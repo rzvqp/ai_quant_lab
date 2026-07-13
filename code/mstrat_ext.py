@@ -449,10 +449,279 @@ def s31_setups(d, h):
         out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
     return out
 
+# =====================================================================================
+# ============  MECHANISM-DIVERSITY BATCH 1 (S41-S46) — genuinely NEW ingredients  ====
+# NEW classes not present in S1-S40: (A) volume MAGNITUDE, (B) short-term RETURN reversal,
+# (C) momentum DIVERGENCE, (D) intrabar PRESSURE (order-flow proxy), (E) streak/sequence, (F) volume-gated breakout.
+# =====================================================================================
+
+# S41 — Volume-climax REVERSAL. NEW ingredient: volume MAGNITUDE (m_volrank). A participation spike at a price
+# extreme = capitulation/blow-off; forced flow exhausts -> reversal. Differs from ALL S1-S40 (only VWAP used
+# volume, never volume magnitude as a trigger) and from S14 exhaustion (which used ROC stall, not volume).
+S41_DIMS = dict(vthr=[0.90, 0.95], stop=['bar', 'atr'], exit=['rr2', 'rr3', 'time'])
+def s41_grammar(): return _grid('S41', S41_DIMS)
+def s41_setups(d, h):
+    hi = d['high'].values; lo = d['low'].values; cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values
+    vr = d['m_volrank'].values; r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d); vt = float(h['vthr'])
+    top = (vr >= vt) & (hi >= r20x)          # climactic volume at a 20-bar high -> blow-off top -> short
+    bot = (vr >= vt) & (lo <= r20n)          # climactic volume at a 20-bar low  -> capitulation -> long
+    top = top & ~np.concatenate([[False], top[:-1]]); bot = bot & ~np.concatenate([[False], bot[:-1]])
+    out = []
+    for t in np.flatnonzero((top | bot) & np.isfinite(atr) & (atr > 0) & np.isfinite(vr)):
+        if t >= n - 1 or t < 1:
+            continue
+        dirn = -1 if top[t] else 1; ei = t + 1
+        stop = ((hi[t] + 2 * TICK) if dirn < 0 else (lo[t] - 2 * TICK)) if h['stop'] == 'bar' else (o[ei] - dirn * 1.5 * atr[t])
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S42 — Short-term RETURN reversal (overreaction). NEW ingredient: return-magnitude ranking / serial dependence.
+# The largest recent mover reverses (liquidity providers absorb overreaction). Differs from S8 (distance-from-
+# SMA) — S42 uses the L-bar RETURN itself, the classic short-term-reversal anomaly, untested so far.
+S42_DIMS = dict(L=[3, 6], thr=[0.006, 0.012], stop=['atr'], exit=['rr2', 'rr3', 'time'])
+def s42_grammar(): return _grid('S42', S42_DIMS)
+def s42_setups(d, h):
+    c = d['close']; cl = c.values; o = d['open'].values; atr = d['m_atr'].values
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d); L = int(h['L']); thr = float(h['thr'])
+    roc = (c / c.shift(L) - 1).values
+    over = roc > thr; undr = roc < -thr        # overbought -> fade short ; oversold -> fade long
+    short = over & ~np.concatenate([[False], over[:-1]]); long = undr & ~np.concatenate([[False], undr[:-1]])
+    out = []
+    for t in np.flatnonzero((short | long) & np.isfinite(roc) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        dirn = 1 if long[t] else -1; ei = t + 1; stop = o[ei] - dirn * 1.5 * atr[t]
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S43 — Momentum DIVERGENCE (RSI vs price). NEW ingredient: oscillator/price divergence. Price makes a new
+# extreme while RSI does NOT -> momentum weakening -> reversal. Differs from S14 (ROC stall, no price-extreme
+# reference) and from all level mechanisms — this is a divergence between price and an oscillator.
+S43_DIMS = dict(rsi_tf=['m', 'h1'], lb=[14, 20], stop=['bar', 'atr'], exit=['rr2', 'time'])
+def s43_grammar(): return _grid('S43', S43_DIMS)
+def s43_setups(d, h):
+    hi = d['high'].values; lo = d['low'].values; cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values
+    rsi = d[('m_rsi' if h['rsi_tf'] == 'm' else 'h1_rsi')].values; lb = int(h['lb']); n = len(d)
+    ph = pd.Series(hi).rolling(lb).max().shift(1).values; pl = pd.Series(lo).rolling(lb).min().shift(1).values
+    rmaxv = pd.Series(rsi).rolling(lb).max().shift(1).values; rminv = pd.Series(rsi).rolling(lb).min().shift(1).values
+    bear = (hi > ph) & (rsi < rmaxv)         # new price high but RSI below its recent high -> bearish divergence
+    bull = (lo < pl) & (rsi > rminv)         # new price low but RSI above its recent low  -> bullish divergence
+    bear = bear & ~np.concatenate([[False], bear[:-1]]); bull = bull & ~np.concatenate([[False], bull[:-1]])
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values; out = []
+    for t in np.flatnonzero((bear | bull) & np.isfinite(rsi) & np.isfinite(atr) & (atr > 0) & np.isfinite(ph)):
+        if t >= n - 1 or t < 1:
+            continue
+        dirn = 1 if bull[t] else -1; ei = t + 1
+        stop = ((hi[t] + 2 * TICK) if dirn < 0 else (lo[t] - 2 * TICK)) if h['stop'] == 'bar' else (o[ei] - dirn * 1.5 * atr[t])
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S44 — Intrabar PRESSURE / close-location (order-flow proxy from OHLC). NEW ingredient: intrabar buying/selling
+# pressure via close-location-value CLV=((C-L)-(H-C))/(H-L). Persistent pressure -> continuation; extreme -> exhaust.
+# Differs from all S1-S40 (none use intrabar close position as an order-flow proxy).
+S44_DIMS = dict(N=[3, 5], mode=['continue', 'exhaust'], stop=['atr'], exit=['rr2', 'rr3', 'time'])
+def s44_grammar(): return _grid('S44', S44_DIMS)
+def s44_setups(d, h):
+    hi = d['high'].values; lo = d['low'].values; cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values
+    rng = np.where((hi - lo) > 0, hi - lo, np.nan); clv = ((cl - lo) - (hi - cl)) / rng
+    N = int(h['N']); mclv = pd.Series(clv).rolling(N).mean().values; n = len(d)
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values
+    strong_buy = mclv > 0.5; strong_sell = mclv < -0.5
+    if h['mode'] == 'continue':
+        lo_ev = strong_buy & ~np.concatenate([[False], strong_buy[:-1]]); sh_ev = strong_sell & ~np.concatenate([[False], strong_sell[:-1]])
+        long_ev, short_ev = lo_ev, sh_ev
+    else:  # exhaust: extreme buying pressure -> fade short, extreme selling -> fade long
+        sh_ev = strong_buy & ~np.concatenate([[False], strong_buy[:-1]]); lo_ev = strong_sell & ~np.concatenate([[False], strong_sell[:-1]])
+        long_ev, short_ev = lo_ev, sh_ev
+    out = []
+    for t in np.flatnonzero((long_ev | short_ev) & np.isfinite(mclv) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        dirn = 1 if long_ev[t] else -1; ei = t + 1; stop = o[ei] - dirn * 1.5 * atr[t]
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S45 — Consecutive-bar STREAK. NEW ingredient: sequential run-length. N consecutive same-direction closes ->
+# reverse (overextension) or continue (momentum). Differs from all (none use raw close-streak length).
+# k=3 excluded on selectivity grounds (pre-PnL): a 3-bar run occurs ~1/8 of bars = not an "extended" streak.
+S45_DIMS = dict(k=[4, 5, 6], mode=['reverse', 'continue'], stop=['atr'], exit=['rr2', 'time'])
+def s45_grammar(): return _grid('S45', S45_DIMS)
+def s45_setups(d, h):
+    c = d['close']; cl = c.values; o = d['open'].values; atr = d['m_atr'].values
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d); k = int(h['k'])
+    up = (np.diff(cl, prepend=cl[0]) > 0).astype(int); dn = (np.diff(cl, prepend=cl[0]) < 0).astype(int)
+    up_streak = pd.Series(up).groupby((up != pd.Series(up).shift()).cumsum()).cumsum().values * up
+    dn_streak = pd.Series(dn).groupby((dn != pd.Series(dn).shift()).cumsum()).cumsum().values * dn
+    up_ev = up_streak == k; dn_ev = dn_streak == k          # exactly k in a row (onset of the k-streak)
+    out = []
+    for t in np.flatnonzero((up_ev | dn_ev) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        base = 1 if up_ev[t] else -1                        # base direction of the streak
+        dirn = -base if h['mode'] == 'reverse' else base; ei = t + 1; stop = o[ei] - dirn * 1.5 * atr[t]
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S46 — Volume-CONFIRMED breakout. NEW ingredient: participation gate on breakouts. Breakout of a level ONLY
+# when volume expands (conviction). Directly tests whether VOLUME is the missing ingredient that made the
+# volume-blind breakouts (S3/S23) fail. Differs from S3/S23 by the m_volrank confirmation.
+S46_DIMS = dict(vthr=[0.70, 0.85], lb=[20, 50], stop=['level', 'atr'], exit=['rr2', 'rr3', 'trailing'])
+def s46_grammar(): return _grid('S46', S46_DIMS)
+def s46_setups(d, h):
+    cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values; vr = d['m_volrank'].values
+    lb = int(h['lb']); rmx = d[f'rmax{lb}'].values; rmn = d[f'rmin{lb}'].values
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d); vt = float(h['vthr'])
+    up = (cl > rmx) & (vr >= vt); dn = (cl < rmn) & (vr >= vt)
+    up = up & ~np.concatenate([[False], up[:-1]]); dn = dn & ~np.concatenate([[False], dn[:-1]])
+    out = []
+    for t in np.flatnonzero((up | dn) & np.isfinite(rmx) & np.isfinite(atr) & (atr > 0) & np.isfinite(vr)):
+        if t >= n - 1 or t < 1:
+            continue
+        dirn = 1 if up[t] else -1; ei = t + 1
+        stop = ((rmn[t] - 2 * TICK) if dirn > 0 else (rmx[t] + 2 * TICK)) if h['stop'] == 'level' else (o[ei] - dirn * 1.5 * atr[t])
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# =====================================================================================
+# ============  MECHANISM-DIVERSITY BATCH 2 (S47-S51)  ================================
+# NEW ingredients: weekend gap, consolidation DURATION, narrowest-range pattern, engulfing, range-position.
+# =====================================================================================
+
+# S47 — Weekend-gap fill/continuation (Monday). NEW: weekend-specific gap (Fri-close -> Mon-open). Differs from
+# S19 (intraday session gaps) — this is the weekend liquidity gap only.
+S47_DIMS = dict(mode=['fill', 'continue'], thr=[0.3, 0.6], exit=['rr2', 'rr3', 'time'])
+def s47_grammar(): return _grid('S47', S47_DIMS)
+def s47_setups(d, h):
+    o = d['open'].values; atr = d['m_atr'].values; gap = d['gap'].values; pc = d['prev_sess_close'].values
+    bis = d['bar_in_sess'].values; r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d)
+    wd = _dt(d).dayofweek.values; thr = float(h['thr'])
+    mon_open = (wd == 0) & (bis == 0) & np.isfinite(gap)
+    gu = mon_open & (gap > thr * atr); gd = mon_open & (gap < -thr * atr)
+    out = []
+    for t in np.flatnonzero((gu | gd) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        up_gap = bool(gu[t])
+        dirn = (-1 if up_gap else 1) if h['mode'] == 'fill' else (1 if up_gap else -1); ei = t + 1
+        stop = o[ei] - dirn * 1.5 * atr[t]
+        if h['mode'] == 'fill':
+            ek, ep = 'opp_struct', float(pc[t])         # fill targets the prior close
+        else:
+            ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S48 — Consolidation-DURATION breakout. NEW ingredient: TIME spent compressed (run-length of compression),
+# not the compression level. Longer coil -> larger expansion. Differs from S23 (compress level + HTF) which
+# ignores duration.
+S48_DIMS = dict(D=[6, 12], stop=['range', 'atr'], exit=['rr2', 'rr3', 'trailing'])
+def s48_grammar(): return _grid('S48', S48_DIMS)
+def s48_setups(d, h):
+    hi = d['high'].values; lo = d['low'].values; cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values
+    comp = d['compress'].values; r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d); D = int(h['D'])
+    coil = pd.Series(comp).rolling(D).sum().shift(1).values >= D      # D consecutive compressed bars (prior)
+    band_hi = pd.Series(hi).rolling(D).max().shift(1).values; band_lo = pd.Series(lo).rolling(D).min().shift(1).values
+    up = coil & (cl > band_hi); dn = coil & (cl < band_lo)
+    up = up & ~np.concatenate([[False], up[:-1]]); dn = dn & ~np.concatenate([[False], dn[:-1]])
+    out = []
+    for t in np.flatnonzero((up | dn) & np.isfinite(band_hi) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        dirn = 1 if up[t] else -1; ei = t + 1
+        stop = ((band_lo[t] - 2 * TICK) if dirn > 0 else (band_hi[t] + 2 * TICK)) if h['stop'] == 'range' else (o[ei] - dirn * 1.5 * atr[t])
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S49 — Narrowest-range (NR) bar breakout. NEW ingredient: the NR-N compression PATTERN (smallest range of last
+# N bars) as the breakout trigger. Differs from S23/S48 (ATR-level / duration) — this is a single-bar range pattern.
+S49_DIMS = dict(N=[4, 7], mode=['breakout', 'fade'], stop=['bar', 'atr'], exit=['rr2', 'time'])
+def s49_grammar(): return _grid('S49', S49_DIMS)
+def s49_setups(d, h):
+    hi = d['high'].values; lo = d['low'].values; cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d); N = int(h['N']); rng = hi - lo
+    is_nr = rng <= pd.Series(rng).rolling(N).min().values                  # narrowest range of last N (inclusive)
+    nrh = np.where(is_nr, hi, np.nan); nrl = np.where(is_nr, lo, np.nan)
+    nrh = pd.Series(nrh).ffill().shift(1).values; nrl = pd.Series(nrl).ffill().shift(1).values  # last NR bar's H/L (prior)
+    # a true NR breakout is the expansion within a few bars OF the NR bar, not any later crossing (selectivity)
+    recent = pd.Series(is_nr.astype(int)).rolling(3).max().shift(1).values >= 1
+    up = (cl > nrh) & recent; dn = (cl < nrl) & recent
+    up = up & ~np.concatenate([[False], up[:-1]]); dn = dn & ~np.concatenate([[False], dn[:-1]])
+    out = []
+    for t in np.flatnonzero((up | dn) & np.isfinite(nrh) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        raw = 1 if up[t] else -1; dirn = raw if h['mode'] == 'breakout' else -raw; ei = t + 1
+        stop = ((nrl[t] - 2 * TICK) if dirn > 0 else (nrh[t] + 2 * TICK)) if h['stop'] == 'bar' else (o[ei] - dirn * 1.5 * atr[t])
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S50 — Outside-bar / engulfing reversal. NEW ingredient: the engulfing (outside) candle pattern (range
+# expansion that engulfs the prior bar) as a control-shift signal. Differs from all (candlestick pattern).
+S50_DIMS = dict(mode=['reversal', 'continuation'], stop=['bar', 'atr'], exit=['rr2', 'rr3', 'time'])
+def s50_grammar(): return _grid('S50', S50_DIMS)
+def s50_setups(d, h):
+    hi = d['high'].values; lo = d['low'].values; cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values; n = len(d)
+    ph = np.concatenate([[np.nan], hi[:-1]]); pl = np.concatenate([[np.nan], lo[:-1]])
+    # meaningful engulfing = outside bar that is also a genuine range EXPANSION (range > ATR), a real control shift
+    outside = (hi > ph) & (lo < pl) & ((hi - lo) > atr)
+    bull = outside & (cl > o); bear = outside & (cl < o)                    # bullish / bearish engulfing
+    out = []
+    for t in np.flatnonzero((bull | bear) & np.isfinite(ph) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        base = 1 if bull[t] else -1                                         # engulfing direction
+        dirn = base if h['mode'] == 'continuation' else -base; ei = t + 1
+        stop = ((lo[t] - 2 * TICK) if dirn > 0 else (hi[t] + 2 * TICK)) if h['stop'] == 'bar' else (o[ei] - dirn * 1.5 * atr[t])
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
+# S51 — Intraday range-position reversion. NEW ingredient: position within the developing SESSION range. Near
+# the top/bottom of the session range -> revert toward the middle. Differs from S8 (SMA distance) / S26 (VWAP band).
+S51_DIMS = dict(thr=[0.85, 0.95], stop=['atr', 'edge'], exit=['rr2', 'time'])
+def s51_grammar(): return _grid('S51', S51_DIMS)
+def s51_setups(d, h):
+    hi = d['high'].values; lo = d['low'].values; cl = d['close'].values; o = d['open'].values; atr = d['m_atr'].values
+    sh = d['sess_high'].values; sl = d['sess_low'].values; bis = d['bar_in_sess'].values; n = len(d); thr = float(h['thr'])
+    width = sh - sl; pos = np.where(width > 0, (cl - sl) / width, np.nan)
+    r20x = d['rmax20'].values; r20n = d['rmin20'].values
+    devd = bis >= 8                                                         # only after the session range has formed
+    hi_ev = (pos >= thr) & devd; lo_ev = (pos <= (1 - thr)) & devd          # near top -> short ; near bottom -> long
+    hi_ev = hi_ev & ~np.concatenate([[False], hi_ev[:-1]]); lo_ev = lo_ev & ~np.concatenate([[False], lo_ev[:-1]])
+    out = []
+    for t in np.flatnonzero((hi_ev | lo_ev) & np.isfinite(pos) & np.isfinite(atr) & (atr > 0)):
+        if t >= n - 1 or t < 1:
+            continue
+        dirn = 1 if lo_ev[t] else -1; ei = t + 1
+        stop = (o[ei] - dirn * 1.5 * atr[t]) if h['stop'] == 'atr' else ((sl[t] - 2 * TICK) if dirn > 0 else (sh[t] + 2 * TICK))
+        ek, ep = _exitmap(h['exit'], dirn, r20n, r20x, ei, r20x, r20n)
+        out.append(dict(si=int(t), ei=ei, dir=dirn, stop=float(stop), exit_kind=ek, exit_param=ep))
+    return out
+
 # ------------- extension registry (mirrors MS.REGISTRY shape) -------------
 EXT_REGISTRY = {
     'S21': (s21_grammar, s21_setups),
     'S22': (s22_grammar, s22_setups),
+    'S47': (s47_grammar, s47_setups),
+    'S48': (s48_grammar, s48_setups),
+    'S49': (s49_grammar, s49_setups),
+    'S50': (s50_grammar, s50_setups),
+    'S51': (s51_grammar, s51_setups),
+    'S41': (s41_grammar, s41_setups),
+    'S42': (s42_grammar, s42_setups),
+    'S43': (s43_grammar, s43_setups),
+    'S44': (s44_grammar, s44_setups),
+    'S45': (s45_grammar, s45_setups),
+    'S46': (s46_grammar, s46_setups),
     'S29': (s29_grammar, s29_setups),
     'S30': (s30_grammar, s30_setups),
     'S31': (s31_grammar, s31_setups),
@@ -481,6 +750,17 @@ EXT_ECON = {
     'S38': 'patient pullback-into-zone (trend continuation)',
     'S39': 'trend-efficiency-gated continuation',
     'S40': 'regime router (trend-continuation / range-reversion)',
+    'S41': 'volume-climax reversal',
+    'S42': 'short-term return reversal (overreaction)',
+    'S43': 'momentum divergence (RSI/price)',
+    'S44': 'intrabar pressure / close-location (order-flow proxy)',
+    'S45': 'consecutive-bar streak',
+    'S46': 'volume-confirmed breakout',
+    'S47': 'weekend-gap fill/continuation',
+    'S48': 'consolidation-duration breakout',
+    'S49': 'narrowest-range (NR) breakout',
+    'S50': 'outside-bar / engulfing reversal',
+    'S51': 'intraday range-position reversion',
 }
 def ext_setups(d, h): return EXT_REGISTRY[h['family']][1](d, h)
 def ext_backtest(d, h): return MS.simulate(d, EXT_REGISTRY[h['family']][1](d, h), MS.CFG)
