@@ -1,0 +1,15 @@
+{
+ "python": "3.14.6",
+ "platform": "Windows-11-10.0.26200-SP0",
+ "numpy": "2.5.1",
+ "pandas": "3.0.3",
+ "pyarrow": "25.0.0",
+ "base_commit": "1bc0ffb1fb6bfffcdb75f611a937e3536a898e40",
+ "branch": "matched-null-validation",
+ "data_sha256_16": {
+  "M15": "c777cb9c60972878",
+  "H1": "5ff7420ac6698e63",
+  "H4": "9a6e1111b6af576e",
+  "D1": "a5fc340cfcd2cfc3"
+ }
+}

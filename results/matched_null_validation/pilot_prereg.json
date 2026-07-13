@@ -1,0 +1,59 @@
+{
+ "strata": null,
+ "B_triage": 20000,
+ "B_refine": 200000,
+ "B_val": 10000,
+ "selected": [
+  {
+   "label": "S1_representative",
+   "id": "f34e8d2827c3",
+   "rule": "S1 research-worthy, largest n"
+  },
+  {
+   "label": "S5_representative",
+   "id": "3a9d271b56b8",
+   "rule": "S5 research-worthy, largest n"
+  },
+  {
+   "label": "S9_representative",
+   "id": "904767451034",
+   "rule": "S9 research-worthy, largest n"
+  },
+  {
+   "label": "S6_extreme",
+   "id": "7a86a38610f8",
+   "rule": "known tiny-stop/outlier extreme (maxDD 89.8R)"
+  },
+  {
+   "label": "unprofitable_S6",
+   "id": "0dd1ec64d5ab",
+   "rule": "clearly unprofitable, n>=100, lowest exp"
+  },
+  {
+   "label": "unprofitable_S6",
+   "id": "5a134f30e7a1",
+   "rule": "clearly unprofitable, n>=100, lowest exp"
+  },
+  {
+   "label": "fragile_profitable_S14",
+   "id": "35eda8bdb094",
+   "rule": "hist-profitable but fragile, n>=50"
+  },
+  {
+   "label": "fragile_profitable_S1",
+   "id": "8e919fd46517",
+   "rule": "hist-profitable but fragile, n>=50"
+  },
+  {
+   "label": "research_worthy_S20",
+   "id": "e38573221e35",
+   "rule": "research-worthy, other family, largest n"
+  },
+  {
+   "label": "research_worthy_S20",
+   "id": "601e20753a4a",
+   "rule": "research-worthy, other family, largest n"
+  }
+ ],
+ "note": "ids fixed before p computation; no verdict issued"
+}
