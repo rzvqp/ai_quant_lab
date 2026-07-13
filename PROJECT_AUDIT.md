@@ -1,4 +1,24 @@
-# PROJECT_AUDIT — open defects, debts, method validity (2026-07-13)
+# PROJECT_AUDIT — open defects, debts, method validity (updated 2026-07-14, pre-Wave1 consolidation)
+
+## A0. Consolidation & risk register (2026-07-14)
+**Branches integrated into research-main:** master (baseline), matched-null-validation, family-implementation-s21-s40,
+strategy-development. **Not integrated:** none (all merged; original refs retained). Conflicts: CHANGELOG (union),
+2 report files (S1–S40 canonical + S1–S20 preserved). No CEO-decision conflict. Engine byte-frozen throughout.
+
+**Methods VALIDATED:** matched-null Test B (Verdict A — calibration/power/adversarial/parity pass; unstratified config).
+Block-bootstrap (Test A) interim-official under-validation. **Methods PENDING:** global-FDR (not run), walk-forward, Red Team.
+
+**Retracted conclusions (history preserved):** "S1=drift", "S1/S5/S9 decorrelated", "no RC significant",
+S1-standalone "6 candidates", analytic-p as verdict, and the earlier claim that broad mechanisms generalize
+(most S21–S51 negatives). All logged in NEGATIVE_EVIDENCE_REGISTRY / knowledge/.
+
+**Open risks carried into Wave 1:**
+- **Beta confound (I7):** most positives are long in a bull sample; timing-alpha vs gold beta unresolved (Wave-1 EXP-03/04 partial).
+- **Multiple testing:** 2,432 hypotheses + 54 generated + 10 experiments reusing correlated events → hierarchical
+  family-wise plan mandatory (EXPERIMENT_PRIORITY_MATRIX); no per-experiment significance hunting.
+- **Small-n:** several positives (S42 n≈43, S1/swing n≈43, S31 n=38) — min-trades + UNRESOLVED-if-CI-straddles rules set.
+- **Semantic duplication:** generator novelty gate is TAG-based (necessary not sufficient); v2 semantic-signature owed.
+- **Codex filesystem review PENDING:** its MCP sandbox is stale; all Codex reviews to date are INLINE only.
 
 ## A. Confirmed defects
 | id | severity | description | status |

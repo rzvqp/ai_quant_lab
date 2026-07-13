@@ -1,5 +1,15 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-14 (close) — OFFICIAL SESSION CLOSE PRE-WAVE1 (consolidation)
+- Consolidated master + matched-null-validation + family-implementation-s21-s40 + strategy-development into ONE
+  official branch **research-main**. Engine byte-identical across all branches (zero code conflict); only CHANGELOG
+  unioned + 2 report files (S1–S40 canonical, S1–S20 variants preserved). BRANCH_CONSOLIDATION_AUDIT.md.
+- Integrity verified: portable path (no Temp), 84,152 bars, engine parity+smoke PASS, matched-null tests PASS,
+  generator 54, planner 54→52, all JSON/parquet valid, tree CLEAN (196 files).
+- Created SESSION_CLOSE_PRE_WAVE1.md, BRANCH_CONSOLIDATION_AUDIT.md, ARTIFACT_INVENTORY_PRE_WAVE1.md, WAVE1_HANDOFF.md;
+  rewrote PROJECT_STATE_v1.0.md, updated PROJECT_AUDIT.md + NEXT_SESSION.md. Portable archive + SHA256 + restore instructions.
+- **Wave 1 = PLANNED, FROZEN, NOT STARTED.** Nothing implemented/run; holdout SEALED; no FDR. Next session starts with Wave 1 execution (CEO-gated).
+
 ## Session 2026-07-14 — Experiment Planner v1 (54 HGv1 -> 10-experiment falsifiable plan, no backtest)
 - Built knowledge/experiments/: EXPERIMENT_REGISTRY.jsonl/.md, HYPOTHESIS_DEDUPLICATION.md, EXPERIMENT_PRIORITY_MATRIX.md,
   WAVE_1/2/3_SPEC.md, CLAUDE_CODEX_REVIEW.md; code/experiment_planner_v1.py (structural-valid + dedup + type + info-value).
