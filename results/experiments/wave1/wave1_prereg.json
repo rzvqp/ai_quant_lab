@@ -1,0 +1,84 @@
+{
+ "spec": "knowledge/experiments/WAVE_1_SPEC.md",
+ "prereg": {
+  "split": [
+   0.6,
+   0.8
+  ],
+  "min_trades": 30,
+  "margin": 0.0,
+  "B_perm": 20000,
+  "B_matched": 20000,
+  "K_shuffle": 500,
+  "placebo_window_days": 30,
+  "multiplicity": "holm-bonferroni",
+  "reps": {
+   "S1": {
+    "id": "f34e8d2827c3",
+    "h": {
+     "side": "low",
+     "liq_ref": "pdh_pdl",
+     "liq_lb": 50,
+     "confirm": "consecutive2",
+     "imb": "none",
+     "stop": "beyond_sweep",
+     "exit": "rr2",
+     "window": 8,
+     "family": "S1"
+    }
+   },
+   "S2": {
+    "id": "959581cbcdb3",
+    "h": {
+     "ref": "pdh_pdl",
+     "lb": 20,
+     "fail_within": 4,
+     "stop": "atr",
+     "exit": "rr2",
+     "side": "low",
+     "family": "S2"
+    }
+   },
+   "S5": {
+    "id": "3a9d271b56b8",
+    "h": {
+     "session": "ny",
+     "mode": "breakout",
+     "stop": "atr",
+     "exit": "rr2",
+     "side": "up",
+     "family": "S5"
+    }
+   },
+   "S39": {
+    "id": "13752e544049",
+    "h": {
+     "L": 20,
+     "er_thr": 0.5,
+     "stop": "swing",
+     "exit": "rr2",
+     "family": "S39"
+    }
+   }
+  },
+  "seeds": {
+   "exp01": 7681,
+   "exp02": 7682,
+   "exp03": 7683,
+   "exp04": 7684,
+   "exp05": 7685,
+   "exp06": 7686,
+   "matched_research": 659918,
+   "matched_val": 2827
+  }
+ },
+ "split_bars": {
+  "n": 84152,
+  "a": 50491,
+  "b": 67321,
+  "holdout_bars": 16831
+ },
+ "alpha": 0.05,
+ "status_rules": "frozen in run_wave1.decide()",
+ "note": "ids/seeds/B/K/margins/multiplicity fixed BEFORE any p computed; holdout SEALED"
+}

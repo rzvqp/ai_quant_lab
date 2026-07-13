@@ -1,0 +1,82 @@
+{
+ "exp": "EXP-02",
+ "kind": "mechanism_selection",
+ "hypothesis": "HGv1-043",
+ "rep_id": "13752e544049",
+ "arms": {
+  "gate_on": {
+   "n": 159,
+   "exp": -0.05242247518707631,
+   "pf": 0.8529245982780935,
+   "maxdd_R": 15.353823417991752,
+   "win": 0.4339622641509434,
+   "sumR": -8.335173554745133
+  },
+  "gate_off": {
+   "n": 1286,
+   "exp": -0.0979818530739533,
+   "pf": 0.8287343181152762,
+   "maxdd_R": 135.860254040378,
+   "win": 0.3810264385692068,
+   "sumR": -126.00466305310394
+  }
+ },
+ "primary": {
+  "n_on": 159,
+  "n_off": 1286,
+  "mean_on": -0.05242247518707631,
+  "mean_off": -0.0979818530739533,
+  "delta": 0.04555937788687699,
+  "p": 0.29723513824308784,
+  "k_ge": 5944,
+  "B": 20000,
+  "p_ci": [
+   0.2909055017284721,
+   0.3035723880959205
+  ],
+  "mean_on_ci": [
+   -0.18018734624118998,
+   0.0778374200296758
+  ],
+  "null_mean": -0.0984733655911686,
+  "null_q": [
+   -0.0998156168093462,
+   0.04832437708321068,
+   0.10870806066015708
+  ]
+ },
+ "primary_n": 159,
+ "raw_p": 0.29723513824308784,
+ "p_ci": [
+  0.2909055017284721,
+  0.3035723880959205
+ ],
+ "delta": 0.04555937788687699,
+ "mean_on_ci": [
+  -0.18018734624118998,
+  0.0778374200296758
+ ],
+ "mean_off": -0.0979818530739533,
+ "oos": {
+  "gate_on_exp": 0.023803074267752196,
+  "gate_on_n": 58
+ },
+ "decomposition": {
+  "universe": "ungated generic continuation (executed once); gate-ON = efficient partition of it",
+  "n_off": 1286,
+  "n_on": 159,
+  "frequency_ratio": 0.12363919129082426,
+  "all_trends_exp": -0.0979818530739533,
+  "efficient_subset_exp": -0.05242247518707631,
+  "s39_as_registered_exp": 0.028869942451630336,
+  "s39_as_registered_n": 320,
+  "long_share_on": 0.5345911949685535,
+  "long_share_off": 0.562208398133748,
+  "cost_drag_R_on": 0.022988505747126523,
+  "cost_drag_R_off": 0.04280906706692835,
+  "retrospective_selection_note": "the null draws random size-n_on subsets of the WHOLE executed continuation universe; if the efficient partition sits inside that null (large p) the gate does NOT select better-than-random trends (no genuine efficiency edge)."
+ },
+ "adj_p_holm": 0.5324733763311834,
+ "bh_fdr_pass_q0.10": false,
+ "status": "NO DIFFERENCE DETECTED"
+}

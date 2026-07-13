@@ -1,0 +1,66 @@
+{
+ "exp": "EXP-04",
+ "kind": "beta_matched",
+ "hypothesis": "HGv1-049",
+ "rep_id": "3a9d271b56b8",
+ "primary": {
+  "k": 406,
+  "obs_mean": 0.07557888788303532,
+  "B": 20000,
+  "seed": 7684,
+  "strata": [
+   "strat_combo"
+  ],
+  "p": 0.1774911254437278,
+  "k_ge": 3549,
+  "null_mean": 0.01912800195209305,
+  "null_sd": 0.061319178815784636,
+  "ci": [
+   0.17221725454871933,
+   0.18280662791113184
+  ],
+  "null_q": [
+   0.019113004285774157,
+   0.09700786808836377,
+   0.12016324439373757,
+   0.16184212353334182
+  ]
+ },
+ "primary_n": 406,
+ "raw_p": 0.1774911254437278,
+ "p_ci": [
+  0.17221725454871933,
+  0.18280662791113184
+ ],
+ "obs_mean": 0.07557888788303532,
+ "null_mean": 0.01912800195209305,
+ "side_primary": {
+  "side": "up",
+  "k": 406,
+  "p": 0.1774911254437278,
+  "obs_mean": 0.07557888788303532
+ },
+ "side_mirror": {
+  "side": "down",
+  "k": 373,
+  "p": 0.40612969351532424,
+  "obs_mean": -0.16499206068958625
+ },
+ "unstratified_anchor": {
+  "p": 0.034498275086245686,
+  "obs_mean": 0.07557888788303532,
+  "null_mean": -0.05173788959773784,
+  "ci": [
+   0.032010425112251335,
+   0.03706837965967159
+  ]
+ },
+ "oos": {
+  "exp": 0.23709429239049085,
+  "n": 125
+ },
+ "caveat": "PRIMARY p uses a session x vol x trend STRATIFIED (beta/regime-matched) null. The stratified config is NOT separately calibration-validated (only the unstratified config passed the matched-null battery), so EXP-03/04 are DIAGNOSTIC-grade; the unstratified anchor p is reported alongside. Representatives are single-direction; the opposite side is reported as side_mirror.",
+ "adj_p_holm": 0.5324733763311834,
+ "bh_fdr_pass_q0.10": false,
+ "status": "WEAKENS CLAIM"
+}

@@ -1,0 +1,72 @@
+{
+ "exp": "EXP-01",
+ "kind": "mechanism_paired",
+ "hypothesis": "HGv1-042",
+ "rep_id": "f34e8d2827c3",
+ "arms": {
+  "confirmed": {
+   "n": 399,
+   "exp": 0.031962916023161876,
+   "pf": 1.0536416856718134,
+   "maxdd_R": 20.7373949789173,
+   "win": 0.46115288220551376,
+   "sumR": 12.753203493241589
+  },
+  "raw": {
+   "n": 510,
+   "exp": -0.14519253222792072,
+   "pf": 0.8059609909877045,
+   "maxdd_R": 88.66907009048494,
+   "win": 0.36666666666666664,
+   "sumR": -74.04819143623956
+  }
+ },
+ "primary": {
+  "paired_n": 337,
+  "delta": 0.1074246873020748,
+  "delta_minus_margin": 0.1074246873020748,
+  "p": 0.08829558522073896,
+  "k_ge": 1765,
+  "B": 20000,
+  "p_ci": [
+   0.08439742420001184,
+   0.09226071749226453
+  ],
+  "delta_ci": [
+   -0.047196712520451774,
+   0.26113833693432315
+  ],
+  "mean_treat": 0.03795850853348726,
+  "mean_ctrl": -0.06946617876858754
+ },
+ "primary_n": 337,
+ "raw_p": 0.08829558522073896,
+ "p_ci": [
+  0.08439742420001184,
+  0.09226071749226453
+ ],
+ "delta": 0.1074246873020748,
+ "delta_ci": [
+  -0.047196712520451774,
+  0.26113833693432315
+ ],
+ "oos": {
+  "confirmed_exp": -0.06140251405216482,
+  "confirmed_n": 106
+ },
+ "decomposition": {
+  "sweeps_total": 971,
+  "confirmed": 827,
+  "confirm_rate": 0.8516992790937178,
+  "mean_delay_bars": 3.07496977025393,
+  "mean_entry_price_shift_dir": 0.8438923821039891,
+  "raw_all_exp": -0.14519253222792072,
+  "raw_confirmed_only_exp": -0.03132956131683301,
+  "confirmed_exp": 0.031962916023161876,
+  "selection_effect_note": "raw_all vs raw_confirmed_only isolates confirmation-as-SELECTION; confirmed vs raw_confirmed_only isolates confirmation-as-TIMING(delay+price).",
+  "exposure_duration": "NOT MEASURED \u2014 MS.simulate returns (R,si,ei) only; exit index is not exposed by the frozen engine, so holding time is not reported without an engine change (out of scope)."
+ },
+ "adj_p_holm": 0.44147792610369485,
+ "bh_fdr_pass_q0.10": false,
+ "status": "NO DIFFERENCE DETECTED"
+}

@@ -1,0 +1,67 @@
+{
+ "multiplicity": "holm-bonferroni",
+ "alpha": 0.05,
+ "primary_pvals": [
+  0.08829558522073896,
+  0.29723513824308784,
+  0.006949652517374131,
+  0.1774911254437278,
+  0.11776447105788423,
+  0.2375249500998004
+ ],
+ "holm_adj": [
+  0.44147792610369485,
+  0.5324733763311834,
+  0.04169791510424479,
+  0.5324733763311834,
+  0.47105788423153694,
+  0.5324733763311834
+ ],
+ "bh_pass": [
+  false,
+  false,
+  true,
+  false,
+  false,
+  false
+ ],
+ "results": [
+  {
+   "exp": "EXP-01",
+   "status": "NO DIFFERENCE DETECTED",
+   "raw_p": 0.08829558522073896,
+   "adj_p_holm": 0.44147792610369485
+  },
+  {
+   "exp": "EXP-02",
+   "status": "NO DIFFERENCE DETECTED",
+   "raw_p": 0.29723513824308784,
+   "adj_p_holm": 0.5324733763311834
+  },
+  {
+   "exp": "EXP-03",
+   "status": "SUPPORTS CLAIM",
+   "raw_p": 0.006949652517374131,
+   "adj_p_holm": 0.04169791510424479
+  },
+  {
+   "exp": "EXP-04",
+   "status": "WEAKENS CLAIM",
+   "raw_p": 0.1774911254437278,
+   "adj_p_holm": 0.5324733763311834
+  },
+  {
+   "exp": "EXP-05",
+   "status": "NO DIFFERENCE DETECTED",
+   "raw_p": 0.11776447105788423,
+   "adj_p_holm": 0.47105788423153694
+  },
+  {
+   "exp": "EXP-06",
+   "status": "NO DIFFERENCE DETECTED",
+   "raw_p": 0.2375249500998004,
+   "adj_p_holm": 0.5324733763311834
+  }
+ ],
+ "note": "Wave-1 family-wise correction ONLY; global S1-S51 FDR NOT run; holdout SEALED"
+}

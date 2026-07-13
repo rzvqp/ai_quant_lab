@@ -37,11 +37,11 @@ S1-standalone "6 candidates", analytic-p as verdict, and the earlier claim that 
 ## A.1 Reproducibility status (2026-07-13)
 - Portability fix (D-critical `mtf.py`) applied; official campaign re-run on a fresh venv (pandas 3.0.3/numpy 2.5.1, newer than original) reproduced the baseline **EXACTLY** (Verdict A): 1972/1800/357/130/14/9; per-hypothesis parquet max abs diff 0.0; total trades 1,300,740 identical; boolean verdicts identical; 0 Temp reads; holdout SEALED. Baseline not overwritten (new run in results/reproduction_v2/). Pre-fix git checkpoint `85857234`. See PORTABILITY_AUDIT.md, REPRODUCIBILITY_AUDIT.md.
 
-## B. Method validity status (ALL under validation)
+## B. Method validity status
 - Analytic p-value: INVALID for verdicts (diagnostic only).
 - IID bootstrap (Test A robustness): H0-centering proven correct; METHOD UNDER VALIDATION.
 - Block bootstrap (Test A robustness): well-calibrated on 2 synthetic controls; METHOD UNDER VALIDATION (needs full battery).
-- Matched-null (Test B, primary): MISCALIBRATED; fix required.
+- Matched-null (Test B, primary): **ENGINE VALIDATED (Verdict A)** — calibration/power/adversarial/parity all PASS (unstratified ATR-scaled config; see §A0, defect D3, docs/MATCHED_NULL_VALIDATION.md). APPLICATION SCOPE SO FAR: the 10-hypothesis pre-registered pilot ONLY. FULL-CAMPAIGN application (matched-null over the whole eligible S1–S51 universe) = **PENDING** (CEO-gated). [Corrected 2026-07-14, wave1-execution: this bullet previously read "MISCALIBRATED; fix required", stale relative to §A0/D3 which record the 2026-07-13 resolution. Documentary correction only — no methodology change.]
 - Global-FDR: NOT yet run with a valid p-value. Universe = full eligible valid (m=1552; 1704 conservative diagnostic).
 
 ## C. Retracted conclusions (audit trail)

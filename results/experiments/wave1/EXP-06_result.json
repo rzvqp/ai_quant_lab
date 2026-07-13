@@ -1,0 +1,56 @@
+{
+ "exp": "EXP-06",
+ "kind": "placebo",
+ "hypothesis": "HGv1-051",
+ "rep_id": "959581cbcdb3",
+ "primary": {
+  "real": {
+   "n": 272,
+   "exp": 0.01878892033764576,
+   "pf": 1.0295047284134482,
+   "maxdd_R": 22.478573443584207,
+   "win": 0.4117647058823529,
+   "sumR": 5.110586331839647
+  },
+  "K": 500,
+  "Keff": 500,
+  "p": 0.2375249500998004,
+  "k_ge": 118,
+  "p_low": 0.7644710578842315,
+  "k_le": 382,
+  "ci": [
+   0.2008812954638237,
+   0.2751443563017508
+  ],
+  "shuffled_mean_of_means": -0.03444491280577308,
+  "shuffled_n_median": 292.0,
+  "real_n": 272,
+  "freq_ratio": 1.0735294117647058
+ },
+ "primary_n": 272,
+ "raw_p": 0.2375249500998004,
+ "raw_p_low": 0.7644710578842315,
+ "p_ci": [
+  0.2008812954638237,
+  0.2751443563017508
+ ],
+ "real": {
+  "n": 272,
+  "exp": 0.01878892033764576,
+  "pf": 1.0295047284134482,
+  "maxdd_R": 22.478573443584207,
+  "win": 0.4117647058823529,
+  "sumR": 5.110586331839647
+ },
+ "shuffled_mean_of_means": -0.03444491280577308,
+ "freq_ratio": 1.0735294117647058,
+ "shuffled_n_median": 292.0,
+ "oos": {
+  "exp": -0.031123073587796646,
+  "n": 75
+ },
+ "geometry_note": "Placebo transplants each day a NEARBY donor day's level-relative-to-price offset (preserves daily persistence + distance geometry + signal frequency: freq_ratio reported), while destroying the level's economic identity. K seeded shuffles.",
+ "adj_p_holm": 0.5324733763311834,
+ "bh_fdr_pass_q0.10": false,
+ "status": "NO DIFFERENCE DETECTED"
+}
