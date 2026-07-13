@@ -1,0 +1,11 @@
+{
+ "id": "S36",
+ "name": "S36 (not implemented)",
+ "status": "NOT_IMPLEMENTED",
+ "reason": "Macro-event / calendar-surprise (needs external event data) \u2014 CEO-gated, NOT implemented.",
+ "timeframe": "n/a",
+ "validation_status": "NOT IMPLEMENTED \u2014 blocked on external data acquisition (CEO-gated).",
+ "provenance": {
+  "generated_from": "no code, no results; documented for library completeness"
+ }
+}

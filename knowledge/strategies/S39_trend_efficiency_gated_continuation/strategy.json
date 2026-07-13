@@ -1,0 +1,84 @@
+{
+ "id": "S39",
+ "name": "Trend-Efficiency-Gated Continuation",
+ "klass": "Class VII \u2014 efficient continuation (redesign of S15)",
+ "slug": "S39_trend_efficiency_gated_continuation",
+ "status": "IMPLEMENTED",
+ "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
+ "sessions": "All sessions",
+ "long_short": "both",
+ "htf_context": "M15 trend + efficiency ratio",
+ "mechanism": "Take continuation ONLY when the trend is CLEAN \u2014 high Kaufman efficiency ratio (net move / path length) predicts persistence; skip noisy chop. Loser = counter-trend faders in efficient trends. (Wave-1 EXP-02: the gate did not beat random selection at the family-wise bar.)",
+ "entry_rules": "M15 trend + an expansion bar (range>1.5*ATR, matching close) GATED by efficiency ratio >= er_thr over L bars; onset only; enter next open.",
+ "exit_rules": "rr2 | rr3 | trailing.",
+ "stop_loss_rules": "atr or swing (20-bar extreme).",
+ "required_confirmations": "the efficiency-ratio gate.",
+ "invalid_conditions": [
+  "ATR non-finite or <= 0 at the signal bar",
+  "signal on the last available bar (no next-open to fill)",
+  "a position is already open (overlap suppression)"
+ ],
+ "position_sizing": {
+  "model": "risk-normalised (1R per trade)",
+  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ },
+ "grammar": "L(10|20), er_thr(0.3|0.5), stop, exit",
+ "executable_default": {
+  "selection_rule": "research_worthy & largest-n",
+  "hypothesis_id": "13752e544049",
+  "params": {
+   "L": 20,
+   "er_thr": 0.5,
+   "stop": "swing",
+   "exit": "rr2"
+  }
+ },
+ "performance": {
+  "historical": {
+   "hypothesis_id": "13752e544049",
+   "n": 320,
+   "expectancy_R": 0.0289,
+   "profit_factor": 1.085,
+   "drawdown_R": 11.65,
+   "win_rate": 0.472,
+   "sumR": 9.24,
+   "median_R": -0.0554,
+   "trimmed5_R": -0.0176,
+   "months": 27,
+   "pos_months": 14,
+   "years": 4.0,
+   "side": "both",
+   "hist_profitable": true,
+   "research_worthy": true,
+   "fragile": false,
+   "top1_share": 0.02,
+   "oos_expectancy_R": 0.0179
+  },
+  "oos_expectancy_R": 0.0179,
+  "drawdown_R": 11.65,
+  "profit_factor": 1.085,
+  "expectancy_R": 0.0289,
+  "family": {
+   "n_hypotheses": 24,
+   "n_hist_profitable": 2,
+   "n_research_worthy": 2,
+   "best_exp": 0.0305,
+   "median_exp": -0.1037
+  }
+ },
+ "monte_carlo": "Wave-1 EXP-02: the efficiency gate did NOT select better-than-random continuation trades at the family-wise bar (NO DIFFERENCE DETECTED).",
+ "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
+ "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
+ "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 2 historically-profitable, 2 research-worthy. Representative 13752e544049: n=320, exp=0.0289R, PF=1.085, maxDD=11.65R, OOS exp=0.0179R, pos-months 14/27, research-worthy. ",
+ "provenance": {
+  "engine": "mstrat.py v2 (FROZEN)",
+  "module": "mstrat_ext",
+  "results_parquet": "results/ext_families/EXT_FAMILY_RESULTS.parquet",
+  "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
+  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+ }
+}

@@ -1,0 +1,84 @@
+{
+ "id": "S46",
+ "name": "Volume-Confirmed Breakout",
+ "klass": "Batch1 \u2014 participation-gated breakout",
+ "slug": "S46_volume_confirmed_breakout",
+ "status": "IMPLEMENTED",
+ "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
+ "sessions": "All sessions",
+ "long_short": "both",
+ "htf_context": "none",
+ "mechanism": "Breakout of a level ONLY when volume expands (conviction) \u2014 tests whether VOLUME is the missing ingredient that made the volume-blind breakouts (S3/S23) fail.",
+ "entry_rules": "Close beyond the `lb`-bar extreme with volume rank >= vthr; onset only; enter next open.",
+ "exit_rules": "rr2 | rr3 | trailing.",
+ "stop_loss_rules": "level (2 ticks past the level) or atr.",
+ "required_confirmations": "REQUIRED: volume expansion.",
+ "invalid_conditions": [
+  "ATR non-finite or <= 0 at the signal bar",
+  "signal on the last available bar (no next-open to fill)",
+  "a position is already open (overlap suppression)"
+ ],
+ "position_sizing": {
+  "model": "risk-normalised (1R per trade)",
+  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ },
+ "grammar": "vthr(0.70|0.85), lb(20|50), stop, exit",
+ "executable_default": {
+  "selection_rule": "research_worthy & largest-n",
+  "hypothesis_id": "6131c7eced5d",
+  "params": {
+   "vthr": 0.85,
+   "lb": 50,
+   "stop": "level",
+   "exit": "rr3"
+  }
+ },
+ "performance": {
+  "historical": {
+   "hypothesis_id": "6131c7eced5d",
+   "n": 519,
+   "expectancy_R": 0.0172,
+   "profit_factor": 1.052,
+   "drawdown_R": 24.33,
+   "win_rate": 0.453,
+   "sumR": 8.94,
+   "median_R": -0.0979,
+   "trimmed5_R": -0.0698,
+   "months": 27,
+   "pos_months": 13,
+   "years": 4.0,
+   "side": "both",
+   "hist_profitable": true,
+   "research_worthy": true,
+   "fragile": false,
+   "top1_share": 0.016,
+   "oos_expectancy_R": -0.017
+  },
+  "oos_expectancy_R": -0.017,
+  "drawdown_R": 24.33,
+  "profit_factor": 1.052,
+  "expectancy_R": 0.0172,
+  "family": {
+   "n_hypotheses": 24,
+   "n_hist_profitable": 1,
+   "n_research_worthy": 1,
+   "best_exp": 0.0172,
+   "median_exp": -0.0966
+  }
+ },
+ "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+ "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
+ "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample",
+ "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 1 historically-profitable, 1 research-worthy. Representative 6131c7eced5d: n=519, exp=0.0172R, PF=1.052, maxDD=24.33R, OOS exp=-0.017R, pos-months 13/27, research-worthy. ",
+ "provenance": {
+  "engine": "mstrat.py v2 (FROZEN)",
+  "module": "mstrat_ext",
+  "results_parquet": "results/ext_families/EXT_FAMILY_RESULTS.parquet",
+  "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
+  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+ }
+}

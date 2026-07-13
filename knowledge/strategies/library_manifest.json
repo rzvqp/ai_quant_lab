@@ -1,0 +1,549 @@
+{
+ "library": "Executable Strategy Library",
+ "interface": "Research-Lab -> AI-Trader",
+ "engine": "mstrat.py v2 (FROZEN)",
+ "generated_from": "frozen research parquets + frozen family code; no re-backtest",
+ "holdout_status": "SEALED",
+ "global_fdr": "NOT RUN",
+ "walk_forward": "NOT RUN",
+ "overall_verdict": "EXPLORATORY \u2014 no confirmed alpha; specs are executable descriptions of researched behaviour",
+ "counts": {
+  "implemented": 45,
+  "invalid": 2,
+  "not_implemented": 6,
+  "total_numbered": 51
+ },
+ "strategies": [
+  {
+   "id": "S1",
+   "slug": "S01_confirmed_liquidity_sweep_reversal",
+   "name": "Confirmed Liquidity Sweep Reversal",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.032,
+   "oos_R": -0.0614,
+   "profit_factor": 1.054,
+   "drawdown_R": 20.74,
+   "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample"
+  },
+  {
+   "id": "S2",
+   "slug": "S02_failed_breakout_fade",
+   "name": "Failed-Breakout Fade",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0188,
+   "oos_R": -0.0311,
+   "profit_factor": 1.03,
+   "drawdown_R": 22.48,
+   "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample"
+  },
+  {
+   "id": "S3",
+   "slug": "S03_breakout_retest_continuation",
+   "name": "Breakout Retest Continuation",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0634,
+   "oos_R": 0.1052,
+   "profit_factor": 1.086,
+   "drawdown_R": 40.57,
+   "confidence": "VERY LOW \u2014 historically profitable but not research-worthy"
+  },
+  {
+   "id": "S4",
+   "slug": "S04_volatility_compression_expansion",
+   "name": "Volatility Compression Expansion",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.3763,
+   "oos_R": -0.2415,
+   "profit_factor": 0.269,
+   "drawdown_R": 1183.6,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S5",
+   "slug": "S05_opening_range_breakout",
+   "name": "Opening-Range Breakout",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0756,
+   "oos_R": 0.2371,
+   "profit_factor": 1.135,
+   "drawdown_R": 14.3,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S6",
+   "slug": "S06_session_transition",
+   "name": "Session-Transition",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.017,
+   "oos_R": 0.1604,
+   "profit_factor": 1.027,
+   "drawdown_R": 23.91,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S7",
+   "slug": "S07_trend_pullback_continuation",
+   "name": "Trend Pullback Continuation",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.5641,
+   "oos_R": -0.4291,
+   "profit_factor": 0.449,
+   "drawdown_R": 1844.9,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S8",
+   "slug": "S08_extension_mean_reversion",
+   "name": "Extension Mean-Reversion",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0171,
+   "oos_R": 0.1094,
+   "profit_factor": 1.026,
+   "drawdown_R": 24.62,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S9",
+   "slug": "S09_multi_timeframe_alignment",
+   "name": "Multi-Timeframe Alignment",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0624,
+   "oos_R": 0.1713,
+   "profit_factor": 1.117,
+   "drawdown_R": 20.53,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S10",
+   "slug": "S10_displacement_continuation",
+   "name": "Displacement Continuation",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.3217,
+   "oos_R": -0.3042,
+   "profit_factor": 0.4,
+   "drawdown_R": 1076.09,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S11",
+   "slug": "S11_structure_break_reversal_choch",
+   "name": "Structure-Break Reversal (CHoCH)",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.1668,
+   "oos_R": -0.0441,
+   "profit_factor": 0.776,
+   "drawdown_R": 205.01,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S12",
+   "slug": "S12_range_rotation",
+   "name": "Range Rotation",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.2384,
+   "oos_R": -0.1921,
+   "profit_factor": 0.67,
+   "drawdown_R": 484.25,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S13",
+   "slug": "S13_imbalance_fill",
+   "name": "Imbalance Fill",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0199,
+   "oos_R": 0.0732,
+   "profit_factor": 1.028,
+   "drawdown_R": 121.8,
+   "confidence": "VERY LOW \u2014 historically profitable but not research-worthy"
+  },
+  {
+   "id": "S14",
+   "slug": "S14_momentum_exhaustion",
+   "name": "Momentum Exhaustion",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0349,
+   "oos_R": -0.1374,
+   "profit_factor": 1.061,
+   "drawdown_R": 14.01,
+   "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample (flagged FRAGILE \u2014 dominated by few periods)"
+  },
+  {
+   "id": "S15",
+   "slug": "S15_trend_acceleration",
+   "name": "Trend Acceleration",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.2812,
+   "oos_R": -0.1987,
+   "profit_factor": 0.404,
+   "drawdown_R": 830.41,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S16",
+   "slug": "S16_previous_day_levels",
+   "name": "Previous-Day Levels",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0316,
+   "oos_R": 0.1368,
+   "profit_factor": 1.042,
+   "drawdown_R": 90.31,
+   "confidence": "VERY LOW \u2014 historically profitable but not research-worthy"
+  },
+  {
+   "id": "S17",
+   "slug": "S17_weekly_levels",
+   "name": "Weekly Levels",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0567,
+   "oos_R": 0.0312,
+   "profit_factor": 1.082,
+   "drawdown_R": 21.06,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S18",
+   "slug": "S18_time_of_day_edge",
+   "name": "Time-of-Day Edge",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0316,
+   "oos_R": 0.0132,
+   "profit_factor": 1.037,
+   "drawdown_R": 75.15,
+   "confidence": "VERY LOW \u2014 historically profitable but not research-worthy"
+  },
+  {
+   "id": "S19",
+   "slug": "S19_session_gap",
+   "name": "Session Gap",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0596,
+   "oos_R": 0.6205,
+   "profit_factor": 1.076,
+   "drawdown_R": 10.17,
+   "confidence": "VERY LOW \u2014 historically profitable but not research-worthy (flagged FRAGILE \u2014 dominated by few periods)"
+  },
+  {
+   "id": "S20",
+   "slug": "S20_hybrid_sweep_mtf",
+   "name": "Hybrid Sweep + MTF",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0553,
+   "oos_R": 0.1371,
+   "profit_factor": 1.121,
+   "drawdown_R": 10.76,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S21",
+   "slug": "S21_equal_highs_lows_liquidity_pool_raid",
+   "name": "Equal-Highs/Lows Liquidity-Pool Raid",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.3669,
+   "oos_R": -0.2608,
+   "profit_factor": 0.586,
+   "drawdown_R": 868.62,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S22",
+   "slug": "S22_round_number_magnet_rejection",
+   "name": "Round-Number Magnet / Rejection",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0819,
+   "oos_R": 0.1465,
+   "profit_factor": 1.117,
+   "drawdown_R": 22.47,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S23",
+   "slug": "S23_squeeze_breakout_htf_filter",
+   "name": "Squeeze Breakout + HTF Filter",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.2604,
+   "oos_R": -0.1659,
+   "profit_factor": 0.332,
+   "drawdown_R": 423.44,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S24",
+   "slug": "S24_overnight_variance_session_carry",
+   "name": "Overnight Variance / Session Carry",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0815,
+   "oos_R": -0.0746,
+   "profit_factor": 1.107,
+   "drawdown_R": 33.37,
+   "confidence": "VERY LOW \u2014 historically profitable but not research-worthy"
+  },
+  {
+   "id": "S25",
+   "slug": "S25_volatility_regime_onset",
+   "name": "Volatility-Regime Onset",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.1246,
+   "oos_R": 0.0174,
+   "profit_factor": 0.83,
+   "drawdown_R": 130.2,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S26",
+   "slug": "S26_value_area_rejection_acceptance",
+   "name": "Value-Area Rejection / Acceptance",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.3336,
+   "oos_R": -0.1423,
+   "profit_factor": 0.55,
+   "drawdown_R": 1286.82,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S27",
+   "slug": "S27_vwap_reclaim_in_trend",
+   "name": "VWAP Reclaim in Trend",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.4462,
+   "oos_R": -0.2416,
+   "profit_factor": 0.469,
+   "drawdown_R": 1952.65,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S28",
+   "slug": "S28_anchored_vwap_reaction",
+   "name": "Anchored-VWAP Reaction",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.1113,
+   "oos_R": -0.0187,
+   "profit_factor": 0.853,
+   "drawdown_R": 148.9,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S29",
+   "slug": "S29_day_of_week_effect",
+   "name": "Day-of-Week Effect",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.2047,
+   "oos_R": -0.0259,
+   "profit_factor": 1.332,
+   "drawdown_R": 17.7,
+   "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample"
+  },
+  {
+   "id": "S30",
+   "slug": "S30_kill_zone_time_window",
+   "name": "Kill-Zone Time-Window",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.1073,
+   "oos_R": 0.0554,
+   "profit_factor": 0.848,
+   "drawdown_R": 159.67,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S31",
+   "slug": "S31_month_end_month_start_effect",
+   "name": "Month-End / Month-Start Effect",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.1249,
+   "oos_R": -0.4385,
+   "profit_factor": 1.163,
+   "drawdown_R": 9.51,
+   "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample"
+  },
+  {
+   "id": "S38",
+   "slug": "S38_patient_pullback_into_zone",
+   "name": "Patient Pullback-into-Zone",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.2386,
+   "oos_R": -0.1003,
+   "profit_factor": 0.371,
+   "drawdown_R": 541.46,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S39",
+   "slug": "S39_trend_efficiency_gated_continuation",
+   "name": "Trend-Efficiency-Gated Continuation",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0289,
+   "oos_R": 0.0179,
+   "profit_factor": 1.085,
+   "drawdown_R": 11.65,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S40",
+   "slug": "S40_regime_router",
+   "name": "Regime Router",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.3109,
+   "oos_R": -0.1335,
+   "profit_factor": 0.62,
+   "drawdown_R": 1073.11,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S41",
+   "slug": "S41_volume_climax_reversal",
+   "name": "Volume-Climax Reversal",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.388,
+   "oos_R": -0.3384,
+   "profit_factor": 0.575,
+   "drawdown_R": 535.55,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S42",
+   "slug": "S42_short_term_return_reversal",
+   "name": "Short-Term Return Reversal",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0833,
+   "oos_R": 0.0574,
+   "profit_factor": 1.139,
+   "drawdown_R": 5.23,
+   "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  {
+   "id": "S43",
+   "slug": "S43_momentum_divergence_rsi_price",
+   "name": "Momentum Divergence (RSI/Price)",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.3331,
+   "oos_R": -0.3381,
+   "profit_factor": 0.618,
+   "drawdown_R": 1319.21,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S44",
+   "slug": "S44_intrabar_pressure_close_location",
+   "name": "Intrabar Pressure / Close-Location",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.1434,
+   "oos_R": -0.0965,
+   "profit_factor": 0.8,
+   "drawdown_R": 372.51,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S45",
+   "slug": "S45_consecutive_bar_streak",
+   "name": "Consecutive-Bar Streak",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0448,
+   "oos_R": 0.1299,
+   "profit_factor": 1.063,
+   "drawdown_R": 39.05,
+   "confidence": "VERY LOW \u2014 historically profitable but not research-worthy"
+  },
+  {
+   "id": "S46",
+   "slug": "S46_volume_confirmed_breakout",
+   "name": "Volume-Confirmed Breakout",
+   "status": "IMPLEMENTED",
+   "expectancy_R": 0.0172,
+   "oos_R": -0.017,
+   "profit_factor": 1.052,
+   "drawdown_R": 24.33,
+   "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample"
+  },
+  {
+   "id": "S47",
+   "slug": "S47_weekend_gap_fill_continuation",
+   "name": "Weekend-Gap Fill / Continuation",
+   "status": "INVALID",
+   "expectancy_R": -0.0727,
+   "oos_R": -0.369,
+   "profit_factor": 0.707,
+   "drawdown_R": 1.93,
+   "confidence": "INVALID"
+  },
+  {
+   "id": "S48",
+   "slug": "S48_consolidation_duration_breakout",
+   "name": "Consolidation-Duration Breakout",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.2184,
+   "oos_R": -0.1314,
+   "profit_factor": 0.285,
+   "drawdown_R": 402.2,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S49",
+   "slug": "S49_narrowest_range_nr_breakout",
+   "name": "Narrowest-Range (NR) Breakout",
+   "status": "INVALID",
+   "expectancy_R": null,
+   "oos_R": null,
+   "profit_factor": null,
+   "drawdown_R": null,
+   "confidence": "INVALID"
+  },
+  {
+   "id": "S50",
+   "slug": "S50_outside_bar_engulfing_reversal",
+   "name": "Outside-Bar / Engulfing Reversal",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.5859,
+   "oos_R": -0.5938,
+   "profit_factor": 0.444,
+   "drawdown_R": 1892.1,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S51",
+   "slug": "S51_intraday_range_position_reversion",
+   "name": "Intraday Range-Position Reversion",
+   "status": "IMPLEMENTED",
+   "expectancy_R": -0.3491,
+   "oos_R": -0.2622,
+   "profit_factor": 0.592,
+   "drawdown_R": 1190.79,
+   "confidence": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  {
+   "id": "S32",
+   "slug": "S32_not_implemented",
+   "name": "S32 (not implemented)",
+   "status": "NOT_IMPLEMENTED"
+  },
+  {
+   "id": "S33",
+   "slug": "S33_not_implemented",
+   "name": "S33 (not implemented)",
+   "status": "NOT_IMPLEMENTED"
+  },
+  {
+   "id": "S34",
+   "slug": "S34_not_implemented",
+   "name": "S34 (not implemented)",
+   "status": "NOT_IMPLEMENTED"
+  },
+  {
+   "id": "S35",
+   "slug": "S35_not_implemented",
+   "name": "S35 (not implemented)",
+   "status": "NOT_IMPLEMENTED"
+  },
+  {
+   "id": "S36",
+   "slug": "S36_not_implemented",
+   "name": "S36 (not implemented)",
+   "status": "NOT_IMPLEMENTED"
+  },
+  {
+   "id": "S37",
+   "slug": "S37_not_implemented",
+   "name": "S37 (not implemented)",
+   "status": "NOT_IMPLEMENTED"
+  }
+ ]
+}

@@ -1,0 +1,84 @@
+{
+ "id": "S45",
+ "name": "Consecutive-Bar Streak",
+ "klass": "Batch1 \u2014 sequence / run-length",
+ "slug": "S45_consecutive_bar_streak",
+ "status": "IMPLEMENTED",
+ "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
+ "sessions": "All sessions",
+ "long_short": "both",
+ "htf_context": "none",
+ "mechanism": "N consecutive same-direction closes -> reverse (overextension) or continue (momentum). NEW ingredient: raw close-streak length. k=3 excluded (not \"extended\").",
+ "entry_rules": "Exactly k consecutive up/down closes (streak onset); reverse or continue; enter next open.",
+ "exit_rules": "rr2 | time.",
+ "stop_loss_rules": "atr (1.5*ATR).",
+ "required_confirmations": "none",
+ "invalid_conditions": [
+  "ATR non-finite or <= 0 at the signal bar",
+  "signal on the last available bar (no next-open to fill)",
+  "a position is already open (overlap suppression)"
+ ],
+ "position_sizing": {
+  "model": "risk-normalised (1R per trade)",
+  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ },
+ "grammar": "k(4|5|6), mode(reverse|continue), exit",
+ "executable_default": {
+  "selection_rule": "hist_profitable & largest-n",
+  "hypothesis_id": "19ff587f4e5c",
+  "params": {
+   "k": 6,
+   "mode": "reverse",
+   "stop": "atr",
+   "exit": "time"
+  }
+ },
+ "performance": {
+  "historical": {
+   "hypothesis_id": "19ff587f4e5c",
+   "n": 601,
+   "expectancy_R": 0.0448,
+   "profit_factor": 1.063,
+   "drawdown_R": 39.05,
+   "win_rate": 0.334,
+   "sumR": 26.91,
+   "median_R": -1.0759,
+   "trimmed5_R": -0.2312,
+   "months": 27,
+   "pos_months": 11,
+   "years": 4.0,
+   "side": "both",
+   "hist_profitable": true,
+   "research_worthy": false,
+   "fragile": false,
+   "top1_share": 0.034,
+   "oos_expectancy_R": 0.1299
+  },
+  "oos_expectancy_R": 0.1299,
+  "drawdown_R": 39.05,
+  "profit_factor": 1.063,
+  "expectancy_R": 0.0448,
+  "family": {
+   "n_hypotheses": 12,
+   "n_hist_profitable": 1,
+   "n_research_worthy": 0,
+   "best_exp": 0.0448,
+   "median_exp": -0.1029
+  }
+ },
+ "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+ "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
+ "confidence": "VERY LOW \u2014 historically profitable but not research-worthy",
+ "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 12 hypotheses, 1 historically-profitable, 0 research-worthy. Representative 19ff587f4e5c: n=601, exp=0.0448R, PF=1.063, maxDD=39.05R, OOS exp=0.1299R, pos-months 11/27, hist-profitable. ",
+ "provenance": {
+  "engine": "mstrat.py v2 (FROZEN)",
+  "module": "mstrat_ext",
+  "results_parquet": "results/ext_families/EXT_FAMILY_RESULTS.parquet",
+  "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
+  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+ }
+}
