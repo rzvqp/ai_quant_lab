@@ -1,0 +1,315 @@
+{
+ "totals": {
+  "hyps": 2300,
+  "profitable": 375,
+  "rw": 139
+ },
+ "per_family": {
+  "S1": {
+   "econ": "liquidity-sweep mean-reversion",
+   "engine": "S1-S20",
+   "hyps": 1152,
+   "profitable": 261,
+   "rw": 90,
+   "bestExp": 0.391,
+   "bestOOS": 0.698
+  },
+  "S2": {
+   "econ": "failed-breakout fade",
+   "engine": "S1-S20",
+   "hyps": 144,
+   "profitable": 18,
+   "rw": 6,
+   "bestExp": 0.075,
+   "bestOOS": 0.256
+  },
+  "S3": {
+   "econ": "breakout-retest momentum",
+   "engine": "S1-S20",
+   "hyps": 96,
+   "profitable": 2,
+   "rw": 0,
+   "bestExp": 0.063,
+   "bestOOS": 0.12
+  },
+  "S4": {
+   "econ": "volatility-regime expansion",
+   "engine": "S1-S20",
+   "hyps": 32,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.145,
+   "bestOOS": 0.049
+  },
+  "S5": {
+   "econ": "opening-range momentum",
+   "engine": "S1-S20",
+   "hyps": 96,
+   "profitable": 20,
+   "rw": 12,
+   "bestExp": 0.166,
+   "bestOOS": 0.336
+  },
+  "S6": {
+   "econ": "session-transition momentum",
+   "engine": "S1-S20",
+   "hyps": 32,
+   "profitable": 7,
+   "rw": 3,
+   "bestExp": 0.497,
+   "bestOOS": 0.685
+  },
+  "S7": {
+   "econ": "trend-pullback continuation",
+   "engine": "S1-S20",
+   "hyps": 24,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.099,
+   "bestOOS": 0.041
+  },
+  "S8": {
+   "econ": "extension mean-reversion",
+   "engine": "S1-S20",
+   "hyps": 48,
+   "profitable": 4,
+   "rw": 2,
+   "bestExp": 0.029,
+   "bestOOS": 0.658
+  },
+  "S9": {
+   "econ": "MTF-trend momentum",
+   "engine": "S1-S20",
+   "hyps": 32,
+   "profitable": 12,
+   "rw": 6,
+   "bestExp": 0.068,
+   "bestOOS": 0.282
+  },
+  "S10": {
+   "econ": "displacement continuation",
+   "engine": "S1-S20",
+   "hyps": 48,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.051,
+   "bestOOS": 0.205
+  },
+  "S11": {
+   "econ": "structure-break reversal",
+   "engine": "S1-S20",
+   "hyps": 24,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.052,
+   "bestOOS": 0.102
+  },
+  "S12": {
+   "econ": "range rotation",
+   "engine": "S1-S20",
+   "hyps": 48,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.036,
+   "bestOOS": 0.096
+  },
+  "S13": {
+   "econ": "imbalance fill",
+   "engine": "S1-S20",
+   "hyps": 24,
+   "profitable": 5,
+   "rw": 0,
+   "bestExp": 0.041,
+   "bestOOS": 0.142
+  },
+  "S14": {
+   "econ": "momentum exhaustion",
+   "engine": "S1-S20",
+   "hyps": 16,
+   "profitable": 6,
+   "rw": 1,
+   "bestExp": 0.579,
+   "bestOOS": 0.333
+  },
+  "S15": {
+   "econ": "trend acceleration",
+   "engine": "S1-S20",
+   "hyps": 24,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.05,
+   "bestOOS": 0.163
+  },
+  "S16": {
+   "econ": "previous-day levels",
+   "engine": "S1-S20",
+   "hyps": 40,
+   "profitable": 1,
+   "rw": 0,
+   "bestExp": 0.032,
+   "bestOOS": 0.474
+  },
+  "S17": {
+   "econ": "weekly levels",
+   "engine": "S1-S20",
+   "hyps": 24,
+   "profitable": 6,
+   "rw": 5,
+   "bestExp": 0.424,
+   "bestOOS": 1.26
+  },
+  "S18": {
+   "econ": "time-of-day",
+   "engine": "S1-S20",
+   "hyps": 24,
+   "profitable": 5,
+   "rw": 0,
+   "bestExp": 0.177,
+   "bestOOS": 0.264
+  },
+  "S19": {
+   "econ": "session gap",
+   "engine": "S1-S20",
+   "hyps": 12,
+   "profitable": 4,
+   "rw": 0,
+   "bestExp": 0.915,
+   "bestOOS": 0.621
+  },
+  "S20": {
+   "econ": "hybrid sweep+MTF",
+   "engine": "S1-S20",
+   "hyps": 32,
+   "profitable": 6,
+   "rw": 5,
+   "bestExp": 0.099,
+   "bestOOS": 0.172
+  },
+  "S21": {
+   "econ": "equal-highs/lows liquidity-pool raid",
+   "engine": "S21-S40",
+   "hyps": 48,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.092,
+   "bestOOS": -0.087
+  },
+  "S22": {
+   "econ": "round-number magnet/rejection",
+   "engine": "S21-S40",
+   "hyps": 24,
+   "profitable": 6,
+   "rw": 1,
+   "bestExp": 0.121,
+   "bestOOS": 0.147
+  },
+  "S23": {
+   "econ": "squeeze breakout + HTF filter",
+   "engine": "S21-S40",
+   "hyps": 32,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.091,
+   "bestOOS": 0.209
+  },
+  "S24": {
+   "econ": "overnight variance / session carry",
+   "engine": "S21-S40",
+   "hyps": 24,
+   "profitable": 2,
+   "rw": 0,
+   "bestExp": 0.081,
+   "bestOOS": 0.166
+  },
+  "S25": {
+   "econ": "volatility-regime onset",
+   "engine": "S21-S40",
+   "hyps": 12,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.08,
+   "bestOOS": 0.086
+  },
+  "S26": {
+   "econ": "value-area rejection/acceptance",
+   "engine": "S21-S40",
+   "hyps": 32,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.123,
+   "bestOOS": 0.207
+  },
+  "S27": {
+   "econ": "VWAP reclaim in trend",
+   "engine": "S21-S40",
+   "hyps": 24,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.064,
+   "bestOOS": 0.125
+  },
+  "S28": {
+   "econ": "anchored-VWAP reaction",
+   "engine": "S21-S40",
+   "hyps": 12,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.04,
+   "bestOOS": 0.084
+  },
+  "S29": {
+   "econ": "day-of-week effect",
+   "engine": "S21-S40",
+   "hyps": 20,
+   "profitable": 6,
+   "rw": 4,
+   "bestExp": 0.419,
+   "bestOOS": 0.245
+  },
+  "S30": {
+   "econ": "kill-zone time-window effect",
+   "engine": "S21-S40",
+   "hyps": 12,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.016,
+   "bestOOS": 0.199
+  },
+  "S31": {
+   "econ": "month-end/month-start effect",
+   "engine": "S21-S40",
+   "hyps": 12,
+   "profitable": 2,
+   "rw": 2,
+   "bestExp": 0.178,
+   "bestOOS": 0.478
+  },
+  "S38": {
+   "econ": "patient pullback-into-zone (trend continuation)",
+   "engine": "S21-S40",
+   "hyps": 36,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.098,
+   "bestOOS": 0.159
+  },
+  "S39": {
+   "econ": "trend-efficiency-gated continuation",
+   "engine": "S21-S40",
+   "hyps": 24,
+   "profitable": 2,
+   "rw": 2,
+   "bestExp": 0.031,
+   "bestOOS": 0.166
+  },
+  "S40": {
+   "econ": "regime router (trend-continuation / range-reversion)",
+   "engine": "S21-S40",
+   "hyps": 16,
+   "profitable": 0,
+   "rw": 0,
+   "bestExp": -0.118,
+   "bestOOS": 0.002
+  }
+ }
+}

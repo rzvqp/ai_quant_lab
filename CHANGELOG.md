@@ -1,5 +1,18 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-13 (e) — S21-S40 family implementation + Lab Knowledge System (branch family-implementation-s21-s40)
+- Implemented 14 new families (Tier A: S21,S23,S26,S38,S39,S40; Tier B: S22,S24,S25,S27,S28,S29,S30,S31) in
+  `code/mstrat_ext.py`, reusing the FROZEN engine (mstrat.py byte-identical to 1bc0ffb). 328 hyps; 2 genuine
+  positives with +OOS: **S22 (round-number momentum), S39 (trend-efficiency continuation)**. Others negative or
+  calendar-overfit (S29/S31 screen-RW but OOS-refuted). No optimization; definitional fixes only (pre-PnL).
+- **Lab Knowledge System** built (Claude + Codex inline collaboration): STRATEGY_REGISTRY (2300/375/139),
+  dedup 139 RW → 22 distinct, MECHANISM_REGISTRY (13 mechanisms), KNOWLEDGE_REGISTRY (5 falsifiable claims),
+  STRATEGY_PROFILES, TOP_STRATEGIES_SHORTLIST (~8 distinct), EXPLORATORY_PORTFOLIO_DIAGNOSTICS, CLAUDE_CODEX_REVIEW.
+- Codex consulted via compact inline prompts (TASKs 2-5 complete); its filesystem snapshot is STALE → CODEX
+  FILESYSTEM REVIEW PENDING. Shortlist for future matched-null→global-FDR: S5, S2, S1-short, S1-low/swing(prov),
+  one momentum rep, S22 (+ S1-low/pdh, S17-pwlow reserve). Calendar excluded (family-wise selection). Nothing
+  validated; holdout SEALED; no global-FDR. Not merged.
+
 ## Session 2026-07-13 (b) — Portability fix + reproducibility test (CEO-approved, scope-limited)
 - **Git checkpoint:** folder was un-versioned → `git init` + baseline commit `85857234bad5172634e9c2b603e873976a204470` (pre-fix, 58 files). Added `.gitignore` (venv/, __pycache__/).
 - **Portability (class A only):** `code/mtf.py` `D` repointed from hardcoded Temp → `Path(__file__).resolve().parents[1]/"data"/"market"` (str-typed, env override `AI_QUANT_DATA_DIR`). This single constant feeds the whole campaign chain (mstrat/s1/mtf). Secondary Temp paths (data-rebuild + GC-foundation scripts) classified and DEFERRED as debt D8 (not on campaign path).
