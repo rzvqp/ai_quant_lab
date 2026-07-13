@@ -10,14 +10,20 @@ TICK = MS.TICK
 
 # ---------- observed profile extraction ----------
 def observed_profile(d, setups, cfg=MS.CFG):
-    """Run the observed setups through MS.simulate and extract the per-executed-trade profile."""
-    o = d['open'].values
+    """Run the observed setups through MS.simulate and extract the per-executed-trade profile.
+    Risk is stored as a RATIO to local ATR (risk/ATR[si]); the null rescales it to the ATR at the
+    counterfactual entry bar. This preserves the strategy's risk-in-ATR-units profile and its local-
+    volatility scaling (real stops are 1.5*ATR or structural ~local range) — WITHOUT it, the null
+    mismatches risk to local vol and inflates FPR under level-drifting/trending series (adversarial finding)."""
+    o = d['open'].values; atr = d['m_atr'].values
     tr = MS.simulate(d, setups, cfg)
     ei = tr['ei'].astype(int).values; R = tr['R'].values
     by_ei = {s['ei']: s for s in setups}
-    risks = np.empty(len(ei)); dirs = np.empty(len(ei), dtype=int); enc = []
+    risks = np.empty(len(ei)); risk_over_atr = np.empty(len(ei)); dirs = np.empty(len(ei), dtype=int); enc = []
     for j, e in enumerate(ei):
         s = by_ei[e]; entry = o[e]; risk = abs(entry - s['stop'])
+        si = s['si']; a = atr[si] if (si < len(atr) and np.isfinite(atr[si]) and atr[si] > 0) else np.nan
+        risk_over_atr[j] = (risk / a) if np.isfinite(a) else np.nan
         risks[j] = risk; dirs[j] = s['dir']
         ek = s['exit_kind']; ep = s.get('exit_param')
         if ek in ('opp_liq', 'opp_struct'):
@@ -31,8 +37,12 @@ def observed_profile(d, setups, cfg=MS.CFG):
             enc.append(('trailing', None))
         else:
             enc.append(('rr', 2.0))
+    # fill any non-finite risk/ATR ratio with the median (rare: signal bar with bad ATR)
+    if len(risk_over_atr):
+        med = np.nanmedian(risk_over_atr)
+        risk_over_atr = np.where(np.isfinite(risk_over_atr), risk_over_atr, med if np.isfinite(med) else 1.5)
     return dict(R=R, mean=float(R.mean()) if len(R) else float('nan'), k=len(R),
-                risks=risks, dirs=dirs, enc=enc, ei=ei)
+                risks=risks, risk_over_atr=risk_over_atr, dirs=dirs, enc=enc, ei=ei)
 
 # ---------- eligibility pool (optionally stratified) ----------
 def eligibility_pool(d, strata=None):
@@ -63,8 +73,8 @@ def _strata_key(d, ei, strata):
 
 # ---------- one null replicate (routes through MS.simulate) ----------
 def _null_mean(d, prof, pool, strata_keys, rng, cfg):
-    o = d['open'].values; k = prof['k']
-    idx = rng.integers(0, k, size=k)                       # bootstrap the (risk,dir,exit,stratum) profile
+    o = d['open'].values; atr = d['m_atr'].values; k = prof['k']
+    idx = rng.integers(0, k, size=k)                       # bootstrap the (risk/ATR,dir,exit,stratum) profile
     setups = []
     for j in idx:
         key = strata_keys[j] if strata_keys is not None else '_all'
@@ -72,7 +82,10 @@ def _null_mean(d, prof, pool, strata_keys, rng, cfg):
         if cand is None or len(cand) == 0:
             cand = next(iter(pool.values()))
         i = int(cand[rng.integers(0, len(cand))])
-        dirn = int(prof['dirs'][j]); risk = float(prof['risks'][j]); ek, ep = prof['enc'][j]
+        dirn = int(prof['dirs'][j]); ek, ep = prof['enc'][j]
+        risk = float(prof['risk_over_atr'][j]) * float(atr[i])   # rescale risk to LOCAL ATR at the null entry
+        if not np.isfinite(risk) or risk <= 0:
+            risk = float(prof['risks'][j])
         setups.append(dict(si=i, ei=i + 1, dir=dirn,
                            stop=float(o[i + 1] - dirn * risk), exit_kind=ek, exit_param=ep))
     r = MS.simulate(d, setups, cfg)['R'].values

@@ -74,7 +74,7 @@ def gen_series(n=6000, seed=0, p0=2000.0, vol_base=0.0009, vol_clustering=0.0, a
     dt = pd.to_datetime(df['time'], unit='s', utc=True)
     hr = dt.dt.hour.values
     df['session'] = np.select([hr < 8, hr < 16], ['asia', 'london'], 'ny')
-    df['month'] = dt.dt.to_period('M').astype(str).values
+    df['month'] = dt.dt.tz_convert(None).dt.to_period('M').astype(str).values
     df['atrq'] = pd.qcut(df['m_atr'], 5, labels=False, duplicates='drop')
     df.attrs['seed'] = seed
     return df

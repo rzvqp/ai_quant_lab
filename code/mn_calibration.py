@@ -64,13 +64,13 @@ def run():
     half = len(ps)//2
     summary['split_half_fpr05'] = [float((ps[:half] < 0.05).mean()), float((ps[half:] < 0.05).mean())]
     # criteria
-    f05 = summary['fpr']['0.05']; f01 = summary['fpr']['0.01']; f10 = summary['fpr']['0.10']
+    f05 = summary['fpr'][0.05]; f01 = summary['fpr'][0.01]; f10 = summary['fpr'][0.10]
     summary['criteria'] = dict(
-        ks_ok=ks_p > 0.05, no_zero=not summary['any_zero'],
-        fpr05_ok=(f05['ci'][0] <= 0.05 <= f05['ci'][1]),
-        fpr01_ok=(f01['ci'][0] <= 0.01 <= f01['ci'][1]),
-        fpr10_ok=(f10['ci'][0] <= 0.10 <= f10['ci'][1]))
-    summary['CALIBRATED'] = all(summary['criteria'].values())
+        ks_ok=bool(ks_p > 0.05), no_zero=bool(not summary['any_zero']),
+        fpr05_ok=bool(f05['ci'][0] <= 0.05 <= f05['ci'][1]),
+        fpr01_ok=bool(f01['ci'][0] <= 0.01 <= f01['ci'][1]),
+        fpr10_ok=bool(f10['ci'][0] <= 0.10 <= f10['ci'][1]))
+    summary['CALIBRATED'] = bool(all(summary['criteria'].values()))
     json.dump(summary, open(os.path.join(OUT, "calibration_summary.json"), "w"), indent=1)
     print(json.dumps(summary, indent=1))
     print("CALIBRATED:", summary['CALIBRATED'])

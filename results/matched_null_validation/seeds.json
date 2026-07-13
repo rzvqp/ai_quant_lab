@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "master": 20260713,
+  "n_series": 120,
+  "B": 2000,
+  "per_series": "master-derived rng.integers; null seed = seed^0x5eed"
+ },
+ "power": {
+  "master": 20260714,
+  "n_series_per_cell": 50,
+  "B": 1000,
+  "mags": [
+   0.0,
+   0.1,
+   0.25,
+   0.5,
+   1.0
+  ],
+  "freqs": [
+   80,
+   200,
+   400
+  ],
+  "horizon": 8
+ },
+ "adversarial": {
+  "master": 20260715,
+  "n_per_scenario": 40,
+  "B": 1500
+ },
+ "pilot": {
+  "research_seed": 659918,
+  "val_seed": 2827,
+  "B_triage": 20000,
+  "B_refine": 200000,
+  "B_val": 10000,
+  "strata": [
+   "session",
+   "atrq"
+  ]
+ }
+}
