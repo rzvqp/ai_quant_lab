@@ -1,5 +1,15 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-14 — Experiment Planner v1 (54 HGv1 -> 10-experiment falsifiable plan, no backtest)
+- Built knowledge/experiments/: EXPERIMENT_REGISTRY.jsonl/.md, HYPOTHESIS_DEDUPLICATION.md, EXPERIMENT_PRIORITY_MATRIX.md,
+  WAVE_1/2/3_SPEC.md, CLAUDE_CODEX_REVIEW.md; code/experiment_planner_v1.py (structural-valid + dedup + type + info-value).
+- Funnel: 54 hypotheses -> 54 structurally valid -> 52 after semantic dedup -> all T0 -> **10 selected** (2 mechanism,
+  2 contradiction, 2 beta, 2 placebo, 2 alpha) in 3 waves. Prioritized by INFORMATION VALUE (not expectancy/prior).
+- Codex inline: merged HGv1-044+004 into a 2x2 factorial (EXP-07); required explicit control/ablation arms per
+  experiment; shared matched-null + label-shuffle harness; hierarchical family-wise multiplicity plan (top risk).
+  CODEX FILESYSTEM REVIEW PENDING.
+- Read-only; engine + S1-S51 byte-frozen; nothing implemented/run; holdout SEALED; no FDR. Stop after planning.
+
 ## Session 2026-07-13 (h) — Hypothesis Generator v1 (architecture + logic, no backtest)
 - Built knowledge/generator/: HYPOTHESIS_GENERATOR_V1.md (architecture), code/hypothesis_generator_v1.py (logic),
   GENERATED_HYPOTHESES_v1.jsonl/.md (54 demo candidates), CLAUDE_CODEX_REVIEW.md, generator_summary.json.
