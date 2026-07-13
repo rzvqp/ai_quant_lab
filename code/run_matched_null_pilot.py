@@ -10,7 +10,9 @@ import numpy as np, pandas as pd, mstrat as MS, matched_null as MN
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "results", "matched_null_validation"); os.makedirs(OUT, exist_ok=True)
 BASE_PARQUET = os.path.join(ROOT, "results", "FAMILY_RESULTS.parquet")
-B_TRIAGE = 20000; B_REFINE = 200000; B_VAL = 10000; STRATA = ('session', 'atrq')
+# Primary config = the VALIDATED engine configuration (unstratified + ATR-scaled risk), i.e. exactly what
+# passed calibration/power/adversarial. Stratified (session x vol) nulls are deferred (not separately validated).
+B_TRIAGE = 20000; B_REFINE = 200000; B_VAL = 10000; STRATA = None
 
 def select_prereg():
     df = pd.read_parquet(BASE_PARQUET)

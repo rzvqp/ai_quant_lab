@@ -63,9 +63,9 @@ def run():
         if m == 0: continue
         f05 = float((sub['p'] < 0.05).mean()); f01 = float((sub['p'] < 0.01).mean())
         ci05 = [round(x, 4) for x in wilson(int((sub['p'] < 0.05).sum()), m)]
-        ok = ci05[0] <= 0.05 <= ci05[1] or f05 <= 0.10   # calibrated or at worst mildly conservative/loose
+        ok = bool(ci05[0] <= 0.05 <= ci05[1] or f05 <= 0.10)   # calibrated or at worst mildly loose
         all_ok = all_ok and ok
-        summ["scenarios"].append(dict(scenario=scn, n=m, mean_p=float(sub['p'].mean()),
+        summ["scenarios"].append(dict(scenario=scn, n=int(m), mean_p=float(sub['p'].mean()),
                                       fpr05=f05, fpr05_ci=ci05, fpr01=f01, mean_k=float(sub['k'].mean()),
                                       any_zero=bool((sub['p']==0).any()), calibrated=ok))
     summ["ALL_SCENARIOS_CALIBRATED"] = bool(all_ok)
