@@ -1,0 +1,61 @@
+=== LOT 2 (S6-S10): families ['S6', 'S7', 'S8', 'S9', 'S10'] | M15=84152 research=50491 val=16830 holdout(SEALED)=16831 ===
+
+--- BACKTEST PARITY AUDIT (fast vs reference engine) ---
+  parity: PASS
+
+--- SMOKE + LOOKAHEAD + LEDGER per family ---
+  S1: grammar=1152 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S2: grammar=144 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S3: grammar=96 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S4: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S5: grammar=96 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S6: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S7: grammar=24 signal_hyps=24 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S8: grammar=48 signal_hyps=48 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S9: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S10: grammar=48 signal_hyps=48 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+
+===== LOT 2 (S6-S10) REPORT (holdout SEALED) =====
+hypotheses generated: 184 | unique canonical: 184 | semantic duplicates removed: 0
+eliminated per stage: {'expectancy': 162, 'profit_factor': 20, 'max_dd': 2}
+passed Statistician: 0 | GLOBAL-FDR: 0 | walk-forward: 0 | Red Team -> CANDIDATES: 0
+min p-value: 1.00e+00 | min q-value: 1.000 | throughput: 124,126 hyp/hr (5s) | errors: 0
+
+per-family (diagnostic):
+  S6: grammar=32 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+  S7: grammar=24 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+  S8: grammar=48 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+  S9: grammar=32 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+  S10: grammar=48 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+
+families WITH candidates: none | families NO-SIGNAL: ['S6', 'S7', 'S8', 'S9', 'S10']
+
+--- CANDIDATES (survived Statistician->global-FDR->walk-forward->Red Team; holdout SEALED) ---
+  NONE
+
+
+===== ALPHA-FACTOR ANALYSIS (S1-S10) =====
+
+monthly-R correlation between family factors (research):
+      S1    S2    S3    S5    S6    S8    S9
+S1  1.00  0.00 -0.29 -0.42  0.07 -0.02 -0.35
+S2  0.00  1.00 -0.04  0.11  0.11  0.28  0.21
+S3 -0.29 -0.04  1.00  0.38  0.15  0.03  0.55
+S5 -0.42  0.11  0.38  1.00  0.23 -0.12  0.46
+S6  0.07  0.11  0.15  0.23  1.00 -0.42 -0.02
+S8 -0.02  0.28  0.03 -0.12 -0.42  1.00 -0.11
+S9 -0.35  0.21  0.55  0.46 -0.02 -0.11  1.00
+
+--- ALPHA_REGISTRY (S1-S10) ---
+  A_S1 [liquidity-sweep mean-reversion] exp=0.253R n=141 p=1.72e-03 nov=0.58 -> PROVISIONAL SUB-FDR
+  A_S2 [failed-breakout fade] exp=0.075R n=513 p=1.00e+00 nov=0.72 -> PROVISIONAL NO CANDIDATE
+  A_S3 [breakout-retest momentum] exp=0.063R n=761 p=1.00e+00 nov=0.45 -> PROVISIONAL NO CANDIDATE
+  A_S4 [volatility-regime expansion] exp=-R n=0 p=- nov=- -> PROVISIONAL NO SIGNAL
+  A_S5 [opening-range momentum] exp=0.135R n=295 p=2.82e-03 nov=0.54 -> PROVISIONAL SUB-FDR
+  A_S6 [session-transition momentum] exp=1.196R n=244 p=1.00e+00 nov=0.58 -> PROVISIONAL NO CANDIDATE
+  A_S7 [trend-pullback continuation] exp=-R n=0 p=- nov=- -> PROVISIONAL NO SIGNAL
+  A_S8 [extension mean-reversion] exp=0.029R n=304 p=1.00e+00 nov=0.58 -> PROVISIONAL NO CANDIDATE
+  A_S9 [MTF-trend momentum] exp=0.068R n=545 p=1.00e+00 nov=0.45 -> PROVISIONAL NO CANDIDATE
+  A_S10 [displacement continuation] exp=-R n=0 p=- nov=- -> PROVISIONAL NO SIGNAL
+
+wrote ALPHA_REGISTRY.md, PROJECT_STATE_v1.0.json

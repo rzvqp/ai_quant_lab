@@ -1,0 +1,23 @@
+total hyps=1704 | VALID(n>=MINTR)=1552 | compute 51s
+
+calibrating DISCOVERY SCREEN to hit 5-15% of valid as Research Candidate:
+  exp>0.0 pf>=1.15 dd<=12 oos=True: research_candidates=35 (2.3% of valid)
+  exp>0.0 pf>=1.05 dd<=20 oos=True: research_candidates=65 (4.2% of valid)
+  exp>0.0 pf>=1.02 dd<=25 oos=True: research_candidates=93 (6.0% of valid)
+  exp>0.0 pf>=1.0 dd<=30 oos=False: research_candidates=133 (8.6% of valid)
+  exp>0.02 pf>=1.05 dd<=25 oos=True: research_candidates=77 (5.0% of valid)
+
+CHOSEN screen exp>0 & PF>=1.05 & maxDD<=20R & OOS>0 -> 65 Research Candidates (4.2% of valid)
+per-family Research Candidates:
+  S1: valid=1000 research_candidates=49
+  S2: valid=144 research_candidates=0
+  S3: valid=96 research_candidates=0
+  S4: valid=32 research_candidates=0
+  S5: valid=96 research_candidates=12
+  S6: valid=32 research_candidates=0
+  S7: valid=24 research_candidates=0
+  S8: valid=48 research_candidates=0
+  S9: valid=32 research_candidates=4
+  S10: valid=48 research_candidates=0
+
+Strict validation (UNCHANGED) still applies global-FDR+walk-forward+Red Team over these; decides survival separately.

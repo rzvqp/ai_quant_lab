@@ -1,0 +1,30 @@
+compute 55s | total=1704 valid=1552 Research_Candidates=106
+
+=== EXACT per-family under FROZEN Discovery Screen V1 (exp>0 & PF>=1.02 & maxDD<=25R & n>=25; NO OOS) ===
+  S1: generated=1152 valid=1000 RC=77 (7.7% of valid) | elim: {'exp<=0': 868, 'invalid_min_trades': 152, 'dd>25': 43, 'pf<1.02': 12}
+  S2: generated=144 valid=144 RC=6 (4.2% of valid) | elim: {'exp<=0': 126, 'pf<1.02': 7, 'dd>25': 5}
+  S3: generated=96 valid=96 RC=0 (0.0% of valid) | elim: {'exp<=0': 94, 'dd>25': 2}
+  S4: generated=32 valid=32 RC=0 (0.0% of valid) | elim: {'exp<=0': 32}
+  S5: generated=96 valid=96 RC=12 (12.5% of valid) | elim: {'exp<=0': 76, 'dd>25': 4, 'pf<1.02': 4}
+  S6: generated=32 valid=32 RC=3 (9.4% of valid) | elim: {'exp<=0': 26, 'dd>25': 2, 'pf<1.02': 1}
+  S7: generated=24 valid=24 RC=0 (0.0% of valid) | elim: {'exp<=0': 24}
+  S8: generated=48 valid=48 RC=2 (4.2% of valid) | elim: {'exp<=0': 44, 'pf<1.02': 1, 'dd>25': 1}
+  S9: generated=32 valid=32 RC=6 (18.8% of valid) | elim: {'exp<=0': 20, 'dd>25': 5, 'pf<1.02': 1}
+  S10: generated=48 valid=48 RC=0 (0.0% of valid) | elim: {'exp<=0': 48}
+  SUM RC = 106
+
+RC hypothesis_ids per family (first 6):
+  S1: ['94cd3ebb46af', 'd4c06178855b', '7bff1db1efc9', '7ffc3eec8f35', '422b41b76f25', 'd3f6064c7617']... (total 77)
+  S2: ['7d2520719a9d', '959581cbcdb3', 'ffb287e7a04c', '136fbbbf3bab', '97ad21c3d9b8', '2ca2380a8cfd'] (total 6)
+  S5: ['c7ee43c7e825', '7472f3d412f2', '26fc5797d47b', '3a9d271b56b8', '11f8f0d3a172', 'd9b401281244']... (total 12)
+  S6: ['d599b306543f', '9ce1f6567a2f', '285dcba858f4'] (total 3)
+  S8: ['0e2979c0d58e', '58b4b02f5624'] (total 2)
+  S9: ['2eb552214cc7', '8815da183383', '047d776a1bcb', '904767451034', '9bfaa0f08a0f', 'c1bbd81fd538'] (total 6)
+
+=== FDR (report all 3, strict verdict = official method C) ===
+ A. over ALL VALID (p computed for every valid hyp): m=1552 minp=2.14e-54 minq=0.000 pass=20
+ B. over RC SUBSET [SELECTIVE/DIAGNOSTIC - needs selection correction, NOT a strict verdict]: m=106 minp=2.25e-07 minq=0.000 pass=54
+ C. OFFICIAL frozen pipeline: BH over full canonical universe (invalid->p=1): m=1704 minp=2.14e-54 minq=0.000 pass=18
+    -> p-values are computed for ALL valid hyps (not only after screen); strict verdict uses C.
+
+wrote FAMILY_RESULTS.parquet (exact, reproducible)

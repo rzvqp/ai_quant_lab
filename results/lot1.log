@@ -1,0 +1,29 @@
+=== LOT 1 (S1-S5): families ['S1', 'S2', 'S3', 'S4', 'S5'] | M15=84152 research=50491 val=16830 holdout(SEALED)=16831 ===
+
+--- BACKTEST PARITY AUDIT (fast vs reference engine) ---
+  parity: PASS
+
+--- SMOKE + LOOKAHEAD + LEDGER per family ---
+  S1: grammar=1152 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S2: grammar=144 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S3: grammar=96 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S4: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S5: grammar=96 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+
+===== LOT 1 (S1-S5) REPORT (holdout SEALED) =====
+hypotheses generated: 1520 | unique canonical: 1520 | semantic duplicates removed: 0
+eliminated per stage: {'expectancy': 1196, 'min_trades': 152, 'profit_factor': 97, 'max_dd': 32, 'oos': 7, 'param_stability': 6}
+passed Statistician: 30 | GLOBAL-FDR: 0 | walk-forward: 0 | Red Team -> CANDIDATES: 0
+min p-value: 1.72e-03 | min q-value: 0.822 | throughput: 182,683 hyp/hr (30s) | errors: 0
+
+per-family (diagnostic):
+  S1: grammar=1152 statPass=24 globalFDR=0 candidates=0 -> REJECTED
+  S2: grammar=144 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+  S3: grammar=96 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+  S4: grammar=32 statPass=0 globalFDR=0 candidates=0 -> NO SIGNAL
+  S5: grammar=96 statPass=6 globalFDR=0 candidates=0 -> REJECTED
+
+families WITH candidates: none | families NO-SIGNAL: ['S2', 'S3', 'S4']
+
+--- CANDIDATES (survived Statistician->global-FDR->walk-forward->Red Team; holdout SEALED) ---
+  NONE
