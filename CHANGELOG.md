@@ -1,5 +1,16 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-13 (h) — Hypothesis Generator v1 (architecture + logic, no backtest)
+- Built knowledge/generator/: HYPOTHESIS_GENERATOR_V1.md (architecture), code/hypothesis_generator_v1.py (logic),
+  GENERATED_HYPOTHESES_v1.jsonl/.md (54 demo candidates), CLAUDE_CODEX_REVIEW.md, generator_summary.json.
+- Recombines ONLY existing KB/Ontology (primitives/conditions/invariants/contradictions) — no new primitives,
+  NO backtest. 7 operators (O1 transfer, O2 stacked-selectivity, O3 cross-level-type, O4 contradiction-resolver,
+  O5 beta-deconfound, O6 placebo, O7 boundary/counterfactual). Hard novelty gate vs S1-S51 signatures: every
+  candidate auto-states why-new / contradiction / mechanism / differs-from-all-S1-S51 + refinement-vs-genuinely-new.
+- Codex inline review adopted: observational novelty is necessary-not-sufficient (v2 semantic signature),
+  O2 anti-inflation guards encoded, added O7, prior->prior_plausibility (hidden from validators). CODEX FS REVIEW PENDING.
+- Read-only; engine + S1-S51 byte-frozen; nothing implemented/validated; holdout SEALED; no FDR.
+
 ## Session 2026-07-13 (g) — lab ONTOLOGY + knowledge graph + hypothesis generator
 - Built knowledge/ontology/: ONTOLOGY.md, INVARIANTS.md (9 invariants), RELATIONS.md (38 observational edges),
   HYPOTHESIS_GENERATOR.md, KNOWLEDGE_GRAPH.json/.jsonl, GENERATED_HYPOTHESES.jsonl, CLAUDE_CODEX_REVIEW.md.
