@@ -3,14 +3,13 @@
 Read PROJECT_STATE_v1.0.md + SESSION_CLOSE_S1_S20.md + docs/ first. Holdout stays SEALED. No live trading.
 Do NOT re-tune Discovery Screen V1. Do NOT re-run families to force a candidate count.
 
-## PORTABILITY (required before running on a new machine)
-The copied Python modules contain absolute paths to the original ephemeral Temp scratchpad. Repoint them to
-THIS folder before running. Essential change (the canonical data-path constant used by mstrat.py/s1.py/mtf.py):
-- `code/mtf.py` line 6: `D = r"...\scratchpad\phaseb\alpha\data_market"` → set to this folder's `data\market`.
-Also repoint absolute Temp paths in (only if you run these data-build/foundation scripts): build_gc_bars.py,
-quality_and_resample.py, resample_ny.py, run_cycle.py, run_prod.py. (Grep the code for `AppData.Local.Temp`.)
-GC MBO raw data (`scratchpad/phaseb/data2`, ~1GB, foundation/closed track) was NOT copied — re-download from
-Databento if the foundation reconstruction must be re-run; not needed for the XAUUSD alpha campaign.
+## PORTABILITY — ✅ DONE (2026-07-13, CEO-approved portability-only pass)
+- `code/mtf.py` `D` is now portable (`Path(__file__).resolve().parents[1]/"data"/"market"`, str; env override `AI_QUANT_DATA_DIR`). Campaign chain runs from this folder with NO Temp dependency.
+- Reproduction = **EXACT** (Verdict A) on a fresh venv: 1972/1800/357/130/14/9, per-hyp parquet diff 0.0, trades 1,300,740 identical. See PORTABILITY_AUDIT.md + REPRODUCIBILITY_AUDIT.md; run saved in results/reproduction_v2/. Pre-fix git checkpoint `85857234`.
+- REMAINING (debt D8, deferred — NOT on campaign path, do only if rerun): build_gc_bars.py, quality_and_resample.py,
+  resample_ny.py, run_cycle.py, run_prod.py, foundation_gc/engine.py still hold Temp paths. Add pyarrow to requirements.txt (D9).
+- GC MBO raw data (`scratchpad/phaseb/data2`, ~1GB, foundation/closed track) was NOT copied — re-download from
+  Databento if the foundation reconstruction must be re-run; not needed for the XAUUSD alpha campaign.
 
 ## Environment setup (new machine)
 1. `python -m venv venv && venv\Scripts\pip install -r requirements.txt`

@@ -2,8 +2,14 @@
 Lookahead-safe: each M15 bar sees only higher-TF bars already CLOSED (merge_asof on availability
 = next-bar-start). Signal at M15 close; entry at next M15 open. Optimized backtest (signal-indexed)."""
 import numpy as np, pandas as pd, itertools, hashlib, math
+from pathlib import Path
 from alpha_lab import CFG
-D=r"C:\Users\MEDION~1\AppData\Local\Temp\claude\C--Users-MEDION-GAMING-tradingview-mcp\344b31d3-785f-43a4-b73b-d80a24bc18df\scratchpad\phaseb\alpha\data_market"
+# Portable canonical data path (was hardcoded to ephemeral Temp scratchpad).
+# mtf.py lives in <PROJECT_ROOT>/code/, so parents[1] == PROJECT_ROOT.
+# Kept as a str (code concatenates D+r"\OANDA_XAUUSD_*.csv" in mtf/mstrat/s1).
+# Override with env AI_QUANT_DATA_DIR if the data lives elsewhere.
+import os as _os
+D=_os.environ.get("AI_QUANT_DATA_DIR") or str(Path(__file__).resolve().parents[1]/"data"/"market")
 TICK=0.1
 
 def _ind(df):

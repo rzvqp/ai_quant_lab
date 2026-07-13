@@ -8,7 +8,14 @@ Durable project home (this folder): `C:\Users\MEDION GAMING\ai_quant_lab\`
 - `code/` = 29 Python modules  · `data/market/` = XAUUSD OHLCV CSVs  · `docs/` = spec/audit docs
 - `results/` = FAMILY_RESULTS.parquet + run logs  · `pullers/` = TradingView CDP data pullers (.mjs)
 - `foundation_gc/engine.py` = Phase-B order-book reconstruction engine (GC, closed track)
-Runtime: Python 3.14 venv (recreate: `pip install -r requirements.txt` = databento, pandas, numpy, sortedcontainers, zstandard). Original venv was in ephemeral Temp; not copied.
+Runtime: Python 3.14 venv (recreate: `pip install -r requirements.txt` = databento, pandas, numpy, sortedcontainers, zstandard; **+ pyarrow** for the parquet, missing from requirements = debt D9). Original venv was in ephemeral Temp; not copied.
+
+## 0. PORTABILITY & REPRODUCTION STATUS (2026-07-13 update — CEO-approved portability-only pass)
+- **PORTABLE.** Critical data path repointed to this folder: `code/mtf.py` `D` now = `Path(__file__).resolve().parents[1]/"data"/"market"` (str; env override `AI_QUANT_DATA_DIR`). Whole campaign chain (run_full_campaign→mstrat→s1→mtf) runs with NO Temp dependency. Secondary Temp paths (resample_ny, quality_and_resample, run_prod = data-rebuild; run_cycle, build_gc_bars, foundation_gc/engine = GC-foundation) left as debt D8 (not on campaign path).
+- **REPRODUCTION = EXACT (Verdict A).** Re-ran ENGINE v2 on a fresh venv (pandas 3.0.3/numpy 2.5.1, NEWER) → bit-exact vs baseline: 1972/1800/357/130/14/9, per-hypothesis parquet max abs diff 0.0, total trades 1,300,740 identical, boolean verdicts identical. Saved to `results/reproduction_v2/`; baseline untouched; holdout SEALED. See PORTABILITY_AUDIT.md + REPRODUCIBILITY_AUDIT.md.
+- Git checkpoint created (folder was un-versioned): pre-fix baseline commit `85857234`.
+- **Data note:** M15 actual = **84,152** bars (docs below said 84,151 = wc off-by-one; file has no trailing newline). Proven identical to baseline data (exact parquet + sealed-holdout size 16,831 = 84,152−67,321). Not a data change.
+- Nothing else changed: methodology, S1–S20 defs, thresholds, holdout, p-engine all UNTOUCHED. Next authorized task remains matched-null (needs a NEW CEO gate).
 
 ## 1. WHAT IS ACTUALLY IMPLEMENTED
 - **Data pipeline (XAUUSD)**: M15 history built via TradingView **Replay** stepping (pullers/pull_replay_m15.mjs) + gap-fill (pull_gapfill.mjs). Resampled to H1/H4/D1 anchored to **17:00 America/New_York (DST-aware)** (code/resample_ny.py). **Cross-checked bit-exact vs native TradingView OANDA bars** (0 OHLC mismatches over 2023-2026). Files: `data/market/OANDA_XAUUSD_{M15,H1,H4,D1}.csv`.

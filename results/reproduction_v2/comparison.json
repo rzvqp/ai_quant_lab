@@ -1,0 +1,100 @@
+{
+ "tolerance": {
+  "atol": 1e-09,
+  "rtol": 1e-09
+ },
+ "rows": {
+  "base": 1972,
+  "new": 1972,
+  "equal": true
+ },
+ "cols_equal": true,
+ "id_order_identical": true,
+ "id_set_identical": true,
+ "merge_all_both": true,
+ "numeric_max_abs_diff": {
+  "n": 0.0,
+  "exp": 0.0,
+  "pf": 0.0,
+  "dd": 0.0,
+  "win": 0.0,
+  "sumR": 0.0,
+  "val_exp": 0.0,
+  "median": 0.0,
+  "trim5": 0.0,
+  "t1": 0.0,
+  "t3": 0.0,
+  "t5": 0.0,
+  "wo1": 0.0,
+  "months": 0.0,
+  "pos_months": 0.0,
+  "years": 0.0
+ },
+ "numeric_mismatch_count_beyond_tol": {
+  "n": 0,
+  "exp": 0,
+  "pf": 0,
+  "dd": 0,
+  "win": 0,
+  "sumR": 0,
+  "val_exp": 0,
+  "median": 0,
+  "trim5": 0,
+  "t1": 0,
+  "t3": 0,
+  "t5": 0,
+  "wo1": 0,
+  "months": 0,
+  "pos_months": 0,
+  "years": 0
+ },
+ "bool_mismatch_count": {
+  "hist_prof": 0,
+  "research_worthy": 0,
+  "fragile": 0
+ },
+ "side_mismatch_count": 0,
+ "headline_base": {
+  "generated": 1972,
+  "valid": 1800,
+  "hist_profitable": 357,
+  "research_worthy": 130,
+  "fam_prof": "['S1', 'S2', 'S3', 'S5', 'S6', 'S8', 'S9', 'S13', 'S14', 'S16', 'S17', 'S18', 'S19', 'S20']",
+  "fam_noprof": "['S4', 'S7', 'S10', 'S11', 'S12', 'S15']",
+  "fam_rw": "['S1', 'S2', 'S5', 'S6', 'S8', 'S9', 'S14', 'S17', 'S20']",
+  "compute_s": 83,
+  "warnings": 32,
+  "errors": 0,
+  "temp_refs": 64
+ },
+ "headline_new": {
+  "generated": 1972,
+  "valid": 1800,
+  "hist_profitable": 357,
+  "research_worthy": 130,
+  "fam_prof": "['S1', 'S2', 'S3', 'S5', 'S6', 'S8', 'S9', 'S13', 'S14', 'S16', 'S17', 'S18', 'S19', 'S20']",
+  "fam_noprof": "['S4', 'S7', 'S10', 'S11', 'S12', 'S15']",
+  "fam_rw": "['S1', 'S2', 'S5', 'S6', 'S8', 'S9', 'S14', 'S17', 'S20']",
+  "compute_s": 83,
+  "warnings": 32,
+  "errors": 0,
+  "temp_refs": 0
+ },
+ "headline_equal": {
+  "fam_prof": true,
+  "fam_rw": true,
+  "generated": true,
+  "valid": true,
+  "fam_noprof": true,
+  "hist_profitable": true,
+  "research_worthy": true
+ },
+ "total_trades": {
+  "base": 1300740,
+  "new": 1300740,
+  "equal": true
+ },
+ "EXACT": true,
+ "max_abs_diff_overall": 0.0,
+ "FUNCTIONALLY_EQUIVALENT": true
+}

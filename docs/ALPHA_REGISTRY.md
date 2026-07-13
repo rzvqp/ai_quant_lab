@@ -1,3 +1,9 @@
+> ⚠️ **STALE / HISTORICAL / NON-AUTHORITATIVE** (marked 2026-07-13). This registry covers only S1–S10 and its
+> `p` / `passed_stat` columns come from the **analytic p-value engine that was later INVALIDATED** (see
+> MONTE_CARLO_AUDIT.md, PROJECT_STATE §9). Do NOT treat `passed_stat=True` or these p-values as verdicts.
+> Authoritative campaign results = `results/FAMILY_RESULTS.parquet` + `results/full.log` (S1–S20, ENGINE v2).
+> Kept for audit trail; not deleted. Update/archive deferred per CEO.
+
 # ALPHA_REGISTRY (provisional, holdout SEALED)
 
 Unit = alpha FACTOR (economic mechanism). Portfolio objective = max expectancy at min inter-factor correlation.

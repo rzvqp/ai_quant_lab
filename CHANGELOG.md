@@ -1,4 +1,17 @@
-# CHANGELOG — session 2026-07-12 → 2026-07-13 (AI Quant Research Lab)
+# CHANGELOG — AI Quant Research Lab
+
+## Session 2026-07-13 (b) — Portability fix + reproducibility test (CEO-approved, scope-limited)
+- **Git checkpoint:** folder was un-versioned → `git init` + baseline commit `85857234bad5172634e9c2b603e873976a204470` (pre-fix, 58 files). Added `.gitignore` (venv/, __pycache__/).
+- **Portability (class A only):** `code/mtf.py` `D` repointed from hardcoded Temp → `Path(__file__).resolve().parents[1]/"data"/"market"` (str-typed, env override `AI_QUANT_DATA_DIR`). This single constant feeds the whole campaign chain (mstrat/s1/mtf). Secondary Temp paths (data-rebuild + GC-foundation scripts) classified and DEFERRED as debt D8 (not on campaign path).
+- **Environment:** created `venv` (Python 3.14.6); installed requirements + pyarrow (parquet engine missing from requirements = debt D9). Versions newer than original (pandas 3.0.3/numpy 2.5.1/pyarrow 25.0.0).
+- **Reproduction = EXACT (Verdict A):** re-ran `run_full_campaign.py` (ENGINE v2) into `results/reproduction_v2/` → bit-exact vs baseline: 1972/1800/357/130/14/9; per-hypothesis parquet max abs diff 0.0; total trades 1,300,740 identical; boolean verdicts identical; 0 Temp reads; holdout SEALED; baseline untouched.
+- **Data note (D10):** M15 file has 84,152 bars (docs said 84,151 = wc off-by-one, no trailing newline); proven identical to baseline data. No data/result change.
+- New artifacts: PORTABILITY_AUDIT.md, REPRODUCIBILITY_AUDIT.md, results/reproduction_v2/{full.log, FAMILY_RESULTS.parquet, ENGINE_RUNTIME_PATHS.json, comparison.json}. Marked stale (non-destructive): results/PROJECT_STATE_v1.0.json, docs/ALPHA_REGISTRY.md.
+- **Unchanged:** methodology, S1–S20 definitions, thresholds, holdout, p-value engine. Matched-null NOT started (awaits a new CEO gate).
+
+---
+
+## Session 2026-07-12 → 2026-07-13 (AI Quant Research Lab)
 
 Chronological, verified from code/logs. Earlier foundation (COMEX GC) summarized; main work is the pivot to alpha discovery.
 

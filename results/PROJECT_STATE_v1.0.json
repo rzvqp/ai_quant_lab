@@ -1,4 +1,5 @@
 {
+ "_STATUS": "STALE / HISTORICAL / NON-AUTHORITATIVE (marked 2026-07-13). This is a MID-CAMPAIGN checkpoint (S1-S10, Lots 1-2 only). Superseded by the completed S1-S20 campaign in results/FAMILY_RESULTS.parquet + results/full.log and by PROJECT_STATE_v1.0.md. Kept for audit trail; not deleted. Update/archive deferred per CEO.",
  "lots_done": [
   "LOT1",
   "LOT2"

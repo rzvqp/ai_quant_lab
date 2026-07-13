@@ -1,0 +1,35 @@
+{
+ "generated": "2026-07-13 reproduction session (portability fix)",
+ "engine": "code/mstrat.py (ENGINE v2, stop-floor)",
+ "runner": "code/run_full_campaign.py",
+ "python": "3.14.6 (fresh venv at ai_quant_lab/venv)",
+ "libs": {"pandas": "3.0.3", "numpy": "2.5.1", "pyarrow": "25.0.0"},
+ "canonical_data_path_constant": {
+  "module": "code/mtf.py",
+  "symbol": "D",
+  "before": "C:\\Users\\MEDION~1\\AppData\\Local\\Temp\\claude\\C--Users-MEDION-GAMING-tradingview-mcp\\344b31d3-785f-43a4-b73b-d80a24bc18df\\scratchpad\\phaseb\\alpha\\data_market",
+  "after_resolution_rule": "os.environ['AI_QUANT_DATA_DIR'] or str(Path(__file__).resolve().parents[1]/'data'/'market')",
+  "resolved_runtime_value": "C:\\Users\\MEDION GAMING\\ai_quant_lab\\data\\market"
+ },
+ "runtime_files_opened": {
+  "M15": "C:\\Users\\MEDION GAMING\\ai_quant_lab\\data\\market\\OANDA_XAUUSD_M15.csv",
+  "H1": "C:\\Users\\MEDION GAMING\\ai_quant_lab\\data\\market\\OANDA_XAUUSD_H1.csv",
+  "H4": "C:\\Users\\MEDION GAMING\\ai_quant_lab\\data\\market\\OANDA_XAUUSD_H4.csv",
+  "D1": "C:\\Users\\MEDION GAMING\\ai_quant_lab\\data\\market\\OANDA_XAUUSD_D1.csv"
+ },
+ "actual_bar_counts": {"M15": 84152, "H1": 20832, "H4": 5450, "D1": 909},
+ "documented_bar_counts": {"M15": 84151, "H1": 20832, "H4": 5450, "D1": 909},
+ "bar_count_note": "M15 actual=84152 vs documented 84151 = a wc-based off-by-one in the docs (M15 file has no trailing newline). PROVEN benign: campaign split research=50491 / val=16830 / holdout=16831 sums to 84152 and the sealed-holdout size 16831 matches the original session's documented 16831, so the ORIGINAL run also used 84152. Data is identical; only the doc figure is off by one.",
+ "columns": {"M15": ["time", "open", "high", "low", "close", "volume"]},
+ "campaign_split": {"research": 50491, "validation": 16830, "holdout_SEALED": 16831, "total": 84152},
+ "verification": {
+  "no_temp_reads": true,
+  "no_system32_reads": true,
+  "no_old_repo_reads": true,
+  "temp_refs_in_new_log": 0,
+  "holdout_opened": false,
+  "writes_outside_project": false,
+  "parity_and_smoke": "PASS",
+  "cwd_independent": "mtf.D derives from __file__, independent of working directory"
+ }
+}

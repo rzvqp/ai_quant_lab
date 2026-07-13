@@ -10,6 +10,12 @@
 | D5 | LOW | run_full_campaign.py %-profitable display bug (÷valid=0 → 400% for S19). Counts correct. | cosmetic |
 | D6 | MED | Top-by-expectancy / top-by-profit-DD lists dominated by low-n flukes (S1 n=3-5, PF≈99). | use RESEARCH_WORTHY + monthly-stability lists |
 | D7 | INFRA | Lab code+data were only in ephemeral Temp scratchpad. | fixed: copied to durable ai_quant_lab/; GC MBO raw (data2) still Temp-only (re-downloadable) |
+| D8 | INFRA | Secondary hardcoded Temp paths remain in NON-campaign scripts: resample_ny.py, quality_and_resample.py, run_prod.py (data-rebuild), run_cycle.py, build_gc_bars.py, foundation_gc/engine.py (GC foundation). | deferred: not on the official S1–S20 campaign path; repoint only if those scripts are rerun. Campaign path (mtf.py) FIXED 2026-07-13. |
+| D9 | INFRA | requirements.txt omits a parquet engine (pyarrow) though the campaign writes/reads FAMILY_RESULTS.parquet. | add `pyarrow` to requirements.txt (installed manually this session). |
+| D10 | DOC | Docs state M15=84,151 bars; actual file = 84,152 (wc off-by-one, no trailing newline). Proven benign (exact reproduction; holdout 16,831 matches). | correct the figure in docs; no data/result change. |
+
+## A.1 Reproducibility status (2026-07-13)
+- Portability fix (D-critical `mtf.py`) applied; official campaign re-run on a fresh venv (pandas 3.0.3/numpy 2.5.1, newer than original) reproduced the baseline **EXACTLY** (Verdict A): 1972/1800/357/130/14/9; per-hypothesis parquet max abs diff 0.0; total trades 1,300,740 identical; boolean verdicts identical; 0 Temp reads; holdout SEALED. Baseline not overwritten (new run in results/reproduction_v2/). Pre-fix git checkpoint `85857234`. See PORTABILITY_AUDIT.md, REPRODUCIBILITY_AUDIT.md.
 
 ## B. Method validity status (ALL under validation)
 - Analytic p-value: INVALID for verdicts (diagnostic only).
