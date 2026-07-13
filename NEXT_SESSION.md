@@ -20,12 +20,12 @@ Do NOT re-tune Discovery Screen V1. Do NOT re-run families to force a candidate 
    (1972 hyps, 357 hist-profitable, 130 research-worthy).
 
 ## Task order (statistical remediation — must precede any strict verdict)
-1. **Fix matched-null (Test B, PRIMARY alpha test).** Root cause of the pilot failure: synthetic control fed
-   bare synthetic R's to a real-price null (scale mismatch). Fix = generate synthetic PRICE series with
-   injected null/edge SIGNALS, run through mstrat.simulate. Validate: ≥100 independent null series →
-   p-value distribution ~uniform, P(p<0.05)≈5%; 3-5 injected edge magnitudes → power curve + FPR + seed reproducibility.
+1. **Fix matched-null (Test B, PRIMARY alpha test). ✅ DONE 2026-07-13 (branch matched-null-validation).**
+   Rebuilt on synthetic PRICE series through mstrat.simulate; ≥100 null series → p uniform (KS p=0.11);
+   power curve monotone; adversarial 12/12 (incl. drift, after a risk/ATR-scaling fix); parity proven; pilot
+   sane. **VALIDATED (Verdict A).** See docs/MATCHED_NULL_VALIDATION.md. NOT merged; global-FDR is CEO-gated.
 2. **Choose ONE official p-value method BEFORE seeing which rejects current strategies** (per EMPIRICAL_PVALUE_SPEC.md).
-   Candidates: matched-null (Test B, primary) + block-bootstrap (Test A, robustness secondary).
+   Candidates: matched-null (Test B, primary — NOW VALIDATED) + block-bootstrap (Test A, robustness secondary).
 3. **Adaptive MC**: MC-1 triage B=20k → MC-2 B≥200k (CI) → MC-3 B≥1e6 (confirmation), p=(k+1)/(B+1), save seeds/counts.
    Status UNRESOLVED if p CI intersects the BH threshold.
 4. **Wire INVALID-EXECUTION + finalize stop-floor** per docs/MIN_STOP_FLOOR_PREREG.md; re-run ALL S1-S20 uniformly if it changes execution.
