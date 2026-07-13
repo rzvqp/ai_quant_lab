@@ -1,5 +1,13 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-13 (c) — Matched-null remediation & validation (branch matched-null-validation)
+- Diagnosed old miscalibration: bare synthetic R-series compared to a real-price null (scale mismatch).
+- Rebuilt Test B on synthetic PRICE series routed through mstrat.simulate (no parallel backtester): code/synth_price.py, code/matched_null.py, docs/MATCHED_NULL_SPEC.md, docs/SYNTHETIC_PRICE_GENERATOR.md.
+- Adversarial battery exposed a 2nd defect: absolute-risk bootstrap → FPR 0.975 under drift; fixed by bootstrapping risk/ATR and rescaling to local ATR at the counterfactual entry (drift FPR 0.975→0.00).
+- Batteries all PASS: calibration (120 null series, KS p=0.11, FPR covers nominal), power (monotone, edge=1→~1.0), adversarial (12/12 scenarios), parity (observed R == MS.backtest exactly). Tests in tests/.
+- Pre-registered pilot on 10 real hypotheses: engine rejects losers (p 0.86–0.998), only S5 survives research+OOS (p 0.032/0.038); most research-significant edges fail OOS. NO strategy verdict; pilot p's are pre-FDR.
+- **ENGINE VERDICT A — MATCHED-NULL VALIDATED** (unstratified config). docs/MATCHED_NULL_VALIDATION.md. Global-FDR/walk-forward/Red Team/holdout remain CEO-gated. Not merged (isolated from strategy-development).
+
 ## Session 2026-07-13 (b) — Portability fix + reproducibility test (CEO-approved, scope-limited)
 - **Git checkpoint:** folder was un-versioned → `git init` + baseline commit `85857234bad5172634e9c2b603e873976a204470` (pre-fix, 58 files). Added `.gitignore` (venv/, __pycache__/).
 - **Portability (class A only):** `code/mtf.py` `D` repointed from hardcoded Temp → `Path(__file__).resolve().parents[1]/"data"/"market"` (str-typed, env override `AI_QUANT_DATA_DIR`). This single constant feeds the whole campaign chain (mstrat/s1/mtf). Secondary Temp paths (data-rebuild + GC-foundation scripts) classified and DEFERRED as debt D8 (not on campaign path).
