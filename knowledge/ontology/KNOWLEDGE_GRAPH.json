@@ -1,0 +1,841 @@
+{
+ "nodes": [
+  {
+   "id": "P001",
+   "type": "primitive",
+   "label": "Confirmed liquidity sweep",
+   "polarity": "positive"
+  },
+  {
+   "id": "P002",
+   "type": "primitive",
+   "label": "Failed-breakout fade",
+   "polarity": "positive"
+  },
+  {
+   "id": "P003",
+   "type": "primitive",
+   "label": "Opening-range momentum",
+   "polarity": "positive"
+  },
+  {
+   "id": "P004",
+   "type": "primitive",
+   "label": "Round-number momentum",
+   "polarity": "positive"
+  },
+  {
+   "id": "P005",
+   "type": "primitive",
+   "label": "Trend-efficiency continuation",
+   "polarity": "positive-weak"
+  },
+  {
+   "id": "P006",
+   "type": "primitive",
+   "label": "Short-term overreaction",
+   "polarity": "positive-weak"
+  },
+  {
+   "id": "P007",
+   "type": "primitive",
+   "label": "MTF alignment",
+   "polarity": "mixed"
+  },
+  {
+   "id": "P008",
+   "type": "primitive",
+   "label": "Session transition",
+   "polarity": "mixed"
+  },
+  {
+   "id": "P009",
+   "type": "primitive",
+   "label": "Streak persistence",
+   "polarity": "inconclusive"
+  },
+  {
+   "id": "P010",
+   "type": "primitive",
+   "label": "Liquidity memory (levels)",
+   "polarity": "mixed"
+  },
+  {
+   "id": "P011",
+   "type": "primitive",
+   "label": "Raw sweep (no confirm)",
+   "polarity": "negative"
+  },
+  {
+   "id": "P012",
+   "type": "primitive",
+   "label": "Trend/pullback continuation",
+   "polarity": "negative"
+  },
+  {
+   "id": "P013",
+   "type": "primitive",
+   "label": "Breakout/expansion chasing",
+   "polarity": "negative"
+  },
+  {
+   "id": "P014",
+   "type": "primitive",
+   "label": "Value/VWAP reaction",
+   "polarity": "mixed-negative"
+  },
+  {
+   "id": "P015",
+   "type": "primitive",
+   "label": "Calendar seasonality",
+   "polarity": "overfit"
+  },
+  {
+   "id": "P016",
+   "type": "primitive",
+   "label": "Regime routing",
+   "polarity": "negative"
+  },
+  {
+   "id": "P017",
+   "type": "primitive",
+   "label": "Intrabar pressure",
+   "polarity": "negative"
+  },
+  {
+   "id": "P018",
+   "type": "primitive",
+   "label": "Momentum divergence",
+   "polarity": "negative"
+  },
+  {
+   "id": "P019",
+   "type": "primitive",
+   "label": "Volume-derived signals",
+   "polarity": "negative"
+  },
+  {
+   "id": "C_confirmation",
+   "type": "condition",
+   "label": "confirmation stage (displacement/close-back)",
+   "effect": "HELPS",
+   "evidence": "P001>P011"
+  },
+  {
+   "id": "C_efficiency",
+   "type": "condition",
+   "label": "trend-efficiency gate (clean trend only)",
+   "effect": "HELPS",
+   "evidence": "P005>P012"
+  },
+  {
+   "id": "C_psych_level",
+   "type": "condition",
+   "label": "psychological round level",
+   "effect": "HELPS",
+   "evidence": "P004 break>reject"
+  },
+  {
+   "id": "C_structural_level",
+   "type": "condition",
+   "label": "structural reference level (PDH/PDL/weekly)",
+   "effect": "HELPS",
+   "evidence": "P001/P002/P010"
+  },
+  {
+   "id": "C_extreme_return",
+   "type": "condition",
+   "label": "extreme realized short-term return",
+   "effect": "HELPS",
+   "evidence": "P006"
+  },
+  {
+   "id": "C_session_window",
+   "type": "condition",
+   "label": "session opening/auction window",
+   "effect": "CONTEXT",
+   "evidence": "P003/P008"
+  },
+  {
+   "id": "C_htf_alignment",
+   "type": "condition",
+   "label": "higher-timeframe trend alignment",
+   "effect": "MIXED",
+   "evidence": "P007 (beta-confounded)"
+  },
+  {
+   "id": "C_vwap_reference",
+   "type": "condition",
+   "label": "VWAP / value-area sigma reference",
+   "effect": "WEAK",
+   "evidence": "P014 (S8 exception)"
+  },
+  {
+   "id": "C_volume",
+   "type": "condition",
+   "label": "volume magnitude / participation",
+   "effect": "NO-HELP",
+   "evidence": "P019 (S41/S46 negative)"
+  },
+  {
+   "id": "C_divergence",
+   "type": "condition",
+   "label": "oscillator-price divergence",
+   "effect": "NO-HELP",
+   "evidence": "P018"
+  },
+  {
+   "id": "C_intrabar",
+   "type": "condition",
+   "label": "intrabar close-location pressure",
+   "effect": "NO-HELP",
+   "evidence": "P017"
+  },
+  {
+   "id": "C_regime_label",
+   "type": "condition",
+   "label": "regime classifier label (always-on)",
+   "effect": "NO-HELP",
+   "evidence": "P016"
+  },
+  {
+   "id": "C_calendar",
+   "type": "condition",
+   "label": "calendar/day-of-week/month window",
+   "effect": "OVERFIT",
+   "evidence": "P015 (OOS-refuted)"
+  },
+  {
+   "id": "C_cost_drag",
+   "type": "condition",
+   "label": "per-trade cost (~0.027R)",
+   "effect": "DEGRADES",
+   "evidence": "all high-frequency families"
+  },
+  {
+   "id": "I1",
+   "type": "invariant",
+   "label": "Selectivity Principle",
+   "confidence": "high (methodological)"
+  },
+  {
+   "id": "I2",
+   "type": "invariant",
+   "label": "Confirmation Improved (reversals)",
+   "confidence": "medium"
+  },
+  {
+   "id": "I3",
+   "type": "invariant",
+   "label": "Cost-Drag Hurdle",
+   "confidence": "high (given fixed cost model)"
+  },
+  {
+   "id": "I4",
+   "type": "invariant",
+   "label": "Chasing Penalty (tested)",
+   "confidence": "high (conditional pattern)"
+  },
+  {
+   "id": "I5",
+   "type": "invariant",
+   "label": "Structure-Reversion (tested) outperformed Continuation",
+   "confidence": "medium"
+  },
+  {
+   "id": "I6",
+   "type": "invariant",
+   "label": "OOS-Selection Guard",
+   "confidence": "high (methodological)"
+  },
+  {
+   "id": "I7",
+   "type": "invariant",
+   "label": "Beta Confound",
+   "confidence": "high (as a caution)"
+  },
+  {
+   "id": "I8",
+   "type": "invariant",
+   "label": "Level-Type Association",
+   "confidence": "medium"
+  },
+  {
+   "id": "I9",
+   "type": "invariant",
+   "label": "Ingredient Selectivity (no incremental edge detected)",
+   "confidence": "medium"
+  }
+ ],
+ "edges": [
+  {
+   "source": "P001",
+   "relation": "IMPROVED_BY",
+   "target": "C_confirmation",
+   "evidence": "S1 confirmed positive; S21 raw negative (matched contrast)",
+   "confidence": "medium"
+  },
+  {
+   "source": "P011",
+   "relation": "ASSOCIATED_WITH_FAILURE_WITHOUT",
+   "target": "C_confirmation",
+   "evidence": "S21 all negative",
+   "confidence": "medium"
+  },
+  {
+   "source": "P001",
+   "relation": "OUTPERFORMS_MATCHED_VARIANT",
+   "target": "P011",
+   "evidence": "sweep with vs without confirmation; NOTE confirmation also shifts entry/exposure (not a clean single factor) (C1)",
+   "confidence": "medium"
+  },
+  {
+   "source": "P005",
+   "relation": "IMPROVED_BY",
+   "target": "C_efficiency",
+   "evidence": "S39 er>=0.5 positive; low-efficiency negative",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P012",
+   "relation": "ASSOCIATED_WITH_FAILURE_WITHOUT",
+   "target": "C_efficiency",
+   "evidence": "S7/S10/S15/S38 negative",
+   "confidence": "medium"
+  },
+  {
+   "source": "P005",
+   "relation": "OUTPERFORMS_MATCHED_VARIANT",
+   "target": "P012",
+   "evidence": "efficiency-gated vs generic continuation (C2)",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P004",
+   "relation": "IMPROVED_BY",
+   "target": "C_psych_level",
+   "evidence": "S22 breakout positive; reject negative",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P004",
+   "relation": "OUTPERFORMS_MATCHED_VARIANT",
+   "target": "P013",
+   "evidence": "round-number vs generic break (C4)",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P013",
+   "relation": "ASSOCIATED_WITH_FAILURE_WITHOUT",
+   "target": "C_psych_level",
+   "evidence": "S3/S23 generic breakouts negative",
+   "confidence": "medium"
+  },
+  {
+   "source": "P006",
+   "relation": "IMPROVED_BY",
+   "target": "C_extreme_return",
+   "evidence": "S42 fade of large 6-bar move positive (small n)",
+   "confidence": "low"
+  },
+  {
+   "source": "P006",
+   "relation": "OUTPERFORMS_MATCHED_VARIANT",
+   "target": "P014",
+   "evidence": "return-ranked vs value-reference reversion (C5)",
+   "confidence": "low"
+  },
+  {
+   "source": "P002",
+   "relation": "IMPROVED_BY",
+   "target": "C_structural_level",
+   "evidence": "S2 fade at prior-day level positive",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P003",
+   "relation": "ASSOCIATED_WITH",
+   "target": "C_session_window",
+   "evidence": "S5 opening-range positive",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P003",
+   "relation": "OUTPERFORMS_MATCHED_VARIANT",
+   "target": "P013",
+   "evidence": "opening-range vs generic break (C7)",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P007",
+   "relation": "CONSISTENT_WITH_BETA",
+   "target": "I7",
+   "evidence": "S9/S20 long-momentum in bull; beta plausibly explains it (not proven)",
+   "confidence": "medium"
+  },
+  {
+   "source": "P007",
+   "relation": "CORRELATED_WITH",
+   "target": "P003",
+   "evidence": "monthly-corr with the momentum cluster",
+   "confidence": "medium"
+  },
+  {
+   "source": "P014",
+   "relation": "UNDERPERFORMED_WITH",
+   "target": "C_vwap_reference",
+   "evidence": "sigma-band VA a weak proxy; S8 marginal exception",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P019",
+   "relation": "NO_INCREMENTAL_EDGE_DETECTED",
+   "target": "C_volume",
+   "evidence": "S41/S46 negative (needs ablation + more power)",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P018",
+   "relation": "NO_INCREMENTAL_EDGE_DETECTED",
+   "target": "C_divergence",
+   "evidence": "S43 negative",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P017",
+   "relation": "NO_INCREMENTAL_EDGE_DETECTED",
+   "target": "C_intrabar",
+   "evidence": "S44 negative (OHLC proxy; tick data untested)",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P016",
+   "relation": "NO_INCREMENTAL_EDGE_DETECTED",
+   "target": "C_regime_label",
+   "evidence": "S40 always-on router negative",
+   "confidence": "low-medium"
+  },
+  {
+   "source": "P015",
+   "relation": "FAILED_OOS",
+   "target": "C_calendar",
+   "evidence": "strong in-sample, OOS-refuted (S29/S31); calendar not proven causal",
+   "confidence": "high"
+  },
+  {
+   "source": "P011",
+   "relation": "CONSISTENT_WITH",
+   "target": "C_cost_drag",
+   "evidence": "high-frequency + no edge",
+   "confidence": "medium"
+  },
+  {
+   "source": "P013",
+   "relation": "CONSISTENT_WITH",
+   "target": "C_cost_drag",
+   "evidence": "frequent breakouts, cost-dominated",
+   "confidence": "medium"
+  },
+  {
+   "source": "P001",
+   "relation": "SUPPORTS",
+   "target": "I1",
+   "evidence": "positive conditioned version",
+   "confidence": "high"
+  },
+  {
+   "source": "P004",
+   "relation": "SUPPORTS",
+   "target": "I1",
+   "evidence": "positive conditioned version",
+   "confidence": "high"
+  },
+  {
+   "source": "P005",
+   "relation": "SUPPORTS",
+   "target": "I1",
+   "evidence": "positive conditioned version",
+   "confidence": "high"
+  },
+  {
+   "source": "P006",
+   "relation": "SUPPORTS",
+   "target": "I1",
+   "evidence": "positive conditioned version",
+   "confidence": "high"
+  },
+  {
+   "source": "P011",
+   "relation": "SUPPORTS",
+   "target": "I1",
+   "evidence": "negative unconditioned version",
+   "confidence": "high"
+  },
+  {
+   "source": "P012",
+   "relation": "SUPPORTS",
+   "target": "I1",
+   "evidence": "negative unconditioned version",
+   "confidence": "high"
+  },
+  {
+   "source": "P013",
+   "relation": "SUPPORTS",
+   "target": "I1",
+   "evidence": "negative unconditioned version",
+   "confidence": "high"
+  },
+  {
+   "source": "P015",
+   "relation": "SUPPORTS",
+   "target": "I6",
+   "evidence": "OOS-refuted calendar",
+   "confidence": "high"
+  },
+  {
+   "source": "P002",
+   "relation": "SUPPORTS",
+   "target": "I8",
+   "evidence": "level-type dependence",
+   "confidence": "medium"
+  },
+  {
+   "source": "P004",
+   "relation": "SUPPORTS",
+   "target": "I8",
+   "evidence": "level-type dependence",
+   "confidence": "medium"
+  },
+  {
+   "source": "P019",
+   "relation": "SUPPORTS",
+   "target": "I9",
+   "evidence": "unhelpful ingredient",
+   "confidence": "medium"
+  },
+  {
+   "source": "P017",
+   "relation": "SUPPORTS",
+   "target": "I9",
+   "evidence": "unhelpful ingredient",
+   "confidence": "medium"
+  },
+  {
+   "source": "P018",
+   "relation": "SUPPORTS",
+   "target": "I9",
+   "evidence": "unhelpful ingredient",
+   "confidence": "medium"
+  },
+  {
+   "source": "P016",
+   "relation": "SUPPORTS",
+   "target": "I9",
+   "evidence": "unhelpful ingredient",
+   "confidence": "medium"
+  }
+ ],
+ "invariants": [
+  {
+   "id": "I1",
+   "name": "Selectivity Principle",
+   "conf": "high (methodological)",
+   "claim": "Across the tested families, a qualifying CONDITION tends to separate the profitable from the unprofitable version of the same base behavior; unconditioned versions underperformed their conditioned matched variants.",
+   "support": "P001 vs P011 (confirmation), P005 vs P012 (efficiency), P004 break vs reject (psych level), P006 (extreme return); contrasts C1,C2,C4,C5",
+   "against": "each contrast is a MATCHED CONTRAST (the condition also changes entry/exposure), not a clean single factor",
+   "scope": "XAUUSD M15 2022-25, tested specs"
+  },
+  {
+   "id": "I2",
+   "name": "Confirmation Improved (reversals)",
+   "conf": "medium",
+   "claim": "In the tested S1 specification, adding a confirmation stage IMPROVED the sweep-reversal result; the raw version was non-positive. (One family \u2014 association, not established necessity.)",
+   "support": "S1 confirmed positive vs S21 raw negative (matched contrast)",
+   "against": "one family; confirmation also changes entry time/price/opportunity set",
+   "scope": "M15, tested specs"
+  },
+  {
+   "id": "I3",
+   "name": "Cost-Drag Hurdle",
+   "conf": "high (given fixed cost model)",
+   "claim": "Under the lab CFG cost model, per-trade edge must exceed the ~0.027R implementation hurdle; high-frequency broad signals were cost-dominated. Not a universal floor (depends on costs/turnover/sizing/fills).",
+   "support": "high-frequency negatives S21/S27/S40/S13/S46; positives are low-frequency selective",
+   "against": "cost-model-dependent",
+   "scope": "M15, this CFG"
+  },
+  {
+   "id": "I4",
+   "name": "Chasing Penalty (tested)",
+   "conf": "high (conditional pattern)",
+   "claim": "In the tested definitions, entering WITH an ongoing breakout/expansion/pullback without a level or quality gate was negative. Not \"chasing loses\" in general.",
+   "support": "P012 (S7/S10/S15/S38), P013 (S3/S4/S23/S46/S48) negative",
+   "against": "round-number break (P004) is a level mechanism, not generic chasing",
+   "scope": "M15, tested specs"
+  },
+  {
+   "id": "I5",
+   "name": "Structure-Reversion (tested) outperformed Continuation",
+   "conf": "medium",
+   "claim": "In the tested families, fades at structural references / after return extremes OUTPERFORMED tested trend continuations. A tested-set comparison, not a universal law.",
+   "support": "P001/P002/P006 positive vs P012/P013 negative",
+   "against": "P014 value-reversion mostly negative (reference-type matters, I8)",
+   "scope": "M15, tested families"
+  },
+  {
+   "id": "I6",
+   "name": "OOS-Selection Guard",
+   "conf": "high (methodological)",
+   "claim": "In-sample profitability under family-wise selection is not persistence; out-of-sample separated genuine edge from overfit in this lab.",
+   "support": "P015 calendar strong in-sample but FAILED OOS (S29/S31)",
+   "against": "none",
+   "scope": "M15"
+  },
+  {
+   "id": "I7",
+   "name": "Beta Confound",
+   "conf": "high (as a caution)",
+   "claim": "Long positive results in a bull sample MAY reflect gold beta rather than entry-timing alpha; unresolved until a beta/regime-matched null runs on the full set.",
+   "support": "19/22 distinct candidates long; only S1-short is short",
+   "against": "matched-null engine removes drift-beta by construction but not yet applied to the full set",
+   "scope": "2022-25 bull"
+  },
+  {
+   "id": "I8",
+   "name": "Level-Type Association",
+   "conf": "medium",
+   "claim": "Tested psychological/structural levels were ASSOCIATED with edge; sigma-band/VWAP/generic-range references were not (no incremental edge detected). Limited power; interactions uncontrolled.",
+   "support": "P004 round-number & P002 structural positive vs P013 generic-range & P014 VWAP-sigma negative",
+   "against": "S8 VWAP marginal exception; low power",
+   "scope": "M15"
+  },
+  {
+   "id": "I9",
+   "name": "Ingredient Selectivity (no incremental edge detected)",
+   "conf": "medium",
+   "claim": "For volume/divergence/intrabar-pressure/regime-label, NO INCREMENTAL EDGE WAS DETECTED in the tested definitions (not proof of ineffectiveness); confirmation/efficiency/level-type were associated with edge.",
+   "support": "P019/P017/P018/P016 negative; P001/P005/P004 positive",
+   "against": "null results need ingredient ablations + more power; volume untested at tick/MBO",
+   "scope": "M15 OHLCV"
+  }
+ ],
+ "generated_hypotheses": [
+  {
+   "hypothesis_id": "H001",
+   "kind": "alpha-candidate",
+   "description": "Value/VWAP reaction (P014) WITH a confirmation stage \u2014 precisely define reaction/direction/timing first (Codex: VWAP evidence is weak)",
+   "source": "P014 + C_confirmation",
+   "tests_invariant": "I1,I2,I9",
+   "prior_confidence": "low",
+   "extends_family": "S8/S26/S27",
+   "next_test": "confirmed vs raw value-reaction in a matched null",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H002",
+   "kind": "alpha-candidate",
+   "description": "Breakout (P013) gated by high trend-efficiency \u2014 distinguish from P005 to avoid duplication (Codex)",
+   "source": "P013 + C_efficiency",
+   "tests_invariant": "I1,I4",
+   "prior_confidence": "low",
+   "extends_family": "S3/S23",
+   "next_test": "efficiency-gated breakout vs generic breakout AND vs P005",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H003",
+   "kind": "alpha-candidate",
+   "description": "Breakout (P013) restricted to psychological round levels (from P004)",
+   "source": "P013 + C_psych_level",
+   "tests_invariant": "I8",
+   "prior_confidence": "low-medium",
+   "extends_family": "S3/S46",
+   "next_test": "level-type ablation on breakouts",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H004",
+   "kind": "alpha-candidate",
+   "description": "Regime router (P016) with a STAND-ASIDE default (deploy only high-conviction sub-setups)",
+   "source": "P016 refined",
+   "tests_invariant": "I3",
+   "prior_confidence": "low",
+   "extends_family": "S40",
+   "next_test": "selective router vs always-on router",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H005",
+   "kind": "experiment",
+   "description": "Round-number REJECT leg (P004 negative half) WITH a confirmation stage",
+   "source": "P004-reject + C_confirmation",
+   "tests_invariant": "I2",
+   "prior_confidence": "low",
+   "extends_family": "S22",
+   "next_test": "does confirmation rescue the reject leg?",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H006",
+   "kind": "alpha-candidate",
+   "description": "Confirmed liquidity sweep (P001) that occurs AT a psychological round level (P004) \u2014 guard against redundant stacking",
+   "source": "P001 + P004",
+   "tests_invariant": "I1,I8",
+   "prior_confidence": "medium",
+   "extends_family": "S1/S22",
+   "next_test": "stacked-selectivity sweep vs single-condition sweep (must beat both parents)",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H007",
+   "kind": "alpha-candidate",
+   "description": "Failed-breakout fade (P002) AT round-number levels (P004)",
+   "source": "P002 + P004",
+   "tests_invariant": "I8",
+   "prior_confidence": "medium",
+   "extends_family": "S2/S22",
+   "next_test": "level-type ablation on failed-breakout fade",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H008",
+   "kind": "alpha-candidate",
+   "description": "Short-term overreaction fade (P006) AT a structural level (P002/P010)",
+   "source": "P006 + C_structural_level",
+   "tests_invariant": "I5,I8",
+   "prior_confidence": "low-medium",
+   "extends_family": "S42/S2",
+   "next_test": "return-extreme fade with vs without a level anchor",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H009",
+   "kind": "alpha-candidate",
+   "description": "Opening-range momentum (P003) WITH a confirmation filter \u2014 define base+confirmation precisely (Codex)",
+   "source": "P003 + C_confirmation",
+   "tests_invariant": "I1",
+   "prior_confidence": "low-medium",
+   "extends_family": "S5",
+   "next_test": "confirmed vs raw opening-range break",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H010",
+   "kind": "alpha-candidate",
+   "description": "Confirmed sweep (P001) applied to WEEKLY level memory (P010)",
+   "source": "P001 + P010",
+   "tests_invariant": "I2",
+   "prior_confidence": "medium",
+   "extends_family": "S1/S17",
+   "next_test": "confirmed weekly-level reaction",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H011",
+   "kind": "beta-diagnostic",
+   "description": "Opening-range momentum (P003) short-side / down-flat regimes \u2014 BETA DIAGNOSTIC (not an alpha hypothesis)",
+   "source": "P003 short",
+   "tests_invariant": "I7",
+   "prior_confidence": "n/a",
+   "extends_family": "S5",
+   "next_test": "beta/regime-matched null on the short side",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H012",
+   "kind": "beta-diagnostic",
+   "description": "MTF alignment (P007) beta-neutralized (residualize vs gold trend) before scoring \u2014 BETA DIAGNOSTIC",
+   "source": "P007 - beta",
+   "tests_invariant": "I7",
+   "prior_confidence": "n/a",
+   "extends_family": "S9/S20",
+   "next_test": "beta-adjusted expectancy of MTF alignment",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H013",
+   "kind": "experiment",
+   "description": "Confirmation-ablation on the sweep signal set (isolate the confirmation contribution) \u2014 EXPERIMENT",
+   "source": "C1",
+   "tests_invariant": "I2",
+   "prior_confidence": "n/a",
+   "extends_family": "S1/S21",
+   "next_test": "frozen matched null with/without confirmation",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H014",
+   "kind": "experiment",
+   "description": "Level-type ablation: structural vs statistical reference for the SAME reversion signal \u2014 EXPERIMENT",
+   "source": "C5/C8",
+   "tests_invariant": "I8",
+   "prior_confidence": "n/a",
+   "extends_family": "S2/S26",
+   "next_test": "structural-vs-sigma reference in a null",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H015",
+   "kind": "alpha-candidate",
+   "description": "True volume-profile value area (POC/VA) replacing the sigma-band proxy (P014)",
+   "source": "P014 fixed",
+   "tests_invariant": "I8",
+   "prior_confidence": "unknown",
+   "extends_family": "S26",
+   "next_test": "volume-profile VA reaction",
+   "data_tier": "needs finer/volume data"
+  },
+  {
+   "hypothesis_id": "H016",
+   "kind": "alpha-candidate",
+   "description": "Intrabar pressure (P017) at tick/MBO resolution instead of OHLC proxy",
+   "source": "P017 upgraded",
+   "tests_invariant": "I9",
+   "prior_confidence": "unknown",
+   "extends_family": "S44",
+   "next_test": "order-flow at tick resolution",
+   "data_tier": "T2 (tick/MBO)"
+  },
+  {
+   "hypothesis_id": "H017",
+   "kind": "mechanism-test",
+   "description": "Level-label PLACEBO: confirmed-sweep (P001) with RANDOMIZED level labels (local structure preserved) should LOSE edge; survival implies the edge is not level-driven",
+   "source": "P001 placebo",
+   "tests_invariant": "I1,I8",
+   "prior_confidence": "n/a",
+   "extends_family": "S1",
+   "next_test": "randomized-level-label placebo vs real levels",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H018",
+   "kind": "mechanism-test",
+   "description": "Timing PLACEBO: a positive edge should survive a beta-preserving TIME-SHIFT but fail a mechanism-breaking random re-timing (matched-null already partly does this)",
+   "source": "any positive",
+   "tests_invariant": "I7",
+   "prior_confidence": "n/a",
+   "extends_family": "S5/S2/S1",
+   "next_test": "time-shift-invariance vs random-retiming placebo",
+   "data_tier": "T0"
+  },
+  {
+   "hypothesis_id": "H019",
+   "kind": "mechanism-test",
+   "description": "Market-neutral RESIDUAL: test each positive primitive on gold returns residualized vs its own trend/beta; survivors are non-beta alpha, the rest are beta",
+   "source": "positives - beta",
+   "tests_invariant": "I7",
+   "prior_confidence": "n/a",
+   "extends_family": "all positives",
+   "next_test": "beta-residualized expectancy per primitive",
+   "data_tier": "T0"
+  }
+ ],
+ "meta": {
+  "n_primitives": 19,
+  "n_conditions": 14,
+  "n_invariants": 9,
+  "n_edges": 38,
+  "n_generated": 19,
+  "scope": "XAUUSD M15 2022-25",
+  "note": "exploratory knowledge; no validated alpha; generator PROPOSES, does not implement"
+ }
+}

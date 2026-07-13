@@ -1,5 +1,15 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-13 (g) — lab ONTOLOGY + knowledge graph + hypothesis generator
+- Built knowledge/ontology/: ONTOLOGY.md, INVARIANTS.md (9 invariants), RELATIONS.md (38 observational edges),
+  HYPOTHESIS_GENERATOR.md, KNOWLEDGE_GRAPH.json/.jsonl, GENERATED_HYPOTHESES.jsonl, CLAUDE_CODEX_REVIEW.md.
+- 42 nodes (19 primitives + 14 conditions + 9 invariants); graph-driven generator emitted **19 candidate
+  hypotheses** (11 alpha-candidates, 3 experiments, 2 beta-diagnostics, 3 mechanism-tests). Proposals only.
+- Codex inline review adopted: relations made OBSERVATIONAL (one-family evidence can't support causal edges);
+  P001-vs-P011 relabelled a matched-contrast; invariant wording softened; hypotheses tagged by kind; added
+  Codex's placebo/mechanism-invariance rule (F). CODEX FILESYSTEM REVIEW PENDING.
+- Read-only; engine + S1-S51 byte-frozen; no strategy implemented/validated; holdout SEALED; no FDR.
+
 ## Session 2026-07-13 (f) — knowledge/ base (behavioral primitives from S1-S51)
 - Built official `knowledge/` folder (read-only synthesis; engine + S1-S51 untouched): README, BEHAVIOR_REGISTRY
   (.md/.jsonl), MECHANISM_REGISTRY (copy), STRATEGY_EVIDENCE_MAP, NEGATIVE_EVIDENCE_REGISTRY, CONTRADICTION_REGISTRY
