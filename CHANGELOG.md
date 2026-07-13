@@ -1,5 +1,15 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-13 (f) — knowledge/ base (behavioral primitives from S1-S51)
+- Built official `knowledge/` folder (read-only synthesis; engine + S1-S51 untouched): README, BEHAVIOR_REGISTRY
+  (.md/.jsonl), MECHANISM_REGISTRY (copy), STRATEGY_EVIDENCE_MAP, NEGATIVE_EVIDENCE_REGISTRY, CONTRADICTION_REGISTRY
+  (10 contradictions), VALIDATION_STATUS, CLAUDE_CODEX_REVIEW, and primitives/ (13 files).
+- **19 behavioral primitives** distilled from the CEO's 23 candidates (5 merged): 6 SUPPORTED-EXPLORATORILY
+  (confirmed-sweep, failed-breakout-fade, opening-range, round-number, trend-efficiency, short-term-overreaction),
+  4 MIXED, 1 INCONCLUSIVE, 8 REPEATEDLY-NEGATIVE. Status never "VALIDATED".
+- Codex inline review (mapping/consistency): adopted P014→MIXED, P019 renamed (two subtypes), +4 contradictions
+  (C7-C10). CODEX FILESYSTEM REVIEW PENDING (stale sandbox). No strategy/engine change; holdout SEALED; no FDR.
+
 ## Session 2026-07-13 (e) — S21-S40 family implementation + Lab Knowledge System (branch family-implementation-s21-s40)
 - Implemented 14 new families (Tier A: S21,S23,S26,S38,S39,S40; Tier B: S22,S24,S25,S27,S28,S29,S30,S31) in
   `code/mstrat_ext.py`, reusing the FROZEN engine (mstrat.py byte-identical to 1bc0ffb). 328 hyps; 2 genuine
