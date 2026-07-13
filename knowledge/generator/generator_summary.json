@@ -1,0 +1,21 @@
+{
+ "n_generated": 54,
+ "kinds": {
+  "alpha-candidate": 38,
+  "experiment": 6,
+  "beta-diagnostic": 2,
+  "mechanism-test": 3,
+  "scope-test": 5
+ },
+ "operators": {
+  "O1_ingredient_transfer": 7,
+  "O2_stacked_selectivity": 24,
+  "O3_cross_level_type": 7,
+  "O4_contradiction_resolver": 6,
+  "O5_beta_deconfound": 2,
+  "O6_placebo": 3,
+  "O7_boundary_counterfactual": 5
+ },
+ "novelty_gate": "every candidate passed the S1-S51 signature novelty check; duplicates discarded",
+ "note": "architecture + logic + output only; NO backtest, NO implementation, NO validation"
+}

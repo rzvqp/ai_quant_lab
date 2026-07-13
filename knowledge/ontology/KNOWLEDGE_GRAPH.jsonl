@@ -1,0 +1,80 @@
+{"kind": "node", "id": "P001", "type": "primitive", "label": "Confirmed liquidity sweep", "polarity": "positive"}
+{"kind": "node", "id": "P002", "type": "primitive", "label": "Failed-breakout fade", "polarity": "positive"}
+{"kind": "node", "id": "P003", "type": "primitive", "label": "Opening-range momentum", "polarity": "positive"}
+{"kind": "node", "id": "P004", "type": "primitive", "label": "Round-number momentum", "polarity": "positive"}
+{"kind": "node", "id": "P005", "type": "primitive", "label": "Trend-efficiency continuation", "polarity": "positive-weak"}
+{"kind": "node", "id": "P006", "type": "primitive", "label": "Short-term overreaction", "polarity": "positive-weak"}
+{"kind": "node", "id": "P007", "type": "primitive", "label": "MTF alignment", "polarity": "mixed"}
+{"kind": "node", "id": "P008", "type": "primitive", "label": "Session transition", "polarity": "mixed"}
+{"kind": "node", "id": "P009", "type": "primitive", "label": "Streak persistence", "polarity": "inconclusive"}
+{"kind": "node", "id": "P010", "type": "primitive", "label": "Liquidity memory (levels)", "polarity": "mixed"}
+{"kind": "node", "id": "P011", "type": "primitive", "label": "Raw sweep (no confirm)", "polarity": "negative"}
+{"kind": "node", "id": "P012", "type": "primitive", "label": "Trend/pullback continuation", "polarity": "negative"}
+{"kind": "node", "id": "P013", "type": "primitive", "label": "Breakout/expansion chasing", "polarity": "negative"}
+{"kind": "node", "id": "P014", "type": "primitive", "label": "Value/VWAP reaction", "polarity": "mixed-negative"}
+{"kind": "node", "id": "P015", "type": "primitive", "label": "Calendar seasonality", "polarity": "overfit"}
+{"kind": "node", "id": "P016", "type": "primitive", "label": "Regime routing", "polarity": "negative"}
+{"kind": "node", "id": "P017", "type": "primitive", "label": "Intrabar pressure", "polarity": "negative"}
+{"kind": "node", "id": "P018", "type": "primitive", "label": "Momentum divergence", "polarity": "negative"}
+{"kind": "node", "id": "P019", "type": "primitive", "label": "Volume-derived signals", "polarity": "negative"}
+{"kind": "node", "id": "C_confirmation", "type": "condition", "label": "confirmation stage (displacement/close-back)", "effect": "HELPS", "evidence": "P001>P011"}
+{"kind": "node", "id": "C_efficiency", "type": "condition", "label": "trend-efficiency gate (clean trend only)", "effect": "HELPS", "evidence": "P005>P012"}
+{"kind": "node", "id": "C_psych_level", "type": "condition", "label": "psychological round level", "effect": "HELPS", "evidence": "P004 break>reject"}
+{"kind": "node", "id": "C_structural_level", "type": "condition", "label": "structural reference level (PDH/PDL/weekly)", "effect": "HELPS", "evidence": "P001/P002/P010"}
+{"kind": "node", "id": "C_extreme_return", "type": "condition", "label": "extreme realized short-term return", "effect": "HELPS", "evidence": "P006"}
+{"kind": "node", "id": "C_session_window", "type": "condition", "label": "session opening/auction window", "effect": "CONTEXT", "evidence": "P003/P008"}
+{"kind": "node", "id": "C_htf_alignment", "type": "condition", "label": "higher-timeframe trend alignment", "effect": "MIXED", "evidence": "P007 (beta-confounded)"}
+{"kind": "node", "id": "C_vwap_reference", "type": "condition", "label": "VWAP / value-area sigma reference", "effect": "WEAK", "evidence": "P014 (S8 exception)"}
+{"kind": "node", "id": "C_volume", "type": "condition", "label": "volume magnitude / participation", "effect": "NO-HELP", "evidence": "P019 (S41/S46 negative)"}
+{"kind": "node", "id": "C_divergence", "type": "condition", "label": "oscillator-price divergence", "effect": "NO-HELP", "evidence": "P018"}
+{"kind": "node", "id": "C_intrabar", "type": "condition", "label": "intrabar close-location pressure", "effect": "NO-HELP", "evidence": "P017"}
+{"kind": "node", "id": "C_regime_label", "type": "condition", "label": "regime classifier label (always-on)", "effect": "NO-HELP", "evidence": "P016"}
+{"kind": "node", "id": "C_calendar", "type": "condition", "label": "calendar/day-of-week/month window", "effect": "OVERFIT", "evidence": "P015 (OOS-refuted)"}
+{"kind": "node", "id": "C_cost_drag", "type": "condition", "label": "per-trade cost (~0.027R)", "effect": "DEGRADES", "evidence": "all high-frequency families"}
+{"kind": "node", "id": "I1", "type": "invariant", "label": "Selectivity Principle", "confidence": "high (methodological)"}
+{"kind": "node", "id": "I2", "type": "invariant", "label": "Confirmation Improved (reversals)", "confidence": "medium"}
+{"kind": "node", "id": "I3", "type": "invariant", "label": "Cost-Drag Hurdle", "confidence": "high (given fixed cost model)"}
+{"kind": "node", "id": "I4", "type": "invariant", "label": "Chasing Penalty (tested)", "confidence": "high (conditional pattern)"}
+{"kind": "node", "id": "I5", "type": "invariant", "label": "Structure-Reversion (tested) outperformed Continuation", "confidence": "medium"}
+{"kind": "node", "id": "I6", "type": "invariant", "label": "OOS-Selection Guard", "confidence": "high (methodological)"}
+{"kind": "node", "id": "I7", "type": "invariant", "label": "Beta Confound", "confidence": "high (as a caution)"}
+{"kind": "node", "id": "I8", "type": "invariant", "label": "Level-Type Association", "confidence": "medium"}
+{"kind": "node", "id": "I9", "type": "invariant", "label": "Ingredient Selectivity (no incremental edge detected)", "confidence": "medium"}
+{"kind": "edge", "source": "P001", "relation": "IMPROVED_BY", "target": "C_confirmation", "evidence": "S1 confirmed positive; S21 raw negative (matched contrast)", "confidence": "medium"}
+{"kind": "edge", "source": "P011", "relation": "ASSOCIATED_WITH_FAILURE_WITHOUT", "target": "C_confirmation", "evidence": "S21 all negative", "confidence": "medium"}
+{"kind": "edge", "source": "P001", "relation": "OUTPERFORMS_MATCHED_VARIANT", "target": "P011", "evidence": "sweep with vs without confirmation; NOTE confirmation also shifts entry/exposure (not a clean single factor) (C1)", "confidence": "medium"}
+{"kind": "edge", "source": "P005", "relation": "IMPROVED_BY", "target": "C_efficiency", "evidence": "S39 er>=0.5 positive; low-efficiency negative", "confidence": "low-medium"}
+{"kind": "edge", "source": "P012", "relation": "ASSOCIATED_WITH_FAILURE_WITHOUT", "target": "C_efficiency", "evidence": "S7/S10/S15/S38 negative", "confidence": "medium"}
+{"kind": "edge", "source": "P005", "relation": "OUTPERFORMS_MATCHED_VARIANT", "target": "P012", "evidence": "efficiency-gated vs generic continuation (C2)", "confidence": "low-medium"}
+{"kind": "edge", "source": "P004", "relation": "IMPROVED_BY", "target": "C_psych_level", "evidence": "S22 breakout positive; reject negative", "confidence": "low-medium"}
+{"kind": "edge", "source": "P004", "relation": "OUTPERFORMS_MATCHED_VARIANT", "target": "P013", "evidence": "round-number vs generic break (C4)", "confidence": "low-medium"}
+{"kind": "edge", "source": "P013", "relation": "ASSOCIATED_WITH_FAILURE_WITHOUT", "target": "C_psych_level", "evidence": "S3/S23 generic breakouts negative", "confidence": "medium"}
+{"kind": "edge", "source": "P006", "relation": "IMPROVED_BY", "target": "C_extreme_return", "evidence": "S42 fade of large 6-bar move positive (small n)", "confidence": "low"}
+{"kind": "edge", "source": "P006", "relation": "OUTPERFORMS_MATCHED_VARIANT", "target": "P014", "evidence": "return-ranked vs value-reference reversion (C5)", "confidence": "low"}
+{"kind": "edge", "source": "P002", "relation": "IMPROVED_BY", "target": "C_structural_level", "evidence": "S2 fade at prior-day level positive", "confidence": "low-medium"}
+{"kind": "edge", "source": "P003", "relation": "ASSOCIATED_WITH", "target": "C_session_window", "evidence": "S5 opening-range positive", "confidence": "low-medium"}
+{"kind": "edge", "source": "P003", "relation": "OUTPERFORMS_MATCHED_VARIANT", "target": "P013", "evidence": "opening-range vs generic break (C7)", "confidence": "low-medium"}
+{"kind": "edge", "source": "P007", "relation": "CONSISTENT_WITH_BETA", "target": "I7", "evidence": "S9/S20 long-momentum in bull; beta plausibly explains it (not proven)", "confidence": "medium"}
+{"kind": "edge", "source": "P007", "relation": "CORRELATED_WITH", "target": "P003", "evidence": "monthly-corr with the momentum cluster", "confidence": "medium"}
+{"kind": "edge", "source": "P014", "relation": "UNDERPERFORMED_WITH", "target": "C_vwap_reference", "evidence": "sigma-band VA a weak proxy; S8 marginal exception", "confidence": "low-medium"}
+{"kind": "edge", "source": "P019", "relation": "NO_INCREMENTAL_EDGE_DETECTED", "target": "C_volume", "evidence": "S41/S46 negative (needs ablation + more power)", "confidence": "low-medium"}
+{"kind": "edge", "source": "P018", "relation": "NO_INCREMENTAL_EDGE_DETECTED", "target": "C_divergence", "evidence": "S43 negative", "confidence": "low-medium"}
+{"kind": "edge", "source": "P017", "relation": "NO_INCREMENTAL_EDGE_DETECTED", "target": "C_intrabar", "evidence": "S44 negative (OHLC proxy; tick data untested)", "confidence": "low-medium"}
+{"kind": "edge", "source": "P016", "relation": "NO_INCREMENTAL_EDGE_DETECTED", "target": "C_regime_label", "evidence": "S40 always-on router negative", "confidence": "low-medium"}
+{"kind": "edge", "source": "P015", "relation": "FAILED_OOS", "target": "C_calendar", "evidence": "strong in-sample, OOS-refuted (S29/S31); calendar not proven causal", "confidence": "high"}
+{"kind": "edge", "source": "P011", "relation": "CONSISTENT_WITH", "target": "C_cost_drag", "evidence": "high-frequency + no edge", "confidence": "medium"}
+{"kind": "edge", "source": "P013", "relation": "CONSISTENT_WITH", "target": "C_cost_drag", "evidence": "frequent breakouts, cost-dominated", "confidence": "medium"}
+{"kind": "edge", "source": "P001", "relation": "SUPPORTS", "target": "I1", "evidence": "positive conditioned version", "confidence": "high"}
+{"kind": "edge", "source": "P004", "relation": "SUPPORTS", "target": "I1", "evidence": "positive conditioned version", "confidence": "high"}
+{"kind": "edge", "source": "P005", "relation": "SUPPORTS", "target": "I1", "evidence": "positive conditioned version", "confidence": "high"}
+{"kind": "edge", "source": "P006", "relation": "SUPPORTS", "target": "I1", "evidence": "positive conditioned version", "confidence": "high"}
+{"kind": "edge", "source": "P011", "relation": "SUPPORTS", "target": "I1", "evidence": "negative unconditioned version", "confidence": "high"}
+{"kind": "edge", "source": "P012", "relation": "SUPPORTS", "target": "I1", "evidence": "negative unconditioned version", "confidence": "high"}
+{"kind": "edge", "source": "P013", "relation": "SUPPORTS", "target": "I1", "evidence": "negative unconditioned version", "confidence": "high"}
+{"kind": "edge", "source": "P015", "relation": "SUPPORTS", "target": "I6", "evidence": "OOS-refuted calendar", "confidence": "high"}
+{"kind": "edge", "source": "P002", "relation": "SUPPORTS", "target": "I8", "evidence": "level-type dependence", "confidence": "medium"}
+{"kind": "edge", "source": "P004", "relation": "SUPPORTS", "target": "I8", "evidence": "level-type dependence", "confidence": "medium"}
+{"kind": "edge", "source": "P019", "relation": "SUPPORTS", "target": "I9", "evidence": "unhelpful ingredient", "confidence": "medium"}
+{"kind": "edge", "source": "P017", "relation": "SUPPORTS", "target": "I9", "evidence": "unhelpful ingredient", "confidence": "medium"}
+{"kind": "edge", "source": "P018", "relation": "SUPPORTS", "target": "I9", "evidence": "unhelpful ingredient", "confidence": "medium"}
+{"kind": "edge", "source": "P016", "relation": "SUPPORTS", "target": "I9", "evidence": "unhelpful ingredient", "confidence": "medium"}

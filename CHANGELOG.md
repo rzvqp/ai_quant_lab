@@ -1,12 +1,65 @@
 # CHANGELOG — AI Quant Research Lab
 
-## Session 2026-07-13 (c) — Matched-null remediation & validation (branch matched-null-validation)
-- Diagnosed old miscalibration: bare synthetic R-series compared to a real-price null (scale mismatch).
-- Rebuilt Test B on synthetic PRICE series routed through mstrat.simulate (no parallel backtester): code/synth_price.py, code/matched_null.py, docs/MATCHED_NULL_SPEC.md, docs/SYNTHETIC_PRICE_GENERATOR.md.
-- Adversarial battery exposed a 2nd defect: absolute-risk bootstrap → FPR 0.975 under drift; fixed by bootstrapping risk/ATR and rescaling to local ATR at the counterfactual entry (drift FPR 0.975→0.00).
-- Batteries all PASS: calibration (120 null series, KS p=0.11, FPR covers nominal), power (monotone, edge=1→~1.0), adversarial (12/12 scenarios), parity (observed R == MS.backtest exactly). Tests in tests/.
-- Pre-registered pilot on 10 real hypotheses: engine rejects losers (p 0.86–0.998), only S5 survives research+OOS (p 0.032/0.038); most research-significant edges fail OOS. NO strategy verdict; pilot p's are pre-FDR.
-- **ENGINE VERDICT A — MATCHED-NULL VALIDATED** (unstratified config). docs/MATCHED_NULL_VALIDATION.md. Global-FDR/walk-forward/Red Team/holdout remain CEO-gated. Not merged (isolated from strategy-development).
+## Session 2026-07-14 — Experiment Planner v1 (54 HGv1 -> 10-experiment falsifiable plan, no backtest)
+- Built knowledge/experiments/: EXPERIMENT_REGISTRY.jsonl/.md, HYPOTHESIS_DEDUPLICATION.md, EXPERIMENT_PRIORITY_MATRIX.md,
+  WAVE_1/2/3_SPEC.md, CLAUDE_CODEX_REVIEW.md; code/experiment_planner_v1.py (structural-valid + dedup + type + info-value).
+- Funnel: 54 hypotheses -> 54 structurally valid -> 52 after semantic dedup -> all T0 -> **10 selected** (2 mechanism,
+  2 contradiction, 2 beta, 2 placebo, 2 alpha) in 3 waves. Prioritized by INFORMATION VALUE (not expectancy/prior).
+- Codex inline: merged HGv1-044+004 into a 2x2 factorial (EXP-07); required explicit control/ablation arms per
+  experiment; shared matched-null + label-shuffle harness; hierarchical family-wise multiplicity plan (top risk).
+  CODEX FILESYSTEM REVIEW PENDING.
+- Read-only; engine + S1-S51 byte-frozen; nothing implemented/run; holdout SEALED; no FDR. Stop after planning.
+
+## Session 2026-07-13 (h) — Hypothesis Generator v1 (architecture + logic, no backtest)
+- Built knowledge/generator/: HYPOTHESIS_GENERATOR_V1.md (architecture), code/hypothesis_generator_v1.py (logic),
+  GENERATED_HYPOTHESES_v1.jsonl/.md (54 demo candidates), CLAUDE_CODEX_REVIEW.md, generator_summary.json.
+- Recombines ONLY existing KB/Ontology (primitives/conditions/invariants/contradictions) — no new primitives,
+  NO backtest. 7 operators (O1 transfer, O2 stacked-selectivity, O3 cross-level-type, O4 contradiction-resolver,
+  O5 beta-deconfound, O6 placebo, O7 boundary/counterfactual). Hard novelty gate vs S1-S51 signatures: every
+  candidate auto-states why-new / contradiction / mechanism / differs-from-all-S1-S51 + refinement-vs-genuinely-new.
+- Codex inline review adopted: observational novelty is necessary-not-sufficient (v2 semantic signature),
+  O2 anti-inflation guards encoded, added O7, prior->prior_plausibility (hidden from validators). CODEX FS REVIEW PENDING.
+- Read-only; engine + S1-S51 byte-frozen; nothing implemented/validated; holdout SEALED; no FDR.
+
+## Session 2026-07-13 (g) — lab ONTOLOGY + knowledge graph + hypothesis generator
+- Built knowledge/ontology/: ONTOLOGY.md, INVARIANTS.md (9 invariants), RELATIONS.md (38 observational edges),
+  HYPOTHESIS_GENERATOR.md, KNOWLEDGE_GRAPH.json/.jsonl, GENERATED_HYPOTHESES.jsonl, CLAUDE_CODEX_REVIEW.md.
+- 42 nodes (19 primitives + 14 conditions + 9 invariants); graph-driven generator emitted **19 candidate
+  hypotheses** (11 alpha-candidates, 3 experiments, 2 beta-diagnostics, 3 mechanism-tests). Proposals only.
+- Codex inline review adopted: relations made OBSERVATIONAL (one-family evidence can't support causal edges);
+  P001-vs-P011 relabelled a matched-contrast; invariant wording softened; hypotheses tagged by kind; added
+  Codex's placebo/mechanism-invariance rule (F). CODEX FILESYSTEM REVIEW PENDING.
+- Read-only; engine + S1-S51 byte-frozen; no strategy implemented/validated; holdout SEALED; no FDR.
+
+## Session 2026-07-13 (f) — knowledge/ base (behavioral primitives from S1-S51)
+- Built official `knowledge/` folder (read-only synthesis; engine + S1-S51 untouched): README, BEHAVIOR_REGISTRY
+  (.md/.jsonl), MECHANISM_REGISTRY (copy), STRATEGY_EVIDENCE_MAP, NEGATIVE_EVIDENCE_REGISTRY, CONTRADICTION_REGISTRY
+  (10 contradictions), VALIDATION_STATUS, CLAUDE_CODEX_REVIEW, and primitives/ (13 files).
+- **19 behavioral primitives** distilled from the CEO's 23 candidates (5 merged): 6 SUPPORTED-EXPLORATORILY
+  (confirmed-sweep, failed-breakout-fade, opening-range, round-number, trend-efficiency, short-term-overreaction),
+  4 MIXED, 1 INCONCLUSIVE, 8 REPEATEDLY-NEGATIVE. Status never "VALIDATED".
+- Codex inline review (mapping/consistency): adopted P014→MIXED, P019 renamed (two subtypes), +4 contradictions
+  (C7-C10). CODEX FILESYSTEM REVIEW PENDING (stale sandbox). No strategy/engine change; holdout SEALED; no FDR.
+
+## Session 2026-07-13 (e) — S21-S40 family implementation + Lab Knowledge System (branch family-implementation-s21-s40)
+- Implemented 14 new families (Tier A: S21,S23,S26,S38,S39,S40; Tier B: S22,S24,S25,S27,S28,S29,S30,S31) in
+  `code/mstrat_ext.py`, reusing the FROZEN engine (mstrat.py byte-identical to 1bc0ffb). 328 hyps; 2 genuine
+  positives with +OOS: **S22 (round-number momentum), S39 (trend-efficiency continuation)**. Others negative or
+  calendar-overfit (S29/S31 screen-RW but OOS-refuted). No optimization; definitional fixes only (pre-PnL).
+- **Lab Knowledge System** built (Claude + Codex inline collaboration): STRATEGY_REGISTRY (2300/375/139),
+  dedup 139 RW → 22 distinct, MECHANISM_REGISTRY (13 mechanisms), KNOWLEDGE_REGISTRY (5 falsifiable claims),
+  STRATEGY_PROFILES, TOP_STRATEGIES_SHORTLIST (~8 distinct), EXPLORATORY_PORTFOLIO_DIAGNOSTICS, CLAUDE_CODEX_REVIEW.
+- Codex consulted via compact inline prompts (TASKs 2-5 complete); its filesystem snapshot is STALE → CODEX
+  FILESYSTEM REVIEW PENDING. Shortlist for future matched-null→global-FDR: S5, S2, S1-short, S1-low/swing(prov),
+  one momentum rep, S22 (+ S1-low/pdh, S17-pwlow reserve). Calendar excluded (family-wise selection). Nothing
+  validated; holdout SEALED; no global-FDR. Not merged.
+
+## Session 2026-07-13 (c) — Matched-null remediation & validation (branch matched-null-validation, consolidated)
+- Diagnosed old miscalibration (bare synthetic R vs real-price null); rebuilt Test B on synthetic PRICE series
+  through mstrat.simulate. Adversarial battery exposed a 2nd defect (absolute-risk bootstrap → FPR 0.975 under
+  drift); fixed via risk/ATR rescaling (drift FPR 0.975→0.00). Calibration+power+adversarial+parity all PASS.
+- Pilot on 10 pre-registered real hyps: rejects losers; only S5 survives research+OOS; most fail OOS.
+  **ENGINE VERDICT A — MATCHED-NULL VALIDATED** (unstratified). docs/MATCHED_NULL_VALIDATION.md. Global-FDR/holdout CEO-gated.
 
 ## Session 2026-07-13 (b) — Portability fix + reproducibility test (CEO-approved, scope-limited)
 - **Git checkpoint:** folder was un-versioned → `git init` + baseline commit `85857234bad5172634e9c2b603e873976a204470` (pre-fix, 58 files). Added `.gitignore` (venv/, __pycache__/).
