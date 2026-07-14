@@ -1,5 +1,51 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-14 (Phase 6.4) — Scoring Engine v1 implemented, adversarially reviewed, READY
+- CEO approval granted; implemented the Scoring Engine production module against the frozen
+  `ai_trader/scoring_engine/*.md`/`SCORING_SCHEMA.json` specification — no redesign. 13 source
+  modules (pipeline, evidence binder, 8 per-signal components, conflict analyzer, aggregator,
+  assembler, ranker, output-collector validator, schema validation, public API facade, types,
+  config, exceptions), 199 tests, `mypy --strict` clean, 98% coverage. Full writeup:
+  `SCORING_ENGINE_VALIDATION_REPORT.md`.
+- **Independent adversarial review** (same technique that caught bugs in all three prior modules)
+  found **4 real bugs (2 CRITICAL, 1 HIGH, 1 MEDIUM)**, all fixed with regression tests: (1)
+  `pipeline.py`'s malformed-input guard only checked `as_of`/`symbol`/`strategy_id` truthiness, not
+  the required nested `context_ref`/`explanation` objects — a signal with either set to `None` slipped
+  past it and crashed the WHOLE containing batch with `AttributeError`, not just the one bad signal;
+  (2) the fail-safe reassembly path in `engine.py` never re-validated its own reassembled `INVALID`
+  score, and that reassembly copied identity fields straight from the same signal that caused the
+  original schema failure — a signal with a malformed `strategy_version` could still produce a
+  schema-invalid "fixed" score that got emitted anyway; (3) `components.py`'s `regime_alignment`
+  awarded a full match (1.0) when a contract's applicable-regime list was the wildcard `ANY`, instead
+  of the `0.5` neutral value `SCORING_MODEL.md` explicitly specifies for that case — an unintentional
+  inversion of the spec's literal wording; (4) the malformed-input guard also rejected `as_of == 0` as
+  invalid, but `0` is the Signal Engine's own documented sentinel for a missing-timestamp signal
+  (always paired with `state=INVALID`) — a legitimately-typed signal that should route through the
+  ordinary non-actionable-state path (`SKIPPED`), not be rejected as garbage input.
+- Fixes: `_is_malformed()` now checks `context_ref`/`explanation` presence instead of scalar-field
+  truthiness (fixing both the crash and the `as_of==0` misclassification together); `_finalize_one()`
+  re-validates its reassembled fallback and, if still invalid, falls back to a fully placeholder-based
+  score carrying no data from the offending signal; `regime_alignment()`'s `ANY`-applicable case no
+  longer short-circuits to a match, correctly falling through to the neutral default.
+- One additional design correction made proactively during implementation (via direct smoke testing,
+  before the formal adversarial review): `risk_penalty`'s wholly-missing-contract case originally
+  forced the worst-case value (1.0), which — combined with `historical_confidence` also going to 0 for
+  the same condition — collapsed `total_score` to exactly 0 for every evidence-missing signal
+  regardless of live signal quality, double-punishing the same underlying fact through two components.
+  Changed to a neutral 0.5, letting `historical_confidence` alone carry the honesty penalty.
+- Confirmed via the real Strategy Manager + real Signal Engine (`test_engine_integration.py`): every
+  real strategy's signal is currently `INVALID`/`CORRUPTED_OUTPUT` (Signal Engine's own documented,
+  unmigrated scope boundary) — the Scoring Engine degrades this to a classified `SKIP`/`INVALID` score
+  end-to-end, never crashes, and stays fully queryable. Also exercised a real, interesting fail-safe
+  case: for every real (quarantined) strategy, `find_strategy()` succeeds (`Lifecycle.INVALID`) while
+  `get_contract()` fails (`NotFound`) — the Evidence Binder correctly treats this partial lookup as
+  wholly evidence-missing, never a fabricated partial result.
+- **Verdict: Scoring Engine v1 = READY.** Does not self-authorize Risk Manager (Phase 6.5) — still
+  CEO-gated; work stopped immediately after the verdict per the CEO's explicit directive for this
+  task. No changes to Research Lab, Strategy Library, Strategy Interface, Market Scanner, Strategy
+  Manager, or Signal Engine. Full `ai_trader/` suite green: 758 tests, 61 source files, mypy --strict
+  clean, no regressions.
+
 ## Session 2026-07-14 (Phase 6.3) — Signal Engine v1 implemented, adversarially reviewed, READY
 - CEO approval granted; implemented the Signal Engine production module against the frozen
   `ai_trader/signal_engine/*.md`/`SIGNAL_SCHEMA.json`/`SIGNAL_EXPLANATION_SCHEMA.json` specification —
