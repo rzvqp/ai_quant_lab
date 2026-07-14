@@ -149,12 +149,31 @@ commit message.
 
 ---
 
-## 5. Current validation status — **BENCHMARK STILL RUNNING / ANOMALY, NOT RESOLVED**
+## 5. Current validation status — **LARGE-SCALE BENCHMARK FAILED / INCONCLUSIVE, NOT RESOLVED**
 
 The CEO's Phase 6.1 validation directive required: static audit (done), test-quality audit (done), schema
 validation audit (done), and a **large-scale end-to-end replay benchmark** with specific metrics. This last
-part is **INCOMPLETE** and the session is ending on a context-limit handoff mid-benchmark. Read this section
-carefully before doing anything else.
+part is **INCOMPLETE and its outcome is UNCONFIRMED** — read this section carefully before doing anything else,
+including the correction note immediately below (this section was revised after the initial version of this
+document turned out to describe the situation less precisely than it should have).
+
+> **Correction note (post-write):** the first version of this document, written while a large-scale run appeared
+> to still be executing, described a "confirmed super-linear scaling anomaly" based on watching one OS process's
+> CPU time climb across repeated `Get-Process` checks. Shortly after this document was first committed, the
+> background task-tracking system reported that the actual tracked benchmark invocation had **FAILED (exit code
+> 127)**, and a follow-up check found: (a) that OS process had already terminated, (b) `bench_output.log`
+> contained only the startup banner line and no results, ever, and (c) no python processes were running at all
+> anymore. **It is not established that the process being watched via `Get-Process` was even the same process as
+> the tracked, failed benchmark invocation** — several earlier foreground attempts at this same benchmark had
+> already hit the Bash tool's timeout (5, 6:40, and 9:50 minute foreground timeouts on smaller/larger size
+> attempts, before the run was moved to an explicit background invocation), and on Windows/Git-Bash a timed-out
+> foreground command does not reliably kill its child `python.exe` process — so the process being watched may
+> well have been an **orphan from one of those earlier timed-out attempts**, unrelated to the tracked background
+> task's own failure. **Net effect: there is currently NO reliable evidence of a super-linear scaling problem.**
+> There is only: (1) solid, linear, controlled data up to 1-year × 3-symbols (kept below, still trustworthy), and
+> (2) one or more benchmark invocations at 2-year × 3-symbol scale that did not produce a result, for a reason
+> that was never actually determined. Treat the "super-linear blowup" hypothesis from the first draft as
+> **retracted, pending real evidence** — do not carry it forward as an established fact.
 
 ### What IS confirmed (small/medium-scale, controlled, directly measured — trustworthy)
 Using a standalone benchmark harness (`bench_market_scanner.py`, written to the scratchpad directory, **not**
@@ -185,42 +204,46 @@ consistent with rolling windows filling toward their configured cap, not a red f
   behaving correctly in ad-hoc runs and in the dedicated integration tests (`test_scanner_integration.py`).
 
 ### What is NOT confirmed — the open problem
-A **2-year × 3-symbol** run (504 weekdays/symbol, ~217,000 total M15 contexts expected) was launched to
-extrapolate to genuinely large scale. **Extrapolating linearly from the 252-weekday×3-symbol measurement above
-(92.18s), this run should take roughly 180–220 seconds. It did not.** At last check before this handoff was
-written, the background process (PID 26844, started at 13:52:13) had consumed **2,355+ seconds of CPU time
-(39+ minutes) and was still running**, confirmed still actively computing (CPU time climbing between checks,
-not stalled) via `Get-Process`. This is **10–15x worse than the controlled measurement predicts** — a genuine,
-unexplained super-linear scaling anomaly that appears somewhere between 252 and 504 weekdays (or between 3 and
-some larger number of total events) that was **not root-caused** before this session ended.
+One or more **2-year × 3-symbol** run attempts (504 weekdays/symbol, ~217,000 total M15 contexts expected) were
+made to extrapolate to genuinely large scale, across several foreground and one explicit background invocation.
+**None produced a result.** The final, officially-tracked background attempt reported **status FAILED, exit code
+127** (a shell-level exit code, classically "command not found" — but given the surrounding confusion documented
+in the correction note above, do not assume this diagnosis without re-deriving it; it could equally reflect the
+task tracker losing/mis-attributing a detached process). Its output log (`bench_output.log`) contains only the
+startup banner and nothing else — no timing numbers, no error traceback, nothing actionable was ever captured.
 
-**Do NOT report this larger run's number as a benchmark result — it never finished. Do NOT estimate or
-extrapolate a "probably fine" number for it. This is an open, unresolved finding, not a completed measurement.**
+**Do NOT report any number from these attempts as a benchmark result. Do NOT assume a super-linear performance
+problem exists. Do NOT assume the scanner is fine at large scale either. Both are simply UNKNOWN right now.**
+The only honest, defensible statement is: **Market Scanner v1 is validated at up to ~72K contexts (1 year ×
+3 symbols, 92.18s, linear scaling) and UNVALIDATED beyond that**, for reasons that were never established.
 
 ### Exactly what the next session must do about this
-1. Check whether the background process (or the log file it was writing to) is still around; if the harness
-   script is gone, recreate it (the logic is fully described in this document's benchmark table above and in
-   §10 — regenerate synthetic weekday OHLCV bars for N symbols/years, aggregate to H1/H4/D1, feed through
-   `ingest_bar`/`advance_clock`/`build_context` in timestamp order, time it).
-2. **Root-cause the super-linear blowup** before declaring anything about large-scale performance. Suspects to
-   check first (none of these were verified — they are hypotheses, not findings):
-   - Whether `TimeframeWindow.bars()`'s `list(self._bars)` copy (called every cycle, once per tracked timeframe)
-     interacts badly with something at a much larger total-events count (e.g. GC generation-promotion overhead
-     from a very large `all_events` list held in memory for the whole run in the benchmark harness itself —
-     note this cost would be in the **harness**, not necessarily the scanner).
-   - Whether the benchmark harness's own O(total events) Python-level bookkeeping (building ~430K `RawBar`
-     objects up front, one giant list, one `.sort()` call) has a cost that doesn't show up until it's this large.
-   - Whether something inside `fastjsonschema`'s generated validator has non-linear behavior as window
-     `bars` arrays fill toward their 100-bar cap for ALL FOUR timeframes simultaneously for the first time only
-     at this larger scale (unlikely given the linear data up to 1 year, but not ruled out).
-   - Whether it is a `bench_market_scanner.py` harness bug (most likely, given it was hastily modified mid-session
-     to reduce redundant work) rather than a scanner defect at all.
-3. Once root-caused: if it's a genuine scanner defect, fix it (this would now be a 3rd critical finding) and
-   re-verify with tests+mypy+coverage. If it's a harness artifact, fix the harness and re-run cleanly.
-4. Produce the **final, complete audit report** (static review + test quality + schema validation + the large-
-   scale benchmark, this time with real numbers all the way through) and assign the **READY / NOT READY**
-   verdict the CEO required.
-5. **Only after an explicit READY verdict** may Strategy Manager implementation begin.
+1. **Start clean.** Do not resume/trust any leftover process, log file, or PID from the previous session — kill
+   anything still running under the name `python.exe` that looks related first (`Get-Process -Name python`), and
+   verify no orphans remain before starting a new attempt.
+2. **Recreate the benchmark harness from scratch**, capturing output robustly this time: write results
+   incrementally (flush after every print, or write partial results to a file periodically) so a crash or timeout
+   still leaves evidence of how far it got and what the last measurement was. The harness logic needed
+   (regenerate synthetic weekday OHLCV bars for N symbols/years, aggregate to H1/H4/D1, feed through
+   `ingest_bar`/`advance_clock`/`build_context` in timestamp order, time it) is fully described by this document's
+   confirmed benchmark table above; do not assume the original script (`bench_market_scanner.py`, written to the
+   scratchpad, not part of the repo) still exists or is trustworthy — re-verify or rewrite it.
+3. **Scale up gradually and incrementally**, re-confirming linearity at each step (e.g. 1yr×3sym [already done,
+   92s] → 1.5yr×3sym → 2yr×3sym), rather than jumping straight to the largest size again — this will localize
+   *where* (if anywhere) a problem appears, or prove there isn't one, instead of producing another all-or-nothing
+   multi-minute black box.
+4. Run any long attempt with a bounded, known timeout and **check on it periodically with real evidence**
+   (log file contents + `Get-Process` CPU time), and if it fails, capture the actual stderr/exit reason before
+   concluding anything about *why*.
+5. Once a genuinely large-scale (multi-year, multi-symbol) run either (a) completes with real numbers, or
+   (b) reveals a specific, root-caused defect — fix it if it's a real scanner defect (this would be a new critical
+   finding, fix + re-verify with tests+mypy+coverage exactly as done for the two fixes in §4), or note it as a
+   harness artifact if that's what it turns out to be.
+6. Produce the **final, complete audit report** (static review + test quality + schema validation, already done
+   and reusable from this document + the large-scale benchmark, this time with REAL numbers or a REAL, specific
+   root-caused explanation of why it can't run at that scale) and assign the **READY / NOT READY** verdict the
+   CEO required.
+7. **Only after an explicit READY verdict** may Strategy Manager implementation begin.
 
 ---
 
@@ -288,14 +311,18 @@ extrapolate a "probably fine" number for it. This is an open, unresolved finding
 **Do not start Strategy Manager implementation yet.** The immediate next task is to **finish validating Market
 Scanner v1**:
 
-1. Re-establish or rebuild the large-scale benchmark harness (see §5 for exactly what it must do and the
-   suspects to check first).
-2. **Root-cause** the super-linear slowdown observed at 2-year×3-symbol scale. Do not guess; measure. Use
-   `cProfile`/`tracemalloc` as was done earlier in this session (methodology is described in §5 and §10).
+1. Rebuild the large-scale benchmark harness from scratch, with robust incremental output (see §5's corrected
+   account — the prior attempt's failure mode was never actually diagnosed; do not assume a super-linear
+   slowdown exists, and do not assume it doesn't).
+2. Scale up gradually (1yr×3sym is already confirmed at 92.18s/linear; step up from there) and, if and when a
+   real slowdown or failure is reproduced with actual evidence in hand, **root-cause it** using
+   `cProfile`/`tracemalloc` (methodology demonstrated in §5/§10) rather than guessing.
 3. If it reveals a real scanner defect: fix it, re-run the full test suite (`pytest ai_trader/market_scanner/tests/
    -q`) and `mypy --strict --python-version 3.11 ai_trader/market_scanner --exclude 'tests/'` after the fix, and
    re-run the large-scale benchmark to confirm the fix actually resolves it (with real, honest numbers — see §9).
-4. If it's a harness artifact: fix the harness, re-run cleanly, and report the real numbers.
+4. If it's a harness artifact, or the run completes cleanly at large scale with no issue at all: report the real
+   numbers plainly — do not manufacture a problem that isn't there any more than the prior draft manufactured one
+   that couldn't be confirmed.
 5. Assemble the **complete final audit report**: static code review findings (already gathered — see §10 for the
    full list of verified MAJOR/MINOR items not yet fixed), test-quality findings (already gathered — see §10),
    schema-validation confirmation (already done), and the large-scale benchmark section (finish this).
@@ -363,10 +390,19 @@ Scanner v1**:
   Execution Engine's `ORDER_SCHEMA.json`) should use `fastjsonschema` from the start, not `jsonschema`, to avoid
   repeating this exact mistake. Keep `jsonschema` only for one-time startup schema-shape sanity checks
   (`Draft202012Validator.check_schema(schema)`), which is cheap and only runs once.
-- **A large-scale benchmark run (2 years × 3 symbols, ~217K expected contexts) exhibited severe super-linear
-  scaling that was NOT explained before the session ended** (§5). The controlled, smaller-scale data (up to
-  1 year × 3 symbols, 72,351 contexts in 92.18s) is solid and linear; something changes between that scale and
-  2×–4× larger. Do not assume this is "just more of the same" — investigate before reporting anything about it.
+- **A large-scale benchmark attempt (2 years × 3 symbols, ~217K expected contexts) never produced a result**
+  (§5) — the tracked background invocation reported FAILED (exit 127) and its log captured nothing beyond a
+  startup banner. **Do not confuse "a process I was watching via `Get-Process` kept accumulating CPU time" with
+  "the benchmark is running and slow."** Those turned out to likely be two different things: several earlier
+  foreground attempts at the same benchmark had already hit Bash-tool timeouts, and on Windows/Git-Bash a timed-
+  out foreground command does not reliably kill its child `python.exe` — so the process being watched was most
+  likely an **orphan from an earlier timed-out attempt**, not the tracked run at all, and its rising CPU time
+  proved nothing about the tracked run's actual behavior. **Lesson: when monitoring a long-running background
+  task, verify you are watching the SAME process the task tracker is tracking (e.g. capture and log the PID the
+  background tool itself reports, not a PID found later via a generic `tasklist`/`Get-Process` name search),
+  and prefer robust incremental output (flush-per-record logging) over "wait for one final print at the end" so
+  a crash still leaves usable evidence.** The controlled, smaller-scale data (up to 1 year × 3 symbols, 72,351
+  contexts in 92.18s) remains solid and linear and is not in question; only the larger scale is unknown.
 - **`cProfile` itself adds enormous overhead to code with millions of tiny function calls** (like a compiled
   jsonschema validator's `isinstance` checks) — a profiled run can be 3-5x slower than the real thing. Always
   cross-check profiler-derived conclusions against a real, unprofiled timing measurement (this session did both,
