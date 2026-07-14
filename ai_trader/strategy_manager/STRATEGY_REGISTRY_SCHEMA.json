@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/strategy_manager/STRATEGY_REGISTRY_SCHEMA.json",
+  "title": "Strategy Registry v1",
+  "description": "Internal registry the Strategy Manager maintains: one entry per discovered strategy plus indices, the aggregated context specification, and version/health bookkeeping. Descriptive schema for the registry OBJECT (design artifact); no executable logic. Spec: STRATEGY_MANAGER_ARCHITECTURE.md + STRATEGY_MANAGER_STATE_MACHINE.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["registry_version", "manager_version", "supported", "generated_at", "entries", "indices", "aggregated_context", "health_summary"],
+  "properties": {
+    "registry_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+    "manager_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "supported": {
+      "type": "object", "additionalProperties": false,
+      "required": ["interface_major", "runtime_api_major", "feature_dictionary_major"],
+      "properties": {
+        "interface_major": { "type": "integer", "minimum": 1 },
+        "runtime_api_major": { "type": "integer", "minimum": 1 },
+        "feature_dictionary_major": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "generated_at": { "type": "integer", "description": "UTC epoch seconds of the last (re)load" },
+    "entries": {
+      "type": "array",
+      "description": "one RegistryEntry per discovered strategy (including quarantined ones)",
+      "items": { "$ref": "#/$defs/RegistryEntry" }
+    },
+    "indices": {
+      "type": "object", "additionalProperties": false,
+      "required": ["by_id", "by_lifecycle", "by_health", "by_symbol", "by_required_field", "active"],
+      "properties": {
+        "by_id": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 }, "description": "id -> entries[] index" },
+        "by_lifecycle": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } }, "description": "lifecycle state -> [id]" },
+        "by_health": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "by_symbol": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "by_required_field": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } }, "description": "feature field -> [id] needing it" },
+        "active": { "type": "array", "items": { "type": "string", "pattern": "^S\\d+$" }, "description": "ids in the live active set" }
+      }
+    },
+    "aggregated_context": { "$ref": "#/$defs/AggregatedContext" },
+    "health_summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["overall", "counts", "total", "active_count"],
+      "properties": {
+        "overall": { "type": "string", "enum": ["OK", "DEGRADED", "FAILED"] },
+        "total": { "type": "integer", "minimum": 0 },
+        "active_count": { "type": "integer", "minimum": 0 },
+        "counts": {
+          "type": "object", "additionalProperties": false,
+          "description": "count per health state",
+          "properties": {
+            "LOADED": { "type": "integer", "minimum": 0 },
+            "DISABLED": { "type": "integer", "minimum": 0 },
+            "INVALID": { "type": "integer", "minimum": 0 },
+            "INCOMPATIBLE": { "type": "integer", "minimum": 0 },
+            "DUPLICATE": { "type": "integer", "minimum": 0 },
+            "DEPRECATED": { "type": "integer", "minimum": 0 },
+            "STALE": { "type": "integer", "minimum": 0 },
+            "MISSING_DEPENDENCY": { "type": "integer", "minimum": 0 },
+            "CORRUPTED": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Lifecycle": {
+      "type": "string",
+      "enum": ["NOT_IMPLEMENTED", "INVALID", "EXPERIMENTAL", "EXPLORATORY", "CANDIDATE", "VALIDATED", "PROMOTED", "DISABLED", "RETIRED"]
+    },
+    "Health": {
+      "type": "string",
+      "enum": ["LOADED", "DISABLED", "INVALID", "INCOMPATIBLE", "DUPLICATE", "DEPRECATED", "STALE", "MISSING_DEPENDENCY", "CORRUPTED"]
+    },
+    "RegistryEntry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "slug", "source_path", "lifecycle", "health", "loaded", "contract_ref", "compatibility"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^S\\d+$" },
+        "slug": { "type": "string" },
+        "source_path": { "type": "string", "description": "Library path of the contract (read-only)" },
+        "lifecycle": { "$ref": "#/$defs/Lifecycle" },
+        "health": { "$ref": "#/$defs/Health" },
+        "loaded": { "type": "boolean", "description": "true if a valid contract was parsed (even if not active)" },
+        "active": { "type": "boolean", "description": "in the live active set" },
+        "contract_ref": {
+          "type": "object", "additionalProperties": false, "required": ["identity_version", "interface_version"],
+          "properties": {
+            "identity_version": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+            "interface_version": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+            "content_hash": { "type": ["string", "null"], "description": "hash of the contract file for change detection" }
+          }
+        },
+        "compatibility": {
+          "type": "object", "additionalProperties": false,
+          "required": ["compatible", "schema_valid", "interface_ok", "runtime_ok", "context_ok"],
+          "properties": {
+            "compatible": { "type": "boolean" },
+            "schema_valid": { "type": "boolean" },
+            "interface_ok": { "type": "boolean" },
+            "runtime_ok": { "type": "boolean" },
+            "context_ok": { "type": "boolean" },
+            "deprecated_fields": { "type": ["array", "null"], "items": { "type": "string" } },
+            "reasons": { "type": ["array", "null"], "items": { "type": "string" }, "description": "why incompatible/invalid, if so" }
+          }
+        },
+        "required_context": { "oneOf": [ { "$ref": "#/$defs/RequiredContext" }, { "type": "null" } ] },
+        "last_review": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "errors": { "type": ["array", "null"], "items": { "type": "string" } }
+      }
+    },
+    "RequiredContext": {
+      "type": "object", "additionalProperties": false,
+      "required": ["timeframes", "fields_by_timeframe", "lookback_by_timeframe", "symbols"],
+      "properties": {
+        "timeframes": { "type": "array", "items": { "type": "string" } },
+        "fields_by_timeframe": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "lookback_by_timeframe": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "symbols": { "type": "array", "items": { "type": "string" } },
+        "optional_fields_by_timeframe": { "type": ["object", "null"], "additionalProperties": { "type": "array", "items": { "type": "string" } } }
+      }
+    },
+    "AggregatedContext": {
+      "type": "object", "additionalProperties": false,
+      "description": "UNION(required_context()) over ACTIVE strategies -> the Market Scanner specification.",
+      "required": ["timeframes", "required_fields_by_timeframe", "lookback_by_timeframe", "symbols", "feature_dictionary_major", "interface_version", "contributor_ids"],
+      "properties": {
+        "timeframes": { "type": "array", "items": { "type": "string" } },
+        "required_fields_by_timeframe": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "optional_fields_by_timeframe": { "type": ["object", "null"], "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "lookback_by_timeframe": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "symbols": { "type": "array", "items": { "type": "string" } },
+        "warmup_bars": { "type": ["integer", "null"], "minimum": 0 },
+        "feature_dictionary_major": { "type": "integer", "minimum": 1 },
+        "interface_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "contributor_ids": { "type": "array", "items": { "type": "string", "pattern": "^S\\d+$" }, "description": "active strategy ids that shaped this spec" }
+      }
+    }
+  }
+}
