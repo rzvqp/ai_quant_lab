@@ -1,5 +1,49 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 (Phase 6.5) — Risk Manager v1 implemented, adversarially reviewed, READY
+- CEO approval granted; implemented the Risk Manager production module against the frozen
+  `ai_trader/risk_manager/*.md`/`RISK_SCHEMA.json` specification — no redesign. 13 source modules
+  (pre-trade filters, portfolio limits, loss/drawdown guards + cooldowns, position sizer, constraint
+  builder, the fixed 9-stage per-opportunity pipeline, decision assembler, output-collector validator,
+  schema validation, public API facade, types, config, exceptions), 209 tests, `mypy --strict` clean,
+  99% coverage (`engine.py` itself 100%). Full writeup: `RISK_MANAGER_VALIDATION_REPORT.md`.
+- **Independent adversarial review** (same technique that caught bugs in all four prior modules) found
+  **8 real issues (2 CRITICAL, 1 HIGH, 3 MEDIUM, 2 LOW)**, all fixed with regression tests: (1) no
+  exception safety net anywhere in the pipeline call chain — a runtime-malformed `OpportunityScore`
+  field (e.g. `total_score=None`) could crash the WHOLE `evaluate()` batch instead of degrading to one
+  classified `DENY`; (2) `evaluate()`'s `PORTFOLIO_UNAVAILABLE` branch bypassed the decision-validation/
+  reassembly path entirely, unlike the normal per-opportunity loop; (3) `POSITION_SIZING.md`'s
+  correlation-group sub-budget (trades sharing a correlation group must share a smaller, deterministic
+  slice of the aggregate exposure cap) was never implemented — only the aggregate cap was enforced; (4)
+  `allow_trade()`'s `portfolio_impact` for its own ALLOW didn't reflect its own effect, inconsistent
+  with `evaluate()`'s behavior for the identical opportunity; (5) `health()`'s DEGRADED status never
+  cleared after a stale/missing portfolio was followed by a fresh, valid one, contradicting the
+  documented recovery behavior; (6) a module docstring inaccurately implied a sizing-time clamp applies
+  to leverage/overnight limits, when the spec only defines that mechanism for exposure (documentation-
+  only, no functional gap); (7) the fail-safe fallback decision hardcoded `engine_state=READY`
+  regardless of the actual global state, producing internally-inconsistent output while
+  SUSPENDED/EMERGENCY_STOP; (8) the pre-trade filter chain checked data-quality FIRST instead of LAST,
+  contradicting the policy document's own table order and changing which reason code surfaces when
+  multiple filters fail together.
+- Fixes: a new `_evaluate_one()` helper in `engine.py` wraps the pipeline call + portfolio update +
+  decision finalization in `try/except Exception`, reused by BOTH `evaluate()`'s batch loop and
+  `allow_trade()`'s single-opportunity path (closing findings #1 and #4 together); the
+  `PORTFOLIO_UNAVAILABLE` branch now routes through the same validated path (#2); `sizing.py` now
+  clamps to `min(aggregate_remaining, group_remaining)` where `group_budget = max_exposure_pct /
+  max_correlated` (#3); `evaluate()` clears portfolio-availability degraded reasons on a fresh,
+  non-stale portfolio (#5); `limits.py`'s docstring corrected (#6); `assemble_invalid_decision()` takes
+  and threads through the actual `engine_state` (#7); `filters.py`'s fixed chain reordered to Volatility
+  → Spread → Liquidity → News → Data-quality → Weekend → Gap (#8).
+- One additional test-design issue found and fixed during the module's own test-writing pass (before
+  the formal review): tuning `signal_strength` alone cannot reliably produce a below-floor `total_score`
+  through the real Scoring Engine (its `EVIDENCE_MISSING` fallback defaults to a neutral 0.5, not 0) —
+  resolved with a dedicated `make_below_floor_opportunity()` fixture that forces the needed fields
+  directly instead of relying on that cross-engine arithmetic coincidence.
+- Confirmed via the real Scoring Engine (`test_engine_integration.py`): the full pipeline from a real
+  `OpportunityScore` through to a validated `RiskDecision` works end-to-end, deterministically, with no
+  regressions in Market Scanner, Strategy Manager, Signal Engine, or Scoring Engine (full `ai_trader/`
+  suite: 967 tests passing).
+
 ## Session 2026-07-14 (Phase 6.4) — Scoring Engine v1 implemented, adversarially reviewed, READY
 - CEO approval granted; implemented the Scoring Engine production module against the frozen
   `ai_trader/scoring_engine/*.md`/`SCORING_SCHEMA.json` specification — no redesign. 13 source
