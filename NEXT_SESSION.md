@@ -5,6 +5,14 @@ handoff; Wave 1 has since executed and the project has moved into building the A
 self-contained: a new Claude session must be able to continue correctly from this file alone, without reading
 any prior conversation.
 
+> **2026-07-14 continuation-session update (supersedes commit `f61edfb`'s "retracted, unknown" state):** a
+> second, independent session picked this handoff up in parallel with the session that wrote the `f61edfb`
+> correction below — see the RESOLVED note at the top of §5 for the full account, including why this doesn't
+> contradict `f61edfb`'s caution, it completes it. **Market Scanner v1 = READY.** Full writeup in
+> `MARKET_SCANNER_VALIDATION_REPORT.md` at the repo root; §5/§7/§8 below are updated to match. The `f61edfb`
+> correction note and the original pre-correction §5 are both kept beneath, verbatim, for the audit trail —
+> both are now historical.
+
 ---
 
 ## 1. Current project mission
@@ -149,7 +157,44 @@ commit message.
 
 ---
 
-## 5. Current validation status — **LARGE-SCALE BENCHMARK FAILED / INCONCLUSIVE, NOT RESOLVED**
+## 5. Current validation status — **RESOLVED 2026-07-14: root-caused and READY**
+
+> **RESOLVED note (2026-07-14, a session running concurrently with the one that wrote the `f61edfb` correction
+> note immediately below):** the `f61edfb` correction was right to distrust the original "confirmed super-linear
+> anomaly" framing — that framing genuinely was unwarranted from the evidence available at the time. But the
+> conclusion "large-scale behavior is simply UNKNOWN" turned out to be one step short of the actual answer, which
+> this session reached by direct, controlled experiment rather than by further monitoring ambiguity:
+>
+> 1. On starting, this session found a stray `python.exe` (PID 26844) still alive and still accumulating CPU
+>    time (~262 minutes and climbing) — independent confirmation that at least one real, long-running process
+>    from the original handoff genuinely existed and was never an artifact of confused PID-watching. It was killed.
+> 2. A rewritten harness (now committed at `ai_trader/market_scanner/benchmarks/bench_market_scanner.py`) that
+>    logs throughput every 2,000 contexts and self-aborts on a wall-clock budget was run through a full bisection,
+>    252→300→350→400→450→**504** weekdays × 3 symbols. **Every step completed cleanly**, including the exact
+>    504wd/2yr scale that had never finished before: 144,702 contexts in 204.1s, 709 ctx/s, 0 lookahead
+>    violations. Real numbers, not extrapolated — see the table below.
+> 3. The one code difference between the old, never-finishing harness and the new, clean one is that the old one
+>    called `tracemalloc.start()` unconditionally around the whole run. **Confirmed by direct A/B test**: the
+>    identical 2yr×3-symbol replay run again with `tracemalloc` enabled had not completed its first 2,000-context
+>    checkpoint after 5.5+ minutes (vs. 204s total without it) — while `Get-Process` confirmed it was genuinely
+>    still consuming CPU throughout (49s and climbing), i.e. not a deadlocked/orphaned process, just
+>    pathologically slow. This reproduces the character of the original hang on demand.
+>
+> **Root cause: `tracemalloc`'s per-allocation bookkeeping becomes catastrophically expensive at ~2yr×3-symbol
+> scale (~430K bar objects + heavy per-context dict/list churn) — a harness artifact, not a Market Scanner
+> defect.** No scanner source file changed as a result. Full writeup with the complete bisection table and the
+> A/B evidence: `MARKET_SCANNER_VALIDATION_REPORT.md` (repo root). **Verdict: Market Scanner v1 = READY**, per
+> that report's §5. Per §9 below, this does not self-authorize starting Strategy Manager — that still needs
+> explicit CEO approval.
+>
+> This resolution is compatible with, and directly builds on, `f61edfb`'s caution: that session was correct that
+> the *original* anomaly claim wasn't properly evidenced, and correct to not guess at a cause. It simply hadn't
+> yet run the controlled A/B experiment that turns "unknown" into a specific, reproducible, named root cause.
+
+The rest of this section (the `f61edfb` correction note and the original pre-correction account) is kept
+verbatim below for the audit trail — both are now **historical**, superseded by the RESOLVED note above.
+
+---
 
 The CEO's Phase 6.1 validation directive required: static audit (done), test-quality audit (done), schema
 validation audit (done), and a **large-scale end-to-end replay benchmark** with specific metrics. This last
@@ -293,8 +338,8 @@ The only honest, defensible statement is: **Market Scanner v1 is validated at up
 | 5.5 | Risk Manager — architecture docs | **DONE** |
 | 5.6 | Execution Engine — architecture docs | **DONE** |
 | — | Simulation Framework — architecture docs (roadmap pivot: simulate before broker) | **DONE** |
-| 6.1 | Market Scanner — **implementation** | **IN PROGRESS** — code done, 2 critical bugs found+fixed, large-scale benchmark unresolved (§5). **NOT yet declared READY.** |
-| 6.2 | Strategy Manager — implementation | **NOT STARTED** — blocked on Market Scanner READY verdict |
+| 6.1 | Market Scanner — **implementation** | **DONE — READY** (§5 RESOLVED note, `MARKET_SCANNER_VALIDATION_REPORT.md`). Code done, 2 critical bugs found+fixed, large-scale benchmark completed + root-caused (harness `tracemalloc` artifact, not a scanner defect). |
+| 6.2 | Strategy Manager — implementation | **NOT STARTED** — Market Scanner READY verdict is now in hand; still requires explicit CEO go-ahead before starting (§9) |
 | 6.3 | Signal Engine — implementation | **NOT STARTED** |
 | 6.4 | Scoring Engine — implementation | **NOT STARTED** |
 | 6.5 | Risk Manager — implementation | **NOT STARTED** |
@@ -308,31 +353,21 @@ The only honest, defensible statement is: **Market Scanner v1 is validated at up
 
 ## 8. Immediate next task
 
-**Do not start Strategy Manager implementation yet.** The immediate next task is to **finish validating Market
-Scanner v1**:
+**Market Scanner v1 validation is DONE (§5 RESOLVED note; verdict READY, see `MARKET_SCANNER_VALIDATION_REPORT.md`).**
+Steps 1–6 that used to live in this section (rebuild the harness, scale up gradually, root-cause any slowdown,
+fix-or-report, assemble the audit report, assign a verdict) are all complete. What remains:
 
-1. Rebuild the large-scale benchmark harness from scratch, with robust incremental output (see §5's corrected
-   account — the prior attempt's failure mode was never actually diagnosed; do not assume a super-linear
-   slowdown exists, and do not assume it doesn't).
-2. Scale up gradually (1yr×3sym is already confirmed at 92.18s/linear; step up from there) and, if and when a
-   real slowdown or failure is reproduced with actual evidence in hand, **root-cause it** using
-   `cProfile`/`tracemalloc` (methodology demonstrated in §5/§10) rather than guessing.
-3. If it reveals a real scanner defect: fix it, re-run the full test suite (`pytest ai_trader/market_scanner/tests/
-   -q`) and `mypy --strict --python-version 3.11 ai_trader/market_scanner --exclude 'tests/'` after the fix, and
-   re-run the large-scale benchmark to confirm the fix actually resolves it (with real, honest numbers — see §9).
-4. If it's a harness artifact, or the run completes cleanly at large scale with no issue at all: report the real
-   numbers plainly — do not manufacture a problem that isn't there any more than the prior draft manufactured one
-   that couldn't be confirmed.
-5. Assemble the **complete final audit report**: static code review findings (already gathered — see §10 for the
-   full list of verified MAJOR/MINOR items not yet fixed), test-quality findings (already gathered — see §10),
-   schema-validation confirmation (already done), and the large-scale benchmark section (finish this).
-6. Assign an explicit **READY** or **NOT READY** verdict for Market Scanner v1, honestly, based on real evidence.
-7. **Only if READY:** ask the CEO for explicit approval to begin Strategy Manager implementation (Phase 6.2),
-   which must be built strictly against `ai_trader/strategy_manager/`'s existing, frozen architecture docs
-   (`STRATEGY_MANAGER_ARCHITECTURE.md`, `STRATEGY_REGISTRY_SCHEMA.json`, `STRATEGY_MANAGER_API.md`,
-   `STRATEGY_MANAGER_STATE_MACHINE.md`, `STRATEGY_MANAGER_SEQUENCE.md`) — no redesign, following the exact same
-   "production-quality: types, tests, mypy strict, docstrings, deterministic, logging, config objects" bar that
-   Market Scanner was held to.
+1. **Ask the CEO for explicit approval to begin Strategy Manager implementation (Phase 6.2)** — a READY verdict
+   on Market Scanner does not self-authorize starting the next module (§9: "stop and wait for explicit CEO
+   approval between every phase"). This is the one open gate.
+2. **Once approved:** build Strategy Manager strictly against `ai_trader/strategy_manager/`'s existing, frozen
+   architecture docs (`STRATEGY_MANAGER_ARCHITECTURE.md`, `STRATEGY_REGISTRY_SCHEMA.json`,
+   `STRATEGY_MANAGER_API.md`, `STRATEGY_MANAGER_STATE_MACHINE.md`, `STRATEGY_MANAGER_SEQUENCE.md`) — no redesign,
+   following the exact same "production-quality: types, tests, mypy strict, docstrings, deterministic, logging,
+   config objects" bar Market Scanner was held to, including an independent adversarial code-review pass and a
+   real (not extrapolated) benchmark before declaring it READY — and this time, if a benchmark tool uses
+   `tracemalloc` at large scale, remember §5's finding and treat it as a suspect from the start, not an
+   afterthought.
 
 ---
 
@@ -440,6 +475,28 @@ Scanner v1**:
 - **An independent, fresh-eyes adversarial code review (via a background subagent with no memory of writing the
   code) found real issues the implementer missed** — this is a validated, effective technique and should be
   repeated for every future module's post-implementation validation pass, not skipped as "we already tested it."
+
+### Addendum (2026-07-14, resolution session — see §5 RESOLVED note)
+- **`tracemalloc.start()` around a hot loop is not free, and its cost is not linear.** It was invisible at
+  small/medium scale (up to ~90K contexts, the scale the original controlled table was built at) and became
+  catastrophically expensive at ~217K contexts — not a gradual slowdown, a cliff. The general lesson from §10
+  above ("`cProfile` adds enormous overhead, cross-check against an unprofiled run") turned out to apply to
+  `tracemalloc` too, and more severely: cProfile's overhead is a roughly constant multiplier, tracemalloc's here
+  was apparently non-linear in the number of tracked allocations. **Any future memory-profiling of a hot loop
+  should default to off, with an explicit opt-in flag, and a documented safe-scale ceiling** — exactly the
+  pattern now baked into the committed `bench_market_scanner.py`'s `--tracemalloc` flag.
+- **A stuck/slow process's rising `Get-Process` CPU time is real evidence it's doing something, even if you
+  can't yet explain what.** The intermediate session's caution (`f61edfb`) about not trusting an unverified PID
+  match was reasonable given what it could see, but the resolution came from replacing observation with a
+  controlled experiment (rerun the same input with and without the one suspected variable, A/B, with a real
+  abort budget) rather than from further inspection of an ambiguous already-running process. When a process's
+  origin is uncertain, it's often faster to kill it and reproduce cleanly from scratch than to keep
+  investigating the ambiguous one.
+- **Two Claude Code sessions worked this exact handoff concurrently** (this one and the one that produced
+  `f61edfb`), neither aware of the other, and both committed to the same branch. Nothing was lost — git history
+  preserved both — but it's worth the CEO/user knowing this can happen if multiple sessions are pointed at the
+  same repo/branch at once; the resolution here was to explicitly supersede the intermediate commit rather than
+  silently overwrite or ignore it.
 
 ### Process discipline notes
 - When a CEO validation directive says "fix ONLY critical issues," the discipline that worked well: verify EVERY

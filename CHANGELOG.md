@@ -1,5 +1,22 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-14 (resolution) — Market Scanner v1 large-scale benchmark: root-caused, READY
+- Resolved the benchmark left incomplete at the `ai-trader-implementation` handoff (commit `14bef43`) and the
+  further "retracted, unknown" correction committed concurrently by a second session (`f61edfb`) — see
+  NEXT_SESSION.md §5's RESOLVED note and `MARKET_SCANNER_VALIDATION_REPORT.md` for the full account.
+- **Root cause found by direct A/B experiment**: `tracemalloc.start()`, called unconditionally around the old
+  benchmark's full run, becomes catastrophically slow at ~2yr x 3-symbol scale (~217K contexts) — confirmed by
+  re-running the identical replay with and without it (204s complete vs. >5.5min to not even finish the first
+  2,000-context checkpoint). Harness artifact, not a Market Scanner defect; no scanner source changed.
+- Full bisection (252/300/350/400/450/504 weekdays x 3 symbols) completed cleanly at every step with real,
+  reproducible numbers (204.1s / 709 ctx/s / 0 lookahead violations at the full 2yr scale) using a new,
+  instrumented, self-limiting harness now **committed** at `ai_trader/market_scanner/benchmarks/` (previously
+  scratchpad-only, lost between sessions). `mypy --strict` clean across all 20 source files; 127/127 tests;
+  97% coverage — all reproduced on a freshly-created venv (the original was in an ephemeral Temp dir and gone).
+- **Verdict: Market Scanner v1 = READY.** Does not self-authorize Strategy Manager (Phase 6.2) — still CEO-gated.
+- Housekeeping: killed a stale orphaned benchmark process left running since the original handoff (PID 26844,
+  ~262 minutes CPU time and climbing when found).
+
 ## Session 2026-07-14 (close) — OFFICIAL SESSION CLOSE PRE-WAVE1 (consolidation)
 - Consolidated master + matched-null-validation + family-implementation-s21-s40 + strategy-development into ONE
   official branch **research-main**. Engine byte-identical across all branches (zero code conflict); only CHANGELOG
