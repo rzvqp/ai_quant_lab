@@ -1,5 +1,40 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-14 (Phase 6.2) — Strategy Manager v1 implemented, adversarially reviewed, READY
+- CEO approval granted; implemented the Strategy Manager production module against the frozen
+  `ai_trader/strategy_manager/*.md`/`STRATEGY_REGISTRY_SCHEMA.json` specification and the frozen
+  `knowledge/interface/strategy_contract.v1.schema.json` contract — no redesign. 16 source modules
+  (loader, compatibility checker, registry, lifecycle controller, context aggregator, health monitor,
+  public API facade, typed contract mirror, schema validation x2, config, exceptions, handle,
+  required_context), 251 tests, `mypy --strict` clean, 99% coverage. Full writeup:
+  `STRATEGY_MANAGER_VALIDATION_REPORT.md`.
+- **Independent adversarial review** (same technique that caught 2 critical Market Scanner bugs) found
+  **6 real bugs**, all fixed and regression-tested: (1) `reload()` silently cleared an operator's
+  `DISABLED` kill-switch on any unrelated content change; (2) `MISSING_DEPENDENCY` was reported as
+  health but never actually enforced at `activate()` time, and dependents weren't re-evaluated when a
+  dependency deactivated; (3) `reload_transition()` checked compatibility before `NOT_IMPLEMENTED`
+  status, opposite of `initial_lifecycle()`'s order, misclassifying stubs; (4)
+  `compute_required_context()` silently collapsed multiple `required_data` entries sharing a
+  timeframe, dropping fields compatibility had already validated; (5) `auto_admit_min_maturity` only
+  applied to brand-new strategies, never an existing one whose reloaded contract cleared the bar; (6)
+  `retire()` rejected `INVALID`/`NOT_IMPLEMENTED` sources though the transition table says "from: any".
+- **Confirmed, documented, pre-existing gap** (not a Strategy Manager defect): the real
+  `knowledge/strategies/*/strategy.json` files are "v0 seed" shape and do not validate against the
+  frozen v1 contract schema (already flagged in `STRATEGY_INTERFACE_v1.md` §7 as a separate,
+  CEO-gated migration task). Pointed at the real Library, the Manager correctly discovers all 51
+  strategies and quarantines every one as `INVALID`, reaching a fully queryable `READY` state with an
+  empty active set — the documented fail-safe design working as intended. A dedicated integration test
+  asserts this exact outcome as a tripwire against silently regressing once that migration eventually
+  happens.
+- `StrategyHandle.api` deliberately implements only `required_context()` (the one Strategy API method
+  that's a pure function of the contract); the six behavioral methods
+  (`detect`/`generate_signal`/`get_score`/`can_trade`/`can_open_position`/`explain_signal`/`health`)
+  raise a typed `StrategyApiNotImplementedError` — that logic requires per-strategy rule evaluation
+  that doesn't exist anywhere in this repo and belongs to the Signal Engine (Phase 6.3, not started).
+- **Verdict: Strategy Manager v1 = READY.** Does not self-authorize Signal Engine (Phase 6.3) — still
+  CEO-gated. No changes to Research Lab, Wave 1, Strategy Library, Strategy Interface, or Market
+  Scanner (confirmed via full combined test suite + mypy — 378 tests, 36 files, zero regressions).
+
 ## Session 2026-07-14 (resolution) — Market Scanner v1 large-scale benchmark: root-caused, READY
 - Resolved the benchmark left incomplete at the `ai-trader-implementation` handoff (commit `14bef43`) and the
   further "retracted, unknown" correction committed concurrently by a second session (`f61edfb`) — see

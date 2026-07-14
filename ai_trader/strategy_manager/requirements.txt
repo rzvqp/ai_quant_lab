@@ -1,0 +1,10 @@
+# Strategy Manager v1 runtime dependencies. Own requirements file (independent of the Research
+# Lab's requirements.txt and separate from the Market Scanner's), though it currently needs the
+# exact same schema-validation stack for the same reason (see schema_validation.py docstrings):
+# jsonschema for a one-time schema-shape sanity check, fastjsonschema for the compiled validator.
+#
+# This package also imports ai_trader.market_scanner's published types (ProvidedFeatures,
+# ScannerVersions, Requirements, CompatibilityReport) to construct the Manager<->Scanner handshake
+# -- a sibling AI-Trader module dependency, not an external package.
+jsonschema>=4.20,<5
+fastjsonschema>=2.19,<3
