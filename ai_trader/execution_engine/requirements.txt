@@ -1,0 +1,2 @@
+jsonschema>=4.20,<5
+fastjsonschema>=2.19,<3
