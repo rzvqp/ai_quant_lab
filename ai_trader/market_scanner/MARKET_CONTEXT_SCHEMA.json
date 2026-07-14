@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/market_scanner/MARKET_CONTEXT_SCHEMA.json",
+  "title": "MarketContext v1",
+  "description": "Standardized, versioned, lookahead-safe market observation the Market Scanner produces per (symbol, as_of). Sufficient to evaluate any Strategy Library strategy without reading broker data. Produced by the scanner ONLY; carries no decisions, no scores, no orders. Spec: MARKET_SCANNER_ARCHITECTURE.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "clock", "symbol_meta", "session", "calendar", "timeframes", "data_quality", "sufficiency"],
+  "properties": {
+    "meta": {
+      "type": "object", "additionalProperties": false,
+      "required": ["context_schema_version", "feature_dictionary_version", "interface_version",
+                   "symbol", "base_timeframe", "as_of", "generated_at", "mode", "source"],
+      "properties": {
+        "context_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+        "feature_dictionary_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "interface_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "Strategy Interface version this context is built to serve." },
+        "scanner_version": { "type": ["string", "null"] },
+        "symbol": { "type": "string" },
+        "base_timeframe": { "type": "string", "description": "the heartbeat timeframe, e.g. M15" },
+        "as_of": { "type": "integer", "description": "UTC epoch seconds of the last closed base bar (evaluation instant)" },
+        "generated_at": { "type": "integer", "description": "UTC epoch seconds when the context was assembled" },
+        "mode": { "type": "string", "enum": ["LIVE", "REPLAY", "LAB_PARITY"] },
+        "source": { "type": "string", "description": "opaque data-source adapter id; NOT a research handle" }
+      }
+    },
+
+    "clock": {
+      "type": "object", "additionalProperties": false,
+      "required": ["as_of", "base_bar_index", "is_new_session", "is_new_day", "is_new_week"],
+      "properties": {
+        "as_of": { "type": "integer" },
+        "base_bar_index": { "type": "integer", "minimum": 0, "description": "monotonic base-bar counter since warmup" },
+        "is_new_session": { "type": "boolean" },
+        "is_new_day": { "type": "boolean" },
+        "is_new_week": { "type": "boolean" },
+        "is_month_boundary": { "type": ["boolean", "null"] }
+      }
+    },
+
+    "symbol_meta": {
+      "type": "object", "additionalProperties": false,
+      "required": ["symbol", "tick_size", "point_value", "price_precision", "session_anchor"],
+      "properties": {
+        "symbol": { "type": "string" },
+        "tick_size": { "type": "number", "exclusiveMinimum": 0 },
+        "point_value": { "type": "number", "exclusiveMinimum": 0 },
+        "price_precision": { "type": "integer", "minimum": 0 },
+        "session_anchor": { "type": "string", "description": "e.g. 'NY_17:00' — must match the research convention" },
+        "trading_hours": { "type": ["string", "null"] }
+      }
+    },
+
+    "session": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "block_id", "bar_in_session", "session_open_ts"],
+      "properties": {
+        "name": { "type": "string", "enum": ["asia", "london", "ny", "late"] },
+        "block_id": { "type": "integer", "description": "NY-17:00 anchored session/day block id (blk)" },
+        "bar_in_session": { "type": "integer", "minimum": 0 },
+        "session_open_ts": { "type": "integer" },
+        "session_high": { "type": ["number", "null"] },
+        "session_low": { "type": ["number", "null"] },
+        "opening_range": {
+          "type": ["object", "null"], "additionalProperties": false,
+          "properties": {
+            "high": { "type": ["number", "null"] },
+            "low": { "type": ["number", "null"] },
+            "formed": { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "calendar": {
+      "type": "object", "additionalProperties": false,
+      "required": ["date", "dow", "dom", "is_holiday", "is_weekend_gap", "dst_offset_seconds"],
+      "properties": {
+        "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "dow": { "type": "integer", "minimum": 0, "maximum": 6 },
+        "dom": { "type": "integer", "minimum": 1, "maximum": 31 },
+        "is_holiday": { "type": "boolean" },
+        "is_weekend_gap": { "type": "boolean" },
+        "dst_offset_seconds": { "type": "integer" },
+        "event_flags": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["ts", "impact"],
+            "properties": {
+              "ts": { "type": "integer" },
+              "kind": { "type": ["string", "null"] },
+              "impact": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] }
+            }
+          }
+        }
+      }
+    },
+
+    "timeframes": {
+      "type": "object",
+      "description": "map of timeframe -> TimeframeContext. MUST include base_timeframe and every HTF any loaded strategy requires.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/TimeframeContext" }
+    },
+
+    "quote": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "properties": {
+        "ts": { "type": "integer" },
+        "bid": { "type": ["number", "null"] },
+        "ask": { "type": ["number", "null"] },
+        "spread": { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+
+    "data_quality": {
+      "type": "object", "additionalProperties": false,
+      "required": ["overall", "by_timeframe"],
+      "properties": {
+        "overall": { "type": "string", "enum": ["OK", "DEGRADED", "STALE", "INSUFFICIENT"] },
+        "by_timeframe": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object", "additionalProperties": false,
+            "required": ["last_bar_complete", "warmup_satisfied", "staleness_ms", "gaps"],
+            "properties": {
+              "last_bar_complete": { "type": "boolean" },
+              "warmup_satisfied": { "type": "boolean" },
+              "staleness_ms": { "type": "integer", "minimum": 0 },
+              "late_dropped": { "type": ["integer", "null"], "minimum": 0 },
+              "gaps": {
+                "type": "array",
+                "items": {
+                  "type": "object", "additionalProperties": false,
+                  "required": ["from_ts", "to_ts", "bars_missing"],
+                  "properties": {
+                    "from_ts": { "type": "integer" },
+                    "to_ts": { "type": "integer" },
+                    "bars_missing": { "type": "integer", "minimum": 1 },
+                    "cause": { "type": ["string", "null"] }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "sufficiency": {
+      "type": "object", "additionalProperties": false,
+      "required": ["overall"],
+      "properties": {
+        "overall": { "type": "string", "enum": ["SUFFICIENT", "PARTIAL", "INSUFFICIENT"] },
+        "missing_fields": { "type": ["array", "null"], "items": { "type": "string" } },
+        "missing_timeframes": { "type": ["array", "null"], "items": { "type": "string" } },
+        "note": { "type": ["string", "null"] }
+      }
+    }
+  },
+
+  "$defs": {
+    "Bar": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ts_open", "ts_close", "open", "high", "low", "close", "volume", "complete", "available_at"],
+      "properties": {
+        "ts_open": { "type": "integer" },
+        "ts_close": { "type": "integer" },
+        "open": { "type": "number" },
+        "high": { "type": "number" },
+        "low": { "type": "number" },
+        "close": { "type": "number" },
+        "volume": { "type": ["number", "null"], "minimum": 0 },
+        "complete": { "type": "boolean" },
+        "available_at": { "type": "integer", "description": "ts at/after which this bar may be used (lookahead-safe); = ts_close" }
+      }
+    },
+    "TimeframeContext": {
+      "type": "object", "additionalProperties": false,
+      "required": ["timeframe", "bars", "features"],
+      "properties": {
+        "timeframe": { "type": "string" },
+        "bars": {
+          "type": "array", "items": { "$ref": "#/$defs/Bar" },
+          "description": "rolling window, oldest→newest, only bars with available_at <= meta.as_of (lookahead-safe)"
+        },
+        "features": {
+          "type": "object",
+          "description": "standardized feature namespace values at as_of (feature_dictionary_version). Keys are declared field names; unavailable (warmup) values are null.",
+          "additionalProperties": { "type": ["number", "boolean", "string", "null"] }
+        }
+      }
+    }
+  }
+}
