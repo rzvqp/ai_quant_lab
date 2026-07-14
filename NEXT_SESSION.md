@@ -18,6 +18,16 @@ any prior conversation.
 > `STRATEGY_MANAGER_VALIDATION_REPORT.md` at the repo root. §2/§7/§8 below are updated to match; the rest of
 > this document (Market Scanner-specific history) is unchanged and still accurate for that module.
 
+> **2026-07-14 deep-validation addendum:** a later CEO directive asked specifically for a CPU profile,
+> a formal memory measurement, and parity verification against the frozen research engine for Market
+> Scanner v1 — three items the original validation never captured. All three are now done; see
+> `MARKET_SCANNER_VALIDATION_REPORT.md` §7. One real, non-blocking finding: HTF-derived features
+> (h1_/h4_/d1_ trend_up/volrank/rsi) and D1-derived levels (pdh/pdl/etc.) diverge from the frozen
+> research engine at genuine gaps in the underlying H1/H4/D1 feed, where the two systems use different
+> (both individually lookahead-safe) conventions for when a bar's data becomes usable across a gap —
+> rare (isolated to actual data gaps), does not affect determinism or lookahead safety, and is now a
+> disclosed backlog item, not a defect. **Verdict unchanged: READY.**
+
 ---
 
 ## 1. Current project mission

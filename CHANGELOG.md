@@ -1,5 +1,30 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-14 (deep validation) — Market Scanner v1: CPU profile, memory, parity vs frozen engine
+- Filled the three gaps a later CEO directive asked for that the original Phase 6.1 validation never
+  captured: a real `cProfile` capture (120wd x 3-symbol, 34,440 contexts) confirms schema validation
+  still dominates wall-clock (~73-74%) with no new hotspot -- the existing `fastjsonschema` fix already
+  addressed the real bottleneck; a formal external-process memory measurement (`Get-Process` sampling,
+  not `tracemalloc`, which is the already-identified root cause of the original hang) shows flat ~101 MB
+  RSS across the full 2yr x 3-symbol run, no growth; and the first-ever parity check against the frozen
+  research engine (`code/mstrat.py`), run against the full real 84,152-bar historical XAUUSD M15 series
+  (not synthetic data).
+- **Parity result**: M15-native features match the frozen engine exactly (including the two features
+  with a documented deliberate divergence -- EMA/RSI seeding -- which converge well within the warmup
+  window used). `or_high`/`or_low` match exactly once mstrat's own documented usage gate
+  (`bar_in_sess>=4`) is applied to both sides -- the scanner's version is lookahead-safe by construction
+  where the raw research-engine column is not, without that gate. One real, non-blocking finding:
+  HTF-derived (`h1_`/`h4_`/`d1_` `trend_up`/`volrank`/`rsi`) and D1-derived level features
+  (`pdh`/`pdl`/`pd_open`/`pd_close`/`pd_mid`/`pw_high`/`pw_low`) diverge at genuine gaps in the
+  underlying H1/H4/D1 feed (root-caused to a specific missing Friday D1 bar), where the two systems use
+  different but individually valid, individually lookahead-safe conventions for when a bar's data
+  becomes usable across a gap. Rare (isolated to actual data gaps, confirmed 0 lookahead violations
+  throughout), does not affect determinism, added to the backlog as a design decision for a future
+  directive -- not fixed reactively, since no defect was found, only a legitimate convention difference.
+- **No Market Scanner source code changed.** Full writeup: `MARKET_SCANNER_VALIDATION_REPORT.md` §7.
+  **Verdict unchanged: READY.** Full test suite still green (378 tests, 36 files, mypy --strict clean,
+  97%/99% coverage) -- confirmed no regressions from this investigation.
+
 ## Session 2026-07-14 (Phase 6.2) — Strategy Manager v1 implemented, adversarially reviewed, READY
 - CEO approval granted; implemented the Strategy Manager production module against the frozen
   `ai_trader/strategy_manager/*.md`/`STRATEGY_REGISTRY_SCHEMA.json` specification and the frozen
