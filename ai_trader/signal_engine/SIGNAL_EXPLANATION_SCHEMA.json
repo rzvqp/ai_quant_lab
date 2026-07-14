@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/signal_engine/SIGNAL_EXPLANATION_SCHEMA.json",
+  "title": "Signal Explanation v1",
+  "description": "Structured, machine-readable explanation attached to every StrategySignal. STRUCTURED FIELDS ONLY — the Signal Engine generates no novel prose. Any human string is either copied verbatim from the contract (mechanism, condition labels) or rendered from a fixed template id + params. Composed from the strategy's explain_signal() output plus the evaluation facts. Spec: SIGNAL_ENGINE_ARCHITECTURE.md §6.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "explanation_schema_version", "strategy_ref", "state", "triggering_mechanism",
+    "why_exists", "why_failed", "required_conditions", "missing_conditions",
+    "invalid_conditions", "confirmations", "context_summary"
+  ],
+  "properties": {
+    "explanation_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+    "strategy_ref": {
+      "type": "object", "additionalProperties": false, "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^S\\d+$" },
+        "version": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$" }
+      }
+    },
+    "state": {
+      "type": "string",
+      "enum": ["BUY", "SELL", "LONG_READY", "SHORT_READY", "WAIT_CONFIRMATION", "NEED_CONTEXT", "BLOCKED", "INVALID", "NO_SIGNAL"]
+    },
+
+    "triggering_mechanism": {
+      "type": "object", "additionalProperties": false, "required": ["mechanism_text"],
+      "properties": {
+        "mechanism_code": { "type": ["string", "null"], "description": "stable mechanism/class code (e.g. LIQUIDITY_SWEEP)" },
+        "mechanism_text": { "type": "string", "description": "copied verbatim from the contract's mechanism field (not generated)" }
+      }
+    },
+
+    "why_exists": {
+      "type": "array", "description": "satisfied triggering conditions (empty unless the setup is present)",
+      "items": { "$ref": "#/$defs/ConditionRecord" }
+    },
+    "why_failed": {
+      "type": "array", "description": "conditions that prevented an actionable signal (for NO_SIGNAL/WAIT_CONFIRMATION/NEED_CONTEXT/BLOCKED/INVALID)",
+      "items": { "$ref": "#/$defs/ConditionRecord" }
+    },
+    "required_conditions": {
+      "type": "array", "description": "all conditions the setup requires, each with satisfied=true/false",
+      "items": { "$ref": "#/$defs/ConditionRecord" }
+    },
+    "missing_conditions": {
+      "type": "array", "description": "required context/data that was absent (drives NEED_CONTEXT)",
+      "items": { "$ref": "#/$defs/ConditionRecord" }
+    },
+    "invalid_conditions": {
+      "type": "array", "description": "active blocking/invalid conditions (drives BLOCKED/INVALID)",
+      "items": { "$ref": "#/$defs/ConditionRecord" }
+    },
+
+    "confirmations": {
+      "type": "object", "additionalProperties": false, "required": ["required", "met", "pending"],
+      "properties": {
+        "required": { "type": "array", "items": { "type": "string" } },
+        "met": { "type": "array", "items": { "type": "string" } },
+        "pending": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "context_summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["symbol", "as_of", "session", "data_quality"],
+      "properties": {
+        "symbol": { "type": "string" },
+        "as_of": { "type": "integer" },
+        "session": { "type": ["string", "null"] },
+        "regime": { "type": ["string", "null"] },
+        "data_quality": { "type": "string", "enum": ["OK", "DEGRADED", "STALE", "INSUFFICIENT"] },
+        "timeframes_used": { "type": ["array", "null"], "items": { "type": "string" } }
+      }
+    },
+
+    "template": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "description": "optional human rendering via a FIXED template id + params — no free-text generation",
+      "properties": {
+        "template_id": { "type": "string" },
+        "params": { "type": "object" }
+      }
+    }
+  },
+
+  "$defs": {
+    "ConditionRecord": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "satisfied"],
+      "properties": {
+        "code": { "type": "string", "description": "stable condition code (e.g. SWEEP_TAKEN, CLOSE_BACK_INSIDE, CONFIRM_CONSECUTIVE2, ATR_VALID, IN_SESSION, WARMUP_MET)" },
+        "label": { "type": ["string", "null"], "description": "human label copied from the contract/condition dictionary (not generated)" },
+        "satisfied": { "type": "boolean" },
+        "observed": { "type": ["number", "string", "boolean", "null"], "description": "the observed value, if applicable" },
+        "expected": { "type": ["number", "string", "boolean", "null"], "description": "the required value/threshold, if applicable" }
+      }
+    }
+  }
+}

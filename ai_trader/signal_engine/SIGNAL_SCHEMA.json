@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/signal_engine/SIGNAL_SCHEMA.json",
+  "title": "StrategySignal v1",
+  "description": "Canonical, standardized signal the Signal Engine produces per (strategy, symbol, as_of). Exactly one is produced per evaluated (strategy, symbol) each cycle — including non-actionable states. Carries the strategy's OWN declared confidence/strength (never a cross-strategy rank) and a structured Explanation (SIGNAL_EXPLANATION_SCHEMA.json). Spec: SIGNAL_ENGINE_ARCHITECTURE.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "signal_schema_version", "signal_engine_version", "signal_id",
+    "strategy_id", "strategy_version",
+    "timestamp", "as_of", "symbol", "timeframe",
+    "state", "direction", "signal_strength", "confidence",
+    "mechanism", "required_confirmations", "confirmations_met",
+    "missing_context", "invalid_conditions", "quality_flags",
+    "context_ref", "explanation", "evaluation_time_ms"
+  ],
+  "properties": {
+    "signal_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+    "signal_engine_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "signal_id": { "type": "string", "description": "unique id for this signal instance (strategy_id|symbol|as_of derived)" },
+
+    "strategy_id": { "type": "string", "pattern": "^S\\d+$" },
+    "strategy_version": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "contract identity.version" },
+
+    "timestamp": { "type": "integer", "description": "UTC epoch seconds the signal was produced" },
+    "as_of": { "type": "integer", "description": "MarketContext as_of; MUST equal the evaluated context's as_of" },
+    "symbol": { "type": "string" },
+    "timeframe": { "type": "string", "description": "execution timeframe, e.g. M15" },
+
+    "state": { "$ref": "#/$defs/SignalState" },
+    "direction": { "type": "string", "enum": ["LONG", "SHORT", "NONE"] },
+    "signal_strength": { "type": "number", "minimum": 0, "maximum": 1, "description": "the strategy's OWN setup strength (NOT a cross-strategy rank)" },
+    "confidence": { "type": "string", "enum": ["NONE", "NEGATIVE", "VERY_LOW", "LOW", "MEDIUM", "HIGH"], "description": "copied from the strategy/contract; never a comparative score" },
+
+    "mechanism": { "type": "string", "description": "the strategy's mechanism text, copied verbatim from the contract (not generated)" },
+    "required_confirmations": { "type": "array", "items": { "type": "string" } },
+    "confirmations_met": { "type": "boolean" },
+
+    "missing_context": { "type": "array", "items": { "type": "string" }, "description": "required fields/timeframes the context lacked (drives NEED_CONTEXT)" },
+    "invalid_conditions": { "type": "array", "items": { "type": "string" }, "description": "active invalid/blocking conditions (drives BLOCKED)" },
+    "quality_flags": {
+      "type": "array",
+      "items": { "type": "string", "enum": [
+        "OK", "EVAL_TIMEOUT", "SCHEMA_MISMATCH", "INVALID_DIRECTION", "MISSING_TIMESTAMP",
+        "UNKNOWN_STRATEGY", "MISSING_CONTEXT", "INVALID_CONFIDENCE", "DUPLICATE_SIGNAL",
+        "CORRUPTED_OUTPUT", "DEGRADED_CONTEXT", "DEPRECATED_FIELD"
+      ] }
+    },
+
+    "context_ref": {
+      "type": "object", "additionalProperties": false,
+      "required": ["context_schema_version", "feature_dictionary_version", "interface_version", "data_quality"],
+      "properties": {
+        "context_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "feature_dictionary_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "interface_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "data_quality": { "type": "string", "enum": ["OK", "DEGRADED", "STALE", "INSUFFICIENT"] },
+        "context_hash": { "type": ["string", "null"] }
+      }
+    },
+
+    "explanation": { "type": "object", "description": "structured Explanation; MUST conform to SIGNAL_EXPLANATION_SCHEMA.json" },
+
+    "evaluation_time_ms": { "type": "number", "minimum": 0 },
+
+    "trade_params": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "description": "present only for actionable/ready states; null otherwise. Prices only — NO sizing (Risk Manager's job).",
+      "properties": {
+        "entry": { "type": ["number", "null"] },
+        "stop": { "type": ["number", "null"] },
+        "target": { "type": ["number", "null"] },
+        "risk_R": { "type": ["number", "null"], "minimum": 0, "description": "1.0 by construction (stop defines 1R)" },
+        "valid_until": { "type": ["string", "integer", "null"], "description": "expiry timestamp or bar-count" }
+      }
+    },
+    "regime": { "type": ["string", "null"], "enum": ["TREND_UP", "TREND_DOWN", "RANGE", "HIGH_VOL", "LOW_VOL", "SESSION_OPEN", "ANY", null] },
+    "session": { "type": ["string", "null"] }
+  },
+
+  "allOf": [
+    {
+      "$comment": "actionable states must carry a concrete direction",
+      "if": { "properties": { "state": { "enum": ["BUY", "LONG_READY"] } } },
+      "then": { "properties": { "direction": { "const": "LONG" } } }
+    },
+    {
+      "if": { "properties": { "state": { "enum": ["SELL", "SHORT_READY"] } } },
+      "then": { "properties": { "direction": { "const": "SHORT" } } }
+    },
+    {
+      "$comment": "non-actionable states carry no direction",
+      "if": { "properties": { "state": { "enum": ["WAIT_CONFIRMATION", "NEED_CONTEXT", "BLOCKED", "INVALID", "NO_SIGNAL"] } } },
+      "then": { "properties": { "direction": { "const": "NONE" } } }
+    }
+  ],
+
+  "$defs": {
+    "SignalState": {
+      "type": "string",
+      "enum": ["BUY", "SELL", "LONG_READY", "SHORT_READY", "WAIT_CONFIRMATION", "NEED_CONTEXT", "BLOCKED", "INVALID", "NO_SIGNAL"]
+    }
+  }
+}
