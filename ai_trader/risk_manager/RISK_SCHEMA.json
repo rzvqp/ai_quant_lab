@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/risk_manager/RISK_SCHEMA.json",
+  "title": "RiskDecision v1",
+  "description": "The deterministic decision the Risk Manager produces per OpportunityScore: ALLOW (with size + execution constraints) or DENY (with reasons). Emitted to the Execution Engine (ALLOW) / caller (DENY). Carries no order and performs no execution. Spec: RISK_MANAGER_ARCHITECTURE.md + RISK_POLICY.md + POSITION_SIZING.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "risk_schema_version", "risk_engine_version", "risk_policy_version",
+    "decision_id", "score_id", "signal_id", "strategy_id", "symbol", "timestamp", "as_of",
+    "engine_state", "decision", "direction", "applied_rules", "refs"
+  ],
+  "properties": {
+    "risk_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+    "risk_engine_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "risk_policy_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+
+    "decision_id": { "type": "string" },
+    "score_id": { "type": "string", "description": "the OpportunityScore this decision is derived from" },
+    "signal_id": { "type": "string" },
+    "strategy_id": { "type": "string", "pattern": "^S\\d+$" },
+    "symbol": { "type": "string" },
+    "timestamp": { "type": "integer", "description": "UTC epoch seconds the decision was produced" },
+    "as_of": { "type": "integer", "description": "MUST equal the opportunity's as_of" },
+
+    "engine_state": { "type": "string", "enum": ["READY", "SUSPENDED", "EMERGENCY_STOP"] },
+    "decision": { "type": "string", "enum": ["ALLOW", "DENY"] },
+    "direction": { "type": "string", "enum": ["LONG", "SHORT", "NONE"] },
+
+    "denied_reasons": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["code"],
+        "properties": {
+          "code": { "type": "string", "description": "e.g. LIMIT_MAX_POSITIONS, LOSS_DAILY, FILTER_SPREAD, COOLDOWN_AFTER_LOSS, BELOW_FLOOR, KILL_SWITCH, SIZE_BELOW_MIN, PORTFOLIO_UNAVAILABLE, DATA_DEGRADED, NOT_ACTIONABLE" },
+          "detail": { "type": ["string", "null"] },
+          "observed": { "type": ["number", "string", "boolean", "null"] },
+          "limit": { "type": ["number", "string", "boolean", "null"] }
+        }
+      }
+    },
+    "applied_rules": {
+      "type": "array",
+      "description": "ordered list of rule ids evaluated, with pass/fail — for audit",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["rule", "passed"],
+        "properties": {
+          "rule": { "type": "string" },
+          "passed": { "type": "boolean" },
+          "detail": { "type": ["string", "null"] }
+        }
+      }
+    },
+
+    "sizing": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["method", "risk_per_trade_pct", "risk_R", "size_units", "min_size", "max_size"],
+          "properties": {
+            "method": { "type": "string", "enum": ["FIXED_FRACTIONAL", "VOL_SCALED", "ATR_SCALED"] },
+            "risk_per_trade_pct": { "type": "number", "minimum": 0, "maximum": 1 },
+            "quality_factor": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "risk_R": { "type": "number", "minimum": 0 },
+            "risk_budget_currency": { "type": ["number", "null"], "minimum": 0 },
+            "stop_distance": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+            "size_units": { "type": "number", "minimum": 0 },
+            "size_lots": { "type": ["number", "null"], "minimum": 0 },
+            "min_size": { "type": "number", "minimum": 0 },
+            "max_size": { "type": "number", "minimum": 0 },
+            "notional": { "type": ["number", "null"], "minimum": 0 },
+            "leverage": { "type": ["number", "null"], "minimum": 0 },
+            "partial_exit_plan": {
+              "type": ["array", "null"],
+              "items": {
+                "type": "object", "additionalProperties": false, "required": ["at_R", "fraction"],
+                "properties": {
+                  "at_R": { "type": "number" },
+                  "fraction": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+
+    "constraints": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "entry": { "type": ["number", "null"] },
+            "stop": { "type": ["number", "null"] },
+            "target": { "type": ["number", "null"] },
+            "max_hold_bars": { "type": ["integer", "null"], "minimum": 0 },
+            "valid_until": { "type": ["string", "integer", "null"] },
+            "max_slippage": { "type": ["number", "null"], "minimum": 0 },
+            "allowed_session": { "type": ["string", "null"] },
+            "reduce_only": { "type": ["boolean", "null"] }
+          }
+        }
+      ]
+    },
+
+    "portfolio_impact": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "open_positions_after": { "type": ["integer", "null"], "minimum": 0 },
+            "portfolio_risk_pct_after": { "type": ["number", "null"], "minimum": 0 },
+            "leverage_after": { "type": ["number", "null"], "minimum": 0 },
+            "correlation_group": { "type": ["string", "null"] }
+          }
+        }
+      ]
+    },
+
+    "refs": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scoring_schema_version", "interface_version"],
+      "properties": {
+        "scoring_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "interface_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "account_equity": { "type": ["number", "null"], "minimum": 0 },
+        "data_quality": { "type": ["string", "null"], "enum": ["OK", "DEGRADED", "STALE", "INSUFFICIENT", null] }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "$comment": "DENY must carry at least one reason and no sizing/constraints",
+      "if": { "properties": { "decision": { "const": "DENY" } } },
+      "then": {
+        "required": ["denied_reasons"],
+        "properties": {
+          "denied_reasons": { "type": "array", "minItems": 1 },
+          "sizing": { "type": "null" },
+          "constraints": { "type": "null" }
+        }
+      }
+    },
+    {
+      "$comment": "ALLOW must carry sizing + constraints and a concrete direction",
+      "if": { "properties": { "decision": { "const": "ALLOW" } } },
+      "then": {
+        "required": ["sizing", "constraints"],
+        "properties": {
+          "direction": { "enum": ["LONG", "SHORT"] },
+          "engine_state": { "const": "READY" }
+        }
+      }
+    }
+  ]
+}
