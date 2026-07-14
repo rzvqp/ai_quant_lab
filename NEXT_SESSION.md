@@ -1,53 +1,30 @@
 # NEXT_SESSION.md — Official Handoff (AI Trader Implementation Phase)
 
-**This document supersedes any prior `NEXT_SESSION.md`** (the previous version was a pre-Wave-1 Research Lab
-handoff; Wave 1 has since executed and the project has moved into building the AI Trader). This document is
-self-contained: a new Claude session must be able to continue correctly from this file alone, without reading
-any prior conversation.
+**Official session-close document, rewritten in full on 2026-07-15 per explicit CEO directive.** This
+document is self-contained: a new Claude session must be able to continue correctly from this file
+alone, without reading any prior conversation or any other `NEXT_SESSION.md` version. Every fact below
+was verified directly against `git log`/`git status`/`git diff`/a live test run at close time — nothing
+here is assumed or carried over unverified.
 
-> **2026-07-14 continuation-session update (supersedes commit `f61edfb`'s "retracted, unknown" state):** a
-> second, independent session picked this handoff up in parallel with the session that wrote the `f61edfb`
-> correction below — see the RESOLVED note at the top of §5 for the full account, including why this doesn't
-> contradict `f61edfb`'s caution, it completes it. **Market Scanner v1 = READY.** Full writeup in
-> `MARKET_SCANNER_VALIDATION_REPORT.md` at the repo root; §5/§7/§8 below are updated to match. The `f61edfb`
-> correction note and the original pre-correction §5 are both kept beneath, verbatim, for the audit trail —
-> both are now historical.
+---
 
-> **2026-07-14 Phase 6.2 update:** CEO approval granted; Strategy Manager v1 has been implemented,
-> tested, adversarially reviewed (6 real bugs found and fixed), and verdicted **READY**. Full writeup in
-> `STRATEGY_MANAGER_VALIDATION_REPORT.md` at the repo root. §2/§7/§8 below are updated to match; the rest of
-> this document (Market Scanner-specific history) is unchanged and still accurate for that module.
+## 0. TL;DR for the next session
 
-> **2026-07-14 Phase 6.3 update:** CEO approval granted; Signal Engine v1 has been implemented, tested,
-> adversarially reviewed (5 real bugs + 1 real gap found and fixed, 1 finding verified correct-as-designed),
-> and verdicted **READY**. Full writeup in `SIGNAL_ENGINE_VALIDATION_REPORT.md` at the repo root. §2/§7/§8
-> below are updated to match. Per the CEO's explicit directive for this task, work stopped immediately after
-> the verdict — Scoring Engine, Risk Manager, Learning Engine, Broker Adapter, and MT5 integration are all
-> still **NOT STARTED** and still require explicit new CEO approval.
+```
+✓ Market Scanner   READY   (Phase 6.1)
+✓ Strategy Manager READY   (Phase 6.2)
+✓ Signal Engine    READY   (Phase 6.3)
+✓ Scoring Engine   READY   (Phase 6.4)
+✓ Risk Manager     READY   (Phase 6.5)   ← just closed
 
-> **2026-07-14 Phase 6.4 update:** CEO approval granted; Scoring Engine v1 has been implemented, tested,
-> adversarially reviewed (4 real bugs found and fixed: 2 CRITICAL, 1 HIGH, 1 MEDIUM), and verdicted
-> **READY**. Full writeup in `SCORING_ENGINE_VALIDATION_REPORT.md` at the repo root. §2/§7/§8 below are
-> updated to match. Per the CEO's explicit directive for this task, work stopped immediately after the
-> verdict — Risk Manager, Execution Engine, Simulation, Learning Engine, Broker Adapter, and MT5 integration
-> are all still **NOT STARTED** and still require explicit new CEO approval.
+Next: Phase 6.6 — Execution Engine implementation. NOT STARTED. Requires explicit new CEO approval
+      before writing any code. Full pre-read handoff: EXECUTION_ENGINE_HANDOFF.md (repo root).
 
-> **2026-07-15 Phase 6.5 update:** CEO approval granted; Risk Manager v1 has been implemented, tested,
-> adversarially reviewed (8 real issues found and fixed: 2 CRITICAL, 1 HIGH, 3 MEDIUM, 2 LOW), and
-> verdicted **READY**. Full writeup in `RISK_MANAGER_VALIDATION_REPORT.md` at the repo root. §2/§7/§8
-> below are updated to match. Per the CEO's explicit directive for this task, work stopped immediately
-> after the verdict — Execution Engine, Simulation, Learning Engine, Broker Adapter, and MT5 integration
-> are all still **NOT STARTED** and still require explicit new CEO approval.
-
-> **2026-07-14 deep-validation addendum:** a later CEO directive asked specifically for a CPU profile,
-> a formal memory measurement, and parity verification against the frozen research engine for Market
-> Scanner v1 — three items the original validation never captured. All three are now done; see
-> `MARKET_SCANNER_VALIDATION_REPORT.md` §7. One real, non-blocking finding: HTF-derived features
-> (h1_/h4_/d1_ trend_up/volrank/rsi) and D1-derived levels (pdh/pdl/etc.) diverge from the frozen
-> research engine at genuine gaps in the underlying H1/H4/D1 feed, where the two systems use different
-> (both individually lookahead-safe) conventions for when a bar's data becomes usable across a gap —
-> rare (isolated to actual data gaps), does not affect determinism or lookahead safety, and is now a
-> disclosed backlog item, not a defect. **Verdict unchanged: READY.**
+Branch: ai-trader-implementation   HEAD: 7c225d1   Working tree: CLEAN
+Full ai_trader/ suite: 967 tests passing · mypy --strict clean (75 source files, 5 modules) ·
+overall coverage 95% (single 0%-covered file is a standalone benchmark script, not a defect)
+Protected paths (code/, results/, knowledge/): 0-diff since Phase 6.1 began — verified this session.
+```
 
 ---
 
@@ -64,42 +41,51 @@ any prior conversation.
   Trader: a versioned JSON Schema (`strategy_contract.v1.schema.json`) plus a runtime Strategy API
   (`STRATEGY_API_v1.md`). The Trader may consume strategies ONLY through this interface — never Research Lab
   internals directly.
-- **AI Trader** (`ai_trader/`) — the execution system, currently being built module-by-module: **Market Scanner
-  → Strategy Manager → Signal Engine → Scoring Engine → Risk Manager → Execution Engine**, plus a **Simulation
-  Framework** that runs this exact same pipeline against historical data with a virtual broker/account instead of
-  a real one.
+- **AI Trader** (`ai_trader/`) — the execution system, being built module-by-module: **Market Scanner →
+  Strategy Manager → Signal Engine → Scoring Engine → Risk Manager → Execution Engine**, plus a **Simulation
+  Framework** that runs this exact same pipeline against historical data with a virtual broker/account instead
+  of a real one.
 
 **CEO-mandated sequencing (current, standing directive):** the AI Trader must first become a **complete,
 deterministic backtesting/simulation engine** and prove profitability over historical data. **Only after
 simulation proves profitable does Broker Adapter / MetaTrader / live execution work begin** (that is Phase 8+,
 not authorized now). Within that, the CEO also pivoted from "architecture only" to "implement for real,
-production-quality code" starting with Market Scanner (Phase 6.1).
+production-quality code" starting with Market Scanner (Phase 6.1) and now through Risk Manager (Phase 6.5).
 
 ---
 
-## 2. Current architecture status (design docs — all complete)
+## 2. Project status — every phase, verified
 
-Every module below has a **complete, CEO-approved architecture** (documentation + JSON Schema only, no
-executable code except where noted). None of these documents should be redesigned without an explicit new CEO
-directive — they are the frozen specification implementation must follow.
+### 2a. Design docs (all complete, frozen specification)
 
 | module | location | status |
 |---|---|---|
-| **Wave 1** (research experiments EXP-01..06) | `knowledge/experiments/WAVE_1_*` + `code/wave1_harness.py`, `code/run_wave1.py` | **EXECUTED** (results committed on `wave1-execution`, see §3) |
-| **Strategy Library** | `knowledge/strategies/` (51 folders + `INDEX.md` + `library_manifest.json`) | **DONE** — all 51 strategies (S1–S51) have `README.md` + `strategy.json`; generated by `code/build_strategy_library.py` from frozen research (v0 seed shape) |
-| **Strategy Interface v1** | `knowledge/interface/` (README, STRATEGY_INTERFACE_v1.md, strategy_contract.v1.schema.json, STRATEGY_API_v1.md, runtime_responses.v1.schema.json, AI_TRADER_ARCHITECTURE.md) | **DONE** — contract + runtime API + versioning/compatibility policy designed |
-| **Market Scanner docs** | `ai_trader/market_scanner/{README,MARKET_SCANNER_ARCHITECTURE,MARKET_CONTEXT_SCHEMA.json,MARKET_SCANNER_API,MARKET_SCANNER_SEQUENCE}.*` | **DONE** (Phase 5.1) |
-| **Strategy Manager docs** | `ai_trader/strategy_manager/` (README, ARCHITECTURE, API, STATE_MACHINE, SEQUENCE, STRATEGY_REGISTRY_SCHEMA.json) | **DONE** (Phase 5.2) |
-| **Strategy Manager implementation** | `ai_trader/strategy_manager/*.py` + `tests/` | **DONE — READY** (Phase 6.2, see `STRATEGY_MANAGER_VALIDATION_REPORT.md`). 16 source modules, 251 tests, mypy --strict clean, 99% coverage. Adversarial review found 6 real bugs, all fixed + regression-tested. |
-| **Signal Engine docs** | `ai_trader/signal_engine/` (README, ARCHITECTURE, API, SEQUENCE, STATE_MACHINE, SIGNAL_SCHEMA.json, SIGNAL_EXPLANATION_SCHEMA.json) | **DONE** (Phase 5.3) |
-| **Signal Engine implementation** | `ai_trader/signal_engine/*.py` + `tests/` | **DONE — READY** (Phase 6.3, see `SIGNAL_ENGINE_VALIDATION_REPORT.md`). 10 source modules, 181 tests, mypy --strict clean, 99% coverage. Adversarial review found 5 real bugs + 1 real gap (all fixed + regression-tested), 1 finding verified correct-as-designed. |
-| **Scoring Engine docs** | `ai_trader/scoring_engine/` (README, ARCHITECTURE, SCORING_MODEL.md, API, SEQUENCE, STATE_MACHINE, SCORING_SCHEMA.json) | **DONE** (Phase 5.4) |
-| **Scoring Engine implementation** | `ai_trader/scoring_engine/*.py` + `tests/` | **DONE — READY** (Phase 6.4, see `SCORING_ENGINE_VALIDATION_REPORT.md`). 13 source modules, 199 tests, mypy --strict clean, 98% coverage. Adversarial review found 4 real bugs (2 CRITICAL, 1 HIGH, 1 MEDIUM), all fixed + regression-tested. |
-| **Risk Manager docs** | `ai_trader/risk_manager/` (README, ARCHITECTURE, RISK_POLICY.md, POSITION_SIZING.md, API, SEQUENCE, STATE_MACHINE, RISK_SCHEMA.json) | **DONE** (Phase 5.5) |
-| **Risk Manager implementation** | `ai_trader/risk_manager/*.py` + `tests/` | **DONE — READY** (Phase 6.5, see `RISK_MANAGER_VALIDATION_REPORT.md`). 13 source modules, 209 tests, mypy --strict clean, 99% coverage (engine.py 100%). Adversarial review found 8 real issues (2 CRITICAL, 1 HIGH, 3 MEDIUM, 2 LOW), all fixed + regression-tested. |
-| **Execution Engine docs** | `ai_trader/execution_engine/` (README, ARCHITECTURE, ORDER_LIFECYCLE.md, ORDER_SCHEMA.json, API, SEQUENCE, STATE_MACHINE, FAILURE_POLICY.md) | **DONE** (Phase 5.6) — **NOT implemented yet** |
-| **Simulation Framework docs** | `ai_trader/simulation/` (README, ARCHITECTURE, PORTFOLIO_SIMULATOR.md, EXECUTION_SIMULATOR.md, PERFORMANCE_ANALYZER.md, CONTEXT.md, API, SEQUENCE, STATE_MACHINE, SIMULATION_SCHEMA.json) | **DONE** (post Phase 5.6 pivot) — **NOT implemented yet** |
-| **Market Scanner implementation** | `ai_trader/market_scanner/*.py` + `adapters/` + `tests/` | **IMPLEMENTED** (Phase 6.1) — see §4. **2 critical bugs found and fixed** during Phase 6.1 validation (§10); large-scale benchmark **incomplete** (§5) |
+| Research Lab (S1–S51 discovery, matched-null, knowledge base/ontology) | `code/`, `results/`, `knowledge/` | **DONE / FROZEN** |
+| Wave 1 (research experiments EXP-01..06) | `knowledge/experiments/WAVE_1_*` + `code/wave1_harness.py`, `code/run_wave1.py` | **EXECUTED** (results committed) |
+| Strategy Library | `knowledge/strategies/` (51 folders + `INDEX.md` + `library_manifest.json`) | **DONE** — all 51 strategies (S1–S51) |
+| Strategy Interface v1 | `knowledge/interface/` (README, STRATEGY_INTERFACE_v1.md, strategy_contract.v1.schema.json, STRATEGY_API_v1.md, runtime_responses.v1.schema.json, AI_TRADER_ARCHITECTURE.md) | **DONE** |
+| Market Scanner docs | `ai_trader/market_scanner/{README,MARKET_SCANNER_ARCHITECTURE,MARKET_CONTEXT_SCHEMA.json,MARKET_SCANNER_API,MARKET_SCANNER_SEQUENCE}.*` | **DONE** (Phase 5.1) |
+| Strategy Manager docs | `ai_trader/strategy_manager/` (README, ARCHITECTURE, API, STATE_MACHINE, SEQUENCE, STRATEGY_REGISTRY_SCHEMA.json) | **DONE** (Phase 5.2) |
+| Signal Engine docs | `ai_trader/signal_engine/` (README, ARCHITECTURE, API, SEQUENCE, STATE_MACHINE, SIGNAL_SCHEMA.json, SIGNAL_EXPLANATION_SCHEMA.json) | **DONE** (Phase 5.3) |
+| Scoring Engine docs | `ai_trader/scoring_engine/` (README, ARCHITECTURE, SCORING_MODEL.md, API, SEQUENCE, STATE_MACHINE, SCORING_SCHEMA.json) | **DONE** (Phase 5.4) |
+| Risk Manager docs | `ai_trader/risk_manager/` (README, ARCHITECTURE, RISK_POLICY.md, POSITION_SIZING.md, API, SEQUENCE, STATE_MACHINE, RISK_SCHEMA.json) | **DONE** (Phase 5.5) |
+| Execution Engine docs | `ai_trader/execution_engine/` (README, EXECUTION_ENGINE_ARCHITECTURE.md, ORDER_LIFECYCLE.md, ORDER_SCHEMA.json, EXECUTION_API.md, EXECUTION_SEQUENCE.md, EXECUTION_STATE_MACHINE.md, EXECUTION_FAILURE_POLICY.md) | **DONE** (Phase 5.6) — **NOT implemented yet — this is next (Phase 6.6)** |
+| Simulation Framework docs | `ai_trader/simulation/` (README, ARCHITECTURE, PORTFOLIO_SIMULATOR.md, EXECUTION_SIMULATOR.md, PERFORMANCE_ANALYZER.md, CONTEXT.md, API, SEQUENCE, STATE_MACHINE, SIMULATION_SCHEMA.json) | **DONE** (post Phase 5.6 pivot) — **NOT implemented yet** |
+
+### 2b. Implementations (production code)
+
+| module | location | status |
+|---|---|---|
+| Market Scanner | `ai_trader/market_scanner/*.py` + `adapters/` + `tests/` | **READY** (Phase 6.1, `MARKET_SCANNER_VALIDATION_REPORT.md`). 127 tests. 2 critical bugs found+fixed by adversarial review. Large-scale benchmark completed + root-caused (harness `tracemalloc` artifact, not a scanner defect). |
+| Strategy Manager | `ai_trader/strategy_manager/*.py` + `tests/` | **READY** (Phase 6.2, `STRATEGY_MANAGER_VALIDATION_REPORT.md`). 16 source modules, 251 tests, mypy --strict clean, 99% coverage. Adversarial review found 6 real bugs, all fixed. |
+| Signal Engine | `ai_trader/signal_engine/*.py` + `tests/` | **READY** (Phase 6.3, `SIGNAL_ENGINE_VALIDATION_REPORT.md`). 10 source modules, 181 tests, mypy --strict clean, 99% coverage. Adversarial review found 5 real bugs + 1 real gap (all fixed), 1 finding confirmed correct-as-designed. |
+| Scoring Engine | `ai_trader/scoring_engine/*.py` + `tests/` | **READY** (Phase 6.4, `SCORING_ENGINE_VALIDATION_REPORT.md`). 13 source modules, 199 tests, mypy --strict clean, 98% coverage. Adversarial review found 4 real bugs (2 CRITICAL, 1 HIGH, 1 MEDIUM), all fixed. |
+| **Risk Manager** | `ai_trader/risk_manager/*.py` + `tests/` | **READY** (Phase 6.5, `RISK_MANAGER_VALIDATION_REPORT.md`). 13 source modules, 209 tests, mypy --strict clean, **99% coverage (`engine.py` itself 100%)**. Adversarial review found **8 real issues (2 CRITICAL, 1 HIGH, 3 MEDIUM, 2 LOW)**, all fixed + regression-tested. **Just closed this session.** |
+| Execution Engine | `ai_trader/execution_engine/` | **NOT implemented** — docs only. **Phase 6.6, next.** Pre-read: `EXECUTION_ENGINE_HANDOFF.md`. |
+| Simulation Framework | `ai_trader/simulation/` | **NOT implemented** — docs only. |
+| Portfolio Manager | *(no directory exists)* | **NOT DESIGNED** — see §6 "Portfolio Manager gap" below; important open item for Execution Engine. |
+| Learning Engine | *(no directory exists)* | **NOT DESIGNED, NOT STARTED.** |
+| Broker Adapter / MT5 Integration | *(no directory exists)* | **NOT AUTHORIZED** — explicitly gated on simulation proving profitable first. |
 
 **Key architectural invariant across every AI Trader module:** the documented pipeline order is fixed —
 `Market Scanner → Strategy Manager → Signal Engine → Scoring Engine → Risk Manager → Execution Engine →
@@ -108,9 +94,30 @@ directive — they are the frozen specification implementation must follow.
 matrices are specified in each module's ARCHITECTURE.md) — e.g. Signal Engine never calls `get_score()`, Scoring
 Engine never touches the broker, Risk Manager never generates signals, Execution Engine never re-decides risk.
 
+### 2c. Current pipeline (implemented portion, end-to-end)
+
+```
+MarketContext (Market Scanner, real bars via ReplayAdapter)
+   → StrategySignal (Signal Engine, per configured strategy — currently every real strategy in
+     Strategy Library returns INVALID/CORRUPTED_OUTPUT because StrategyRuntimeHandle.api has no real
+     detect/generate_signal logic yet, see §6)
+   → OpportunityScore (Scoring Engine — degrades every real signal to a classified SKIP/INVALID score,
+     proven fail-safe end-to-end by test_engine_integration.py)
+   → RiskDecision (Risk Manager — degrades every SKIP/INVALID opportunity to a classified DENY,
+     proven fail-safe end-to-end by test_engine_integration.py)
+   → [Execution Engine — NOT YET BUILT — this is the next link in the chain]
+```
+The pipeline is fully wired and fail-safe end-to-end for today's "every real strategy signal is
+INVALID" state; it has never yet produced (or needed to handle) a real ALLOW decision flowing into an
+Execution Engine, because that module doesn't exist yet. This is expected and by design (see §6).
+
 ---
 
 ## 3. Current git state
+
+**Branch:** `ai-trader-implementation`
+**HEAD commit:** `7c225d1` — "Phase 6.5: implement Risk Manager v1, adversarially reviewed, READY"
+**Working tree:** CLEAN (`git status --porcelain` returns nothing) — verified at close time.
 
 All branches, in chronological order (oldest → newest), with their HEAD commit at handoff time:
 
@@ -118,456 +125,305 @@ All branches, in chronological order (oldest → newest), with their HEAD commit
 |---|---|---|---|
 | 1 | `master` | `1bc0ffb` | Research Lab baseline (S1–S20 campaign, engine v2) |
 | 2 | `strategy-development` | `0d776ec` | S1–S20 dedup registry + S21–S40 design library |
-| 3 | `matched-null-validation` | `69747fd` | Matched-null engine + validation + pilot |
-| 4 | `family-implementation-s21-s40` | `e3901da` | S21–S51 families, knowledge base, ontology, generator, planner |
-| 5 | `research-main` | `68c017b` | **Official consolidated Research Lab** (all 4 branches above merged); SESSION CLOSE PRE-WAVE1 |
-| 6 | `wave1-execution` | `7afbd3b` | Wave 1 harness + EXP-01..06 executed + results + KG update proposal |
-| 7 | `strategy-library` | `3bb22fb` | Strategy Library (51 strategies) built from frozen research |
-| 8 | `strategy-interface` | `3b86c87` | Strategy Interface v1 (contract + API + AI-Trader architecture) |
-| 9 | `ai-trader-market-scanner` | `e7f30a1` | Market Scanner **docs** (Phase 5.1) |
-| 10 | `ai-trader-strategy-manager` | `51fc6f5` | Strategy Manager **docs** (Phase 5.2) |
-| 11 | `ai-trader-signal-engine` | `1d215e4` | Signal Engine **docs** (Phase 5.3) |
-| 12 | `ai-trader-scoring-engine` | `ea57e23` | Scoring Engine **docs** (Phase 5.4) |
-| 13 | `ai-trader-risk-manager` | `559d289` | Risk Manager **docs** (Phase 5.5) |
-| 14 | `ai-trader-execution-engine` | `6c600ab` | Execution Engine **docs** (Phase 5.6) |
-| 15 | `ai-trader-simulation` | `85c56f1` | Simulation Framework **docs** (roadmap pivot) |
-| 16 | `ai-trader-implementation` | `6b90f4d` | **Market Scanner v1 implementation** + Phase 6.1 validation fixes ← **CURRENT HEAD** |
+| 3 | `research-main` | `7afbd3b` | Consolidated Research Lab, S1–S51, matched-null, Wave 1 EXECUTED |
+| 4 | `ai-trader-implementation` | `7c225d1` | **Current.** Strategy Library, Strategy Interface, AI Trader architecture (Phases 5.1–5.6 + Simulation), Market Scanner/Strategy Manager/Signal Engine/Scoring Engine/Risk Manager implementations (Phases 6.1–6.5), all READY |
 
-**Current branch:** `ai-trader-implementation`
-**Current HEAD commit:** `6b90f4d47777b50328800aeebd73f0fb23db6272`
-**Working tree:** clean (verified via `git status --porcelain` = empty immediately before this handoff was written)
+Last 8 commits on `ai-trader-implementation` (newest first):
+```
+7c225d1 Phase 6.5: implement Risk Manager v1, adversarially reviewed, READY
+7825726 Phase 6.4: Scoring Engine v1 implementation, adversarially reviewed, READY
+19069f4 Phase 6.3: Signal Engine v1 implementation, adversarially reviewed, READY
+ceb50b5 Deep-validation addendum: Market Scanner CPU profile, memory, parity vs frozen engine
+b62288e Phase 6.2: Strategy Manager v1 implementation, adversarially reviewed, READY
+526a921 Phase 6.1 RESOLUTION: root-cause Market Scanner large-scale benchmark, verdict READY
+f61edfb CORRECTION: retract unconfirmed "super-linear benchmark slowdown" claim in NEXT_SESSION.md
+14bef43 END OF SESSION: official handoff (NEXT_SESSION.md) for context-limit close
+```
 
-Each branch above is a linear descendant of the previous one (`git checkout -b <new> <prev>` each time) —
-**none of these branches have been merged back into `research-main` or into each other**; they form one long
-chain. `research-main` (branch 5) remains the last point where the Research Lab alone was official. No branch
-has been pushed anywhere; everything is local.
-
----
-
-## 4. Completed implementation (Market Scanner v1 — the only module implemented so far)
-
-**Location:** `ai_trader/market_scanner/` (source) + `ai_trader/market_scanner/tests/` (tests) + `ai_trader/__init__.py`
-(minimal package marker).
-
-- **18 source modules** (all under `ai_trader/market_scanner/`, `mypy --strict` clean across all of them):
-  `__init__.py`, `types.py`, `timeframes.py`, `config.py`, `exceptions.py`, `clock.py`, `bar_store.py`,
-  `session.py`, `calendar_engine.py`, `indicators.py`, `features.py`, `timeframe_sync.py`, `data_quality.py`,
-  `schema_validation.py`, `scanner.py`, `adapters/__init__.py`, `adapters/base.py`, `adapters/replay.py`.
-  Plus `py.typed` (PEP 561 marker) and `requirements.txt` (own, independent of Research Lab's `code/requirements.txt`).
-- **16 test files** under `tests/` (15 test modules + `conftest.py`), **127 tests, all passing**
-  (124 `def test_*` functions; 3 extra come from one `@pytest.mark.parametrize` expansion in `test_config.py`).
-- **Coverage: 97%** (`coverage run --source=ai_trader.market_scanner`) — the ~3% uncovered is exclusively
-  defensive/unreachable-in-tests code (abstract-method default bodies never hit because the one concrete adapter
-  overrides them; the `SchemaLoadError` file-missing/corrupt-JSON branches; a couple of docstring-only exception
-  classes).
-- **mypy --strict: 0 errors** across all 18 source files (verified after every change in this session).
-- **Only the documented API is exported** from `ai_trader/market_scanner/__init__.py` — internal modules are not
-  part of the public surface.
-- **No broker, no live execution, no MetaTrader** — only the `replay` adapter (`adapters/replay.py`) exists,
-  matching the CEO's Phase 6.1 scope (broker work is explicitly Phase 8+, not authorized).
-- **0-diff confirmed** against the Research Lab, engine, Strategy Library, Strategy Interface, and every other
-  `ai_trader/*` module's docs at the time of the Phase 6.1 implementation commit (`cef57c1`) — only
-  `ai_trader/market_scanner/` (+ the root `ai_trader/__init__.py`) contains new files.
-
-### Performance fix (critical, fixed this session)
-The original implementation used `jsonschema.Draft202012Validator.iter_errors()` on every single
-`build_context()` call. An independent adversarial code review (a fresh-eyes agent, read-only) plus an empirical
-benchmark found this was making large-scale replay **impractically slow**: profiling showed >95% of wall-clock
-time inside `jsonschema`/`referencing` internals (millions of `$ref`-resolution calls per run), at roughly
-**~10 ms per emitted `MarketContext`**. Fixed by compiling the exact same, unmodified
-`MARKET_CONTEXT_SCHEMA.json` once via `fastjsonschema` and validating through the compiled function instead.
-**Measured speedup: 19.15s → 1.86s on an identical 1,900-context workload — a 10.3x improvement (~10ms →
-~1ms/context)**, with byte-identical pass/fail semantics verified before the swap (required-key, enum,
-`additionalProperties`, and type checks all confirmed equivalent). The test suite's own wall-time dropped
-11.5s → 1.55s as a side-confirmation. `requirements.txt` now lists both `jsonschema` (one-time schema-shape
-sanity check at startup) and `fastjsonschema` (the actual hot-path validator).
-
-### Correctness fix (critical, fixed this session)
-`calendar_engine.py` was inferring `is_holiday=True` from any day-count gap larger than the normal 3-day
-weekend gap. **This conflates a genuine market holiday with an ordinary multi-day data outage** — both look
-identical from the bar feed alone — which silently fabricates a calendar fact in direct violation of the
-module's own stated "never invent; always disclose" policy, with realistic potential to feed a wrong signal to
-calendar-gated strategies (S18/S29/S31 in the Strategy Library). **Fixed:** `is_holiday` now reflects **only** a
-confirmed `CalendarEvent(kind="holiday")`; an unexplained gap is still honestly reported via `data_quality` (this
-path was already correct and is unchanged). The corresponding unit test was renamed and its assertion inverted to
-match the corrected behavior.
-
-Both fixes are committed at `6b90f4d` with full before/after verification (tests + mypy, both green) in the
-commit message.
+**Protected-path 0-diff verification (re-run this session, not assumed):**
+```
+git diff cef57c1~1 HEAD -- code/ results/ knowledge/
+```
+returns **empty** — `cef57c1` is the commit that started Phase 6.1 (Market Scanner implementation, the
+first AI Trader production code). Nothing under `code/`, `results/`, or `knowledge/` has changed across
+the entire Phase 6.1→6.5 implementation span. (Note: comparing against the much older `master`/`1bc0ffb`
+baseline instead is NOT the right check — it would show the legitimate, pre-Phase-6.1 Strategy Library
+build (`code/build_strategy_library.py`, `knowledge/strategies/`) as a "diff," which is expected,
+documented history, not a violation. Always diff from `cef57c1~1` forward.)
 
 ---
 
-## 5. Current validation status — **RESOLVED 2026-07-14: root-caused and READY**
+## 4. Testing, coverage, and type-checking statistics (verified this session)
 
-> **RESOLVED note (2026-07-14, a session running concurrently with the one that wrote the `f61edfb` correction
-> note immediately below):** the `f61edfb` correction was right to distrust the original "confirmed super-linear
-> anomaly" framing — that framing genuinely was unwarranted from the evidence available at the time. But the
-> conclusion "large-scale behavior is simply UNKNOWN" turned out to be one step short of the actual answer, which
-> this session reached by direct, controlled experiment rather than by further monitoring ambiguity:
->
-> 1. On starting, this session found a stray `python.exe` (PID 26844) still alive and still accumulating CPU
->    time (~262 minutes and climbing) — independent confirmation that at least one real, long-running process
->    from the original handoff genuinely existed and was never an artifact of confused PID-watching. It was killed.
-> 2. A rewritten harness (now committed at `ai_trader/market_scanner/benchmarks/bench_market_scanner.py`) that
->    logs throughput every 2,000 contexts and self-aborts on a wall-clock budget was run through a full bisection,
->    252→300→350→400→450→**504** weekdays × 3 symbols. **Every step completed cleanly**, including the exact
->    504wd/2yr scale that had never finished before: 144,702 contexts in 204.1s, 709 ctx/s, 0 lookahead
->    violations. Real numbers, not extrapolated — see the table below.
-> 3. The one code difference between the old, never-finishing harness and the new, clean one is that the old one
->    called `tracemalloc.start()` unconditionally around the whole run. **Confirmed by direct A/B test**: the
->    identical 2yr×3-symbol replay run again with `tracemalloc` enabled had not completed its first 2,000-context
->    checkpoint after 5.5+ minutes (vs. 204s total without it) — while `Get-Process` confirmed it was genuinely
->    still consuming CPU throughout (49s and climbing), i.e. not a deadlocked/orphaned process, just
->    pathologically slow. This reproduces the character of the original hang on demand.
->
-> **Root cause: `tracemalloc`'s per-allocation bookkeeping becomes catastrophically expensive at ~2yr×3-symbol
-> scale (~430K bar objects + heavy per-context dict/list churn) — a harness artifact, not a Market Scanner
-> defect.** No scanner source file changed as a result. Full writeup with the complete bisection table and the
-> A/B evidence: `MARKET_SCANNER_VALIDATION_REPORT.md` (repo root). **Verdict: Market Scanner v1 = READY**, per
-> that report's §5. Per §9 below, this does not self-authorize starting Strategy Manager — that still needs
-> explicit CEO approval.
->
-> This resolution is compatible with, and directly builds on, `f61edfb`'s caution: that session was correct that
-> the *original* anomaly claim wasn't properly evidenced, and correct to not guess at a cause. It simply hadn't
-> yet run the controlled A/B experiment that turns "unknown" into a specific, reproducible, named root cause.
+```
+pytest ai_trader/ -q
+967 passed in ~4.3s
 
-The rest of this section (the `f61edfb` correction note and the original pre-correction account) is kept
-verbatim below for the audit trail — both are now **historical**, superseded by the RESOLVED note above.
+mypy --strict ai_trader/market_scanner ai_trader/strategy_manager ai_trader/signal_engine \
+              ai_trader/scoring_engine ai_trader/risk_manager --exclude 'tests/'
+Success: no issues found in 75 source files
 
----
+coverage run --source=ai_trader -m pytest ai_trader/ -q
+coverage report --omit="*/tests/*"
+TOTAL   4893 stmts   255 miss   95%
+```
 
-The CEO's Phase 6.1 validation directive required: static audit (done), test-quality audit (done), schema
-validation audit (done), and a **large-scale end-to-end replay benchmark** with specific metrics. This last
-part is **INCOMPLETE and its outcome is UNCONFIRMED** — read this section carefully before doing anything else,
-including the correction note immediately below (this section was revised after the initial version of this
-document turned out to describe the situation less precisely than it should have).
+Per-module test counts (sum to 967): Market Scanner 127, Strategy Manager 251, Signal Engine 181,
+Scoring Engine 199, Risk Manager 209.
 
-> **Correction note (post-write):** the first version of this document, written while a large-scale run appeared
-> to still be executing, described a "confirmed super-linear scaling anomaly" based on watching one OS process's
-> CPU time climb across repeated `Get-Process` checks. Shortly after this document was first committed, the
-> background task-tracking system reported that the actual tracked benchmark invocation had **FAILED (exit code
-> 127)**, and a follow-up check found: (a) that OS process had already terminated, (b) `bench_output.log`
-> contained only the startup banner line and no results, ever, and (c) no python processes were running at all
-> anymore. **It is not established that the process being watched via `Get-Process` was even the same process as
-> the tracked, failed benchmark invocation** — several earlier foreground attempts at this same benchmark had
-> already hit the Bash tool's timeout (5, 6:40, and 9:50 minute foreground timeouts on smaller/larger size
-> attempts, before the run was moved to an explicit background invocation), and on Windows/Git-Bash a timed-out
-> foreground command does not reliably kill its child `python.exe` process — so the process being watched may
-> well have been an **orphan from one of those earlier timed-out attempts**, unrelated to the tracked background
-> task's own failure. **Net effect: there is currently NO reliable evidence of a super-linear scaling problem.**
-> There is only: (1) solid, linear, controlled data up to 1-year × 3-symbols (kept below, still trustworthy), and
-> (2) one or more benchmark invocations at 2-year × 3-symbol scale that did not produce a result, for a reason
-> that was never actually determined. Treat the "super-linear blowup" hypothesis from the first draft as
-> **retracted, pending real evidence** — do not carry it forward as an established fact.
+The 95% *overall* figure is pulled down by exactly one file:
+`ai_trader/market_scanner/benchmarks/bench_market_scanner.py` (181 stmts, 0% — a standalone CLI
+benchmark script, never exercised by pytest, not a source-code defect). Every module's own coverage
+(reported in its own validation report) is 98–100%:
 
-### What IS confirmed (small/medium-scale, controlled, directly measured — trustworthy)
-Using a standalone benchmark harness (`bench_market_scanner.py`, written to the scratchpad directory, **not**
-part of the repo — a new session should recreate it if needed rather than assume it still exists on disk) that
-generates a realistic weekday-only (Mon–Fri) synthetic OHLCV dataset with periodic simulated feed outages and
-runs it through the full ingest → advance_clock → build_context cycle with M15+H1+H4+D1 timeframes:
+| module | coverage | mypy --strict | notes |
+|---|---|---|---|
+| Market Scanner | see `MARKET_SCANNER_VALIDATION_REPORT.md` | clean | benchmark script excluded from the module's own reported % |
+| Strategy Manager | 99% | clean | |
+| Signal Engine | 99% | clean | |
+| Scoring Engine | 98% | clean | |
+| Risk Manager | **99% (`engine.py` 100%)** | clean | remaining gaps: 2 lines in `pipeline.py` (an unreachable `Direction.NONE` branch), 6 lines in `schema_validation.py` (file-missing/corrupt-JSON/compile-failure environment paths) |
 
-| scale | M15 bars/symbol | contexts | wall time | ms/context |
-|---|---|---|---|---|
-| 20 weekdays × 1 symbol | 1,920 | 1,900 | 1.86s (post-fix; was 19.15s pre-fix) | ~0.98 |
-| 60 weekdays × 1 symbol | 5,760 | 5,740 | 5.96s | 1.038 |
-| 120 weekdays × 1 symbol | 11,520 | 11,480 | 12.31s | 1.072 |
-| 252 weekdays (~1yr) × 1 symbol | 24,192 | 24,117 | 29.41s | 1.220 |
-| 120 weekdays × 3 symbols | 34,560 | 34,440 | 39.30s | 1.141 |
-| 252 weekdays (~1yr) × 3 symbols | 72,576 | 72,351 | 92.18s | 1.274 |
-
-This data is **solid and reproducible** — scaling is close to linear (ms/context creeps up mildly, ~0.98→1.27,
-consistent with rolling windows filling toward their configured cap, not a red flag).
-
-- **Determinism:** confirmed at small scale via the test suite's own `TestDeterminism` tests AND via ad-hoc
-  re-runs during this session — identical inputs produce byte-identical `MarketContext` output every time.
-- **Lookahead safety:** confirmed — zero violations found scanning every bar in every timeframe of every emitted
-  context (`available_at <= as_of` holds universally) across all runs above.
-- **Schema validity:** confirmed — every context emitted during every run above validated successfully (no
-  `ContextValidationError` raised anywhere; `strict_schema_validation=True`, the default, means any failure
-  would have aborted the run).
-- **Weekend transitions, session transitions, warmup transitions, gap/missing-data events:** all observed and
-  behaving correctly in ad-hoc runs and in the dedicated integration tests (`test_scanner_integration.py`).
-
-### What is NOT confirmed — the open problem
-One or more **2-year × 3-symbol** run attempts (504 weekdays/symbol, ~217,000 total M15 contexts expected) were
-made to extrapolate to genuinely large scale, across several foreground and one explicit background invocation.
-**None produced a result.** The final, officially-tracked background attempt reported **status FAILED, exit code
-127** (a shell-level exit code, classically "command not found" — but given the surrounding confusion documented
-in the correction note above, do not assume this diagnosis without re-deriving it; it could equally reflect the
-task tracker losing/mis-attributing a detached process). Its output log (`bench_output.log`) contains only the
-startup banner and nothing else — no timing numbers, no error traceback, nothing actionable was ever captured.
-
-**Do NOT report any number from these attempts as a benchmark result. Do NOT assume a super-linear performance
-problem exists. Do NOT assume the scanner is fine at large scale either. Both are simply UNKNOWN right now.**
-The only honest, defensible statement is: **Market Scanner v1 is validated at up to ~72K contexts (1 year ×
-3 symbols, 92.18s, linear scaling) and UNVALIDATED beyond that**, for reasons that were never established.
-
-### Exactly what the next session must do about this
-1. **Start clean.** Do not resume/trust any leftover process, log file, or PID from the previous session — kill
-   anything still running under the name `python.exe` that looks related first (`Get-Process -Name python`), and
-   verify no orphans remain before starting a new attempt.
-2. **Recreate the benchmark harness from scratch**, capturing output robustly this time: write results
-   incrementally (flush after every print, or write partial results to a file periodically) so a crash or timeout
-   still leaves evidence of how far it got and what the last measurement was. The harness logic needed
-   (regenerate synthetic weekday OHLCV bars for N symbols/years, aggregate to H1/H4/D1, feed through
-   `ingest_bar`/`advance_clock`/`build_context` in timestamp order, time it) is fully described by this document's
-   confirmed benchmark table above; do not assume the original script (`bench_market_scanner.py`, written to the
-   scratchpad, not part of the repo) still exists or is trustworthy — re-verify or rewrite it.
-3. **Scale up gradually and incrementally**, re-confirming linearity at each step (e.g. 1yr×3sym [already done,
-   92s] → 1.5yr×3sym → 2yr×3sym), rather than jumping straight to the largest size again — this will localize
-   *where* (if anywhere) a problem appears, or prove there isn't one, instead of producing another all-or-nothing
-   multi-minute black box.
-4. Run any long attempt with a bounded, known timeout and **check on it periodically with real evidence**
-   (log file contents + `Get-Process` CPU time), and if it fails, capture the actual stderr/exit reason before
-   concluding anything about *why*.
-5. Once a genuinely large-scale (multi-year, multi-symbol) run either (a) completes with real numbers, or
-   (b) reveals a specific, root-caused defect — fix it if it's a real scanner defect (this would be a new critical
-   finding, fix + re-verify with tests+mypy+coverage exactly as done for the two fixes in §4), or note it as a
-   harness artifact if that's what it turns out to be.
-6. Produce the **final, complete audit report** (static review + test quality + schema validation, already done
-   and reusable from this document + the large-scale benchmark, this time with REAL numbers or a REAL, specific
-   root-caused explanation of why it can't run at that scale) and assign the **READY / NOT READY** verdict the
-   CEO required.
-7. **Only after an explicit READY verdict** may Strategy Manager implementation begin.
+`mypy --strict` across the FULL `ai_trader/` tree (including every module's own `tests/` package) shows
+98 pre-existing errors in 16 files — **all** in Strategy Manager's and Market Scanner's own test files
+(`union-attr` on `NotFound`/`TimeframeWindow | None` narrowing, a couple of `type-arg`/`no-untyped-def`
+gaps). These predate the Risk Manager session, are outside its scope, and were NOT touched. Each
+module's own validation report scopes its "mypy --strict clean" claim to that module's source + its own
+tests; the cross-module combined run above intentionally excludes `tests/` for exactly this reason.
+**This is a known, disclosed item for a future cleanup pass — not a Risk Manager regression, not
+blocking Phase 6.6.**
 
 ---
 
-## 6. Protected invariants — must NEVER be changed without an explicit new CEO directive
+## 5. Validation reports (one per implemented module, repo root)
 
-- **Research Lab** (`code/`, `results/`, `data/`) — engine (`mstrat.py`, `mstrat_ext.py`, `matched_null.py`,
-  `mtf.py`, `s1.py`, `alpha_lab.py`, `run_full_campaign.py`, `run_lot.py`) is **FROZEN**, byte-identical to
-  baseline `1bc0ffb` — confirmed 0-diff at every single commit in this entire session chain.
-- **Wave 1** (`knowledge/experiments/WAVE_1_*`, `code/wave1_harness.py`, `code/run_wave1.py`,
-  `results/experiments/wave1/`) — executed and closed; do not re-run, do not reinterpret results post-hoc.
-- **S1–S51** (the strategy families themselves, in `code/mstrat.py`/`code/mstrat_ext.py`) — frozen; the Strategy
-  Library reads their results, never their code.
-- **Knowledge Base / Ontology / Knowledge Graph** (`knowledge/BEHAVIOR_REGISTRY*`, `knowledge/ontology/`,
-  `knowledge/experiments/` other than Wave 1 artifacts) — frozen research state.
-- **Research artifacts** (`results/*.parquet`, `results/matched_null_validation/`, `results/ext_families/`) — read-only.
-- **Strategy Library** (`knowledge/strategies/`) — the 51 `strategy.json`/`README.md` pairs, `INDEX.md`,
-  `library_manifest.json` — do not regenerate/modify without a new CEO directive; the AI Trader consumes these
-  read-only, through the Strategy Interface only.
-- **Strategy Interface v1** (`knowledge/interface/`) — the contract schema, runtime API, and versioning policy
-  are frozen at v1; only additive/backward-compatible changes are ever permitted, and only under a new MINOR/
-  PATCH directive, never a silent redesign.
-- **Every AI Trader module's *_ARCHITECTURE.md / *_SCHEMA.json / *_API.md / *_SEQUENCE.md / *_STATE_MACHINE.md**
-  for Market Scanner, Strategy Manager, Signal Engine, Scoring Engine, Risk Manager, Execution Engine, and the
-  Simulation Framework — these are the frozen specifications. Implementation must follow them; implementation
-  must NOT redesign them. (Market Scanner's docs were used as-is to build the Phase 6.1 implementation — no
-  redesign occurred, only bugs found in the CODE were fixed.)
-- **Holdout** (`results/` terminal 20% of M15 data, D1/H1/H4 equivalents) — SEALED, never opened.
-- **Global-FDR over the full S1–S51 universe** — NOT authorized, NOT run.
-- **The separation law:** the AI Trader (`ai_trader/`) must never import Research Lab code (`code/*`) at runtime,
-  never read `results/*`, never read `knowledge/experiments/*` or `knowledge/ontology/*`. Verified true for every
-  Market Scanner module (import graph is a clean DAG rooted entirely within `ai_trader/market_scanner/`).
-
----
-
-## 7. Current roadmap
-
-| phase | item | status |
+| report | module | verdict |
 |---|---|---|
-| — | Research Lab (S1–S51 discovery, matched-null, knowledge base/ontology) | **DONE** |
-| — | Wave 1 (EXP-01..EXP-06) | **DONE** (executed, results committed) |
-| — | Strategy Library (51 strategies) | **DONE** |
-| — | Strategy Interface v1 (contract + API) | **DONE** |
-| 5.1 | Market Scanner — architecture docs | **DONE** |
-| 5.2 | Strategy Manager — architecture docs | **DONE** |
-| 5.3 | Signal Engine — architecture docs | **DONE** |
-| 5.4 | Scoring Engine — architecture docs | **DONE** |
-| 5.5 | Risk Manager — architecture docs | **DONE** |
-| 5.6 | Execution Engine — architecture docs | **DONE** |
-| — | Simulation Framework — architecture docs (roadmap pivot: simulate before broker) | **DONE** |
-| 6.1 | Market Scanner — **implementation** | **DONE — READY** (§5 RESOLVED note, `MARKET_SCANNER_VALIDATION_REPORT.md`). Code done, 2 critical bugs found+fixed, large-scale benchmark completed + root-caused (harness `tracemalloc` artifact, not a scanner defect). |
-| 6.2 | Strategy Manager — implementation | **DONE — READY** (`STRATEGY_MANAGER_VALIDATION_REPORT.md`). 16 modules, 251 tests, mypy --strict clean, 99% coverage, adversarial review (6 real bugs found+fixed). |
-| 6.3 | Signal Engine — implementation | **DONE — READY** (`SIGNAL_ENGINE_VALIDATION_REPORT.md`). 10 modules, 181 tests, mypy --strict clean, 99% coverage, adversarial review (5 real bugs + 1 real gap found+fixed, 1 finding confirmed correct-as-designed). |
-| 6.4 | Scoring Engine — implementation | **DONE — READY** (`SCORING_ENGINE_VALIDATION_REPORT.md`). 13 modules, 199 tests, mypy --strict clean, 98% coverage, adversarial review (4 real bugs found+fixed: 2 CRITICAL, 1 HIGH, 1 MEDIUM). |
-| 6.5 | Risk Manager — implementation | **DONE — READY** (`RISK_MANAGER_VALIDATION_REPORT.md`). 13 modules, 209 tests, mypy --strict clean, 99% coverage (engine.py 100%), adversarial review (8 real issues found+fixed: 2 CRITICAL, 1 HIGH, 3 MEDIUM, 2 LOW). |
-| 6.6 | Execution Engine — implementation (Execution Simulator side only; NO broker) | **NOT STARTED** |
-| 7.x | Simulation Framework — implementation (Portfolio Simulator, Performance Analyzer, harness) | **NOT STARTED** |
-| 7.x | Large-scale simulation runs proving (or disproving) portfolio profitability | **NOT STARTED** |
-| 8+ | Broker Adapter / MetaTrader / live execution | **NOT AUTHORIZED** — explicitly gated on simulation proving profitable first |
-| — | Learning Engine | **NOT DESIGNED, NOT STARTED** |
+| `MARKET_SCANNER_VALIDATION_REPORT.md` | Market Scanner | READY |
+| `STRATEGY_MANAGER_VALIDATION_REPORT.md` | Strategy Manager | READY |
+| `SIGNAL_ENGINE_VALIDATION_REPORT.md` | Signal Engine | READY |
+| `SCORING_ENGINE_VALIDATION_REPORT.md` | Scoring Engine | READY |
+| `RISK_MANAGER_VALIDATION_REPORT.md` | Risk Manager | READY |
+| `EXECUTION_ENGINE_HANDOFF.md` | Execution Engine | *(pre-implementation handoff, not a validation report — nothing to validate yet)* |
+
+Every validation report follows the identical, mandatory template established at Phase 6.1 and held to
+every phase since: what was built → design decisions (gap-fills, marked "IMPLEMENTATION CHOICE") →
+independent adversarial review findings + fixes → final test/mypy/coverage numbers → protected-invariant
+confirmation → verdict. Follow this exact template for Execution Engine's own report at the end of
+Phase 6.6.
 
 ---
 
-## 8. Immediate next task
+## 6. Important design decisions and open items to carry forward
 
-**Market Scanner v1, Strategy Manager v1, Signal Engine v1, Scoring Engine v1, AND Risk Manager v1 are
-all DONE — READY** (see `MARKET_SCANNER_VALIDATION_REPORT.md`, `STRATEGY_MANAGER_VALIDATION_REPORT.md`,
-`SIGNAL_ENGINE_VALIDATION_REPORT.md`, `SCORING_ENGINE_VALIDATION_REPORT.md`, and
-`RISK_MANAGER_VALIDATION_REPORT.md`). Per the CEO's explicit directive for the Risk Manager task, work
-stopped immediately after its READY verdict. What remains:
+- **Portfolio Manager gap.** `EXECUTION_ENGINE_ARCHITECTURE.md` names a `Portfolio Manager` module as a
+  required upstream/read dependency (`PortfolioState`, fill reporting) — but **no such module exists,
+  is designed, or is scheduled**. The Risk Manager already solved an analogous problem: it designed and
+  owns its own `PortfolioState`/`OpenPosition`/`ClosedPosition` types (`ai_trader/risk_manager/types.py`)
+  as a documented "IMPLEMENTATION CHOICE" gap-fill, since no canonical schema existed for them either.
+  **Execution Engine will face the identical decision** — whether to import/reuse
+  `ai_trader.risk_manager.types.PortfolioState` (Risk Manager IS an allowed direct dependency per the
+  Execution Engine's own interaction matrix) or to define its own analogous type. This is an open design
+  question for Phase 6.6, not resolved by this session, and should be raised with the CEO or decided
+  explicitly (and documented as an IMPLEMENTATION CHOICE) at the start of that implementation — see
+  `EXECUTION_ENGINE_HANDOFF.md` for the full analysis.
+- **Broker Adapter is abstract-only in v1.** Every Execution Engine doc is explicit that v1 documents
+  and implements the Broker Adapter *contract* (an interface/capabilities profile), never a real venue
+  integration. Phase 6.6 should build the Execution Engine against a fake/test double implementing that
+  contract, exactly as the Risk Manager was tested against real `OpportunityScore`s from a real Scoring
+  Engine rather than a live broker.
+- **`fastjsonschema` from the start.** Every implemented module's hot-path schema validation uses
+  `fastjsonschema` (compiled once) for the hot path and `jsonschema` only for one-time startup
+  shape-sanity checks — a lesson learned expensively during Market Scanner (Phase 6.1, §10 below) and
+  followed correctly by all four subsequent modules. `ORDER_SCHEMA.json` exists and is ready for the
+  same pattern.
+- **The independent adversarial-review technique is now mandatory, not optional.** It has found real
+  bugs in all five implemented modules: 2 (Market Scanner), 6 (Strategy Manager), 5+1 (Signal Engine), 4
+  (Scoring Engine), 8 (Risk Manager) — 26 real issues total, zero false-negative sessions. Run it (a
+  fresh-eyes subagent with no memory of writing the code, reading every frozen spec doc in full then
+  every source file, hunting for policy/formula deviations, fail-safe violations, determinism
+  violations, and — the newest lesson, see below — sibling-entry-point inconsistency) before declaring
+  Execution Engine READY.
+- **New lesson from Risk Manager's review, generalize it to Execution Engine:** when a module's public
+  API has more than one entry point that can independently produce the same kind of output (Risk
+  Manager had `evaluate()`'s batch loop AND `allow_trade()`'s single-opportunity path, plus a
+  degraded-input branch inside `evaluate()`), verify EVERY entry point routes through the SAME
+  validation/reassembly/exception-safety helper. 3 of Risk Manager's 8 findings were exactly this class
+  of bug: one path got the safety net, a sibling path didn't. Execution Engine's API
+  (`execute`/`build_order`/`cancel`/`reconcile`/`emergency_flatten`) has FIVE entry points that can each
+  independently touch the Order Ledger — this class of bug is a strong candidate to recur; design a
+  single shared internal helper for order-state mutation + validation from the start, and have the
+  adversarial review check every entry point against it explicitly.
+- **Gap-fill pattern, reaffirmed every phase:** when a frozen spec names an input/output without fully
+  specifying its mechanism (Scoring Engine's `risk_penalty` weights, Risk Manager's `correlation_groups`
+  and `per_strategy_cooldown_bars`), fill it with an explicit, documented, honesty/safety-preserving
+  default and mark it "IMPLEMENTATION CHOICE" in the source — never silently redesign, never leave it
+  unstated. Execution Engine's `ConstraintDefaults`-equivalent numeric placeholders (retry bounds, rate
+  limits, reconciliation timeouts — none fixed by the docs) will need the same treatment.
 
-1. **Ask the CEO for explicit approval to begin Execution Engine implementation (Phase 6.6)** — a READY
-   verdict on Risk Manager does not self-authorize starting the next module (§9: "stop and wait for
-   explicit CEO approval between every phase"). This is the one open gate. Note: the Signal Engine's real
-   `StrategyHandle.api` (`StrategyRuntimeHandle`) still raises `StrategyApiNotImplementedError` for every
-   method except `required_context()` — every real strategy's signal is currently `INVALID`/
-   `CORRUPTED_OUTPUT` by design, so every real `OpportunityScore`/`RiskDecision` the downstream engines
-   produce today is correspondingly `SKIP`/`DENY` too (proven fail-safe end-to-end by every engine's own
-   `test_engine_integration.py`). Building real per-strategy `detect`/`generate_signal`/etc. logic
-   (interpreting the Strategy Library's natural-language entry/exit/stop specifications into executable
-   rules) is a SEPARATE, not-yet-scoped task — it was explicitly out of bounds for Phase 6.3 and remains
-   open; raise it explicitly with the CEO before assuming it's bundled into Execution Engine or any other
-   phase.
-2. **Once approved:** build the Execution Engine strictly against `ai_trader/execution_engine/`'s
-   existing, frozen architecture docs (README, ARCHITECTURE, ORDER_LIFECYCLE.md, ORDER_SCHEMA.json, API,
-   SEQUENCE, STATE_MACHINE, FAILURE_POLICY.md) — no redesign, following the exact same "production-
-   quality: types, tests, mypy strict, docstrings, deterministic, logging, config objects" bar the prior
-   five modules were held to, including an independent adversarial code-review pass before declaring it
-   READY (this technique has now found real bugs in all five prior modules — 2 in Market Scanner, 6 in
-   Strategy Manager, 5+1 in Signal Engine, 4 in Scoring Engine, 8 in Risk Manager — treat it as mandatory,
-   not optional). If a benchmark tool uses `tracemalloc` at large scale, remember §5's Market Scanner
-   finding and treat it as a suspect from the start. If the module has its own hot-path JSON Schema
-   validation, use `fastjsonschema` from the start (§10's Market Scanner lesson, already followed by
-   Strategy Manager, Signal Engine, Scoring Engine, and Risk Manager). When a frozen model doc leaves an
-   input's exact normalization/weighting/mechanism unspecified (as `SCORING_MODEL.md` did for
-   `risk_penalty`, and `RISK_POLICY.md`/`POSITION_SIZING.md` did for correlation grouping and per-strategy
-   cooldowns), fill the gap with an explicit, documented, honesty/safety-preserving default and mark it
-   "IMPLEMENTATION CHOICE" — Scoring Engine's `config.py`/`components.py` and Risk Manager's `config.py`
-   are worked examples of this pattern. **New lesson from Risk Manager's adversarial review, generalize
-   it**: when a module's public API has more than one entry point that can independently produce the same
-   kind of output (Risk Manager had `evaluate()`'s batch loop AND `allow_trade()`'s single-opportunity
-   path, plus a degraded-input branch inside `evaluate()`), verify EVERY entry point routes through the
-   SAME validation/reassembly/exception-safety helper — 3 of the 8 findings (the two CRITICALs plus the
-   `portfolio_impact` MEDIUM) were exactly this class of bug: one path got the safety net, a sibling path
-   didn't.
+---
+
+## 7. Protected invariants — confirmed untouched (verified this session)
+
+- **Research Lab** (`code/`, `results/`, `data/`), **Strategy Library** (`knowledge/strategies/`),
+  **Strategy Interface v1** (`knowledge/interface/`) — read-only; 0-diff confirmed via
+  `git diff cef57c1~1 HEAD -- code/ results/ knowledge/` (empty), covering the entire Phase 6.1–6.5 span.
+- **Market Scanner, Strategy Manager, Signal Engine, Scoring Engine implementations** — zero files
+  modified by the Risk Manager session (verified via the Phase 6.5 commit's own file list: every
+  changed/added file is under `ai_trader/risk_manager/` or a repo-root doc). Risk Manager only *imports*
+  already-published types from Scoring Engine/Signal Engine/Market Scanner — never mutates them.
+- **No broker code, no MT5, no live trading, no Execution Engine, no Simulation, no Learning Engine, no
+  ML** — none exist anywhere in the tree, per the CEO directive's standing exclusion list.
+- **Determinism preserved end-to-end**: no module reached from any of the five implemented engines'
+  `engine.py` imports `time`/`random`; every engine's own `TestDeterminism` suite passes; opportunities/
+  decisions within one batch are always processed in a fixed (rank or equivalent) order regardless of
+  input order.
+
+---
+
+## 8. Technical debt and remaining risks (disclosed, not fixed — deliberate scope discipline)
+
+1. **Real per-strategy `detect`/`generate_signal` logic does not exist.** `StrategyRuntimeHandle.api`
+   (Signal Engine) raises `StrategyApiNotImplementedError` for every method except `required_context()`.
+   Every real strategy's signal is currently `INVALID`/`CORRUPTED_OUTPUT` by design, so every real
+   `OpportunityScore`/`RiskDecision` downstream is correspondingly `SKIP`/`DENY` too — proven fail-safe
+   end-to-end, but it means **no module has ever been exercised against a genuine ALLOW flowing all the
+   way through from a real strategy.** This was explicitly out of scope for Phases 6.1–6.5 and remains
+   open. It is a SEPARATE, not-yet-scoped task (interpreting the Strategy Library's natural-language
+   entry/exit/stop specifications into executable rules) — raise it explicitly with the CEO; do not
+   assume it is bundled into Execution Engine or any other phase.
+2. **mypy --strict test-file gaps in Strategy Manager and Market Scanner** (98 errors, 16 files, all
+   pre-existing, all `union-attr`/`type-arg`/`no-untyped-def` in test files, not source) — see §4.
+   Disclosed, not fixed; out of scope for the Risk Manager session; a future cleanup task.
+3. **Portfolio Manager is undesigned** — see §6. Execution Engine implementation cannot fully start
+   without resolving this (either reuse Risk Manager's `PortfolioState` type or design a new one) —
+   flag this explicitly at the start of Phase 6.6 rather than silently picking one.
+4. **`RiskDecision.constraints`/`sizing` → `OrderRequest` mapping has policy choices the architecture
+   names but does not fully pin down** (§`ORDER_LIFECYCLE.md` §6: "Mapping RiskDecision → order type
+   (default policy)" — Market vs. Limit vs. Stop selection based on "entry price ≈ current market" has
+   no numeric threshold for "≈"). This will need an explicit, documented IMPLEMENTATION CHOICE default
+   during Phase 6.6, exactly like every prior module's own gap-fills.
+5. **Large-scale Market Scanner benchmark** — resolved and closed (§10 below), included here only so a
+   future session doesn't need to re-discover that it WAS resolved, not still open.
 
 ---
 
 ## 9. Non-negotiable rules (standing CEO directives — apply to every future session)
 
 - **No shortcuts.** No prototype/demo code presented as production code.
-- **No fake benchmarks.** A benchmark that didn't finish is not a result — report it as incomplete, exactly as
-  done in §5 of this document. Never estimate/extrapolate a number and present it as measured.
-- **No fabricated statistics.** Every number in any report must come from an actual, reproducible run. If a
-  number can't be reproduced or the run didn't finish, say so explicitly.
-- **No hidden redesign.** Architecture documents (the `*_ARCHITECTURE.md`, `*_SCHEMA.json`, `*_API.md` files)
-  are the frozen specification once approved. Implementation follows them; it does not quietly change them.
-  (Bug fixes to actual code defects are not redesign — e.g. the two Phase 6.1 fixes changed buggy code, not the
-  documented architecture/schema/API.)
-- **No touching frozen Research Lab artifacts** — see §6, verified 0-diff at every commit so far; keep doing this
-  at every future commit too (`git diff <base-commit> -- code/ results/ knowledge/` should stay empty).
-- **Simulation before broker.** No Broker Adapter, no MetaTrader integration, no live execution until the
-  Simulation Framework is implemented and has demonstrated profitable, robust portfolio management across many
-  historical runs. This is currently far off — only Market Scanner is implemented so far.
-- **Broker only after simulation is profitable.** Not merely "implemented" — profitable, per the CEO's own words.
-- **Documentation before implementation.** Every module gets its full architecture (README, ARCHITECTURE, API,
-  SEQUENCE, STATE_MACHINE, and any relevant SCHEMA.json) approved before a single line of implementation code is
-  written. This was followed for all 6 downstream AI Trader modules + the Simulation Framework; continue this
-  discipline for Strategy Manager onward.
-- **Implementation before optimization.** Get it correct and tested first; only optimize when a real, measured
-  problem is found (exactly what happened with the schema-validation performance fix this session — it was
-  fixed because profiling proved it was a genuine bottleneck, not speculatively).
-- **Everything versioned.** Every schema has an explicit version field (`context_schema_version`,
-  `feature_dictionary_version`, `scanner_version`, `interface_version`, etc.) baked into every emitted object.
-- **Everything deterministic.** No wall-clock in business logic, no unseeded randomness, fixed iteration order
-  where it could otherwise vary (sorted dict keys, sorted timeframe iteration, etc.). Verified for Market
-  Scanner via explicit determinism tests and ad-hoc re-run comparisons.
-- **Everything reproducible.** A given input (bars + config + versions) must always produce the same output.
-  This is why the incomplete large-scale benchmark in §5 must be re-run and root-caused, not hand-waved away.
-- **Fix ONLY critical issues when told to.** When a validation/audit task says "fix only critical issues," that
-  is a scope discipline, not laziness — MAJOR/MINOR findings get documented (see §10) for a deliberate future
-  decision, not silently bundled into an unscoped cleanup.
-- **Stop and wait for explicit CEO approval** between every phase. Do not self-authorize moving to the next
-  module, to Wave 2/3, to opening the holdout, to global-FDR, or to broker work.
+- **No fake benchmarks.** A benchmark that didn't finish is not a result — report it as incomplete.
+  Never estimate/extrapolate a number and present it as measured.
+- **No fabricated statistics.** Every number in any report must come from an actual, reproducible run.
+  If a number can't be reproduced or the run didn't finish, say so explicitly.
+- **No hidden redesign.** Architecture documents (the `*_ARCHITECTURE.md`, `*_SCHEMA.json`, `*_API.md`
+  files) are the frozen specification once approved. Implementation follows them; it does not quietly
+  change them. (Bug fixes to actual code defects are not redesign.)
+- **No touching frozen Research Lab artifacts** — verified 0-diff at every commit so far (§3/§7); keep
+  doing this at every future commit too (`git diff cef57c1~1 HEAD -- code/ results/ knowledge/` should
+  stay empty).
+- **Simulation before broker.** No Broker Adapter, no MetaTrader integration, no live execution until
+  the Simulation Framework is implemented and has demonstrated profitable, robust portfolio management
+  across many historical runs.
+- **Broker only after simulation is profitable.** Not merely "implemented" — profitable, per the CEO's
+  own words.
+- **Documentation before implementation.** Every module gets its full architecture (README, ARCHITECTURE,
+  API, SEQUENCE, STATE_MACHINE, and any relevant SCHEMA.json) approved before a single line of
+  implementation code is written. Execution Engine's docs are already complete (Phase 5.6) — this gate
+  is already satisfied for Phase 6.6.
+- **Implementation before optimization.** Get it correct and tested first; only optimize when a real,
+  measured problem is found.
+- **Everything versioned.** Every schema has an explicit version field baked into every emitted object
+  (`order_schema_version`, `execution_engine_version`, etc. already defined in `ORDER_SCHEMA.json`).
+- **Everything deterministic.** No wall-clock in business logic, no unseeded randomness, fixed iteration
+  order where it could otherwise vary. `EXECUTION_ENGINE_ARCHITECTURE.md` §11 already states order
+  *construction/validation* must be deterministic (order *outcomes* depend on the future venue and are
+  not — but must always reconcile to a definite state).
+- **Everything reproducible.** A given input (bars + config + versions) must always produce the same
+  output.
+- **Fix ONLY critical issues when told to.** When a validation/audit task says "fix only critical
+  issues," that is a scope discipline, not laziness.
+- **Independent adversarial code review is mandatory** before any module is declared READY (§6). This
+  has never once come back clean — budget time for it and for fixing what it finds.
+- **Stop and wait for explicit CEO approval** between every phase. Do not self-authorize moving to the
+  next module, to Simulation, to Learning Engine, to Broker Adapter/MT5, or to opening the holdout.
 
 ---
 
-## 10. Lessons learned this session (full detail — do not re-discover these from scratch)
+## 10. Lessons learned across all five implemented modules (do not re-discover these from scratch)
 
 ### Performance
-- **`jsonschema.Draft202012Validator.iter_errors()` is not fast enough for a hot path called once per bar over a
-  multi-year replay.** Its cost scales with the total size of the validated structure (in this case, up to ~100
-  bars × 4 timeframes = ~400 nested `Bar` objects per context) and, critically, it re-resolves `$ref`s
-  (`#/$defs/Bar`, `#/$defs/TimeframeContext`) **on every single validation call** rather than once — profiling
-  showed millions of `referencing`-library calls per run. **`fastjsonschema.compile(schema)` solves this**: it
-  compiles the schema into a plain Python function once; subsequent calls are just executing that function, no
-  repeated resolution. Measured 10.3x speedup, verified equivalent pass/fail behavior first. **This lesson
-  generalizes**: any future module with its own JSON Schema + a "validate on every hot-path call" requirement
-  (Signal Engine's `SIGNAL_SCHEMA.json`, Scoring Engine's `SCORING_SCHEMA.json`, Risk Manager's `RISK_SCHEMA.json`,
-  Execution Engine's `ORDER_SCHEMA.json`) should use `fastjsonschema` from the start, not `jsonschema`, to avoid
-  repeating this exact mistake. Keep `jsonschema` only for one-time startup schema-shape sanity checks
-  (`Draft202012Validator.check_schema(schema)`), which is cheap and only runs once.
-- **A large-scale benchmark attempt (2 years × 3 symbols, ~217K expected contexts) never produced a result**
-  (§5) — the tracked background invocation reported FAILED (exit 127) and its log captured nothing beyond a
-  startup banner. **Do not confuse "a process I was watching via `Get-Process` kept accumulating CPU time" with
-  "the benchmark is running and slow."** Those turned out to likely be two different things: several earlier
-  foreground attempts at the same benchmark had already hit Bash-tool timeouts, and on Windows/Git-Bash a timed-
-  out foreground command does not reliably kill its child `python.exe` — so the process being watched was most
-  likely an **orphan from an earlier timed-out attempt**, not the tracked run at all, and its rising CPU time
-  proved nothing about the tracked run's actual behavior. **Lesson: when monitoring a long-running background
-  task, verify you are watching the SAME process the task tracker is tracking (e.g. capture and log the PID the
-  background tool itself reports, not a PID found later via a generic `tasklist`/`Get-Process` name search),
-  and prefer robust incremental output (flush-per-record logging) over "wait for one final print at the end" so
-  a crash still leaves usable evidence.** The controlled, smaller-scale data (up to 1 year × 3 symbols, 72,351
-  contexts in 92.18s) remains solid and linear and is not in question; only the larger scale is unknown.
-- **`cProfile` itself adds enormous overhead to code with millions of tiny function calls** (like a compiled
-  jsonschema validator's `isinstance` checks) — a profiled run can be 3-5x slower than the real thing. Always
-  cross-check profiler-derived conclusions against a real, unprofiled timing measurement (this session did both,
-  and they agreed on WHICH thing was slow, just not on the absolute magnitude).
+- **`jsonschema.Draft202012Validator.iter_errors()` is too slow for any hot path called once per
+  event/bar/opportunity.** It re-resolves `$ref`s on every call. `fastjsonschema.compile(schema)` solves
+  this (measured 10.3x speedup on Market Scanner). Keep `jsonschema` only for one-time startup
+  shape-sanity checks. Every implemented module (Market Scanner, Strategy Manager, Signal Engine,
+  Scoring Engine, Risk Manager) follows this pattern; Execution Engine should too from the start.
+- **`tracemalloc.start()` around a hot loop is not free and its cost is non-linear** — invisible at
+  small/medium scale, catastrophic at large scale (a cliff, not a gradual slowdown). Default memory
+  profiling to OFF with an explicit opt-in flag and a documented safe-scale ceiling.
+- **`cProfile` adds enormous overhead to code with millions of tiny function calls** — always cross-check
+  profiler-derived conclusions against a real, unprofiled timing measurement.
 
-### Critical bugs found (both fixed, see §4)
-1. **Schema-validation performance** (above).
-2. **`calendar_engine.py`'s `is_holiday` heuristic conflated data outages with real holidays.** The general
-   lesson: **a missing-data signal and a "the world was legitimately closed" signal look identical from inside a
-   bar feed alone** — you cannot infer one from the other without an independent, explicit source of truth (here,
-   a real `CalendarEvent`). Whenever a future module is tempted to infer a semantic fact ("this was a holiday",
-   "this was intentional", "this was expected") purely from an absence-of-data pattern, stop and ask whether that
-   absence could equally be explained by a boring data problem — if so, do not infer, only disclose (exactly the
-   module's own stated "never invent; always disclose" principle, which the code itself was violating).
+### Process discipline
+- **An independent, fresh-eyes adversarial code review (a subagent with no memory of writing the code)
+  finds real issues the implementer misses, every single time it has been run** (§6). Non-negotiable.
+- **Verify EVERY claimed finding independently before acting** — don't trust an audit's claims at face
+  value, even a careful one.
+- **When a module's public API has multiple entry points that can produce the same kind of output,
+  verify they all route through the same safety/validation helper** — the newest, most generalizable
+  lesson, from Risk Manager's review (§6). Directly relevant to Execution Engine's 5-entry-point API.
+- **Test-design traps compound across engines**: tuning one upstream engine's "obvious" knob
+  (`signal_strength`) does not reliably control a downstream engine's threshold check, because
+  intermediate engines have their own neutral-default fallbacks. When a test needs a specific
+  downstream state, force it directly via `dataclasses.replace` on the exact field under test, with a
+  comment explaining why the naive cross-engine approach doesn't work (see Risk Manager's
+  `make_below_floor_opportunity()`).
+- **A missing-data signal and a "the world was legitimately closed" signal look identical from inside a
+  bar feed alone** — never infer a semantic fact purely from an absence-of-data pattern; disclose the
+  absence, don't invent an explanation for it (Market Scanner's `calendar_engine.py` lesson).
+- **Committing verified, tested fixes before writing a handoff document** (never leaving them as
+  uncommitted working-tree changes) — followed at every phase close, including this one.
+- **When monitoring a long-running background task, verify you are watching the SAME process the task
+  tracker is tracking** — a rising CPU number from an unrelated/orphaned process proves nothing about
+  the tracked run (Market Scanner Phase 6.1 large-scale-benchmark lesson).
 
-### Architectural decisions made / reaffirmed this session
-- **Streaming, incremental, pure-Python indicator computation** (no pandas/numpy dependency at runtime in
-  `indicators.py`) was chosen over batch/vectorized recomputation specifically so the scanner can process one bar
-  at a time with bounded, small state (deques sized to each indicator's window) — appropriate for both live and
-  replay use, and keeps the AI Trader's dependency footprint independent of the Research Lab's.
-- **Two deliberate, documented divergences from the Research Lab's exact pandas-based indicator formulas** (EMA
-  warmup uses the standard recursive `adjust=False`-equivalent form rather than pandas' `adjust=True`; RSI seeds
-  Wilder's average via a simple mean of the first 14 deltas rather than pandas' single-observation EWM seed).
-  Both converge to the identical steady-state formula after warmup and only differ in early transient behavior.
-  This was a conscious, documented trade-off — full byte-for-byte conformance testing against the frozen research
-  engine is explicitly deferred (the architecture doc itself says this is "owed at build time" as a SEPARATE,
-  future task, not part of Phase 6.1). **A future session should eventually build this conformance test** (feed
-  the scanner the exact same historical CSVs the Research Lab used via a `lab-parity` adapter, and diff its
-  features against the frozen engine's feature frame) but this was correctly out of scope for Phase 6.1.
-- **`MarketContext` is represented as a plain, JSON-serializable `dict[str, Any]`**, not a parallel dataclass
-  hierarchy mirroring the schema. Rationale: the schema IS the canonical contract; a hand-maintained dataclass
-  mirror would inevitably drift from it. This is a deliberate simplicity choice, not an oversight.
-- **Only the `ReplayAdapter` was implemented**, matching the Phase 6.1 scope exactly (no live/broker adapter —
-  that's Phase 8+, and building it now would have been unauthorized scope creep).
-- **An independent, fresh-eyes adversarial code review (via a background subagent with no memory of writing the
-  code) found real issues the implementer missed** — this is a validated, effective technique and should be
-  repeated for every future module's post-implementation validation pass, not skipped as "we already tested it."
+### Architectural decisions reaffirmed across modules
+- **Streaming, incremental, pure-Python computation** (no pandas/numpy at runtime) chosen for the
+  Market Scanner so it can process one bar at a time with bounded state — appropriate for both live and
+  replay use.
+- **Derived properties over stored redundant state** — Risk Manager's `PortfolioState.drawdown_pct` /
+  `daily_pnl_pct` / `portfolio_risk_pct` / `leverage` are always computed from equity/positions, never
+  stored fields, eliminating a whole class of stale-derived-value bug by construction. Apply the same
+  principle to Execution Engine's Order Ledger where possible.
+- **Gap-fill types documented as IMPLEMENTATION CHOICE, never silently redesigned** — the consistent
+  pattern across every module when a frozen doc names an input without fully specifying it (§6).
 
-### Addendum (2026-07-14, resolution session — see §5 RESOLVED note)
-- **`tracemalloc.start()` around a hot loop is not free, and its cost is not linear.** It was invisible at
-  small/medium scale (up to ~90K contexts, the scale the original controlled table was built at) and became
-  catastrophically expensive at ~217K contexts — not a gradual slowdown, a cliff. The general lesson from §10
-  above ("`cProfile` adds enormous overhead, cross-check against an unprofiled run") turned out to apply to
-  `tracemalloc` too, and more severely: cProfile's overhead is a roughly constant multiplier, tracemalloc's here
-  was apparently non-linear in the number of tracked allocations. **Any future memory-profiling of a hot loop
-  should default to off, with an explicit opt-in flag, and a documented safe-scale ceiling** — exactly the
-  pattern now baked into the committed `bench_market_scanner.py`'s `--tracemalloc` flag.
-- **A stuck/slow process's rising `Get-Process` CPU time is real evidence it's doing something, even if you
-  can't yet explain what.** The intermediate session's caution (`f61edfb`) about not trusting an unverified PID
-  match was reasonable given what it could see, but the resolution came from replacing observation with a
-  controlled experiment (rerun the same input with and without the one suspected variable, A/B, with a real
-  abort budget) rather than from further inspection of an ambiguous already-running process. When a process's
-  origin is uncertain, it's often faster to kill it and reproduce cleanly from scratch than to keep
-  investigating the ambiguous one.
-- **Two Claude Code sessions worked this exact handoff concurrently** (this one and the one that produced
-  `f61edfb`), neither aware of the other, and both committed to the same branch. Nothing was lost — git history
-  preserved both — but it's worth the CEO/user knowing this can happen if multiple sessions are pointed at the
-  same repo/branch at once; the resolution here was to explicitly supersede the intermediate commit rather than
-  silently overwrite or ignore it.
+---
 
-### Process discipline notes
-- When a CEO validation directive says "fix ONLY critical issues," the discipline that worked well: verify EVERY
-  claimed finding independently (don't trust an audit's claims at face value, even a careful one) before deciding
-  what's critical vs. deferred, then act on exactly the critical ones and write everything else down precisely
-  (§ this document's own §10 above) rather than silently expanding scope OR silently dropping findings.
-- Committing the two verified, tested critical fixes **before** writing this handoff (rather than leaving them
-  as uncommitted working-tree changes) was the right call — a handoff document describing a dirty working tree
-  would be confusing and risks the fixes being lost or mis-attributed in the next session.
+## 11. Exact first task of the next session
+
+1. **Read `EXECUTION_ENGINE_HANDOFF.md` (repo root) in full first** — it is the dedicated, complete
+   pre-implementation briefing for Phase 6.6, built this session specifically so the next session does
+   not need to re-derive it from the raw architecture docs.
+2. **Ask the CEO for explicit approval to begin Execution Engine implementation (Phase 6.6)** — a READY
+   verdict on Risk Manager does not self-authorize starting the next module (§9: "stop and wait for
+   explicit CEO approval between every phase"). This is the one open gate.
+3. **Once approved**, resolve the Portfolio Manager gap explicitly first (§6/§8 item 3) — decide
+   (and document as an IMPLEMENTATION CHOICE) whether to reuse `ai_trader.risk_manager.types.PortfolioState`
+   or design a new type, before writing the Order Builder.
+4. **Build the Execution Engine strictly against `ai_trader/execution_engine/`'s existing, frozen
+   architecture docs** — no redesign, following the exact same "production-quality: types, tests, mypy
+   strict, docstrings, deterministic, logging, config objects" bar every prior module was held to,
+   including a mandatory independent adversarial code-review pass before declaring it READY.
+5. **Do NOT start Simulation Framework, Learning Engine, Broker Adapter, or MT5 integration** — all
+   remain explicitly not authorized until Execution Engine is READY and the CEO grants the next approval.
+6. **Follow the exact validation-report template** (§5) and update `NEXT_SESSION.md`/`CHANGELOG.md`
+   again at the end of Phase 6.6, exactly as done for every phase so far.
+
+---
+
+*Prior-session narrative history (Market Scanner large-scale-benchmark investigation, the two-concurrent-
+sessions incident, the tracemalloc cliff discovery, etc.) has been condensed into §10 above. The full
+blow-by-blow account of those investigations remains available in git history (commits `f61edfb` through
+`526a921`) and in `MARKET_SCANNER_VALIDATION_REPORT.md` for anyone who needs the original detail; it is
+intentionally not reproduced verbatim here to keep this handoff a usable entry point rather than an
+archive.*
