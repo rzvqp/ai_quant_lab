@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/simulation/SIMULATION_SCHEMA.json",
+  "title": "SimulationRun v1",
+  "description": "A self-describing simulation run: the immutable SimulationContext (spec) + the finalized SimulationReport (results). Deterministic: identical context + data + module versions reproduce this object bit-for-bit. Spec: SIMULATION_CONTEXT.md + PERFORMANCE_ANALYZER.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["simulation_schema_version", "meta", "context", "report"],
+  "properties": {
+    "simulation_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+    "meta": {
+      "type": "object", "additionalProperties": false,
+      "required": ["run_id", "state", "simulation_framework_version", "fill_model_version", "cost_model_version", "module_versions", "generated_at"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "batch_id": { "type": ["string", "null"] },
+        "state": { "type": "string", "enum": ["COMPLETED", "FAILED", "STOPPED"] },
+        "simulation_framework_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "fill_model_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "cost_model_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "module_versions": { "type": "object", "description": "composed pipeline + schema versions the report was produced by" },
+        "generated_at": { "type": "integer" }
+      }
+    },
+
+    "context": {
+      "type": "object", "additionalProperties": false,
+      "required": ["run_id", "date_range", "symbols", "timeframes", "starting_balance", "base_currency",
+                   "cost_model", "fill_model", "strategy_set", "run_seed", "deterministic"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "date_range": {
+          "type": "object", "additionalProperties": false, "required": ["start", "end"],
+          "properties": { "start": { "type": "integer" }, "end": { "type": "integer" } }
+        },
+        "symbols": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "timeframes": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "data_source": { "type": ["string", "null"], "enum": ["replay", "lab-parity", null] },
+        "warmup_bars": { "type": ["integer", "null"], "minimum": 0 },
+        "starting_balance": { "type": "number", "exclusiveMinimum": 0 },
+        "base_currency": { "type": "string" },
+        "leverage_max": { "type": ["number", "null"], "minimum": 0 },
+        "margin_model": {
+          "type": ["object", "null"], "additionalProperties": false,
+          "properties": {
+            "initial_margin_pct": { "type": ["number", "null"], "minimum": 0 },
+            "maintenance_margin_pct": { "type": ["number", "null"], "minimum": 0 }
+          }
+        },
+        "cost_model": {
+          "type": "object", "additionalProperties": false, "required": ["spread_model", "commission_model"],
+          "properties": {
+            "spread_model": { "type": "string" },
+            "commission_model": { "type": "string" }
+          }
+        },
+        "fill_model": {
+          "type": "object", "additionalProperties": false, "required": ["entry_timing", "intrabar"],
+          "properties": {
+            "entry_timing": { "type": "string", "enum": ["next_open", "close", "signal_close"] },
+            "intrabar": { "type": "string", "enum": ["stop_before_target", "target_before_stop", "proportional"] },
+            "partial_fill_policy": { "type": ["string", "null"] },
+            "limit_touch_rule": { "type": ["string", "null"] },
+            "slippage_model": { "type": ["string", "null"] }
+          }
+        },
+        "strategy_set": {
+          "oneOf": [
+            { "type": "string", "enum": ["all_activatable"] },
+            { "type": "array", "items": { "type": "string", "pattern": "^S\\d+$" } }
+          ]
+        },
+        "risk_config_version": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "run_seed": { "type": "integer", "description": "master seed; all stochastic draws derive from hash(run_seed, stable_key)" },
+        "deterministic": { "type": "boolean", "const": true }
+      }
+    },
+
+    "report": {
+      "type": "object", "additionalProperties": false,
+      "required": ["portfolio_summary", "performance", "attribution", "stats"],
+      "properties": {
+        "portfolio_summary": {
+          "type": "object", "additionalProperties": false,
+          "required": ["starting_balance", "final_balance", "final_equity", "net_profit", "return_pct", "max_drawdown_pct"],
+          "properties": {
+            "starting_balance": { "type": "number" },
+            "final_balance": { "type": "number" },
+            "final_equity": { "type": "number" },
+            "net_profit": { "type": "number" },
+            "return_pct": { "type": "number" },
+            "closed_pnl": { "type": ["number", "null"] },
+            "floating_pnl": { "type": ["number", "null"] },
+            "max_drawdown_pct": { "type": "number", "minimum": 0 },
+            "max_drawdown_R": { "type": ["number", "null"], "minimum": 0 }
+          }
+        },
+        "performance": {
+          "type": "object", "additionalProperties": true,
+          "required": ["trades", "expectancy_R", "profit_factor", "win_rate", "sharpe", "max_drawdown_pct"],
+          "properties": {
+            "trades": { "type": "integer", "minimum": 0 },
+            "expectancy_R": { "type": ["number", "null"] },
+            "expectancy_currency": { "type": ["number", "null"] },
+            "profit_factor": { "type": ["number", "null"], "minimum": 0 },
+            "win_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "payoff_ratio": { "type": ["number", "null"] },
+            "sharpe": { "type": ["number", "null"] },
+            "sortino": { "type": ["number", "null"] },
+            "cagr_pct": { "type": ["number", "null"] },
+            "recovery_factor": { "type": ["number", "null"] },
+            "avg_exposure_pct": { "type": ["number", "null"], "minimum": 0 },
+            "avg_holding_bars": { "type": ["number", "null"], "minimum": 0 },
+            "max_drawdown_pct": { "type": "number", "minimum": 0 }
+          }
+        },
+        "attribution": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["strategy_id", "trades", "net_pnl", "expectancy_R"],
+            "properties": {
+              "strategy_id": { "type": "string", "pattern": "^S\\d+$" },
+              "correlation_group": { "type": ["string", "null"] },
+              "trades": { "type": "integer", "minimum": 0 },
+              "win_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+              "expectancy_R": { "type": ["number", "null"] },
+              "profit_factor": { "type": ["number", "null"], "minimum": 0 },
+              "net_pnl": { "type": "number" },
+              "contribution_pct": { "type": ["number", "null"] },
+              "max_drawdown_contribution_pct": { "type": ["number", "null"] },
+              "exposure_share_pct": { "type": ["number", "null"] }
+            }
+          }
+        },
+        "allocation": {
+          "type": ["object", "null"], "additionalProperties": true,
+          "properties": {
+            "avg_allocation_by_strategy": { "type": ["object", "null"] },
+            "concentration_max_share_pct": { "type": ["number", "null"] }
+          }
+        },
+        "risk_events": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["type", "count"],
+            "properties": {
+              "type": { "type": "string", "description": "e.g. DENY_reason / SUSPENDED / EMERGENCY_STOP / MARGIN_CALL / LIQUIDATION / COOLDOWN" },
+              "count": { "type": "integer", "minimum": 0 },
+              "detail": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "stats": {
+          "type": "object", "additionalProperties": false,
+          "required": ["session", "daily", "monthly"],
+          "properties": {
+            "session": { "type": "array", "items": { "$ref": "#/$defs/PeriodStat" } },
+            "daily": { "type": "array", "items": { "$ref": "#/$defs/PeriodStat" } },
+            "monthly": { "type": "array", "items": { "$ref": "#/$defs/PeriodStat" } }
+          }
+        },
+        "artifacts": {
+          "type": ["object", "null"], "additionalProperties": false,
+          "description": "references to persisted logs (paths/ids), not inlined",
+          "properties": {
+            "trade_history_ref": { "type": ["string", "null"] },
+            "execution_log_ref": { "type": ["string", "null"] },
+            "equity_curve_ref": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+
+    "batch_summary": {
+      "type": ["object", "null"], "additionalProperties": true,
+      "description": "OPTIONAL cross-run descriptive statistics for run_batch (NO optimization/selection)",
+      "properties": {
+        "runs": { "type": ["integer", "null"], "minimum": 0 },
+        "return_pct": { "$ref": "#/$defs/Dist" },
+        "max_drawdown_pct": { "$ref": "#/$defs/Dist" },
+        "profit_factor": { "$ref": "#/$defs/Dist" }
+      }
+    }
+  },
+
+  "$defs": {
+    "PeriodStat": {
+      "type": "object", "additionalProperties": false, "required": ["period", "pnl", "trades"],
+      "properties": {
+        "period": { "type": "string", "description": "e.g. session name / YYYY-MM-DD / YYYY-MM" },
+        "pnl": { "type": "number" },
+        "return_pct": { "type": ["number", "null"] },
+        "trades": { "type": "integer", "minimum": 0 },
+        "win_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "max_drawdown_pct": { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+    "Dist": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "properties": {
+        "mean": { "type": ["number", "null"] },
+        "median": { "type": ["number", "null"] },
+        "p05": { "type": ["number", "null"] },
+        "p95": { "type": ["number", "null"] },
+        "min": { "type": ["number", "null"] },
+        "max": { "type": ["number", "null"] }
+      }
+    }
+  }
+}
