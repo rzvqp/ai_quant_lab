@@ -1,5 +1,52 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 (Phase 6.6) — Execution Engine v1 implemented, adversarially reviewed, READY
+- CEO approval granted; implemented the Execution Engine production module against the frozen
+  `ai_trader/execution_engine/*.md`/`ORDER_SCHEMA.json` specification — no redesign. 13 source modules
+  (value types, config, exceptions, schema validation, the abstract Broker Adapter `Protocol`, Order
+  Builder, Order Validator, Order Ledger, Lifecycle Tracker, Reconciler, the fixed per-decision
+  pipeline, Result/Reporter, public API facade), 198 tests, `mypy --strict` clean, 99% coverage. Full
+  writeup: `EXECUTION_ENGINE_VALIDATION_REPORT.md`.
+- Resolved the Portfolio Manager gap flagged in the Phase 6.5 session-close handoff
+  (`EXECUTION_ENGINE_HANDOFF.md`) by reusing `ai_trader.risk_manager.types.PortfolioState` directly
+  (documented IMPLEMENTATION CHOICE #1) rather than designing a parallel type. Designed a pull-based
+  abstract Broker Adapter `Protocol` (`submit_order`/`cancel_order`/`query_status`/`query_open_orders`/
+  `capabilities`) matching `EXECUTION_SEQUENCE.md`'s own query-based calls exactly — no real venue
+  integration exists anywhere in this diff; a deterministic fake test double implements the Protocol
+  for the test suite only.
+- **Independent adversarial review** (same technique that caught bugs in all five prior modules) found
+  **7 real issues (2 CRITICAL, 1 HIGH, 3 MEDIUM, 1 LOW)**, all fixed with regression tests: (1) the
+  pipeline validated an order BEFORE checking the duplicate guard, so a retry of an already-FILLED order
+  evaluated against a since-changed `PortfolioState` could fail validation and have its Ledger record
+  silently overwritten with a bogus REJECTED, corrupting the record of an order that had genuinely
+  executed; (2) the Reconciler and `engine.cancel()` had no exception handling around Broker Adapter
+  calls — a single flaky broker call aborted reconciling every other open order, and a broker exception
+  during `shutdown()`'s draining reconciliation propagated out of the public API entirely, violating the
+  documented "never thrown across the boundary" contract; (3) `emergency_flatten()` silently no-op'd
+  (empty report, no degraded signal) when called before any portfolio had ever been observed — dangerous
+  for a method that exists specifically as an emergency safety mechanism; (4) the Order Validator had no
+  "time restrictions" check at all despite the architecture naming one; (5) an advisory broker-transition
+  sanity-check function was written but never actually wired in anywhere; (6) `emergency_flatten()`'s
+  build stage had no exception safety net even though its submit stage already did; (7) a broker
+  reporting a fill without a price had that price silently fabricated as `0.0` instead of falling back
+  to the order's own reference price.
+- Fixes: the duplicate guard now runs FIRST in `pipeline.py`, before validation, so an idempotent retry
+  never re-evaluates against a possibly-different portfolio; every Broker Adapter call in
+  `reconciler.py` is now wrapped (degrading to "treat as unresolved" on exception, never propagating),
+  and a new `reconciler.request_cancel()` is the one exception-safe boundary `engine.cancel()` uses
+  instead of calling the adapter directly; `emergency_flatten()` now marks the engine DEGRADED with an
+  explicit reason when no portfolio has ever been observed, and wraps its build stage in the same
+  exception safety its submit stage already had; `validator.py` gained a documented
+  `_check_time_restrictions()`; the dead transition-check function is now wired into
+  `lifecycle.py::apply_broker_update()` as an advisory warning log; a malformed fill now falls back to
+  the order's own `limit_price` before ever falling back to `0.0`.
+- Confirmed via the real Risk Manager (`test_engine_integration.py`): the full pipeline from a real,
+  schema-valid `RiskDecision` (built through Risk Manager's own fixtures against a real Scoring Engine)
+  through to a validated, FILLED `OrderStatus` works end-to-end, deterministically; the real-strategy
+  DENY chain (Signal Engine → Scoring Engine → Risk Manager → Execution Engine) degrades to a no-op
+  `REJECTED` status end-to-end, never a crash, with no regressions in Market Scanner, Strategy Manager,
+  Signal Engine, Scoring Engine, or Risk Manager (full `ai_trader/` suite: 1165 tests passing).
+
 ## Session 2026-07-15 (Phase 6.5) — Risk Manager v1 implemented, adversarially reviewed, READY
 - CEO approval granted; implemented the Risk Manager production module against the frozen
   `ai_trader/risk_manager/*.md`/`RISK_SCHEMA.json` specification — no redesign. 13 source modules
