@@ -1,0 +1,10 @@
+# Signal Engine v1 runtime dependencies. Own requirements file (independent of the Research Lab's,
+# Market Scanner's, and Strategy Manager's), though it needs the exact same schema-validation stack
+# for the same reason (see schema_validation.py docstrings): jsonschema for a one-time schema-shape
+# sanity check, fastjsonschema for the compiled validator.
+#
+# This package also imports ai_trader.market_scanner's and ai_trader.strategy_manager's published
+# types (DataQualityLevel, ConfidenceLevel, Regime, RequiredContext, Contract) -- sibling AI-Trader
+# module dependencies, not external packages.
+jsonschema>=4.20,<5
+fastjsonschema>=2.19,<3

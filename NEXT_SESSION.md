@@ -18,6 +18,13 @@ any prior conversation.
 > `STRATEGY_MANAGER_VALIDATION_REPORT.md` at the repo root. §2/§7/§8 below are updated to match; the rest of
 > this document (Market Scanner-specific history) is unchanged and still accurate for that module.
 
+> **2026-07-14 Phase 6.3 update:** CEO approval granted; Signal Engine v1 has been implemented, tested,
+> adversarially reviewed (5 real bugs + 1 real gap found and fixed, 1 finding verified correct-as-designed),
+> and verdicted **READY**. Full writeup in `SIGNAL_ENGINE_VALIDATION_REPORT.md` at the repo root. §2/§7/§8
+> below are updated to match. Per the CEO's explicit directive for this task, work stopped immediately after
+> the verdict — Scoring Engine, Risk Manager, Learning Engine, Broker Adapter, and MT5 integration are all
+> still **NOT STARTED** and still require explicit new CEO approval.
+
 > **2026-07-14 deep-validation addendum:** a later CEO directive asked specifically for a CPU profile,
 > a formal memory measurement, and parity verification against the frozen research engine for Market
 > Scanner v1 — three items the original validation never captured. All three are now done; see
@@ -70,7 +77,8 @@ directive — they are the frozen specification implementation must follow.
 | **Market Scanner docs** | `ai_trader/market_scanner/{README,MARKET_SCANNER_ARCHITECTURE,MARKET_CONTEXT_SCHEMA.json,MARKET_SCANNER_API,MARKET_SCANNER_SEQUENCE}.*` | **DONE** (Phase 5.1) |
 | **Strategy Manager docs** | `ai_trader/strategy_manager/` (README, ARCHITECTURE, API, STATE_MACHINE, SEQUENCE, STRATEGY_REGISTRY_SCHEMA.json) | **DONE** (Phase 5.2) |
 | **Strategy Manager implementation** | `ai_trader/strategy_manager/*.py` + `tests/` | **DONE — READY** (Phase 6.2, see `STRATEGY_MANAGER_VALIDATION_REPORT.md`). 16 source modules, 251 tests, mypy --strict clean, 99% coverage. Adversarial review found 6 real bugs, all fixed + regression-tested. |
-| **Signal Engine docs** | `ai_trader/signal_engine/` (README, ARCHITECTURE, API, SEQUENCE, STATE_MACHINE, SIGNAL_SCHEMA.json, SIGNAL_EXPLANATION_SCHEMA.json) | **DONE** (Phase 5.3) — **NOT implemented yet** |
+| **Signal Engine docs** | `ai_trader/signal_engine/` (README, ARCHITECTURE, API, SEQUENCE, STATE_MACHINE, SIGNAL_SCHEMA.json, SIGNAL_EXPLANATION_SCHEMA.json) | **DONE** (Phase 5.3) |
+| **Signal Engine implementation** | `ai_trader/signal_engine/*.py` + `tests/` | **DONE — READY** (Phase 6.3, see `SIGNAL_ENGINE_VALIDATION_REPORT.md`). 10 source modules, 181 tests, mypy --strict clean, 99% coverage. Adversarial review found 5 real bugs + 1 real gap (all fixed + regression-tested), 1 finding verified correct-as-designed. |
 | **Scoring Engine docs** | `ai_trader/scoring_engine/` (README, ARCHITECTURE, SCORING_MODEL.md, API, SEQUENCE, STATE_MACHINE, SCORING_SCHEMA.json) | **DONE** (Phase 5.4) — **NOT implemented yet** |
 | **Risk Manager docs** | `ai_trader/risk_manager/` (README, ARCHITECTURE, RISK_POLICY.md, POSITION_SIZING.md, API, SEQUENCE, STATE_MACHINE, RISK_SCHEMA.json) | **DONE** (Phase 5.5) — **NOT implemented yet** |
 | **Execution Engine docs** | `ai_trader/execution_engine/` (README, ARCHITECTURE, ORDER_LIFECYCLE.md, ORDER_SCHEMA.json, API, SEQUENCE, STATE_MACHINE, FAILURE_POLICY.md) | **DONE** (Phase 5.6) — **NOT implemented yet** |
@@ -356,7 +364,7 @@ The only honest, defensible statement is: **Market Scanner v1 is validated at up
 | — | Simulation Framework — architecture docs (roadmap pivot: simulate before broker) | **DONE** |
 | 6.1 | Market Scanner — **implementation** | **DONE — READY** (§5 RESOLVED note, `MARKET_SCANNER_VALIDATION_REPORT.md`). Code done, 2 critical bugs found+fixed, large-scale benchmark completed + root-caused (harness `tracemalloc` artifact, not a scanner defect). |
 | 6.2 | Strategy Manager — implementation | **DONE — READY** (`STRATEGY_MANAGER_VALIDATION_REPORT.md`). 16 modules, 251 tests, mypy --strict clean, 99% coverage, adversarial review (6 real bugs found+fixed). |
-| 6.3 | Signal Engine — implementation | **NOT STARTED** — Strategy Manager READY verdict is now in hand; still requires explicit CEO go-ahead before starting (§9) |
+| 6.3 | Signal Engine — implementation | **DONE — READY** (`SIGNAL_ENGINE_VALIDATION_REPORT.md`). 10 modules, 181 tests, mypy --strict clean, 99% coverage, adversarial review (5 real bugs + 1 real gap found+fixed, 1 finding confirmed correct-as-designed). |
 | 6.4 | Scoring Engine — implementation | **NOT STARTED** |
 | 6.5 | Risk Manager — implementation | **NOT STARTED** |
 | 6.6 | Execution Engine — implementation (Execution Simulator side only; NO broker) | **NOT STARTED** |
@@ -369,24 +377,32 @@ The only honest, defensible statement is: **Market Scanner v1 is validated at up
 
 ## 8. Immediate next task
 
-**Market Scanner v1 AND Strategy Manager v1 are both DONE — READY** (see `MARKET_SCANNER_VALIDATION_REPORT.md`
-and `STRATEGY_MANAGER_VALIDATION_REPORT.md`). What remains:
+**Market Scanner v1, Strategy Manager v1, AND Signal Engine v1 are all DONE — READY** (see
+`MARKET_SCANNER_VALIDATION_REPORT.md`, `STRATEGY_MANAGER_VALIDATION_REPORT.md`, and
+`SIGNAL_ENGINE_VALIDATION_REPORT.md`). Per the CEO's explicit directive for the Signal Engine task, work
+stopped immediately after its READY verdict. What remains:
 
-1. **Ask the CEO for explicit approval to begin Signal Engine implementation (Phase 6.3)** — a READY verdict
-   on Strategy Manager does not self-authorize starting the next module (§9: "stop and wait for explicit CEO
-   approval between every phase"). This is the one open gate. Note: the Signal Engine is the module that will
-   finally need to build real per-strategy rule-evaluation logic — the Strategy Manager's `StrategyRuntimeHandle`
-   deliberately implements only `required_context()` and raises `StrategyApiNotImplementedError` for
-   `detect`/`generate_signal`/`get_score`/`can_trade`/`can_open_position`/`explain_signal`/`health`
-   (`STRATEGY_MANAGER_VALIDATION_REPORT.md` §2) — that gap is exactly what Signal Engine exists to fill.
-2. **Once approved:** build the Signal Engine strictly against `ai_trader/signal_engine/`'s existing, frozen
-   architecture docs (README, ARCHITECTURE, API, SEQUENCE, STATE_MACHINE, SIGNAL_SCHEMA.json,
-   SIGNAL_EXPLANATION_SCHEMA.json) — no redesign, following the exact same "production-quality: types, tests,
-   mypy strict, docstrings, deterministic, logging, config objects" bar the prior two modules were held to,
+1. **Ask the CEO for explicit approval to begin Scoring Engine implementation (Phase 6.4)** — a READY
+   verdict on Signal Engine does not self-authorize starting the next module (§9: "stop and wait for
+   explicit CEO approval between every phase"). This is the one open gate. Note: the Signal Engine's real
+   `StrategyHandle.api` (`StrategyRuntimeHandle`) still raises `StrategyApiNotImplementedError` for every
+   method except `required_context()` — every real strategy's signal is currently `INVALID`/
+   `CORRUPTED_OUTPUT` by design, proven fail-safe end-to-end by `test_engine_integration.py`. Building real
+   per-strategy `detect`/`generate_signal`/etc. logic (interpreting the Strategy Library's natural-language
+   entry/exit/stop specifications into executable rules) is a SEPARATE, not-yet-scoped task — it was
+   explicitly out of bounds for Phase 6.3 (Signal Engine's job was the fixed orchestration machinery around
+   whatever those methods return, not the methods' own logic) and remains open; raise it explicitly with the
+   CEO before assuming it's bundled into Scoring Engine or any other phase.
+2. **Once approved:** build the Scoring Engine strictly against `ai_trader/scoring_engine/`'s existing,
+   frozen architecture docs (README, ARCHITECTURE, SCORING_MODEL.md, API, SEQUENCE, STATE_MACHINE,
+   SCORING_SCHEMA.json) — no redesign, following the exact same "production-quality: types, tests, mypy
+   strict, docstrings, deterministic, logging, config objects" bar the prior three modules were held to,
    including an independent adversarial code-review pass before declaring it READY (this technique has now
-   found real bugs in both prior modules — 2 in Market Scanner, 6 in Strategy Manager — treat it as mandatory,
-   not optional). If a benchmark tool uses `tracemalloc` at large scale, remember §5's Market Scanner finding
-   and treat it as a suspect from the start.
+   found real bugs in all three prior modules — 2 in Market Scanner, 6 in Strategy Manager, 5+1 in Signal
+   Engine — treat it as mandatory, not optional). If a benchmark tool uses `tracemalloc` at large scale,
+   remember §5's Market Scanner finding and treat it as a suspect from the start. If the module has its own
+   hot-path JSON Schema validation, use `fastjsonschema` from the start (§10's Market Scanner lesson,
+   already followed by both Strategy Manager and Signal Engine).
 
 ---
 

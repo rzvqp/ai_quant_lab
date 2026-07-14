@@ -1,5 +1,47 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-14 (Phase 6.3) — Signal Engine v1 implemented, adversarially reviewed, READY
+- CEO approval granted; implemented the Signal Engine production module against the frozen
+  `ai_trader/signal_engine/*.md`/`SIGNAL_SCHEMA.json`/`SIGNAL_EXPLANATION_SCHEMA.json` specification —
+  no redesign. 10 source modules (pipeline, context validation, explanation builder, assembler,
+  output-collector validator, schema validation, public API facade, types, config, exceptions), 181
+  tests, `mypy --strict` clean, 99% coverage. Full writeup: `SIGNAL_ENGINE_VALIDATION_REPORT.md`.
+- **Independent adversarial review** (same technique that caught 2 critical Market Scanner bugs and 6
+  Strategy Manager bugs) found **7 issues (2 CRITICAL, 3 HIGH, 2 MEDIUM)**; 6 were real and fixed with
+  regression tests, 1 confirmed correct-as-designed: (1) `_collect()` read a handle's `contract`
+  property *before* its exception boundary — a broken read would crash the whole batch's evaluation,
+  not just one strategy's; (2) the documented default `max_workers=1` plus `Future.result(timeout=...)`'s
+  inability to actually interrupt a hung thread meant one truly-hung (not merely slow) strategy would
+  permanently wedge the engine's shared worker pool, silently starving every later cycle and deadlocking
+  `shutdown()`; (3) a `required_context()` exception during symbol-scoping silently dropped a
+  genuinely-scoped strategy with zero trace instead of producing a classified signal; (4) a context
+  missing `meta.as_of` produced an empty batch instead of one INVALID signal per scoped strategy, per
+  the API doc's explicit "all signals INVALID/NEED_CONTEXT, never a crash" text; (5) the documented
+  Output Collector deduplication (same strategy_id+symbol+as_of → keep one, drop extra) was entirely
+  unimplemented; (6) `validator.py`'s `MISSING_TIMESTAMP` check tested `as_of is None`, permanently
+  unreachable dead code since the field is typed plain `int` and the real "missing" sentinel is `0`.
+  The 7th finding (`UNKNOWN_STRATEGY` validation never exercised) was investigated and found to be
+  correct as designed — the frozen `validate_signal(signal) -> ValidationResult` API has no
+  `known_strategy_ids` parameter, and the engine is explicitly "no research access" with no persistent
+  strategy registry to check against.
+- Fixes: moved the contract read inside `_collect()`'s try/except; added `_refresh_executor()` (fresh
+  worker pool every cycle, bounding a hang's blast radius to the cycle it occurred in — the best a
+  pure-thread design can do without process isolation); `_is_scoped_to_symbol()` now fails OPEN
+  (treats a scoping exception as scoped, routing it into the full classified pipeline) instead of
+  silently dropping; added `_missing_as_of_signal()` (classified INVALID/MISSING_TIMESTAMP fallback,
+  wired into both `evaluate()` and `evaluate_strategy()`); added `_dedupe()` (keeps the first
+  occurrence, records drops in `degraded_reasons`); tightened the dead `is None` check to `not
+  signal.as_of`.
+- Confirmed via the real Strategy Manager (`test_engine_integration.py`): every real strategy's
+  `StrategyRuntimeHandle` still raises `StrategyApiNotImplementedError` for every method except
+  `required_context()` (Strategy Manager's own documented, unmigrated scope boundary) — the Signal
+  Engine degrades this to a classified `INVALID`/`CORRUPTED_OUTPUT` signal end-to-end, never crashes,
+  and stays fully queryable.
+- **Verdict: Signal Engine v1 = READY.** Does not self-authorize Scoring Engine (Phase 6.4) — still
+  CEO-gated; work stopped immediately after the verdict per the CEO's explicit directive for this task.
+  No changes to Research Lab, Strategy Library, Strategy Interface, Market Scanner, or Strategy Manager.
+  Full `ai_trader/` suite green: 559 tests, 47 source files, mypy --strict clean, no regressions.
+
 ## Session 2026-07-14 (deep validation) — Market Scanner v1: CPU profile, memory, parity vs frozen engine
 - Filled the three gaps a later CEO directive asked for that the original Phase 6.1 validation never
   captured: a real `cProfile` capture (120wd x 3-symbol, 34,440 contexts) confirms schema validation
