@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/scoring_engine/SCORING_SCHEMA.json",
+  "title": "OpportunityScore v1",
+  "description": "Standardized, deterministic 0-100 opportunity score the Scoring Engine produces per StrategySignal. Rule-based composite of nine fixed components (SCORING_MODEL.md) - NOT a machine-learning prediction. Emitted to the Risk Manager; carries no order, no size, no decision. Spec: SCORING_ENGINE_ARCHITECTURE.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scoring_schema_version", "scoring_engine_version", "scoring_model_version",
+    "score_id", "signal_id", "strategy_id", "symbol", "timestamp", "as_of",
+    "state", "direction",
+    "total_score", "component_scores", "confidence", "quality", "recommendation",
+    "rank", "reason_codes", "refs"
+  ],
+  "properties": {
+    "scoring_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+    "scoring_engine_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "scoring_model_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+
+    "score_id": { "type": "string", "description": "unique id (strategy_id|symbol|as_of derived)" },
+    "signal_id": { "type": "string", "description": "the StrategySignal this score is derived from" },
+    "strategy_id": { "type": "string", "pattern": "^S\\d+$" },
+    "symbol": { "type": "string" },
+    "timestamp": { "type": "integer", "description": "UTC epoch seconds the score was produced" },
+    "as_of": { "type": "integer", "description": "MarketContext as_of; MUST equal the signal's as_of" },
+
+    "state": {
+      "type": "string",
+      "enum": ["BUY", "SELL", "LONG_READY", "SHORT_READY", "WAIT_CONFIRMATION", "NEED_CONTEXT", "BLOCKED", "INVALID", "NO_SIGNAL"]
+    },
+    "direction": { "type": "string", "enum": ["LONG", "SHORT", "NONE"] },
+
+    "total_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "component_scores": {
+      "type": "object", "additionalProperties": false,
+      "required": ["signal_strength", "historical_confidence", "market_alignment", "regime_alignment",
+                   "confirmation_quality", "data_quality", "execution_readiness", "risk_penalty", "conflict_penalty"],
+      "properties": {
+        "signal_strength": { "$ref": "#/$defs/unit" },
+        "historical_confidence": { "$ref": "#/$defs/unit" },
+        "market_alignment": { "$ref": "#/$defs/unit" },
+        "regime_alignment": { "$ref": "#/$defs/unit" },
+        "confirmation_quality": { "$ref": "#/$defs/unit" },
+        "data_quality": { "$ref": "#/$defs/unit" },
+        "execution_readiness": { "$ref": "#/$defs/unit" },
+        "risk_penalty": { "$ref": "#/$defs/unit" },
+        "conflict_penalty": { "$ref": "#/$defs/unit" }
+      }
+    },
+    "base_quality": { "$ref": "#/$defs/unit" },
+    "penalty_factor": { "$ref": "#/$defs/unit" },
+
+    "confidence": { "type": "string", "enum": ["NONE", "VERY_LOW", "LOW", "MEDIUM", "HIGH"] },
+    "quality": { "type": "string", "enum": ["PREMIUM", "STRONG", "MODERATE", "WEAK", "POOR"] },
+    "recommendation": {
+      "type": "string",
+      "enum": ["STRONG_OPPORTUNITY", "MODERATE_OPPORTUNITY", "WEAK_OPPORTUNITY", "WATCH", "SKIP", "INVALID"]
+    },
+    "rank": { "type": "integer", "minimum": 1, "description": "deterministic rank within the (symbol, as_of) batch; 1 = best" },
+
+    "reason_codes": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["code"],
+        "properties": {
+          "code": { "type": "string", "description": "stable reason code, e.g. NEGATIVE_OOS_CAP, REGIME_MATCH, CONFLICT_OPPOSING, DATA_DEGRADED, EVIDENCE_MISSING, FULLY_CONFIRMED, NOT_ACTIONABLE" },
+          "component": { "type": ["string", "null"] },
+          "detail": { "type": ["string", "null"], "description": "structured detail; not free-text narrative" }
+        }
+      }
+    },
+
+    "refs": {
+      "type": "object", "additionalProperties": false,
+      "required": ["strategy_version", "signal_schema_version", "interface_version", "data_quality"],
+      "properties": {
+        "strategy_version": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "signal_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "interface_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "data_quality": { "type": "string", "enum": ["OK", "DEGRADED", "STALE", "INSUFFICIENT"] }
+      }
+    },
+
+    "trade_context": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "description": "prices carried through from the signal for the Risk Manager; NO sizing here",
+      "properties": {
+        "entry": { "type": ["number", "null"] },
+        "stop": { "type": ["number", "null"] },
+        "target": { "type": ["number", "null"] },
+        "risk_R": { "type": ["number", "null"], "minimum": 0 }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "$comment": "non-actionable states cannot carry a positive recommendation",
+      "if": { "properties": { "state": { "enum": ["NEED_CONTEXT", "BLOCKED", "INVALID", "NO_SIGNAL"] } } },
+      "then": { "properties": { "recommendation": { "enum": ["SKIP", "INVALID"] }, "direction": { "const": "NONE" } } }
+    }
+  ],
+
+  "$defs": {
+    "unit": { "type": "number", "minimum": 0, "maximum": 1 }
+  }
+}
