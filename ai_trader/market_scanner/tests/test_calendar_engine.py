@@ -37,13 +37,16 @@ def test_weekend_gap_friday_to_monday() -> None:
     assert snap.dow == 0
 
 
-def test_holiday_inferred_from_extra_gap() -> None:
+def test_unexplained_extra_gap_is_not_inferred_as_a_holiday() -> None:
+    """A gap larger than the normal 3-day weekend gap (e.g. Thu -> Tue-after-next) looks identical
+    whether caused by a genuine holiday or a data outage; is_holiday must stay False absent an
+    explicit CalendarEvent (that honest ambiguity is reported via data_quality gaps instead)."""
     engine = CalendarEngine()
     engine.update(_THURSDAY, 1800)
     engine.update(_FRIDAY, 1800)
-    # a 4-day gap instead of the normal 3-day weekend gap (e.g. Monday holiday)
+    # a 4-day gap instead of the normal 3-day weekend gap (e.g. Monday holiday, or an outage)
     snap = engine.update(_MONDAY + _DAY, 1800)
-    assert snap.is_holiday is True
+    assert snap.is_holiday is False
 
 
 def test_explicit_holiday_event_confirms_is_holiday() -> None:

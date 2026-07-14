@@ -7,10 +7,15 @@ engine's own day-boundary convention (``mstrat_ext._new_day``) used by the calen
 *sessions*, via ``session.py``; calendar-day boundaries are plain UTC dates in the researched
 system, and parity requires reproducing that exactly).
 
-Holiday detection is a documented, deterministic heuristic in the absence of an explicit holiday
-feed: a day-count gap larger than the normal weekend gap (Fri->Mon = 3 days) is inferred as a
-holiday. An explicit :class:`~ai_trader.market_scanner.types.CalendarEvent` with ``kind="holiday"``
-always overrides/confirms this for its date.
+Holiday detection: ``is_holiday`` is set ONLY from a confirmed
+:class:`~ai_trader.market_scanner.types.CalendarEvent` with ``kind="holiday"`` for that date — never
+inferred from a day-count gap. A day-count gap larger than the normal weekend gap (Fri->Mon = 3
+days) looks IDENTICAL from the bar feed alone whether it was a genuine market holiday or an
+ordinary multi-day data outage; inferring "holiday" from that gap would silently fabricate a
+calendar fact the scanner cannot actually know, in violation of the "never invent; always disclose"
+policy (architecture §8) — a real outage of that shape is already honestly reported as an
+unexplained gap via ``data_quality`` (see :mod:`~ai_trader.market_scanner.bar_store`), which is
+where that signal belongs. Without an explicit holiday feed, ``is_holiday`` is simply ``False``.
 """
 
 from __future__ import annotations
@@ -105,14 +110,13 @@ class CalendarEngine:
             (today.year, today.month) != (self._prev_date.year, self._prev_date.month)
         )
 
-        is_weekend_gap = False
+        # is_holiday reflects ONLY a confirmed CalendarEvent for this date (see module docstring):
+        # a bar-feed gap alone cannot distinguish a genuine holiday from a data outage, so it is
+        # never used to infer is_holiday. Day-count gaps are reported honestly via data_quality.
         is_holiday = today in self._confirmed_holidays
-        if is_new_day and self._prev_date is not None and self._prev_dow is not None:
-            gap_days = (today - self._prev_date).days
-            expected_gap = 3 if self._prev_dow == 4 else 1
-            if gap_days > expected_gap:
-                is_holiday = True
-            is_weekend_gap = self._prev_dow == 4 and dow != 4
+        is_weekend_gap = (
+            is_new_day and self._prev_dow is not None and self._prev_dow == 4 and dow != 4
+        )
 
         flags = [
             EventFlag(ts=e.ts, impact=e.impact, kind=e.kind)

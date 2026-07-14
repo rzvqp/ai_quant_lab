@@ -1,3 +1,8 @@
 # Market Scanner v1 runtime dependencies. Deliberately minimal and independent of the Research
 # Lab's requirements.txt (code/requirements.txt) -- the AI Trader is a physically separate system.
+#
+# jsonschema: one-time startup check that MARKET_CONTEXT_SCHEMA.json is well-formed Draft 2020-12.
+# fastjsonschema: compiles that schema into the actual per-context validator used on the hot path
+#   (schema_validation.py) -- ~10x faster than repeated jsonschema.iter_errors() calls at scale.
 jsonschema>=4.20,<5
+fastjsonschema>=2.19,<3
