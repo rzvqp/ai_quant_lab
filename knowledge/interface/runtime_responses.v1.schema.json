@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-quant-lab/interface/runtime_responses.v1.schema.json",
+  "title": "Strategy API v1 runtime response objects",
+  "description": "Normative shapes for the values the runtime API returns (STRATEGY_API_v1.md). Definition only; no implementation. Every response is a deterministic function of (contract, context, trader_state).",
+  "$defs": {
+    "Direction": { "type": "string", "enum": ["LONG", "SHORT", "NONE"] },
+    "Regime": { "type": "string", "enum": ["TREND_UP", "TREND_DOWN", "RANGE", "HIGH_VOL", "LOW_VOL", "SESSION_OPEN", "ANY"] },
+    "Health": { "type": "string", "enum": ["OK", "DEGRADED", "STALE", "DISABLED", "INVALID", "UNKNOWN"] },
+
+    "ContextRequirement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["timeframes", "fields_by_timeframe", "lookback_bars_by_timeframe", "warmup_bars"],
+      "properties": {
+        "timeframes": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "fields_by_timeframe": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } },
+        "lookback_bars_by_timeframe": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } },
+        "htf": { "type": ["array", "null"], "items": { "type": "string" } },
+        "warmup_bars": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "DetectResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["active", "setup_forming", "insufficient_context", "reason"],
+      "properties": {
+        "active": { "type": "boolean" },
+        "setup_forming": { "type": "boolean" },
+        "insufficient_context": { "type": "boolean" },
+        "reason": { "type": "string" }
+      }
+    },
+
+    "Signal": {
+      "type": "object", "additionalProperties": false,
+      "required": ["present", "direction", "entry", "stop", "target", "risk_R", "confidence",
+                   "strength", "reason", "regime", "required_confirmations_met", "valid_until", "invalidations"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "direction": { "$ref": "#/$defs/Direction" },
+        "entry": { "type": ["number", "null"] },
+        "stop": { "type": ["number", "null"] },
+        "target": { "type": ["number", "null"] },
+        "risk_R": { "type": ["number", "null"], "minimum": 0, "description": "1.0 by construction (stop defines 1R)." },
+        "confidence": { "type": "string", "enum": ["NONE", "NEGATIVE", "VERY_LOW", "LOW", "MEDIUM", "HIGH"] },
+        "strength": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reason": { "type": "string" },
+        "regime": { "$ref": "#/$defs/Regime" },
+        "required_confirmations_met": { "type": "boolean" },
+        "valid_until": { "type": ["string", "null"], "description": "timestamp or bar-count after which the signal expires" },
+        "invalidations": { "type": "array", "items": { "type": "string" } }
+      },
+      "allOf": [
+        { "if": { "properties": { "present": { "const": false } } },
+          "then": { "properties": { "direction": { "const": "NONE" }, "entry": { "const": null }, "stop": { "const": null } } } }
+      ]
+    },
+
+    "Score": {
+      "type": "object", "additionalProperties": false,
+      "required": ["value", "components", "basis"],
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "components": {
+          "type": "object", "additionalProperties": false,
+          "required": ["setup_quality", "confirmation", "regime_fit", "maturity_prior", "health_penalty"],
+          "properties": {
+            "setup_quality": { "type": "number", "minimum": 0, "maximum": 1 },
+            "confirmation": { "type": "number", "minimum": 0, "maximum": 1 },
+            "regime_fit": { "type": "number", "minimum": 0, "maximum": 1 },
+            "maturity_prior": { "type": "number", "minimum": 0, "maximum": 1 },
+            "health_penalty": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "basis": { "type": "string" }
+      }
+    },
+
+    "Gate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["allowed", "reasons"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "reasons": { "type": "array", "items": { "type": "string" } },
+        "slots_remaining": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+
+    "Explanation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["headline", "mechanism", "triggered_conditions", "confirmations", "regime", "contract_ref"],
+      "properties": {
+        "headline": { "type": "string" },
+        "mechanism": { "type": "string" },
+        "triggered_conditions": { "type": "array", "items": { "type": "string" } },
+        "confirmations": { "type": "array", "items": { "type": "string" } },
+        "regime": { "$ref": "#/$defs/Regime" },
+        "counterfactual": { "type": ["string", "null"], "description": "what would have prevented the signal" },
+        "contract_ref": {
+          "type": "object", "additionalProperties": false, "required": ["id", "version"],
+          "properties": { "id": { "type": "string", "pattern": "^S\\d+$" }, "version": { "type": "string" } }
+        }
+      }
+    },
+
+    "HealthReport": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state", "checks", "last_review"],
+      "properties": {
+        "state": { "$ref": "#/$defs/Health" },
+        "checks": {
+          "type": "object", "additionalProperties": false,
+          "required": ["data_ok", "not_stale", "within_scope", "not_killed", "live_drift_ok"],
+          "properties": {
+            "data_ok": { "type": "boolean" },
+            "not_stale": { "type": "boolean" },
+            "within_scope": { "type": "boolean" },
+            "not_killed": { "type": "boolean" },
+            "live_drift_ok": { "type": ["boolean", "null"] }
+          }
+        },
+        "last_review": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "notes": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
