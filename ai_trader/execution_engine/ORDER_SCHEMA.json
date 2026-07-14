@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-trader/execution_engine/ORDER_SCHEMA.json",
+  "title": "OrderRequest v1",
+  "description": "The fully-specified, idempotent order the Execution Engine builds from an approved RiskDecision and hands to the abstract Broker Adapter. It carries no fills and performs no execution; it is the request. Spec: EXECUTION_ENGINE_ARCHITECTURE.md + ORDER_LIFECYCLE.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "order_schema_version", "execution_engine_version",
+    "order_request_id", "client_order_id", "decision_id",
+    "strategy_id", "symbol", "timestamp", "as_of",
+    "side", "direction", "intent",
+    "order_type", "time_in_force", "quantity",
+    "constraints", "refs"
+  ],
+  "properties": {
+    "order_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "const": "1.0.0" },
+    "execution_engine_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+
+    "order_request_id": { "type": "string", "description": "unique id for this OrderRequest instance" },
+    "client_order_id": { "type": "string", "description": "IDEMPOTENCY key derived from decision_id; a retry re-derives the same value so no duplicate order is created" },
+    "decision_id": { "type": "string", "description": "the approved RiskDecision this order executes" },
+    "score_id": { "type": ["string", "null"] },
+    "signal_id": { "type": ["string", "null"] },
+    "strategy_id": { "type": "string", "pattern": "^S\\d+$" },
+
+    "symbol": { "type": "string" },
+    "timestamp": { "type": "integer", "description": "UTC epoch seconds the order was built" },
+    "as_of": { "type": "integer", "description": "MUST equal the RiskDecision as_of" },
+
+    "side": { "type": "string", "enum": ["BUY", "SELL"] },
+    "direction": { "type": "string", "enum": ["LONG", "SHORT"] },
+    "intent": { "type": "string", "enum": ["OPEN", "CLOSE", "REDUCE", "SCALE_IN", "SCALE_OUT"] },
+
+    "order_type": { "type": "string", "enum": ["MARKET", "LIMIT", "STOP", "STOP_LIMIT", "OCO", "BRACKET"] },
+    "time_in_force": { "type": "string", "enum": ["IOC", "FOK", "GTC", "DAY"] },
+
+    "quantity": { "type": "number", "exclusiveMinimum": 0, "description": "order size in units (from RiskDecision.sizing.size_units)" },
+    "lots": { "type": ["number", "null"], "minimum": 0 },
+
+    "limit_price": { "type": ["number", "null"], "description": "required for LIMIT and STOP_LIMIT" },
+    "stop_price": { "type": ["number", "null"], "description": "required for STOP and STOP_LIMIT" },
+
+    "bracket": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "description": "child protective legs for BRACKET orders",
+      "properties": {
+        "take_profit": { "type": ["number", "null"] },
+        "stop_loss": { "type": ["number", "null"] }
+      }
+    },
+    "oco_link": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "description": "linkage for OCO (one-cancels-other) structures",
+      "properties": {
+        "group_id": { "type": "string" },
+        "role": { "type": "string", "enum": ["PRIMARY", "SECONDARY"] }
+      }
+    },
+
+    "constraints": {
+      "type": "object", "additionalProperties": false,
+      "required": ["max_slippage", "reduce_only", "post_only"],
+      "properties": {
+        "max_slippage": { "type": ["number", "null"], "minimum": 0, "description": "required (non-null) for MARKET / marketable orders" },
+        "reduce_only": { "type": "boolean", "description": "order may only decrease exposure (exits / emergency flatten)" },
+        "post_only": { "type": "boolean", "description": "maker-only; reject if it would take liquidity" },
+        "valid_until": { "type": ["string", "integer", "null"] },
+        "allowed_session": { "type": ["string", "null"] },
+        "max_hold_bars": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+
+    "broker_capabilities_ref": {
+      "type": ["object", "null"], "additionalProperties": false,
+      "description": "the abstract capability profile the order was validated against (echoed for audit)",
+      "properties": {
+        "tick_size": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "lot_step": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "min_qty": { "type": ["number", "null"], "minimum": 0 },
+        "max_qty": { "type": ["number", "null"], "minimum": 0 },
+        "contract_version": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$" }
+      }
+    },
+
+    "refs": {
+      "type": "object", "additionalProperties": false,
+      "required": ["risk_schema_version", "risk_policy_version"],
+      "properties": {
+        "risk_schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "risk_policy_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "account": { "type": ["string", "null"] }
+      }
+    }
+  },
+
+  "allOf": [
+    {
+      "$comment": "LIMIT requires a limit_price",
+      "if": { "properties": { "order_type": { "const": "LIMIT" } } },
+      "then": { "properties": { "limit_price": { "type": "number" } }, "required": ["limit_price"] }
+    },
+    {
+      "$comment": "STOP requires a stop_price",
+      "if": { "properties": { "order_type": { "const": "STOP" } } },
+      "then": { "properties": { "stop_price": { "type": "number" } }, "required": ["stop_price"] }
+    },
+    {
+      "$comment": "STOP_LIMIT requires both stop_price and limit_price",
+      "if": { "properties": { "order_type": { "const": "STOP_LIMIT" } } },
+      "then": {
+        "properties": { "stop_price": { "type": "number" }, "limit_price": { "type": "number" } },
+        "required": ["stop_price", "limit_price"]
+      }
+    },
+    {
+      "$comment": "BRACKET requires the protective legs object",
+      "if": { "properties": { "order_type": { "const": "BRACKET" } } },
+      "then": { "properties": { "bracket": { "type": "object" } }, "required": ["bracket"] }
+    },
+    {
+      "$comment": "OCO requires the linkage object",
+      "if": { "properties": { "order_type": { "const": "OCO" } } },
+      "then": { "properties": { "oco_link": { "type": "object" } }, "required": ["oco_link"] }
+    },
+    {
+      "$comment": "side must agree with direction for opening/scaling intents",
+      "if": { "properties": { "intent": { "enum": ["OPEN", "SCALE_IN"] } } },
+      "then": {
+        "oneOf": [
+          { "properties": { "direction": { "const": "LONG" }, "side": { "const": "BUY" } } },
+          { "properties": { "direction": { "const": "SHORT" }, "side": { "const": "SELL" } } }
+        ]
+      }
+    }
+  ]
+}
