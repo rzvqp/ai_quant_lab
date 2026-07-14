@@ -1,0 +1,3 @@
+# Market Scanner v1 runtime dependencies. Deliberately minimal and independent of the Research
+# Lab's requirements.txt (code/requirements.txt) -- the AI Trader is a physically separate system.
+jsonschema>=4.20,<5
