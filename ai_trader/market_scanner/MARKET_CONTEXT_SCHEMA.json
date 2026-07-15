@@ -188,6 +188,16 @@
           "type": "object",
           "description": "standardized feature namespace values at as_of (feature_dictionary_version). Keys are declared field names; unavailable (warmup) values are null.",
           "additionalProperties": { "type": ["number", "boolean", "string", "null"] }
+        },
+        "feature_history": {
+          "type": "array",
+          "description": "Phase 6.8 Wave B addition (optional -- a producer omitting this field is still schema-valid): the SAME standardized feature namespace computed at each of `bars`' own closes, oldest→newest, index-aligned 1:1 with `bars` (feature_history[i] is the real, already-computed snapshot as of bars[i]'s own close -- never approximated or back-filled). An entry is null where that specific bar's own snapshot was not retained.",
+          "items": {
+            "oneOf": [
+              { "type": "null" },
+              { "type": "object", "additionalProperties": { "type": ["number", "boolean", "string", "null"] } }
+            ]
+          }
         }
       }
     }

@@ -1,84 +1,135 @@
 {
- "id": "S4",
- "name": "Volatility Compression Expansion",
- "klass": "Volatility-regime expansion",
- "slug": "S04_volatility_compression_expansion",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both (bar-directional)",
- "htf_context": "none",
- "mechanism": "After a compression regime (ATR below its mean), a range-expansion bar (>k*ATR) signals a volatility breakout; trade its direction. NOTE: S4 was found NEGATIVE \u2014 expansion direction is near-random without a trend filter (the fix is S23).",
- "entry_rules": "Prior compression for `min_compress` bars; an expansion bar range>k*ATR; direction = the expansion bar colour; enter next open.",
- "exit_rules": "rr2 | rr3 | trailing | time.",
- "stop_loss_rules": "bar (2 ticks past the expansion bar) or atr.",
- "required_confirmations": "none",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S4",
+  "name": "Volatility Compression Expansion",
+  "slug": "S04_volatility_compression_expansion",
+  "version": "1.0.0",
+  "class": "Volatility-regime expansion"
  },
- "grammar": "exp_k(1.5|2.0), stop, exit, min_compress(1|3)",
- "executable_default": {
-  "selection_rule": "largest-n (no positive hypothesis)",
-  "hypothesis_id": "9c749c4ba49d",
-  "params": {
-   "exp_k": 1.5,
-   "stop": "bar",
-   "exit": "trailing",
-   "min_compress": 1
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "9c749c4ba49d",
+ "semantics": {
+  "mechanism": "After a compression regime (ATR below its mean), a range-expansion bar (>k*ATR) signals a volatility breakout; trade its direction. NOTE: S4 was found NEGATIVE — expansion direction is near-random without a trend filter (the fix is S23).",
+  "signal_reason": "Prior compression for `min_compress` bars; an expansion bar range>k*ATR; direction = the expansion bar colour; enter next open.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "compress",
+     "m_atr"
+    ],
+    "lookback_bars": 3
+   }
+  ],
+  "required_confirmations": [
+   "COMPRESSION_EXPANSION_BREAKOUT"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "A range-expansion bar (>1.5*ATR) after >=1 of the prior 2 bars were compressed; direction = the expansion bar's own colour.",
+   "trigger": "COMPRESSION_EXPANSION_BREAKOUT",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "1.5*ATR-at-entry trailing stop (frozen engine's own exit=trailing convention); no fixed price target.",
+   "options": [
+    "trailing"
+   ]
+  },
+  "stop": {
+   "description": "2 ticks past the expansion bar's own extreme.",
+   "trigger": "bar"
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance — an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "NEGATIVE",
+   "rationale": "NEGATIVE — family unprofitable on the research segment"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 3141,
    "expectancy_R": -0.3763,
    "profit_factor": 0.269,
    "drawdown_R": 1183.6,
    "win_rate": 0.226,
-   "sumR": -1182.05,
-   "median_R": -0.4754,
-   "trimmed5_R": -0.4355,
-   "months": 27,
    "pos_months": 0,
-   "years": 4.0,
-   "side": "both",
-   "hist_profitable": false,
-   "research_worthy": false,
-   "fragile": false,
-   "top1_share": 0.037,
-   "oos_expectancy_R": -0.2415
+   "months": 27,
+   "top1_share": 0.037
   },
-  "oos_expectancy_R": -0.2415,
-  "drawdown_R": 1183.6,
-  "profit_factor": 0.269,
-  "expectancy_R": -0.3763,
-  "family": {
-   "n_hypotheses": 32,
-   "n_hist_profitable": 0,
-   "n_research_worthy": 0,
-   "best_exp": -0.1454,
-   "median_exp": -0.2265
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.2415,
+   "profit_factor": 0.269,
+   "drawdown_R": 1183.6,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN — matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY — historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 9c749c4ba49d: n=3141, exp=-0.3763R, PF=0.269, maxDD=1183.6R, OOS exp=-0.2415R, pos-months 0/27, not profitable. ",
+  "known_limitations": [
+   "NEGATIVE — family unprofitable on the research segment",
+   "NOT RUN — matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "NEGATIVE \u2014 family unprofitable on the research segment",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 9c749c4ba49d: n=3141, exp=-0.3763R, PF=0.269, maxDD=1183.6R, OOS exp=-0.2415R, pos-months 0/27, not profitable. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S04_volatility_compression_expansion"
  }
 }

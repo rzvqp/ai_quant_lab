@@ -1,84 +1,134 @@
 {
- "id": "S14",
- "name": "Momentum Exhaustion",
- "klass": "Momentum exhaustion",
- "slug": "S14_momentum_exhaustion",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "none",
- "mechanism": "A sharp move (high |ROC|) that then STALLS (ROC magnitude shrinks) signals exhaustion; fade it. Loser = late momentum chasers.",
- "entry_rules": "Onset of acceleration (|ROC3|>k) together with a stall (current |ROC| < prior |ROC|); enter next open against the exhausted move.",
- "exit_rules": "rr2 | time.",
- "stop_loss_rules": "atr or bar (2 ticks past the bar extreme).",
- "required_confirmations": "the stall",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S14",
+  "name": "Momentum Exhaustion",
+  "slug": "S14_momentum_exhaustion",
+  "version": "1.0.0",
+  "class": "Momentum exhaustion"
  },
- "grammar": "roc_k(0.004|0.008), side, stop, exit",
- "executable_default": {
-  "selection_rule": "research_worthy & largest-n",
-  "hypothesis_id": "4c47c202af20",
-  "params": {
-   "roc_k": 0.004,
-   "side": "down",
-   "stop": "atr",
-   "exit": "time"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "4c47c202af20",
+ "semantics": {
+  "mechanism": "A sharp move (high |ROC|) that then STALLS (ROC magnitude shrinks) signals exhaustion; fade it. Loser = late momentum chasers.",
+  "signal_reason": "Onset of acceleration (|ROC3|>k) together with a stall (current |ROC| < prior |ROC|); enter next open against the exhausted move.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "m_atr"
+    ],
+    "lookback_bars": 6
+   }
+  ],
+  "required_confirmations": [
+   "MOMENTUM_EXHAUSTION_STALL"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "Fresh onset of a 3-bar-ROC acceleration (>0.004) followed by a stall (shrinking magnitude); always fades the up-move.",
+   "trigger": "MOMENTUM_EXHAUSTION_STALL",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "24-bar time-stop (frozen engine's own exit=time convention); no price target.",
+   "options": [
+    "time"
+   ]
+  },
+  "stop": {
+   "description": "1.5*ATR from entry, floored.",
+   "trigger": "atr"
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "VERY_LOW",
+   "rationale": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample (flagged FRAGILE \u2014 dominated by few periods)"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 118,
    "expectancy_R": 0.0349,
    "profit_factor": 1.061,
    "drawdown_R": 14.01,
    "win_rate": 0.373,
-   "sumR": 4.12,
-   "median_R": -0.5742,
-   "trimmed5_R": -0.1868,
-   "months": 25,
    "pos_months": 11,
-   "years": 4.0,
-   "side": "short",
-   "hist_profitable": true,
-   "research_worthy": true,
-   "fragile": true,
-   "top1_share": 0.137,
-   "oos_expectancy_R": -0.1374
+   "months": 25,
+   "top1_share": 0.137
   },
-  "oos_expectancy_R": -0.1374,
-  "drawdown_R": 14.01,
-  "profit_factor": 1.061,
-  "expectancy_R": 0.0349,
-  "family": {
-   "n_hypotheses": 16,
-   "n_hist_profitable": 6,
-   "n_research_worthy": 1,
-   "best_exp": 0.5785,
-   "median_exp": -0.0688
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.1374,
+   "profit_factor": 1.061,
+   "drawdown_R": 14.01,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 16 hypotheses, 6 historically-profitable, 1 research-worthy. Representative 4c47c202af20: n=118, exp=0.0349R, PF=1.061, maxDD=14.01R, OOS exp=-0.1374R, pos-months 11/25, research-worthy, FRAGILE. ",
+  "known_limitations": [
+   "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample (flagged FRAGILE \u2014 dominated by few periods)",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample (flagged FRAGILE \u2014 dominated by few periods)",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 16 hypotheses, 6 historically-profitable, 1 research-worthy. Representative 4c47c202af20: n=118, exp=0.0349R, PF=1.061, maxDD=14.01R, OOS exp=-0.1374R, pos-months 11/25, research-worthy, FRAGILE. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S14_momentum_exhaustion"
  }
 }

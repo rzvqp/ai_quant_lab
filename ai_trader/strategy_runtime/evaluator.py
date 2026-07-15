@@ -97,6 +97,15 @@ class RuntimeEvaluator:
     #: -backed exit rule.
     time_stop_bars: int | None = None
 
+    #: ATR multiple an open position of this strategy trails by, via the Simulation Framework's own
+    #: generic trailing-stop overlay (:mod:`ai_trader.simulation.trailing_stop`) -- ``None`` (the
+    #: default) means no trailing stop for this strategy. A family evaluator whose own v0
+    #: ``executable_default.exit == "trailing"`` sets this to the frozen research engine's own
+    #: universal trailing distance (``code/mstrat.py::simulate``'s own hardcoded ``1.5*atr[si]``,
+    #: identical for every family using this exit kind, read only, never imported) -- never
+    #: invented, never a per-strategy tunable.
+    trailing_stop_atr_mult: float | None = None
+
     def __init__(self, strategy_id: str, contract: Contract, symbols: frozenset[str]) -> None:
         self.strategy_id = strategy_id
         self.contract = contract

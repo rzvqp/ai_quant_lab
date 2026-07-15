@@ -1,84 +1,142 @@
 {
- "id": "S27",
- "name": "VWAP Reclaim in Trend",
- "klass": "Class III \u2014 value + trend",
- "slug": "S27_vwap_reclaim_in_trend",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "H4/H1 trend + session VWAP",
- "mechanism": "In the HTF trend, price reclaims session VWAP (mean-revert to VWAP then continue with the trend). Distinct from S26 (excursion).",
- "entry_rules": "HTF trend up and a close reclaims above VWAP (or trend down and close breaks below VWAP); onset only; enter next open.",
- "exit_rules": "opp_struct (far VWAP band) | time.",
- "stop_loss_rules": "atr or vwap (fraction of sigma past VWAP).",
- "required_confirmations": "HTF trend.",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S27",
+  "name": "VWAP Reclaim in Trend",
+  "slug": "S27_vwap_reclaim_in_trend",
+  "version": "1.0.0",
+  "class": "Class III \u2014 value + trend"
  },
- "grammar": "htf(h4|h1), band_k(1.0|2.0), stop, exit",
- "executable_default": {
-  "selection_rule": "largest-n (no positive hypothesis)",
-  "hypothesis_id": "90f754da36c5",
-  "params": {
-   "htf": "h4",
-   "band_k": 1.0,
-   "stop": "vwap",
-   "exit": "rr2"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "90f754da36c5",
+ "semantics": {
+  "mechanism": "In the HTF trend, price reclaims session VWAP (mean-revert to VWAP then continue with the trend). Distinct from S26 (excursion).",
+  "signal_reason": "HTF trend up and a close reclaims above VWAP (or trend down and close breaks below VWAP); onset only; enter next open.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "vwap",
+     "m_std",
+     "m_atr"
+    ],
+    "lookback_bars": 2,
+    "htf": [
+     "H4"
+    ]
+   }
+  ],
+  "required_confirmations": [
+   "H4_TREND_VWAP_RECLAIM"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "H4 trend up + fresh close-reclaim above vwap (LONG), or H4 trend down + fresh close-break below vwap (SHORT).",
+   "trigger": "H4_TREND_VWAP_RECLAIM",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "Target the far vwap band (vwap +/- band_k*std) -- NOT the literal exit=rr2 grammar value.",
+   "options": [
+    "rr2"
+   ]
+  },
+  "stop": {
+   "description": "vwap -/+ 0.25*std (stop='vwap'), floored.",
+   "trigger": "vwap_band"
+  },
+  "target": {
+   "description": "Far vwap band: vwap + direction*1.0*std."
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "NEGATIVE",
+   "rationale": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 4364,
    "expectancy_R": -0.4462,
    "profit_factor": 0.469,
    "drawdown_R": 1952.65,
    "win_rate": 0.341,
-   "sumR": -1947.39,
-   "median_R": -1.1747,
-   "trimmed5_R": -0.6279,
-   "months": 27,
    "pos_months": 1,
-   "years": 4.0,
-   "side": "both",
-   "hist_profitable": false,
-   "research_worthy": false,
-   "fragile": false,
-   "top1_share": 0.005,
-   "oos_expectancy_R": -0.2416
+   "months": 27,
+   "top1_share": 0.005
   },
-  "oos_expectancy_R": -0.2416,
-  "drawdown_R": 1952.65,
-  "profit_factor": 0.469,
-  "expectancy_R": -0.4462,
-  "family": {
-   "n_hypotheses": 24,
-   "n_hist_profitable": 0,
-   "n_research_worthy": 0,
-   "best_exp": -0.0642,
-   "median_exp": -0.2263
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.2416,
+   "profit_factor": 0.469,
+   "drawdown_R": 1952.65,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 90f754da36c5: n=4364, exp=-0.4462R, PF=0.469, maxDD=1952.65R, OOS exp=-0.2416R, pos-months 1/27, not profitable. ",
+  "known_limitations": [
+   "NEGATIVE \u2014 family unprofitable on the research segment",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "NEGATIVE \u2014 family unprofitable on the research segment",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 90f754da36c5: n=4364, exp=-0.4462R, PF=0.469, maxDD=1952.65R, OOS exp=-0.2416R, pos-months 1/27, not profitable. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat_ext",
-  "results_parquet": "results/ext_families/EXT_FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S27_vwap_reclaim_in_trend"
  }
 }

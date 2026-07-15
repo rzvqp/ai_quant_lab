@@ -25,7 +25,13 @@ CHECKPOINT_2_IDS = frozenset({
     "S1", "S6", "S16", "S17", "S18", "S19", "S24", "S29", "S30", "S31",
     "S2", "S11", "S12", "S21", "S22",
 })
-TIME_EXIT_IDS = frozenset({"S16", "S17", "S18", "S19", "S24"})
+#: ALL 43 runtime-eligible strategies (Wave B COMPLETE, Checkpoints 2-9) -- see test_registry.py's
+#: own CURRENT_MIGRATED_IDS docstring for the full per-batch breakdown.
+CURRENT_MIGRATED_IDS = CHECKPOINT_2_IDS | frozenset({
+    "S13", "S44", "S26", "S27", "S28", "S45", "S50", "S3", "S4", "S5", "S10", "S23", "S46", "S48",
+    "S7", "S9", "S14", "S15", "S38", "S39", "S43", "S8", "S41", "S42", "S51", "S20", "S25", "S40",
+})
+TIME_EXIT_IDS = frozenset({"S13", "S14", "S16", "S17", "S18", "S19", "S24", "S25", "S28", "S45"})
 
 
 def _risk_config() -> RiskConfig:
@@ -43,7 +49,8 @@ def _run(run_id: str) -> SimulationHarness:
     harness = SimulationHarness(
         context, SYMBOL_META, DATA_DIR,
         manager_config=ManagerConfig(auto_admit_min_maturity="EXPLORATORY"),
-        use_strategy_runtime=True, risk_config=_risk_config(), enable_time_stops=True,
+        use_strategy_runtime=True, risk_config=_risk_config(),
+        enable_time_stops=True, enable_trailing_stops=True,
     )
     harness.configure()
     harness.load()
@@ -68,7 +75,9 @@ def test_all_checkpoint_2_strategies_are_active_before_the_run() -> None:
     harness.configure()
     harness.load()
     handles = build_runtime_handles(harness._strategy_manager, frozenset({"XAUUSD"}))
-    assert {h.id for h in handles} == CHECKPOINT_2_IDS
+    ids = {h.id for h in handles}
+    assert CHECKPOINT_2_IDS <= ids
+    assert ids == CURRENT_MIGRATED_IDS
 
 
 def test_checkpoint_2_produces_real_trades_through_the_full_pipeline() -> None:
@@ -78,7 +87,7 @@ def test_checkpoint_2_produces_real_trades_through_the_full_pipeline() -> None:
     assert len(account.trade_ledger) > 0, "at least one Checkpoint 2 strategy must close a real trade"
 
     for trade in account.trade_ledger:
-        assert trade.strategy_id in CHECKPOINT_2_IDS
+        assert trade.strategy_id in CURRENT_MIGRATED_IDS
         assert trade.symbol == "XAUUSD"
         assert trade.qty > 0
         assert trade.entry_price > 0 and trade.exit_price > 0

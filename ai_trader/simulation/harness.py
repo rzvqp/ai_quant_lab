@@ -35,9 +35,11 @@ from ai_trader.simulation.exceptions import DataLoadError
 from ai_trader.simulation.execution_simulator import ExecutionSimulator
 from ai_trader.simulation.portfolio_simulator import PortfolioSimulator
 from ai_trader.simulation.time_stop import build_time_stop_decision, positions_due_for_time_stop
+from ai_trader.simulation.trailing_stop import build_trailing_stop_decision, positions_due_for_trailing_stop
 from ai_trader.simulation.types import TERMINAL_RUN_STATES, CloseAtEndPolicy, RunState, SimFillEvent, SimPhase
 from ai_trader.strategy_manager.config import ManagerConfig
 from ai_trader.strategy_manager.manager import StrategyManager
+from ai_trader.strategy_runtime import context_access
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +65,7 @@ class SimulationHarness:
         self, context: SimulationContext, symbol_meta: dict[str, SymbolMeta], data_dir: Path,
         manager_config: ManagerConfig | None = None, use_strategy_runtime: bool = False,
         risk_config: RiskConfig | None = None, enable_time_stops: bool = False,
+        enable_trailing_stops: bool = False, strategy_id_filter: frozenset[str] | None = None,
     ) -> None:
         """``manager_config``/``use_strategy_runtime``/``risk_config`` default to Phase 6.7's own
         original, verified-fail-safe behavior (a bare ``ManagerConfig()``/``RiskConfig()`` with no
@@ -79,7 +82,15 @@ class SimulationHarness:
         each active strategy's own ``RuntimeEvaluator.time_stop_bars`` (see
         ``ai_trader.simulation.time_stop``); only meaningful alongside ``use_strategy_runtime=True``
         (default ``False``: Phase 6.7's original behavior, no strategy has ever declared a time-stop
-        before Phase 6.8 Wave B, unchanged)."""
+        before Phase 6.8 Wave B, unchanged). ``enable_trailing_stops=True`` additionally enforces
+        each active strategy's own ``RuntimeEvaluator.trailing_stop_atr_mult`` (see
+        ``ai_trader.simulation.trailing_stop``); only meaningful alongside
+        ``use_strategy_runtime=True`` (default ``False``, unchanged). ``strategy_id_filter``
+        (default ``None``: no filtering,
+        every active strategy participates, unchanged) restricts real evaluation to specific
+        strategy ids -- generically useful for isolating one strategy's own behavior from the rest
+        of the shared, ever-growing active set (e.g. a per-strategy conformance test), never a
+        strategy-specific mechanism in this module's own logic."""
         self.context = context
         self._symbol_meta = symbol_meta
         self._data_dir = data_dir
@@ -87,6 +98,9 @@ class SimulationHarness:
         self._use_strategy_runtime = use_strategy_runtime
         self._risk_config = risk_config or RiskConfig()
         self._enable_time_stops = enable_time_stops
+        self._enable_trailing_stops = enable_trailing_stops
+        self._strategy_id_filter = strategy_id_filter
+        self._trailing_entry_atr: dict[str, float] = {}  # keyed by symbol (one position per symbol)
         self.state = RunState.UNINITIALIZED
         self.fail_reason: str | None = None
         self.degraded_reasons: list[str] = []
@@ -285,13 +299,16 @@ class SimulationHarness:
         self._data_source.feed_up_to(self._scanner, as_of)
         self._scanner.advance_clock(as_of)
         phase_running = self._clock is not None and self._clock.phase is SimPhase.RUNNING
+        bars = self._data_source.base_bars_at(as_of)
 
         if phase_running:
             context_batch = self._scanner.scan(as_of, list(self.context.symbols))
             handles: Sequence[StrategyHandleLike]
             if self._use_strategy_runtime:
                 from ai_trader.strategy_runtime.registry import build_runtime_handles
-                handles = build_runtime_handles(self._strategy_manager, frozenset(self.context.symbols))
+                handles = build_runtime_handles(
+                    self._strategy_manager, frozenset(self.context.symbols), only_ids=self._strategy_id_filter,
+                )
             else:
                 handles = self._strategy_manager.active_strategies()
             for symbol in sorted(self.context.symbols):
@@ -343,7 +360,39 @@ class SimulationHarness:
                             self._execution_engine.execute(decision, portfolio_state)
                             self.orders_submitted += 1
 
-        bars = self._data_source.base_bars_at(as_of)
+            if self._enable_trailing_stops and self._use_strategy_runtime:
+                atr_mult_by_strategy = {
+                    h.id: mult for h in handles
+                    if (mult := getattr(h.api, "trailing_stop_atr_mult", None)) is not None
+                }
+                positions = self.portfolio_simulator.account.positions
+                # Register each newly-opened trailing-enabled position's own entry-bar ATR (the
+                # frozen engine's own trailing formula fixes this at signal time, never
+                # re-computed bar to bar) -- captured once, the first bar this module observes it.
+                for symbol, pos in positions.items():
+                    if pos.strategy_id in atr_mult_by_strategy and symbol not in self._trailing_entry_atr:
+                        ctx = context_batch.get(symbol)
+                        atr = context_access.feature(ctx, "m_atr") if ctx is not None else None
+                        if atr is not None and atr > 0:
+                            self._trailing_entry_atr[symbol] = atr
+                # Drop tracked entries for positions that have since closed.
+                for symbol in list(self._trailing_entry_atr):
+                    if symbol not in positions:
+                        del self._trailing_entry_atr[symbol]
+
+                if atr_mult_by_strategy:
+                    due = positions_due_for_trailing_stop(
+                        positions, bars, self._trailing_entry_atr, atr_mult_by_strategy,
+                    )
+                    if due:
+                        portfolio_state = self.portfolio_simulator.to_portfolio_state(as_of)
+                        for position in due:
+                            decision = build_trailing_stop_decision(
+                                position, as_of, self._risk_manager, self._risk_config,
+                            )
+                            self._execution_engine.execute(decision, portfolio_state)
+                            self.orders_submitted += 1
+
         fills = self.execution_simulator.advance_bar(as_of, bars)
         assert self._clock is not None
         self.portfolio_simulator.apply(fills, self._clock.bar_index)

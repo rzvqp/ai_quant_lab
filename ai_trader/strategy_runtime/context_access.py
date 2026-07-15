@@ -51,6 +51,54 @@ def flag(context: MarketContext, name: str, timeframe: str = "M15") -> bool | No
     return bool(value) if isinstance(value, bool) else None
 
 
+def feature_history(context: MarketContext, timeframe: str = "M15") -> list[dict[str, Any] | None]:
+    """The per-bar feature snapshot history (Phase 6.8 Wave B addition,
+    ``ai_trader.market_scanner.scanner``'s own ``_base_feature_history``), oldest-first, index
+    -aligned 1:1 with :func:`bars` -- an entry is ``None`` where that specific bar's own snapshot
+    was not retained. Empty list if the producing Market Scanner omitted this optional field
+    entirely (a fixture/test scanner not carrying this Phase 6.8 addition, or a non-base
+    timeframe that does not yet populate it)."""
+    block = timeframe_block(context, timeframe)
+    if block is None:
+        return []
+    raw = block.get("feature_history")
+    return list(raw) if isinstance(raw, list) else []
+
+
+def feature_n_ago(context: MarketContext, name: str, n: int, timeframe: str = "M15") -> float | None:
+    """The numeric value of feature ``name`` as of the bar ``n`` bars ago (``n=0`` is the last
+    closed bar, matching :func:`bar_n_ago`'s own convention) -- ``None`` if that bar's own
+    snapshot was not retained, the feature is absent/non-numeric there, or ``n`` reaches before
+    the retained history (never fabricates a value)."""
+    history = feature_history(context, timeframe)
+    idx = len(history) - 1 - n
+    if not (0 <= idx < len(history)):
+        return None
+    snapshot = history[idx]
+    if snapshot is None:
+        return None
+    value = snapshot.get(name)
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
+def flag_n_ago(context: MarketContext, name: str, n: int, timeframe: str = "M15") -> bool | None:
+    """The boolean value of feature ``name`` as of the bar ``n`` bars ago -- see
+    :func:`feature_n_ago` for the shared semantics."""
+    history = feature_history(context, timeframe)
+    idx = len(history) - 1 - n
+    if not (0 <= idx < len(history)):
+        return None
+    snapshot = history[idx]
+    if snapshot is None:
+        return None
+    value = snapshot.get(name)
+    return bool(value) if isinstance(value, bool) else None
+
+
 def text_feature(context: MarketContext, name: str, timeframe: str = "M15") -> str | None:
     value = features(context, timeframe).get(name)
     return value if isinstance(value, str) else None

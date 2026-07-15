@@ -30,6 +30,23 @@ CHECKPOINT_2_IDS = frozenset({
     "S2", "S11", "S12", "S21", "S22",  # B2
 })
 
+#: ALL 43 runtime-eligible strategies, migrated across Checkpoints 2-9 (Wave B COMPLETE):
+#: Checkpoint 2 (above) + B4/B6 (S13, S44) + B3 (S26, S27, S28) + B5 (S45, S50) + B7
+#: (S3, S4, S5, S10, S23, S46, S48) + B8 (S7, S9, S14, S15, S38, S39, S43) + B9 (S8, S41, S42,
+#: S51) + B10 (S20, S25, S40, LAST). S4/S10/S15/S23/S38/S48 use the generic trailing-stop
+#: mechanism (``ai_trader.simulation.trailing_stop``); S4/S23/S25/S43/S48 use the generic
+#: historical-features window (``context_access.flag_n_ago``/``feature_n_ago``). This is every
+#: strategy the frozen Research Lab marks IMPLEMENTED and runtime-eligible -- none remain.
+CURRENT_MIGRATED_IDS = CHECKPOINT_2_IDS | frozenset({
+    "S13", "S44",  # B4 + B6
+    "S26", "S27", "S28",  # B3
+    "S45", "S50",  # B5
+    "S3", "S4", "S5", "S10", "S23", "S46", "S48",  # B7
+    "S7", "S9", "S14", "S15", "S38", "S39", "S43",  # B8
+    "S8", "S41", "S42", "S51",  # B9
+    "S20", "S25", "S40",  # B10 (LAST)
+})
+
 
 def test_s1_is_registered() -> None:
     registry._ensure_families_imported()
@@ -51,24 +68,35 @@ def test_build_runtime_handles_returns_only_registered_and_active() -> None:
     assert ids <= registry.registered_strategy_ids()
 
 
-def test_build_runtime_handles_shows_exactly_the_checkpoint_2_count() -> None:
-    """After B1+B2's own migration, StrategyManager.load_library() + build_runtime_handles() against
-    the REAL library must show exactly the 15 strategies (S1 + 14) migrated so far -- a direct
-    extension of the registry's own "expected loaded/active count per batch" testing discipline."""
+def test_checkpoint_2_ids_remain_a_subset_of_active() -> None:
+    """CHECKPOINT_2_IDS's own 15 strategies stay active as later batches are added on top --
+    a regression here would mean a later batch broke an earlier one, not just "more strategies
+    exist now"."""
     mgr = make_manager()
     handles = registry.build_runtime_handles(mgr, frozenset({"XAUUSD"}))
     ids = {h.id for h in handles}
-    assert ids == CHECKPOINT_2_IDS
+    assert CHECKPOINT_2_IDS <= ids
+
+
+def test_build_runtime_handles_shows_exactly_the_current_migrated_count() -> None:
+    """StrategyManager.load_library() + build_runtime_handles() against the REAL library must show
+    exactly the strategies migrated so far across every checkpoint -- a direct extension of the
+    registry's own "expected loaded/active count per batch" testing discipline, updated as each
+    new batch lands (documented, not a regression)."""
+    mgr = make_manager()
+    handles = registry.build_runtime_handles(mgr, frozenset({"XAUUSD"}))
+    ids = {h.id for h in handles}
+    assert ids == CURRENT_MIGRATED_IDS
 
 
 def test_time_stop_bars_set_only_for_the_time_exit_strategies() -> None:
-    """Only S16/S17/S18/S19/S24 (whose own executable_default selects exit=time) declare a
-    time-stop; every other Checkpoint 2 strategy must NEVER have one -- opting in is per-strategy,
-    never a forced default (ai_trader.simulation.time_stop's own generic contract)."""
+    """Only strategies whose own executable_default selects exit=time declare a time-stop; every
+    other migrated strategy must NEVER have one -- opting in is per-strategy, never a forced
+    default (ai_trader.simulation.time_stop's own generic contract)."""
     mgr = make_manager()
     handles = {h.id: h for h in registry.build_runtime_handles(mgr, frozenset({"XAUUSD"}))}
-    time_exit_ids = {"S16", "S17", "S18", "S19", "S24"}
-    for strategy_id in CHECKPOINT_2_IDS:
+    time_exit_ids = {"S13", "S14", "S16", "S17", "S18", "S19", "S24", "S25", "S28", "S45"}
+    for strategy_id in CURRENT_MIGRATED_IDS:
         expected = 24 if strategy_id in time_exit_ids else None
         assert handles[strategy_id].api.time_stop_bars == expected, strategy_id
 

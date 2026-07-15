@@ -1,5 +1,88 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 — Wave D: first full-portfolio simulation (all 43 strategies); two real bugs found and fixed
+- Ran the first full historical XAUUSD portfolio simulation with all 43 migrated strategies active
+  simultaneously, per the CEO's own standing Wave D instructions: $2,000 starting capital, 5% risk per
+  trade, full available historical range (2022-12-16 -> 2026-07-13, ~3.6 years, 84,151 M15 bars).
+- **Bug #1 found and fixed: cooldown-after-loss clock permanently stuck at zero.** The first Wave D
+  attempt produced exactly 1 trade in 3.6 years. Root cause:
+  `PortfolioSimulator.to_portfolio_state()` (`ai_trader/simulation/portfolio_simulator.py`) hardcoded
+  every `ClosedPosition.bars_since_close` to `0` -- the SOLE clock source for
+  `check_cooldown_after_loss()`'s "deny while `bars_since_close < after_loss_bars`" guard -- so the
+  guard never expired once XAUUSD had its first loss, permanently blocking every future entry for the
+  rest of any run. Fixed by computing the real elapsed bar count from `as_of` vs. the trade's own
+  `exit_as_of`, via the existing `ai_trader.market_scanner.timeframes.timeframe_seconds` helper.
+  Regression test added (`test_bars_since_close_advances_with_as_of`). Confined entirely to the
+  non-frozen Simulation Framework -- zero impact on the Research Lab or the six frozen pipeline
+  modules.
+- **Bug #2 found and fixed: time-stop exits landing one bar late.** After fixing Bug #1, the full
+  regression suite's own `test_checkpoint2_end_to_end.py` -- now exercising far more real trading
+  activity -- caught a real S25 trade with `holding_bars=25` against its own declared 24-bar
+  time-stop limit. Root cause: `positions_due_for_time_stop()` (`ai_trader/simulation/time_stop.py`)
+  fired at `age_bars >= limit`, but `ExecutionSimulator.advance_bar()` never matches an order on the
+  same bar it was submitted (the same one-bar submit-to-fill lag every entry order already has) --
+  the synthetic reduce-only decision therefore only filled one bar later, silently violating the
+  strategy's own declared horizon. Fixed by firing one bar early (`>= limit - 1`) so the fill lands
+  exactly at the declared limit. Both affected unit tests updated; the real end-to-end proof rerun
+  clean (3/3) including the exact `holding_bars <= 24` assertion that caught it. Also confined to the
+  non-frozen Simulation Framework.
+- **Final Wave D result** (after both fixes, verified against a fresh full regression suite,
+  1515/1515 passing, and `mypy --strict` clean, 158 files): 513 trades, +$313.21 net profit (+15.66%
+  return on $2,000), Sharpe 1.196, max drawdown 6.16%, profit factor 1.264, win rate 39.77%,
+  expectancy +0.179R. 29 of 43 strategies got at least one trade (14 never got a slot in this run due
+  to single-position-per-symbol competition across 43 strategies sharing one XAUUSD slot -- not a
+  strategy defect). Every underperforming strategy reported honestly; none removed, disabled, or
+  re-tuned, per the CEO's own standing report-only instruction. Full report:
+  `WAVE_D_PORTFOLIO_SIMULATION_REPORT.md`.
+
+## Session 2026-07-15 — Phase 6.8 Wave B COMPLETE: all 43 runtime-eligible strategies migrated
+- CEO authorized Wave B to continue automatically past Checkpoint 2, batch-by-batch (B3-B10, 28
+  strategies), without a fresh per-batch ask, per the same standing stop-triggers (frozen-contract
+  change, semantic ambiguity, missing data, research/runtime parity failure).
+- Migrated and implemented the remaining 28 real runtime evaluators across 8 mechanism batches: B3
+  (S26/S27/S28, VWAP/value -- new `vwap.py` helper), B4 (S13, imbalance/FVG), B5 (S45/S50,
+  candlestick -- new `patterns.py` helper), B6 (S44, order-flow proxy), B7 (S3/S4/S5/S10/S23/S46/S48,
+  breakout/compression), B8 (S7/S9/S14/S15/S38/S39/S43, trend/momentum), B9 (S8/S41/S42/S51,
+  mean-reversion/volume), B10 (S20/S25/S40, composite/meta -- LAST, per plan). Every strategy
+  verified against the frozen research engine's own grammar functions (`code/mstrat.py`/
+  `code/mstrat_ext.py`, read-only), not just v0 JSON prose.
+- **Research/runtime parity gap #1 resolved: generic trailing-stop mechanism.** Six strategies'
+  evidence-backed `executable_default` selected `exit=trailing` (1.5*ATR-at-entry), with no
+  corresponding execution mechanism (`BrokerAdapter` has no order-amend; `emergency_flatten()`
+  rejected after discovering it permanently latches engine lifecycle state, blocking all future
+  entries -- caught during design, not shipped). Built `RuntimeEvaluator.trailing_stop_atr_mult` +
+  `ai_trader/simulation/trailing_stop.py`, reusing Portfolio Simulator's already-tracked `Position.mfe`
+  (zero new `Position` fields), submitting through the same `ExecutionEngine.execute()` gateway every
+  other order uses. CEO-approved design; zero frozen-pipeline-module edits.
+- **Research/runtime parity gap #2 resolved: generic historical-features window.** Five strategies
+  (S4/S23/S25/S43/S48) needed genuine per-bar historical feature values (a prior bar's own `compress`
+  flag/`m_rsi`/`atr_ma` snapshot) to reproduce the frozen engine's own rolling-window/onset logic --
+  only the CURRENT bar's snapshot was ever exposed before. Initially scoped narrowly (RSI only, for
+  S43), broadened after finding the same root cause blocks S4/S23/S25/S48 too -- CEO approved the
+  generic fix over four narrow patches. Built via the first-ever, explicitly CEO-approved, additive/
+  schema-optional touch to a frozen pipeline module (Market Scanner): `scanner.py`'s new
+  `_base_feature_history`, `timeframe_sync.py`'s optional `feature_history` param,
+  `MARKET_CONTEXT_SCHEMA.json`'s new optional field (not `required`), and new
+  `context_access.feature_n_ago`/`flag_n_ago` helpers. Full pre-existing `market_scanner` test suite
+  (127 tests) passes unchanged -- zero regressions from the touch.
+- Added a generic `strategy_id_filter`/`only_ids` capability to `SimulationHarness`/
+  `build_runtime_handles` after discovering S1 got ZERO trades in its own dedicated test once 30+
+  strategies compete for the single-position-per-symbol slot -- isolates any strategy for focused
+  testing without special-casing S1.
+- Updated pre-existing tripwires for the full 43-strategy reality (documented, not a regression, same
+  pattern every prior checkpoint established): `test_real_library_integration.py` (loaded/failed
+  counts, now the FINAL count), `test_registry.py`/`test_checkpoint2_end_to_end.py`
+  (`CURRENT_MIGRATED_IDS` now the full 43-id set, `time_stop_bars` expected-set gained S25,
+  `enable_trailing_stops=True` added to the real-pipeline run).
+- Verified live: `pytest` 1514/1514 passing, `mypy --strict` 0 errors (158 files), coverage 95%
+  (9392 stmts). Protected areas confirmed clean: Research Lab 0-diff, `knowledge/` confined to exactly
+  the 43 migrated strategy folders, five of six pipeline modules byte-identical (Market Scanner's own
+  touch explicitly CEO-approved and additive-only). Full report:
+  `PHASE_6_8_WAVE_B_COMPLETION_REPORT.md`.
+- Next: Wave D -- the first full historical XAUUSD portfolio simulation with all 43 strategies active
+  simultaneously ($2,000 capital, 5% risk/trade), per the CEO's own standing instructions. Report
+  findings only; no strategy removed or optimized at this stage.
+
 ## Session 2026-07-15 — Phase 6.8 Wave B Checkpoint 2: batches B1+B2 (14 strategies) READY
 - CEO authorized Wave B to begin this session. Reconstructed and verified live (not assumed):
   repository path, branch, HEAD, working tree clean, protected-area 0-diff, full `ai_trader/` suite

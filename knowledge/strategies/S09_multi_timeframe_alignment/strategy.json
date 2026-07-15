@@ -1,85 +1,141 @@
 {
- "id": "S9",
- "name": "Multi-Timeframe Alignment",
- "klass": "MTF-trend momentum",
- "slug": "S09_multi_timeframe_alignment",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "H4 trend (+optional H1)",
- "mechanism": "4H trend context (optionally 1H-aligned) plus a fresh M15 breakout trigger \u2014 trade only with the higher-timeframe. Loser = counter-trend breakout faders.",
- "entry_rules": "4H trend in the trade direction (and 1H aligned if conf1h=align); ONSET of a close beyond the `lb`-bar rolling extreme; enter next open.",
- "exit_rules": "rr2 | rr3.",
- "stop_loss_rules": "atr (1.5*ATR) or structural (20-bar extreme).",
- "required_confirmations": "HTF trend alignment (and optional 1H confirm).",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S9",
+  "name": "Multi-Timeframe Alignment",
+  "slug": "S09_multi_timeframe_alignment",
+  "version": "1.0.0",
+  "class": "MTF-trend momentum"
  },
- "grammar": "c4h(up|down), conf1h(align|any), lb(10|20), stop, exit",
- "executable_default": {
-  "selection_rule": "research_worthy & largest-n",
-  "hypothesis_id": "904767451034",
-  "params": {
-   "c4h": "up",
-   "conf1h": "any",
-   "lb": 10,
-   "stop": "structural",
-   "exit": "rr3"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "904767451034",
+ "semantics": {
+  "mechanism": "4H trend context (optionally 1H-aligned) plus a fresh M15 breakout trigger \u2014 trade only with the higher-timeframe. Loser = counter-trend breakout faders.",
+  "signal_reason": "4H trend in the trade direction (and 1H aligned if conf1h=align); ONSET of a close beyond the `lb`-bar rolling extreme; enter next open.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "rmin20",
+     "m_atr"
+    ],
+    "lookback_bars": 12,
+    "htf": [
+     "H4"
+    ]
+   }
+  ],
+  "required_confirmations": [
+   "H4_ALIGNED_10BAR_BREAKOUT"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "H4 trend up + fresh onset of a close above the prior 10-bar rolling closing high.",
+   "trigger": "H4_ALIGNED_10BAR_BREAKOUT",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "3R fixed target.",
+   "options": [
+    "rr3"
+   ]
+  },
+  "stop": {
+   "description": "The 20-bar rolling low (stop='structural'), floored.",
+   "trigger": "structural"
+  },
+  "target": {
+   "description": "3R fixed target from entry/stop distance."
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "LOW",
+   "rationale": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 687,
    "expectancy_R": 0.0624,
    "profit_factor": 1.117,
    "drawdown_R": 20.53,
    "win_rate": 0.418,
-   "sumR": 42.84,
-   "median_R": -0.4074,
-   "trimmed5_R": -0.0322,
-   "months": 26,
    "pos_months": 12,
-   "years": 3.0,
-   "side": "long",
-   "hist_profitable": true,
-   "research_worthy": true,
-   "fragile": false,
-   "top1_share": 0.007,
-   "oos_expectancy_R": 0.1713
+   "months": 26,
+   "top1_share": 0.007
   },
-  "oos_expectancy_R": 0.1713,
-  "drawdown_R": 20.53,
-  "profit_factor": 1.117,
-  "expectancy_R": 0.0624,
-  "family": {
-   "n_hypotheses": 32,
-   "n_hist_profitable": 12,
-   "n_research_worthy": 6,
-   "best_exp": 0.068,
-   "median_exp": -0.0767
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": 0.1713,
+   "profit_factor": 1.117,
+   "drawdown_R": 20.53,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "PILOT",
+   "note": "Matched-null pilot representative tested (engine-validation pilot; no strategy verdict issued).",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 12 historically-profitable, 6 research-worthy. Representative 904767451034: n=687, exp=0.0624R, PF=1.117, maxDD=20.53R, OOS exp=0.1713R, pos-months 12/26, research-worthy. ",
+  "known_limitations": [
+   "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
+   "Matched-null pilot representative tested (engine-validation pilot; no strategy verdict issued)."
+  ]
  },
- "monte_carlo": "Matched-null pilot representative tested (engine-validation pilot; no strategy verdict issued).",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 12 historically-profitable, 6 research-worthy. Representative 904767451034: n=687, exp=0.0624R, PF=1.117, maxDD=20.53R, OOS exp=0.1713R, pos-months 12/26, research-worthy. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S09_multi_timeframe_alignment"
  }
 }

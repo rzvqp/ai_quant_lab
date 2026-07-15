@@ -57,10 +57,19 @@ def build_timeframe_context(
     timeframe: str,
     bars: list[RawBar],
     features: dict[str, Any],
+    feature_history: list[dict[str, Any] | None] | None = None,
 ) -> dict[str, Any]:
-    """Assemble one ``$defs/TimeframeContext`` entry."""
-    return {
+    """Assemble one ``$defs/TimeframeContext`` entry. ``feature_history`` (Phase 6.8 Wave B
+    addition, optional/additive) is the SAME standardized feature namespace computed at each of
+    ``bars``' own closes, oldest->newest, index-aligned 1:1 with ``bars`` -- ``None`` entries mean
+    that particular bar's own feature snapshot was not retained (never approximated or
+    back-filled). Omitted entirely (not merely ``None``) when the caller has no history to offer,
+    so existing consumers reading only ``features`` (the current snapshot) are unaffected."""
+    context: dict[str, Any] = {
         "timeframe": timeframe,
         "bars": [bar_to_schema_dict(b) for b in bars],
         "features": features,
     }
+    if feature_history is not None:
+        context["feature_history"] = feature_history
+    return context

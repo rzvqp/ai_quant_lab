@@ -25,14 +25,18 @@ def make_position(
 
 
 class TestPositionsDueForTimeStop:
-    def test_position_at_exact_limit_is_due(self) -> None:
-        pos = make_position(opened_bar_index=10)
-        due = positions_due_for_time_stop({"XAUUSD": pos}, bar_index=34, time_stop_bars_by_strategy={"S16": 24})
-        assert due == (pos,)
-
-    def test_position_under_limit_is_not_due(self) -> None:
+    def test_position_one_bar_before_the_limit_is_due(self) -> None:
+        """Fires at ``age_bars == limit - 1`` (BUG FIX, not ``== limit``): the synthetic decision
+        built THIS bar only fills next bar (``ExecutionSimulator``'s own one-bar submit-to-fill lag,
+        the same lag every entry order already has), so firing here lands the real close exactly at
+        ``age_bars == limit`` -- not one bar late."""
         pos = make_position(opened_bar_index=10)
         due = positions_due_for_time_stop({"XAUUSD": pos}, bar_index=33, time_stop_bars_by_strategy={"S16": 24})
+        assert due == (pos,)
+
+    def test_position_two_bars_before_the_limit_is_not_yet_due(self) -> None:
+        pos = make_position(opened_bar_index=10)
+        due = positions_due_for_time_stop({"XAUUSD": pos}, bar_index=32, time_stop_bars_by_strategy={"S16": 24})
         assert due == ()
 
     def test_strategy_with_no_declared_limit_never_matches(self) -> None:

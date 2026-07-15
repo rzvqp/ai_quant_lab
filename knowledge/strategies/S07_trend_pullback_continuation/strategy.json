@@ -1,84 +1,141 @@
 {
- "id": "S7",
- "name": "Trend Pullback Continuation",
- "klass": "Trend-pullback continuation",
- "slug": "S07_trend_pullback_continuation",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "H4 or H1 trend",
- "mechanism": "In an established HTF trend, a pullback to the M15 EMA20 then a confirmation close back in the trend direction resumes the move. Found NEGATIVE (late entries; the redesign is S38).",
- "entry_rules": "HTF trend up/down; price pulls to the wrong side of EMA20; within `pb_within` bars a close returns through EMA20; enter next open.",
- "exit_rules": "rr2 | rr3 | trailing.",
- "stop_loss_rules": "ema (2 ticks past EMA at entry) or atr.",
- "required_confirmations": "REQUIRED: the confirmation close back through EMA20.",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S7",
+  "name": "Trend Pullback Continuation",
+  "slug": "S07_trend_pullback_continuation",
+  "version": "1.0.0",
+  "class": "Trend-pullback continuation"
  },
- "grammar": "htf(h4|h1), stop, exit, pb_within(4|8)",
- "executable_default": {
-  "selection_rule": "largest-n (no positive hypothesis)",
-  "hypothesis_id": "c91b945af60e",
-  "params": {
-   "htf": "h4",
-   "stop": "ema",
-   "exit": "rr2",
-   "pb_within": 8
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "c91b945af60e",
+ "semantics": {
+  "mechanism": "In an established HTF trend, a pullback to the M15 EMA20 then a confirmation close back in the trend direction resumes the move. Found NEGATIVE (late entries; the redesign is S38).",
+  "signal_reason": "HTF trend up/down; price pulls to the wrong side of EMA20; within `pb_within` bars a close returns through EMA20; enter next open.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "m_ema20",
+     "m_atr"
+    ],
+    "lookback_bars": 10,
+    "htf": [
+     "H4"
+    ]
+   }
+  ],
+  "required_confirmations": [
+   "H4_TREND_EMA20_PULLBACK_CONFIRMED"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "Nearest prior pullback to the wrong side of EMA20, confirmed (close back on the trend side) within 8 bars.",
+   "trigger": "H4_TREND_EMA20_PULLBACK_CONFIRMED",
+   "timing": "next_open_after_confirmation"
+  },
+  "exit": {
+   "description": "2R fixed target.",
+   "options": [
+    "rr2"
+   ]
+  },
+  "stop": {
+   "description": "2 ticks past EMA20 (stop='ema'), floored.",
+   "trigger": "beyond_ema"
+  },
+  "target": {
+   "description": "2R fixed target from entry/stop distance."
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "NEGATIVE",
+   "rationale": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 3270,
    "expectancy_R": -0.5641,
    "profit_factor": 0.449,
    "drawdown_R": 1844.9,
    "win_rate": 0.324,
-   "sumR": -1844.61,
-   "median_R": -1.3072,
-   "trimmed5_R": -0.69,
-   "months": 27,
    "pos_months": 0,
-   "years": 4.0,
-   "side": "both",
-   "hist_profitable": false,
-   "research_worthy": false,
-   "fragile": false,
-   "top1_share": 0.001,
-   "oos_expectancy_R": -0.4291
+   "months": 27,
+   "top1_share": 0.001
   },
-  "oos_expectancy_R": -0.4291,
-  "drawdown_R": 1844.9,
-  "profit_factor": 0.449,
-  "expectancy_R": -0.5641,
-  "family": {
-   "n_hypotheses": 24,
-   "n_hist_profitable": 0,
-   "n_research_worthy": 0,
-   "best_exp": -0.0987,
-   "median_exp": -0.3999
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.4291,
+   "profit_factor": 0.449,
+   "drawdown_R": 1844.9,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 0 historically-profitable, 0 research-worthy. Representative c91b945af60e: n=3270, exp=-0.5641R, PF=0.449, maxDD=1844.9R, OOS exp=-0.4291R, pos-months 0/27, not profitable. ",
+  "known_limitations": [
+   "NEGATIVE \u2014 family unprofitable on the research segment",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "NEGATIVE \u2014 family unprofitable on the research segment",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 0 historically-profitable, 0 research-worthy. Representative c91b945af60e: n=3270, exp=-0.5641R, PF=0.449, maxDD=1844.9R, OOS exp=-0.4291R, pos-months 0/27, not profitable. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S07_trend_pullback_continuation"
  }
 }

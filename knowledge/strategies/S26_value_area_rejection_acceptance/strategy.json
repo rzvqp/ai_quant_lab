@@ -1,84 +1,139 @@
 {
- "id": "S26",
- "name": "Value-Area Rejection / Acceptance",
- "klass": "Class III \u2014 auction / value",
- "slug": "S26_value_area_rejection_acceptance",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "session VWAP",
- "mechanism": "Excursions beyond the value-area edge (session VWAP +/- k*sigma) are rejected (revert) or accepted (value migrates -> follow). Institutions anchor to value.",
- "entry_rules": "reject: onset of an excursion beyond the VA edge that closes back inside (fade); accept: close beyond the edge (follow); enter next open.",
- "exit_rules": "rr2 | rr3 | vwap (revert to VWAP for rejects) | time.",
- "stop_loss_rules": "atr or edge (2 ticks past the excursion bar).",
- "required_confirmations": "none",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S26",
+  "name": "Value-Area Rejection / Acceptance",
+  "slug": "S26_value_area_rejection_acceptance",
+  "version": "1.0.0",
+  "class": "Class III \u2014 auction / value"
  },
- "grammar": "mode(reject|accept), k(2.0|3.0), stop, exit",
- "executable_default": {
-  "selection_rule": "largest-n (no positive hypothesis)",
-  "hypothesis_id": "51a65f7481bc",
-  "params": {
-   "mode": "reject",
-   "k": 2.0,
-   "stop": "edge",
-   "exit": "vwap"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "51a65f7481bc",
+ "semantics": {
+  "mechanism": "Excursions beyond the value-area edge (session VWAP +/- k*sigma) are rejected (revert) or accepted (value migrates -> follow). Institutions anchor to value.",
+  "signal_reason": "reject: onset of an excursion beyond the VA edge that closes back inside (fade); accept: close beyond the edge (follow); enter next open.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "vwap",
+     "m_std",
+     "m_atr"
+    ],
+    "lookback_bars": 2
+   }
+  ],
+  "required_confirmations": [
+   "VALUE_AREA_EDGE_REJECTION"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "Fresh onset of an excursion beyond the value-area edge (vwap +/- 2*std) closing back inside.",
+   "trigger": "VALUE_AREA_EDGE_REJECTION",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "Revert to session vwap as the price target (not a fixed R:R).",
+   "options": [
+    "vwap"
+   ]
+  },
+  "stop": {
+   "description": "2 ticks beyond the excursion bar's own extreme (stop='edge'), floored.",
+   "trigger": "beyond_edge"
+  },
+  "target": {
+   "description": "Session vwap (revert to value)."
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "NEGATIVE",
+   "rationale": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 3826,
    "expectancy_R": -0.3336,
    "profit_factor": 0.55,
    "drawdown_R": 1286.82,
    "win_rate": 0.347,
-   "sumR": -1276.47,
-   "median_R": -1.1051,
-   "trimmed5_R": -0.477,
-   "months": 27,
    "pos_months": 0,
-   "years": 4.0,
-   "side": "both",
-   "hist_profitable": false,
-   "research_worthy": false,
-   "fragile": false,
-   "top1_share": 0.007,
-   "oos_expectancy_R": -0.1423
+   "months": 27,
+   "top1_share": 0.007
   },
-  "oos_expectancy_R": -0.1423,
-  "drawdown_R": 1286.82,
-  "profit_factor": 0.55,
-  "expectancy_R": -0.3336,
-  "family": {
-   "n_hypotheses": 32,
-   "n_hist_profitable": 0,
-   "n_research_worthy": 0,
-   "best_exp": -0.1226,
-   "median_exp": -0.2267
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.1423,
+   "profit_factor": 0.55,
+   "drawdown_R": 1286.82,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 51a65f7481bc: n=3826, exp=-0.3336R, PF=0.55, maxDD=1286.82R, OOS exp=-0.1423R, pos-months 0/27, not profitable. ",
+  "known_limitations": [
+   "NEGATIVE \u2014 family unprofitable on the research segment",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "NEGATIVE \u2014 family unprofitable on the research segment",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 51a65f7481bc: n=3826, exp=-0.3336R, PF=0.55, maxDD=1286.82R, OOS exp=-0.1423R, pos-months 0/27, not profitable. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat_ext",
-  "results_parquet": "results/ext_families/EXT_FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S26_value_area_rejection_acceptance"
  }
 }

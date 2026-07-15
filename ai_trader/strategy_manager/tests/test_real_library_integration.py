@@ -7,17 +7,17 @@ them is a separate task, not part of Strategy Manager implementation. This test 
 fail-safe design handles that reality correctly: every not-yet-migrated real strategy is discovered
 and quarantined as ``INVALID`` with a diagnostic reason, and the Manager stays queryable regardless.
 This test's own docstring used to describe itself as a tripwire against "0 strategies load" going
-unnoticed; as of the Phase 6.8 reference slice, S1 IS migrated and loads successfully -- the counts
-below were updated to match, exactly the "tripwire fires, get updated deliberately" scenario the
-original docstring anticipated. Phase 6.8 Wave B Checkpoint 2 (B1+B2, 14 more strategies) updated
-these counts again -- expected, not a regression, verified live against the real library rather than
-assumed: 15 strategies now schema-validate and load; of those, 5 (S18/S22/S29/S30/S31, whose own
-``required_data`` needs only ``m_atr``) are ALSO fully COMPATIBLE under this fixture's minimal
-``FakeScanner`` feature declaration (unlike the real ``MarketScanner``, which declares every feature
--- see the Simulation Harness integration tests for full compatibility proof), while the other 10
-remain INCOMPATIBLE under this fixture for the same reason S1 originally was (missing declared
-fields like ``pdl``/``prev_sess_high``/``rmax20``). As more strategies migrate (Wave B's remaining
-batches), these counts will need updating again -- expected, not a regression.
+unnoticed; each Wave B checkpoint updates these counts again as more strategies migrate -- expected,
+not a regression, verified live against the real library rather than assumed each time. As of Wave
+B's completion (Checkpoints 1-9, all 43 runtime-eligible strategies migrated), all 43 schema-validate
+and load; of those, some are ALSO fully COMPATIBLE under this fixture's minimal ``FakeScanner``
+feature declaration (whose own ``required_data`` needs only the handful of features this fixture
+declares, e.g. ``m_atr``), while the rest remain INCOMPATIBLE under this fixture for the same reason
+S1 originally was (missing declared fields like ``pdl``/``prev_sess_high``/``rmax20``) -- the real
+``MarketScanner`` declares every feature, full compatibility proven by the Simulation Harness
+integration tests. This is the FINAL count -- no further strategy is expected to move from `failed`
+(still-v0 INVALID) to `loaded` (schema-valid) under the current Strategy Library, since every
+runtime-eligible strategy is now migrated.
 """
 
 from __future__ import annotations
@@ -43,21 +43,23 @@ class TestRealStrategyLibrary:
         mgr.configure(FakeScanner())
         report = mgr.load_library(as_of=AS_OF)
 
-        # 15 strategies are migrated (S1 Checkpoint 1 + B1/B2 Checkpoint 2) and pass SCHEMA
-        # validation (now in `loaded`). `loaded`/`failed` are not mutually exclusive by design
+        # ALL 43 runtime-eligible strategies are migrated (Wave B COMPLETE, Checkpoints 1-9) and pass
+        # SCHEMA validation (now in `loaded`). `loaded`/`failed` are not mutually exclusive by design
         # (manager.py `_build_load_report`): a schema-valid entry that fails the separate
         # COMPATIBILITY check (against the scanner's declared `get_provided_features()`) appears in
-        # both. `FakeScanner()` here is a deliberately minimal test double declaring only a handful
-        # of M15 features (including `m_atr`, but NOT `pdl`/`prev_sess_high`/`rmax20`/etc.) -- so 5
-        # of the 15 (S18/S22/S29/S30/S31, whose own `required_data` needs only `m_atr`) are fully
-        # COMPATIBLE even under this fixture, while the other 10 are schema-valid but INCOMPATIBLE,
-        # not a real problem, just this particular fixture's own limited feature declaration (the
-        # real `MarketScanner` declares every feature -- full compatibility proven by the Simulation
-        # Harness integration tests).
+        # both. `FakeScanner()` here is a deliberately minimal test double declaring only a handful of
+        # M15 features (including `m_atr`, but NOT `pdl`/`prev_sess_high`/`rmax20`/etc.) -- so some of
+        # the 43 are fully COMPATIBLE even under this fixture, while the rest are schema-valid but
+        # INCOMPATIBLE, not a real problem, just this particular fixture's own limited feature
+        # declaration (the real `MarketScanner` declares every feature -- full compatibility proven
+        # by the Simulation Harness integration tests).
         assert set(report.loaded) == {
-            "S1", "S2", "S6", "S11", "S12", "S16", "S17", "S18", "S19", "S21", "S22", "S24", "S29", "S30", "S31",
+            "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12", "S13", "S14",
+            "S15", "S16", "S17", "S18", "S19", "S20", "S21", "S22", "S23", "S24", "S25", "S26", "S27",
+            "S28", "S29", "S30", "S31", "S38", "S39", "S40", "S41", "S42", "S43", "S44", "S45", "S46",
+            "S48", "S50", "S51",
         }
-        assert len(report.failed) == 46  # 36 still-v0 INVALID + 10 schema-valid-but-INCOMPATIBLE
+        assert len(report.failed) == 36  # 8 still-v0 INVALID (S32-S37, S47, S49) + schema-valid-but-INCOMPATIBLE
         s1_failure = next(f for f in report.failed if f.id == "S1")
         assert "pdl" in " ".join(s1_failure.reasons)
         assert report.duplicates == ()
@@ -67,8 +69,8 @@ class TestRealStrategyLibrary:
         assert mgr.active_strategies() == []
         assert mgr.required_context().contributor_ids == ()
 
-        # DEGRADED (not FAILED): 5 strategies are healthy-but-inactive under this fixture, so the
-        # Manager is no longer "every entry unusable" -- but it stays fully queryable regardless.
+        # DEGRADED (not FAILED): several strategies are healthy-but-inactive under this fixture, so
+        # the Manager is no longer "every entry unusable" -- but it stays fully queryable regardless.
         assert mgr.health().overall is ManagerOverallHealth.DEGRADED
         assert mgr.statistics().total == 51
         assert len(mgr.list_strategies()) == 51

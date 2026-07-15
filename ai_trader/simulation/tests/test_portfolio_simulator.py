@@ -129,6 +129,28 @@ class TestPortfolioStateProjection:
         assert state.open_positions[0].symbol == "XAUUSD"
         assert state.is_stale is False
 
+    def test_bars_since_close_advances_with_as_of(self) -> None:
+        """Regression test for a real bug found during Wave D's own full-portfolio run:
+        ``bars_since_close`` was hardcoded to 0, so ``check_cooldown_after_loss`` (whose ONLY clock
+        source this is) never expired -- a symbol's first loss permanently blocked every future
+        entry for the rest of the run. This must actually advance with ``as_of``."""
+        context = make_context()
+        psim = PortfolioSimulator(context, SYMBOL_META)
+        psim.apply((make_fill(1000, 100.0, qty=10.0, client_order_id="C1"),), bar_index=0)
+        psim.apply(
+            (make_fill(1900, 90.0, qty=10.0, direction=Direction.SHORT, reduce_only=True, client_order_id="C1"),),
+            bar_index=1,
+        )  # a real loss, closed at as_of=1900
+
+        state_at_close = psim.to_portfolio_state(1900)
+        assert state_at_close.recent_closed_positions[-1].bars_since_close == 0
+
+        state_5_bars_later = psim.to_portfolio_state(1900 + 5 * 900)
+        assert state_5_bars_later.recent_closed_positions[-1].bars_since_close == 5
+
+        state_much_later = psim.to_portfolio_state(1900 + 500 * 900)
+        assert state_much_later.recent_closed_positions[-1].bars_since_close == 500
+
     def test_r_multiple_uses_registered_stop_hint(self) -> None:
         context = make_context()
         psim = PortfolioSimulator(context, SYMBOL_META)

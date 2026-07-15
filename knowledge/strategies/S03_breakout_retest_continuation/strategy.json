@@ -1,86 +1,138 @@
 {
- "id": "S3",
- "name": "Breakout Retest Continuation",
- "klass": "Breakout-retest momentum",
- "slug": "S03_breakout_retest_continuation",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "none",
- "mechanism": "A genuine breakout of a level, then a retest of that level as new support/resistance, then continuation. Loser = faders of the confirmed breakout.",
- "entry_rules": "Close breaks the level; within `retest_within` bars price returns to the level; enter next open in the breakout direction.",
- "exit_rules": "rr2 | rr3 | trailing (1.5*ATR trail).",
- "stop_loss_rules": "beyond_level (2 ticks past the level) or atr.",
- "required_confirmations": "The retest hold is the confirmation.",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S3",
+  "name": "Breakout Retest Continuation",
+  "slug": "S03_breakout_retest_continuation",
+  "version": "1.0.0",
+  "class": "Breakout-retest momentum"
  },
- "grammar": "ref(swing|session), lb(20|50), retest_within(4|8), stop, exit, side",
- "executable_default": {
-  "selection_rule": "hist_profitable & largest-n",
-  "hypothesis_id": "6e148815498c",
-  "params": {
-   "ref": "swing",
-   "lb": 50,
-   "retest_within": 8,
-   "stop": "atr",
-   "exit": "rr3",
-   "side": "up"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "6e148815498c",
+ "semantics": {
+  "mechanism": "A genuine breakout of a level, then a retest of that level as new support/resistance, then continuation. Loser = faders of the confirmed breakout.",
+  "signal_reason": "Close breaks the level; within `retest_within` bars price returns to the level; enter next open in the breakout direction.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "rmax50",
+     "m_atr"
+    ],
+    "lookback_bars": 10
+   }
+  ],
+  "required_confirmations": [
+   "BREAKOUT_RETEST_CONTINUATION"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "Nearest prior breakout above the 50-bar rolling high, retested (first touch back to the level) within 8 bars.",
+   "trigger": "BREAKOUT_RETEST_CONTINUATION",
+   "timing": "next_open_after_confirmation"
+  },
+  "exit": {
+   "description": "3R fixed target.",
+   "options": [
+    "rr3"
+   ]
+  },
+  "stop": {
+   "description": "1.5*ATR from entry, floored.",
+   "trigger": "atr"
+  },
+  "target": {
+   "description": "3R fixed target from entry/stop distance."
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "VERY_LOW",
+   "rationale": "VERY LOW \u2014 historically profitable but not research-worthy"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 761,
    "expectancy_R": 0.0634,
    "profit_factor": 1.086,
    "drawdown_R": 40.57,
    "win_rate": 0.332,
-   "sumR": 48.23,
-   "median_R": -1.0807,
-   "trimmed5_R": -0.0233,
-   "months": 27,
    "pos_months": 15,
-   "years": 4.0,
-   "side": "long",
-   "hist_profitable": true,
-   "research_worthy": false,
-   "fragile": false,
-   "top1_share": 0.005,
-   "oos_expectancy_R": 0.1052
+   "months": 27,
+   "top1_share": 0.005
   },
-  "oos_expectancy_R": 0.1052,
-  "drawdown_R": 40.57,
-  "profit_factor": 1.086,
-  "expectancy_R": 0.0634,
-  "family": {
-   "n_hypotheses": 96,
-   "n_hist_profitable": 2,
-   "n_research_worthy": 0,
-   "best_exp": 0.0634,
-   "median_exp": -0.2694
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": 0.1052,
+   "profit_factor": 1.086,
+   "drawdown_R": 40.57,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 96 hypotheses, 2 historically-profitable, 0 research-worthy. Representative 6e148815498c: n=761, exp=0.0634R, PF=1.086, maxDD=40.57R, OOS exp=0.1052R, pos-months 15/27, hist-profitable. ",
+  "known_limitations": [
+   "VERY LOW \u2014 historically profitable but not research-worthy",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "VERY LOW \u2014 historically profitable but not research-worthy",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 96 hypotheses, 2 historically-profitable, 0 research-worthy. Representative 6e148815498c: n=761, exp=0.0634R, PF=1.086, maxDD=40.57R, OOS exp=0.1052R, pos-months 15/27, hist-profitable. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S03_breakout_retest_continuation"
  }
 }

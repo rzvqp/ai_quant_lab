@@ -1,85 +1,134 @@
 {
- "id": "S10",
- "name": "Displacement Continuation",
- "klass": "Displacement continuation",
- "slug": "S10_displacement_continuation",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "none",
- "mechanism": "A displacement bar (range>k*ATR with matching close) marks strong intent; a controlled pullback then continuation. Found NEGATIVE standalone.",
- "entry_rules": "Displacement bar; within `pb` bars price pulls back to the displacement close; enter next open in the displacement direction.",
- "exit_rules": "rr2 | rr3 | trailing.",
- "stop_loss_rules": "bar (2 ticks past the displacement bar) or atr.",
- "required_confirmations": "the controlled pullback",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S10",
+  "name": "Displacement Continuation",
+  "slug": "S10_displacement_continuation",
+  "version": "1.0.0",
+  "class": "Displacement continuation"
  },
- "grammar": "disp_k(1.5|2.0), pb(2|4), side, stop, exit",
- "executable_default": {
-  "selection_rule": "largest-n (no positive hypothesis)",
-  "hypothesis_id": "208de46a2aa8",
-  "params": {
-   "disp_k": 1.5,
-   "pb": 4,
-   "side": "down",
-   "stop": "bar",
-   "exit": "trailing"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "208de46a2aa8",
+ "semantics": {
+  "mechanism": "A displacement bar (range>k*ATR with matching close) marks strong intent; a controlled pullback then continuation. Found NEGATIVE standalone.",
+  "signal_reason": "Displacement bar; within `pb` bars price pulls back to the displacement close; enter next open in the displacement direction.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "m_atr"
+    ],
+    "lookback_bars": 6
+   }
+  ],
+  "required_confirmations": [
+   "DISPLACEMENT_PULLBACK_CONTINUATION"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "Nearest prior bearish displacement bar, pulled back to (touched) within 4 bars.",
+   "trigger": "DISPLACEMENT_PULLBACK_CONTINUATION",
+   "timing": "next_open_after_confirmation"
+  },
+  "exit": {
+   "description": "Trailing stop (1.5*ATR-at-entry, ratchets in the trade's favor); no fixed price target.",
+   "options": [
+    "trailing"
+   ]
+  },
+  "stop": {
+   "description": "2 ticks beyond the displacement bar's own extreme (stop='bar'), floored.",
+   "trigger": "beyond_bar"
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "NEGATIVE",
+   "rationale": "NEGATIVE \u2014 family unprofitable on the research segment"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 3346,
    "expectancy_R": -0.3217,
    "profit_factor": 0.4,
    "drawdown_R": 1076.09,
    "win_rate": 0.269,
-   "sumR": -1076.29,
-   "median_R": -0.3907,
-   "trimmed5_R": -0.4024,
-   "months": 27,
    "pos_months": 0,
-   "years": 4.0,
-   "side": "short",
-   "hist_profitable": false,
-   "research_worthy": false,
-   "fragile": false,
-   "top1_share": 0.026,
-   "oos_expectancy_R": -0.3042
+   "months": 27,
+   "top1_share": 0.026
   },
-  "oos_expectancy_R": -0.3042,
-  "drawdown_R": 1076.09,
-  "profit_factor": 0.4,
-  "expectancy_R": -0.3217,
-  "family": {
-   "n_hypotheses": 48,
-   "n_hist_profitable": 0,
-   "n_research_worthy": 0,
-   "best_exp": -0.0505,
-   "median_exp": -0.2305
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.3042,
+   "profit_factor": 0.4,
+   "drawdown_R": 1076.09,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 48 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 208de46a2aa8: n=3346, exp=-0.3217R, PF=0.4, maxDD=1076.09R, OOS exp=-0.3042R, pos-months 0/27, not profitable. ",
+  "known_limitations": [
+   "NEGATIVE \u2014 family unprofitable on the research segment",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "NEGATIVE \u2014 family unprofitable on the research segment",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 48 hypotheses, 0 historically-profitable, 0 research-worthy. Representative 208de46a2aa8: n=3346, exp=-0.3217R, PF=0.4, maxDD=1076.09R, OOS exp=-0.3042R, pos-months 0/27, not profitable. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S10_displacement_continuation"
  }
 }

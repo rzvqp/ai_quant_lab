@@ -10,6 +10,7 @@ pure observer/normalizer: no signals, no scoring, no orders, no access to Resear
 from __future__ import annotations
 
 import logging
+from collections import deque
 from typing import Any
 
 from ai_trader.market_scanner import data_quality
@@ -77,6 +78,15 @@ class MarketScanner:
         self._feature_providers: dict[str, FeatureProvider] = {}
         self._base_bar_index: dict[str, int] = {}
         self._last_base_result: dict[str, Any] = {}
+        #: Phase 6.8 Wave B addition: per-symbol rolling history of the base-timeframe feature dict
+        #: computed at EACH closed bar (keyed by that bar's own ``ts_close``), bounded to the same
+        #: retention every rolling bar window already uses (``_window_max_len``). Previously this
+        #: module discarded every feature snapshot but the latest; this is the ONLY thing that
+        #: changes -- retaining real, already-computed values, never approximating or recomputing an
+        #: indicator's history from a shorter window. Exposed via ``build_context``'s new
+        #: ``feature_history`` field (see ``timeframe_sync.build_timeframe_context``), generic
+        #: infrastructure any current or future strategy/timeframe can reuse.
+        self._base_feature_history: dict[str, deque[tuple[int, dict[str, Any]]]] = {}
         self._clock = ClockController()
         self._requirements: Requirements | None = None
         self._context_timeframes: frozenset[str] = frozenset(DEFAULT_CONTEXT_TIMEFRAMES)
@@ -98,6 +108,7 @@ class MarketScanner:
         self._feature_providers = {}
         self._base_bar_index = {s.symbol: 0 for s in symbols}
         self._last_base_result = {}
+        self._base_feature_history = {}
         self._clock = ClockController()
         self._adapter_mode = data_source.mode
         self._adapter_source_id = data_source.source_id
@@ -189,6 +200,11 @@ class MarketScanner:
             result = fp.on_base_close(bar, latest_d1)
             self._last_base_result[bar.symbol] = result
             self._base_bar_index[bar.symbol] = self._base_bar_index.get(bar.symbol, 0) + 1
+            history = self._base_feature_history.get(bar.symbol)
+            if history is None:
+                history = deque(maxlen=self._window_max_len(bar.timeframe))
+                self._base_feature_history[bar.symbol] = history
+            history.append((bar.ts_close, result.features))
         elif bar.timeframe in self._context_timeframes:
             fp.on_context_close(bar.timeframe, bar)
 
@@ -244,8 +260,14 @@ class MarketScanner:
             calendar_dict = last_result.calendar.to_schema_dict()
             m15_features = last_result.features
 
+        history = self._base_feature_history.get(symbol)
+        features_by_ts = dict(history) if history is not None else {}
+        base_feature_history: list[dict[str, Any] | None] = [features_by_ts.get(b.ts_close) for b in base_bars]
+
         fp = self._feature_providers.get(symbol)
-        timeframes: dict[str, Any] = {base_tf: build_timeframe_context(base_tf, base_bars, m15_features)}
+        timeframes: dict[str, Any] = {
+            base_tf: build_timeframe_context(base_tf, base_bars, m15_features, base_feature_history),
+        }
         features_by_timeframe: dict[str, dict[str, Any]] = {base_tf: m15_features}
         for tf in sorted(self._context_timeframes):
             window = store.window(tf)

@@ -1,0 +1,85 @@
+{
+ "id": "S8",
+ "name": "Extension Mean-Reversion",
+ "klass": "Extension mean-reversion",
+ "slug": "S08_extension_mean_reversion",
+ "status": "IMPLEMENTED",
+ "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
+ "sessions": "All sessions",
+ "long_short": "both",
+ "htf_context": "none",
+ "mechanism": "Price extends k*ATR beyond a reference (SMA or session VWAP); the onset of over-extension reverts toward the reference. Loser = late trend-chasers.",
+ "entry_rules": "At the ONSET of |close-ref| > k*ATR (first bar of the extension); enter next open toward the reference.",
+ "exit_rules": "rr2 | opp_liq (revert to the reference) | time.",
+ "stop_loss_rules": "atr (1.5*ATR) or ext (2 ticks past the bar extreme).",
+ "required_confirmations": "none (extension onset is selective)",
+ "invalid_conditions": [
+  "ATR non-finite or <= 0 at the signal bar",
+  "signal on the last available bar (no next-open to fill)",
+  "a position is already open (overlap suppression)"
+ ],
+ "position_sizing": {
+  "model": "risk-normalised (1R per trade)",
+  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ },
+ "grammar": "ref(sma|vwap), k(2.0|3.0), side, stop, exit",
+ "executable_default": {
+  "selection_rule": "research_worthy & largest-n",
+  "hypothesis_id": "0e2979c0d58e",
+  "params": {
+   "ref": "vwap",
+   "k": 3.0,
+   "side": "up",
+   "stop": "atr",
+   "exit": "rr2"
+  }
+ },
+ "performance": {
+  "historical": {
+   "hypothesis_id": "0e2979c0d58e",
+   "n": 302,
+   "expectancy_R": 0.0171,
+   "profit_factor": 1.026,
+   "drawdown_R": 24.62,
+   "win_rate": 0.407,
+   "sumR": 5.15,
+   "median_R": -1.0673,
+   "trimmed5_R": -0.0195,
+   "months": 27,
+   "pos_months": 16,
+   "years": 4.0,
+   "side": "long",
+   "hist_profitable": true,
+   "research_worthy": true,
+   "fragile": false,
+   "top1_share": 0.01,
+   "oos_expectancy_R": 0.1094
+  },
+  "oos_expectancy_R": 0.1094,
+  "drawdown_R": 24.62,
+  "profit_factor": 1.026,
+  "expectancy_R": 0.0171,
+  "family": {
+   "n_hypotheses": 48,
+   "n_hist_profitable": 4,
+   "n_research_worthy": 2,
+   "best_exp": 0.0291,
+   "median_exp": -0.2355
+  }
+ },
+ "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+ "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
+ "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
+ "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 48 hypotheses, 4 historically-profitable, 2 research-worthy. Representative 0e2979c0d58e: n=302, exp=0.0171R, PF=1.026, maxDD=24.62R, OOS exp=0.1094R, pos-months 16/27, research-worthy. ",
+ "provenance": {
+  "engine": "mstrat.py v2 (FROZEN)",
+  "module": "mstrat",
+  "results_parquet": "results/FAMILY_RESULTS.parquet",
+  "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
+  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+ }
+}

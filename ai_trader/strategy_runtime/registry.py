@@ -43,12 +43,20 @@ def _ensure_families_imported() -> None:
     import ai_trader.strategy_runtime.families  # noqa: F401
 
 
-def build_runtime_handles(strategy_manager: "StrategyManager", symbols: frozenset[str]) -> tuple[RuntimeStrategyHandle, ...]:
+def build_runtime_handles(
+    strategy_manager: "StrategyManager", symbols: frozenset[str], only_ids: frozenset[str] | None = None,
+) -> tuple[RuntimeStrategyHandle, ...]:
     """Real handles for every currently-active strategy THAT ALSO has a registered evaluator. Order
-    is Strategy Manager's own ``active_strategies()`` order (already deterministic there)."""
+    is Strategy Manager's own ``active_strategies()`` order (already deterministic there).
+    ``only_ids`` (default ``None``: no filtering, current behavior unchanged) restricts the result to
+    those specific strategy ids -- generically useful for isolating one strategy's own behavior
+    (e.g. a per-strategy conformance test) from the rest of the shared, ever-growing active set,
+    never a strategy-specific carve-out in this module's own logic."""
     _ensure_families_imported()
     handles: list[RuntimeStrategyHandle] = []
     for handle in strategy_manager.active_strategies():
+        if only_ids is not None and handle.id not in only_ids:
+            continue
         evaluator_cls = _FAMILY_EVALUATORS.get(handle.id)
         if evaluator_cls is None:
             continue

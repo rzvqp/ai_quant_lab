@@ -50,11 +50,20 @@ def positions_due_for_time_stop(
     """Pure function: which open positions have reached their OWN strategy's declared time-stop
     horizon at ``bar_index``. A strategy absent from ``time_stop_bars_by_strategy`` (or explicitly
     mapped to ``None`` by a caller) never matches -- opting into a time-stop is per-strategy and
-    additive, never a forced default for strategies that never declared one."""
+    additive, never a forced default for strategies that never declared one.
+
+    **Fires one bar EARLY, at ``age_bars >= limit - 1``** (BUG FIX, found during Wave D's own
+    full-portfolio run: a real trade showed ``holding_bars=25`` against a declared 24-bar limit).
+    ``ExecutionSimulator.advance_bar`` never matches an order on the same bar it was submitted
+    (``EXECUTION_SIMULATOR.md`` §3, the same lookahead-safe one-bar lag every entry order already
+    has -- ``"enter next open"``) -- a reduce-only time-stop decision built at ``age_bars == limit``
+    would only actually FILL one bar later, at ``age_bars == limit + 1``, silently violating the
+    strategy's own declared horizon. Submitting one bar earlier compensates for that same, already-
+    universal lag, so the fill lands exactly at ``age_bars == limit``."""
     due = []
     for pos in positions.values():
         limit = time_stop_bars_by_strategy.get(pos.strategy_id)
-        if limit is not None and (bar_index - pos.opened_bar_index) >= limit:
+        if limit is not None and (bar_index - pos.opened_bar_index) >= limit - 1:
             due.append(pos)
     return tuple(due)
 

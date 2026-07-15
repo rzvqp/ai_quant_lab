@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from ai_trader.market_scanner.timeframes import timeframe_seconds
 from ai_trader.market_scanner.types import SymbolMeta
 from ai_trader.risk_manager.types import ClosedPosition, OpenPosition, PortfolioState
 from ai_trader.signal_engine.types import Direction
@@ -355,10 +356,17 @@ class PortfolioSimulator:
             )
             for pos in sorted(acct.positions.values(), key=lambda p: p.symbol)
         )
+        bar_seconds = timeframe_seconds(self._context.base_timeframe)
         recent_closed = tuple(
             ClosedPosition(
                 symbol=t.symbol, strategy_id=t.strategy_id, was_loss=t.net_pnl < 0,
-                bars_since_close=0,
+                # BUG FIX (found during Wave D's own full-portfolio run): this was hardcoded to 0,
+                # meaning every closed position looked "just closed" on every future bar forever --
+                # `check_cooldown_after_loss`'s own `bars_since_close < threshold` check then NEVER
+                # expired, permanently blocking the symbol after its first loss. `bars_since_close`
+                # is this cooldown clock's SOLE source (`ClosedPosition`'s own docstring), so it must
+                # actually advance with `as_of`.
+                bars_since_close=max(0, (as_of - t.exit_as_of) // bar_seconds),
             )
             for t in acct.trade_ledger[-20:]
         )

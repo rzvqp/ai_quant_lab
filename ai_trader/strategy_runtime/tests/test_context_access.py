@@ -65,3 +65,58 @@ def test_missing_timeframe_returns_empty() -> None:
 def test_data_quality_level_defaults_ok() -> None:
     ctx = {"meta": {}}
     assert context_access.data_quality_level(ctx) == "OK"
+
+
+def make_context_with_history(feature_history: list[dict | None]) -> dict:  # type: ignore[type-arg]
+    ctx = make_context()
+    ctx["timeframes"]["M15"]["feature_history"] = feature_history
+    return ctx
+
+
+class TestFeatureHistory:
+    def test_returns_empty_list_when_absent(self) -> None:
+        ctx = make_context()  # no feature_history key -- an older/fixture scanner without it
+        assert context_access.feature_history(ctx) == []
+
+    def test_returns_the_raw_list_when_present(self) -> None:
+        history = [{"compress": False}, {"compress": True}]
+        ctx = make_context_with_history(history)
+        assert context_access.feature_history(ctx) == history
+
+    def test_missing_timeframe_returns_empty(self) -> None:
+        ctx = make_context()
+        assert context_access.feature_history(ctx, "H4") == []
+
+
+class TestFeatureNAgo:
+    def test_n_zero_is_the_last_bars_own_snapshot(self) -> None:
+        ctx = make_context_with_history([{"m_atr": 1.0}, {"m_atr": 2.0}])
+        assert context_access.feature_n_ago(ctx, "m_atr", 0) == 2.0
+        assert context_access.feature_n_ago(ctx, "m_atr", 1) == 1.0
+
+    def test_out_of_range_n_never_fabricates(self) -> None:
+        ctx = make_context_with_history([{"m_atr": 1.0}, {"m_atr": 2.0}])
+        assert context_access.feature_n_ago(ctx, "m_atr", 5) is None
+
+    def test_none_entry_in_history_returns_none(self) -> None:
+        ctx = make_context_with_history([None, {"m_atr": 2.0}])
+        assert context_access.feature_n_ago(ctx, "m_atr", 1) is None
+
+    def test_boolean_value_returns_none_from_numeric_accessor(self) -> None:
+        ctx = make_context_with_history([{"compress": True}])
+        assert context_access.feature_n_ago(ctx, "compress", 0) is None
+
+
+class TestFlagNAgo:
+    def test_n_zero_is_the_last_bars_own_snapshot(self) -> None:
+        ctx = make_context_with_history([{"compress": False}, {"compress": True}])
+        assert context_access.flag_n_ago(ctx, "compress", 0) is True
+        assert context_access.flag_n_ago(ctx, "compress", 1) is False
+
+    def test_out_of_range_n_never_fabricates(self) -> None:
+        ctx = make_context_with_history([{"compress": True}])
+        assert context_access.flag_n_ago(ctx, "compress", 5) is None
+
+    def test_none_entry_in_history_returns_none(self) -> None:
+        ctx = make_context_with_history([None])
+        assert context_access.flag_n_ago(ctx, "compress", 0) is None
