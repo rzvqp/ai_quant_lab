@@ -174,11 +174,26 @@ TOTAL   7345 stmts   345 miss   95%
 
 ## G. Technical debt / known limitations carried forward
 
-1. **No real Strategy Signal implementation exists yet — STILL TRUE, now the single most consequential
-   gap.** `StrategyRuntimeHandle.api` (Signal Engine) still raises `StrategyApiNotImplementedError` for
-   every method except `required_context()`. This is why Phase 6.7's own full-history run trades zero
-   times. Raise this explicitly with the CEO as the likely next priority — do not assume it is bundled
-   into any other phase.
+1. **No real Strategy Signal implementation exists yet — STILL TRUE, now fully diagnosed as TWO
+   independent, stacked gaps** (`STRATEGY_RUNTIME_INTEGRATION_GAP.md`, a dedicated read-only analysis
+   committed 2026-07-15, read it in full before touching anything strategy-related):
+   - **Contract-format gap:** all 51 `knowledge/strategies/S*/strategy.json` files are still the
+     Research Lab's own v0 research-export shape, none carry Strategy Interface v1's required
+     top-level keys. Verified LIVE by running the real `StrategyManager.load_library()` against the
+     real library: **51/51 fail schema validation identically** (`loaded=0, failed=51`,
+     `counts_by_health={'INVALID': 51, ...}`), so `active_strategies()` always returns `[]`.
+   - **Runtime-logic gap (independent of the above):** `StrategyRuntimeHandle` (`handle.py`) is a
+     universal stub — every method except `required_context()` unconditionally raises
+     `StrategyApiNotImplementedError`, by explicit design, for every strategy, always. Fixing the
+     contract format alone would NOT produce a single signal without this also being closed.
+   - Zero executable strategy code exists anywhere under `knowledge/strategies/` (confirmed: 0 `.py`
+     files). The Research Lab's own `code/mstrat.py`/`families.py` are whole-DataFrame batch functions,
+     architecturally incompatible with per-bar `MarketContext` evaluation, and **must never be imported
+     at AI Trader runtime** (would violate the Research-Lab-frozen boundary) — only their logic may be
+     read offline and re-implemented natively.
+   - This is why Phase 6.7's own full-history run trades zero times. **CEO has since named this Phase
+     6.8 — Executable Strategy Vertical Slice** (§H) — approved for planning only, NOT yet authorized to
+     implement.
 2. **Portfolio Manager is still NOT a separate runtime module.** Execution Engine and now the Simulation
    Framework's Portfolio Simulator both reuse/project `ai_trader.risk_manager.types.PortfolioState`
    directly — a documented IMPLEMENTATION CHOICE, resolved consistently a second time (Simulation
@@ -192,16 +207,26 @@ TOTAL   7345 stmts   345 miss   95%
 
 ## H. Immediate next phase
 
-**No new AI Trader implementation phase is authorized by this handoff.** The CEO's Phase 6.7 approval
-message was explicit: "Stop after Phase 6.7," and named Learning Engine, strategy optimization, Broker
-Adapter, MT5, paper trading, and live trading as all NOT to begin.
+**PHASE 6.8 — EXECUTABLE STRATEGY VERTICAL SLICE.** CEO-named (2026-07-15), following the gap analysis
+in `STRATEGY_RUNTIME_INTEGRATION_GAP.md` (§G item 1). **Explicitly NOT yet authorized to implement** —
+"Do not begin Phase 6.8 until a new explicit CEO approval is given." The objective is ONE real strategy
+proven end-to-end, not a 51-strategy batch migration:
 
-**The most consequential open question for the CEO to decide next** (not a self-authorized phase, a
-question to raise): now that the Simulation Framework can run the real pipeline deterministically, the
-gating blocker to any actual profitability evidence is §G item 1 (no real strategy signal logic). A
-future phase to interpret the Strategy Library's S1–S51 natural-language contracts into executable
-Signal Engine logic would need its own CEO-approved scope, design docs, and handoff — exactly like every
-prior phase.
+1. Select one frozen strategy family with existing research code and sufficient historical evidence
+   (the gap analysis's own §10 recommends S1 — best-specified contract, no HTF context required,
+   already-honest "no confirmed alpha" research verdict).
+2. Migrate its contract v0 → Strategy Interface v1.
+3. Implement its runtime evaluator WITHOUT importing Research Lab code at runtime.
+4. Validate runtime outputs against the frozen research implementation on identical historical contexts.
+5. Load it through Strategy Manager; produce real actionable signals through Signal Engine.
+6. Pass through Scoring Engine, Risk Manager, Execution Engine.
+7. Run the first economic backtest through the Simulation Framework: **XAUUSD, 2,000 USD starting
+   capital, USD account currency, 5% risk per trade.**
+8. Report trades, net profit, return, expectancy, profit factor, max drawdown, equity curve, strategy
+   attribution, execution costs.
+
+Do not batch-migrate S2–S51 before this vertical slice proves out. Do not begin Learning Engine, Broker
+Adapter, MT5, or live/paper trading under cover of this phase.
 
 ## I. Exact next-session order
 
@@ -209,11 +234,12 @@ prior phase.
 2. **Verify Git state directly** — `git branch --show-current`, `git log -1`, `git status --porcelain`
    — re-confirm §B, especially whether the CEO has since instructed (in this or another session) that
    Phase 6.7's work be committed; do not assume it was.
-3. **Read `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md` in full** for the complete Phase 6.7 detail this
-   document only summarizes.
+3. **Read `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md` and `STRATEGY_RUNTIME_INTEGRATION_GAP.md` in
+   full** for the complete Phase 6.7 detail and the Phase 6.8 gap diagnosis this document only
+   summarizes.
 4. **Report the reconstructed state back to the CEO** before proceeding on anything new.
-5. **Wait for explicit CEO direction** on: (a) whether to commit Phase 6.7, and (b) what the next
-   authorized phase is (most likely a strategy-signal-logic phase per §H, but not to be assumed).
+5. **Wait for explicit CEO direction** — Phase 6.8 (§H) is named but NOT yet approved to implement; do
+   not self-authorize starting it.
 
 ---
 

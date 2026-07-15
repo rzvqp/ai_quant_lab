@@ -1,5 +1,29 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 — Strategy Runtime Integration Gap analysis (read-only), Phase 6.8 named
+- CEO-approved read-only investigation into why Phase 6.7's own full-history run produces zero trades.
+  Ran the real `StrategyManager.load_library()` against the real `knowledge/strategies/` library (no
+  mocks) and confirmed empirically: **all 51/51 strategy contracts fail Strategy Interface v1 schema
+  validation identically** (`loaded=0, failed=51`), because every `strategy.json` is still the Research
+  Lab's own v0 research-export shape — none carry `interface_version`/`identity`/`lifecycle`/
+  `semantics`/`execution`/`evidence`/`provenance`. `StrategyManager.active_strategies()` therefore
+  always returns `[]`.
+- Confirmed a SECOND, independent gap: `StrategyRuntimeHandle` (`handle.py`) is a universal stub —
+  every method except `required_context()` raises `StrategyApiNotImplementedError` by explicit design,
+  for every strategy. Fixing the contract format alone would not produce a single signal.
+- Confirmed zero executable strategy code exists anywhere under `knowledge/strategies/` (0 `.py`
+  files), and that the Research Lab's own `code/mstrat.py`/`families.py` are whole-DataFrame batch
+  functions architecturally incompatible with per-bar runtime evaluation — they must never be imported
+  at AI Trader runtime (would violate the Research-Lab-frozen boundary); only their logic may be read
+  offline and re-implemented natively.
+- Full writeup, all 10 CEO-requested questions answered from repository evidence only:
+  `STRATEGY_RUNTIME_INTEGRATION_GAP.md`. No strategy file or runtime code was modified; nothing was
+  optimized; no Learning Engine work was started.
+- **CEO named the next phase: Phase 6.8 — Executable Strategy Vertical Slice** (one strategy,
+  recommended S1, migrated + given a real runtime evaluator + proven through the real six-module
+  pipeline + a first economic backtest at XAUUSD/2,000 USD/5% risk-per-trade) — **explicitly NOT yet
+  authorized to implement**; requires a new, separate CEO approval before any code is written.
+
 ## Session 2026-07-15 (Phase 6.7) — Simulation Framework v1 implemented, adversarially reviewed, READY
 - CEO approval granted; implemented the Simulation Framework production module against the frozen
   `ai_trader/simulation/*.md`/`SIMULATION_SCHEMA.json` specification and `SIMULATION_HANDOFF.md` — no
