@@ -104,3 +104,36 @@ class TestS1FileOnDisk:
         errors = validate_contract(data)
         assert errors == [], errors
         assert data["identity"]["id"] == "S1"
+
+
+#: Phase 6.8 Checkpoint 2 -- Wave B batches B1 (session/calendar) + B2 (liquidity/sweep).
+CHECKPOINT_2_FOLDERS_BY_ID = {
+    "S6": "S06_session_transition", "S16": "S16_previous_day_levels", "S17": "S17_weekly_levels",
+    "S18": "S18_time_of_day_edge", "S19": "S19_session_gap", "S24": "S24_overnight_variance_session_carry",
+    "S29": "S29_day_of_week_effect", "S30": "S30_kill_zone_time_window",
+    "S31": "S31_month_end_month_start_effect", "S2": "S02_failed_breakout_fade",
+    "S11": "S11_structure_break_reversal_choch", "S12": "S12_range_rotation",
+    "S21": "S21_equal_highs_lows_liquidity_pool_raid", "S22": "S22_round_number_magnet_rejection",
+}
+
+
+class TestCheckpoint2FilesOnDisk:
+    """The same tripwire as ``TestS1FileOnDisk``, extended to every strategy migrated in Checkpoint 2
+    -- every v1 ``strategy.json`` stays schema-valid, and the original v0 export is preserved
+    unchanged alongside it (never deleted)."""
+
+    def test_every_checkpoint_2_strategy_json_is_schema_valid_v1(self) -> None:
+        root = Path(__file__).resolve().parents[3] / "knowledge" / "strategies"
+        for strategy_id, folder in CHECKPOINT_2_FOLDERS_BY_ID.items():
+            data = json.loads((root / folder / "strategy.json").read_text(encoding="utf-8"))
+            errors = validate_contract(data)
+            assert errors == [], f"{folder}: {errors}"
+            assert data["identity"]["id"] == strategy_id
+
+    def test_every_checkpoint_2_v0_file_is_preserved(self) -> None:
+        root = Path(__file__).resolve().parents[3] / "knowledge" / "strategies"
+        for folder in CHECKPOINT_2_FOLDERS_BY_ID.values():
+            v0_path = root / folder / "strategy.v0.json"
+            assert v0_path.exists(), f"{folder}: original v0 export missing"
+            v0 = json.loads(v0_path.read_text(encoding="utf-8"))
+            assert "interface_version" not in v0  # the v0 shape, never migrated in place

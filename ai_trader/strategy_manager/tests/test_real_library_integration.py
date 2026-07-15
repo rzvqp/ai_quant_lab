@@ -9,8 +9,15 @@ and quarantined as ``INVALID`` with a diagnostic reason, and the Manager stays q
 This test's own docstring used to describe itself as a tripwire against "0 strategies load" going
 unnoticed; as of the Phase 6.8 reference slice, S1 IS migrated and loads successfully -- the counts
 below were updated to match, exactly the "tripwire fires, get updated deliberately" scenario the
-original docstring anticipated. As more strategies migrate (Phase 6.8 Wave B), these counts will need
-updating again -- expected, not a regression.
+original docstring anticipated. Phase 6.8 Wave B Checkpoint 2 (B1+B2, 14 more strategies) updated
+these counts again -- expected, not a regression, verified live against the real library rather than
+assumed: 15 strategies now schema-validate and load; of those, 5 (S18/S22/S29/S30/S31, whose own
+``required_data`` needs only ``m_atr``) are ALSO fully COMPATIBLE under this fixture's minimal
+``FakeScanner`` feature declaration (unlike the real ``MarketScanner``, which declares every feature
+-- see the Simulation Harness integration tests for full compatibility proof), while the other 10
+remain INCOMPATIBLE under this fixture for the same reason S1 originally was (missing declared
+fields like ``pdl``/``prev_sess_high``/``rmax20``). As more strategies migrate (Wave B's remaining
+batches), these counts will need updating again -- expected, not a regression.
 """
 
 from __future__ import annotations
@@ -36,28 +43,33 @@ class TestRealStrategyLibrary:
         mgr.configure(FakeScanner())
         report = mgr.load_library(as_of=AS_OF)
 
-        # S1 is migrated (Phase 6.8 reference slice) and passes SCHEMA validation (now in `loaded`).
-        # It still appears in `failed` too here -- `loaded`/`failed` are not mutually exclusive by
-        # design (manager.py `_build_load_report`): a schema-valid entry that fails the separate
+        # 15 strategies are migrated (S1 Checkpoint 1 + B1/B2 Checkpoint 2) and pass SCHEMA
+        # validation (now in `loaded`). `loaded`/`failed` are not mutually exclusive by design
+        # (manager.py `_build_load_report`): a schema-valid entry that fails the separate
         # COMPATIBILITY check (against the scanner's declared `get_provided_features()`) appears in
-        # both. `FakeScanner()` here is a deliberately minimal test double that does not declare
-        # `pdl`/`m_atr` as provided M15 features (unlike the real `MarketScanner`, which does -- S1
-        # loads AND is fully compatible against the real scanner, proven by the Simulation Harness
-        # integration tests) -- so under this fixture S1 is schema-valid but INCOMPATIBLE, not a real
-        # problem, just this particular fixture's own limited feature declaration.
-        assert report.loaded == ("S1",)
-        assert len(report.failed) == 51
+        # both. `FakeScanner()` here is a deliberately minimal test double declaring only a handful
+        # of M15 features (including `m_atr`, but NOT `pdl`/`prev_sess_high`/`rmax20`/etc.) -- so 5
+        # of the 15 (S18/S22/S29/S30/S31, whose own `required_data` needs only `m_atr`) are fully
+        # COMPATIBLE even under this fixture, while the other 10 are schema-valid but INCOMPATIBLE,
+        # not a real problem, just this particular fixture's own limited feature declaration (the
+        # real `MarketScanner` declares every feature -- full compatibility proven by the Simulation
+        # Harness integration tests).
+        assert set(report.loaded) == {
+            "S1", "S2", "S6", "S11", "S12", "S16", "S17", "S18", "S19", "S21", "S22", "S24", "S29", "S30", "S31",
+        }
+        assert len(report.failed) == 46  # 36 still-v0 INVALID + 10 schema-valid-but-INCOMPATIBLE
         s1_failure = next(f for f in report.failed if f.id == "S1")
         assert "pdl" in " ".join(s1_failure.reasons)
         assert report.duplicates == ()
 
-        # Still not ACTIVE: INCOMPATIBLE (under this fixture) is never ACTIVATABLE.
+        # Still not ACTIVE: compatibility alone is not ACTIVATABLE -- this Manager's own default
+        # config auto-admits nothing (ManagerConfig()'s conservative default, by design).
         assert mgr.active_strategies() == []
         assert mgr.required_context().contributor_ids == ()
 
-        # FAILED, not a crash: every entry is still unusable UNDER THIS FIXTURE (50 INVALID + 1
-        # INCOMPATIBLE), but the Manager itself is fully queryable.
-        assert mgr.health().overall is ManagerOverallHealth.FAILED
+        # DEGRADED (not FAILED): 5 strategies are healthy-but-inactive under this fixture, so the
+        # Manager is no longer "every entry unusable" -- but it stays fully queryable regardless.
+        assert mgr.health().overall is ManagerOverallHealth.DEGRADED
         assert mgr.statistics().total == 51
         assert len(mgr.list_strategies()) == 51
 

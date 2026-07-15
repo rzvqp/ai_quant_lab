@@ -1,0 +1,83 @@
+{
+ "id": "S31",
+ "name": "Month-End / Month-Start Effect",
+ "klass": "Class IV \u2014 calendar",
+ "slug": "S31_month_end_month_start_effect",
+ "status": "IMPLEMENTED",
+ "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
+ "sessions": "Month-end/start first bar",
+ "long_short": "both",
+ "htf_context": "none",
+ "mechanism": "Fixed windows around the month change (day-of-month >=27 or <=2), entered at the day's first bar. Calendar effect; small sample; in-sample-only overfit risk.",
+ "entry_rules": "In the month-end/start window, at the day's first bar, enter next open directionally.",
+ "exit_rules": "rr2 | rr3 | time.",
+ "stop_loss_rules": "atr (1.5*ATR).",
+ "required_confirmations": "none",
+ "invalid_conditions": [
+  "ATR non-finite or <= 0 at the signal bar",
+  "signal on the last available bar (no next-open to fill)",
+  "a position is already open (overlap suppression)"
+ ],
+ "position_sizing": {
+  "model": "risk-normalised (1R per trade)",
+  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ },
+ "grammar": "window(month_end|month_start), side, exit",
+ "executable_default": {
+  "selection_rule": "research_worthy & largest-n",
+  "hypothesis_id": "75078bddddd9",
+  "params": {
+   "window": "month_start",
+   "side": "down",
+   "exit": "rr3"
+  }
+ },
+ "performance": {
+  "historical": {
+   "hypothesis_id": "75078bddddd9",
+   "n": 38,
+   "expectancy_R": 0.1249,
+   "profit_factor": 1.163,
+   "drawdown_R": 9.51,
+   "win_rate": 0.316,
+   "sumR": 4.74,
+   "median_R": -1.1135,
+   "trimmed5_R": 0.0507,
+   "months": 26,
+   "pos_months": 12,
+   "years": 3.0,
+   "side": "short",
+   "hist_profitable": true,
+   "research_worthy": true,
+   "fragile": false,
+   "top1_share": 0.087,
+   "oos_expectancy_R": -0.4385
+  },
+  "oos_expectancy_R": -0.4385,
+  "drawdown_R": 9.51,
+  "profit_factor": 1.163,
+  "expectancy_R": 0.1249,
+  "family": {
+   "n_hypotheses": 12,
+   "n_hist_profitable": 2,
+   "n_research_worthy": 2,
+   "best_exp": 0.1783,
+   "median_exp": -0.3099
+  }
+ },
+ "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+ "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
+ "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample",
+ "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 12 hypotheses, 2 historically-profitable, 2 research-worthy. Representative 75078bddddd9: n=38, exp=0.1249R, PF=1.163, maxDD=9.51R, OOS exp=-0.4385R, pos-months 12/26, research-worthy. ",
+ "provenance": {
+  "engine": "mstrat.py v2 (FROZEN)",
+  "module": "mstrat_ext",
+  "results_parquet": "results/ext_families/EXT_FAMILY_RESULTS.parquet",
+  "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
+  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+ }
+}

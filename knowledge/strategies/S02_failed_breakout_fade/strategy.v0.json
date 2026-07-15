@@ -1,0 +1,86 @@
+{
+ "id": "S2",
+ "name": "Failed-Breakout Fade",
+ "klass": "Failed-breakout / contrarian",
+ "slug": "S02_failed_breakout_fade",
+ "status": "IMPLEMENTED",
+ "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
+ "sessions": "All sessions",
+ "long_short": "both",
+ "htf_context": "none",
+ "mechanism": "A close breaks beyond a reference level then FAILS (closes back inside) within a few bars \u2014 a false breakout. Fade back into the range. Loser = breakout buyers of the false break.",
+ "entry_rules": "Close beyond ref (up: close>refH; low: close<refL); within `fail_within` bars a close returns inside; enter next open (contrarian, into the range).",
+ "exit_rules": "rr2 | opp_liq | time.",
+ "stop_loss_rules": "beyond_ext (2 ticks past the failed-break extreme) or atr (1.5*ATR).",
+ "required_confirmations": "The failure itself (close back inside within the window) is the confirmation.",
+ "invalid_conditions": [
+  "ATR non-finite or <= 0 at the signal bar",
+  "signal on the last available bar (no next-open to fill)",
+  "a position is already open (overlap suppression)"
+ ],
+ "position_sizing": {
+  "model": "risk-normalised (1R per trade)",
+  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ },
+ "grammar": "ref(swing|session|pdh_pdl), lb(20|50), fail_within(2|4), stop, exit, side",
+ "executable_default": {
+  "selection_rule": "research_worthy & largest-n",
+  "hypothesis_id": "959581cbcdb3",
+  "params": {
+   "ref": "pdh_pdl",
+   "lb": 20,
+   "fail_within": 4,
+   "stop": "atr",
+   "exit": "rr2",
+   "side": "low"
+  }
+ },
+ "performance": {
+  "historical": {
+   "hypothesis_id": "959581cbcdb3",
+   "n": 272,
+   "expectancy_R": 0.0188,
+   "profit_factor": 1.03,
+   "drawdown_R": 22.48,
+   "win_rate": 0.412,
+   "sumR": 5.11,
+   "median_R": -1.0527,
+   "trimmed5_R": -0.0157,
+   "months": 26,
+   "pos_months": 13,
+   "years": 3.0,
+   "side": "long",
+   "hist_profitable": true,
+   "research_worthy": true,
+   "fragile": false,
+   "top1_share": 0.011,
+   "oos_expectancy_R": -0.0311
+  },
+  "oos_expectancy_R": -0.0311,
+  "drawdown_R": 22.48,
+  "profit_factor": 1.03,
+  "expectancy_R": 0.0188,
+  "family": {
+   "n_hypotheses": 144,
+   "n_hist_profitable": 18,
+   "n_research_worthy": 6,
+   "best_exp": 0.0746,
+   "median_exp": -0.0949
+  }
+ },
+ "monte_carlo": "Wave-1 EXP-06 level placebo: real above shuffled but NOT significant (NO DIFFERENCE DETECTED).",
+ "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
+ "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample",
+ "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 144 hypotheses, 18 historically-profitable, 6 research-worthy. Representative 959581cbcdb3: n=272, exp=0.0188R, PF=1.03, maxDD=22.48R, OOS exp=-0.0311R, pos-months 13/26, research-worthy. ",
+ "provenance": {
+  "engine": "mstrat.py v2 (FROZEN)",
+  "module": "mstrat",
+  "results_parquet": "results/FAMILY_RESULTS.parquet",
+  "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
+  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+ }
+}

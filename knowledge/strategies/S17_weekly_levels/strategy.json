@@ -1,84 +1,135 @@
 {
- "id": "S17",
- "name": "Weekly Levels",
- "klass": "Reference-level (weekly)",
- "slug": "S17_weekly_levels",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "Weekly levels",
- "mechanism": "Prior-week high/low as higher-timeframe decision levels \u2014 breakout or rejection.",
- "entry_rules": "Onset of a close beyond prev-week high/low (breakout) or a tag-then-reject; enter next open.",
- "exit_rules": "rr2 | rr3 | time.",
- "stop_loss_rules": "atr or level.",
- "required_confirmations": "none",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S17",
+  "name": "Weekly Levels",
+  "slug": "S17_weekly_levels",
+  "version": "1.0.0",
+  "class": "Reference-level (weekly)"
  },
- "grammar": "level(pw_high|pw_low), mode(breakout|reject), stop, exit",
- "executable_default": {
-  "selection_rule": "research_worthy & largest-n",
-  "hypothesis_id": "f5afb9813f83",
-  "params": {
-   "level": "pw_high",
-   "mode": "reject",
-   "stop": "atr",
-   "exit": "time"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "f5afb9813f83",
+ "semantics": {
+  "mechanism": "Prior-week high/low as higher-timeframe decision levels \u2014 breakout or rejection.",
+  "signal_reason": "Onset of a close beyond prev-week high/low (breakout) or a tag-then-reject; enter next open.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "pw_high",
+     "m_atr"
+    ],
+    "lookback_bars": 2
+   }
+  ],
+  "required_confirmations": [
+   "PW_HIGH_REJECTION_ONSET"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "Fresh wick-rejection onset at the previous week's high.",
+   "trigger": "PW_HIGH_REJECTION_ONSET",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "24-bar time-stop (frozen engine's own exit=time convention); no price target.",
+   "options": [
+    "time"
+   ]
+  },
+  "stop": {
+   "description": "1.5*ATR from entry, floored.",
+   "trigger": "atr"
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "LOW",
+   "rationale": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 187,
    "expectancy_R": 0.0567,
    "profit_factor": 1.082,
    "drawdown_R": 21.06,
    "win_rate": 0.353,
-   "sumR": 10.61,
-   "median_R": -1.0597,
-   "trimmed5_R": -0.2209,
-   "months": 25,
    "pos_months": 13,
-   "years": 3.0,
-   "side": "short",
-   "hist_profitable": true,
-   "research_worthy": true,
-   "fragile": false,
-   "top1_share": 0.071,
-   "oos_expectancy_R": 0.0312
+   "months": 25,
+   "top1_share": 0.071
   },
-  "oos_expectancy_R": 0.0312,
-  "drawdown_R": 21.06,
-  "profit_factor": 1.082,
-  "expectancy_R": 0.0567,
-  "family": {
-   "n_hypotheses": 24,
-   "n_hist_profitable": 6,
-   "n_research_worthy": 5,
-   "best_exp": 0.4235,
-   "median_exp": -0.2033
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": 0.0312,
+   "profit_factor": 1.082,
+   "drawdown_R": 21.06,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 6 historically-profitable, 5 research-worthy. Representative f5afb9813f83: n=187, exp=0.0567R, PF=1.082, maxDD=21.06R, OOS exp=0.0312R, pos-months 13/25, research-worthy. ",
+  "known_limitations": [
+   "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 24 hypotheses, 6 historically-profitable, 5 research-worthy. Representative f5afb9813f83: n=187, exp=0.0567R, PF=1.082, maxDD=21.06R, OOS exp=0.0312R, pos-months 13/25, research-worthy. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S17_weekly_levels"
  }
 }

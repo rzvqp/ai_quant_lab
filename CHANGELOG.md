@@ -1,5 +1,43 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 — Phase 6.8 Wave B Checkpoint 2: batches B1+B2 (14 strategies) READY
+- CEO authorized Wave B to begin this session. Reconstructed and verified live (not assumed):
+  repository path, branch, HEAD, working tree clean, protected-area 0-diff, full `ai_trader/` suite
+  (1303/1303), `mypy --strict` (0 errors, 111 files), coverage (96%) -- all matched `WAVE_B_HANDOFF.md`
+  exactly before any new code was written.
+- Migrated and implemented 14 real runtime evaluators: batch B1 (S6, S16, S17, S18, S19, S24, S29,
+  S30, S31 -- session/calendar) and batch B2 (S2, S11, S12, S21, S22 -- liquidity/sweep, extending
+  S1's own proven pattern), each verified against the frozen research engine's own grammar functions
+  (`code/mstrat.py`/`code/mstrat_ext.py`, read-only) for exact `executable_default` fidelity -- caught
+  two non-obvious details a v0-JSON-only reading would have missed (S12's `target=='center'`
+  silently overriding its own literal `exit=rr2` to a fixed 1.5R; S12's `stop=='ext'` branch, not
+  the atr-based one most peers use).
+- **Research/runtime parity gap found and resolved**: 5 of B1's own evidence-backed
+  `executable_default` selections (S16/S17/S18/S19/S24) chose the frozen engine's `exit=time` (24-bar
+  timeout) grammar option, which had no corresponding mechanism anywhere in the AI Trader runtime.
+  Stopped and disclosed per the CEO's own standing trigger rather than substituting a different,
+  non-evidence-backed exit. Per explicit CEO design mandate (deterministic, reusable, configurable,
+  no strategy-specific code, single Execution Engine gateway, no duplicated execution path, preserve
+  frozen semantics): built a generic time-stop overlay (`RuntimeEvaluator.time_stop_bars` +
+  `ai_trader/simulation/time_stop.py`, wired into `harness.py` via a new opt-in flag) that submits an
+  ordinary reduce-only `RiskDecision` through `ExecutionEngine.execute()` -- the exact same gateway
+  every other order already uses. Rejected reusing `emergency_flatten` after discovering it would
+  permanently latch the engine's lifecycle state and block every other strategy's future entries -- a
+  real regression caught during design, not shipped. **Zero edits to any of the six frozen pipeline
+  modules or to `knowledge/interface/`'s own contract schema.**
+- Proven end-to-end (`test_checkpoint2_end_to_end.py`) over real historical XAUUSD data: all 15
+  strategies (S1 + 14) reach real runtime handles, real trades close, every time-exit trade's
+  `holding_bars <= 24`, schema-valid report, determinism holds with the new mechanism active.
+- Updated two pre-existing tripwires for the new 15-strategy reality (documented, not a regression,
+  the same pattern S1's own migration already established): `test_real_library_integration.py`
+  (loaded/failed counts, overall health) and `test_s1_end_to_end.py` (no longer assumes S1 is the
+  only active strategy or that every trade is S1's).
+- Verified live: `pytest` 1367/1367 passing, `mypy --strict` 0 errors (126 files), coverage 96%
+  (8121 stmts). Protected areas confirmed clean: Research Lab 0-diff, six pipeline modules'
+  production code byte-identical (only 2 documented tripwire test files touched), `knowledge/`
+  confined to exactly the 15 migrated strategy folders. Full report: `PHASE_6_8_CHECKPOINT_2_REPORT.md`.
+- Remaining: 28 strategies across 8 Wave B groups (B3-B10), per `PHASE_6_8_WAVE_B_PLAN.md`'s own order.
+
 ## Session 2026-07-15 — Official session close: WAVE_B_HANDOFF.md written, repo frozen for Wave B
 - CEO ordered a complete official session close so a brand-new Claude session can continue using ONLY
   repository files. Verified live (not assumed): repository path, branch (`ai-trader-implementation`),

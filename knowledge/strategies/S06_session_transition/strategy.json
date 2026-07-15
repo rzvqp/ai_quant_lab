@@ -1,85 +1,140 @@
 {
- "id": "S6",
- "name": "Session-Transition",
- "klass": "Session-transition momentum",
- "slug": "S06_session_transition",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "london | ny (parameter)",
- "long_short": "both",
- "htf_context": "none",
- "mechanism": "Early in London/NY, price interacts with the PRIOR session high/low; breakout (continuation) or fade (reversion) of that level as the new session takes control.",
- "entry_rules": "In the first ~10 bars of the target session, cross of the prior-session high/low; breakout enters with the cross, fade enters against a tag-without-cross; enter next open.",
- "exit_rules": "rr2 | time.",
- "stop_loss_rules": "prev_ext (2 ticks past the level) or atr.",
- "required_confirmations": "none",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S6",
+  "name": "Session-Transition",
+  "slug": "S06_session_transition",
+  "version": "1.0.0",
+  "class": "Session-transition momentum"
  },
- "grammar": "session(london|ny), mode(breakout|fade), side, stop, exit",
- "executable_default": {
-  "selection_rule": "research_worthy & largest-n",
-  "hypothesis_id": "285dcba858f4",
-  "params": {
-   "session": "ny",
-   "mode": "breakout",
-   "side": "up",
-   "stop": "atr",
-   "exit": "rr2"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "285dcba858f4",
+ "semantics": {
+  "mechanism": "Early in London/NY, price interacts with the PRIOR session high/low; breakout (continuation) or fade (reversion) of that level as the new session takes control.",
+  "signal_reason": "In the first ~10 bars of the target session, cross of the prior-session high/low; breakout enters with the cross, fade enters against a tag-without-cross; enter next open.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "session",
+     "bar_in_sess",
+     "prev_sess_high",
+     "m_atr"
+    ],
+    "lookback_bars": 1
+   }
+  ],
+  "required_confirmations": [
+   "NY_SESSION_TRANSITION_BREAKOUT"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "london | ny (parameter)",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "First 10 bars of the NY session, close breaks above the prior session high.",
+   "trigger": "NY_SESSION_TRANSITION_BREAKOUT",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "2R fixed target.",
+   "options": [
+    "rr2"
+   ]
+  },
+  "stop": {
+   "description": "1.5*ATR from entry, floored.",
+   "trigger": "atr"
+  },
+  "target": {
+   "description": "2R fixed target from entry/stop distance."
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "LOW",
+   "rationale": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 395,
    "expectancy_R": 0.017,
    "profit_factor": 1.027,
    "drawdown_R": 23.91,
    "win_rate": 0.395,
-   "sumR": 6.71,
-   "median_R": -1.0589,
-   "trimmed5_R": -0.0252,
-   "months": 27,
    "pos_months": 12,
-   "years": 4.0,
-   "side": "long",
-   "hist_profitable": true,
-   "research_worthy": true,
-   "fragile": false,
-   "top1_share": 0.008,
-   "oos_expectancy_R": 0.1604
+   "months": 27,
+   "top1_share": 0.008
   },
-  "oos_expectancy_R": 0.1604,
-  "drawdown_R": 23.91,
-  "profit_factor": 1.027,
-  "expectancy_R": 0.017,
-  "family": {
-   "n_hypotheses": 32,
-   "n_hist_profitable": 7,
-   "n_research_worthy": 3,
-   "best_exp": 0.4973,
-   "median_exp": -0.2893
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": 0.1604,
+   "profit_factor": 1.027,
+   "drawdown_R": 23.91,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "PILOT",
+   "note": "Matched-null pilot used an S6 extreme hypothesis as a known tiny-stop/outlier CONTROL (not this representative).",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 7 historically-profitable, 3 research-worthy. Representative 285dcba858f4: n=395, exp=0.017R, PF=1.027, maxDD=23.91R, OOS exp=0.1604R, pos-months 12/27, research-worthy. ",
+  "known_limitations": [
+   "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
+   "Matched-null pilot used an S6 extreme hypothesis as a known tiny-stop/outlier CONTROL (not this representative)."
+  ]
  },
- "monte_carlo": "Matched-null pilot used an S6 extreme hypothesis as a known tiny-stop/outlier CONTROL (not this representative).",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "LOW \u2014 exploratory; research-worthy with positive out-of-sample expectancy",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 32 hypotheses, 7 historically-profitable, 3 research-worthy. Representative 285dcba858f4: n=395, exp=0.017R, PF=1.027, maxDD=23.91R, OOS exp=0.1604R, pos-months 12/27, research-worthy. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S06_session_transition"
  }
 }

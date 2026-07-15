@@ -1,83 +1,137 @@
 {
- "id": "S29",
- "name": "Day-of-Week Effect",
- "klass": "Class IV \u2014 calendar",
- "slug": "S29_day_of_week_effect",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "Weekday first bar",
- "long_short": "both",
- "htf_context": "none",
- "mechanism": "A fixed weekday directional bias, entered at that day's first bar. Pure calendar effect; in-sample-favourable, multiple-testing across weekdays acknowledged (calendar families are overfit-prone).",
- "entry_rules": "At the first bar of the chosen weekday, enter next open directionally; hold.",
- "exit_rules": "rr2 | time.",
- "stop_loss_rules": "atr (1.5*ATR).",
- "required_confirmations": "none",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S29",
+  "name": "Day-of-Week Effect",
+  "slug": "S29_day_of_week_effect",
+  "version": "1.0.0",
+  "class": "Class IV \u2014 calendar"
  },
- "grammar": "dow(0..4), side, exit",
- "executable_default": {
-  "selection_rule": "research_worthy & largest-n",
-  "hypothesis_id": "13e900a2bf7b",
-  "params": {
-   "dow": 3,
-   "side": "up",
-   "exit": "rr2"
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "13e900a2bf7b",
+ "semantics": {
+  "mechanism": "A fixed weekday directional bias, entered at that day's first bar. Pure calendar effect; in-sample-favourable, multiple-testing across weekdays acknowledged (calendar families are overfit-prone).",
+  "signal_reason": "At the first bar of the chosen weekday, enter next open directionally; hold.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "m_atr"
+    ],
+    "lookback_bars": 2
+   }
+  ],
+  "required_confirmations": [
+   "DAY_OF_WEEK_EFFECT"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "Weekday first bar",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "First bar of a UTC Thursday.",
+   "trigger": "DAY_OF_WEEK_EFFECT",
+   "timing": "next_open_after_signal"
+  },
+  "exit": {
+   "description": "2R fixed target.",
+   "options": [
+    "rr2"
+   ]
+  },
+  "stop": {
+   "description": "1.5*ATR from entry, floored.",
+   "trigger": "atr"
+  },
+  "target": {
+   "description": "2R fixed target from entry/stop distance."
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "VERY_LOW",
+   "rationale": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 112,
    "expectancy_R": 0.2047,
    "profit_factor": 1.332,
    "drawdown_R": 17.7,
    "win_rate": 0.482,
-   "sumR": 22.93,
-   "median_R": -1.0536,
-   "trimmed5_R": 0.1952,
-   "months": 27,
    "pos_months": 16,
-   "years": 4.0,
-   "side": "long",
-   "hist_profitable": true,
-   "research_worthy": true,
-   "fragile": false,
-   "top1_share": 0.021,
-   "oos_expectancy_R": -0.0259
+   "months": 27,
+   "top1_share": 0.021
   },
-  "oos_expectancy_R": -0.0259,
-  "drawdown_R": 17.7,
-  "profit_factor": 1.332,
-  "expectancy_R": 0.2047,
-  "family": {
-   "n_hypotheses": 20,
-   "n_hist_profitable": 6,
-   "n_research_worthy": 4,
-   "best_exp": 0.4188,
-   "median_exp": -0.164
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.0259,
+   "profit_factor": 1.332,
+   "drawdown_R": 17.7,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "NOT_RUN",
+   "scope": "WAVE1",
+   "note": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
+   "p": null,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 20 hypotheses, 6 historically-profitable, 4 research-worthy. Representative 13e900a2bf7b: n=112, exp=0.2047R, PF=1.332, maxDD=17.7R, OOS exp=-0.0259R, pos-months 16/27, research-worthy. ",
+  "known_limitations": [
+   "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample",
+   "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict."
+  ]
  },
- "monte_carlo": "NOT RUN \u2014 matched-null was applied only to the pre-registered pilot and the Wave-1 representatives. The analytic normal-approx p-value is INVALIDATED (PROJECT_AUDIT D1) and is not used as a verdict.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 20 hypotheses, 6 historically-profitable, 4 research-worthy. Representative 13e900a2bf7b: n=112, exp=0.2047R, PF=1.332, maxDD=17.7R, OOS exp=-0.0259R, pos-months 16/27, research-worthy. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat_ext",
-  "results_parquet": "results/ext_families/EXT_FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S29_day_of_week_effect"
  }
 }

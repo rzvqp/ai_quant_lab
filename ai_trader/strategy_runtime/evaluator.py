@@ -87,6 +87,16 @@ class RuntimeEvaluator:
     genuinely needs custom precondition/gating logic beyond data-quality (none of the 43
     runtime-eligible strategies' own contracts specify anything beyond that as of this phase)."""
 
+    #: Bars after which an open position of this strategy is force-closed at market, regardless of
+    #: stop/target, via the Simulation Framework's own generic time-stop overlay
+    #: (:mod:`ai_trader.simulation.time_stop`) -- ``None`` (the default) means no time-stop for this
+    #: strategy (its own contract's exit is purely stop/target-based). A family evaluator whose own
+    #: v0 ``executable_default.exit == "time"`` sets this to the frozen research engine's own "time"
+    #: exit horizon (``code/mstrat.py``'s own ``_exitmap``: ``exit_kind=='time' -> 24`` bars, read
+    #: only, never imported) -- never invented, never a substitute for a different, non-evidence
+    #: -backed exit rule.
+    time_stop_bars: int | None = None
+
     def __init__(self, strategy_id: str, contract: Contract, symbols: frozenset[str]) -> None:
         self.strategy_id = strategy_id
         self.contract = contract

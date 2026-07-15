@@ -43,9 +43,12 @@ def test_s1_produces_a_real_trade_through_the_full_pipeline() -> None:
     assert harness.state is RunState.WARMUP, harness.fail_reason
 
     # S1 must actually be active (loaded, admitted, and the REAL evaluator wired in) before the run.
+    # Phase 6.8 Wave B Checkpoint 2 migrated 14 more strategies alongside S1 -- this test's own
+    # purpose (proving S1 specifically reaches a real runtime handle) only needs "S1 is present",
+    # not "S1 is the only one active" (which stopped being true the moment Checkpoint 2 landed).
     from ai_trader.strategy_runtime.registry import build_runtime_handles
     handles = build_runtime_handles(harness._strategy_manager, frozenset({"XAUUSD"}))
-    assert [h.id for h in handles] == ["S1"]
+    assert "S1" in [h.id for h in handles]
 
     harness.run_to_completion()
     assert harness.state is RunState.COMPLETED, harness.fail_reason
@@ -53,19 +56,29 @@ def test_s1_produces_a_real_trade_through_the_full_pipeline() -> None:
     assert harness.fills_total > 0
 
     account = harness.portfolio_simulator.account
-    assert len(account.trade_ledger) > 0, "S1 must close at least one real trade over this window"
+    assert len(account.trade_ledger) > 0, "at least one real trade must close over this window"
 
+    # Phase 6.8 Wave B Checkpoint 2 registered 14 more strategies sharing this same runtime registry
+    # (`build_runtime_handles` returns every active strategy, not S1 alone) -- since only one
+    # position at a time is open per symbol system-wide, other strategies can legitimately win some
+    # of the shared slot's trades now. This test's own remaining scope is "S1 itself still produces
+    # at least one real, sane trade" (Checkpoint 2's own `test_checkpoint2_end_to_end.py` covers the
+    # full 15-strategy proof, including the relaxed R-multiple bound for time-exit strategies).
     for trade in account.trade_ledger:
-        assert trade.strategy_id == "S1"
         assert trade.symbol == "XAUUSD"
         # every trade must be internally consistent: qty/prices positive and finite.
         assert trade.qty > 0
         assert trade.entry_price > 0 and trade.exit_price > 0
-        # R-multiple must be computed (S1 always registers a stop hint) and in a sane range for a
-        # rr2-exit strategy (a loss caps near -1R, a win at the target caps near +2R; a little
-        # tolerance either side for slippage/spread).
+        # a real stop is always registered, so downside is bounded near -1R regardless of strategy;
+        # only rr2/rr3-exit strategies cap the upside near +2R/+3R -- time-exit strategies do not.
         assert trade.pnl_r is not None
-        assert -1.5 <= trade.pnl_r <= 2.5
+        assert trade.pnl_r >= -1.5
+
+    s1_trades = [t for t in account.trade_ledger if t.strategy_id == "S1"]
+    assert len(s1_trades) > 0, "S1 must close at least one real trade over this window"
+    for trade in s1_trades:
+        # S1's own rr2 exit still caps its upside near +2R (a little tolerance for slippage/spread).
+        assert trade.pnl_r is not None and trade.pnl_r <= 2.5
 
     # The report must be internally consistent and schema-valid end to end.
     report = performance_analyzer.analyze(context, account)
@@ -77,7 +90,7 @@ def test_s1_produces_a_real_trade_through_the_full_pipeline() -> None:
     assert errors == [], errors
     assert report.performance.trades == len(account.trade_ledger)
     s1_attribution = next(a for a in report.attribution if a.strategy_id == "S1")
-    assert s1_attribution.trades == len(account.trade_ledger)
+    assert s1_attribution.trades == len(s1_trades)
 
 
 def test_deterministic_replay_is_still_bit_identical_with_real_strategies_active() -> None:

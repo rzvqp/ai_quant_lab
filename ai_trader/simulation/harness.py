@@ -34,6 +34,7 @@ from ai_trader.simulation.data_source import ReplayDataSource
 from ai_trader.simulation.exceptions import DataLoadError
 from ai_trader.simulation.execution_simulator import ExecutionSimulator
 from ai_trader.simulation.portfolio_simulator import PortfolioSimulator
+from ai_trader.simulation.time_stop import build_time_stop_decision, positions_due_for_time_stop
 from ai_trader.simulation.types import TERMINAL_RUN_STATES, CloseAtEndPolicy, RunState, SimFillEvent, SimPhase
 from ai_trader.strategy_manager.config import ManagerConfig
 from ai_trader.strategy_manager.manager import StrategyManager
@@ -61,7 +62,7 @@ class SimulationHarness:
     def __init__(
         self, context: SimulationContext, symbol_meta: dict[str, SymbolMeta], data_dir: Path,
         manager_config: ManagerConfig | None = None, use_strategy_runtime: bool = False,
-        risk_config: RiskConfig | None = None,
+        risk_config: RiskConfig | None = None, enable_time_stops: bool = False,
     ) -> None:
         """``manager_config``/``use_strategy_runtime``/``risk_config`` default to Phase 6.7's own
         original, verified-fail-safe behavior (a bare ``ManagerConfig()``/``RiskConfig()`` with no
@@ -74,13 +75,18 @@ class SimulationHarness:
         Risk Manager's own fail-safe default denies every opportunity for a symbol with no configured
         threshold (``filters.py``: "cannot confirm safe, never assume safe"), so leaving this at the
         bare default with real strategies active means every decision DENYs on FILTER_SPREAD/
-        FILTER_LIQUIDITY, not a bug in this module."""
+        FILTER_LIQUIDITY, not a bug in this module. ``enable_time_stops=True`` additionally enforces
+        each active strategy's own ``RuntimeEvaluator.time_stop_bars`` (see
+        ``ai_trader.simulation.time_stop``); only meaningful alongside ``use_strategy_runtime=True``
+        (default ``False``: Phase 6.7's original behavior, no strategy has ever declared a time-stop
+        before Phase 6.8 Wave B, unchanged)."""
         self.context = context
         self._symbol_meta = symbol_meta
         self._data_dir = data_dir
         self._manager_config = manager_config or ManagerConfig()
         self._use_strategy_runtime = use_strategy_runtime
         self._risk_config = risk_config or RiskConfig()
+        self._enable_time_stops = enable_time_stops
         self.state = RunState.UNINITIALIZED
         self.fail_reason: str | None = None
         self.degraded_reasons: list[str] = []
@@ -316,6 +322,26 @@ class SimulationHarness:
                             self.portfolio_simulator.record_risk_event("DENY", as_of)
                 if decision_batch.engine_state.value != "READY":
                     self.portfolio_simulator.record_risk_event(decision_batch.engine_state.value, as_of)
+
+            if self._enable_time_stops and self._use_strategy_runtime:
+                assert self._clock is not None
+                time_stop_bars_by_strategy = {
+                    h.id: bars_limit for h in handles
+                    if (bars_limit := getattr(h.api, "time_stop_bars", None)) is not None
+                }
+                if time_stop_bars_by_strategy:
+                    due = positions_due_for_time_stop(
+                        self.portfolio_simulator.account.positions, self._clock.bar_index,
+                        time_stop_bars_by_strategy,
+                    )
+                    if due:
+                        portfolio_state = self.portfolio_simulator.to_portfolio_state(as_of)
+                        for position in due:
+                            decision = build_time_stop_decision(
+                                position, as_of, self._clock.bar_index, self._risk_manager, self._risk_config,
+                            )
+                            self._execution_engine.execute(decision, portfolio_state)
+                            self.orders_submitted += 1
 
         bars = self._data_source.base_bars_at(as_of)
         fills = self.execution_simulator.advance_bar(as_of, bars)
