@@ -1,5 +1,24 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 — Official session close: WAVE_B_HANDOFF.md written, repo frozen for Wave B
+- CEO ordered a complete official session close so a brand-new Claude session can continue using ONLY
+  repository files. Verified live (not assumed): repository path, branch (`ai-trader-implementation`),
+  HEAD (`19bd4e09c641ff82ec0e72ceaa92e481d63be831`), working tree CLEAN, protected-area 0-diff (Research
+  Lab; `knowledge/` confined to S1's own folder; six pipeline modules' production code untouched), full
+  `ai_trader/` suite (1303/1303 passing), `mypy --strict` (0 errors, 111 files), coverage (96% total).
+- Wrote `WAVE_B_HANDOFF.md` — a 27-section, fully self-contained official handoff (executive summary,
+  repo/branch/HEAD/working-tree state, completed phases, READY/not-started modules, current + runtime
+  architecture, Simulation Framework and Strategy Runtime status, Checkpoint 1 and S1-migration
+  summaries, both bugs found and fixed with lessons learned, protected invariants, the Strategy Runtime
+  Integration Gap summary, Wave B objectives/mechanism-batches/migration-order/testing-methodology/
+  checkpoints, current known limitations, future roadmap, the exact next task, and the exact first
+  prompt for the next session) — designed so a new session needs nothing from this conversation.
+- Rewrote `NEXT_SESSION.md` in full as a concise, accurate entry point pointing to `WAVE_B_HANDOFF.md`
+  for full detail (the prior version predated this session's commits and had gone stale, including a
+  now-false "Phase 6.7 uncommitted" claim).
+- No strategy code implemented, no additional contracts migrated, no protected area modified this
+  session beyond the handoff documents themselves.
+
 ## Session 2026-07-15 — Phase 6.8 Checkpoint 1 committed; Wave B planned, deferred to a fresh session
 - CEO accepted Checkpoint 1 and ordered it committed, then the repository frozen at this known-good
   state: "Wave B will start in a fresh session... Do not implement additional strategies." Reason

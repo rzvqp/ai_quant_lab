@@ -1,11 +1,12 @@
 # NEXT_SESSION.md — Official Handoff (AI Trader Implementation Phase)
 
 **Official session-close document, rewritten in full on 2026-07-15 per explicit CEO directive, after
-Phase 6.7 (Simulation Framework) reached READY.** This document is the single source of truth for the
-next Claude session. It is self-contained: a brand-new session must be able to continue correctly from
-this file alone, without reading any prior conversation, without any fact surviving only in Claude's
-memory. Every fact below was verified directly against `git log`/`git status`/`git diff`/a live
-`pytest`+`mypy`+`coverage` run at close time — nothing here is assumed or carried over unverified.
+Phase 6.8 Checkpoint 1 (generic strategy runtime + S1 reference slice) reached READY and was
+committed.** This document is the entry point for the next Claude session. It is self-contained enough
+to act on, but the full, exhaustive detail (27 sections) lives in **`WAVE_B_HANDOFF.md`** — read that
+file in full before doing anything else; this document only summarizes it. Every fact below was
+verified directly against `git log`/`git status`/`git diff`/a live `pytest`+`mypy`+`coverage` run at
+close time — nothing here is assumed or carried over unverified.
 
 ---
 
@@ -16,21 +17,23 @@ memory. Every fact below was verified directly against `git log`/`git status`/`g
 - **Research Lab** (`code/`, `results/`, `knowledge/`) discovers and validates trading strategies
   against historical XAUUSD data. **Frozen and stable; never touched during AI Trader work** — verified
   0-diff at every commit since Phase 6.1 began (§F).
-- **Strategy Library** (`knowledge/strategies/`) publishes 51 versioned, executable strategy contracts
-  (S1–S51). **Strategy Interface v1** (`knowledge/interface/`) is the ONLY sanctioned contract between
-  the Lab and the Trader.
-- **AI Trader** (`ai_trader/`) is the execution system. All six live pipeline modules are READY: Market
-  Scanner → Strategy Manager → Signal Engine → Scoring Engine → Risk Manager → Execution Engine. The
-  **Simulation Framework** (Phase 6.7) is now ALSO implemented and READY: it composes those six modules
-  unchanged with an Execution Simulator + Portfolio Simulator (no real broker) to run deterministic
-  historical backtests.
+- **Strategy Library** (`knowledge/strategies/`) publishes 51 strategy specs (S1–S51). **Strategy
+  Interface v1** (`knowledge/interface/`) is the ONLY sanctioned contract between the Lab and the
+  Trader. As of this session, **S1 alone** has been migrated to that v1 shape and given a real runtime
+  evaluator; the other 50 (43 runtime-eligible + 2 invalid + 6 not-implemented) are unchanged.
+- **AI Trader** (`ai_trader/`) is the execution system. All six live pipeline modules are READY:
+  Market Scanner → Strategy Manager → Signal Engine → Scoring Engine → Risk Manager → Execution
+  Engine. The **Simulation Framework** (Phase 6.7) is READY: it composes those six modules unchanged
+  with a virtual broker/account for deterministic historical backtests. The **Strategy Runtime**
+  framework (Phase 6.8, `ai_trader/strategy_runtime/`) is READY and proven end-to-end for its one
+  implemented strategy, S1.
 
 **Simulation-first is mandatory (standing CEO directive, non-negotiable):** the AI Trader must prove
 robust historical profitability in simulation before any Broker Adapter/MT5/live execution work begins.
-**That profitability proof has NOT yet happened** — see §C7/§G item 1: no real per-strategy signal logic
-exists, so the framework currently produces zero trades against real data. The next substantive step
-toward "prove profitability" is implementing real strategy signal logic (a separate, not-yet-scoped
-task), NOT Broker Adapter/MT5/Learning Engine, which remain explicitly unauthorized.
+**That profitability proof has NOT yet happened at the portfolio level** — only S1 (one of 43
+runtime-eligible strategies) trades for real today. The next substantive step is Phase 6.8 Wave B:
+making the rest of the Strategy Library executable — explicitly NOT authorized to begin until a fresh
+session is told to (§H).
 
 ---
 
@@ -39,240 +42,106 @@ task), NOT Broker Adapter/MT5/Learning Engine, which remain explicitly unauthori
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD commit:      af00953 "Correct NEXT_SESSION.md's own HEAD reference to the final close commit"
-                  (UNCHANGED this session -- see below)
-Working tree:     NOT CLEAN -- Phase 6.7's entire implementation is UNCOMMITTED.
+HEAD commit (before this handoff's own commit):
+                  19bd4e09c641ff82ec0e72ceaa92e481d63be831
+                  "Phase 6.8 Checkpoint 1: generic strategy runtime + S1 reference slice READY"
+Working tree:     CLEAN (verified via `git status --porcelain` before writing this document)
 ```
 
-**IMPORTANT — this session did NOT commit.** The assistant operates under a standing "never commit
-without explicit user instruction" rule and the CEO approval message for Phase 6.7 did not explicitly
-instruct a commit (its Final Deliverables list did not include one, unlike `SIMULATION_HANDOFF.md` §16's
-own suggested workflow, which the assistant did not treat as CEO authorization). **Every Phase 6.7 file
-is on disk, fully verified (tests/mypy/coverage/adversarial review all passed live), and staged for the
-CEO's review — but git-uncommitted.**
+**This document's own commit will advance HEAD by exactly one past the hash above.** Re-verify
+`git log -1`/`git status --porcelain` directly before trusting any git-state claim in this file — the
+same discipline every prior handoff in this repository has followed.
 
-`git status --porcelain` shows (all untracked, all new, all confined to `ai_trader/simulation/` plus
-three root-level docs):
-```
-ai_trader/simulation/__init__.py
-ai_trader/simulation/api.py
-ai_trader/simulation/artifacts.py
-ai_trader/simulation/clock.py
-ai_trader/simulation/config.py
-ai_trader/simulation/data_source.py
-ai_trader/simulation/exceptions.py
-ai_trader/simulation/execution_simulator.py
-ai_trader/simulation/harness.py
-ai_trader/simulation/performance_analyzer.py
-ai_trader/simulation/portfolio_simulator.py
-ai_trader/simulation/py.typed
-ai_trader/simulation/schema_validation.py
-ai_trader/simulation/types.py
-ai_trader/simulation/IMPLEMENTATION_CHOICES.md
-ai_trader/simulation/tests/                    (13 test files)
-SIMULATION_FRAMEWORK_VALIDATION_REPORT.md
-NEXT_SESSION.md                                 (this file, modified)
-CHANGELOG.md                                    (modified)
-```
-**The 10 frozen `ai_trader/simulation/*.md`/`.json` design docs and `SIMULATION_HANDOFF.md` were NOT
-modified** (frozen specification, read-only throughout).
+## C. Completed implementation — summary (full detail: `WAVE_B_HANDOFF.md` §6–§14)
 
-**Next session's FIRST action regarding git**: ask the CEO whether to commit this work now. If yes,
-stage exactly the files above (never `git add -A`), commit with a message describing Phase 6.7, and
-re-verify `git status --porcelain` is clean afterward. Do not assume authorization from this document
-alone — it records what happened, not a standing instruction to commit.
+All six live pipeline modules (Phases 6.1–6.6) are READY and unchanged this session. The Simulation
+Framework (Phase 6.7) is READY and unchanged this session except one extension (§D). Phase 6.8
+Checkpoint 1 is READY: a generic Strategy Runtime framework (`ai_trader/strategy_runtime/`, 7 modules,
+51 tests) plus one fully implemented, proven-end-to-end strategy, S1. Two real bugs were found and
+fixed during Checkpoint 1's own end-to-end verification (a stop-calculation bug in S1's evaluator; a
+real Phase 6.7 gap where the harness claimed ATR/spread/liquidity data was unavailable when it was
+not) — both are detailed in `WAVE_B_HANDOFF.md` §15 and regression-tested.
 
-## C. Completed implementation — every module, verified
+**`ai_trader/simulation/harness.py`** (not a frozen module — the Simulation Framework's own
+orchestrator) gained three opt-in constructor parameters this session, all defaulting to Phase 6.7's
+original, unchanged behavior: `manager_config`, `use_strategy_runtime`, `risk_config`. See
+`WAVE_B_HANDOFF.md` §10 for exact semantics — a real strategy will never trade unless a caller
+explicitly passes all three configured correctly.
 
-### C1–C6. The six live pipeline modules (Phases 6.1–6.6) — READY, UNCHANGED this session
-Verified via `git diff af00953 -- ai_trader/market_scanner ai_trader/strategy_manager ai_trader/signal_engine ai_trader/scoring_engine ai_trader/risk_manager ai_trader/execution_engine`
-→ **empty**. Full per-module detail (tests/coverage/mypy/bugs found) is unchanged from the prior
-handoff; see git history of this file (`git log -p -- NEXT_SESSION.md`) or each module's own
-`*_VALIDATION_REPORT.md` for the original Phase 6.1–6.6 detail, not repeated here to keep this document
-a usable entry point.
-
-### C7. Simulation Framework (Phase 6.7 — just closed this session)
-- **Source:** `ai_trader/simulation/*.py` (12 production modules + `__init__.py`/`py.typed`)
-- **Tests:** 87 (13 test files) · **Coverage:** 95% total (per-file 89–100%, see
-  `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md` §6) · **mypy --strict:** clean (13 files)
-- **Validation report:** `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md` (full detail; this section
-  summarizes)
-- **Bugs found+fixed by adversarial review:** 8 real issues (3 CRITICAL, 2 HIGH, 3 MEDIUM) — FOK
-  partial-fill-revert fill leak; no exception safety net during RUNNING; the documented pre-fill
-  margin rejection was never wired up; the liquidation threshold was off by ~100x (comparing a
-  margin-level ratio against a margin percentage); `close_at_end_policy` was never consulted;
-  `execution_log.jsonl` was mislabeled (wrong flag, wrong content); Risk Manager DENY/SUSPENDED/
-  EMERGENCY_STOP events never reached `report.risk_events`; a partially-filled IOC order was mislabeled
-  `FILLED`. All 8 fixed with dedicated regression tests (`test_adversarial_fixes.py`); see the
-  validation report §4 for the full table.
-- **What it proves:** the real, composed six-module pipeline runs deterministically and fail-safe over
-  real historical XAUUSD data (full 2023–2026 dataset, 83,479 M15 bars, ~1,620 bars/sec, no crash, no
-  state corruption) via the Execution Simulator (virtual Broker Adapter) + Portfolio Simulator (virtual
-  account) + Performance Analyzer (`SimulationReport`, schema-validated). Determinism proven directly
-  (identical context+seed ⇒ byte-identical report).
-- **What it does NOT prove:** profitability. No real per-strategy signal logic exists (carried forward
-  unchanged from §C3/Phase 6.3's own disclosed gap) — every real strategy's signal is `INVALID` by
-  design, so a full-history run produces **zero trades**, equity exactly unchanged. This is the single
-  most important carried-forward fact for whoever picks up strategy-logic work next.
-- **Known limitations (disclosed, not fixed):** R-multiple requires an explicit stop hint (else `None`,
-  never fabricated); portfolio-level `max_drawdown_R` and per-period `return_pct`/`max_drawdown_pct` in
-  session/daily/monthly rollups are `None` (no sound formula without further design); capital
-  allocation report is a simplified single-time-point measure, not the full time series;
-  `atr_fraction` slippage falls back to zero (no ATR threaded into the bar-matching loop in v1);
-  `run_batch` executes sequentially, not in parallel (a permission, not a requirement); session
-  classification is a simple UTC-hour-bucket approximation. Full list: validation report §8.
-
----
-
-## D. Full pipeline status
-
-```
-Market Scanner        READY  (Phase 6.1)
-   → Strategy Manager  READY  (Phase 6.2)
-      → Signal Engine  READY  (Phase 6.3)  [no real per-strategy signal logic yet -- see below]
-         → Scoring Engine  READY  (Phase 6.4)
-            → Risk Manager  READY  (Phase 6.5)
-               → Execution Engine  READY  (Phase 6.6)
-                  → Simulation Framework  READY  (Phase 6.7) -- proves the pipeline runs, not that it profits
-                     → Learning Engine  [NOT STARTED -- not authorized]
-```
-
-## E. Global implementation statistics (verified live this session)
+## D. Global implementation statistics (verified live this session)
 
 ```
 pytest ai_trader/ -q
-1252 passed in ~55s
+1303 passed
 
 mypy --strict ai_trader/market_scanner ai_trader/strategy_manager ai_trader/signal_engine \
               ai_trader/scoring_engine ai_trader/risk_manager ai_trader/execution_engine \
-              ai_trader/simulation --exclude 'tests/'
-Success: no issues found in 102 source files
+              ai_trader/simulation ai_trader/strategy_runtime --exclude 'tests/'
+Success: no issues found in 111 source files
 
 coverage run --source=ai_trader -m pytest ai_trader/ -q
 coverage report --omit="*/tests/*"
-TOTAL   7345 stmts   345 miss   95%
+TOTAL   7642 stmts   338 miss   96%
 ```
 
-- **Total tests:** 1252 (six live modules: 1165, unchanged; Simulation Framework: 87, new)
-- **Total production source files:** 102 (89 prior + 13 new), `mypy --strict` clean across all
-- **Overall coverage:** 95%
+## E. Protected invariants — confirmed untouched (verified this session, live)
 
-## F. Protected invariants — confirmed untouched (verified this session, live)
+- `code/`, `results/` (Research Lab) — 0-diff since Phase 6.1, confirmed via
+  `git diff cef57c1~1 HEAD -- code/ results/`.
+- `knowledge/` — changes confined EXACTLY to `knowledge/strategies/
+  S01_confirmed_liquidity_sweep_reversal/` (the migrated `strategy.json` + preserved
+  `strategy.v0.json`); every other strategy folder untouched.
+- The six live pipeline modules' production code — byte-identical to the pre-Phase-6.7 HEAD
+  (`af00953`); only two TEST files were updated (`strategy_manager/tests/
+  test_real_library_integration.py`, `scoring_engine/tests/test_engine_integration.py`), both
+  pre-existing, documented tripwires that anticipated exactly the S1 migration.
+- Terminal holdout — SEALED, untouched. No broker code, no MT5, no Learning Engine anywhere.
 
-- **Research Lab** (`code/`, `results/`, `data/`) — **FROZEN.** `git diff cef57c1~1 HEAD -- code/ results/ knowledge/`
-  → empty.
-- **S1–S51**, **Wave 1**, **Strategy Library**, **Strategy Interface v1**, **Knowledge Base** — all
-  **FROZEN**, part of the same 0-diff guarantee above.
-- **The six live pipeline modules** — byte-identical to the pre-Phase-6.7 HEAD (`af00953`), confirmed
-  by direct `git diff`, §B.
-- **Terminal holdout** — **SEALED**, untouched.
-- **No broker code, no MT5, no live trading, no Learning Engine** — none exist anywhere in the tree.
-- **Existing frozen module documentation** (every `*_ARCHITECTURE.md`/`*_SCHEMA.json`/`*_API.md`,
-  including all 10 Simulation Framework docs + `SIMULATION_HANDOFF.md`) — unmodified; the new
-  `ai_trader/simulation/IMPLEMENTATION_CHOICES.md` is an ADDITIVE companion document, not an edit to any
-  frozen spec.
+## F. Technical debt / known limitations
 
-## G. Technical debt / known limitations carried forward
-
-1. **No real Strategy Signal implementation exists yet — STILL TRUE, now fully diagnosed as TWO
-   independent, stacked gaps** (`STRATEGY_RUNTIME_INTEGRATION_GAP.md`, a dedicated read-only analysis
-   committed 2026-07-15, read it in full before touching anything strategy-related):
-   - **Contract-format gap:** all 51 `knowledge/strategies/S*/strategy.json` files are still the
-     Research Lab's own v0 research-export shape, none carry Strategy Interface v1's required
-     top-level keys. Verified LIVE by running the real `StrategyManager.load_library()` against the
-     real library: **51/51 fail schema validation identically** (`loaded=0, failed=51`,
-     `counts_by_health={'INVALID': 51, ...}`), so `active_strategies()` always returns `[]`.
-   - **Runtime-logic gap (independent of the above):** `StrategyRuntimeHandle` (`handle.py`) is a
-     universal stub — every method except `required_context()` unconditionally raises
-     `StrategyApiNotImplementedError`, by explicit design, for every strategy, always. Fixing the
-     contract format alone would NOT produce a single signal without this also being closed.
-   - Zero executable strategy code exists anywhere under `knowledge/strategies/` (confirmed: 0 `.py`
-     files). The Research Lab's own `code/mstrat.py`/`families.py` are whole-DataFrame batch functions,
-     architecturally incompatible with per-bar `MarketContext` evaluation, and **must never be imported
-     at AI Trader runtime** (would violate the Research-Lab-frozen boundary) — only their logic may be
-     read offline and re-implemented natively.
-   - This is why Phase 6.7's own full-history run trades zero times. **CEO has since named this Phase
-     6.8 — Executable Strategy Vertical Slice** (§H) — approved for planning only, NOT yet authorized to
-     implement.
-2. **Portfolio Manager is still NOT a separate runtime module.** Execution Engine and now the Simulation
-   Framework's Portfolio Simulator both reuse/project `ai_trader.risk_manager.types.PortfolioState`
-   directly — a documented IMPLEMENTATION CHOICE, resolved consistently a second time (Simulation
-   Framework §C7), not silently re-decided.
-3. **`BrokerAdapter` ↔ Execution Simulator mapping** is now resolved and verified (Simulation Framework
-   §C7 IMPLEMENTATION CHOICE #1) — the open question from the Phase 6.6 handoff is CLOSED.
-4. **`mypy --strict` test-file gaps in Strategy Manager and Market Scanner** (98 pre-existing errors, 16
-   files, all in TEST files, not source) — unchanged, still disclosed, still out of scope.
-5. Simulation Framework's own disclosed limitations — see §C7 above / validation report §8 (not
-   repeated here).
+See `WAVE_B_HANDOFF.md` §24 for the complete, current list (Phase 6.2/6.1 pre-existing mypy test-file
+gaps; approximated `atr_rolling_median`/`current_spread`/`liquidity_proxy`; missing portfolio-level
+`max_drawdown_R` and per-period drawdown stats; no S1-specific conformance test against the frozen
+research engine's own historical trade log yet).
 
 ## H. Immediate next phase
 
-**PHASE 6.8 — EXECUTABLE STRATEGY VERTICAL SLICE.** CEO-named (2026-07-15). CEO later corrected the
-final objective: NOT one strategy only — the complete eligible Strategy Library (all ~43
-RUNTIME-ELIGIBLE strategies) must become executable so the AI Trader can evaluate all of them
-concurrently and choose between simultaneous opportunities. S1 is the technical reference slice used
-to validate the generic integration pattern, not the finish line.
+**PHASE 6.8 WAVE B — make the remaining ~42 runtime-eligible strategies executable.**
+**CEO decision (2026-07-15): explicitly deferred to a FRESH session. Do not begin Wave B in whatever
+session reads this next merely because this document exists — wait for the CEO to explicitly say to
+start it in that session.**
 
-**Checkpoint 1 (generic runtime framework + S1 reference slice) is ACHIEVED and verified — see
-`PHASE_6_8_CHECKPOINT_1_REPORT.md` for the full writeup.** Built `ai_trader/strategy_runtime/` (7
-modules, 51 tests, mypy --strict clean); migrated S1 v0→v1; implemented its real evaluator; proved it
-end-to-end through the real six-module pipeline + Simulation Framework (real trades, correct
-R-multiples, schema-valid report, determinism intact). Found and fixed two real bugs along the way
-(a stop-calculation bug in the S1 evaluator; a real Phase 6.7 gap where `_build_risk_context` claimed
-ATR/spread/liquidity data was unavailable when it wasn't) — neither would have surfaced without the
-real end-to-end proof, not unit tests alone.
+A complete, prepared (NOT executed) plan already exists: `PHASE_6_8_WAVE_B_PLAN.md` — 42 strategies
+grouped into 10 mechanism-based batches (B1–B10) using the Strategy Library's own embedded `klass`
+taxonomy, an estimated migration order, the mapping onto the CEO's own Checkpoint 2–6 structure, and a
+per-batch testing discipline. Full detail + the exact recommended first task + the exact first prompt
+to use: **`WAVE_B_HANDOFF.md` §19–§27**.
 
-**CEO decision after Checkpoint 1 (2026-07-15): freeze the repository here in a known-good state.
-Wave B (migrating and implementing the remaining ~42 runtime-eligible strategies) is explicitly
-DEFERRED to a FRESH session — do not begin it in whatever session reads this next until that fresh
-session's own work starts.** Reason given: Checkpoint 1 already exposed two real production bugs;
-before multiplying that pattern across 42 more strategies, the CEO wants the repo frozen at a verified
-checkpoint rather than compounding risk in one continuous pass.
-
-**`PHASE_6_8_WAVE_B_PLAN.md` (repo root) is the prepared, NOT-YET-EXECUTED plan for that fresh
-session**: strategies grouped into 10 mechanism-based batches (B1–B10, using the Strategy Library's own
-embedded `klass` taxonomy) covering all 42 remaining strategies, an estimated migration order
-(session/calendar first as lowest-risk, composite/meta last since it depends on the others), the
-mapping from those batches onto the CEO's own Checkpoint 2–6 structure, and the per-batch testing
-discipline (unit tests → contract-migration tests → registry tests → per-batch end-to-end proof → full
-regression check — the same rigor that caught both Checkpoint 1 bugs, applied per batch rather than
-deferred to the end). Nothing in that plan has been implemented, tested, or migrated.
-
-Per the CEO's Phase 6.8 approval, once that fresh session begins Wave B it may proceed family-by-family
-or in small mechanism-based batches WITHOUT re-asking approval per family, EXCEPT: a frozen contract
-must change, semantics are ambiguous, required data is missing, or research/runtime parity cannot be
+Once Wave B IS authorized, per the CEO's own Phase 6.8 approval it may proceed family-by-family or in
+small mechanism-based batches WITHOUT re-asking approval per family, EXCEPT: a frozen contract must
+change, semantics are ambiguous, required data is missing, or research/runtime parity cannot be
 established — those specific triggers still pause for a fresh CEO decision.
 
-Final Wave D backtest parameters (already specified): **XAUUSD, 2,000 USD starting capital, USD account
-currency, 5% risk per trade**, reporting trades/net profit/return/expectancy/profit factor/max
-drawdown/equity curve/strategy+session+regime attribution/rejection reasons/which strategies helped or
-hurt/correlation between strategies.
-
-Do not begin Learning Engine, Broker Adapter, MT5, or live/paper trading under cover of this phase.
+Do not begin Learning Engine, Broker Adapter, MT5, or live/paper trading under cover of this or any
+future phase without its own dedicated CEO approval.
 
 ## I. Exact next-session order
 
 1. **Read this document in full first.**
 2. **Verify Git state directly** — `git branch --show-current`, `git log -1`, `git status --porcelain`
-   — re-confirm §B, especially whether the CEO has since instructed (in this or another session) that
-   Phase 6.7's work be committed; do not assume it was.
-3. **Read `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md`, `STRATEGY_RUNTIME_INTEGRATION_GAP.md`,
-   `PHASE_6_8_CHECKPOINT_1_REPORT.md`, and `PHASE_6_8_WAVE_B_PLAN.md` in full** for the complete Phase
-   6.7 detail, the Phase 6.8 gap diagnosis, Checkpoint 1's own verified state, and the prepared (NOT
-   YET EXECUTED) Wave B plan this document only summarizes.
+   — re-confirm §B; do not trust the hash above blindly (it predates this document's own commit).
+3. **Read `WAVE_B_HANDOFF.md` in full** — the authoritative, exhaustive (27-section) handoff this
+   document only summarizes. Also read `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md`,
+   `STRATEGY_RUNTIME_INTEGRATION_GAP.md`, `PHASE_6_8_CHECKPOINT_1_REPORT.md`, and
+   `PHASE_6_8_WAVE_B_PLAN.md` for the detail behind each phase.
 4. **Report the reconstructed state back to the CEO** before proceeding on anything new.
-5. Phase 6.8 itself IS approved (CEO's "IMPLEMENTATION PLAN" message, 2026-07-15) and Checkpoint 1 is
-   done and committed — but the CEO explicitly deferred Wave B to a FRESH session (§H): do not
-   self-authorize starting Wave B just because this document says it may proceed without per-family
-   approval in principle. Confirm with the CEO that THIS session is the intended "fresh session" before
-   writing any Wave B code. Once confirmed, family-by-family or small-batch migration may proceed
-   WITHOUT re-asking approval per family, per the CEO's own stated exceptions (§H). Only pause for a
-   fresh CEO decision on: a frozen-contract change, semantic ambiguity, missing
-   required data, or a research/runtime parity failure.
+5. **Wait for explicit CEO authorization to begin Wave B** — do not self-authorize starting it just
+   because a plan exists on disk. `WAVE_B_HANDOFF.md` §27 has the exact prompt the CEO is expected to
+   use to start that session.
 
 ---
 
-*Prior-session narrative history for Phases 6.1–6.6 (Market Scanner large-scale-benchmark
-investigation, the two-concurrent-sessions incident, the tracemalloc cliff discovery, per-phase
-lessons-learned) remains available in git history of this file (`git log -p -- NEXT_SESSION.md`) and in
-each module's own `*_VALIDATION_REPORT.md`.*
+*Prior-session narrative history (Phases 6.1–6.7, the Strategy Runtime Integration Gap investigation,
+Checkpoint 1's own two-bug discovery) remains available in git history of this file
+(`git log -p -- NEXT_SESSION.md`) and in each phase's own dedicated report/handoff document listed
+above.*
