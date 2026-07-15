@@ -1,5 +1,54 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 (Phase 6.7) — Simulation Framework v1 implemented, adversarially reviewed, READY
+- CEO approval granted; implemented the Simulation Framework production module against the frozen
+  `ai_trader/simulation/*.md`/`SIMULATION_SCHEMA.json` specification and `SIMULATION_HANDOFF.md` — no
+  redesign. Composes the real Market Scanner → Strategy Manager → Signal Engine → Scoring Engine →
+  Risk Manager → Execution Engine (all six **unchanged**) with three new simulation-only components
+  (Execution Simulator, Portfolio Simulator, Performance Analyzer) plus a Replay Clock/Data Source,
+  Simulation Harness (orchestrator), and public API facade — 12 source modules, 87 tests, `mypy
+  --strict` clean, 95% coverage. Full writeup: `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md`.
+- Froze all 8 `SIMULATION_HANDOFF.md` §15 IMPLEMENTATION CHOICE gaps (Execution Simulator↔BrokerAdapter
+  mapping, PortfolioState ownership, partial-fill policy, latency model, margin defaults, liquidation
+  ordering, conformance test, artifact persistence) in `ai_trader/simulation/IMPLEMENTATION_CHOICES.md`
+  BEFORE writing any code or seeing any performance result, per explicit CEO directive.
+- Discovered and fixed three additional real-vs-documented mismatches only surfaced once code met the
+  real upstream contracts: `RiskDecision.constraints.valid_until` is a bar COUNT not an epoch timestamp
+  (confirmed from `risk_manager/config.py`'s own docstring); the research engine's cost model applies
+  the FULL configured tick count per leg, not a halved bid/ask spread (confirmed from `code/mstrat.py`);
+  a triggered STOP fills at trigger price ± slippage only, never ± spread (confirmed from
+  `EXECUTION_SIMULATOR.md`'s own Stop row, which deliberately omits spread unlike its Market row).
+- **Independent adversarial review** (same technique that caught real bugs in all six prior modules)
+  found **8 real issues (3 CRITICAL, 2 HIGH, 3 MEDIUM)**, all fixed with dedicated regression tests: a
+  FOK partial-fill revert leaked an already-emitted fill to the Portfolio Simulator before the
+  Execution Simulator's own order book reverted it; the RUNNING per-bar loop had no exception safety
+  net at all (unlike configure/load), so any unexpected exception mid-run crashed the whole process
+  instead of failing the run cleanly; the documented pre-fill margin rejection was never actually wired
+  up; the liquidation threshold compared a margin-level RATIO against a margin PERCENTAGE, off by
+  ~100x, so it never fired until equity was already catastrophically near zero under the shipped
+  defaults; `close_at_end_policy` was defined but never consulted, so open positions were silently left
+  open at run end regardless of config; `execution_log.jsonl` was gated on the wrong `RecordConfig`
+  flag and contained risk events instead of order-lifecycle fills; Risk Manager DENY/SUSPENDED/
+  EMERGENCY_STOP events were dropped entirely (only liquidation ever reached `report.risk_events`); a
+  partially-filled IOC order was mislabeled `FILLED` instead of `CANCELLED`. Full details:
+  `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md` §4.
+- Performance benchmark: a small (~3 month) baseline first, then the full available XAUUSD history
+  (2023-01 → 2026-07, 83,479 M15 bars) replayed end-to-end in 51.5s (~1,620 bars/sec), `COMPLETED`,
+  equity uncorrupted throughout.
+- Protected-invariants confirmed live: Research Lab/Strategy Library still 0-diff since Phase 6.1
+  began; all six composed pipeline modules byte-identical to the pre-6.7 HEAD; every change this
+  session is additive, confined to the new `ai_trader/simulation/` package.
+- **Known, disclosed limitation carried forward unchanged from Phase 6.3**: no real per-strategy signal
+  logic exists yet, so a full-history real-pipeline run produces zero trades — the framework is proven
+  to run deterministically and fail-safe at production speed, not yet proven profitable (that requires
+  a separate, not-yet-scoped strategy-logic-implementation task).
+- **This session's changes are UNCOMMITTED** — the assistant operates under a standing "never commit
+  without explicit user instruction" rule; every file is on disk and verified (git status clean outside
+  the new package) but awaits the CEO's explicit go-ahead to commit.
+- **Verdict: READY** (as a deterministic backtesting engine; NOT a demonstration of profitability — see
+  above). Per `SIMULATION_HANDOFF.md` §17, no Learning Engine, strategy optimization, Broker Adapter,
+  MT5, paper trading, or live trading work was started or is authorized.
+
 ## Session 2026-07-15 (Phase 6.6) — Execution Engine v1 implemented, adversarially reviewed, READY
 - CEO approval granted; implemented the Execution Engine production module against the frozen
   `ai_trader/execution_engine/*.md`/`ORDER_SCHEMA.json` specification — no redesign. 13 source modules
