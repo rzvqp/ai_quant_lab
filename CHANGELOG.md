@@ -1,5 +1,58 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-15 — Phase 6.8 Checkpoint 1 committed; Wave B planned, deferred to a fresh session
+- CEO accepted Checkpoint 1 and ordered it committed, then the repository frozen at this known-good
+  state: "Wave B will start in a fresh session... Do not implement additional strategies." Reason
+  given: Checkpoint 1 already exposed two real production bugs; before multiplying that pattern across
+  the remaining ~42 runtime-eligible strategies, the CEO wants a verified stopping point, not
+  continuous unsupervised expansion.
+- Prepared (NOT executed) `PHASE_6_8_WAVE_B_PLAN.md`: the 42 remaining strategies grouped into 10
+  mechanism-based batches (B1-B10) using the Strategy Library's own embedded `klass` taxonomy (Class
+  I-VIII / Batch1-2, verified present on every real entry, not invented for this plan), an estimated
+  migration order (session/calendar lowest-risk first, composite/meta last since it depends on the
+  others), the mapping onto the CEO's own Checkpoint 2-6 structure, and a per-batch testing discipline
+  (unit -> contract-migration -> registry -> per-batch end-to-end proof -> full regression check,
+  applied every batch rather than deferred to the end -- the exact rigor that caught both Checkpoint 1
+  bugs).
+- No strategy code was implemented this session beyond what Checkpoint 1 already committed. No
+  contract was migrated beyond S1.
+
+## Session 2026-07-15 — Phase 6.8 Checkpoint 1: generic runtime framework + S1 reference slice READY
+- CEO approval granted for Phase 6.8 (Executable Strategy Vertical Slice), Wave A. Built
+  `ai_trader/strategy_runtime/` (7 production modules, 51 tests, `mypy --strict` clean, 90-100%
+  coverage per file): shared context-access/confirmation/risk helpers, a `RuntimeEvaluator` base class
+  + `RuntimeStrategyHandle` composing with Signal Engine purely via its own structural
+  `StrategyHandleLike`/`StrategyApiLike` Protocols (zero frozen-module edits), a v0->v1 contract
+  migration mapper, and a strategy_id->evaluator registry.
+- Verified live: 43/43 runtime-eligible strategy contracts are structurally identical v0 shape
+  (confirming a generic migration mapper is safe); classification re-confirmed exactly 43
+  RUNTIME-ELIGIBLE / 2 INVALID (S47, S49) / 6 NOT_IMPLEMENTED (S32-S37), matching the CEO's own
+  expected split.
+- Migrated S1 (Confirmed Liquidity Sweep Reversal) v0->v1 (original preserved as `strategy.v0.json`)
+  and implemented its real runtime evaluator, faithful to the contract's own evidence-backed
+  `executable_default` parameters (not the full, un-evidenced general grammar).
+- **Two real bugs found and fixed via genuine end-to-end verification** (unit tests alone would not
+  have caught either): (1) the stop calculation anchored only to the nominal sweep bar's own low,
+  which real XAUUSD data showed can sit ABOVE the entry price when price makes a new low before
+  confirmation completes -- fixed to clear the true extreme of the whole sweep-to-confirmation
+  sequence; (2) Phase 6.7's own `_build_risk_context` claimed ATR/spread/liquidity data was
+  unavailable in `MarketContext` -- this was WRONG (`market_scanner/features.py`'s `M15_FEATURE_NAMES`
+  publishes `m_atr`/`atr_ma`), so every real opportunity was being denied on `FILTER_VOLATILITY` for no
+  real reason; fixed to read the features that were there all along. Both regression-tested.
+- **Checkpoint 1 proven end-to-end**: S1's real evaluator, driven through the REAL six-module pipeline
+  + Simulation Framework over real historical XAUUSD data, produces real closed trades with correct
+  R-multiples, a schema-valid `SimulationReport`, and bit-identical determinism with real strategy
+  logic active (not just the Phase 6.7 fail-safe-stub path). Full writeup:
+  `PHASE_6_8_CHECKPOINT_1_REPORT.md`.
+- Full `ai_trader/` suite: 1303/1303 passing (zero regressions); two pre-existing tests
+  (`strategy_manager`/`scoring_engine`) updated to reflect S1's now-successful load -- both were
+  explicit, documented tripwires anticipating exactly this migration, not silently patched over.
+- Protected areas confirmed live: Research Lab 0-diff; `knowledge/` changes confined to S1's own
+  folder; the six pipeline modules' production code untouched (two test files updated only).
+- **Wave B (the remaining ~42 runtime-eligible strategies) has NOT started.** Reporting Checkpoint 1 now
+  per the CEO's own checkpoint structure, since proving S1 alone required finding and fixing two real,
+  non-obvious bugs -- each further family deserves the same rigor.
+
 ## Session 2026-07-15 — Strategy Runtime Integration Gap analysis (read-only), Phase 6.8 named
 - CEO-approved read-only investigation into why Phase 6.7's own full-history run produces zero trades.
   Ran the real `StrategyManager.load_library()` against the real `knowledge/strategies/` library (no

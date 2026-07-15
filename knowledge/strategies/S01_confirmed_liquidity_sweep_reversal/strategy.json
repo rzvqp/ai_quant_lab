@@ -1,88 +1,139 @@
 {
- "id": "S1",
- "name": "Confirmed Liquidity Sweep Reversal",
- "klass": "Liquidity / stop-hunt reversal",
- "slug": "S01_confirmed_liquidity_sweep_reversal",
- "status": "IMPLEMENTED",
- "timeframe": "M15 execution (signal at bar close, fill at next M15 open; lookahead-safe). XAUUSD/OANDA, NY-17:00 sessions.",
- "sessions": "All sessions",
- "long_short": "both",
- "htf_context": "none",
- "mechanism": "Price sweeps a resting liquidity level (prior swing / session / prev-day high-low), trapping breakout traders and triggering stops, then closes back inside the range. The reversal is the absorption of that forced flow. Loser = breakout entrants and stopped-out positions.",
- "entry_rules": "A sweep bar takes out the reference level (high>refH & close<refH for a high-sweep; low<refL & close>refL for a low-sweep), THEN a confirmation occurs within `window` bars; enter next open after confirmation.",
- "exit_rules": "Grammar: rr2 / rr3 (2R or 3R fixed target) | opp_liq (opposite liquidity level) | time (24-bar timeout).",
- "stop_loss_rules": "beyond_sweep (2 ticks past the sweep extreme) or structural (2 ticks past the 20-bar extreme at entry).",
- "required_confirmations": "REQUIRED: consecutive2 (two same-direction closes) | close_beyond (close back through the level) | displacement (displacement bar with matching close). Optional imbalance filter (FVG present).",
- "invalid_conditions": [
-  "ATR non-finite or <= 0 at the signal bar",
-  "signal on the last available bar (no next-open to fill)",
-  "a position is already open (overlap suppression)"
- ],
- "position_sizing": {
-  "model": "risk-normalised (1R per trade)",
-  "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
-  "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
-  "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
-  "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
-  "absolute_size": "lot = per-trade risk budget / risk-distance \u2014 an EXECUTION-LAYER decision, NOT set by the research"
+ "interface_version": "1.0.0",
+ "identity": {
+  "id": "S1",
+  "name": "Confirmed Liquidity Sweep Reversal",
+  "slug": "S01_confirmed_liquidity_sweep_reversal",
+  "version": "1.0.0",
+  "class": "Liquidity / stop-hunt reversal"
  },
- "grammar": "side, liq_ref(swing|session|pdh_pdl), liq_lb(20|50), confirm, imb(none|fvg), stop, exit, window(4|8)",
- "executable_default": {
-  "selection_rule": "research_worthy & largest-n",
-  "hypothesis_id": "f34e8d2827c3",
-  "params": {
-   "side": "low",
-   "liq_ref": "pdh_pdl",
-   "liq_lb": 50,
-   "confirm": "consecutive2",
-   "imb": "none",
-   "stop": "beyond_sweep",
-   "exit": "rr2",
-   "window": 8
-  }
+ "lifecycle": {
+  "status": "IMPLEMENTED",
+  "maturity": "EXPLORATORY",
+  "current_health": "OK",
+  "last_review": "2026-07-15"
  },
- "performance": {
-  "historical": {
-   "hypothesis_id": "f34e8d2827c3",
+ "semantics": {
+  "mechanism": "Price sweeps a resting liquidity level (prior swing / session / prev-day high-low), trapping breakout traders and triggering stops, then closes back inside the range. The reversal is the absorption of that forced flow. Loser = breakout entrants and stopped-out positions.",
+  "signal_reason": "A sweep bar takes out the reference level (high>refH & close<refH for a high-sweep; low<refL & close>refL for a low-sweep), THEN a confirmation occurs within `window` bars; enter next open after confirmation.",
+  "market_regime": {
+   "applicable": [
+    "ANY"
+   ],
+   "avoid": []
+  },
+  "required_data": [
+   {
+    "timeframe": "M15",
+    "fields": [
+     "pdl",
+     "m_atr"
+    ],
+    "lookback_bars": 20
+   }
+  ],
+  "required_confirmations": [
+   "SWEEP_PDL",
+   "CONSECUTIVE2_CONFIRM"
+  ]
+ },
+ "execution": {
+  "timeframe": "M15",
+  "sessions": "All sessions",
+  "long_short": "BOTH",
+  "entry": {
+   "description": "A sweep bar takes out the reference level (high>refH & close<refH for a high-sweep; low<refL & close>refL for a low-sweep), THEN a confirmation occurs within `window` bars; enter next open after confirmation.",
+   "trigger": "PDL low-sweep + 2 consecutive bullish closes",
+   "timing": "next_open_after_confirmation"
+  },
+  "exit": {
+   "description": "Grammar: rr2 / rr3 (2R or 3R fixed target) | opp_liq (opposite liquidity level) | time (24-bar timeout).",
+   "options": [
+    "rr2"
+   ]
+  },
+  "stop": {
+   "description": "beyond_sweep (2 ticks past the sweep extreme) or structural (2 ticks past the 20-bar extreme at entry).",
+   "trigger": "beyond_sweep, floored at max(2*spread_ticks*tick,5*tick,0.10*ATR)"
+  },
+  "target": {
+   "description": "2R fixed target from entry/stop distance"
+  },
+  "risk_model": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R"
+  },
+  "position_sizing": {
+   "model": "risk-normalised (1R per trade)",
+   "risk_definition": "risk = |entry - executable_stop|; result R = (dir*(exit-entry) - 2*cost)/risk",
+   "stop_floor": "executable risk = max(2*spread_ticks*tick, 5*tick, 0.10*ATR) = max(0.20, 0.50, 0.10*ATR) price units (v2, pre-registered)",
+   "costs": "(spread 1 + slippage 1) ticks/side * 0.1 = 0.10/side; 0.20 round-trip charged in R",
+   "concurrency": "ONE position at a time (overlapping signals suppressed until the open trade closes)",
+   "absolute_size": "lot = per-trade risk budget / risk-distance — an EXECUTION-LAYER decision, NOT set by the research"
+  },
+  "max_concurrent_positions": 1,
+  "expected_frequency": {
+   "trades_per_year": null,
+   "basis": "not computed from v0 spec"
+  },
+  "cooldown": {
+   "bars": 0,
+   "scope": "PER_STRATEGY"
+  },
+  "invalid_conditions": [
+   "ATR non-finite or <= 0 at the signal bar",
+   "signal on the last available bar (no next-open to fill)",
+   "a position is already open (overlap suppression)"
+  ]
+ },
+ "evidence": {
+  "confidence": {
+   "level": "VERY_LOW",
+   "rationale": "VERY LOW — research-worthy in-sample but non-positive out-of-sample"
+  },
+  "historical_metrics": {
+   "segment": "historical",
    "n": 399,
    "expectancy_R": 0.032,
    "profit_factor": 1.054,
    "drawdown_R": 20.74,
    "win_rate": 0.461,
-   "sumR": 12.75,
-   "median_R": -0.5288,
-   "trimmed5_R": 0.0224,
-   "months": 26,
    "pos_months": 20,
-   "years": 3.0,
-   "side": "long",
-   "hist_profitable": true,
-   "research_worthy": true,
-   "fragile": false,
-   "top1_share": 0.008,
-   "oos_expectancy_R": -0.0614
+   "months": 26,
+   "top1_share": 0.008
   },
-  "oos_expectancy_R": -0.0614,
-  "drawdown_R": 20.74,
-  "profit_factor": 1.054,
-  "expectancy_R": 0.032,
-  "family": {
-   "n_hypotheses": 1152,
-   "n_hist_profitable": 261,
-   "n_research_worthy": 90,
-   "best_exp": 0.3911,
-   "median_exp": -0.0885
-  }
+  "oos_metrics": {
+   "segment": "oos",
+   "n": null,
+   "expectancy_R": -0.0614,
+   "profit_factor": 1.054,
+   "drawdown_R": 20.74,
+   "win_rate": null,
+   "pos_months": null,
+   "months": null,
+   "top1_share": null
+  },
+  "walk_forward_status": "NOT_RUN",
+  "matched_null_status": {
+   "status": "INCONCLUSIVE",
+   "scope": "WAVE1",
+   "note": "Matched-null pilot (research, engine-validation only). Wave-1 EXP-03 beta/regime-matched null p=0.0069 (Holm-adj 0.042) — DIAGNOSTIC-grade, and OOS expectancy is NEGATIVE. Wave-1 EXP-01 (confirmation contribution) and EXP-05 (level placebo) = NO DIFFERENCE DETECTED. NO confirmed alpha.",
+   "p": 0.0069,
+   "adjusted_p": null
+  },
+  "global_fdr_status": "NOT_RUN",
+  "validation_status": "EXPLORATORY — historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 1152 hypotheses, 261 historically-profitable, 90 research-worthy. Representative f34e8d2827c3: n=399, exp=0.032R, PF=1.054, maxDD=20.74R, OOS exp=-0.0614R, pos-months 20/26, research-worthy. ",
+  "known_limitations": [
+   "VERY LOW — research-worthy in-sample but non-positive out-of-sample",
+   "Matched-null pilot (research, engine-validation only). Wave-1 EXP-03 beta/regime-matched null p=0.0069 (Holm-adj 0.042) — DIAGNOSTIC-grade, and OOS expectancy is NEGATIVE. Wave-1 EXP-01 (confirmation contribution) and EXP-05 (level placebo) = NO DIFFERENCE DETECTED. NO confirmed alpha."
+  ]
  },
- "monte_carlo": "Matched-null pilot (research, engine-validation only). Wave-1 EXP-03 beta/regime-matched null p=0.0069 (Holm-adj 0.042) \u2014 DIAGNOSTIC-grade, and OOS expectancy is NEGATIVE. Wave-1 EXP-01 (confirmation contribution) and EXP-05 (level placebo) = NO DIFFERENCE DETECTED. NO confirmed alpha.",
- "walk_forward": "NOT RUN (lab-wide; see PROJECT_AUDIT.md).",
- "confidence": "VERY LOW \u2014 research-worthy in-sample but non-positive out-of-sample",
- "validation_status": "EXPLORATORY \u2014 historical research segment only. No confirmed alpha. Holdout SEALED; global-FDR NOT run; walk-forward NOT run. Family: 1152 hypotheses, 261 historically-profitable, 90 research-worthy. Representative f34e8d2827c3: n=399, exp=0.032R, PF=1.054, maxDD=20.74R, OOS exp=-0.0614R, pos-months 20/26, research-worthy. ",
  "provenance": {
   "engine": "mstrat.py v2 (FROZEN)",
-  "module": "mstrat",
-  "results_parquet": "results/FAMILY_RESULTS.parquet",
   "generated_from": "frozen research; NO re-backtest, NO optimisation, NO engine change",
-  "holdout": "Terminal 20% M15 holdout SEALED \u2014 never used in any metric here."
+  "holdout_status": "SEALED",
+  "source_ref": "S01_confirmed_liquidity_sweep_reversal"
  }
 }

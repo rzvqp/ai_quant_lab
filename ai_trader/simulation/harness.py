@@ -9,6 +9,7 @@ duplicated from any composed module.
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,7 @@ from ai_trader.scoring_engine.config import ScoringConfig
 from ai_trader.scoring_engine.engine import ScoringEngine
 from ai_trader.signal_engine.config import EngineConfig as SignalEngineConfig
 from ai_trader.signal_engine.engine import SignalEngine
+from ai_trader.signal_engine.pipeline import StrategyHandleLike
 from ai_trader.signal_engine.types import Direction
 from ai_trader.simulation.clock import ReplayClock
 from ai_trader.simulation.config import SimulationContext
@@ -58,10 +60,27 @@ class SimulationHarness:
 
     def __init__(
         self, context: SimulationContext, symbol_meta: dict[str, SymbolMeta], data_dir: Path,
+        manager_config: ManagerConfig | None = None, use_strategy_runtime: bool = False,
+        risk_config: RiskConfig | None = None,
     ) -> None:
+        """``manager_config``/``use_strategy_runtime``/``risk_config`` default to Phase 6.7's own
+        original, verified-fail-safe behavior (a bare ``ManagerConfig()``/``RiskConfig()`` with no
+        auto-admission and no per-symbol filter thresholds, real evaluators never consulted) -- all
+        are opt-in, additive Phase 6.8 capabilities. Passing ``use_strategy_runtime=True`` swaps
+        ``active_strategies()`` for ``ai_trader.strategy_runtime.registry.build_runtime_handles()``
+        when building the handles Signal Engine evaluates; it does not change anything else about how
+        the six live pipeline modules are composed. ``risk_config`` should set
+        ``filters.reference_spread``/``filters.liquidity_floor`` for every configured symbol --
+        Risk Manager's own fail-safe default denies every opportunity for a symbol with no configured
+        threshold (``filters.py``: "cannot confirm safe, never assume safe"), so leaving this at the
+        bare default with real strategies active means every decision DENYs on FILTER_SPREAD/
+        FILTER_LIQUIDITY, not a bug in this module."""
         self.context = context
         self._symbol_meta = symbol_meta
         self._data_dir = data_dir
+        self._manager_config = manager_config or ManagerConfig()
+        self._use_strategy_runtime = use_strategy_runtime
+        self._risk_config = risk_config or RiskConfig()
         self.state = RunState.UNINITIALIZED
         self.fail_reason: str | None = None
         self.degraded_reasons: list[str] = []
@@ -144,7 +163,7 @@ class SimulationHarness:
             self._scanner = MarketScanner(ScannerConfig(base_timeframe=self.context.base_timeframe))
             self._scanner.configure(list(self._symbol_meta.values()), AdapterConfig(mode=Mode.REPLAY, source_id="replay"))
 
-            self._strategy_manager = StrategyManager(ManagerConfig())
+            self._strategy_manager = StrategyManager(self._manager_config)
             self._strategy_manager.configure(self._scanner)
             self._strategy_manager.load_library(as_of=ticks[0], path=self.context.strategy_library_path)
 
@@ -152,7 +171,7 @@ class SimulationHarness:
             self._signal_engine.configure()
             self._scoring_engine = ScoringEngine(ScoringConfig())
             self._scoring_engine.configure(manager=self._strategy_manager)
-            self._risk_manager = RiskManager(RiskConfig())
+            self._risk_manager = RiskManager(self._risk_config)
             self._execution_engine = ExecutionEngine(ExecConfig())
 
             caps = _build_capabilities(self.context, self._symbol_meta)
@@ -263,14 +282,20 @@ class SimulationHarness:
 
         if phase_running:
             context_batch = self._scanner.scan(as_of, list(self.context.symbols))
-            handles = self._strategy_manager.active_strategies()
+            handles: Sequence[StrategyHandleLike]
+            if self._use_strategy_runtime:
+                from ai_trader.strategy_runtime.registry import build_runtime_handles
+                handles = build_runtime_handles(self._strategy_manager, frozenset(self.context.symbols))
+            else:
+                handles = self._strategy_manager.active_strategies()
             for symbol in sorted(self.context.symbols):
                 ctx = context_batch.get(symbol)
                 if ctx is None:
                     continue  # NEED_CONTEXT-equivalent: nothing to evaluate this cycle for this symbol
                 signal_batch = self._signal_engine.evaluate(ctx, handles, trader_state=None)
                 score_batch = self._scoring_engine.score_batch(signal_batch.signals)
-                risk_context = _build_risk_context(ctx, as_of)
+                tick_size = self._symbol_meta[symbol].tick_size if symbol in self._symbol_meta else 0.01
+                risk_context = _build_risk_context(ctx, as_of, tick_size, self.context.cost_model.spread_ticks)
                 portfolio_state = self.portfolio_simulator.to_portfolio_state(as_of)
                 decision_batch = self._risk_manager.evaluate(score_batch.scores, risk_context, portfolio_state)
                 for decision in decision_batch.decisions:
@@ -301,14 +326,29 @@ class SimulationHarness:
         self.portfolio_simulator.mark_to_market(as_of, bars, phase_running=phase_running)
 
 
-def _build_risk_context(context: dict[str, Any], as_of: int) -> RiskContext:
+def _build_risk_context(context: dict[str, Any], as_of: int, tick_size: float, spread_ticks: float) -> RiskContext:
     """Assemble ``RiskContext`` from the already-flowing ``MarketContext`` (``SIMULATION_SEQUENCE.md``
-    §2: "RiskContext <- assembled from ctx", never fetched separately). IMPLEMENTATION CHOICE: v1
-    threads through ``data_quality`` only -- ``atr``/``current_spread``/``liquidity_proxy``/session
-    flags are not present in the Market Scanner's own public ``MarketContext`` feature namespace as
-    confirmed by reading ``scanner.py``/``data_quality.py`` directly, so they are left at
-    ``SymbolRiskSnapshot``'s fail-safe defaults rather than fabricated -- a disclosed limitation, see
-    ``SIMULATION_FRAMEWORK_VALIDATION_REPORT.md``."""
+    §2: "RiskContext <- assembled from ctx", never fetched separately).
+
+    IMPLEMENTATION CHOICE, corrected during Phase 6.8's own Checkpoint 1 verification: Phase 6.7's
+    original claim that ``atr``/``current_spread``/``liquidity_proxy`` are unavailable in
+    ``MarketContext`` was WRONG -- ``ai_trader.market_scanner.features.M15_FEATURE_NAMES`` (confirmed
+    by reading the module directly) DOES publish ``m_atr`` and ``atr_ma`` on the M15 timeframe. This
+    now threads:
+    - ``atr`` <- ``timeframes.M15.features.m_atr`` (the scanner's own ATR).
+    - ``atr_rolling_median`` <- ``timeframes.M15.features.atr_ma`` -- a documented approximation
+      (mean, not a true rolling median; no rolling-median feature is published) rather than a
+      fabricated number.
+    - ``current_spread`` <- ``spread_ticks * tick_size`` -- the SAME constant assumed-cost convention
+      the Execution Simulator's own cost model already uses (``EXECUTION_SIMULATOR.md`` §4), not a
+      real live spread feed (none exists in this repo); reusing the existing assumption rather than
+      inventing a second one.
+    - ``liquidity_proxy`` <- the current M15 bar's own traded ``volume`` (real OHLCV data, not
+      fabricated) as the best available liquidity signal.
+    ``current_spread`` here does not include the ± any per-bar variability the Execution Simulator's
+    own slippage model may separately apply -- it is a policy-level constant used ONLY for Risk
+    Manager's spread-filter gate, never fed back into fill pricing.
+    """
     symbol = str(context.get("meta", {}).get("symbol", ""))
     dq_dict = context.get("data_quality")
     level = DataQualityLevel.OK
@@ -319,5 +359,20 @@ def _build_risk_context(context: dict[str, Any], as_of: int) -> RiskContext:
                 level = DataQualityLevel(raw_level)
             except ValueError:
                 level = DataQualityLevel.OK
-    snapshot = SymbolRiskSnapshot(data_quality=level)
+
+    m15 = context.get("timeframes", {}).get("M15", {})
+    features = m15.get("features", {}) if isinstance(m15, dict) else {}
+    atr = features.get("m_atr") if isinstance(features.get("m_atr"), (int, float)) else None
+    atr_rolling_median = features.get("atr_ma") if isinstance(features.get("atr_ma"), (int, float)) else None
+    bars = m15.get("bars", []) if isinstance(m15, dict) else []
+    last_bar = bars[-1] if bars else None
+    liquidity_proxy = last_bar.get("volume") if last_bar is not None else None
+
+    snapshot = SymbolRiskSnapshot(
+        atr=float(atr) if atr is not None else None,
+        atr_rolling_median=float(atr_rolling_median) if atr_rolling_median is not None else None,
+        current_spread=spread_ticks * tick_size,
+        liquidity_proxy=float(liquidity_proxy) if isinstance(liquidity_proxy, (int, float)) else None,
+        data_quality=level,
+    )
     return RiskContext(as_of=as_of, per_symbol={symbol: snapshot}, data_quality=level)

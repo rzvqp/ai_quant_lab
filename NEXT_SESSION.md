@@ -207,26 +207,48 @@ TOTAL   7345 stmts   345 miss   95%
 
 ## H. Immediate next phase
 
-**PHASE 6.8 — EXECUTABLE STRATEGY VERTICAL SLICE.** CEO-named (2026-07-15), following the gap analysis
-in `STRATEGY_RUNTIME_INTEGRATION_GAP.md` (§G item 1). **Explicitly NOT yet authorized to implement** —
-"Do not begin Phase 6.8 until a new explicit CEO approval is given." The objective is ONE real strategy
-proven end-to-end, not a 51-strategy batch migration:
+**PHASE 6.8 — EXECUTABLE STRATEGY VERTICAL SLICE.** CEO-named (2026-07-15). CEO later corrected the
+final objective: NOT one strategy only — the complete eligible Strategy Library (all ~43
+RUNTIME-ELIGIBLE strategies) must become executable so the AI Trader can evaluate all of them
+concurrently and choose between simultaneous opportunities. S1 is the technical reference slice used
+to validate the generic integration pattern, not the finish line.
 
-1. Select one frozen strategy family with existing research code and sufficient historical evidence
-   (the gap analysis's own §10 recommends S1 — best-specified contract, no HTF context required,
-   already-honest "no confirmed alpha" research verdict).
-2. Migrate its contract v0 → Strategy Interface v1.
-3. Implement its runtime evaluator WITHOUT importing Research Lab code at runtime.
-4. Validate runtime outputs against the frozen research implementation on identical historical contexts.
-5. Load it through Strategy Manager; produce real actionable signals through Signal Engine.
-6. Pass through Scoring Engine, Risk Manager, Execution Engine.
-7. Run the first economic backtest through the Simulation Framework: **XAUUSD, 2,000 USD starting
-   capital, USD account currency, 5% risk per trade.**
-8. Report trades, net profit, return, expectancy, profit factor, max drawdown, equity curve, strategy
-   attribution, execution costs.
+**Checkpoint 1 (generic runtime framework + S1 reference slice) is ACHIEVED and verified — see
+`PHASE_6_8_CHECKPOINT_1_REPORT.md` for the full writeup.** Built `ai_trader/strategy_runtime/` (7
+modules, 51 tests, mypy --strict clean); migrated S1 v0→v1; implemented its real evaluator; proved it
+end-to-end through the real six-module pipeline + Simulation Framework (real trades, correct
+R-multiples, schema-valid report, determinism intact). Found and fixed two real bugs along the way
+(a stop-calculation bug in the S1 evaluator; a real Phase 6.7 gap where `_build_risk_context` claimed
+ATR/spread/liquidity data was unavailable when it wasn't) — neither would have surfaced without the
+real end-to-end proof, not unit tests alone.
 
-Do not batch-migrate S2–S51 before this vertical slice proves out. Do not begin Learning Engine, Broker
-Adapter, MT5, or live/paper trading under cover of this phase.
+**CEO decision after Checkpoint 1 (2026-07-15): freeze the repository here in a known-good state.
+Wave B (migrating and implementing the remaining ~42 runtime-eligible strategies) is explicitly
+DEFERRED to a FRESH session — do not begin it in whatever session reads this next until that fresh
+session's own work starts.** Reason given: Checkpoint 1 already exposed two real production bugs;
+before multiplying that pattern across 42 more strategies, the CEO wants the repo frozen at a verified
+checkpoint rather than compounding risk in one continuous pass.
+
+**`PHASE_6_8_WAVE_B_PLAN.md` (repo root) is the prepared, NOT-YET-EXECUTED plan for that fresh
+session**: strategies grouped into 10 mechanism-based batches (B1–B10, using the Strategy Library's own
+embedded `klass` taxonomy) covering all 42 remaining strategies, an estimated migration order
+(session/calendar first as lowest-risk, composite/meta last since it depends on the others), the
+mapping from those batches onto the CEO's own Checkpoint 2–6 structure, and the per-batch testing
+discipline (unit tests → contract-migration tests → registry tests → per-batch end-to-end proof → full
+regression check — the same rigor that caught both Checkpoint 1 bugs, applied per batch rather than
+deferred to the end). Nothing in that plan has been implemented, tested, or migrated.
+
+Per the CEO's Phase 6.8 approval, once that fresh session begins Wave B it may proceed family-by-family
+or in small mechanism-based batches WITHOUT re-asking approval per family, EXCEPT: a frozen contract
+must change, semantics are ambiguous, required data is missing, or research/runtime parity cannot be
+established — those specific triggers still pause for a fresh CEO decision.
+
+Final Wave D backtest parameters (already specified): **XAUUSD, 2,000 USD starting capital, USD account
+currency, 5% risk per trade**, reporting trades/net profit/return/expectancy/profit factor/max
+drawdown/equity curve/strategy+session+regime attribution/rejection reasons/which strategies helped or
+hurt/correlation between strategies.
+
+Do not begin Learning Engine, Broker Adapter, MT5, or live/paper trading under cover of this phase.
 
 ## I. Exact next-session order
 
@@ -234,12 +256,19 @@ Adapter, MT5, or live/paper trading under cover of this phase.
 2. **Verify Git state directly** — `git branch --show-current`, `git log -1`, `git status --porcelain`
    — re-confirm §B, especially whether the CEO has since instructed (in this or another session) that
    Phase 6.7's work be committed; do not assume it was.
-3. **Read `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md` and `STRATEGY_RUNTIME_INTEGRATION_GAP.md` in
-   full** for the complete Phase 6.7 detail and the Phase 6.8 gap diagnosis this document only
-   summarizes.
+3. **Read `SIMULATION_FRAMEWORK_VALIDATION_REPORT.md`, `STRATEGY_RUNTIME_INTEGRATION_GAP.md`,
+   `PHASE_6_8_CHECKPOINT_1_REPORT.md`, and `PHASE_6_8_WAVE_B_PLAN.md` in full** for the complete Phase
+   6.7 detail, the Phase 6.8 gap diagnosis, Checkpoint 1's own verified state, and the prepared (NOT
+   YET EXECUTED) Wave B plan this document only summarizes.
 4. **Report the reconstructed state back to the CEO** before proceeding on anything new.
-5. **Wait for explicit CEO direction** — Phase 6.8 (§H) is named but NOT yet approved to implement; do
-   not self-authorize starting it.
+5. Phase 6.8 itself IS approved (CEO's "IMPLEMENTATION PLAN" message, 2026-07-15) and Checkpoint 1 is
+   done and committed — but the CEO explicitly deferred Wave B to a FRESH session (§H): do not
+   self-authorize starting Wave B just because this document says it may proceed without per-family
+   approval in principle. Confirm with the CEO that THIS session is the intended "fresh session" before
+   writing any Wave B code. Once confirmed, family-by-family or small-batch migration may proceed
+   WITHOUT re-asking approval per family, per the CEO's own stated exceptions (§H). Only pause for a
+   fresh CEO decision on: a frozen-contract change, semantic ambiguity, missing
+   required data, or a research/runtime parity failure.
 
 ---
 

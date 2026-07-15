@@ -48,10 +48,14 @@ class TestRealStrategyManagerEvidenceBinding:
 
         strategy_ids = [v.id for v in mgr.list_strategies()]
         assert strategy_ids  # the real Library has 51 folders (see Strategy Manager's own tests)
-        real_id = strategy_ids[0]
+        from ai_trader.strategy_manager.types import NotFound as SMNotFound
+        # Pick the first id that is STILL v0-seed (no parsed contract) rather than assuming index 0:
+        # S1 is migrated to Strategy Interface v1 as of the Phase 6.8 reference slice
+        # (STRATEGY_RUNTIME_INTEGRATION_GAP.md) and DOES have a parsed contract now, so a hardcoded
+        # "first id" assumption would break here as each further strategy migrates in Wave B too.
+        real_id = next(sid for sid in strategy_ids if isinstance(mgr.get_contract(sid), SMNotFound))
         view = mgr.find_strategy(real_id)
         contract = mgr.get_contract(real_id)
-        from ai_trader.strategy_manager.types import NotFound as SMNotFound
         assert not isinstance(view, SMNotFound)  # find_strategy succeeds...
         assert isinstance(contract, SMNotFound)  # ...but get_contract does not (documented v0-seed gap)
 

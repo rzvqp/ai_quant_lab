@@ -1,14 +1,16 @@
 """Integration test against the REAL Strategy Library (``knowledge/strategies/``).
 
-Documents the known, pre-existing gap (``STRATEGY_INTERFACE_v1.md`` §7): the real
-``strategy.json`` files are "v0 seed" shape and do NOT validate against
-``strategy_contract.v1.schema.json`` — migrating them is an explicit, separate, CEO-gated task, not
-part of Strategy Manager implementation. This test asserts the Manager's fail-safe design handles
-that reality correctly: every real strategy is discovered and quarantined as ``INVALID`` with a
-diagnostic reason, the Manager still reaches a ``READY`` (schema-valid, queryable) state with an
-empty active set, and nothing crashes. If a future CEO-gated migration updates the real files to
-v1 shape, this test's quarantine assertions will start failing loudly — which is the point: it is a
-tripwire against silently regressing back to "0 strategies load" without anyone noticing.
+Documents the known gap (``STRATEGY_INTERFACE_v1.md`` §7) and its ongoing, explicit, CEO-gated
+migration (Phase 6.8, ``STRATEGY_RUNTIME_INTEGRATION_GAP.md``): most real ``strategy.json`` files are
+still "v0 seed" shape and do NOT validate against ``strategy_contract.v1.schema.json`` — migrating
+them is a separate task, not part of Strategy Manager implementation. This test asserts the Manager's
+fail-safe design handles that reality correctly: every not-yet-migrated real strategy is discovered
+and quarantined as ``INVALID`` with a diagnostic reason, and the Manager stays queryable regardless.
+This test's own docstring used to describe itself as a tripwire against "0 strategies load" going
+unnoticed; as of the Phase 6.8 reference slice, S1 IS migrated and loads successfully -- the counts
+below were updated to match, exactly the "tripwire fires, get updated deliberately" scenario the
+original docstring anticipated. As more strategies migrate (Phase 6.8 Wave B), these counts will need
+updating again -- expected, not a regression.
 """
 
 from __future__ import annotations
@@ -34,15 +36,27 @@ class TestRealStrategyLibrary:
         mgr.configure(FakeScanner())
         report = mgr.load_library(as_of=AS_OF)
 
-        assert report.loaded == ()  # v0 seed shape -> every file fails schema validation
+        # S1 is migrated (Phase 6.8 reference slice) and passes SCHEMA validation (now in `loaded`).
+        # It still appears in `failed` too here -- `loaded`/`failed` are not mutually exclusive by
+        # design (manager.py `_build_load_report`): a schema-valid entry that fails the separate
+        # COMPATIBILITY check (against the scanner's declared `get_provided_features()`) appears in
+        # both. `FakeScanner()` here is a deliberately minimal test double that does not declare
+        # `pdl`/`m_atr` as provided M15 features (unlike the real `MarketScanner`, which does -- S1
+        # loads AND is fully compatible against the real scanner, proven by the Simulation Harness
+        # integration tests) -- so under this fixture S1 is schema-valid but INCOMPATIBLE, not a real
+        # problem, just this particular fixture's own limited feature declaration.
+        assert report.loaded == ("S1",)
         assert len(report.failed) == 51
-        assert all(f.health is Health.INVALID for f in report.failed)
+        s1_failure = next(f for f in report.failed if f.id == "S1")
+        assert "pdl" in " ".join(s1_failure.reasons)
         assert report.duplicates == ()
 
+        # Still not ACTIVE: INCOMPATIBLE (under this fixture) is never ACTIVATABLE.
         assert mgr.active_strategies() == []
         assert mgr.required_context().contributor_ids == ()
 
-        # FAILED, not a crash: every entry is unusable, but the Manager itself is fully queryable.
+        # FAILED, not a crash: every entry is still unusable UNDER THIS FIXTURE (50 INVALID + 1
+        # INCOMPATIBLE), but the Manager itself is fully queryable.
         assert mgr.health().overall is ManagerOverallHealth.FAILED
         assert mgr.statistics().total == 51
         assert len(mgr.list_strategies()) == 51
