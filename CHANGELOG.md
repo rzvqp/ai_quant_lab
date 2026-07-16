@@ -1,5 +1,95 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-16 — Official session close: NEXT_SESSION.md/CHANGELOG.md/ROLLING_HEALTH_BACKTEST_HANDOFF.md rewritten, repo frozen for Phase 6.9
+- CEO ordered a complete official session close: documentation and handoff only, no new
+  implementation, no strategy changes, no optimization, Phase 6.9 not started.
+- Verified live (not assumed): repository path, branch (`ai-trader-implementation`), HEAD, working
+  tree CLEAN, protected-area 0-diff (Research Lab; `knowledge/` confined to the 43 migrated strategy
+  folders; six pipeline modules' production code untouched except the one already-disclosed,
+  CEO-approved Market Scanner touch from Wave B), full `ai_trader/` suite, `mypy --strict`, coverage
+  -- see this entry's own final numbers below, all confirmed live at close, not carried over from an
+  earlier session.
+- Wrote `ROLLING_HEALTH_BACKTEST_HANDOFF.md` -- a comprehensive, fully self-contained handoff
+  (current repository state, every completed phase/checkpoint, current architecture, all READY
+  modules, Strategy Health System status and full methodology, current Wave D results, why the
+  Health System was introduced, current ACTIVE/WATCHLIST/PROBATION/DISABLED counts, known
+  limitations, remaining risks, and the complete Phase 6.9 -- Rolling Health-Gated Backtest --
+  specification: exact objective, methodology constraints, anti-lookahead rules, frozen assumptions,
+  stop conditions, implementation order, validation requirements, final acceptance criteria) --
+  designed so a brand-new session needs nothing from this or any prior conversation.
+- Rewrote `NEXT_SESSION.md` in full as the single official entry point, pointing to
+  `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for full architecture/methodology/spec detail.
+- No strategy code implemented, no contract migrated, no protected area modified, no optimization
+  performed this session beyond the handoff documents themselves.
+- Verified live at close: `pytest ai_trader/ -q` -- 1562 passed; `mypy --strict` -- 164 files, 0
+  errors; `coverage` -- 96% (9637 stmts, 432 miss). This entry is the authoritative record --
+  re-verify live before trusting it in any future session, per this repository's own standing
+  discipline.
+
+## Session 2026-07-16 — Add Strategy Health System: rolling-window scoring + adaptive state classification
+- CEO directive: strategies must be judged primarily on RECENT performance (rolling 3/6/12-month
+  windows), not multi-year lifetime averages -- a strategy strong in 2023 may not fit 2026's regime,
+  and a strategy weak historically may fit the current regime well. Implementation authorized for
+  this new, additive subsystem only; no strategy/evaluator/parameter/Research Lab/frozen-pipeline
+  change permitted.
+- Built `ai_trader/strategy_health/` (new, non-frozen, independent of the six frozen pipeline modules
+  and every strategy evaluator): `types.py` (`ClosedTrade`, `HealthState` enum, `WindowMetrics`,
+  `WindowScore`, `StrategyHealthReport`), `metrics.py` (every requested per-window metric: expectancy
+  currency/R, profit factor, net R, win rate, drawdown, trade count, monthly consistency, equity
+  stability, max losing streak, avg holding time), `scoring.py` (the composite 0-100 Health Score),
+  `classifier.py` (score -> ACTIVE/WATCHLIST/PROBATION/DISABLED), `evaluator.py` (the single
+  `evaluate_strategy_health()` entry point, designed for repeated periodic re-evaluation).
+- **Scoring methodology, explicitly NOT hardcoded**: percentile-rank normalization (scale-free,
+  outlier-robust) -> Buhlmann credibility shrinkage (small samples pulled toward the neutral
+  midpoint, `k=10`) -> PCA-derived metric weights (the dominant eigenvector of the current
+  population's own covariance matrix across the 8 scored metrics, clipped non-negative and
+  renormalized -- a deterministic function of the data, not a manual choice; falls back to equal
+  weights only when fewer than 5 strategies have data in a window). Window combination uses
+  CEO-directed, explicitly disclosed priority weights (12m 60% / 6m 25% / 3m 15%, 12-month as the
+  primary decision window) -- a distinct, labeled business-rule choice, not presented as data-driven.
+- **Regime-adaptation trend rule**: a strategy whose 3-month score exceeds its own 12-month baseline
+  by >=15 points is bumped up one classification tier (capped at ACTIVE); the symmetric case bumps
+  down one tier (floored at DISABLED) -- directly implements the CEO's own stated purpose.
+- mypy --strict clean (6 new files), 47 new unit tests, 98% coverage of the new module, full
+  `ai_trader/` suite unaffected (1562 passed, up from 1515).
+- **First real evaluation of all 43 strategies** against the actual Wave D trade history (as of
+  2026-07-13): 2 ACTIVE (S40, S46), 34 WATCHLIST, 7 PROBATION (S1, S5, S13, S14, S22, S28, S30), 0
+  DISABLED. Notable findings (full detail in `STRATEGY_HEALTH_SYSTEM_REPORT.md`): S42 and S26 (both
+  lifetime ELIMINATE-tier in the Wave D audit) show genuine recent improvement, with S42 triggering
+  the trend-bump rule directly -- concrete proof the system catches the "weak historically, better
+  under the current regime" case it was built for. S13 (lifetime VERY_GOOD) shows a sharp,
+  otherwise-hidden 3-month decline. S46's own recent 12-month net R exceeds its full 3.6-year
+  lifetime net R.
+- No strategy was modified, optimized, or removed based on these results -- observation and
+  classification only, per the CEO's own explicit instruction.
+
+## Session 2026-07-16 — Wave D portfolio audit: full per-strategy analysis, tiering, correlation, and 3 portfolio variants
+- CEO-directed ANALYSIS-ONLY session (Romanian directive): no new strategy implementation, no
+  parameter changes, no tuning, no Learning Engine/Broker Adapter/MT5, no Research Lab modification.
+- Reconstructed state exclusively from `NEXT_SESSION.md`/`CHANGELOG.md`/`PHASE_6_8_WAVE_B_
+  COMPLETION_REPORT.md`/`WAVE_D_PORTFOLIO_SIMULATION_REPORT.md` and verified live: branch, HEAD,
+  working tree, `pytest` (1515 passed), `mypy --strict` (158 files clean), coverage (95%) all matched
+  documentation exactly.
+- Audited the documented 513-trade Wave D result at trade level (a deterministic re-run confirmed an
+  exact match to the documented net PnL). For all 43 strategies: trades, win rate, profit factor,
+  expectancy R, net profit, total R, isolated drawdown, portfolio contribution, good/bad months,
+  tier, and confidence level. Tiered into VERY_GOOD (6: S2, S13, S24, S28, S40, S44) / GOOD (2: S39,
+  S46) / NEUTRAL (28) / NEGATIVE (4: S1, S5, S22, S30) / ELIMINATE (3: S14, S26, S42). Computed
+  monthly-PnL correlation among the 11 strategies with enough active months to be statistically
+  meaningful.
+- Simulated 3 static portfolio variants (Conservative/Balanced/Aggressive, differing only in which
+  strategies are included via the pre-existing `strategy_id_filter` parameter -- no strategy/
+  parameter changes) and compared all 4 against the current all-43 baseline. **Key finding**: the
+  Aggressive variant's apparent outperformance was driven almost entirely by one strategy (S1)
+  capturing a handful of extreme-outlier trades via a path-dependent shift in slot-timing once 3
+  losing strategies were removed -- not genuine broad-based edge -- demonstrating the single-shared-
+  symbol-slot architecture makes results highly sensitive to strategy-set composition in a
+  non-additive way. Verdict: further investigation is needed before any portfolio-composition
+  decision or optimization; this audit did not recommend adopting any variant.
+- No `ai_trader/` or `knowledge/` files touched -- Research Lab and all six frozen pipeline modules
+  remained untouched, as required by this session's explicit no-implementation mandate. Full report:
+  `WAVE_D_PORTFOLIO_AUDIT_REPORT.md`.
+
 ## Session 2026-07-15 — Wave D: first full-portfolio simulation (all 43 strategies); two real bugs found and fixed
 - Ran the first full historical XAUUSD portfolio simulation with all 43 migrated strategies active
   simultaneously, per the CEO's own standing Wave D instructions: $2,000 starting capital, 5% risk per
