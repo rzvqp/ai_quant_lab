@@ -1,5 +1,62 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-16 — Phase 6.9 (Rolling Health-Gated Backtest) implemented and closed: VALID NEGATIVE RESULT
+- CEO authorized Phase 6.9 per the frozen specification in `ROLLING_HEALTH_BACKTEST_HANDOFF.md` §8:
+  prove whether a time-evolving, Health-gated strategy roster beats the static all-43 baseline. No
+  optimization phase -- a validation phase. No strategy/contract/evaluator/Research Lab/Health-scoring
+  methodology change permitted.
+- **Methodological issue found and CEO-approved fix (Option B)**: `ai_trader/simulation/harness.py`'s
+  `strategy_id_filter` was, before this session, used to build a single `handles` list that fed BOTH
+  new-signal generation AND time-stop/trailing-stop overlay eligibility for already-open positions --
+  meaning a demoted strategy's open position would have silently lost its own declared exit protection.
+  Fixed additively: overlay eligibility (`time_stop_bars_by_strategy`/`atr_mult_by_strategy`) is now
+  derived from the UNFILTERED runtime strategy set; `strategy_id_filter` gates NEW-signal eligibility
+  only. Byte-identical to pre-fix behavior whenever `strategy_id_filter is None` (proven by
+  construction -- `overlay_handles is handles` in that case -- and empirically, by the full
+  pre-existing 348-test simulation+strategy_runtime suite passing unchanged). 3 new regression tests
+  (`ai_trader/simulation/tests/test_overlay_survives_demotion.py`) prove new entries are blocked after
+  demotion while the demoted strategy's existing position keeps its own time-stop/trailing-stop.
+- Built `ai_trader/strategy_health/rolling_gate.py` (NEW, permanent, thin wrapper, no new scoring
+  logic): `active_strategy_ids_at()`/`health_reports_at()`, the exact entry point
+  `ROLLING_HEALTH_BACKTEST_HANDOFF.md` §8.6 called for. 3 new unit tests.
+- Built and passed the anti-lookahead regression test required by §8.3.3
+  (`ai_trader/strategy_health/tests/test_anti_lookahead.py`, 3 tests): proves programmatically, against
+  a realistic multi-strategy multi-year synthetic ledger, that a checkpoint's own computed Health Score
+  is identical whether the input ledger is pre-truncated to `exit_as_of <= as_of` or the full ledger
+  including future trades -- the single most important correctness property of this phase.
+- Ran the full Rolling Health-Gated Backtest: one continuous `SimulationHarness` over the complete
+  Wave D historical range (2022-12-16 -> 2026-07-13), 12-month ungated bootstrap, then 32 monthly
+  (fixed 30-day) re-evaluation checkpoints gating the ACTIVE roster. Static baseline re-run in the same
+  session reproduced Wave D's own documented 513-trade / +$313.21 / Sharpe 1.196 result EXACTLY, and
+  the rolling-gated run was proven byte-for-byte deterministic across two independent full passes
+  (performance + full 32-checkpoint roster history).
+- **Result: VALID NEGATIVE RESULT -- METHODOLOGY NOT OPERATIONALLY VIABLE AS SPECIFIED.** The ACTIVE
+  roster was empty at all 32 post-bootstrap checkpoints; the rolling-gated portfolio traded only during
+  the 12-month bootstrap (71 trades) and then went completely silent for the remaining ~2.6 years (0
+  trades, 2024-01 -> 2026-07-13), vs the static baseline's 513 trades/+15.66% return across the same
+  window. Root cause (diagnosed, not a bug): this strategy population's lifetime trade frequency
+  (median 7 trades/strategy over 3.6 years, 14/43 strategies with zero lifetime trades, single-shared-
+  symbol-slot architecture) is too sparse to populate rolling 3/6/12-month windows -- even the
+  best-populated strategy's own best rolling window (S46, 48 trades) does not clear the ACTIVE
+  threshold. Once the roster reached zero at month 13, no new trades could be generated anywhere,
+  which means no new evidence could accumulate, which means the roster could never recover on its own
+  -- a self-reinforcing lockout, confirmed exactly: by 2025-01-09 every one of the 43 strategies shows
+  zero trades in every rolling window simultaneously, and this persists for the rest of the backtest.
+- No threshold, Health weight, or credibility-shrinkage parameter was changed to reach or avoid this
+  conclusion, per explicit CEO instruction. Full detail, every checkpoint's own state counts, sample-
+  size distribution, determinism/anti-lookahead evidence, and opportunity-cost analysis:
+  `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`.
+- Verified live at close: `pytest ai_trader/ -q` -- 1571 passed (1562 baseline + 9 new); `mypy --strict`
+  -- 165 files, 0 errors; `coverage` -- 96% (9648 stmts, 432 miss). Protected invariants confirmed:
+  Research Lab, `knowledge/`, and the six frozen pipeline modules' production code untouched; the
+  Strategy Health System's own scoring methodology byte-for-byte unmodified. The only production-code
+  change anywhere is the disclosed, additive `harness.py` overlay-isolation fix.
+- CEO-recommended next phase (not started, not scoped for implementation): **Phase 6.10 -- Sparse-
+  Evidence Strategy Governance Design** -- a future design-only study of ACTIVE+WATCHLIST differentiated
+  risk, hierarchical/Bayesian pooling, longer evidence windows, minimum exploration allocation,
+  portfolio-level Health, shadow-mode evidence accumulation, regime-conditioned evidence, and
+  incumbency-until-negative-evidence policies. No alternative selected or implemented.
+
 ## Session 2026-07-16 — Official session close: NEXT_SESSION.md/CHANGELOG.md/ROLLING_HEALTH_BACKTEST_HANDOFF.md rewritten, repo frozen for Phase 6.9
 - CEO ordered a complete official session close: documentation and handoff only, no new
   implementation, no strategy changes, no optimization, Phase 6.9 not started.

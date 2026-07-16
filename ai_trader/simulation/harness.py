@@ -304,13 +304,24 @@ class SimulationHarness:
         if phase_running:
             context_batch = self._scanner.scan(as_of, list(self.context.symbols))
             handles: Sequence[StrategyHandleLike]
+            overlay_handles: Sequence[StrategyHandleLike]
             if self._use_strategy_runtime:
                 from ai_trader.strategy_runtime.registry import build_runtime_handles
                 handles = build_runtime_handles(
                     self._strategy_manager, frozenset(self.context.symbols), only_ids=self._strategy_id_filter,
                 )
+                # `strategy_id_filter` gates NEW-signal eligibility only (Phase 6.9 CEO directive: a
+                # demoted strategy may not open a new position, but an already-open position must keep
+                # receiving its own declared time-stop/trailing-stop protection until it closes) -- so
+                # overlay eligibility below is derived from the UNFILTERED runtime set, never `handles`.
+                # Identical object (no extra computation) whenever no filter is active -- the only case
+                # every prior test/Wave D run exercises, so behavior there is byte-for-byte unchanged.
+                overlay_handles = handles if self._strategy_id_filter is None else build_runtime_handles(
+                    self._strategy_manager, frozenset(self.context.symbols), only_ids=None,
+                )
             else:
                 handles = self._strategy_manager.active_strategies()
+                overlay_handles = handles
             for symbol in sorted(self.context.symbols):
                 ctx = context_batch.get(symbol)
                 if ctx is None:
@@ -343,7 +354,7 @@ class SimulationHarness:
             if self._enable_time_stops and self._use_strategy_runtime:
                 assert self._clock is not None
                 time_stop_bars_by_strategy = {
-                    h.id: bars_limit for h in handles
+                    h.id: bars_limit for h in overlay_handles
                     if (bars_limit := getattr(h.api, "time_stop_bars", None)) is not None
                 }
                 if time_stop_bars_by_strategy:
@@ -362,7 +373,7 @@ class SimulationHarness:
 
             if self._enable_trailing_stops and self._use_strategy_runtime:
                 atr_mult_by_strategy = {
-                    h.id: mult for h in handles
+                    h.id: mult for h in overlay_handles
                     if (mult := getattr(h.api, "trailing_stop_atr_mult", None)) is not None
                 }
                 positions = self.portfolio_simulator.account.positions

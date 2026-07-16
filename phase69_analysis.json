@@ -1,0 +1,208 @@
+{
+  "n_checkpoints": 32,
+  "checkpoint_interval_days": 30,
+  "first_checkpoint": "2023-12-16",
+  "last_checkpoint": "2026-07-03",
+  "avg_active_count": 0.0,
+  "active_count_by_checkpoint": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "total_promotions": 0,
+  "total_demotions": 0,
+  "promotions_by_checkpoint": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "demotions_by_checkpoint": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "avg_turnover_per_checkpoint_transition": 0.0,
+  "checkpoints_with_any_roster_change": 0,
+  "checkpoints_with_any_roster_change_pct": 0.0,
+  "avg_active_lifetime_periods": 0.0,
+  "avg_active_lifetime_days": 0.0,
+  "n_active_spells_total": 0,
+  "most_time_active_top10": [
+    [
+      "S1",
+      0
+    ],
+    [
+      "S10",
+      0
+    ],
+    [
+      "S11",
+      0
+    ],
+    [
+      "S12",
+      0
+    ],
+    [
+      "S13",
+      0
+    ],
+    [
+      "S14",
+      0
+    ],
+    [
+      "S15",
+      0
+    ],
+    [
+      "S16",
+      0
+    ],
+    [
+      "S17",
+      0
+    ],
+    [
+      "S18",
+      0
+    ]
+  ],
+  "most_oscillating_top10": [
+    [
+      "S46",
+      3
+    ],
+    [
+      "S1",
+      0
+    ],
+    [
+      "S10",
+      0
+    ],
+    [
+      "S11",
+      0
+    ],
+    [
+      "S12",
+      0
+    ],
+    [
+      "S13",
+      0
+    ],
+    [
+      "S14",
+      0
+    ],
+    [
+      "S15",
+      0
+    ],
+    [
+      "S16",
+      0
+    ],
+    [
+      "S17",
+      0
+    ]
+  ],
+  "trend_signal_strong_up_count": 1,
+  "trend_signal_strong_down_count": 0,
+  "trend_signal_total_count": 1,
+  "active_decision_confidence_mean": null,
+  "active_decision_confidence_median": null,
+  "active_decision_confidence_min": null,
+  "all_decision_confidence_mean": 0.012537466618841255,
+  "active_decisions_with_confidence_below_0_5": 0,
+  "active_decisions_total": 0
+}

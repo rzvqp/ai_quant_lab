@@ -1,0 +1,313 @@
+{
+  "state_count_by_checkpoint": [
+    {
+      "date": "2023-12-16",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-01-15",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-02-14",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-03-15",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-04-14",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-05-14",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-06-13",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-07-13",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-08-12",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-09-11",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 39
+    },
+    {
+      "date": "2024-10-11",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 40
+    },
+    {
+      "date": "2024-11-10",
+      "ACTIVE": 0,
+      "WATCHLIST": 42,
+      "PROBATION": 1,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 41
+    },
+    {
+      "date": "2024-12-10",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 41
+    },
+    {
+      "date": "2025-01-09",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-02-08",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-03-10",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-04-09",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-05-09",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-06-08",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-07-08",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-08-07",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-09-06",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-10-06",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-11-05",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2025-12-05",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2026-01-04",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2026-02-03",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2026-03-05",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2026-04-04",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2026-05-04",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2026-06-03",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    },
+    {
+      "date": "2026-07-03",
+      "ACTIVE": 0,
+      "WATCHLIST": 43,
+      "PROBATION": 0,
+      "DISABLED": 0,
+      "zero_evidence_strategies": 43
+    }
+  ],
+  "first_all_zero_evidence_checkpoint": {
+    "date": "2025-01-09",
+    "ACTIVE": 0,
+    "WATCHLIST": 43,
+    "PROBATION": 0,
+    "DISABLED": 0,
+    "zero_evidence_strategies": 43
+  },
+  "n_trades_12m_at_first_checkpoint": {
+    "S1": 3.9999999999999996,
+    "S10": 0.0,
+    "S11": 0.0,
+    "S12": 0.0,
+    "S13": 0.0,
+    "S14": 0.0,
+    "S15": 0.0,
+    "S16": 0.0,
+    "S17": 0.0,
+    "S18": 0.0,
+    "S19": 0.0,
+    "S2": 0.0,
+    "S20": 0.0,
+    "S21": 0.0,
+    "S22": 0.0,
+    "S23": 0.0,
+    "S24": 0.0,
+    "S25": 1.0000000000000002,
+    "S26": 0.0,
+    "S27": 0.0,
+    "S28": 0.0,
+    "S29": 0.0,
+    "S3": 0.0,
+    "S30": 0.0,
+    "S31": 0.0,
+    "S38": 0.0,
+    "S39": 17.000000000000004,
+    "S4": 0.0,
+    "S40": 0.0,
+    "S41": 0.0,
+    "S42": 0.0,
+    "S43": 0.0,
+    "S44": 0.0,
+    "S45": 0.0,
+    "S46": 48.0,
+    "S48": 0.0,
+    "S5": 0.0,
+    "S50": 0.0,
+    "S51": 0.0,
+    "S6": 0.0,
+    "S7": 0.0,
+    "S8": 0.0,
+    "S9": 0.0
+  }
+}
