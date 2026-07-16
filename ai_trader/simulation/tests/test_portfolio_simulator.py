@@ -117,6 +117,51 @@ class TestMargin:
         assert any(e.type == "LIQUIDATION" for e in psim.account.risk_events)
 
 
+class TestRiskEventAttribution:
+    """Phase 6.9A (CEO-approved 2026-07-16): ``RiskEventRecord.strategy_id`` is additive and
+    optional -- these tests prove the storage/plumbing is correct and that the default (no
+    ``strategy_id`` passed) is unchanged from before this field existed."""
+
+    def test_strategy_id_defaults_to_none(self) -> None:
+        context = make_context()
+        psim = PortfolioSimulator(context, SYMBOL_META)
+        psim.record_risk_event("DENY_BELOW_FLOOR", as_of=1000, detail="strength below floor")
+        assert psim.account.risk_events[-1].strategy_id is None
+
+    def test_strategy_id_is_recorded_when_provided(self) -> None:
+        context = make_context()
+        psim = PortfolioSimulator(context, SYMBOL_META)
+        psim.record_risk_event("DENY_LIMIT_MAX_PER_SYMBOL", as_of=1000, strategy_id="S17")
+        event = psim.account.risk_events[-1]
+        assert event.strategy_id == "S17"
+        assert event.type == "DENY_LIMIT_MAX_PER_SYMBOL"
+
+    def test_positional_detail_and_keyword_strategy_id_do_not_collide(self) -> None:
+        """The exact call shape ``harness.py`` uses: positional ``detail``, keyword-or-positional
+        ``strategy_id`` -- both must land in the right field, never swapped."""
+        context = make_context()
+        psim = PortfolioSimulator(context, SYMBOL_META)
+        psim.record_risk_event("DENY_FILTER_VOLATILITY", 2000, "atr out of band", "S28")
+        event = psim.account.risk_events[-1]
+        assert event.as_of == 2000
+        assert event.detail == "atr out of band"
+        assert event.strategy_id == "S28"
+
+    def test_liquidation_events_are_unchanged_and_still_have_no_strategy_id(self) -> None:
+        """Liquidation can close positions from more than one strategy in a single event -- this
+        stays deliberately unattributed (``strategy_id=None``) rather than attributing to only the
+        last-closed position, never fabricating a single-strategy attribution for a multi-position
+        event."""
+        margin_model = MarginModel(initial_margin_pct=0.5, maintenance_margin_pct=0.4, leverage_max=2.0)
+        context = make_context(starting_balance=1000.0, margin_model=margin_model)
+        psim = PortfolioSimulator(context, SYMBOL_META)
+        psim.apply((make_fill(1000, 100.0, qty=15.0),), bar_index=0)
+        psim.mark_to_market(1900, {"XAUUSD": make_bar(1900, 10.0)})
+        liquidation_events = [e for e in psim.account.risk_events if e.type == "LIQUIDATION"]
+        assert len(liquidation_events) == 1
+        assert liquidation_events[0].strategy_id is None
+
+
 class TestPortfolioStateProjection:
     def test_projection_matches_open_positions_and_equity(self) -> None:
         context = make_context()

@@ -140,12 +140,19 @@ class PortfolioSimulator:
         if stop_price is not None:
             self._stop_hints[client_order_id] = stop_price
 
-    def record_risk_event(self, event_type: str, as_of: int, detail: str | None = None) -> None:
+    def record_risk_event(
+        self, event_type: str, as_of: int, detail: str | None = None, strategy_id: str | None = None,
+    ) -> None:
         """Record a non-fill risk/account event (Risk Manager DENYs, SUSPENDED/EMERGENCY_STOP episodes,
         margin calls) for the Performance Analyzer's risk-event summary (``PERFORMANCE_ANALYZER.md``
         §6). A gap a review caught: only liquidation events were ever recorded here; the Harness now
-        calls this for every non-ALLOW ``RiskDecision`` too."""
-        self.account.risk_events.append(RiskEventRecord(type=event_type, as_of=as_of, detail=detail))
+        calls this for every non-ALLOW ``RiskDecision`` too. ``strategy_id`` (Phase 6.9A, CEO-approved
+        2026-07-16): optional, additive traceability -- ``None`` (the default, unchanged behavior for
+        every pre-existing call site that does not pass it) for events with no single originating
+        strategy."""
+        self.account.risk_events.append(
+            RiskEventRecord(type=event_type, as_of=as_of, detail=detail, strategy_id=strategy_id)
+        )
 
     def apply(self, fills: tuple[SimFillEvent, ...], bar_index: int) -> None:
         """Book ``fills`` -- open/increase, reduce, or close positions; realize PnL on any closing

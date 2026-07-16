@@ -342,13 +342,19 @@ class SimulationHarness:
                         # A real gap a review caught: only liquidation events ever reached
                         # report.risk_events. Every DENY reason, and the batch's own engine_state when
                         # not READY (SUSPENDED/EMERGENCY_STOP), is now recorded too
-                        # (PERFORMANCE_ANALYZER.md §6).
+                        # (PERFORMANCE_ANALYZER.md §6). `strategy_id=decision.strategy_id` (Phase 6.9A,
+                        # CEO-approved 2026-07-16): the denial's own already-known originating strategy,
+                        # diagnostics only -- does not affect the DENY decision itself.
                         if decision.denied_reasons:
                             for reason in decision.denied_reasons:
-                                self.portfolio_simulator.record_risk_event(f"DENY_{reason.code}", as_of, reason.detail)
+                                self.portfolio_simulator.record_risk_event(
+                                    f"DENY_{reason.code}", as_of, reason.detail, decision.strategy_id,
+                                )
                         else:
-                            self.portfolio_simulator.record_risk_event("DENY", as_of)
+                            self.portfolio_simulator.record_risk_event("DENY", as_of, strategy_id=decision.strategy_id)
                 if decision_batch.engine_state.value != "READY":
+                    # No single strategy caused a batch-level, non-READY engine state -- strategy_id
+                    # stays None (the default), unchanged from before this field existed.
                     self.portfolio_simulator.record_risk_event(decision_batch.engine_state.value, as_of)
 
             if self._enable_time_stops and self._use_strategy_runtime:

@@ -232,8 +232,19 @@ class SimFillEvent:
 @dataclass(frozen=True, slots=True)
 class RiskEventRecord:
     """One risk/account event for the Performance Analyzer's risk-event summary
-    (``PERFORMANCE_ANALYZER.md`` §6). Internal type -- aggregated into ``report.risk_events`` by type."""
+    (``PERFORMANCE_ANALYZER.md`` §6). Internal type -- aggregated into ``report.risk_events`` by type
+    (never serialized directly, no schema entry -- same class of internal-only shape as ``Bar``/
+    ``SimFillEvent``, module docstring).
+
+    ``strategy_id`` (Phase 6.9A, CEO-approved 2026-07-16): additive, optional traceability field --
+    ``None`` for events with no single originating strategy (e.g. an engine-state-level event spanning
+    the whole batch), populated from the triggering ``RiskDecision.strategy_id`` (a field that already
+    exists on every decision) when one caused this specific event. Diagnostics only: this field is
+    never read by any ALLOW/DENY decision, never changes sizing/risk/scoring/execution behavior, and
+    ``performance_analyzer.py``'s own existing ``RiskEventSummary`` aggregation (by ``type`` only)
+    is unchanged -- callers that ignore this field see byte-identical behavior to before it existed."""
 
     type: str
     as_of: int
     detail: str | None = None
+    strategy_id: str | None = None

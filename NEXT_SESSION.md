@@ -1,18 +1,19 @@
 # NEXT_SESSION.md — Official Handoff (Single Entry Point)
 
-**Rewritten in full on 2026-07-16 as an official session close.** This document, together with
+**Rewritten in full on 2026-07-17 as an official session close.** This document, together with
 `CHANGELOG.md`, `ROLLING_HEALTH_BACKTEST_HANDOFF.md`, `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_
-REPORT.md`, `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md`, and `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_
-SPEC.md`, is designed to be FULLY SELF-CONTAINED — a brand-new chat must be able to reconstruct this
-project's entire state from these documents alone, with no access to any prior conversation. Every
-fact below was verified directly against `git log`/`git status`/`git diff` at close time — nothing
-here is assumed or carried over unverified.
+REPORT.md`, `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md`, `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_
+SPEC.md`, and `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`, is designed to be FULLY
+SELF-CONTAINED — a brand-new chat must be able to reconstruct this project's entire state from these
+documents alone, with no access to any prior conversation. Every fact below was verified directly
+against `git log`/`git status`/`git diff`/a live `pytest`+`mypy --strict`+`coverage` run at close time
+— nothing here is assumed or carried over unverified.
 
-**Read, in order: `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`, then `CURRENT_XAUUSD_12M_
-RELEVANCE_REPORT.md`, then `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`** — together they are
-this session's complete story: a rolling-gate methodology found unworkable, a follow-up current-
-relevance snapshot that independently confirms the underlying evidence is too sparse, and a specified
-(not started) diagnostic phase to determine WHY.
+**Read, in order: `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`, `CURRENT_XAUUSD_12M_RELEVANCE_
+REPORT.md`, then `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`** — together they are the
+project's complete diagnostic story so far: a rolling-gate methodology found unworkable, a current-
+relevance snapshot confirming the underlying evidence is too sparse, and a funnel audit that found and
+measured WHY — the single-position XAUUSD architecture is the dominant, confirmed cause.
 
 ---
 
@@ -26,14 +27,13 @@ relevance snapshot that independently confirms the underlying evidence is too sp
 - **Strategy Library** (`knowledge/strategies/`) publishes 51 strategy specs (S1–S51). **All 43
   runtime-eligible strategies** are migrated to Strategy Interface v1 and have real runtime
   evaluators — Wave B is COMPLETE (unchanged since Phase 6.9).
-- **AI Trader** (`ai_trader/`) is the execution system. All six live pipeline modules are READY.
-  The **Simulation Framework** (Phase 6.7) is READY, extended in the Phase 6.9 session with one
-  disclosed, additive, backward-compatible fix (unchanged this session). The **Strategy Runtime**
-  framework is READY and proven end-to-end for all 43 strategies.
-- **Strategy Health System** (`ai_trader/strategy_health/`) — a rolling-window, recent-performance-
-  based scoring and classification system. Its own scoring methodology is UNCHANGED this session
-  (frozen, per explicit CEO instruction). This session's relevance audit reused two of its existing
-  functions read-only (`compute_window_metrics`, `score_window`) — no new library code was added.
+- **AI Trader** (`ai_trader/`) is the execution system. All six live pipeline modules are READY. The
+  **Simulation Framework** (Phase 6.7) is READY, with two disclosed, additive, backward-compatible
+  fixes to date: the Phase 6.9 `harness.py` overlay-isolation fix, and this session's
+  `RiskEventRecord.strategy_id` traceability field (§C). The **Strategy Runtime** framework is READY
+  and proven end-to-end for all 43 strategies.
+- **Strategy Health System** (`ai_trader/strategy_health/`) — its own scoring methodology remains
+  UNCHANGED since Phase 6.9 (frozen, per standing CEO instruction). Not touched this session at all.
 
 **Simulation-first is mandatory (standing CEO directive, non-negotiable):** the AI Trader must prove
 robust historical profitability in simulation before any Broker Adapter/MT5/live execution work
@@ -42,48 +42,40 @@ history): +15.66% return, Sharpe 1.196, max drawdown 6.16%, 513 trades
 (`WAVE_D_PORTFOLIO_SIMULATION_REPORT.md`) — reproduced EXACTLY, fresh, during Phase 6.9.
 
 **Phase 6.9 — Rolling Health-Gated Backtest — COMPLETE, closed as a VALID NEGATIVE RESULT** (prior
-session). The frozen rolling-gating methodology produced an empty ACTIVE roster at all 32
-post-bootstrap monthly checkpoints over the full 3.6-year history. Full detail: `PHASE_6_9_ROLLING_
-HEALTH_GATED_BACKTEST_REPORT.md`.
+session). Full detail: `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`.
 
 **Current XAUUSD 12-Month Relevance Audit — COMPLETE, closed as a VALID NEGATIVE, UNDER-SAMPLED
-RESULT (this session).** A narrower, current-market-only snapshot (NOT a rolling gate, NOT a
-multi-year aggregate): using the most recent complete 12 months that lie entirely outside the sealed
-terminal holdout (**2024-10-23 → 2025-10-23**, 23,639 M15 bars, disclosed NOT out-of-sample relative
-to strategy discovery — see `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md` §1), classification came back:
+RESULT** (prior session). Window 2024-10-23 → 2025-10-23 (the most recent complete 12 months lying
+entirely outside the sealed holdout): 0 CURRENTLY_STRONG, 0 CURRENTLY_USABLE, 4 CURRENTLY_WEAK (S1,
+S39, S44, S46), 39 INSUFFICIENT_EVIDENCE (20 with zero trades). Full detail:
+`CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md`.
 
-| Classification | Count |
-|---|---|
-| CURRENTLY_STRONG | **0** |
-| CURRENTLY_USABLE | **0** |
-| CURRENTLY_WEAK | **4** (S1, S39, S44, S46) |
-| INSUFFICIENT_EVIDENCE | **39** (20 of which took ZERO trades in the entire 12-month window) |
+**Phase 6.9A — Strategy Evidence Flow Audit — COMPLETE this session.** Measured, per strategy and per
+month over the SAME 2024-10-23→2025-10-23 window, exactly why strategies fail to accumulate evidence:
+raw setup detections, the full Signal Engine state breakdown, Scoring Engine conversion, Risk Manager
+ALLOW/DENY (with the shared-slot reason tracked separately), order-level fills/rejects/expires, and an
+isolated-slot counterfactual (all 43 strategies additionally run alone, same window/config).
 
-Portfolio tests (A=all 43 / B=STRONG-only / C=STRONG+USABLE / D=all-except-WEAK, same $2,000/5%-risk/
-cost-model/seed=1 config) showed **highly concentrated, path-dependent results**: B and C are
-trivially empty (0 qualifying strategies); D numerically beats A on every metric but 94.4% of D's net
-profit comes from ONE strategy (S40, itself INSUFFICIENT_EVIDENCE) trading 26x more often purely
-because excluding S1/S39/S44/S46 freed up the single shared XAUUSD position slot; A's own result is
-dominated by 3 outlier trades and one outlier month. **No current deployment roster can be justified
-from this audit.** No strategy was changed, promoted, or eliminated; no threshold/risk/scoring/
-execution rule was altered; the sealed holdout was not opened. Full detail: `CURRENT_XAUUSD_12M_
-RELEVANCE_REPORT.md`.
+**Headline finding: the single-position XAUUSD architecture is the dominant, measured bottleneck.**
+Only 145 of 1,016,477 Risk-Manager-evaluated opportunities were ever ALLOWED (0.48%) portfolio-wide.
+The shared-slot constraint (`LIMIT_MAX_PER_SYMBOL`) is the SOLE principal suppression cause for 11 of
+43 strategies and a contributing factor in 20 of the 22 "mixed" strategies — far more than scoring
+suppression (sole principal cause for only 2/43), genuine risk-policy suppression (0/43), or execution
+suppression (0/43, and zero rejected/expired orders were recorded at all). Isolated-slot trade counts
+summed across all 43 strategies (823) are **5.8× the actual competitive count (142)** over the
+identical market data and window. Only 8 of 43 strategies are genuinely low-frequency at the raw-setup
+level. Full detail, every strategy's own complete funnel, and honest answers to all 8 CEO-required
+questions: `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
 
-**Phase 6.9A — Strategy Evidence Flow Audit — SPECIFIED this session (documentation only), NOT
-STARTED, NOT IMPLEMENTED.** Both audits above converge on the same open question: strategies aren't
-failing because they're bad, they're failing to accumulate evidence at all. Phase 6.9A's own
-objective is to find out WHY — per-strategy conversion rates through every pipeline stage (raw setup
-detection → actionable signal → context-blocked → shared-slot-blocked → Scoring Engine rejection →
-Risk Manager denial → unfilled order → completed trade), separating genuine low market frequency from
-shared-slot suppression, scoring suppression, risk suppression, execution suppression, and
-insufficient historical data. Full specification: `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`.
-**Do not begin implementing Phase 6.9A, Phase 6.10, Wave C, Learning Engine, Broker Adapter, MT5, or
-live/paper trading without its own dedicated CEO approval — this document does not grant it.**
+**No governance model was selected or implemented.** This finding is an observation about where future
+design effort has the most measured leverage (the Phase 6.10 menu items addressing the shared slot
+specifically: portfolio-level Health scoring, minimum exploration allocation, shadow-mode evidence
+accumulation), not a recommendation to implement any one of them.
 
 **Phase 6.10 — Sparse-Evidence Strategy Governance Design — still CEO-recommended, NOT STARTED, NOT
-SCOPED FOR IMPLEMENTATION** (unchanged from Phase 6.9's own close; see §H). Phase 6.9A is a narrower,
-diagnostic PREREQUISITE to 6.10 — it explains WHY evidence is sparse; 6.10 would design WHAT to do
-about it. Sequencing between them is the CEO's own call, not decided by this document.
+SCOPED FOR IMPLEMENTATION** (unchanged; see §H). **Do not begin implementing Phase 6.10, Wave C,
+Learning Engine, Broker Adapter, MT5, live/paper trading, multi-position trading, Shadow Mode, or
+WATCHLIST activation without its own dedicated CEO approval — this document does not grant it.**
 
 ---
 
@@ -92,151 +84,132 @@ about it. Sequencing between them is the CEO's own call, not decided by this doc
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD (pre-close): 04d616bee5f766f5fac6540e2e174b273ee66899 (last commit before this session's own close commit)
+HEAD (pre-close): b22b483584a926871d8a50c42de8a9124db831cf (last commit before this session's own close commit)
 Working tree:     clean (verified live at close)
 ```
 
-**Note**: the close commit itself (the relevance audit report + this file + `CHANGELOG.md`) lands ONE
-commit after `04d616b` — run `git log -1` to see the exact current HEAD; do not assume it is still
-`04d616b` in any future session. `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md` is written this
-session but deliberately left UNCOMMITTED (per the CEO's own "prepare the specification... stop" — it
-awaits its own explicit review/commit instruction, the same pattern the relevance report itself
-followed before its own commit was authorized).
+**Note**: the close commit itself (Phase 6.9A's implementation + tests + report + this file +
+`CHANGELOG.md`) lands ONE commit after `b22b483` — run `git log -1` to see the exact current HEAD; do
+not assume it is still `b22b483` in any future session.
 
 **Re-verify `git log -1`/`git status --porcelain` directly before trusting any git-state claim
 here** — the same discipline every prior handoff in this repository has followed.
 
 ## C. Completed work this session
 
-- **Current XAUUSD 12-Month Relevance Audit** (§A) — a fresh, standalone `SimulationHarness` run (not
-  a continuation of any prior run) scoped to exactly the 2024-10-23→2025-10-23 window, for portfolio
-  variant A (all 43) and re-run 3 more times for variants B/C/D with different `strategy_id_filter`
-  values. Per-strategy metrics reuse `ai_trader.strategy_health.metrics.compute_window_metrics` and
-  `scoring.score_window` read-only (no Health System code added or modified this session — Phase 6.9's
-  own `rolling_gate.py` addition was the prior session, unchanged here).
-- Diagnostic artifacts preserved at repo root (same precedent as Phase 6.9):
-  `relevance12m_run.py`, `relevance12m_run_bcd.py`, `relevance12m_perstrategy.py` (orchestrator/
-  analysis scripts) and `relevance12m_portfolioA.json`, `relevance12m_portfolioBCD.json`,
-  `relevance12m_perstrategy.json` (raw output, every trade's full record).
-- **`PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`** written — a documentation-only specification,
-  no code, no strategy/pipeline change. See §A and the document itself for full scope.
-- No `ai_trader/` source code was touched this session (unlike Phase 6.9, which added `rolling_
-  gate.py` and the `harness.py` overlay-isolation fix) — this session was analysis + documentation
-  only, reusing infrastructure exactly as Phase 6.9 left it.
+- **CEO-approved additive instrumentation**: `ai_trader/simulation/types.py`'s `RiskEventRecord` gained
+  an optional `strategy_id: str | None = None` field; `PortfolioSimulator.record_risk_event()` and the
+  two DENY call sites in `ai_trader/simulation/harness.py::_run_one_bar` now forward the triggering
+  decision's own already-existing `strategy_id`. Additive, backward-compatible, no ALLOW/DENY/sizing/
+  execution change. 5 new regression tests, including a real end-to-end proof (`DENY_LIMIT_MAX_PER_
+  SYMBOL` over 4,000 real bars, correctly attributed). No schema version bump needed.
+- **Zero-file-diff funnel-measurement technique** (`phase69a_funnel_recorder.py`,
+  `phase69a_funnel_run.py`): monkey-patches an ALREADY-CONSTRUCTED harness instance's own bound methods
+  (`_signal_engine.evaluate`/`_scoring_engine.score_batch`/`_risk_manager.evaluate`) to tap already-
+  computed return values, zero lines changed in any `ai_trader/` source file. Proven behaviorally
+  invisible via a full-`SimulationReportData` parity check (an adversarial review caught and this
+  session fixed a gap in the first version of that check, which compared only 2 of 6 report fields).
+- **The full Strategy Evidence Flow Audit**: competitive (all-43) instrumented run + 43 isolated-slot
+  counterfactual runs, all over the identical window/config, plus conversion-rate and suppression-
+  classification analysis (`phase69a_analysis.py`).
+- **Result**: single-position XAUUSD architecture confirmed as the dominant suppression cause (§A).
+  Full detail: `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
+- Diagnostic artifacts preserved at repo root (same precedent as Phase 6.9/the relevance audit):
+  `phase69a_funnel_recorder.py`, `phase69a_funnel_run.py`, `phase69a_isolated_run.py`,
+  `phase69a_analysis.py` (orchestrator/analysis code) and `phase69a_competitive_funnel.json`,
+  `phase69a_isolated_funnel.json`, `phase69a_analysis.json` (raw output).
 
-Phase 6.9's own completed work (the `harness.py` fix, `rolling_gate.py`, the anti-lookahead test, the
-full rolling-gated backtest) — unchanged, full detail in `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_
-REPORT.md` and the prior `CHANGELOG.md` entry. Prior-prior sessions' work (Phases 6.1–6.8, Wave D,
-Wave D Audit, Strategy Health System build) — unchanged, full detail in `ROLLING_HEALTH_BACKTEST_
-HANDOFF.md` §2–§6.
+Prior sessions' completed work (the relevance audit, Phase 6.9's `harness.py` overlay-isolation fix and
+`rolling_gate.py`, Wave D, the Wave D Audit, the Strategy Health System build) — unchanged, full detail
+in their own respective reports and the prior `CHANGELOG.md` entries.
 
 ## D. Strategy Health System — current status
 
-**Scoring methodology UNCHANGED this session** (frozen, per explicit CEO instruction, same as Phase
-6.9 — see `ROLLING_HEALTH_BACKTEST_HANDOFF.md` §5 for full methodology, still accurate). This session
-exercised it a THIRD way: not the one-time full-lifetime snapshot (`STRATEGY_HEALTH_SYSTEM_REPORT.md`:
-2 ACTIVE/34 WATCHLIST/7 PROBATION/0 DISABLED as of 2026-07-13), not the rolling time-evolving mode
-(Phase 6.9: empty roster throughout), but a **single-window, current-relevance-only** scoring (this
-session: 0 STRONG/0 USABLE/4 WEAK/39 INSUFFICIENT_EVIDENCE as of 2025-10-23, using ONLY that window's
-own 12-month evidence, no blending with 3m/6m, no trend-bump). All three are different, valid readings
-of the same frozen scoring machinery over different data slices — do not confuse them, and do not
-average or reconcile them into one number; each answers a different question.
+**Scoring methodology UNCHANGED this session** (frozen, per standing CEO instruction) — not read from
+or touched at all this session (unlike the relevance audit, which reused `compute_window_metrics`/
+`score_window` read-only). See `ROLLING_HEALTH_BACKTEST_HANDOFF.md` §5 for full methodology, still
+accurate. The three prior distinct evaluations of it (one-time full-lifetime snapshot, rolling
+time-evolving mode, single-window current-relevance mode) remain as previously documented — do not
+confuse them, and this session added no fourth.
 
-## E. Global implementation statistics
-
-Unchanged from Phase 6.9's own close (no `ai_trader/` source code touched this session):
+## E. Global implementation statistics (verified live this session, current HEAD)
 
 ```
 pytest ai_trader/ -q
-1571 passed
+1576 passed
 
 mypy --strict ai_trader/ --exclude 'tests/'
 Success: no issues found in 165 source files
 
 coverage run --source=ai_trader -m pytest ai_trader/ -q
 coverage report --omit="*/tests/*"
-TOTAL   9648 stmts   432 miss   96%
+TOTAL   9649 stmts   432 miss   96%
 ```
+
+Up from the prior session's 1571 tests / 165 files / 9648 stmts — growing by the 5 new
+`RiskEventRecord.strategy_id` attribution tests and 1 new statement (the new field itself) this
+session added.
 
 ## F. Protected invariants — confirmed untouched (verified this session, live)
 
 - `code/`, `results/` (Research Lab) — 0-diff, confirmed via `git status --porcelain -- code/
   results/` (empty).
 - `knowledge/` — untouched.
-- The six live pipeline modules' production code — untouched.
-- The Strategy Health System's own scoring methodology — byte-for-byte unmodified; only read from,
-  never edited, this session.
-- **No `ai_trader/` source file was touched at all this session** — a stricter invariant than Phase
-  6.9's own close (which had one disclosed `harness.py` fix); this session was pure analysis +
-  documentation over the infrastructure Phase 6.9 already left in place.
-- No strategy was changed, promoted, or eliminated. No threshold, risk parameter, scoring weight, or
-  execution rule was altered.
-- Terminal holdout — SEALED, untouched, NOT opened for this audit (the analysis window was
-  deliberately chosen to exclude it entirely — see §A and the relevance report §1).
-- No scratch/temporary files beyond the explicitly-preserved `phase69_*`/`relevance12m_*` diagnostic
-  artifacts (a deliberate, CEO-instructed exception to the usual "delete scratch scripts after report
-  capture" discipline, so both this session's and Phase 6.9's own negative results stay fully
-  reproducible).
+- Every strategy contract, Scoring Engine, Risk Manager, and Execution Engine production code —
+  untouched except the one disclosed, additive `RiskEventRecord.strategy_id` field/plumbing.
+- The Strategy Health System's own scoring methodology — byte-for-byte unmodified; not even read this
+  session.
+- No strategy was changed, promoted, demoted, or eliminated. No threshold, risk parameter, scoring
+  weight, or execution rule was altered. No governance model was implemented.
+- Terminal holdout — SEALED, untouched.
+- No scratch/temporary files beyond the explicitly-preserved `phase69_*`/`relevance12m_*`/`phase69a_*`
+  diagnostic artifacts (a deliberate, CEO-instructed exception to the usual "delete scratch scripts
+  after report capture" discipline, so every phase's own findings stay fully reproducible).
 
 ## G. Technical debt / known limitations
 
-Everything already listed in `ROLLING_HEALTH_BACKTEST_HANDOFF.md` §7 and Phase 6.9's own NEXT_SESSION
-entry, PLUS, newly confirmed by this session's own audit:
+Everything already listed in prior sessions' entries, PLUS, newly confirmed by this session's audit:
 
-- **The evidence-sparsity problem is confirmed independently in a SECOND, differently-designed
-  evaluation** (a single current-relevance window, not a rolling gate) — 20 of 43 strategies took
-  literally zero trades in a full 12-month window, and only 4 had enough evidence to be judged at all,
-  all four scoring WEAK. This is not an artifact of the rolling-gate mechanism specifically (Phase
-  6.9's own finding) — it reproduces under a completely different evaluation design, strengthening the
-  conclusion that the underlying issue is trade-frequency scarcity itself, not any one gating method.
-- **The single-shared-symbol-slot path-dependence effect (Wave D Audit, Phase 6.9) reproduces again
-  here**: portfolio D's 94.4%-from-one-strategy concentration is a direct, confirmed instance of it,
-  now observed a third time across three independent analyses.
-- **WHY strategies fail to accumulate evidence is still not understood at a mechanistic level** — is
-  it genuine market rarity, or is evidence being suppressed by the shared slot, the Scoring Engine, the
-  Risk Manager, or execution, before it ever has a chance to become a trade? This is exactly Phase
-  6.9A's own objective (§A) — not yet answered.
+- **The single-position XAUUSD architecture is now confirmed, measured, and quantified as the
+  dominant bottleneck to evidence accumulation** (§A) — not a hypothesis anymore, an empirically
+  measured fact (0.48% portfolio-wide ALLOW rate; 5.8× isolated-vs-competitive trade-count gap).
+- **Per-strategy rejection-reason attribution is now possible** (via `RiskEventRecord.strategy_id`)
+  for any FUTURE run — this session's own funnel measurement additionally needed the
+  monkey-patch technique for signal-state and scoring-conversion data, since those are still not
+  persisted by any existing structure (a disclosed, deliberate scope boundary — the CEO approved only
+  the `RiskEventRecord` field, not a permanent library change for the broader funnel).
 - Execution costs still modeled as zero everywhere (unchanged limitation).
 - Portfolio-level `max_drawdown_R` still unresolved (unchanged limitation).
 
 ## H. Immediate next phase(s)
 
-**Phase 6.9A — Strategy Evidence Flow Audit.** SPECIFIED (documentation only,
-`PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`), NOT STARTED, NOT IMPLEMENTED. See that document
-for the full spec: per-strategy pipeline-stage conversion rates (raw setups → actionable signals →
-context-blocked → shared-slot-blocked → Scoring Engine rejected → Risk Manager denied → unfilled
-orders → completed trades), a hypothetical isolated-slot trade count (measured, not used to change
-production behavior), and a 6-category suppression classification (A: genuine low market frequency;
-B: shared-slot suppression; C: scoring suppression; D: risk suppression; E: execution suppression; F:
-insufficient historical data) for every strategy.
-
 **Phase 6.10 — Sparse-Evidence Strategy Governance Design.** CEO-recommended, NOT STARTED, NOT SCOPED
-FOR IMPLEMENTATION — unchanged from Phase 6.9's own close. Proposed menu to study (no selection made,
-nothing implemented): ACTIVE+WATCHLIST differentiated risk; hierarchical/Bayesian pooling; longer
-evidence windows; minimum exploration allocation; portfolio-level Health scoring; shadow-mode evidence
-accumulation; regime-conditioned evidence; incumbency-until-negative-evidence policies.
+FOR IMPLEMENTATION. Phase 6.9A's own findings sharpen this menu: portfolio-level Health scoring, a
+minimum exploration allocation, and shadow-mode evidence accumulation are the items most directly
+responsive to the CONFIRMED shared-slot bottleneck; ACTIVE+WATCHLIST differentiated risk,
+hierarchical/Bayesian pooling, longer evidence windows, regime-conditioned evidence, and
+incumbency-until-negative-evidence policies remain on the menu too. No selection has been made.
 
-Do not begin any part of either phase without explicit CEO approval; this document does not grant that
-approval, it only prepares the ground for the CEO's own decision.
+Do not begin any part of it without explicit CEO approval; this document does not grant that approval,
+it only prepares the ground for the CEO's own decision.
 
 ## I. Exact next-session order
 
 1. **Read this document in full first.**
 2. **Verify Git state directly** — `git branch --show-current`, `git log -1`, `git status --porcelain`.
 3. **Read, in order**: `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`, `CURRENT_XAUUSD_12M_
-   RELEVANCE_REPORT.md`, `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`.
-4. **Read `ROLLING_HEALTH_BACKTEST_HANDOFF.md`** for the architecture/methodology both prior audits
+   RELEVANCE_REPORT.md`, `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
+4. **Read `ROLLING_HEALTH_BACKTEST_HANDOFF.md`** for the architecture/methodology all three audits
    tested (still accurate, unchanged).
 5. **Read `CHANGELOG.md`'s own top entry** for this session's exact facts, re-verified live rather
    than trusted, per this repository's own standing discipline.
 6. **Report the reconstructed state back to the CEO** before proceeding on anything new.
-7. Once confirmed, the CEO's own next direction determines what happens — most likely either
-   approving Phase 6.9A's implementation, scoping Phase 6.10, or a different direction the CEO
-   chooses instead. Stop and ask before starting any of them.
+7. Once confirmed, the CEO's own next direction determines what happens — most likely scoping Phase
+   6.10, or a different direction the CEO chooses instead. Stop and ask before starting any of them.
 
 ---
 
 *Prior-session narrative history (Phases 6.1–6.9, Wave D, the Wave D Audit, the Strategy Health
-System's own build, the Rolling Health-Gated Backtest) remains available in git history of this file
-(`git log -p -- NEXT_SESSION.md`) and in each phase's own dedicated report/handoff document listed
-above.*
+System's own build, the Rolling Health-Gated Backtest, the Current XAUUSD 12-Month Relevance Audit)
+remains available in git history of this file (`git log -p -- NEXT_SESSION.md`) and in each phase's
+own dedicated report/handoff document listed above.*

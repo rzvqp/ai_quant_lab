@@ -1,5 +1,61 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-17 — Phase 6.9A (Strategy Evidence Flow Audit) implemented: single-slot architecture confirmed as the dominant suppression cause
+- CEO approved the Phase 6.9A specification (committed as an official artifact,
+  `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`) and authorized implementation: measure, per
+  strategy and per month over the approved non-holdout window (2024-10-23 -> 2025-10-23, identical to
+  the relevance audit's own window), why the 43 strategies fail to accumulate recent trading evidence.
+  Diagnostic only -- no strategy/parameter/Health-scoring/scoring-weight/Risk-Policy/execution-policy/
+  Research-Lab change, no profitability optimization, no governance redesign, no WATCHLIST activation,
+  no multi-position trading, no Shadow Mode/Telegram/Broker Adapter/MT5 work.
+- **Approved additive instrumentation implemented**: `ai_trader/simulation/types.py`'s
+  `RiskEventRecord` gained an optional `strategy_id: str | None = None` field;
+  `PortfolioSimulator.record_risk_event()` and the two DENY call sites in
+  `ai_trader/simulation/harness.py::_run_one_bar` now forward the triggering decision's own
+  already-existing `strategy_id`. Additive, backward-compatible, no ALLOW/DENY/sizing/execution change
+  -- proven by 5 new regression tests, including a real end-to-end proof (a genuine
+  `DENY_LIMIT_MAX_PER_SYMBOL` event over 4,000 real bars, correctly attributed to the actual denied
+  strategy, never the slot-holder, never `None`). No schema version bump needed (`RiskEventRecord` is
+  internal, never directly serialized).
+- **Zero-file-diff funnel measurement technique** (`phase69a_funnel_recorder.py`): monkey-patches the
+  bound methods of an already-constructed harness instance's own component objects
+  (`_signal_engine.evaluate`/`_scoring_engine.score_batch`/`_risk_manager.evaluate`) to tap their
+  already-computed return values -- zero lines changed in any `ai_trader/` source file. Proven
+  behaviorally invisible: an instrumented run and a plain run, identical config, produced a
+  byte-identical trade ledger and full `SimulationReportData` (an adversarial review caught and this
+  session fixed a gap where the first parity check compared only 2 of the report's 6 fields).
+- Measured, per strategy: raw setup detections, signal-state breakdown (actionable/no-signal/
+  wait-confirmation/need-context/blocked/invalid), Scoring Engine conversion, Risk Manager ALLOW/DENY
+  (with the shared-XAUUSD-slot reason tracked separately from every other denial), order-level fill/
+  reject/expire/partial counts, completed trades, and an isolated-slot counterfactual (all 43
+  strategies run alone, same window/config, 43 additional full backtests).
+- **Result**: only 8/43 strategies are genuinely low-frequency at the raw-setup level (principal cause
+  A); the shared single-XAUUSD-slot constraint is the SOLE principal cause for 11/43 (B) and a
+  contributing factor in 20 of the 22 "mixed" (G) strategies; scoring suppression is the sole
+  principal cause for only 2/43 (C); genuine risk-policy suppression (D) and execution suppression (E)
+  are the sole principal cause for **zero** strategies. Portfolio-wide: only 145 of 1,016,477
+  Risk-Manager-evaluated opportunities were ever ALLOWED (0.48%); the single largest specific DENY
+  reason (excluding the mechanical `NOT_ACTIONABLE`/`BELOW_FLOOR` echo of upstream states) is
+  `LIMIT_MAX_PER_SYMBOL` (18,879, vs 3,919 for every other genuine risk reason combined); isolated-slot
+  trade counts summed across all 43 strategies (823) are 5.8x the actual competitive count (142) over
+  the identical market data and window. **The single-position XAUUSD architecture is confirmed as the
+  dominant, measured bottleneck to evidence accumulation** -- not scoring, not risk policy, not
+  execution. Full detail, every strategy's own funnel and classification, and honest answers to all 8
+  CEO-required questions: `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
+- No governance model was selected or implemented; this remains an observation about where future
+  Phase 6.10 design effort would have the most measured leverage (portfolio-level Health, minimum
+  exploration allocation, shadow-mode evidence accumulation -- all already on the Phase 6.10 menu),
+  not a recommendation to implement any specific one.
+- Verified live: `pytest ai_trader/ -q` -- 1576 passed (1571 baseline + 5 new); `mypy --strict` -- 165
+  files, 0 errors; `coverage` -- 96% (9649 stmts, 432 miss). Protected invariants confirmed: Research
+  Lab, `knowledge/`, every strategy contract, Scoring Engine, Risk Manager, and Execution Engine
+  production code, and the Strategy Health System's own scoring methodology all byte-for-byte
+  unmodified except the one disclosed, additive `RiskEventRecord.strategy_id` change.
+- Diagnostic artifacts preserved at repo root (same precedent as Phase 6.9/the relevance audit):
+  `phase69a_funnel_recorder.py`, `phase69a_funnel_run.py`, `phase69a_isolated_run.py`,
+  `phase69a_analysis.py` (orchestrator/analysis code) and `phase69a_competitive_funnel.json`,
+  `phase69a_isolated_funnel.json`, `phase69a_analysis.json` (raw output).
+
 ## Session 2026-07-16 — Current XAUUSD 12-Month Relevance Audit: VALID NEGATIVE, UNDER-SAMPLED RESULT; Phase 6.9A specified (not started)
 - CEO directive: evaluate which of the 43 strategies are relevant to the CURRENT XAUUSD market using
   ONLY the most recent completed 12-month period -- a current-market relevance audit, explicitly NOT a
