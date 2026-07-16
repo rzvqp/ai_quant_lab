@@ -1,5 +1,55 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-16 — Current XAUUSD 12-Month Relevance Audit: VALID NEGATIVE, UNDER-SAMPLED RESULT; Phase 6.9A specified (not started)
+- CEO directive: evaluate which of the 43 strategies are relevant to the CURRENT XAUUSD market using
+  ONLY the most recent completed 12-month period -- a current-market relevance audit, explicitly NOT a
+  rolling gate and NOT a multi-year aggregate. No strategy/parameter/Research-Lab/scoring/risk/
+  execution change permitted; sealed holdout forbidden.
+- **Analysis window: 2024-10-23 -> 2025-10-23** (365 days, 23,639 M15 bars). Chosen BEFORE running
+  anything: the literal "most recent 12 months" of all data would overlap ~87% with the sealed
+  terminal holdout (last 20% of the M15 series, 2025-10-23 09:15 UTC -> 2026-07-13 06:00 UTC), so this
+  audit used the most recent COMPLETE 12 months lying entirely within the non-sealed 80% instead --
+  disclosed explicitly, not chosen after seeing results. Also disclosed: this window is NOT
+  out-of-sample relative to strategy discovery (~71% falls inside the Research Lab's own validation/
+  OOS segment, ~29% inside its research/fitting segment) -- only the sealed holdout itself is
+  genuinely unseen data, and it was not used.
+- Per-strategy 12-month metrics computed for all 43 strategies via a fresh, standalone
+  `SimulationHarness` run (identical $2,000/5%-risk/cost-model/seed=1 config throughout), reusing the
+  EXISTING, frozen `ai_trader.strategy_health.metrics.compute_window_metrics`/`scoring.score_window`
+  read-only (no Health System redesign). Classification bands (65/45) and sample-sufficiency
+  thresholds (SUFFICIENT >=10 / LIMITED 5-9 / INSUFFICIENT <5) reuse the Health System's own existing
+  numbers, not new ones invented for this audit.
+- **Result: 0 CURRENTLY_STRONG; 0 CURRENTLY_USABLE; 4 CURRENTLY_WEAK (S1, S39, S44, S46 -- the only
+  strategies with enough recent evidence to be judged at all); 39 INSUFFICIENT_EVIDENCE, of which 20
+  strategies took ZERO trades in the entire 12-month window.** S46 (previously the Health System's own
+  top-tier, lifetime-ACTIVE strategy) shows a materially weaker recent picture (near-flat expectancy, a
+  13-trade losing streak, its largest isolated drawdown in the table) -- a concrete regime-change
+  signal.
+- Portfolio tests (A=all 43, B=STRONG-only, C=STRONG+USABLE, D=all-except-WEAK), same window/capital/
+  risk/cost/seed: B and C are trivially empty (0 CURRENTLY_STRONG/USABLE strategies exist). **Portfolio
+  results were highly concentrated and path-dependent**: D numerically beats A on every metric, but
+  94.4% of D's net profit comes from ONE strategy (S40, itself rated INSUFFICIENT_EVIDENCE) trading 26x
+  more often only because excluding S1/S39/S44/S46 freed up the single shared XAUUSD position slot --
+  the same non-additive path-dependence already documented in `WAVE_D_PORTFOLIO_AUDIT_REPORT.md`.
+  Portfolio A's own result is dominated by 3 outlier trades (>100% of its net profit) and one outlier
+  month (October 2025 alone = 126% of the year's total).
+- **No current deployment roster can be justified from this audit** -- classified as a valid negative,
+  under-sampled result, not a basis for promoting or eliminating any strategy. No strategy was changed,
+  no threshold/risk/scoring/execution rule was altered, and the sealed holdout was not opened. Full
+  detail: `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md`.
+- Diagnostic artifacts preserved at repo root (same precedent as Phase 6.9):
+  `relevance12m_run.py`/`relevance12m_run_bcd.py`/`relevance12m_perstrategy.py` (orchestrator/analysis
+  scripts) and `relevance12m_portfolioA.json`/`relevance12m_portfolioBCD.json`/
+  `relevance12m_perstrategy.json` (raw output, every trade's full record).
+- **Phase 6.9A -- Strategy Evidence Flow Audit -- specified this session, NOT STARTED, NOT
+  IMPLEMENTED.** A documentation-only specification (`PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`)
+  for a future phase to determine WHY strategies fail to accumulate evidence -- per-strategy conversion
+  rates through every pipeline stage (raw setup detections -> actionable signals -> blocked-by-context
+  -> blocked-by-shared-slot -> Scoring Engine rejections -> Risk Manager denials -> unfilled orders ->
+  completed trades), separating genuine low market frequency from shared-slot suppression, scoring
+  suppression, risk suppression, execution suppression, and insufficient historical data. No code
+  written, no strategy/pipeline change made.
+
 ## Session 2026-07-16 — Phase 6.9 (Rolling Health-Gated Backtest) implemented and closed: VALID NEGATIVE RESULT
 - CEO authorized Phase 6.9 per the frozen specification in `ROLLING_HEALTH_BACKTEST_HANDOFF.md` §8:
   prove whether a time-evolving, Health-gated strategy roster beats the static all-43 baseline. No
