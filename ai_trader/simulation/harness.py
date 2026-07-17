@@ -24,6 +24,7 @@ from ai_trader.risk_manager.engine import RiskManager
 from ai_trader.risk_manager.types import Decision, RiskContext, SymbolRiskSnapshot
 from ai_trader.scoring_engine.config import ScoringConfig
 from ai_trader.scoring_engine.engine import ScoringEngine
+from ai_trader.shadow_evidence.engine import ShadowEvidenceEngine
 from ai_trader.signal_engine.config import EngineConfig as SignalEngineConfig
 from ai_trader.signal_engine.engine import SignalEngine
 from ai_trader.signal_engine.pipeline import StrategyHandleLike
@@ -118,6 +119,11 @@ class SimulationHarness:
         self._execution_engine: ExecutionEngine | None = None
         self.execution_simulator: ExecutionSimulator | None = None
         self.portfolio_simulator: PortfolioSimulator | None = None
+        #: Phase 6.10 Implementation Checkpoint 1B (``PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.
+        #: md``): constructed in ``load()`` only when ``context.shadow_config.active_strategy_ids()``
+        #: is non-empty. ``None`` (the default) means Shadow Mode is fully inert this run -- unchanged
+        #: from Checkpoint 1A's own guarantee.
+        self.shadow_engine: ShadowEvidenceEngine | None = None
 
     # ------------------------------------------------------------------ read-only clock introspection
 
@@ -203,6 +209,12 @@ class SimulationHarness:
                 if self.portfolio_simulator is not None else 0.0
             )
             self._risk_manager.configure(portfolio=self.portfolio_simulator.to_portfolio_state(ticks[0]))
+
+            active_shadow_ids = self.context.shadow_config.active_strategy_ids()
+            if active_shadow_ids:
+                self.shadow_engine = ShadowEvidenceEngine(
+                    active_shadow_ids, self._risk_config, self.context.starting_balance,
+                )
 
             self._clock = ReplayClock(all_ticks=ticks, warmup_ticks=warmup_ticks)
         except Exception as exc:  # noqa: BLE001 -- configure/load errors fail-fast to FAILED before
@@ -332,6 +344,26 @@ class SimulationHarness:
                 risk_context = _build_risk_context(ctx, as_of, tick_size, self.context.cost_model.spread_ticks)
                 portfolio_state = self.portfolio_simulator.to_portfolio_state(as_of)
                 decision_batch = self._risk_manager.evaluate(score_batch.scores, risk_context, portfolio_state)
+                # Phase 6.10 Implementation Checkpoint 1B: a read-only tap on the already-computed
+                # score_batch/risk_context, strictly AFTER the real decision above. shadow_engine is
+                # None unless context.shadow_config.active_strategy_ids() is non-empty (Checkpoint 1A's
+                # own disabled-by-default guarantee, unchanged); observe() never reads/writes
+                # portfolio_state, decision_batch, or any other real object -- only score_batch/
+                # risk_context, both already-produced, immutable values the real decision above already
+                # consumed. observe() already isolates a per-strategy failure internally (Design §10.1)
+                # -- this outer try/except is defense-in-depth (found during this checkpoint's own
+                # adversarial review) against any exception OUTSIDE that per-strategy boundary (e.g. a
+                # bug iterating score_batch.scores itself), so a shadow failure can NEVER fail the real
+                # run via step()'s own outer exception handler -- "competitive execution continues" is
+                # a hard guarantee, not contingent on shadow_engine's own internal code being bug-free.
+                if self.shadow_engine is not None:
+                    try:
+                        self.shadow_engine.observe(as_of, score_batch, risk_context)
+                    except Exception as exc:  # noqa: BLE001 -- failure isolation: shadow must never
+                        # affect competitive execution, even via an exception this outer guard didn't
+                        # anticipate inside observe() itself.
+                        self.shadow_engine.failures.append((as_of, "__engine__", repr(exc)))
+                        logger.warning("Shadow Evidence: observe() raised outside its own per-strategy boundary: %r", exc)
                 for decision in decision_batch.decisions:
                     if decision.decision is Decision.ALLOW:
                         status = self._execution_engine.execute(decision, portfolio_state)

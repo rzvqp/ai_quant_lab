@@ -53,7 +53,7 @@ bottleneck).
 | Shadow Evidence Architecture Design | **CLOSED (design only)** — `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md` |
 | Adversarial design review | **CLOSED — verdict ACCEPTED WITH CONDITIONS** (design document's own §17) |
 | Implementation Checkpoint 1A (config surface + evidence contracts, behavior-inert) | **DONE.** `ai_trader/shadow_evidence/` package (`config.py::ShadowConfig`, `types.py`: `ShadowOpportunityRecord`/`ShadowPositionRecord`/`ShadowTradeLegRecord`, each with `__post_init__` identity-invariant enforcement); `SimulationContext.shadow_config` field added (defaults disabled). No opportunity tap, no virtual risk/execution/position logic. Disabled-mode parity + determinism + instance-count regression tests added and passing; full suite 1592/1592, mypy strict clean, coverage 96% project-wide / 100% on the new package. |
-| Implementation Checkpoint 1B (S10 read-only eligibility tap) | **NOT STARTED.** Deferred by explicit CEO scope correction — requires its own, separate CEO approval. |
+| Implementation Checkpoint 1B (generic read-only pipeline tap, S10 as first validation target) | **DONE.** `ai_trader/shadow_evidence/engine.py::ShadowEvidenceEngine` (generic over `ShadowConfig.shadow_strategies` — no strategy id hardcoded anywhere); wired into `harness.py` as a read-only tap on the already-computed `score_batch`/`risk_context`, strictly after the real Risk Manager decision, with two layers of failure isolation (per-strategy try/except inside `observe()`, plus an outer defense-in-depth try/except at the harness call site — the latter added after this checkpoint's own adversarial review found the per-strategy boundary alone was insufficient). `ShadowRejectionRecord` added (correctly deferred from 1A); the `ShadowOpportunityRecord` ALLOW/position_id invariant was relaxed (an ALLOW opportunity legitimately has no position in a no-execution checkpoint — 1A's own first-pass invariant was too strict). Proven, at both an 85-day pytest-fixture scale and the full 13-month/23,639-bar Phase 6.9A window: competitive execution is byte-identical whether Shadow is disabled, enabled for S10 alone, or enabled for 4 strategies at once; a forced shadow failure (at both the per-strategy and the whole-`observe()` level) never affects competitive execution. S10's shadow funnel exactly reconciles against Phase 6.9A's own published competitive funnel via a pre-registered, verified hypothesis (see `phase610_checkpoint1b_s10_validation.json`). Full suite 1606/1606, mypy strict clean. |
 | Strategy Health integration policy | **NOT SELECTED.** Three options compared (design doc §11); none chosen. |
 
 **Pre-scope diagnostic headline findings** (fully detailed in `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`,
@@ -189,9 +189,10 @@ repository. Phase 6.10 is a design, reviewed, not an implementation.
 - Scoring Engine weights, Risk Policy, Execution Engine rules.
 - The sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) — never opened.
 - No strategy is ever permanently eliminated based on any AI Trader analysis to date.
-- **Phase 6.10 Implementation Checkpoint 1B (the S10 read-only eligibility tap) must not begin without
-  its own, separate, explicit CEO approval** — Checkpoint 1A being complete is not itself that approval,
-  per the CEO's own explicit scope correction (1A and 1B/the tap are separate approvals).
+- **Phase 6.10 Implementation Checkpoint 1C must not begin without its own, separate, explicit CEO
+  approval** — Checkpoint 1B being complete is not itself that approval. No virtual execution, virtual
+  positions/exits, shadow portfolio state, Strategy Health integration, or scaling beyond the currently
+  CEO-approved strategy set is authorized by Checkpoint 1B.
 - No Strategy Health integration policy may be selected without its own dedicated CEO decision (design
   doc §11).
 - No governance model, multi-position trading, Shadow Mode CODE, Telegram, Broker Adapter, or MT5 work
@@ -210,12 +211,13 @@ the repository's own standing "preserve all artifacts and diagnostics" instructi
    `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md` (including its own §17 adversarial review).
 2. **Verify Git state directly** — `git branch --show-current`, `git log -1`, `git status --porcelain`.
 3. **Report the reconstructed state back to the CEO** before proceeding on anything new.
-4. Implementation Checkpoint 1A (config surface + evidence contracts) is DONE, committed separately and
-   revertibly (see `CHANGELOG.md`'s own top entry for the exact commit). Checkpoint 1B (the S10
-   read-only eligibility tap) is NOT STARTED. Once confirmed, the CEO's own next direction determines
-   what happens — most likely a decision on whether to authorize Checkpoint 1B, using the design doc's
-   own §14 staged proposal as the starting point, not a decision already made. **Stop and ask before
-   starting any further implementation.**
+4. Implementation Checkpoints 1A (config surface + evidence contracts) and 1B (the generic, read-only
+   pipeline tap, validated against Phase 6.9A using S10) are DONE, each committed separately and
+   revertibly (see `CHANGELOG.md`'s own top entries for the exact commits). Checkpoint 1C (virtual
+   execution/positions, or whatever the CEO scopes next) is NOT STARTED. Once confirmed, the CEO's own
+   next direction determines what happens — most likely a decision on whether to authorize Checkpoint
+   1C, using the design doc's own §14 staged proposal as the starting point, not a decision already
+   made. **Stop and ask before starting any further implementation.**
 
 ---
 

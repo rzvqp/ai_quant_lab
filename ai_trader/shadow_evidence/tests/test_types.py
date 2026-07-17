@@ -16,6 +16,7 @@ from ai_trader.scoring_engine.types import Recommendation
 from ai_trader.shadow_evidence.types import (
     ShadowOpportunityRecord,
     ShadowPositionRecord,
+    ShadowRejectionRecord,
     ShadowTradeLegRecord,
 )
 from ai_trader.signal_engine.types import Direction, SignalState
@@ -141,14 +142,17 @@ def test_deny_with_a_resulting_position_id_is_rejected() -> None:
         )
 
 
-def test_allow_without_a_resulting_position_id_is_rejected() -> None:
-    with pytest.raises(ValueError, match="ALLOW decision must carry a resulting_position_id"):
-        ShadowOpportunityRecord(
-            opportunity_id="OPP-BAD-2", strategy_id=STRATEGY_ID, symbol=SYMBOL, as_of=1_700_000_000,
-            direction=Direction.LONG, signal_state=SignalState.BUY,
-            score_recommendation=Recommendation.STRONG_OPPORTUNITY,
-            shadow_risk_decision="ALLOW", shadow_denied_reason=None, resulting_position_id=None,
-        )
+def test_allow_without_a_resulting_position_id_is_permitted_pre_execution() -> None:
+    # Relaxed during Checkpoint 1B: an ALLOW opportunity from a read-only pipeline tap (no virtual
+    # execution yet) legitimately has resulting_position_id=None. This must NOT raise.
+    opp = ShadowOpportunityRecord(
+        opportunity_id="OPP-PRE-EXEC", strategy_id=STRATEGY_ID, symbol=SYMBOL, as_of=1_700_000_000,
+        direction=Direction.LONG, signal_state=SignalState.BUY,
+        score_recommendation=Recommendation.STRONG_OPPORTUNITY,
+        shadow_risk_decision="ALLOW", shadow_denied_reason=None, resulting_position_id=None,
+    )
+    assert opp.resulting_position_id is None
+    assert opp.shadow_risk_decision == "ALLOW"
 
 
 def test_unknown_shadow_risk_decision_is_rejected() -> None:
@@ -209,3 +213,15 @@ def test_unknown_position_status_is_rejected() -> None:
             status="PENDING", full_exit_as_of=None, n_legs=0,
             aggregate_net_pnl=None, aggregate_holding_bars_full=None,
         )
+
+
+def test_rejection_record_carries_strategy_id_and_reason() -> None:
+    # Checkpoint 1B: since the shadow risk evaluation always uses a structurally empty per-strategy
+    # portfolio, a rejection can only ever be a genuine market/policy denial -- never a
+    # shared-slot-style reason, which requires a position that does not exist in this checkpoint.
+    rejection = ShadowRejectionRecord(
+        rejection_id="OPP-5:REJ", strategy_id=STRATEGY_ID, symbol=SYMBOL, as_of=1_700_000_000,
+        direction=Direction.LONG, denied_reason_code="FILTER_SPREAD", denied_detail="spread too wide",
+    )
+    assert rejection.strategy_id == STRATEGY_ID
+    assert rejection.denied_reason_code == "FILTER_SPREAD"

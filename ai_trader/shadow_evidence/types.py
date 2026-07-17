@@ -1,11 +1,10 @@
-"""Shadow Evidence data contracts -- Phase 6.10 Implementation Checkpoint 1A
+"""Shadow Evidence data contracts -- Phase 6.10 Implementation Checkpoints 1A + 1B
 (``PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`` §9, revised after its own adversarial review,
 §17). Structural only: frozen data shapes with no execution behavior and no Strategy Health
-classification logic. Only the 3 contracts needed to prove the opportunity -> logical-position ->
-trade-leg identity invariant (Design §17.1, Q4) are implemented here -- ``ShadowRejectionRecord``/
-``ShadowStrategySummary`` are deferred to a later, separately approved checkpoint: they are not
-required to prove this invariant, and the latter is Strategy-Health-adjacent, out of scope here per
-the CEO's own explicit "no Health classification logic" instruction for this checkpoint.
+classification logic. ``ShadowRejectionRecord`` was added in Checkpoint 1B (the read-only pipeline tap
+that actually produces DENY events); ``ShadowStrategySummary`` remains deferred -- it is
+Strategy-Health-adjacent, out of scope per the CEO's own explicit "no Health classification logic"
+instruction.
 
 Reuses existing repository types wherever a genuine match exists, per the adversarial review's own
 data-contract finding (Design §17.1, Q8): ``Direction``/``SignalState`` from
@@ -39,7 +38,7 @@ class ShadowOpportunityRecord:
     score_recommendation: Recommendation
     shadow_risk_decision: str  # "ALLOW" | "DENY" -- the one field with no upstream equivalent
     shadow_denied_reason: str | None
-    resulting_position_id: str | None  # set iff shadow_risk_decision == "ALLOW"; never duplicated
+    resulting_position_id: str | None  # set only once virtual execution exists (not this checkpoint)
 
     def __post_init__(self) -> None:
         if self.shadow_risk_decision not in ("ALLOW", "DENY"):
@@ -51,10 +50,12 @@ class ShadowOpportunityRecord:
             raise ValueError(
                 "ShadowOpportunityRecord: a DENY decision must not carry a resulting_position_id"
             )
-        if self.shadow_risk_decision == "ALLOW" and self.resulting_position_id is None:
-            raise ValueError(
-                "ShadowOpportunityRecord: an ALLOW decision must carry a resulting_position_id"
-            )
+        # NOTE (relaxed during Checkpoint 1B, corrected from Checkpoint 1A's own first pass): an
+        # ALLOW decision does NOT require resulting_position_id to be set. Checkpoint 1B is a
+        # read-only pipeline tap with no virtual execution/positions (explicit CEO scope) -- an ALLOW
+        # opportunity legitimately has resulting_position_id=None here. Only a later checkpoint that
+        # implements virtual execution would populate it. The only enforced direction is the one
+        # above: a DENY must NEVER carry a position id, in any checkpoint.
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,6 +88,26 @@ class ShadowPositionRecord:
             raise ValueError("ShadowPositionRecord.n_legs must be >= 0")
         if self.status == "CLOSED" and self.n_legs < 1:
             raise ValueError("ShadowPositionRecord: a CLOSED position must have n_legs >= 1")
+
+
+@dataclass(frozen=True, slots=True)
+class ShadowRejectionRecord:
+    """One shadow DENY event -- created alongside a ``ShadowOpportunityRecord`` whenever the
+    dedicated, per-strategy shadow ``RiskManager`` denies an opportunity (Checkpoint 1B). Since the
+    shadow risk evaluation always uses a structurally empty per-strategy ``PortfolioState`` (no
+    virtual position ever exists in this checkpoint), ``denied_reason_code`` can never be
+    ``LIMIT_MAX_PER_SYMBOL``/``LIMIT_MAX_POSITIONS`` against a shadow position -- only a genuine
+    market/policy-driven denial (spread/liquidity/volatility filters, etc.) is possible here by
+    construction. This is an expected, honest property of a pipeline stage that has not yet modeled
+    positions -- not a bug to be masked."""
+
+    rejection_id: str
+    strategy_id: str
+    symbol: str
+    as_of: int
+    direction: Direction
+    denied_reason_code: str
+    denied_detail: str | None
 
 
 @dataclass(frozen=True, slots=True)

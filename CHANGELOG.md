@@ -1,5 +1,74 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-17 — Phase 6.10 Implementation Checkpoint 1B: generic read-only pipeline tap, validated against Phase 6.9A using S10
+- CEO-approved: implement the first real Shadow Evidence pipeline. Explicit CEO requirement: S10 is
+  only the first configured strategy, never hardcoded -- the architecture must support
+  `shadow_strategies=("S10",)` today and `shadow_strategies=("S10","S21","S39","S40")` later with zero
+  production-code change. **No virtual execution, virtual positions/exits, Strategy Health integration,
+  multiple real XAUUSD positions, Portfolio Orchestrator, Consensus Engine, or any strategy/scoring/
+  Risk Manager/Execution Engine modification.**
+- **Added `ai_trader/shadow_evidence/engine.py::ShadowEvidenceEngine`**: for every strategy in
+  `ShadowConfig.active_strategy_ids()`, taps the already-computed `score_batch`/`risk_context` (no
+  `RuntimeEvaluator` call, no Signal/Scoring re-invocation -- both remain called exactly once per bar
+  by the harness, unchanged) and evaluates a DEDICATED, per-strategy `RiskManager` instance against a
+  structurally empty per-strategy `PortfolioState` (no virtual position exists in this checkpoint --
+  `resulting_position_id` stays `None` on every `ShadowOpportunityRecord`, by design). Produces
+  `ShadowOpportunityRecord` for every score, and `ShadowRejectionRecord` on DENY (correctly deferred
+  from Checkpoint 1A, since 1A had no tap to produce it). Failure isolation: a per-strategy try/except
+  inside `observe()` degrades only the failing strategy; a second, outer try/except at the harness call
+  site (added after this checkpoint's own adversarial review found the per-strategy boundary alone
+  insufficient) guarantees a bug anywhere in `observe()` can never fail the real run.
+- **Modified `ai_trader/shadow_evidence/config.py::ShadowConfig`**: added `shadow_strategies:
+  tuple[str, ...] = ()` and `active_strategy_ids()` (the single source of truth: empty unless BOTH
+  `enabled=True` AND the list is non-empty).
+- **Modified `ai_trader/shadow_evidence/types.py`**: added `ShadowRejectionRecord`. Corrected
+  `ShadowOpportunityRecord.__post_init__` (found necessary this checkpoint, not a Checkpoint 1A
+  regression): the "ALLOW implies resulting_position_id is set" direction was too strict for a
+  no-execution checkpoint -- an ALLOW opportunity legitimately has no position yet. The "DENY implies no
+  resulting_position_id" direction remains enforced.
+- **Modified `ai_trader/simulation/harness.py`** (the only frozen pipeline file touched): one `import`,
+  one attribute (`self.shadow_engine: ShadowEvidenceEngine | None = None`), one construction site in
+  `load()` (guarded by `active_shadow_ids`, unchanged when empty), and one tap call site in
+  `_run_one_bar()`, placed strictly AFTER the real `RiskManager.evaluate()` call, wrapped in the outer
+  defense-in-depth try/except described above.
+- **Regression tests**: `ai_trader/shadow_evidence/tests/test_engine.py` (7 fast unit tests, using this
+  project's own established `make_signal`/`score_signal_stage1`/`assembler` fixture convention to build
+  genuine `OpportunityScore` objects -- not hand-rolled). `ai_trader/simulation/tests/
+  test_shadow_disabled_parity.py` (10 real-harness tests, ~85-day window): proves competitive execution
+  (full `SimulationReportData`, trade ledger, risk events, orders) is BYTE-IDENTICAL whether Shadow is
+  disabled, enabled for one strategy (S10), or enabled for four strategies at once (S10/S21/S39/S40) --
+  directly proving genericity, not just S10-specific behavior; proves the master switch (`enabled`)
+  wins over a non-empty `shadow_strategies` list; proves a forced failure at both the per-strategy and
+  the whole-`observe()` level never affects competitive execution.
+- **S10 full-scale validation against Phase 6.9A** (`phase610_checkpoint1b_s10_validation.py`, a
+  preserved scratch artifact per this project's own convention, output in
+  `phase610_checkpoint1b_s10_validation.json`): ran the REAL competitive harness (all 43 strategies)
+  over the IDENTICAL 13-month/23,639-bar window Phase 6.9A used, with Shadow enabled for S10. Isolation
+  proof at full scale: 142 competitive trades both with and without Shadow enabled (matching Phase
+  6.9A's own published count exactly), full report and trade ledger byte-identical. S10's shadow funnel
+  (23,639 total opportunities -- one per bar, matching Phase 6.9A's own `total_bars_evaluated` for S10
+  exactly) reconciles EXACTLY against a pre-registered (written-before-running) hypothesis: NOT_ACTIONABLE
+  (22,136), BELOW_FLOOR (588), and INVALID_INPUT (61) match the competitive run's own counts bit-for-bit
+  (confirming shadow reuses the competitive run's own conflict-adjusted scoring, never re-scores in
+  isolation); LIMIT_MAX_PER_SYMBOL and COOLDOWN_AFTER_LOSS are exactly ZERO (confirming shadow's
+  always-empty per-strategy portfolio never sees a shared-slot or cooldown denial, unlike both the
+  competitive run's 706/14 and the isolated run's own 50/5). The one number that could not be predicted
+  in advance, SIZE_BELOW_MIN (780, vs. competitive's 128 and isolated's 1261), was fully explained by
+  reading `risk_manager/sizing.py` after the run: shadow's zero portfolio-gate denials (no
+  LIMIT_MAX_PER_SYMBOL/COOLDOWN) let 854 opportunities reach the sizing stage for S10 (vs. only 134 in
+  the competitive run, throttled down by the 706+14=720 portfolio-gate denials shadow never
+  experiences) -- verified by exact arithmetic reconciliation on both sides (854 = 74 ALLOW + 780
+  SIZE_BELOW_MIN = 1503 actionable − 588 BELOW_FLOOR − 61 INVALID_INPUT; 134 = 6 + 128 = 854 − 720),
+  not asserted or forced.
+- **Verified live**: `pytest ai_trader/ -q` -- 1606 passed (1592 Checkpoint-1A baseline + 14 new: 7
+  engine unit tests + 6 net new/replaced harness tests + 1 rejection-record test). `mypy --strict
+  ai_trader/ --exclude 'tests/'` -- Success, 169 source files. `git status --porcelain -- code/
+  results/ knowledge/` empty; `git diff --stat -- ai_trader/` shows exactly one modified frozen-pipeline
+  file (`simulation/harness.py`) plus the `shadow_evidence` package's own additions.
+- **Phase 6.10 status at this session's own close: Implementation Checkpoints 1A and 1B DONE.
+  Checkpoint 1C (or whatever the CEO scopes next -- virtual execution/positions is explicitly NOT
+  authorized) NOT STARTED -- requires its own, separate CEO approval.**
+
 ## Session 2026-07-17 — Phase 6.10 Implementation Checkpoint 1A: config surface + evidence contracts (structural, behavior-inert)
 - CEO-approved, narrowly scoped: the S10 read-only eligibility tap originally proposed as part of
   Checkpoint 1 was explicitly deferred by the CEO to a separate Checkpoint 1B/2 approval. This session
