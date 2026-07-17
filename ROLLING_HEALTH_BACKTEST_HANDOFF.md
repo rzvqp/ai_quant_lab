@@ -1,11 +1,21 @@
 # Rolling Health-Gated Backtest — Full Handoff (Phase 6.9 Preparation)
 
-**Date:** 2026-07-16. **Purpose:** this document, together with `NEXT_SESSION.md` and
-`CHANGELOG.md`, is designed to let a BRAND-NEW chat reconstruct this entire project — architecture,
-history, current results, and the exact specification for the next phase — using ONLY these three
-files. No conversation memory should be required for anything. Every fact below was verified live
-against the repository at the time of writing (`git log`/`git status`/`git diff`/a live
-`pytest`+`mypy --strict`+`coverage` run) — nothing here is assumed or carried forward unverified.
+**Date:** 2026-07-16 (written); **STATUS UPDATE 2026-07-17: Phase 6.9 (§8 below) is CLOSED — executed
+and reported, result VALID NEGATIVE RESULT.** This document's own §5 (Strategy Health System
+methodology) and §8 (Phase 6.9's original specification, for historical/methodological reference)
+remain accurate and unmodified; §2's status table and §8's own status line are updated below to
+reflect closure. **`PROJECT_STATE_v2.md` is now the primary, authoritative, consolidated reference for
+the project's ENTIRE current state** (this document, plus the relevance audit and Phase 6.9A that
+followed it); this document remains the authoritative METHODOLOGY reference for Phase 6.9's own design
+specifically, but is no longer the single entry point — see `NEXT_SESSION.md` for the current reading
+order.
+
+**Original purpose (still accurate as history):** this document, together with `NEXT_SESSION.md` and
+`CHANGELOG.md`, was designed to let a BRAND-NEW chat reconstruct the project — architecture, history,
+current results, and the exact specification for the next phase — using ONLY these three files. Every
+fact below was verified live against the repository at the time of writing (`git log`/`git status`/
+`git diff`/a live `pytest`+`mypy --strict`+`coverage` run) — nothing here was assumed or carried
+forward unverified, as of 2026-07-16.
 
 ---
 
@@ -33,7 +43,10 @@ handoff.
 | Wave D (first full-portfolio simulation) | **COMPLETE** | `WAVE_D_PORTFOLIO_SIMULATION_REPORT.md` |
 | Wave D Audit (per-strategy tiering, correlation, 3 static variants) | **COMPLETE** | `WAVE_D_PORTFOLIO_AUDIT_REPORT.md` |
 | Strategy Health System (build + first static evaluation) | **COMPLETE** | `STRATEGY_HEALTH_SYSTEM_REPORT.md` |
-| Phase 6.9 (Rolling Health-Gated Backtest) | **NOT STARTED** | this document, §8 |
+| Phase 6.9 (Rolling Health-Gated Backtest) | **CLOSED — VALID NEGATIVE RESULT** | `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md` |
+| Current XAUUSD 12-Month Relevance Audit | **CLOSED — VALID NEGATIVE, UNDER-SAMPLED RESULT** | `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md` |
+| Phase 6.9A (Strategy Evidence Flow Audit) | **CLOSED — root cause confirmed (shared-slot architecture)** | `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md` |
+| Phase 6.10 (Sparse-Evidence Strategy Governance Design) | **NOT STARTED** | `PHASE_6_10_PREPARATION.md` |
 
 ## 3. Current architecture
 
@@ -288,11 +301,18 @@ its pre-2025 history was a net drag on an otherwise-strong current edge.
 
 ## 8. Phase 6.9 — Rolling Health-Gated Backtest — full specification
 
-**Status: proposed specification, NOT YET APPROVED, NOT YET STARTED.** The name and general intent
-("Rolling Health-Gated Backtest") were set by CEO directive; the mechanics below are this handoff's
+**STATUS: CLOSED (2026-07-16) — executed exactly as specified below, result VALID NEGATIVE RESULT.**
+Full execution report, every number, and the exact diagnosed root cause:
+`PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`. The specification text below is kept verbatim as
+the historical/methodological record of what was approved and run — it is a CLOSED-PHASE reference,
+not an open proposal; do not re-read it as "not yet started."
+
+Original status note, preserved for history only ("proposed specification, NOT YET APPROVED, NOT YET
+STARTED" — superseded by the CLOSED status above): the name and general intent ("Rolling Health-Gated
+Backtest") were set by CEO directive; the mechanics below were this handoff's
 own proposed design, derived from the natural next step implied by the Strategy Health System's own
-stated purpose (§5.1) and the tools already built and tested (§5.6). **A future session must get
-explicit CEO sign-off on this specification (or a revised one) before implementing any of it.**
+stated purpose (§5.1) and the tools already built and tested (§5.6). That required sign-off was
+obtained and the phase was executed — see the CLOSED status above.
 
 ### 8.1 Exact objective
 

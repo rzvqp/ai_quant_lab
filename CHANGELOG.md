@@ -1,5 +1,43 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-17 — OFFICIAL SESSION CLOSE: full documentation consolidation, no new implementation
+- CEO directive: close the session so a brand-new chat can reconstruct the project 100% without any
+  prior conversation. Documentation/consolidation only -- no strategy, Health System, Research Lab, or
+  parameter change; Phase 6.10 not started.
+- **Created `PROJECT_STATE_v2.md`** -- the new, single, authoritative, consolidated state document
+  covering the complete architecture (Research Lab + AI Trader), every phase to date (6.1-6.8, Wave B,
+  Wave D, Wave D Audit, Strategy Health System, Phase 6.9, the Current XAUUSD 12-Month Relevance
+  Audit, Phase 6.9A), every implemented module, and every validated conclusion. Supersedes no prior
+  report -- it consolidates pointers to all of them.
+- **Created `PHASE_6_10_PREPARATION.md`** -- exclusively: the problem Phase 6.9A found (single-position
+  XAUUSD architecture as the dominant, measured evidence-suppression cause), its evidence, the
+  conclusions that evidence actually supports (and what it does NOT show -- explicitly flagged), 5 open
+  questions, a 9-option menu (8 from the existing Phase 6.10 menu + 1 new option -- multiple slots/
+  multi-symbol expansion -- named because the evidence points at it directly, explicitly not
+  authorized), a recommendation (investigate same-bar-conflict-vs-persistent-blocking and holding-
+  period distribution first; lean toward scoping shadow-mode evidence accumulation as the first
+  concrete design target), and an explicit "what must NOT be done" list. No selection made, no
+  implementation.
+- **Updated `ROLLING_HEALTH_BACKTEST_HANDOFF.md`**: marked Phase 6.9 CLOSED (both in its own phase
+  table and its §8 specification header), added Current-XAUUSD-Relevance-Audit and Phase-6.9A rows,
+  added a Phase 6.10 NOT STARTED row. The original specification text is preserved verbatim as
+  historical/methodological record -- not deleted, clearly marked as closed-phase reference rather than
+  an open proposal.
+- **Rewrote `NEXT_SESSION.md`** as the session-close entry point, pointing to `PROJECT_STATE_v2.md` and
+  `PHASE_6_10_PREPARATION.md` first, with a condensed exact-project-state summary, git state, this
+  session's own work log, existing modules, global stats, what must not be modified, preserved
+  diagnostic artifacts, and the exact next-session reading order.
+- Verified live at close: `pytest ai_trader/ -q` -- 1576 passed (unchanged from Phase 6.9A's own
+  close, no `ai_trader/` source touched this session); `mypy --strict` -- 165 files, 0 errors;
+  `coverage` -- 96% (9649 stmts, 432 miss). `git status --porcelain -- code/ results/ knowledge/`
+  empty. No temporary/scratch file existed to remove -- the working tree was already clean before this
+  session's own documentation work began, and every previously-preserved diagnostic artifact
+  (`phase69_*`, `relevance12m_*`, `phase69a_*`) was left in place, deliberately, per the CEO's own
+  standing "preserve all artifacts and diagnostics" instruction from Phase 6.9's own close -- deleting
+  them now would have made the committed reports/changelog that reference them by name inconsistent
+  with the repository, violating this same session's own consistency requirement.
+- No `ai_trader/` source code, strategy, test, or diagnostic script was touched this session.
+
 ## Session 2026-07-17 — Phase 6.9A (Strategy Evidence Flow Audit) implemented: single-slot architecture confirmed as the dominant suppression cause
 - CEO approved the Phase 6.9A specification (committed as an official artifact,
   `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_SPEC.md`) and authorized implementation: measure, per
