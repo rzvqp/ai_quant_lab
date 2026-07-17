@@ -1,5 +1,32 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-17 — Phase 6.10 architectural re-frame: Edge Portfolio direction (documentation only, no code)
+- CEO direction update, after accepting Checkpoint 1B: Phase 6.10's real objective is a generic Edge
+  Portfolio architecture (any validated market edge -- New York Reversal, Opening Range Breakout,
+  London Breakout, Trend Continuation, Asia Range Sweep, Mean Reversion, Liquidity Reversal, future
+  discoveries -- not a system dedicated to S10), scaling from 1 edge to 5 to 43 strategies to N edge
+  families without redesign, toward an eventual AI Portfolio Manager that discovers, evaluates,
+  validates, and allocates capital across statistically robust edges. Requested BEFORE any further
+  implementation: a short design confirming the scaling story, not a new checkpoint.
+- **Added `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md`**: maps the CEO's own "edge" vocabulary onto the
+  codebase's existing `strategy_id`/`RuntimeEvaluator` unit (no rename proposed -- pure vocabulary
+  mapping, since S1-S51 already are 43 such edges); grounds the "scales without redesign" claim in three
+  already-verified structural facts (Signal/Scoring Engine iterate the full registered set regardless
+  of N; `ShadowEvidenceEngine.observe()` filters by an O(1) frozenset membership check with no
+  per-strategy branching; every dedicated per-edge object is keyed lazily in a plain dict); walks
+  through 1/5/43/N with what changes (config only) vs. what doesn't (zero code); maps the CEO's own
+  7-stage lifecycle (opportunities/positions/executions/trade history/statistics/health/portfolio
+  contribution) onto what's DONE (opportunities), DESIGNED-not-implemented (positions/executions/
+  statistics), UNSELECTED (health, 3 options compared) and UNDESIGNED (capital allocation across edges
+  -- explicitly, honestly, not claimed to exist); reframes the previously-recommended Checkpoint 1C as
+  the second proof point for the Edge Portfolio's own evidence lifecycle (validated using S10's own
+  existing Phase 6.9A ground truth), not "S10's checkpoint."
+- **No code was written or modified.** `git status --porcelain -- code/ results/ knowledge/ ai_trader/`
+  confirmed empty before and after this session's own documentation work.
+- **Phase 6.10 status unchanged by this session: Implementation Checkpoints 1A and 1B DONE. Checkpoint
+  1C NOT STARTED -- requires its own, separate CEO approval, now with an explicit, CEO-approved
+  architectural direction to scope it against.**
+
 ## Session 2026-07-17 — Phase 6.10 Implementation Checkpoint 1B: generic read-only pipeline tap, validated against Phase 6.9A using S10
 - CEO-approved: implement the first real Shadow Evidence pipeline. Explicit CEO requirement: S10 is
   only the first configured strategy, never hardcoded -- the architecture must support
