@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from ai_trader.shadow_evidence.config import ShadowConfig
 from ai_trader.simulation.exceptions import InvalidContextError
 from ai_trader.simulation.types import (
     CloseAtEndPolicy,
@@ -148,6 +149,13 @@ class SimulationContext:
     batch_id: str | None = None
     #: ``deterministic`` is const=true in the schema itself -- there is no "off" switch (v1 always).
     deterministic: bool = True
+    #: Phase 6.10 Implementation Checkpoint 1A (``PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md``):
+    #: the Shadow Evidence configuration surface. Defaults to disabled -- no existing caller needs to
+    #: pass this field, and nothing in ``SimulationHarness`` reads it yet (no tap, no virtual risk
+    #: evaluation, no shadow execution/portfolio instances exist in this checkpoint). Not included in
+    #: ``performance_analyzer.to_schema_dict()``'s hand-selected field list, so it does not affect
+    #: ``SIMULATION_SCHEMA.json`` validation.
+    shadow_config: ShadowConfig = field(default_factory=ShadowConfig)
 
     def __post_init__(self) -> None:
         if not self.run_id:

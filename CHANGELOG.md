@@ -1,5 +1,56 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-17 — Phase 6.10 Implementation Checkpoint 1A: config surface + evidence contracts (structural, behavior-inert)
+- CEO-approved, narrowly scoped: the S10 read-only eligibility tap originally proposed as part of
+  Checkpoint 1 was explicitly deferred by the CEO to a separate Checkpoint 1B/2 approval. This session
+  implements ONLY the structural foundation: a Shadow Mode configuration surface (default disabled) and
+  the minimum frozen data contracts needed to prove the opportunity -> logical-position -> trade-leg
+  identity invariant. **No opportunity tap, no virtual risk evaluation, no virtual orders/positions/
+  exits, no shadow portfolio state, no Strategy Health integration, and no change to any strategy,
+  Scoring Engine, Risk Manager, or Execution Engine policy.**
+- **Added `ai_trader/shadow_evidence/`** (new package): `config.py::ShadowConfig` (one field,
+  `enabled: bool = False`); `types.py`: `ShadowOpportunityRecord`, `ShadowPositionRecord`,
+  `ShadowTradeLegRecord` (the latter embeds `TradeRecord` verbatim plus 2 additive fields --
+  `position_id`, `exit_reason` -- rather than duplicating its 16 fields, per the design's own
+  adversarial-review finding on data-contract reuse). `ShadowRejectionRecord`/`ShadowStrategySummary`
+  from the design document were deliberately NOT implemented this checkpoint: neither is required to
+  prove the identity invariant, and the latter is Strategy-Health-adjacent, out of scope per the CEO's
+  own explicit "no Health classification logic" instruction.
+- **Modified `ai_trader/simulation/config.py`** (the only existing production file touched): added
+  `SimulationContext.shadow_config: ShadowConfig = field(default_factory=ShadowConfig)` -- purely
+  additive, defaults to disabled, no existing caller needs to pass it. Confirmed not to affect
+  `SIMULATION_SCHEMA.json` validation (`performance_analyzer.to_schema_dict()` hand-selects its own
+  field list and does not reference this new field).
+- **Adversarial self-review found and fixed one real gap before committing**: the identity invariant
+  was initially only documented, not enforced -- nothing stopped constructing an inconsistent record
+  (e.g. a DENY decision carrying a `resulting_position_id`). Added `__post_init__` validation to
+  `ShadowOpportunityRecord` (ALLOW/DENY <-> `resulting_position_id` consistency) and
+  `ShadowPositionRecord` (OPEN/CLOSED <-> `full_exit_as_of`/`n_legs` consistency), matching this
+  project's own established convention (e.g. `DateRange.__post_init__`). 8 adversarial tests added
+  proving each invalid combination is actually rejected, not merely documented.
+- **Regression tests added**: `ai_trader/shadow_evidence/tests/test_types.py` (12 tests, pure
+  fixture-based, no simulation run, no generated results) proves the identity invariant and its
+  enforcement. `ai_trader/simulation/tests/test_shadow_disabled_parity.py` (4 tests, real
+  strategy-runtime harness fixture matching Phase 6.9A's own `test_risk_event_strategy_attribution.py`
+  convention) proves: the config defaults to disabled with no caller changes needed; no shadow evidence
+  object of any kind is created (including a source-inspection assertion that `harness.py` does not even
+  import `shadow_evidence`); exactly one instance each of `RiskManager`/`ExecutionEngine`/
+  `ExecutionSimulator`/`PortfolioSimulator` is constructed per run (no extra shadow-owned instances);
+  and two independent runs of the identical (disabled) config produce a byte-identical full
+  `SimulationReportData`, trade ledger, risk-event list, and order book.
+- **Verified live**: `pytest ai_trader/ -q` -- 1592 passed (1576 Phase-6.9A baseline + 16 new: 4
+  harness-parity + 12 identity-invariant/adversarial). `mypy --strict ai_trader/ --exclude 'tests/'` --
+  Success, 168 source files (up from 165 -- the 3 new non-test `shadow_evidence` files). `coverage`
+  (project-wide) -- 9693 stmts, 432 miss, 96% (identical miss count to Phase 6.9A's own baseline; every
+  one of the 44 new production statements is covered). `coverage` (targeted, `shadow_evidence` package
+  only, after the adversarial-review fix) -- 60 stmts, 0 miss, **100%**.
+  `git status --porcelain -- code/ results/ knowledge/` empty; `git diff --stat -- ai_trader/` shows
+  exactly one modified file (`simulation/config.py`, +8/-0) plus the two new files/package -- no other
+  `ai_trader/` file touched.
+- **Phase 6.10 status at this session's own close: Implementation Checkpoint 1A DONE. Checkpoint 1B
+  (the S10 read-only eligibility tap) NOT STARTED -- requires its own, separate CEO approval, per the
+  CEO's own explicit scope correction that 1A and the tap are not to be combined.**
+
 ## Session 2026-07-17 — Phase 6.10 Pre-Scope Diagnostic (corrected) + Shadow Evidence Architecture Design + adversarial review: ACCEPTED WITH CONDITIONS
 - CEO-directed sequence, same day as the session close below: (1) a pre-scope diagnostic investigating
   same-bar competition, persistent-position blocking, holding-period structure, signal redundancy, and

@@ -52,7 +52,8 @@ bottleneck).
 | Pre-scope diagnostic (same-bar/persistent-blocking/holding-period/signal-redundancy/independent-evidence measurement) | **CLOSED** — `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`, corrected via a CEO-directed consistency check (see below) |
 | Shadow Evidence Architecture Design | **CLOSED (design only)** — `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md` |
 | Adversarial design review | **CLOSED — verdict ACCEPTED WITH CONDITIONS** (design document's own §17) |
-| Implementation Checkpoint 1 (contracts + single-strategy proof, S10) | **NOT STARTED.** Requires its own, separate CEO approval — not authorized by anything in this document. |
+| Implementation Checkpoint 1A (config surface + evidence contracts, behavior-inert) | **DONE.** `ai_trader/shadow_evidence/` package (`config.py::ShadowConfig`, `types.py`: `ShadowOpportunityRecord`/`ShadowPositionRecord`/`ShadowTradeLegRecord`, each with `__post_init__` identity-invariant enforcement); `SimulationContext.shadow_config` field added (defaults disabled). No opportunity tap, no virtual risk/execution/position logic. Disabled-mode parity + determinism + instance-count regression tests added and passing; full suite 1592/1592, mypy strict clean, coverage 96% project-wide / 100% on the new package. |
+| Implementation Checkpoint 1B (S10 read-only eligibility tap) | **NOT STARTED.** Deferred by explicit CEO scope correction — requires its own, separate CEO approval. |
 | Strategy Health integration policy | **NOT SELECTED.** Three options compared (design doc §11); none chosen. |
 
 **Pre-scope diagnostic headline findings** (fully detailed in `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`,
@@ -188,8 +189,9 @@ repository. Phase 6.10 is a design, reviewed, not an implementation.
 - Scoring Engine weights, Risk Policy, Execution Engine rules.
 - The sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) — never opened.
 - No strategy is ever permanently eliminated based on any AI Trader analysis to date.
-- **Phase 6.10 Implementation Checkpoint 1 must not begin without its own, separate, explicit CEO
-  approval** — the design being ACCEPTED WITH CONDITIONS is not itself that approval.
+- **Phase 6.10 Implementation Checkpoint 1B (the S10 read-only eligibility tap) must not begin without
+  its own, separate, explicit CEO approval** — Checkpoint 1A being complete is not itself that approval,
+  per the CEO's own explicit scope correction (1A and 1B/the tap are separate approvals).
 - No Strategy Health integration policy may be selected without its own dedicated CEO decision (design
   doc §11).
 - No governance model, multi-position trading, Shadow Mode CODE, Telegram, Broker Adapter, or MT5 work
@@ -208,10 +210,12 @@ the repository's own standing "preserve all artifacts and diagnostics" instructi
    `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md` (including its own §17 adversarial review).
 2. **Verify Git state directly** — `git branch --show-current`, `git log -1`, `git status --porcelain`.
 3. **Report the reconstructed state back to the CEO** before proceeding on anything new.
-4. Once confirmed, the CEO's own next direction determines what happens — most likely a decision on
-   whether to authorize Implementation Checkpoint 1 (design doc §14), using the design's own conditions
-   (§17.4) as the starting point, not a decision already made. **Stop and ask before starting any
-   implementation.**
+4. Implementation Checkpoint 1A (config surface + evidence contracts) is DONE, committed separately and
+   revertibly (see `CHANGELOG.md`'s own top entry for the exact commit). Checkpoint 1B (the S10
+   read-only eligibility tap) is NOT STARTED. Once confirmed, the CEO's own next direction determines
+   what happens — most likely a decision on whether to authorize Checkpoint 1B, using the design doc's
+   own §14 staged proposal as the starting point, not a decision already made. **Stop and ask before
+   starting any further implementation.**
 
 ---
 
