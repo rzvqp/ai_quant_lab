@@ -1,0 +1,545 @@
+{
+  "source_artifacts": [
+    "phase69a_competitive_funnel.json",
+    "phase69a_isolated_funnel.json"
+  ],
+  "logical_position_correction": {
+    "isolated_legs": 823,
+    "isolated_positions": 758,
+    "isolated_multi_leg_positions": 65,
+    "competitive_legs": 142,
+    "competitive_positions": 117,
+    "competitive_multi_leg_positions": 25
+  },
+  "holding_period": {
+    "legs": {
+      "competitive": {
+        "label": "competitive_142_legs",
+        "n_trades": 142,
+        "median_holding_bars": 73.5,
+        "mean_holding_bars": 160.7,
+        "p75_holding_bars": 185.75,
+        "p90_holding_bars": 374.0,
+        "p95_holding_bars": 489.84999999999974,
+        "max_holding_bars": 2358,
+        "total_slot_bars_occupied": 22816,
+        "top10pct_trade_count": 14,
+        "top10pct_share_of_total_slot_time": 0.47624474053295934,
+        "by_exit_reason": {
+          "stop_loss": {
+            "count": 89,
+            "pct_of_trades": 0.6267605633802817,
+            "median_holding_bars": 81,
+            "mean_holding_bars": 180.2,
+            "pct_of_total_slot_bar_time": 0.7028401122019635
+          },
+          "take_profit": {
+            "count": 38,
+            "pct_of_trades": 0.2676056338028169,
+            "median_holding_bars": 138.0,
+            "mean_holding_bars": 168.9,
+            "pct_of_total_slot_bar_time": 0.2813376577840112
+          },
+          "time_stop": {
+            "count": 7,
+            "pct_of_trades": 0.04929577464788732,
+            "median_holding_bars": 24,
+            "mean_holding_bars": 24,
+            "pct_of_total_slot_bar_time": 0.007363253856942496
+          },
+          "trailing_stop": {
+            "count": 5,
+            "pct_of_trades": 0.035211267605633804,
+            "median_holding_bars": 2,
+            "mean_holding_bars": 6,
+            "pct_of_total_slot_bar_time": 0.001314866760168303
+          },
+          "unclassified": {
+            "count": 3,
+            "pct_of_trades": 0.02112676056338028,
+            "median_holding_bars": 1,
+            "mean_holding_bars": 54.3,
+            "pct_of_total_slot_bar_time": 0.007144109396914446
+          }
+        }
+      },
+      "isolated": {
+        "label": "isolated_823_legs",
+        "n_trades": 823,
+        "median_holding_bars": 19.0,
+        "mean_holding_bars": 87.8,
+        "p75_holding_bars": 60.5,
+        "p90_holding_bars": 261.0000000000007,
+        "p95_holding_bars": 378.4999999999999,
+        "max_holding_bars": 4717,
+        "total_slot_bars_occupied": 72224,
+        "top10pct_trade_count": 82,
+        "top10pct_share_of_total_slot_time": 0.6784863757199823,
+        "by_exit_reason": {
+          "stop_loss": {
+            "count": 380,
+            "pct_of_trades": 0.4617253948967193,
+            "median_holding_bars": 19.0,
+            "mean_holding_bars": 100.3,
+            "pct_of_total_slot_bar_time": 0.5278162383695171
+          },
+          "take_profit": {
+            "count": 170,
+            "pct_of_trades": 0.2065613608748481,
+            "median_holding_bars": 82.0,
+            "mean_holding_bars": 182.8,
+            "pct_of_total_slot_bar_time": 0.4301617190961453
+          },
+          "time_stop": {
+            "count": 81,
+            "pct_of_trades": 0.09842041312272175,
+            "median_holding_bars": 24,
+            "mean_holding_bars": 24,
+            "pct_of_total_slot_bar_time": 0.0269162605228179
+          },
+          "trailing_stop": {
+            "count": 182,
+            "pct_of_trades": 0.22114216281895505,
+            "median_holding_bars": 2.5,
+            "mean_holding_bars": 4.2,
+            "pct_of_total_slot_bar_time": 0.010481280460788658
+          },
+          "unclassified": {
+            "count": 10,
+            "pct_of_trades": 0.012150668286755772,
+            "median_holding_bars": 1.0,
+            "mean_holding_bars": 33.4,
+            "pct_of_total_slot_bar_time": 0.004624501550731059
+          }
+        }
+      }
+    },
+    "positions": {
+      "competitive": {
+        "label": "competitive_117_positions",
+        "n_positions": 117,
+        "median_holding_bars": 73.0,
+        "mean_holding_bars": 169.4,
+        "p90_holding_bars": 400.4000000000004,
+        "max_holding_bars": 2358,
+        "total_slot_bars_occupied": 19817,
+        "top10pct_position_count": 12,
+        "top10pct_share_of_total_slot_time": 0.5070394106070546
+      },
+      "isolated": {
+        "label": "isolated_758_positions",
+        "n_positions": 758,
+        "median_holding_bars": 17.5,
+        "mean_holding_bars": 83.4,
+        "p90_holding_bars": 241.60000000000014,
+        "max_holding_bars": 4717,
+        "total_slot_bars_occupied": 63209,
+        "top10pct_position_count": 76,
+        "top10pct_share_of_total_slot_time": 0.6935562973627173
+      }
+    }
+  },
+  "same_bar_competition": {
+    "definition": "an entry_as_of bar shared by >=2 DIFFERENT strategies' isolated-run logical positions",
+    "total_isolated_positions": 758,
+    "distinct_entry_bars_used_by_isolated_positions": 564,
+    "bars_with_2plus_competing_strategies": 144,
+    "isolated_positions_involved_in_a_same_bar_conflict": 338,
+    "pct_isolated_positions_in_same_bar_conflict": 0.44591029023746703,
+    "conflict_groups_all_same_direction": 117,
+    "conflict_groups_mixed_direction": 27,
+    "pct_conflict_groups_mixed_direction": 0.1875,
+    "mean_entry_price_spread_within_conflict_group": 0.6828472222222312,
+    "max_entry_price_spread_within_conflict_group": 28.070000000000164,
+    "competitive_position_entry_bars_total": 117,
+    "competitive_position_entry_bars_that_were_also_isolated_conflict_bars": 22,
+    "top_10_strategies_by_conflict_participation": [
+      [
+        "S40",
+        66
+      ],
+      [
+        "S39",
+        61
+      ],
+      [
+        "S4",
+        23
+      ],
+      [
+        "S44",
+        19
+      ],
+      [
+        "S26",
+        17
+      ],
+      [
+        "S10",
+        16
+      ],
+      [
+        "S42",
+        15
+      ],
+      [
+        "S43",
+        14
+      ],
+      [
+        "S48",
+        13
+      ],
+      [
+        "S46",
+        11
+      ]
+    ],
+    "top_10_same_direction_pairs": [
+      [
+        [
+          "S39",
+          "S40"
+        ],
+        61
+      ],
+      [
+        [
+          "S26",
+          "S43"
+        ],
+        12
+      ],
+      [
+        [
+          "S4",
+          "S48"
+        ],
+        8
+      ],
+      [
+        [
+          "S13",
+          "S44"
+        ],
+        6
+      ],
+      [
+        [
+          "S26",
+          "S4"
+        ],
+        6
+      ],
+      [
+        [
+          "S4",
+          "S40"
+        ],
+        6
+      ],
+      [
+        [
+          "S26",
+          "S41"
+        ],
+        4
+      ],
+      [
+        [
+          "S40",
+          "S43"
+        ],
+        4
+      ],
+      [
+        [
+          "S41",
+          "S43"
+        ],
+        4
+      ],
+      [
+        [
+          "S4",
+          "S43"
+        ],
+        4
+      ]
+    ],
+    "top_10_opposite_direction_pairs": [
+      [
+        [
+          "S42",
+          "S44"
+        ],
+        6
+      ],
+      [
+        [
+          "S22",
+          "S42"
+        ],
+        4
+      ],
+      [
+        [
+          "S42",
+          "S46"
+        ],
+        3
+      ],
+      [
+        [
+          "S10",
+          "S42"
+        ],
+        2
+      ],
+      [
+        [
+          "S10",
+          "S26"
+        ],
+        2
+      ],
+      [
+        [
+          "S13",
+          "S14"
+        ],
+        2
+      ],
+      [
+        [
+          "S1",
+          "S14"
+        ],
+        1
+      ],
+      [
+        [
+          "S10",
+          "S2"
+        ],
+        1
+      ],
+      [
+        [
+          "S10",
+          "S45"
+        ],
+        1
+      ],
+      [
+        [
+          "S10",
+          "S5"
+        ],
+        1
+      ]
+    ]
+  },
+  "persistent_blocking": {
+    "definition": "position entry falls strictly inside another (different-strategy) isolated position's open interval [entry_as_of, full_exit_as_of)",
+    "total_blocking_relationships_measured": 1978,
+    "distinct_isolated_positions_blocked_at_least_once": 678,
+    "pct_isolated_positions_blocked_at_least_once": 0.8944591029023746,
+    "top_10_blocker_strategies": [
+      [
+        "S46",
+        439
+      ],
+      [
+        "S39",
+        354
+      ],
+      [
+        "S40",
+        341
+      ],
+      [
+        "S42",
+        94
+      ],
+      [
+        "S44",
+        91
+      ],
+      [
+        "S1",
+        89
+      ],
+      [
+        "S13",
+        83
+      ],
+      [
+        "S22",
+        74
+      ],
+      [
+        "S28",
+        49
+      ],
+      [
+        "S14",
+        46
+      ]
+    ],
+    "top_10_victim_strategies": [
+      [
+        "S10",
+        293
+      ],
+      [
+        "S48",
+        185
+      ],
+      [
+        "S25",
+        151
+      ],
+      [
+        "S44",
+        146
+      ],
+      [
+        "S13",
+        121
+      ],
+      [
+        "S1",
+        116
+      ],
+      [
+        "S46",
+        94
+      ],
+      [
+        "S4",
+        79
+      ],
+      [
+        "S14",
+        75
+      ],
+      [
+        "S40",
+        71
+      ]
+    ],
+    "top_10_blocker_victim_pairs": [
+      [
+        [
+          "S39",
+          "S10"
+        ],
+        77
+      ],
+      [
+        [
+          "S40",
+          "S10"
+        ],
+        76
+      ],
+      [
+        [
+          "S46",
+          "S10"
+        ],
+        76
+      ],
+      [
+        [
+          "S46",
+          "S40"
+        ],
+        45
+      ],
+      [
+        [
+          "S46",
+          "S39"
+        ],
+        42
+      ],
+      [
+        [
+          "S46",
+          "S48"
+        ],
+        41
+      ],
+      [
+        [
+          "S39",
+          "S46"
+        ],
+        38
+      ],
+      [
+        [
+          "S40",
+          "S46"
+        ],
+        36
+      ],
+      [
+        [
+          "S39",
+          "S48"
+        ],
+        36
+      ],
+      [
+        [
+          "S40",
+          "S48"
+        ],
+        36
+      ]
+    ],
+    "median_blocking_position_holding_bars": 99.0,
+    "mean_blocking_position_holding_bars": 426.8
+  },
+  "gap_decomposition": {
+    "isolated_positions_total": 758,
+    "competitive_positions_total": 117,
+    "raw_gap_positions": 641,
+    "isolated_positions_matched_to_a_same_strategy_same_bar_competitive_position": 67,
+    "isolated_positions_unmatched_i_e_the_gap": 691,
+    "competitive_positions_with_no_matching_isolated_entry_cooldown_asymmetry_signal": 50,
+    "forced_partition_gap_same_bar_priority": 316,
+    "forced_partition_gap_persistent_priority": 352,
+    "forced_partition_gap_unexplained": 23,
+    "forced_partition_pct_same_bar": 0.4573082489146165,
+    "forced_partition_pct_persistent": 0.5094066570188133,
+    "forced_partition_pct_unexplained": 0.03328509406657019,
+    "honest_gap_same_bar_only": 43,
+    "honest_gap_persistent_only": 352,
+    "honest_gap_both_mechanisms": 273,
+    "honest_gap_neither": 23,
+    "pct_gap_same_bar_only": 0.06222865412445731,
+    "pct_gap_persistent_only": 0.5094066570188133,
+    "pct_gap_both_mechanisms": 0.3950795947901592,
+    "pct_gap_neither": 0.03328509406657019,
+    "pct_gap_with_same_bar_present": 0.4573082489146165,
+    "pct_gap_with_persistent_present": 0.9044862518089725
+  },
+  "evidence_impact": {
+    "raw_setup_detections_portfolio_wide": 31409,
+    "risk_manager_allow_total": 145,
+    "risk_manager_deny_total": 1016332,
+    "risk_manager_evaluated_opportunities": 1016477,
+    "executable_opportunity_count_isolated_no_slot_contention_legs": 823,
+    "executable_opportunity_count_isolated_no_slot_contention_positions": 758,
+    "economically_distinct_opportunity_count_lower_bound_strict_same_bar_dedup": 564,
+    "economically_distinct_opportunity_count_upper_bound_overlap_connected_components": 52,
+    "redundancy_ratio_lower_bound": 0.25593667546174137,
+    "redundancy_ratio_upper_bound": 0.9313984168865436,
+    "completed_trades_competitive_realized_evidence_legs": 142,
+    "completed_trades_competitive_realized_evidence_positions": 117
+  }
+}

@@ -1,5 +1,131 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-17 — Phase 6.10 Pre-Scope Diagnostic (corrected) + Shadow Evidence Architecture Design + adversarial review: ACCEPTED WITH CONDITIONS
+- CEO-directed sequence, same day as the session close below: (1) a pre-scope diagnostic investigating
+  same-bar competition, persistent-position blocking, holding-period structure, signal redundancy, and
+  an independent-evidence estimate, using ONLY existing Phase 6.9A artifacts (no new simulation run);
+  (2) a CEO consistency check on that diagnostic, which found and fixed one real defect; (3) a Shadow
+  Evidence Architecture Design (design only, no code) answering all 11 CEO-specified objective areas;
+  (4) a CEO-directed adversarial design review of that architecture against the real repository, which
+  found several real, code-grounded issues and corrected them in the design document itself. **No
+  strategy, Scoring Engine, Risk Manager, Execution Engine, Strategy Health methodology, Research Lab,
+  `knowledge/`, or the sealed holdout was touched at any point. No Phase 6.10 code exists.**
+- **Created `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`** + its own read-only analysis script/output
+  (`phase610_prescope_analysis.py`/`.json`) — measures, purely by re-deriving from the two existing
+  `phase69a_*_funnel.json` artifacts (no `ai_trader/` source imported or executed, no backtest re-run):
+  a data-quality correction (partial-exit `TradeRecord` legs collapse 823/142 trade-legs to **758/117
+  logical positions** — the 823/142 headline trade-leg counts from Phase 6.9A are unchanged and not
+  being revised, this is a finer unit of account for opportunity-counting specifically); same-bar
+  conflict present in **45.7%** of the 691-position gap; persistent blocking present in **90.4%**;
+  a small number of long-held positions dominate slot-time (top 10% of isolated positions = **69.4%**
+  of total occupied slot-time); 81.25% of same-bar conflicts are same-direction agreement, not a
+  genuine BUY/SELL clash; an estimated **~74% of isolated positions remain economically distinct** even
+  after strict same-bar dedup (lower-bound estimate, 564 of 758 — the degenerate upper-bound estimate,
+  52, is explicitly flagged as unreliable due to transitive chaining through a few long-duration
+  positions). Recommendation: scope shadow-mode evidence accumulation as the first Phase 6.10 design
+  target, with two smaller parallel follow-ons (a holding-period/slot-release look at the three
+  concentrated chronic blockers S46/S39/S40, and a strategy-clustering study of the S39↔S40 redundancy
+  finding).
+- **CEO consistency check found and fixed one real defect, disclosed rather than hidden**: the
+  diagnostic's own first draft reported same-bar conflict (45.7%) and persistent blocking (50.9%) as if
+  they were a clean, mutually-exclusive three-way partition of the gap. Direct re-verification found
+  this was only true because of an unstated priority rule (same-bar checked first) — **273 of the 691
+  gap positions (39.5%) actually satisfy BOTH conditions simultaneously**. Fixed: the analysis script
+  now reports the honest, non-prioritized 4-way breakdown (same-bar-only 6.2%, persistent-only 50.9%,
+  both 39.5%, neither 3.3%) alongside the original forced-partition figures (kept for continuity, not
+  deleted); the document's §1/§9/§10 reasoning was revised accordingly — persistent blocking is now
+  understood as the more pervasive mechanism (present in 90.4% of the gap, alone or combined), and
+  "pure" same-bar-only conflict is rare (6.2%), which sharpens rather than reverses the original
+  recommendation. A separate, minor rounding error (69.3% vs. the correctly-rounded 69.4%) was also
+  found and fixed in the same pass. Re-verified live: every headline metric in both documents
+  independently re-derived from the JSON output and confirmed to match exactly (15/15 checked figures).
+- **Created `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`** — design only, answering all 11
+  CEO-specified objective areas (shadow opportunity lifecycle, logical-position identity, capital/risk
+  model, cost/execution parity, concurrent shadow positions, a 5-record evidence ledger, 9 separation
+  invariants, a 3-option Strategy Health integration comparison with none selected, an 8-test validation
+  plan, a 6-checkpoint staged rollout not implemented, and 6 disclosed limitations), grounded directly in
+  the real pipeline (`harness.py`, `portfolio_simulator.py`, `execution_simulator.py`, `risk_manager/`,
+  `time_stop.py`, `trailing_stop.py`, `strategy_health/types.py` — cited by file/line throughout, nothing
+  invented). Core idea: reuse `RiskManager`/`ExecutionEngine`/`ExecutionSimulator`/`PortfolioSimulator`
+  completely unmodified, one fully independent instance set per shadow strategy, tapping only the
+  already-computed Signal/Scoring outputs — mathematically the same computation Phase 6.9A's own
+  isolated-slot counterfactual already performed offline (43 separate reruns), just computed inline in
+  one pass. Capital model: fixed nominal capital per strategy, matching (not merely resembling)
+  Phase 6.9A's own isolated-run convention ($2,000/5% risk-per-trade) — cloned-live-equity and fixed-R
+  were considered and rejected with reasoning.
+- **CEO-directed adversarial design review performed against the real repository** (`§17` of the design
+  document) — direct source inspection plus a targeted isolation sweep, not a plausibility check. Real,
+  code-grounded findings, all corrected in the design document itself (not just noted):
+  - **H1 (high)**: the design's first draft incorrectly asserted `RiskManager.evaluate()` is
+    "stateless-per-call." It is not — `RiskManager` carries per-instance lifecycle state
+    (`_lifecycle_state`/`_last_portfolio`/`_state_reason_code`) that can LATCH into
+    SUSPENDED/EMERGENCY_STOP across calls (`risk_manager/engine.py` lines 159–170, 254–279), and
+    `configure()` is called only ONCE per harness lifetime (`harness.py` line 205). This actually
+    validates the design's own already-stated practice (one dedicated `RiskManager` instance per
+    shadow strategy) but the stated justification was wrong and has been corrected; the instance-per-
+    strategy requirement is now stated as mandatory, not optional.
+  - **H2 (high)**: `RuntimeEvaluator`'s own per-instance cache (`_cache_key`/`_cache_value`,
+    `strategy_runtime/evaluator.py` lines 113–114, 124–130) is unsynchronized and already processed
+    concurrently by Signal Engine's own thread pool (`signal_engine/engine.py` lines 73, 92, 121,
+    195–198) — a genuine, silent data-race risk IF a shadow implementation ever touched evaluator/
+    handle objects directly rather than only the already-produced immutable signal/score outputs.
+    Fixed: an explicit, hard prohibition added to the design (shadow may only consume the tapped
+    immutable outputs) — costs the design nothing, since it never needed to touch those objects.
+  - **H3 (high)**: `ExecutionEngine` is a single stateful instance with its own `OrderLedger`, and
+    `client_order_id`s are derived deterministically with no real/shadow discriminator
+    (`risk_manager/assembler.py` lines 33, 102; `execution_engine/builder.py` lines 152–153) —
+    `ExecutionSimulator.submit_order()`'s own duplicate guard (lines 112–116) SILENTLY no-ops a
+    resubmitted id, no exception. Fixed: `ExecutionEngine` must be duplicated 1:1 per shadow strategy
+    (now a hard requirement, not implied), plus a `"SHADOW-"` `client_order_id` prefix as
+    defense-in-depth against a future wiring bug.
+  - **M1 (medium)**: `RiskConfig` (`risk_manager/config.py` line 131) is NOT `frozen=True` and carries
+    genuinely mutable dict fields, reachable by 44 shared references (real + 43 shadow) instead of
+    today's 1–2 — no production mutation exists today, but no structural guard prevents one either.
+    Documented as a tested convention (a required test asserting the shared object is unchanged
+    end-to-end), not silently assumed safe.
+  - **Gap found**: the original design had no answer at all for shadow-strategy failure handling.
+    Fixed: a new §10.1 (Failure isolation) added — a per-strategy, per-bar exception boundary; failures
+    recorded, never propagated into the competitive path; the real backtest never halts because a
+    shadow strategy failed, unless explicitly configured for diagnostic testing (the CEO's own
+    carve-out, honored literally).
+  - **Data-contract duplication found**: the original 5-record evidence ledger reinvented schemas that
+    substantially duplicated existing repository types. Fixed: `ShadowTradeLegRecord` now explicitly
+    extends `TradeRecord` (16 existing fields + 2 additive: `position_id`, `exit_reason`), rather than
+    16 fields re-declared from scratch; `ShadowRejectionRecord` now explicitly follows the
+    `RiskEventRecord` additive-field precedent (the same pattern Phase 6.9A itself used); most
+    significantly, `ShadowStrategySummary` is redefined to reuse `strategy_health/metrics.py`'s own
+    FROZEN, unmodified computation functions (via a shadow-sourced `ClosedTrade` stream, projectable
+    from `ShadowTradeLegRecord`), producing a genuine `WindowMetrics` labeled `source="shadow"` — meaning
+    zero new scoring math will be needed for any future Health-integration option, whenever separately
+    approved. `ShadowPositionRecord`/`ShadowOpportunityRecord` were checked and confirmed to have no
+    existing repository analog (legitimately new types).
+  - A reasoned (not yet benchmarked) runtime/memory estimate was added: Signal/Scoring Engine calls are
+    unaffected (0× — tapped, not re-invoked); `RiskManager.evaluate()` calls scale with actionable-signal
+    volume, not strategy-count × bar-count (≈1.3×, using Phase 6.9A's own 30,239-actionable-signals/
+    23,639-bars figure, not a blind 43×); Execution/Portfolio per-bar bookkeeping is the one genuine
+    multiplier risk, bounded by a proposed (exact-parity-preserving) optimization — skip
+    `advance_bar()`/`mark_to_market()` for any shadow instance with no open position and no pending
+    order that bar — bringing the expected multiplier to ≈3–5× (using the diagnostic's own measured
+    ~2.7-average-concurrent-open-shadow-positions figure) rather than an unexamined 43×. An actual
+    benchmark remains required before any 43-strategy rollout, exactly as the design already specified.
+  - Scope discipline confirmed against all 7 named risks (multiple real XAUUSD positions, strategy
+    aggregation, consensus execution, altered holding periods, altered Risk Manager policy, Strategy
+    Health integration, broker/MT5 behavior) — none introduced, each traced to a specific invariant.
+  - **Final verdict: ACCEPTED WITH CONDITIONS.** The core architectural approach is sound and validated
+    against the real codebase — no finding suggested redesign or rejection. The conditions are the
+    corrections listed above, which are now part of the design document itself, not merely noted as
+    future work. Implementation Checkpoint 1 may proceed once these conditions are incorporated (they
+    now are) — but starting it remains its own, separate CEO decision, not made by this review.
+- **Re-verified live after all edits**: the analysis script was re-run; all 15 independently re-checked
+  headline figures across both documents matched the fresh JSON output exactly;
+  `git status --porcelain -- code/ results/ knowledge/ ai_trader/` empty (zero diff) both before and
+  after this session's own documentation work. No `ai_trader/` source file, strategy, Scoring Engine,
+  Risk Manager, Execution Engine, or Strategy Health file was modified — every source citation in both
+  documents is read-only inspection to ground the design/review, not a description of a change made.
+- **Phase 6.10 status at this session's own close: DESIGN REVIEWED, verdict ACCEPTED WITH CONDITIONS.
+  NOT IMPLEMENTED. NOT STARTED as code.** No Strategy Health integration policy selected. Implementation
+  Checkpoint 1 has not begun and requires its own separate CEO approval.
+
 ## Session 2026-07-17 — OFFICIAL SESSION CLOSE: full documentation consolidation, no new implementation
 - CEO directive: close the session so a brand-new chat can reconstruct the project 100% without any
   prior conversation. Documentation/consolidation only -- no strategy, Health System, Research Lab, or
