@@ -1,5 +1,43 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-17 — OFFICIAL PROJECT CHECKPOINT SAVE (documentation and repository-freeze only, no code)
+- CEO-directed, before any further implementation: a documentation and repository-freeze checkpoint.
+  No code implemented, no runtime modified, no architecture changed, Checkpoint 1C not started.
+- **Verified live**: zero `ai_trader/` code has changed since Implementation Checkpoint 1B's own
+  validated commit (`5244632`) — confirmed via `git diff --stat 5244632 HEAD -- ai_trader/` returning
+  empty — so that checkpoint's own test/mypy/coverage figures (1606 passed, 169 mypy-clean source
+  files, 9783 stmts/432 miss/96% coverage) remain current, not stale, and did not need to be re-run.
+- **Updated `PROJECT_STATE_v2.md`**: refreshed §0 (git state, verified-live statistics) and added a
+  new §7 ("Phase 6.10 — Edge Portfolio Evidence System") consolidating the pre-scope diagnostic, the
+  Shadow Evidence Architecture Design + adversarial review, Implementation Checkpoints 1A and 1B, and
+  the Edge Portfolio direction re-frame -- previously entirely absent from this document, which had not
+  been touched since its own original close (`b9a1fc8`, before Phase 6.10 began). Renumbered the
+  document's own §7-§10 to §8-§11 and updated their content accordingly (modules table, standing
+  constraints, diagnostic artifacts, reading order).
+- **Rewrote `NEXT_SESSION.md` in full**: the previous version had drifted -- a numbering bug in its own
+  reading-order list, a git-state block still citing the pre-Checkpoint-1A commit, and a "this session's
+  own work" narrative that predated Checkpoints 1A/1B entirely. Rewritten cleanly, citing the correct
+  current HEAD and every checkpoint's own status/commit hash in one place.
+- **Verified consistency across every Phase 6.10 design document** for the official direction (generic
+  Edge Portfolio, S10 as validation edge only, no S10-specific architecture): every "S10" mention across
+  `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`/`PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`/
+  `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` was checked and confirmed to be either historical/diagnostic
+  analysis or an explicitly-scoped "recommended first validation target" example, never a claim of
+  dedicated architecture -- independently re-confirmed by grepping the actual production code
+  (`ai_trader/shadow_evidence/*.py`, `harness.py`, `simulation/config.py`): the only "S10" hits are
+  illustrative docstring examples, zero conditional logic/defaults/branches reference any specific edge.
+- **Created `RECONSTRUCTION_PROMPT.md`** (did not exist before this checkpoint): a literal,
+  self-contained prompt a brand-new Claude conversation can be given verbatim to reconstruct full
+  project context from this repository alone, ending in an explicit stop-and-wait instruction.
+- **Created `PHASE_6_10_CHECKPOINT_SAVE_REPORT.md`**: completed work / repository status /
+  documentation status / implementation status / remaining roadmap / exact next authorized checkpoint,
+  in one place.
+- **No code was written or modified.** `git status --porcelain -- code/ results/ knowledge/ ai_trader/`
+  confirmed empty before and after this session's own documentation work.
+- **Phase 6.10 status at this checkpoint: Implementation Checkpoints 1A and 1B DONE; Edge Portfolio
+  direction accepted; this checkpoint save complete. Checkpoint 1C NOT STARTED, NOT AUTHORIZED --
+  requires its own, separate CEO approval, in a new conversation if the CEO chooses.**
+
 ## Session 2026-07-17 — Phase 6.10 architectural re-frame: Edge Portfolio direction (documentation only, no code)
 - CEO direction update, after accepting Checkpoint 1B: Phase 6.10's real objective is a generic Edge
   Portfolio architecture (any validated market edge -- New York Reversal, Opening Range Breakout,
