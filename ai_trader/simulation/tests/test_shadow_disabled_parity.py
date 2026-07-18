@@ -522,3 +522,98 @@ def test_one_strategy_failure_among_all_43_is_isolated(monkeypatch) -> None:
     other_strategy_positions = {p.strategy_id for p in engine.positions if p.strategy_id != target}
     assert len(other_strategy_positions) > 0  # at least one other strategy kept trading normally
     assert _competitive_fingerprint(harness) == disabled
+
+
+# ------------------------------------------------------------------------------- Checkpoint 4: Research & Comparison layer
+
+def test_research_layer_works_end_to_end_over_a_real_multi_strategy_run() -> None:
+    # A real harness run (not synthetic fixtures) -- proves the research/comparison/portfolio-research
+    # layers wire correctly against genuine engine output. Reuses the SAME 4-strategy scale already
+    # established at Checkpoints 1C/2/3 -- this layer is purely read-only/pull-based over
+    # already-proven-correct data, so genericity to N=43 is verified separately, cheaply, with
+    # synthetic fixtures (test_research.py) rather than re-paying a full 43-strategy harness run here.
+    from ai_trader.shadow_evidence import comparison, portfolio_research, research
+
+    disabled = _competitive_fingerprint(_run("SHADOW-4-OFF"))
+    config = ShadowConfig(enabled=True, shadow_strategies=("S10", "S21", "S39", "S40"))
+    context = _context("SHADOW-4-RESEARCH", config)
+    harness = _run("SHADOW-4-RESEARCH", config)
+    assert harness.shadow_engine is not None
+    engine = harness.shadow_engine
+
+    # Criterion 5: existing execution remains byte-identical -- this new layer touched nothing.
+    assert _competitive_fingerprint(harness) == disabled
+
+    summaries = research.all_research_summaries(
+        "12m", context.date_range.end, engine.opportunities, engine.rejections, engine.trade_legs,
+    )
+    assert set(summaries).issubset({"S10", "S21", "S39", "S40"})
+    assert len(summaries) > 1  # more than one strategy actually produced evidence
+
+    # Every reused WindowMetrics field plus every new Checkpoint 4 field is populated consistently.
+    for strategy_id, summary in summaries.items():
+        own_legs = [t for t in engine.trade_legs if t.leg.strategy_id == strategy_id]
+        assert summary.window_metrics.n_trades == len(own_legs)
+        assert summary.long.n_trades + summary.short.n_trades == len(own_legs)
+        assert summary.average_r == summary.window_metrics.expectancy_r
+
+    # Comparison utilities.
+    for metric in comparison.available_metrics():
+        ranked = comparison.rank_by(summaries, metric)
+        assert {sid for sid, _ in ranked} == set(summaries)  # every metric ranks every strategy exactly once
+        assert len(ranked) == len(summaries)  # no strategy duplicated or dropped
+    board = comparison.leaderboard(summaries)
+    assert len(board) == len(summaries)
+    strategy_ids = sorted(summaries)
+    if len(strategy_ids) >= 2:
+        cmp = comparison.compare(summaries[strategy_ids[0]], summaries[strategy_ids[1]])
+        assert len(cmp.rows) == len(comparison.available_metrics())
+    for summary in summaries.values():
+        exported = comparison.export_summary(summary)
+        assert exported["strategy_id"] == summary.strategy_id
+
+    # Portfolio research utilities.
+    matrix = portfolio_research.correlation_matrix(engine.trade_legs)
+    for strategy_id in summaries:
+        assert matrix.get((strategy_id, strategy_id)) in (1.0, None)
+    overlap = portfolio_research.trade_overlap_stats(engine.positions)
+    assert isinstance(overlap, tuple)
+    exposure = portfolio_research.simultaneous_exposure(engine.positions)
+    assert exposure.max_concurrent_positions >= 0
+    diversification = portfolio_research.diversification_metrics(matrix)
+    assert diversification.n_strategy_pairs >= 0
+
+    # Criterion 5, restated: after running the ENTIRE research/comparison/portfolio-research layer,
+    # competitive execution is STILL byte-identical (nothing above could have mutated engine state).
+    assert _competitive_fingerprint(harness) == disabled
+
+
+def test_research_and_comparison_outputs_are_deterministic_across_repeated_runs() -> None:
+    from ai_trader.shadow_evidence import comparison, portfolio_research, research
+
+    config = ShadowConfig(enabled=True, shadow_strategies=("S10", "S21"))
+    context = _context("SHADOW-4-DET", config)
+    harness_a = _run("SHADOW-4-DET", config)
+    harness_b = _run("SHADOW-4-DET", config)
+    assert harness_a.shadow_engine is not None and harness_b.shadow_engine is not None
+
+    summaries_a = research.all_research_summaries(
+        "12m", context.date_range.end, harness_a.shadow_engine.opportunities,
+        harness_a.shadow_engine.rejections, harness_a.shadow_engine.trade_legs,
+    )
+    summaries_b = research.all_research_summaries(
+        "12m", context.date_range.end, harness_b.shadow_engine.opportunities,
+        harness_b.shadow_engine.rejections, harness_b.shadow_engine.trade_legs,
+    )
+    assert summaries_a == summaries_b  # criterion 1: independent summaries, reproducible
+
+    assert comparison.leaderboard(summaries_a) == comparison.leaderboard(summaries_b)  # criterion 2
+    strategy_ids = sorted(summaries_a)
+    if len(strategy_ids) >= 2:
+        cmp_a = comparison.compare(summaries_a[strategy_ids[0]], summaries_a[strategy_ids[1]])
+        cmp_b = comparison.compare(summaries_b[strategy_ids[0]], summaries_b[strategy_ids[1]])
+        assert cmp_a == cmp_b  # criterion 3
+
+    matrix_a = portfolio_research.correlation_matrix(harness_a.shadow_engine.trade_legs)
+    matrix_b = portfolio_research.correlation_matrix(harness_b.shadow_engine.trade_legs)
+    assert matrix_a == matrix_b  # criterion 4
