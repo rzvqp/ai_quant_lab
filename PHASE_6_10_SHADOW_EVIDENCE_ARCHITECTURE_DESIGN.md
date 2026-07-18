@@ -237,7 +237,7 @@ own all-43-isolated-runs comparison already relied on.
 | **Slippage** | Identical `max_slippage_pct` / `Constraints.max_slippage` formula (`time_stop.py` line 80's own convention, reused unmodified) applied inside each shadow `ExecutionSimulator`. |
 | **Entry timing** | Identical fill-timing convention, because it is literally the SAME `ExecutionSimulator` class, not a re-implementation — whatever next-bar/same-bar fill rule production uses today applies unchanged to shadow fills. |
 | **Bar-order ambiguity** | Within one bar, shadow strategies' own risk/execution evaluations have NO shared resource to contend over (§8 — each has its own account), so cross-strategy evaluation order does not affect any shadow strategy's own result. It DOES need a fixed, deterministic order for reproducibility (recommended: same `sorted(...)` convention the harness already applies to symbols, extended to strategy iteration — e.g. sorted by `strategy_id`) so that deterministic-replay (§10) is exactly reproducible, not just statistically so. |
-| **Exact parity with isolated-slot simulations** | This is the design's own central validation claim (§10, item 2): because shadow risk evaluation reuses `RiskManager.evaluate()` unmodified with a portfolio_state scoped to exactly one strategy, and shadow execution reuses `ExecutionSimulator`/`PortfolioSimulator` unmodified in a fresh, single-strategy instance, the computation performed is mathematically the same one `phase69a_isolated_run.py::run_isolated(strategy_id)` already performed offline — just computed inline, concurrently with the real competitive run, in one pass instead of 43 separate full-window backtests. The one known source of divergence (disclosed, not hidden): `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` §8 item 3 found a 43%-of-competitive-positions residual where cooldown-after-loss state differs between an isolated run and the competitive run — an analogous divergence could in principle appear between a shadow account's own cooldown state and a TRUE from-scratch isolated rerun's cooldown state IF the shadow account's own start time differs from a fresh isolated run's start time (e.g., Shadow Mode enabled mid-window vs. Phase 6.9A's isolated runs which always started at the window's own beginning). This is a testable, not merely theoretical, concern — flagged explicitly in §10's validation plan and §11's limitations, not asserted away. |
+| **Exact parity with isolated-slot simulations** | **CORRECTED (Checkpoint 1C, 2026-07-18 — see §19): this cell's original claim was wrong and is struck below, not merely refined.** The struck claim asserted the computation was "mathematically the same" as a from-scratch isolated rerun, attributing any divergence solely to cooldown/mid-window-start timing. Checkpoint 1C's own empirical validation (§19) found this false: shadow risk evaluation DOES reuse `RiskManager.evaluate()` unmodified against a portfolio_state scoped to one strategy (true, and this part of the parity claim holds), but the `score_batch` feeding that evaluation is the COMPETITIVE run's own already conflict-adjusted batch (§4's own "Setup generation"/"Scoring" rows — an explicit, deliberate design choice, not an oversight), never a from-scratch single-strategy re-score the way `phase69a_isolated_run.py::run_isolated(strategy_id)` (via `strategy_id_filter`) produces. This is a second, independent, and empirically LARGER divergence source than cooldown timing — see §19 for the validated semantics and the corrected acceptance language. ~~because shadow risk evaluation reuses `RiskManager.evaluate()` unmodified with a portfolio_state scoped to exactly one strategy, and shadow execution reuses `ExecutionSimulator`/`PortfolioSimulator` unmodified in a fresh, single-strategy instance, the computation performed is mathematically the same one `phase69a_isolated_run.py::run_isolated(strategy_id)` already performed offline — just computed inline, concurrently with the real competitive run, in one pass instead of 43 separate full-window backtests. The one known source of divergence (disclosed, not hidden): `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` §8 item 3 found a 43%-of-competitive-positions residual where cooldown-after-loss state differs between an isolated run and the competitive run — an analogous divergence could in principle appear between a shadow account's own cooldown state and a TRUE from-scratch isolated rerun's cooldown state IF the shadow account's own start time differs from a fresh isolated run's start time (e.g., Shadow Mode enabled mid-window vs. Phase 6.9A's isolated runs which always started at the window's own beginning). This is a testable, not merely theoretical, concern — flagged explicitly in §10's validation plan and §11's limitations, not asserted away.~~ |
 
 ---
 
@@ -569,7 +569,7 @@ discussion.
 |---|---|---|
 | **0. Contracts only** | The 5 record types (§9) as frozen dataclasses; no behavior. A parity-test scaffold reusing Phase 6.9A's own `verify_zero_behavior_change()` pattern, run against TODAY's harness with no shadow code yet, to lock in the "shadow-disabled == baseline" starting point. | Test 1 (§13) passes trivially (no shadow code exists yet — this checkpoint only proves the scaffold itself is correct). |
 | **1. Single-strategy risk-eligibility tap** | Wire the `ShadowEvidenceEngine` tap (§4) for exactly ONE strategy (recommended: S10, the pre-scope diagnostic's own most slot-starved victim, §4 there) — `ShadowOpportunityRecord`/`ShadowRejectionRecord` generation only, no virtual entry/execution yet. | S10's own shadow-DENY reason distribution matches its own known funnel counts (`phase69a_analysis.json`'s own S10 row) for the genuine (non-slot) denial reasons; slot-specific denials should not appear at all (shadow bypasses the shared slot by construction). |
-| **2. Single-strategy full lifecycle** | Add virtual entry + the full position/trade-leg lifecycle (§4) for that same one strategy, via a dedicated shadow `ExecutionEngine`/`ExecutionSimulator`/`PortfolioSimulator` instance. | Test 3 (§13) passes for S10 specifically: the shadow ledger reproduces `phase69a_isolated_funnel.json["S10"]`'s own trades exactly (or the observed divergence is fully attributable to the cooldown/mid-window-start caveat already disclosed, §7/§13's additional test). |
+| **2. Single-strategy full lifecycle** | Add virtual entry + the full position/trade-leg lifecycle (§4) for that same one strategy, via a dedicated shadow `ExecutionEngine`/`ExecutionSimulator`/`PortfolioSimulator` instance. | **CORRECTED (Checkpoint 1C, 2026-07-18 — see §19): the exit criterion below assumed near-exact reproduction; the CEO's own ruling establishes this was never the correct bar.** Completed and CEO-accepted with a documented semantic limitation: the shadow ledger reproduces the FIRST 2 of `phase69a_isolated_funnel.json["S10"]`'s 117 trades exactly, then diverges (68 shadow trades total) — root cause verified as competitive-context conflict-adjusted score reuse (§7, §19), not primarily cooldown/mid-window timing. ~~Test 3 (§13) passes for S10 specifically: the shadow ledger reproduces `phase69a_isolated_funnel.json["S10"]`'s own trades exactly (or the observed divergence is fully attributable to the cooldown/mid-window-start caveat already disclosed, §7/§13's additional test).~~ |
 | **3. Scale to all 43** | Extend to every shadow-eligible strategy running concurrently in one pass. | Tests 1, 2, 4, 5, 6 (§13) pass across the full roster; test 8's benchmark is run and its result documented (not pre-judged) before any wider rollout decision. |
 | **4. `ShadowStrategySummary` + read-only reporting** | Aggregate per-strategy shadow statistics into `ShadowStrategySummary` (§9); expose a read-only report (e.g. a new diagnostic script analogous to `phase69a_analysis.py`) — no write path into `strategy_health/`. | The summary's own numbers are independently reproducible from the underlying `ShadowTradeLegRecord`/`ShadowPositionRecord` ledger, the same reproducibility bar this document's own predecessor (`PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`) was held to. |
 | **5. Strategy Health integration** | **Explicitly NOT scoped by this document.** Requires its own dedicated design pass selecting among §11's three options (or another), plus its own separate CEO approval, per the CEO's own standing instruction that `strategy_health/`'s scoring methodology is frozen. | N/A — a future, separate phase. |
@@ -586,7 +586,10 @@ sequence for a future, separately-approved coding phase.
    selection-bias concern (§12, item 5) that a hand-picked subset would introduce — but not decided here.
 2. **Shadow start date**: from the window's own beginning (matching Phase 6.9A's isolated-run
    convention exactly) vs. "enabled going forward from whenever it ships" (operationally simpler, but
-   introduces the mid-window cooldown-state divergence flagged in §7/§13) — not decided here.
+   introduces the mid-window cooldown-state divergence flagged in §7/§13) — not decided here. Note
+   (Checkpoint 1C, §19): cooldown-state timing is a real but SECONDARY divergence source relative to
+   competitive-context score reuse (§7/§19) — resolving this open decision would not, by itself, close
+   the larger divergence §19 documents.
 3. **`position_id` generation scheme**: deterministic string (recommended, §5) vs. random UUID — a
    deterministic scheme is required for the deterministic-replay test (§13, test 6); not formally
    mandated as an implementation detail here beyond that requirement.
@@ -892,3 +895,74 @@ separate CEO decision, per the CEO's own explicit instruction not to begin it in
   implementation. Implementation Checkpoint 1 has not been started.
 
 **Waiting for CEO review. No further action will be taken until then.**
+
+---
+
+## 19. Checkpoint 1C empirical correction (2026-07-18) — the validated semantics, stated precisely
+
+**Status**: Implementation Checkpoints 1A, 1B, and 1C are now DONE (commits `17c312b`, `5244632`,
+`1f0ec84`). This section is a post-implementation correction to this document's own §7 and §14, added
+because Checkpoint 1C's own S10 validation (`phase610_checkpoint1c_s10_validation.py`/`.json`) found
+this design's original central parity claim was WRONG, not merely imprecise — corrected here directly at
+its source (§7, §14, struck in place, per this document's own §17 precedent for found-and-fixed errors),
+with the full narrative and the CEO's own ruling recorded here.
+
+### 19.1 What was found
+
+Over the full 13-month/23,639-bar Phase 6.9A window, S10's shadow trade ledger was compared directly
+against the already-committed `phase69a_isolated_funnel.json` (Design §13 test 3). Result: only **2 of
+117** isolated trades matched exactly; the shadow run produced **68 trades total**, diverging from trade
+3 onward. This is far larger than this document's own original §7 claim implied ("the computation
+performed is mathematically the same" as the isolated run, modulo a narrow cooldown/mid-window-start
+caveat).
+
+### 19.2 Verified root cause (not merely hypothesized)
+
+`phase69a_isolated_run.py` constructs its harness with `strategy_id_filter=frozenset({"S10"})`, which
+restricts the handles **Signal Engine itself evaluates** to S10 alone (`harness.py`'s own
+`strategy_id_filter` semantics) — its `score_batch` for every bar contains only S10's own signal, with no
+possible same-bar conflict against any other strategy. Checkpoint 1C's `ShadowEvidenceEngine`, exactly as
+this design specified (§4's "Setup generation"/"Scoring" rows — a deliberate choice, never an oversight,
+made specifically to avoid a second, ongoing 43-strategy simulation, §1's own problem statement), taps
+the COMPETITIVE run's own already-computed `score_batch` — reflecting all 43 strategies' signals and
+Scoring Engine's own conflict resolution across them. A same-bar conflict can shift S10's own
+recommendation/eligibility by even one bar; that shift changes entry price/timing, and the difference
+compounds forward through cooldown/eligibility state over a 13-month window. Cooldown-after-loss timing
+(this document's original §7/§13 framing) is a real, secondary, compounding factor — never the primary
+cause.
+
+### 19.3 The CEO's ruling — validated semantics, stated for all future reference
+
+**Checkpoint 1C is ACCEPTED WITH DOCUMENTED SEMANTIC LIMITATION (CEO decision, 2026-07-18).** The
+disclosed S10 ledger divergence is explicitly **not** classified as an implementation defect. The
+validated semantics, to be treated as authoritative going forward, superseding this document's original
+§7 framing:
+
+> Shadow Evidence evaluates how a configured strategy would execute from the conflict-adjusted
+> `score_batch` produced inside the competitive run. **It does not reconstruct how that strategy would
+> score and trade in a fully isolated run with no same-bar strategy conflicts.**
+
+Criterion "the shadow ledger reproduces the isolated reference" is **not** to be interpreted as exact or
+near-exact parity with a fully isolated strategy simulation — that was never the correct bar, and this
+document's own original §7/§14 wording implying otherwise was the error, now corrected.
+
+**Standing constraints from this ruling** (binding on any future work in this package):
+1. Do **not** add isolated re-scoring to `ShadowEvidenceEngine` — the competitive-context-reuse design
+   (§4) is confirmed, not revised.
+2. Do **not** modify competitive scoring or execution to chase closer isolated-ledger agreement.
+3. Exact isolated-strategy equivalence is a **separate future research or architecture question** (e.g.
+   a hypothetical, not-yet-designed, not-yet-approved "isolated re-scoring shadow mode" distinct from
+   this one) — it is **not** unfinished Checkpoint 1C work, and closing it is not a precondition for any
+   future checkpoint in this package.
+
+### 19.4 The empirical result, preserved verbatim as an official finding
+
+- 2 of 117 isolated trades matched exactly (trades 1–2; divergence begins at trade 3).
+- 68 total shadow trades produced (vs. 117 isolated).
+- Root cause: reuse of competitive-context conflict-adjusted scores (§19.2), with cooldown-state
+  divergence as a compounding, secondary factor — not the primary cause originally assumed in §7/§13.
+- Competitive execution itself remained perfectly byte-identical throughout (142/142 trades, full
+  `SimulationReportData` match) — this finding concerns ONLY the shadow ledger's own relationship to a
+  hypothetical from-scratch isolated rerun, never the real portfolio.
+
+Full detail: `PHASE_6_10_CHECKPOINT_1C_REPORT.md` §6.4, `phase610_checkpoint1c_s10_validation.json`.

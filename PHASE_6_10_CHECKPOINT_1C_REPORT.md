@@ -13,16 +13,26 @@ edges, multi-account support, any new trading logic, and any S10-specific produc
 
 ## 1. Executive summary
 
-Checkpoint 1C is **COMPLETE**. The Shadow Evidence system now runs the complete virtual position
-lifecycle — a shadow strategy's ALLOW decision is submitted through its own dedicated, fully independent
-`ExecutionEngine`/`ExecutionSimulator`/`PortfolioSimulator`, its resulting position is tracked from
-first fill through every partial exit to final close, and the closing mechanism (stop-loss, take-profit,
-time-stop, trailing-stop, or end-of-window forced close) is recorded explicitly, never inferred.
-Competitive execution remains byte-identical to a Shadow-disabled run, proven for one strategy and for
-four simultaneously-configured strategies, over both an 85-day pytest-fixture window and the full
-13-month/23,639-bar Phase 6.9A window. S10's own shadow trade ledger was directly compared against the
-already-committed `phase69a_isolated_funnel.json` ground truth (§6 below). All 1C code is generic —
-zero strategy-specific branches anywhere in `ai_trader/shadow_evidence/`.
+**Status: CLOSED — ACCEPTED WITH DOCUMENTED SEMANTIC LIMITATION (CEO decision, 2026-07-18).** The
+Shadow Evidence system now runs the complete virtual position lifecycle — a shadow strategy's ALLOW
+decision is submitted through its own dedicated, fully independent `ExecutionEngine`/
+`ExecutionSimulator`/`PortfolioSimulator`, its resulting position is tracked from first fill through
+every partial exit to final close, and the closing mechanism (stop-loss, take-profit, time-stop,
+trailing-stop, or end-of-window forced close) is recorded explicitly, never inferred. Competitive
+execution remains byte-identical to a Shadow-disabled run, proven for one strategy and for four
+simultaneously-configured strategies, over both an 85-day pytest-fixture window and the full
+13-month/23,639-bar Phase 6.9A window. All 1C code is generic — zero strategy-specific branches anywhere
+in `ai_trader/shadow_evidence/`.
+
+S10's own shadow trade ledger was directly compared against the already-committed
+`phase69a_isolated_funnel.json` ground truth and found to diverge substantially (§6.4). The CEO's own
+ruling establishes this divergence as an **expected consequence of Shadow Evidence's validated
+semantics, not an implementation defect and not unfinished work** — see §6.4/§8 for the precise,
+corrected statement of what Checkpoint 1C's acceptance criteria actually require. This report, and
+`PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md` §19, were both updated on 2026-07-18 (documentation-
+only, no code change) to state this boundary explicitly, per the CEO's own direction that the original
+design language ("exact parity," "cooldown tolerance") was imprecise and had to be corrected, not
+merely footnoted.
 
 ## 2. Architectural summary
 
@@ -102,33 +112,51 @@ Mode is disabled or enabled-with-full-virtual-execution, for one strategy (S10) 
 simultaneously-configured strategies (S10/S21/S39/S40), at both the 85-day pytest-fixture scale and the
 full 13-month/23,639-bar Phase 6.9A window.
 
-### 6.4 S10 isolated-ledger validation — real divergence found, root-caused, disclosed honestly
+### 6.4 S10 isolated-ledger validation — the official empirical finding and its validated semantics
 
 Full 13-month run: **142/142 competitive trades, byte-identical** (`full_report_identical: true`,
 `trade_ledger_identical: true`) — matches Phase 6.9A's own published competitive count exactly.
 
-The S10-vs-isolated ledger comparison, however, is **not** a close match: shadow produced **68 trades**
-vs. the isolated run's **117**; only the **first 2 trades match exactly**, diverging from trade 3 onward.
-This is larger than the originally-anticipated "rare, mid-window cooldown edge case" (Design §7's own
-framing) — root-caused, not merely asserted away:
+**The official empirical result (preserved verbatim, per CEO instruction — never to be softened or
+re-derived differently in a future summary):**
+- **2 of 117** isolated trades matched exactly (trades 1–2; divergence begins at trade 3).
+- **68** total shadow trades produced (vs. 117 isolated).
+- Verified root cause: reuse of competitive-context conflict-adjusted scores, followed by compounding
+  cooldown-state divergence (§ below) — not primarily cooldown/mid-window timing, which was this
+  document's own original (incorrect) framing before the CEO's 2026-07-18 correction.
 
-**Root cause**: `phase69a_isolated_run.py` builds its harness with `strategy_id_filter=frozenset({"S10"})`,
-which restricts the handles **Signal Engine itself evaluates** to S10 alone — its `score_batch` for every
-bar contains only S10's own signal, with no possible same-bar conflict. Checkpoint 1C's shadow engine, by
-design (Design §4's own "Setup generation"/"Scoring" rows), taps the **competitive run's own** already-
-computed `score_batch` — which reflects all 43 strategies' signals and Scoring Engine's own conflict
-resolution across them. This is the exact same mechanism Checkpoint 1B's own validation already predicted
-would make `BELOW_FLOOR` counts match the *competitive* run, not the *isolated* one — Checkpoint 1C now
-makes this concrete at the trade-ledger level for the first time: a same-bar conflict shifting S10's own
-recommendation/eligibility by even one bar changes its entry price/timing, and that difference cascades
-into every subsequent trade's cooldown/eligibility state, compounding over a 13-month window.
+**Verified root cause**: `phase69a_isolated_run.py` builds its harness with
+`strategy_id_filter=frozenset({"S10"})`, which restricts the handles **Signal Engine itself evaluates**
+to S10 alone — its `score_batch` for every bar contains only S10's own signal, with no possible same-bar
+conflict. Checkpoint 1C's shadow engine, exactly as designed (Design §4's own "Setup generation"/
+"Scoring" rows — a deliberate choice, never an oversight, made specifically to avoid a second, ongoing
+43-strategy simulation), taps the **competitive run's own** already-computed `score_batch` — which
+reflects all 43 strategies' signals and Scoring Engine's own conflict resolution across them. A same-bar
+conflict shifting S10's own recommendation/eligibility by even one bar changes its entry price/timing,
+and that difference then compounds forward through every subsequent trade's cooldown/eligibility state
+over the 13-month window.
 
-**This is a by-design consequence of the architecture, not an implementation defect** — Shadow Evidence
-was explicitly designed to reuse the competitive run's own scoring (never re-score in isolation, Design
-§4), and this is the first time that choice's full downstream effect on an actual trade ledger has been
-measured, not merely predicted at the funnel-count level. It does not affect competitive-execution parity
-(§6.3, perfect) or any of this checkpoint's other invariants. Full numeric result in
-`phase610_checkpoint1c_s10_validation.json`.
+**The validated semantics (CEO ruling, 2026-07-18 — authoritative, supersedes this document's own
+earlier framing):**
+
+> Shadow Evidence evaluates how a configured strategy would execute from the conflict-adjusted
+> `score_batch` produced inside the competitive run. It does not reconstruct how that strategy would
+> score and trade in a fully isolated run with no same-bar strategy conflicts.
+
+Acceptance criterion #5 ("the shadow trade ledger reproduces the S10 isolated reference") is **not** to
+be interpreted as exact or near-exact parity with a fully isolated strategy simulation, and is **not**
+bounded by a "minor cooldown tolerance" — that framing (this document's own original §6.4 draft, and
+`PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`'s original §7/§14 wording) was imprecise and has been
+corrected at its source (design doc §19). The disclosed divergence is **not classified as an
+implementation defect**. It does not affect competitive-execution parity (§6.3, perfect) or any of this
+checkpoint's other invariants. Full numeric result in `phase610_checkpoint1c_s10_validation.json`
+(unchanged — the data itself was correct from the start; only the interpretive framing around it has
+been corrected).
+
+**Standing constraints from this ruling** (binding on any future work in this package — see design doc
+§19.3 for the full statement): do not add isolated re-scoring to `ShadowEvidenceEngine`; do not modify
+competitive scoring or execution to chase closer isolated-ledger agreement; exact isolated-strategy
+equivalence is a separate future research/architecture question, not unfinished Checkpoint 1C work.
 
 ### 6.5 Multi-edge isolation / generic architecture
 `test_multi_edge_shadow_evidence_scales_with_more_configured_strategies` and
@@ -154,17 +182,17 @@ Two genuinely unreachable defensive branches (`_exit_reason_for`'s `"UNKNOWN"` f
 explanatory comment, matching this codebase's own established convention for exhaustive-by-construction
 branches, rather than engineering a contrived test to hit unreachable code.
 
-## 8. Remaining limitations (disclosed, not resolved by this checkpoint)
+## 8. Validated scope boundary (not unfinished work) and remaining limitations
 
-- **Shadow-vs-truly-isolated trade-ledger divergence is real and now quantified, not just theoretical**
-  (§6.4): S10's shadow run produced 68 trades vs. the isolated run's 117, matching exactly only the first
-  2. Root cause: Shadow Evidence taps the competitive run's own conflict-adjusted `score_batch` by design
-  (never re-scores in isolation) — a same-bar conflict with another strategy can shift S10's own entry
-  timing/price by even one bar, and that difference compounds forward via cooldown/eligibility state over
-  a 13-month window. This is a by-design property of the architecture (already predicted at the funnel-
-  count level by Checkpoint 1B's own validation), not a defect — but its practical magnitude on an actual
-  trade ledger was not previously measured, and is larger than "documented tolerance" may have implied
-  before this checkpoint's own empirical result. Flagged explicitly for CEO judgment, not resolved here.
+**Scope boundary — settled by CEO ruling 2026-07-18, not open work:** Shadow Evidence's own validated
+semantics (§6.4) mean it evaluates strategies against competitive-context conflict-adjusted scoring, not
+isolated from-scratch scoring. Exact isolated-strategy equivalence is a genuinely different capability —
+it would require a materially different design (isolated re-scoring inside `ShadowEvidenceEngine`,
+explicitly ruled out by the CEO, §6.4) — and is classified as a **separate future research or
+architecture question**, should the CEO ever choose to pursue it, not a gap in Checkpoint 1C. No action
+item, no "TODO," no implicit expectation of future closure attaches to this boundary.
+
+**Genuinely remaining limitations (disclosed, not resolved by this checkpoint):**
 - Runtime/memory at 43+ simultaneously-tracked edges remains a reasoned estimate (~3–5×), not benchmarked
   — Checkpoint 1C validated at N=1 and N=4, not N=43. A 43-edge rollout requires its own benchmark first
   (Design §13 test 8, §14 Checkpoint 3) and its own separate CEO approval.
@@ -173,7 +201,17 @@ branches, rather than engineering a contrived test to hit unreachable code.
 - Capital allocation across edges remains undesigned — the largest remaining gap to the stated
   "AI Portfolio Manager" end goal, out of scope here.
 
-## 9. Final statistics
+## 9. Final statistics and commit history
 
-See §6.1/§6.2 above. Final commit hash, branch, and working-tree status are reported in the session's
-own final CEO-facing report (this document is committed alongside that state, not before it).
+See §6.1/§6.2 above for test/mypy/coverage numbers.
+
+- **Implementation commit**: `1f0ec84596951ea83dc65df053c2a9a7ee4e594c` — "Phase 6.10 Implementation
+  Checkpoint 1C: full virtual position lifecycle for Shadow Evidence" (all code, tests, and the original
+  version of this report and the S10 validation artifacts).
+- **Documentation-only clarification commit** (this revision): updates this report's §1/§6.4/§8 and
+  `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md` §7/§14/§19 to state the validated semantics
+  precisely, per the CEO's 2026-07-18 acceptance ruling. No `ai_trader/` source file touched by this
+  revision — see the commit's own diff for confirmation.
+- **Branch**: `ai-trader-implementation`.
+- **Checkpoint 1C status**: CLOSED. No further checkpoint begins without its own, separate, explicit CEO
+  authorization.
