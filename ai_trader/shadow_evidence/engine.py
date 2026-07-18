@@ -40,10 +40,12 @@ from ai_trader.risk_manager.config import RiskConfig
 from ai_trader.risk_manager.engine import RiskManager
 from ai_trader.risk_manager.types import Decision, RiskContext
 from ai_trader.scoring_engine.types import OpportunityScore, Recommendation, ScoreBatch
+from ai_trader.shadow_evidence import aggregation
 from ai_trader.shadow_evidence.types import (
     ShadowOpportunityRecord,
     ShadowPositionRecord,
     ShadowRejectionRecord,
+    ShadowStrategySummary,
     ShadowTradeLegRecord,
 )
 from ai_trader.signal_engine.types import Direction, SignalState
@@ -164,6 +166,34 @@ class ShadowEvidenceEngine:
         possibly-updated record for each ``position_id`` (Design §17.1 Q4's own formal invariant:
         aggregation fields are derived from legs, never the reverse)."""
         return tuple(self._positions.values())
+
+    # ------------------------------------------------------------------ per-strategy lifecycle introspection (Checkpoint 2)
+
+    @property
+    def configured_strategy_ids(self) -> frozenset[str]:
+        """Every strategy_id this engine was configured to shadow-track, regardless of whether it has
+        produced any evidence yet or has since degraded -- the same set passed to ``__init__``."""
+        return self._shadow_strategy_ids
+
+    @property
+    def degraded_strategy_ids(self) -> frozenset[str]:
+        """Every strategy_id that has been degraded by a failure (Design §10.1) -- permanently, for
+        the remainder of this run. A read-only snapshot; never mutated by the caller."""
+        return frozenset(self._degraded_strategy_ids)
+
+    @property
+    def active_strategy_ids(self) -> frozenset[str]:
+        """Configured strategies that have NOT degraded -- the set still eligible to accumulate
+        evidence on a future bar. Purely a set difference, no new state."""
+        return self._shadow_strategy_ids - self._degraded_strategy_ids
+
+    def summaries(self, window: str, as_of: int) -> dict[str, ShadowStrategySummary]:
+        """Every currently-tracked strategy's own aggregated shadow statistics for one rolling window
+        ending at ``as_of`` (Checkpoint 2's own "generic aggregation layer" requirement) -- a thin,
+        read-only pass-through to :mod:`ai_trader.shadow_evidence.aggregation`'s own pure functions;
+        this method holds no computation of its own and never affects any decision this engine makes,
+        during this call or any future bar. Safe to call at any point during or after a run."""
+        return aggregation.all_summaries(window, as_of, self.opportunities, self.rejections, self.trade_legs)
 
     # ------------------------------------------------------------------ lazy per-strategy construction
 

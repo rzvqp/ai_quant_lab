@@ -394,3 +394,53 @@ def test_shadow_outer_boundary_failure_isolation_covers_every_new_checkpoint_1c_
     assert all(sid == "__engine__" for _as_of, sid, _err in harness.shadow_engine.failures)
     assert harness.shadow_engine.trade_legs == []  # settle_bar() never got to run its real body
     assert _competitive_fingerprint(harness) == disabled
+
+
+# ------------------------------------------------------------------------------- Checkpoint 2: generic multi-edge aggregation
+
+def test_summaries_aggregate_across_multiple_strategies_over_a_full_run() -> None:
+    context = _context("SHADOW-2-SUMMARIES", ShadowConfig(enabled=True, shadow_strategies=("S10", "S21", "S39", "S40")))
+    harness = _run("SHADOW-2-SUMMARIES", context.shadow_config)
+    assert harness.shadow_engine is not None
+    engine = harness.shadow_engine
+
+    summaries = engine.summaries("12m", context.date_range.end)
+
+    # Generic: exactly the configured strategies that actually produced evidence, no others, no
+    # hardcoded assumption about which specific ones traded.
+    assert set(summaries).issubset({"S10", "S21", "S39", "S40"})
+    for strategy_id, summary in summaries.items():
+        assert summary.strategy_id == strategy_id
+        assert summary.source == "shadow"
+        own_legs = [t for t in engine.trade_legs if t.leg.strategy_id == strategy_id]
+        assert summary.window_metrics.n_trades == len(own_legs)
+        if own_legs:
+            assert summary.window_metrics.net_pnl == sum(t.leg.net_pnl for t in own_legs)
+        own_opportunities = [o for o in engine.opportunities if o.strategy_id == strategy_id]
+        assert summary.n_opportunities == len(own_opportunities)
+
+
+def test_summaries_are_deterministic_across_repeated_runs() -> None:
+    config = ShadowConfig(enabled=True, shadow_strategies=("S10", "S21"))
+    context = _context("SHADOW-2-DET", config)
+    harness_a = _run("SHADOW-2-DET", config)
+    harness_b = _run("SHADOW-2-DET", config)
+    assert harness_a.shadow_engine is not None and harness_b.shadow_engine is not None
+    summaries_a = harness_a.shadow_engine.summaries("12m", context.date_range.end)
+    summaries_b = harness_b.shadow_engine.summaries("12m", context.date_range.end)
+    assert summaries_a == summaries_b
+
+
+def test_configured_degraded_active_strategy_ids_are_consistent_over_a_full_run(monkeypatch) -> None:
+    def _always_raise(self, strategy_id, as_of, bar_index, bars, phase_running):
+        raise RuntimeError("forced failure for lifecycle-introspection test")
+
+    monkeypatch.setattr(ShadowEvidenceEngine, "_settle_one", _always_raise)
+    harness = _run("SHADOW-2-LIFECYCLE", ShadowConfig(enabled=True, shadow_strategies=("S10", "S21")))
+    assert harness.shadow_engine is not None
+    engine = harness.shadow_engine
+
+    assert engine.configured_strategy_ids == frozenset({"S10", "S21"})
+    assert engine.degraded_strategy_ids <= engine.configured_strategy_ids
+    assert engine.active_strategy_ids == engine.configured_strategy_ids - engine.degraded_strategy_ids
+    assert engine.active_strategy_ids.isdisjoint(engine.degraded_strategy_ids)

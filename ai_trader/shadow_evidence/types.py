@@ -1,16 +1,22 @@
-"""Shadow Evidence data contracts -- Phase 6.10 Implementation Checkpoints 1A + 1B + 1C
+"""Shadow Evidence data contracts -- Phase 6.10 Implementation Checkpoints 1A + 1B + 1C + 2
 (``PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`` §9, revised after its own adversarial review,
-§17). Frozen data shapes; no Strategy Health classification logic. ``ShadowRejectionRecord`` was added
-in Checkpoint 1B (the read-only pipeline tap that produces DENY events); Checkpoint 1C
-(:mod:`ai_trader.shadow_evidence.engine`) populates ``ShadowPositionRecord``/``ShadowTradeLegRecord``
-and sets ``ShadowOpportunityRecord.resulting_position_id`` for the first time. ``ShadowStrategySummary``
-remains deferred -- it is Strategy-Health-adjacent, out of scope per the CEO's own explicit "no Health
-classification logic" instruction.
+§17). Frozen data shapes; no Strategy Health classification logic anywhere in this module.
+``ShadowRejectionRecord`` was added in Checkpoint 1B (the read-only pipeline tap that produces DENY
+events); Checkpoint 1C (:mod:`ai_trader.shadow_evidence.engine`) populates ``ShadowPositionRecord``/
+``ShadowTradeLegRecord`` and sets ``ShadowOpportunityRecord.resulting_position_id`` for the first time.
+Checkpoint 2 adds ``ShadowStrategySummary`` -- generic, per-strategy STATISTICS (win rate, expectancy,
+drawdown, etc., reusing :mod:`ai_trader.strategy_health.metrics`'s own frozen, unmodified computation),
+explicitly NOT Health SCORING or CLASSIFICATION (``strategy_health.scoring``/``classifier``/
+``evaluator`` and ``HealthState``/``WindowScore`` are never imported or produced by this package) --
+the CEO's own explicit "no Health/Edge Health" instruction (Checkpoint 2, 2026-07-18) draws this line
+precisely: statistics is one lifecycle stage earlier than health (`PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md`
+§5's own 7-stage table), and only that earlier stage is in scope here.
 
 Reuses existing repository types wherever a genuine match exists, per the adversarial review's own
 data-contract finding (Design §17.1, Q8): ``Direction``/``SignalState`` from
 :mod:`ai_trader.signal_engine.types`, ``Recommendation`` from :mod:`ai_trader.scoring_engine.types`,
-and ``TradeRecord`` from :mod:`ai_trader.simulation.portfolio_simulator` (embedded, not duplicated).
+``TradeRecord`` from :mod:`ai_trader.simulation.portfolio_simulator` (embedded, not duplicated), and
+``WindowMetrics`` from :mod:`ai_trader.strategy_health.types` (embedded, not duplicated, Checkpoint 2).
 """
 
 from __future__ import annotations
@@ -20,6 +26,7 @@ from dataclasses import dataclass
 from ai_trader.scoring_engine.types import Recommendation
 from ai_trader.signal_engine.types import Direction, SignalState
 from ai_trader.simulation.portfolio_simulator import TradeRecord
+from ai_trader.strategy_health.types import WindowMetrics
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,3 +130,32 @@ class ShadowTradeLegRecord:
     leg: TradeRecord
     position_id: str
     exit_reason: str
+
+
+@dataclass(frozen=True, slots=True)
+class ShadowStrategySummary:
+    """One strategy's aggregated shadow STATISTICS over one rolling window (Checkpoint 2, Design §9's
+    own revised definition, adversarial-review finding Q8). ``window_metrics`` is a genuine
+    ``strategy_health.types.WindowMetrics``, computed by that module's own frozen, unmodified
+    ``compute_window_metrics()`` over this strategy's shadow-sourced ``ClosedTrade`` stream (each
+    ``ShadowTradeLegRecord.leg`` adapted via ``strategy_health.types.from_trade_record``, unmodified)
+    -- NOT reinvented scoring math. This is deliberately a thin wrapper, not a parallel metrics schema:
+    every actual number in ``window_metrics`` comes from code this package does not own or modify.
+
+    ``source`` is the ONE label distinguishing this from a competitive-sourced ``WindowMetrics`` --
+    always ``"shadow"`` here, never silently merged with a competitive stream by any downstream
+    consumer. This type carries NO classification (no ``HealthState``, no percentile/PCA score) --
+    that is Strategy Health's own, separate, still-unselected integration policy (Design §11),
+    untouched by this type or by anything in :mod:`ai_trader.shadow_evidence`."""
+
+    strategy_id: str
+    source: str
+    window_metrics: WindowMetrics
+    n_opportunities: int
+    n_shadow_denied_by_reason: dict[str, int]
+
+    def __post_init__(self) -> None:
+        if self.source != "shadow":
+            raise ValueError(f"ShadowStrategySummary.source must be 'shadow', got {self.source!r}")
+        if self.n_opportunities < 0:
+            raise ValueError("ShadowStrategySummary.n_opportunities must be >= 0")

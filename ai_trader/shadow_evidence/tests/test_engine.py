@@ -506,3 +506,61 @@ def test_finalize_at_end_failure_isolation_degrades_only_the_failing_strategy() 
 
     assert len(engine.failures) == 2
     assert {sid for _as_of, sid, _err in engine.failures} == {"S10", "S21"}
+
+
+# ------------------------------------------------------------------------------- lifecycle introspection + aggregation (Checkpoint 2)
+
+def test_configured_strategy_ids_reflects_construction() -> None:
+    engine = _engine(frozenset({"S10", "S21"}))
+    assert engine.configured_strategy_ids == frozenset({"S10", "S21"})
+    assert engine.degraded_strategy_ids == frozenset()
+    assert engine.active_strategy_ids == frozenset({"S10", "S21"})
+
+
+def test_degraded_and_active_strategy_ids_reflect_a_failure() -> None:
+    engine = _engine(frozenset({"S10", "S21"}))
+
+    def _boom(self: ShadowEvidenceEngine, as_of: int, score: OpportunityScore, risk_context: RiskContext) -> None:
+        raise RuntimeError("forced failure")
+
+    original = ShadowEvidenceEngine._observe_one
+    ShadowEvidenceEngine._observe_one = _boom  # type: ignore[method-assign]
+    try:
+        engine.observe(AS_OF, _batch(_score(strategy_id="S10")), _risk_context())
+    finally:
+        ShadowEvidenceEngine._observe_one = original  # type: ignore[method-assign]
+
+    assert engine.degraded_strategy_ids == frozenset({"S10"})
+    assert engine.active_strategy_ids == frozenset({"S21"})
+    assert engine.configured_strategy_ids == frozenset({"S10", "S21"})  # unchanged -- still configured
+
+
+def test_summaries_aggregates_across_multiple_strategies_end_to_end() -> None:
+    engine = _engine(frozenset({"S10", "S21"}))
+    engine.observe(AS_OF, _batch(_score(strategy_id="S10"), _score(strategy_id="S21")), _risk_context())
+    entry_as_of = AS_OF + BAR_SECONDS
+    engine.settle_bar(entry_as_of, bar_index=1, bars=_bar(entry_as_of, 2000.0), phase_running=True)
+    stop_as_of = entry_as_of + BAR_SECONDS
+    engine.settle_bar(stop_as_of, bar_index=2, bars=_bar(stop_as_of, 1985.0), phase_running=True)  # both stop out
+
+    summaries = engine.summaries("12m", stop_as_of)
+    assert set(summaries) == {"S10", "S21"}
+    for strategy_id, summary in summaries.items():
+        assert summary.strategy_id == strategy_id
+        assert summary.source == "shadow"
+        assert summary.window_metrics.n_trades == 1
+        assert summary.window_metrics.net_pnl < 0  # both closed at a loss (stop hit)
+
+
+def test_summaries_is_read_only_and_never_affects_further_engine_behavior() -> None:
+    # Calling summaries() mid-run must change nothing about subsequent observe()/settle_bar() results.
+    engine = _engine(frozenset({"S10"}))
+    engine.observe(AS_OF, _batch(_score(strategy_id="S10")), _risk_context())
+    entry_as_of = AS_OF + BAR_SECONDS
+    engine.settle_bar(entry_as_of, bar_index=1, bars=_bar(entry_as_of, 2000.0), phase_running=True)
+
+    _ = engine.summaries("3m", entry_as_of)
+    _ = engine.summaries("12m", entry_as_of)  # called twice, different windows -- still read-only
+
+    assert engine.positions[0].status == "OPEN"  # untouched by either summaries() call
+    assert len(engine._accounts) == 1  # no new account spuriously created by summaries()
