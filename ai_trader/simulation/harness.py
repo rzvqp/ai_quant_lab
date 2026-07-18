@@ -212,8 +212,14 @@ class SimulationHarness:
 
             active_shadow_ids = self.context.shadow_config.active_strategy_ids()
             if active_shadow_ids:
+                # Checkpoint 1C: the shadow engine now constructs its own fully independent
+                # ExecutionEngine/ExecutionSimulator/PortfolioSimulator per strategy (Design §4/§10),
+                # so it needs the same context/symbol_meta/capabilities the real stack above was just
+                # built from -- shared by reference (all three are read-only/immutable configuration,
+                # never mutated after construction, the same sharing precedent §10 invariant 3 already
+                # established for RiskConfig).
                 self.shadow_engine = ShadowEvidenceEngine(
-                    active_shadow_ids, self._risk_config, self.context.starting_balance,
+                    active_shadow_ids, self._risk_config, self.context, self._symbol_meta, caps,
                 )
 
             self._clock = ReplayClock(all_ticks=ticks, warmup_ticks=warmup_ticks)
@@ -287,21 +293,33 @@ class SimulationHarness:
         if self.context.close_at_end_policy is not CloseAtEndPolicy.CLOSE_AT_LAST:
             return
         last_as_of = self.as_of
-        if last_as_of is None or not self.portfolio_simulator.account.positions:
+        if last_as_of is None:
             return
         bars = self._data_source.base_bars_at(last_as_of)
-        fills = []
-        for symbol, pos in sorted(self.portfolio_simulator.account.positions.items()):
-            bar = bars.get(symbol)
-            price = bar.close if bar is not None else pos.avg_entry
-            close_direction = Direction.SHORT if pos.direction is Direction.LONG else Direction.LONG
-            fills.append(SimFillEvent(
-                client_order_id=f"CLOSE-AT-END-{symbol}", order_request_id=f"CLOSE-AT-END-{symbol}",
-                strategy_id=pos.strategy_id, symbol=symbol, direction=close_direction, intent_close=True,
-                qty=pos.size, price=price, spread_cost=0.0, slippage_cost=0.0, commission=0.0,
-                as_of=last_as_of, reduce_only=True,
-            ))
-        self.portfolio_simulator.apply(tuple(fills), self.bar_index)
+        if self.portfolio_simulator.account.positions:
+            fills = []
+            for symbol, pos in sorted(self.portfolio_simulator.account.positions.items()):
+                bar = bars.get(symbol)
+                price = bar.close if bar is not None else pos.avg_entry
+                close_direction = Direction.SHORT if pos.direction is Direction.LONG else Direction.LONG
+                fills.append(SimFillEvent(
+                    client_order_id=f"CLOSE-AT-END-{symbol}", order_request_id=f"CLOSE-AT-END-{symbol}",
+                    strategy_id=pos.strategy_id, symbol=symbol, direction=close_direction, intent_close=True,
+                    qty=pos.size, price=price, spread_cost=0.0, slippage_cost=0.0, commission=0.0,
+                    as_of=last_as_of, reduce_only=True,
+                ))
+            self.portfolio_simulator.apply(tuple(fills), self.bar_index)
+
+        # Checkpoint 1C: a shadow account can hold an open position at window-end even when the real
+        # portfolio does not (or vice versa) -- its own finalization runs independently, per the SAME
+        # close_at_end_policy (checked again, internally, by ShadowEvidenceEngine.finalize_at_end).
+        if self.shadow_engine is not None:
+            try:
+                self.shadow_engine.finalize_at_end(last_as_of, self.bar_index, bars)
+            except Exception as exc:  # noqa: BLE001 -- failure isolation: a shadow finalization bug
+                # must never affect the real, already-applied competitive close-at-end result above.
+                self.shadow_engine.failures.append((last_as_of, "__engine__", repr(exc)))
+                logger.warning("Shadow Evidence: finalize_at_end() raised: %r", exc)
 
     def _run_one_bar(self, as_of: int) -> None:
         assert self._data_source and self._scanner and self._strategy_manager
@@ -408,6 +426,16 @@ class SimulationHarness:
                             )
                             self._execution_engine.execute(decision, portfolio_state)
                             self.orders_submitted += 1
+                # Checkpoint 1C: the identical time-stop overlay, applied to each shadow account's OWN
+                # positions using the SAME already-computed time_stop_bars_by_strategy dict (Design §4's
+                # "Time-stop" row) -- defense-in-depth try/except, mirroring the existing tap call site.
+                if self.shadow_engine is not None:
+                    try:
+                        self.shadow_engine.apply_time_stops(as_of, self._clock.bar_index, time_stop_bars_by_strategy)
+                    except Exception as exc:  # noqa: BLE001 -- failure isolation: a shadow overlay bug
+                        # must never affect competitive execution.
+                        self.shadow_engine.failures.append((as_of, "__engine__", repr(exc)))
+                        logger.warning("Shadow Evidence: apply_time_stops() raised: %r", exc)
 
             if self._enable_trailing_stops and self._use_strategy_runtime:
                 atr_mult_by_strategy = {
@@ -441,6 +469,16 @@ class SimulationHarness:
                             )
                             self._execution_engine.execute(decision, portfolio_state)
                             self.orders_submitted += 1
+                # Checkpoint 1C: the identical trailing-stop overlay, applied to each shadow account's
+                # OWN positions, with its OWN per-account entry-ATR tracking (Design §4's "Trailing-
+                # stop" row; §10 invariant 3: never reads/writes this harness's own _trailing_entry_atr).
+                if self.shadow_engine is not None:
+                    try:
+                        self.shadow_engine.apply_trailing_stops(as_of, bars, context_batch, atr_mult_by_strategy)
+                    except Exception as exc:  # noqa: BLE001 -- failure isolation: a shadow overlay bug
+                        # must never affect competitive execution.
+                        self.shadow_engine.failures.append((as_of, "__engine__", repr(exc)))
+                        logger.warning("Shadow Evidence: apply_trailing_stops() raised: %r", exc)
 
         fills = self.execution_simulator.advance_bar(as_of, bars)
         assert self._clock is not None
@@ -448,6 +486,19 @@ class SimulationHarness:
         self.fills_total += len(fills)
         self._execution_engine.reconcile()  # keep EE's own ledger/report in sync (EXECUTION_API.md)
         self.portfolio_simulator.mark_to_market(as_of, bars, phase_running=phase_running)
+
+        # Checkpoint 1C: the identical fill/mark-to-market sequence, once per shadow account, AFTER the
+        # real one above has fully completed (Design §4's "Virtual close" row) -- resolves pending
+        # virtual entries and records every closing/partial-exit leg. Runs every bar, unconditionally
+        # (not gated on phase_running), exactly mirroring the real sequence's own placement outside the
+        # `if phase_running:` block above.
+        if self.shadow_engine is not None:
+            try:
+                self.shadow_engine.settle_bar(as_of, self._clock.bar_index, bars, phase_running)
+            except Exception as exc:  # noqa: BLE001 -- failure isolation: a shadow settlement bug must
+                # never affect competitive execution.
+                self.shadow_engine.failures.append((as_of, "__engine__", repr(exc)))
+                logger.warning("Shadow Evidence: settle_bar() raised: %r", exc)
 
 
 def _build_risk_context(context: dict[str, Any], as_of: int, tick_size: float, spread_ticks: float) -> RiskContext:

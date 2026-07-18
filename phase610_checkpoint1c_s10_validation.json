@@ -1,0 +1,58 @@
+{
+  "config": {
+    "window_start": 1729674000,
+    "window_end": 1761210000,
+    "shadow_strategy": "S10"
+  },
+  "isolation_proof": {
+    "full_report_identical": true,
+    "trade_ledger_identical": true,
+    "plain_trade_count": 142,
+    "shadow_run_trade_count": 142
+  },
+  "position_identity_invariant": {
+    "resulting_position_ids_unique": true,
+    "shadow_position_ids_unique": true,
+    "leg_aggregation_correct": true,
+    "n_positions": 67,
+    "n_trade_legs": 68,
+    "n_opportunities": 23636,
+    "n_failures": 0
+  },
+  "shadow_id_discriminator": {
+    "all_shadow_client_order_ids_prefixed": true,
+    "no_collision_with_real_client_order_ids": true
+  },
+  "comparison_against_phase69a_isolated": {
+    "isolated_n_trades": 117,
+    "shadow_n_trades": 68,
+    "exact_trade_ledger_match": false,
+    "n_matching_from_start": 2,
+    "first_divergence_index": 2,
+    "first_divergent_shadow_trade": {
+      "symbol": "XAUUSD",
+      "direction": "SHORT",
+      "entry_price": 2707.13,
+      "exit_price": 2721.0600000000004,
+      "entry_as_of": 1730877300,
+      "exit_as_of": 1730878200,
+      "qty": 0.15,
+      "net_pnl": -2.0895000000000437,
+      "pnl_r": -1.000718390804646,
+      "holding_bars": 1
+    },
+    "first_divergent_isolated_trade": {
+      "symbol": "XAUUSD",
+      "direction": "SHORT",
+      "entry_price": 2705.7599999999998,
+      "exit_price": 2721.0600000000004,
+      "entry_as_of": 1730876400,
+      "exit_as_of": 1730878200,
+      "qty": 0.15,
+      "net_pnl": -2.2950000000000954,
+      "pnl_r": -0.5049504950495229,
+      "holding_bars": 2
+    },
+    "note": "A divergence starting mid-run (not at trade 0) is consistent with the already-disclosed cooldown-after-loss mid-window-start caveat (Design \u00a77/\u00a713) -- NOT assumed away here, reported for CEO inspection."
+  }
+}

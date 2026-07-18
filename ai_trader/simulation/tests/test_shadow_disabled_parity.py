@@ -1,4 +1,4 @@
-"""Shadow Mode isolation proofs -- Phase 6.10 Implementation Checkpoints 1A + 1B
+"""Shadow Mode isolation proofs -- Phase 6.10 Implementation Checkpoints 1A + 1B + 1C
 (``PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md``). Proves:
 
 - Checkpoint 1A (disabled-by-default): with no ``shadow_strategies`` configured, nothing changes --
@@ -12,6 +12,13 @@
   generic, not hardcoded to one strategy). Also proves shadow evidence records only ever carry a
   configured strategy's own id, and that a forced shadow-strategy failure degrades only that one
   strategy without affecting competitive execution or crashing the run.
+- Checkpoint 1C (the full virtual position lifecycle): the SAME byte-identical competitive-execution
+  guarantee still holds once shadow accounts actually open/manage/close virtual positions; the shadow
+  ledger itself is non-trivial, deterministic across repeated runs, carries the required "SHADOW-"
+  client_order_id discriminator, satisfies the formal position-identity invariant (Design §17.1 Q4)
+  exhaustively over a full run, scales correctly across multiple simultaneously-tracked edges, never
+  mutates the shared ``RiskConfig`` object, and isolates a forced failure in the NEW settlement path
+  exactly as Checkpoint 1B already proved for the read-only tap.
 
 Same real-strategy-runtime fixture convention as ``test_risk_event_strategy_attribution.py``
 (Phase 6.9A).
@@ -213,4 +220,177 @@ def test_shadow_engine_failure_outside_the_per_strategy_boundary_still_does_not_
     assert harness.shadow_engine is not None
     assert len(harness.shadow_engine.failures) > 0
     assert all(sid == "__engine__" for _as_of, sid, _err in harness.shadow_engine.failures)
+    assert _competitive_fingerprint(harness) == disabled
+
+
+# ------------------------------------------------------------ Checkpoint 1C: full virtual execution lifecycle
+
+def _shadow_ledger_fingerprint(harness: SimulationHarness) -> dict[str, object]:
+    """Every shadow-side artifact, for determinism/content comparisons -- never mixed with
+    ``_competitive_fingerprint``'s own real-portfolio surfaces."""
+    assert harness.shadow_engine is not None
+    engine = harness.shadow_engine
+    return {
+        "opportunities": [asdict(o) for o in engine.opportunities],  # type: ignore[call-overload]
+        "positions": [asdict(p) for p in engine.positions],  # type: ignore[call-overload]
+        "trade_legs": [asdict(t) for t in engine.trade_legs],  # type: ignore[call-overload]
+        "rejections": [asdict(r) for r in engine.rejections],  # type: ignore[call-overload]
+    }
+
+
+def test_shadow_enabled_with_full_execution_still_produces_byte_identical_competitive_execution_one_strategy() -> None:
+    disabled = _competitive_fingerprint(_run("SHADOW-1C-OFF"))
+    enabled = _competitive_fingerprint(
+        _run("SHADOW-1C-ON-S10", ShadowConfig(enabled=True, shadow_strategies=("S10",))),
+    )
+    assert disabled == enabled
+
+
+def test_shadow_enabled_with_full_execution_still_produces_byte_identical_competitive_execution_multi_strategy() -> None:
+    disabled = _competitive_fingerprint(_run("SHADOW-1C-OFF-2"))
+    enabled = _competitive_fingerprint(
+        _run(
+            "SHADOW-1C-ON-MULTI",
+            ShadowConfig(enabled=True, shadow_strategies=("S10", "S21", "S39", "S40")),
+        ),
+    )
+    assert disabled == enabled
+
+
+def test_shadow_engine_produces_a_non_trivial_virtual_ledger_for_s10() -> None:
+    # Checkpoint 1C's own central claim: bypassing the shared slot lets a slot-starved strategy
+    # actually accumulate virtual positions/trades, not just risk-eligibility opportunities (1B).
+    harness = _run("SHADOW-1C-NONTRIVIAL", ShadowConfig(enabled=True, shadow_strategies=("S10",)))
+    assert harness.shadow_engine is not None
+    assert len(harness.shadow_engine.opportunities) > 0
+    assert len(harness.shadow_engine.positions) > 0
+    assert len(harness.shadow_engine.trade_legs) > 0
+    assert all(p.strategy_id == "S10" for p in harness.shadow_engine.positions)
+    assert all(t.leg.strategy_id == "S10" for t in harness.shadow_engine.trade_legs)
+
+
+def test_shadow_client_order_ids_all_carry_the_shadow_discriminator_prefix() -> None:
+    # Design §10 invariant 4 / §17.1 finding H3's required defense-in-depth -- verified end to end
+    # through a full harness run, not just the unit-level construction check.
+    harness = _run("SHADOW-1C-PREFIX", ShadowConfig(enabled=True, shadow_strategies=("S10",)))
+    assert harness.shadow_engine is not None
+    assert len(harness.shadow_engine.trade_legs) > 0
+    for trade in harness.shadow_engine.trade_legs:
+        assert trade.leg.client_order_id.startswith("SHADOW-CID-")
+    # ...and never collides with any real, competitive client_order_id.
+    real_ids = {t.client_order_id for t in harness.portfolio_simulator.account.trade_ledger}
+    shadow_ids = {t.leg.client_order_id for t in harness.shadow_engine.trade_legs}
+    assert real_ids.isdisjoint(shadow_ids)
+
+
+def test_shadow_position_identity_invariant_holds_across_a_full_run() -> None:
+    # Design §17.1 Q4's own formal invariant, checked exhaustively over every position a full run
+    # produces: one ShadowOpportunityRecord maps to zero-or-one ShadowPositionRecord; n_legs/
+    # aggregate_net_pnl/full_exit_as_of are always derived from the position's own legs.
+    harness = _run("SHADOW-1C-IDENTITY", ShadowConfig(enabled=True, shadow_strategies=("S10",)))
+    assert harness.shadow_engine is not None
+    engine = harness.shadow_engine
+    resulting_ids = [o.resulting_position_id for o in engine.opportunities if o.shadow_risk_decision == "ALLOW"]
+    assert len(resulting_ids) == len({rid for rid in resulting_ids if rid is not None}) + resulting_ids.count(None)
+    position_ids = {p.position_id for p in engine.positions}
+    assert len(position_ids) == len(engine.positions)  # no position_id ever duplicated across records
+    for position in engine.positions:
+        legs = [t for t in engine.trade_legs if t.position_id == position.position_id]
+        assert len(legs) == position.n_legs
+        if position.status == "CLOSED":
+            assert position.aggregate_net_pnl == sum(leg.leg.net_pnl for leg in legs)
+            assert position.full_exit_as_of == legs[-1].leg.exit_as_of
+
+
+def test_multi_edge_shadow_evidence_scales_with_more_configured_strategies() -> None:
+    # Not a claim about correlation/independence (Design §12) -- only that adding more shadow-tracked
+    # edges yields strictly more (never less, never merged/contaminated) accumulated evidence, and that
+    # every additional strategy's own positions stay correctly attributed to itself alone.
+    solo = _run("SHADOW-1C-SCALE-SOLO", ShadowConfig(enabled=True, shadow_strategies=("S10",)))
+    multi = _run(
+        "SHADOW-1C-SCALE-MULTI", ShadowConfig(enabled=True, shadow_strategies=("S10", "S21", "S39", "S40")),
+    )
+    assert solo.shadow_engine is not None and multi.shadow_engine is not None
+    assert len(multi.shadow_engine.positions) >= len(solo.shadow_engine.positions)
+    by_strategy: dict[str, int] = {}
+    for position in multi.shadow_engine.positions:
+        by_strategy[position.strategy_id] = by_strategy.get(position.strategy_id, 0) + 1
+    assert set(by_strategy).issubset({"S10", "S21", "S39", "S40"})
+    for trade in multi.shadow_engine.trade_legs:
+        assert trade.leg.strategy_id in {"S10", "S21", "S39", "S40"}
+
+
+def test_shadow_enabled_run_with_full_execution_is_deterministic_across_repeated_runs() -> None:
+    # The SAME run_id both times: position_id is deterministically derived FROM run_id (Design §5), so
+    # two runs of the identical (run_id, config) pair -- not merely the same config under different
+    # run_ids -- is the actual determinism claim being tested here.
+    config = ShadowConfig(enabled=True, shadow_strategies=("S10", "S21"))
+    ledger_a = _shadow_ledger_fingerprint(_run("SHADOW-1C-DET", config))
+    ledger_b = _shadow_ledger_fingerprint(_run("SHADOW-1C-DET", config))
+    assert ledger_a == ledger_b
+
+
+def test_shared_risk_config_is_byte_identical_before_and_after_a_shadow_enabled_run() -> None:
+    # Design §10 invariant 3 / §17.1 finding M1's own required test: RiskConfig is shared BY REFERENCE
+    # across the real RiskManager and every shadow RiskManager -- confirm no code path anywhere ever
+    # mutates it in place, end to end through a full run with real virtual execution.
+    risk_config = _risk_config()
+    before = asdict(risk_config)  # type: ignore[call-overload]
+    context = _context("SHADOW-1C-RISKCONFIG-UNCHANGED", ShadowConfig(enabled=True, shadow_strategies=("S10",)))
+    harness = SimulationHarness(
+        context, SYMBOL_META, DATA_DIR,
+        manager_config=ManagerConfig(auto_admit_min_maturity="EXPLORATORY"),
+        use_strategy_runtime=True, risk_config=risk_config,
+        enable_time_stops=True, enable_trailing_stops=True, strategy_id_filter=None,
+    )
+    harness.configure()
+    harness.load()
+    harness.run_to_completion()
+    assert harness.state is RunState.COMPLETED, harness.fail_reason
+    after = asdict(risk_config)  # type: ignore[call-overload]
+    assert before == after
+
+
+def test_shadow_settlement_failure_is_isolated_and_does_not_affect_competitive_execution(monkeypatch) -> None:
+    # Mirrors test_shadow_strategy_failure_is_isolated_and_does_not_affect_competitive_execution, but
+    # forces the NEW Checkpoint 1C settlement path (_settle_one) to fail instead of the Checkpoint 1B
+    # risk-tap path (_observe_one) -- proving failure isolation covers the full virtual execution
+    # lifecycle, not just the original read-only tap.
+    disabled = _competitive_fingerprint(_run("SHADOW-1C-SETTLE-FAIL-BASELINE"))
+
+    def _always_raise(self, strategy_id, as_of, bar_index, bars, phase_running):
+        raise RuntimeError("forced settlement failure for isolation test")
+
+    monkeypatch.setattr(ShadowEvidenceEngine, "_settle_one", _always_raise)
+    harness = _run("SHADOW-1C-SETTLE-FAIL", ShadowConfig(enabled=True, shadow_strategies=("S10",)))
+
+    assert harness.state is RunState.COMPLETED, harness.fail_reason
+    assert harness.shadow_engine is not None
+    assert len(harness.shadow_engine.failures) > 0
+    assert all(sid == "S10" for _as_of, sid, _err in harness.shadow_engine.failures)
+    assert harness.shadow_engine.trade_legs == []
+    assert _competitive_fingerprint(harness) == disabled
+
+
+def test_shadow_outer_boundary_failure_isolation_covers_every_new_checkpoint_1c_call_site(monkeypatch) -> None:
+    # Mirrors test_shadow_engine_failure_outside_the_per_strategy_boundary_still_does_not_affect_
+    # competitive_execution (Checkpoint 1B's own precedent for observe()) -- forces EVERY new
+    # Checkpoint 1C harness-level call site's own PUBLIC method (not its internal _xxx_one helper) to
+    # raise, proving harness.py's own defense-in-depth try/except around each one (found necessary by
+    # the SAME reasoning the original adversarial review already established for observe()) is real,
+    # not merely assumed symmetric with the tested call site.
+    disabled = _competitive_fingerprint(_run("SHADOW-1C-OUTER-FAIL-ALL-BASELINE"))
+
+    def _always_raise(self, *args, **kwargs):
+        raise RuntimeError("forced failure outside the per-strategy boundary")
+
+    for method in ("apply_time_stops", "apply_trailing_stops", "settle_bar", "finalize_at_end"):
+        monkeypatch.setattr(ShadowEvidenceEngine, method, _always_raise)
+    harness = _run("SHADOW-1C-OUTER-FAIL-ALL", ShadowConfig(enabled=True, shadow_strategies=("S10",)))
+
+    assert harness.state is RunState.COMPLETED, harness.fail_reason
+    assert harness.shadow_engine is not None
+    assert len(harness.shadow_engine.failures) > 0
+    assert all(sid == "__engine__" for _as_of, sid, _err in harness.shadow_engine.failures)
+    assert harness.shadow_engine.trade_legs == []  # settle_bar() never got to run its real body
     assert _competitive_fingerprint(harness) == disabled

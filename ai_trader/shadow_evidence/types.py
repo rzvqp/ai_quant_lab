@@ -1,10 +1,11 @@
-"""Shadow Evidence data contracts -- Phase 6.10 Implementation Checkpoints 1A + 1B
+"""Shadow Evidence data contracts -- Phase 6.10 Implementation Checkpoints 1A + 1B + 1C
 (``PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`` §9, revised after its own adversarial review,
-§17). Structural only: frozen data shapes with no execution behavior and no Strategy Health
-classification logic. ``ShadowRejectionRecord`` was added in Checkpoint 1B (the read-only pipeline tap
-that actually produces DENY events); ``ShadowStrategySummary`` remains deferred -- it is
-Strategy-Health-adjacent, out of scope per the CEO's own explicit "no Health classification logic"
-instruction.
+§17). Frozen data shapes; no Strategy Health classification logic. ``ShadowRejectionRecord`` was added
+in Checkpoint 1B (the read-only pipeline tap that produces DENY events); Checkpoint 1C
+(:mod:`ai_trader.shadow_evidence.engine`) populates ``ShadowPositionRecord``/``ShadowTradeLegRecord``
+and sets ``ShadowOpportunityRecord.resulting_position_id`` for the first time. ``ShadowStrategySummary``
+remains deferred -- it is Strategy-Health-adjacent, out of scope per the CEO's own explicit "no Health
+classification logic" instruction.
 
 Reuses existing repository types wherever a genuine match exists, per the adversarial review's own
 data-contract finding (Design §17.1, Q8): ``Direction``/``SignalState`` from
@@ -38,7 +39,7 @@ class ShadowOpportunityRecord:
     score_recommendation: Recommendation
     shadow_risk_decision: str  # "ALLOW" | "DENY" -- the one field with no upstream equivalent
     shadow_denied_reason: str | None
-    resulting_position_id: str | None  # set only once virtual execution exists (not this checkpoint)
+    resulting_position_id: str | None  # set iff the ALLOW's virtual entry order actually filled (1C)
 
     def __post_init__(self) -> None:
         if self.shadow_risk_decision not in ("ALLOW", "DENY"):
@@ -50,12 +51,11 @@ class ShadowOpportunityRecord:
             raise ValueError(
                 "ShadowOpportunityRecord: a DENY decision must not carry a resulting_position_id"
             )
-        # NOTE (relaxed during Checkpoint 1B, corrected from Checkpoint 1A's own first pass): an
-        # ALLOW decision does NOT require resulting_position_id to be set. Checkpoint 1B is a
-        # read-only pipeline tap with no virtual execution/positions (explicit CEO scope) -- an ALLOW
-        # opportunity legitimately has resulting_position_id=None here. Only a later checkpoint that
-        # implements virtual execution would populate it. The only enforced direction is the one
-        # above: a DENY must NEVER carry a position id, in any checkpoint.
+        # An ALLOW decision does NOT require resulting_position_id to be set: Checkpoint 1C submits
+        # every ALLOW's virtual entry order, but the order can still genuinely fail to fill (e.g. a
+        # real INSUFFICIENT_MARGIN/QTY_OUT_OF_BOUNDS rejection from ExecutionSimulator, empirically
+        # rare but not impossible) -- an honest ALLOW-with-no-position, never fabricated. The only
+        # enforced direction is the one above: a DENY must NEVER carry a position id.
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,13 +93,15 @@ class ShadowPositionRecord:
 @dataclass(frozen=True, slots=True)
 class ShadowRejectionRecord:
     """One shadow DENY event -- created alongside a ``ShadowOpportunityRecord`` whenever the
-    dedicated, per-strategy shadow ``RiskManager`` denies an opportunity (Checkpoint 1B). Since the
-    shadow risk evaluation always uses a structurally empty per-strategy ``PortfolioState`` (no
-    virtual position ever exists in this checkpoint), ``denied_reason_code`` can never be
-    ``LIMIT_MAX_PER_SYMBOL``/``LIMIT_MAX_POSITIONS`` against a shadow position -- only a genuine
-    market/policy-driven denial (spread/liquidity/volatility filters, etc.) is possible here by
-    construction. This is an expected, honest property of a pipeline stage that has not yet modeled
-    positions -- not a bug to be masked."""
+    dedicated, per-strategy shadow ``RiskManager`` denies an opportunity. Checkpoint 1B's own shadow
+    risk evaluation always used a structurally empty per-strategy ``PortfolioState`` (no virtual
+    position ever existed), so ``LIMIT_MAX_PER_SYMBOL``/``LIMIT_MAX_POSITIONS``/cooldown denials were
+    impossible there by construction. Checkpoint 1C changes this deliberately: shadow risk evaluation
+    now projects THIS strategy's own real, evolving shadow ``PortfolioState`` (Design §17.1 finding
+    H1's own correction), so ``denied_reason_code`` CAN legitimately be ``LIMIT_MAX_PER_SYMBOL`` (a
+    same-strategy re-entry attempt while a shadow position is already open) or a cooldown-after-loss
+    denial -- exactly mirroring the isolated-slot precedent (Design §8), never a shared-slot denial
+    against the REAL competitive portfolio, which this record never sees or influences."""
 
     rejection_id: str
     strategy_id: str
