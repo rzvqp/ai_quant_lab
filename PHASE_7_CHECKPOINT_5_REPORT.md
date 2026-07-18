@@ -211,5 +211,5 @@ coverage report --omit="*\tests\*"
 
 - Branch: `ai-trader-implementation`
 - Parent commit: `b1bd95314cf6d3d3bd8d07ac57bc4c3099ed0669` (Checkpoint 4)
-- This checkpoint's commit hash: recorded after commit (see below)
+- This checkpoint's commit hash: `8e2748a7980d2447fc3b33b8c9d96192d17f3450`
 - Working tree: clean after commit (all `market_intelligence/` files added, nothing else changed)
