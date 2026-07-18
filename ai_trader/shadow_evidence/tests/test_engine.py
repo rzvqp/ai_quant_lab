@@ -267,6 +267,47 @@ def test_a_strategy_cannot_hold_two_concurrent_shadow_positions_same_symbol() ->
     assert latest.shadow_denied_reason == "LIMIT_MAX_PER_SYMBOL"
 
 
+def test_a_second_allow_while_the_first_entry_is_still_pending_does_not_corrupt_bookkeeping() -> None:
+    # Checkpoint 3's own real finding, at 43-strategy validation scale: a strategy's entry is a
+    # LIMIT-priced BRACKET order (entry/stop/target all set) that can sit WORKING for many bars before
+    # it fills -- LIMIT_MAX_PER_SYMBOL only sees OPEN positions, never pending orders, so RiskManager
+    # legitimately ALLOWs a second entry for the same symbol while the first is still unresolved. This
+    # must never silently overwrite account.pending_entries[symbol] and orphan the first order's own
+    # eventual fill.
+    engine = _engine(frozenset({"S10"}))
+    engine.observe(AS_OF, _batch(_score(strategy_id="S10")), _risk_context())  # entry=2000, first order
+
+    # Price stays away from 2000 (never touches the LONG limit: bar.low <= 2000) -- the first entry
+    # order stays genuinely WORKING, unresolved, for several bars.
+    away_as_of_1 = AS_OF + BAR_SECONDS
+    engine.settle_bar(away_as_of_1, bar_index=1, bars=_bar(away_as_of_1, 2010.0), phase_running=True)
+    assert engine.positions == ()  # first order has not filled yet
+
+    # A second ALLOW arrives for the SAME strategy+symbol before the first resolves.
+    away_as_of_2 = away_as_of_1 + BAR_SECONDS
+    engine.observe(away_as_of_2, _batch(_score(strategy_id="S10", entry=2005.0)), _risk_context(away_as_of_2))
+    second_opp = engine.opportunities[-1]
+    assert second_opp.shadow_risk_decision == "DENY"
+    assert second_opp.shadow_denied_reason == "SHADOW_ENTRY_ALREADY_PENDING"
+    assert second_opp.resulting_position_id is None
+    assert len(engine.rejections) == 1
+    assert engine.rejections[0].denied_reason_code == "SHADOW_ENTRY_ALREADY_PENDING"
+
+    # The FIRST order (still tracked, never overwritten) eventually fills correctly.
+    fill_as_of = away_as_of_2 + BAR_SECONDS
+    engine.settle_bar(fill_as_of, bar_index=3, bars=_bar(fill_as_of, 2000.0), phase_running=True)
+    assert len(engine.positions) == 1
+    assert engine.positions[0].entry_price == 2000.0  # the FIRST order's own price, not the second's
+
+    # And it closes cleanly, with correct bookkeeping (the exact scenario that previously raised the
+    # defensive "no tracked open position_id" RuntimeError once the bug was hit).
+    stop_as_of = fill_as_of + BAR_SECONDS
+    engine.settle_bar(stop_as_of, bar_index=4, bars=_bar(stop_as_of, 1985.0), phase_running=True)
+    assert len(engine.trade_legs) == 1
+    assert engine.positions[0].status == "CLOSED"
+    assert len(engine.failures) == 0  # no internal-consistency error was ever raised
+
+
 def _fractional_fill_context(run_id: str) -> SimulationContext:
     # A hand-constructed 2-leg scaled-exit scenario (Design §13 test 4): FRACTIONAL partial fills mean
     # the SAME closing (TP) order fills 50% on one bar and the remaining 50% on the next -- the exact

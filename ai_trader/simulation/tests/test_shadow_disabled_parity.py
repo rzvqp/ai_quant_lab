@@ -19,6 +19,12 @@
   exhaustively over a full run, scales correctly across multiple simultaneously-tracked edges, never
   mutates the shared ``RiskConfig`` object, and isolates a forced failure in the NEW settlement path
   exactly as Checkpoint 1B already proved for the read-only tap.
+- Checkpoint 3 (the first production strategy set): every one of the SAME guarantees above, now proven
+  at the real production scale -- ``all_registered_strategies()``'s own full 43-strategy set, running
+  concurrently, over the same 85-day fixture window every other test in this file already uses (a
+  deliberately BOUNDED validation scale -- the full 13-month/23,639-bar runtime/memory benchmark Design
+  §13 test 8 requires before any wider rollout decision remains separate, not-yet-authorized work; this
+  checkpoint proves CORRECTNESS at N=43, not throughput at full historical scale).
 
 Same real-strategy-runtime fixture convention as ``test_risk_event_strategy_attribution.py``
 (Phase 6.9A).
@@ -33,7 +39,7 @@ from ai_trader.execution_engine.engine import ExecutionEngine
 from ai_trader.market_scanner.types import SymbolMeta
 from ai_trader.risk_manager.config import RiskConfig
 from ai_trader.risk_manager.engine import RiskManager
-from ai_trader.shadow_evidence.config import ShadowConfig
+from ai_trader.shadow_evidence.config import ShadowConfig, all_registered_strategies
 from ai_trader.shadow_evidence.engine import ShadowEvidenceEngine
 from ai_trader.simulation import performance_analyzer
 from ai_trader.simulation.config import DateRange, SimulationContext
@@ -444,3 +450,75 @@ def test_configured_degraded_active_strategy_ids_are_consistent_over_a_full_run(
     assert engine.degraded_strategy_ids <= engine.configured_strategy_ids
     assert engine.active_strategy_ids == engine.configured_strategy_ids - engine.degraded_strategy_ids
     assert engine.active_strategy_ids.isdisjoint(engine.degraded_strategy_ids)
+
+
+# ------------------------------------------------------------------------------- Checkpoint 3: first production strategy set
+
+def test_all_43_production_strategies_execute_concurrently_with_byte_identical_competitive_execution() -> None:
+    disabled = _competitive_fingerprint(_run("SHADOW-3-OFF"))
+    all_ids = tuple(sorted(all_registered_strategies()))
+    assert len(all_ids) == 43  # the real, already-established production set -- nothing hand-picked
+
+    shadow_config = ShadowConfig(enabled=True, shadow_strategies=all_ids)
+    context = _context("SHADOW-3-ALL-43", shadow_config)
+    harness = _run("SHADOW-3-ALL-43", shadow_config)
+    assert harness.shadow_engine is not None
+    engine = harness.shadow_engine
+
+    # Criterion 5: competitive execution unchanged, at real production scale.
+    assert _competitive_fingerprint(harness) == disabled
+
+    # Criterion 1: multiple existing strategies actually executed concurrently (not just risk-tapped).
+    strategy_ids_with_positions = {p.strategy_id for p in engine.positions}
+    assert len(strategy_ids_with_positions) > 1
+    assert strategy_ids_with_positions.issubset(set(all_ids))
+
+    # Criteria 2/3/4/7: every strategy that traded owns an isolated portfolio/ledger/statistics, with
+    # no cross-strategy contamination -- checked exhaustively, not sampled.
+    summaries = engine.summaries("12m", context.date_range.end)
+    for strategy_id in strategy_ids_with_positions:
+        own_legs = [t for t in engine.trade_legs if t.leg.strategy_id == strategy_id]
+        other_legs = [t for t in engine.trade_legs if t.leg.strategy_id != strategy_id]
+        own_positions = [p for p in engine.positions if p.strategy_id == strategy_id]
+        assert all(p.strategy_id == strategy_id for p in own_positions)  # no foreign positions leaked in
+        assert not any(t.position_id in {p.position_id for p in own_positions} for t in other_legs)
+        summary = summaries[strategy_id]
+        assert summary.strategy_id == strategy_id
+        assert summary.window_metrics.n_trades == len(own_legs)
+
+
+def test_all_43_production_strategies_replay_is_deterministic() -> None:
+    config = ShadowConfig(enabled=True, shadow_strategies=tuple(sorted(all_registered_strategies())))
+    harness_a = _run("SHADOW-3-DET", config)
+    harness_b = _run("SHADOW-3-DET", config)
+    assert harness_a.shadow_engine is not None and harness_b.shadow_engine is not None
+    assert _shadow_ledger_fingerprint(harness_a) == _shadow_ledger_fingerprint(harness_b)
+
+
+def test_one_strategy_failure_among_all_43_is_isolated(monkeypatch) -> None:
+    disabled = _competitive_fingerprint(_run("SHADOW-3-FAIL-BASELINE"))
+    all_ids = tuple(sorted(all_registered_strategies()))
+    target = "S12"  # an arbitrary, real, already-registered strategy -- not special-cased in production code
+    assert target in all_ids
+
+    original = ShadowEvidenceEngine._settle_one
+
+    def _raise_for_target(self, strategy_id, as_of, bar_index, bars, phase_running):
+        if strategy_id == target:
+            raise RuntimeError("forced failure for single-strategy isolation test")
+        return original(self, strategy_id, as_of, bar_index, bars, phase_running)
+
+    monkeypatch.setattr(ShadowEvidenceEngine, "_settle_one", _raise_for_target)
+    harness = _run("SHADOW-3-FAIL", ShadowConfig(enabled=True, shadow_strategies=all_ids))
+
+    assert harness.state is RunState.COMPLETED, harness.fail_reason
+    assert harness.shadow_engine is not None
+    engine = harness.shadow_engine
+
+    assert engine.degraded_strategy_ids == frozenset({target})
+    assert all(sid == target for _as_of, sid, _err in engine.failures)
+    # Every OTHER configured strategy remains active and free to keep producing evidence.
+    assert engine.active_strategy_ids == frozenset(all_ids) - {target}
+    other_strategy_positions = {p.strategy_id for p in engine.positions if p.strategy_id != target}
+    assert len(other_strategy_positions) > 0  # at least one other strategy kept trading normally
+    assert _competitive_fingerprint(harness) == disabled

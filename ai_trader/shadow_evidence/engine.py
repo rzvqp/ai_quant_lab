@@ -265,6 +265,37 @@ class ShadowEvidenceEngine:
             ))
             return
 
+        if score.symbol in account.pending_entries:
+            # Genuine bug found at Checkpoint 3's own 43-strategy validation scale (not visible at
+            # N<=4): a strategy's own entry decision can be a LIMIT-priced BRACKET order (whenever its
+            # signal carries an explicit `entry` price -- `execution_engine/builder.py`'s own
+            # OrderTypeMappingPolicy), which can stay WORKING for many bars before it fills or expires.
+            # `LIMIT_MAX_PER_SYMBOL` only sees OPEN positions (`portfolio_state.open_positions`), never
+            # pending orders -- so a SECOND ALLOW for the same symbol can legitimately be produced by
+            # the SAME dedicated RiskManager while the first entry is still unresolved. The real
+            # competitive/production `PortfolioSimulator` handles this fine on its own (a same-
+            # direction second fill simply scale-in's into the SAME `Position` via weighted averaging,
+            # `portfolio_simulator.py`'s own frozen `_apply_one`) -- but THIS engine's own
+            # `position_id`-per-virtual-entry bookkeeping (Design §5) assumes exactly one in-flight
+            # entry per symbol at a time, and would corrupt (`account.pending_entries[symbol]`
+            # silently overwritten, orphaning the first order's own eventual fill) if a second entry
+            # order were submitted here. Never submitted: an honest, shadow-internal denial, not a
+            # genuine RiskManager decision -- the underlying RiskManager DID say ALLOW, disclosed via
+            # `shadow_denied_reason` rather than silently dropped.
+            self.opportunities.append(ShadowOpportunityRecord(
+                opportunity_id=opportunity_id, strategy_id=strategy_id, symbol=score.symbol, as_of=as_of,
+                direction=score.direction, signal_state=score.state,
+                score_recommendation=score.recommendation, shadow_risk_decision="DENY",
+                shadow_denied_reason="SHADOW_ENTRY_ALREADY_PENDING", resulting_position_id=None,
+            ))
+            self.rejections.append(ShadowRejectionRecord(
+                rejection_id=f"{opportunity_id}:REJ", strategy_id=strategy_id, symbol=score.symbol,
+                as_of=as_of, direction=score.direction,
+                denied_reason_code="SHADOW_ENTRY_ALREADY_PENDING",
+                denied_detail=f"a prior entry for {score.symbol} is still pending resolution",
+            ))
+            return
+
         # ALLOW: submit the virtual entry through THIS strategy's own dedicated, fully separate
         # ExecutionEngine (Design §4/§10 invariant 4) -- never the real one, never another strategy's.
         # The ShadowOpportunityRecord/ShadowPositionRecord for this entry are DEFERRED to

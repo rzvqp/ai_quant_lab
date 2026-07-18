@@ -108,7 +108,14 @@ class ShadowRejectionRecord:
     H1's own correction), so ``denied_reason_code`` CAN legitimately be ``LIMIT_MAX_PER_SYMBOL`` (a
     same-strategy re-entry attempt while a shadow position is already open) or a cooldown-after-loss
     denial -- exactly mirroring the isolated-slot precedent (Design §8), never a shared-slot denial
-    against the REAL competitive portfolio, which this record never sees or influences."""
+    against the REAL competitive portfolio, which this record never sees or influences.
+
+    Checkpoint 3 adds one more possible ``denied_reason_code``: ``SHADOW_ENTRY_ALREADY_PENDING`` -- a
+    shadow-internal, never-a-genuine-RiskManager decision, produced when a strategy's own entry order
+    is a LIMIT-priced bracket still awaiting a fill and a NEW ALLOW arrives for the same symbol before
+    it resolves (``RiskManager.evaluate()`` only sees open positions, never pending orders, so it would
+    otherwise happily ALLOW a second, structurally incompatible entry -- engine.py's own module
+    docstring explains why). Found empirically at 43-strategy validation scale, not visible at N<=4."""
 
     rejection_id: str
     strategy_id: str
