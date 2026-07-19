@@ -1,10 +1,11 @@
-"""Context Memory -- Phase 7 Checkpoints 9-10.
+"""Context Memory -- Phase 7 Checkpoints 9-11.
 
-Immutable data contracts, controlled vocabularies, deterministic identity generation (Checkpoint 9), and
-an append-only persistence layer (Checkpoint 10) for the Context Memory system approved in
-``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. No historical similarity, retrieval, episode
-collapsing, aggregation, outcome settlement, or Decision Intelligence integration exist anywhere in this
-package yet -- see each checkpoint's own report for the exact boundary at that point.
+Immutable data contracts, controlled vocabularies, deterministic identity generation (Checkpoint 9), an
+append-only persistence layer (Checkpoint 10), and deterministic episode collapsing plus a rebuildable
+historical index (Checkpoint 11) for the Context Memory system approved in
+``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. No historical similarity retrieval, contextual
+statistics/evidence aggregation, or Decision Intelligence integration exist anywhere in this package yet
+-- see each checkpoint's own report for the exact boundary at that point.
 
 Deliberately independent of every execution-adjacent package (Signal Engine, Scoring Engine, Risk
 Manager, Portfolio, Shadow Evidence, Execution Engine, MT5, Decision Intelligence) and of
@@ -45,12 +46,21 @@ from ai_trader.context_memory.enums import (
     OutcomeStatus,
     SourceType,
 )
+from ai_trader.context_memory.episodes import (
+    Episode,
+    EpisodeId,
+    StateFingerprint,
+    collapse_into_episodes,
+    compute_episode_id,
+    compute_state_fingerprint,
+)
 from ai_trader.context_memory.identities import (
     compute_context_snapshot_id,
     compute_edge_evidence_id,
     compute_observation_id,
     compute_present_edge_reference_id,
 )
+from ai_trader.context_memory.index import HistoricalIndex, IndexStatistics
 from ai_trader.context_memory.repository import (
     ConflictingDuplicateError,
     ContextMemoryRepository,
@@ -100,4 +110,12 @@ __all__ = [
     "RepositoryWriteError",
     "RepositoryCorruptionError",
     "ConflictingDuplicateError",
+    "StateFingerprint",
+    "EpisodeId",
+    "Episode",
+    "compute_state_fingerprint",
+    "compute_episode_id",
+    "collapse_into_episodes",
+    "HistoricalIndex",
+    "IndexStatistics",
 ]

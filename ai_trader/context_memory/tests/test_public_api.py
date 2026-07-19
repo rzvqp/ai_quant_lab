@@ -20,6 +20,9 @@ _EXPECTED_PUBLIC_NAMES = {
     "ContextMemoryValidationError", "as_of_from_datetime",
     "ContextMemoryRepository", "RepositoryIntegrityReport", "ContextMemoryRepositoryError",
     "RepositoryPathError", "RepositoryWriteError", "RepositoryCorruptionError", "ConflictingDuplicateError",
+    "StateFingerprint", "EpisodeId", "Episode",
+    "compute_state_fingerprint", "compute_episode_id", "collapse_into_episodes",
+    "HistoricalIndex", "IndexStatistics",
 }
 
 
