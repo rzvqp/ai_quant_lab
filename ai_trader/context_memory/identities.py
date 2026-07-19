@@ -1,7 +1,13 @@
 """Canonical serialization and deterministic identity generation -- Phase 7 Checkpoint 9.
 
-**Canonical serialization rules (Checkpoint 9 §I)**, all enforced by the single private helper
-:func:`_hash_canonical`:
+**Checkpoint 10 update**: ``canonical_*``/``hash_canonical`` were promoted from Checkpoint 9's own
+leading-underscore-private names to plain package-internal names (still NOT exported via
+``ai_trader.context_memory.__init__``'s ``__all__`` -- Checkpoint 9 §K's "no internal helper as public
+API" still holds) so :mod:`ai_trader.context_memory.codec` can reuse the exact same canonicalization
+logic for its own encode path, rather than duplicating it. A pure rename; no behavior changed.
+
+**Canonical serialization rules (Checkpoint 9 §I)**, all enforced by the single package-internal helper
+:func:`hash_canonical`:
 
 - Every record is first converted to a plain, JSON-primitive-only ``dict`` (never ``repr()`` -- raw
   ``repr()`` output is explicitly avoided everywhere in this module, since its exact formatting is not a
@@ -56,18 +62,18 @@ from ai_trader.context_memory.contracts import (
 )
 
 
-def _canonical_schema_version(version: SchemaVersion) -> dict[str, str]:
+def canonical_schema_version(version: SchemaVersion) -> dict[str, str]:
     return {"namespace": version.namespace, "version": version.version}
 
 
-def _canonical_float(value: float | None) -> str | None:
+def canonical_float(value: float | None) -> str | None:
     return None if value is None else value.hex()
 
 
-def _canonical_context_snapshot(snapshot: ContextSnapshot) -> dict[str, Any]:
+def canonical_context_snapshot(snapshot: ContextSnapshot) -> dict[str, Any]:
     return {
         "record_type": "context_memory.context_snapshot",
-        "context_memory_schema_version": _canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
+        "context_memory_schema_version": canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
         "instrument": snapshot.instrument,
         "as_of": snapshot.as_of,
         "session_state": snapshot.session_state,
@@ -84,70 +90,70 @@ def _canonical_context_snapshot(snapshot: ContextSnapshot) -> dict[str, Any]:
         "liquidity_state": snapshot.liquidity_state.value,
         "expansion_state": snapshot.expansion_state.value,
         "multi_timeframe_agreement": snapshot.multi_timeframe_agreement.value,
-        "context_confidence_score": _canonical_float(snapshot.context_confidence_score),
+        "context_confidence_score": canonical_float(snapshot.context_confidence_score),
         "data_quality_state": snapshot.data_quality_state.value,
-        "market_intelligence_schema_version": _canonical_schema_version(snapshot.market_intelligence_schema_version),
+        "market_intelligence_schema_version": canonical_schema_version(snapshot.market_intelligence_schema_version),
     }
 
 
-def _canonical_present_edge_reference(ref: PresentEdgeReference) -> dict[str, Any]:
+def canonical_present_edge_reference(ref: PresentEdgeReference) -> dict[str, Any]:
     return {
         "record_type": "context_memory.present_edge_reference",
-        "context_memory_schema_version": _canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
+        "context_memory_schema_version": canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
         "strategy_id": ref.strategy_id,
-        "contract_version": _canonical_schema_version(ref.contract_version),
-        "edge_intelligence_schema_version": _canonical_schema_version(ref.edge_intelligence_schema_version),
+        "contract_version": canonical_schema_version(ref.contract_version),
+        "edge_intelligence_schema_version": canonical_schema_version(ref.edge_intelligence_schema_version),
         "declared_status": ref.declared_status.value,
     }
 
 
-def _canonical_observation(observation: Observation) -> dict[str, Any]:
+def canonical_observation(observation: Observation) -> dict[str, Any]:
     return {
         "record_type": "context_memory.observation",
-        "context_memory_schema_version": _canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
-        "context_snapshot": _canonical_context_snapshot(observation.context_snapshot),
+        "context_memory_schema_version": canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
+        "context_snapshot": canonical_context_snapshot(observation.context_snapshot),
         # already canonically sorted by strategy_id in Observation.__post_init__ -- preserved verbatim,
         # never re-sorted here, so this function stays a pure reflection of already-canonical state.
-        "present_edges": [_canonical_present_edge_reference(ref) for ref in observation.present_edges],
-        "edge_intelligence_schema_version": _canonical_schema_version(observation.edge_intelligence_schema_version),
+        "present_edges": [canonical_present_edge_reference(ref) for ref in observation.present_edges],
+        "edge_intelligence_schema_version": canonical_schema_version(observation.edge_intelligence_schema_version),
         # provenance_note is deliberately excluded -- see Observation's own docstring.
     }
 
 
-def _canonical_outcome(outcome: Outcome) -> dict[str, Any]:
+def canonical_outcome(outcome: Outcome) -> dict[str, Any]:
     return {
         "record_type": "context_memory.outcome",
-        "context_memory_schema_version": _canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
+        "context_memory_schema_version": canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
         "observation_id": outcome.observation_id.value,
         "strategy_id": outcome.strategy_id,
         "horizon": outcome.horizon,
         "horizon_unit": outcome.horizon_unit.value,
-        "outcome_definition_version": _canonical_schema_version(outcome.outcome_definition_version),
+        "outcome_definition_version": canonical_schema_version(outcome.outcome_definition_version),
         "status": outcome.status.value,
         "observation_as_of": outcome.observation_as_of,
-        "normalized_result": _canonical_float(outcome.normalized_result),
+        "normalized_result": canonical_float(outcome.normalized_result),
         "resolution_as_of": outcome.resolution_as_of,
         "cost_model_ref": outcome.cost_model_ref,
         "source_type": outcome.source_type.value,
     }
 
 
-def _hash_canonical(payload: dict[str, Any]) -> str:
+def hash_canonical(payload: dict[str, Any]) -> str:
     canonical_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
 
 
 def compute_context_snapshot_id(snapshot: ContextSnapshot) -> ContextSnapshotId:
-    return ContextSnapshotId(_hash_canonical(_canonical_context_snapshot(snapshot)))
+    return ContextSnapshotId(hash_canonical(canonical_context_snapshot(snapshot)))
 
 
 def compute_present_edge_reference_id(ref: PresentEdgeReference) -> PresentEdgeReferenceId:
-    return PresentEdgeReferenceId(_hash_canonical(_canonical_present_edge_reference(ref)))
+    return PresentEdgeReferenceId(hash_canonical(canonical_present_edge_reference(ref)))
 
 
 def compute_observation_id(observation: Observation) -> ObservationId:
-    return ObservationId(_hash_canonical(_canonical_observation(observation)))
+    return ObservationId(hash_canonical(canonical_observation(observation)))
 
 
 def compute_edge_evidence_id(outcome: Outcome) -> EdgeEvidenceId:
-    return EdgeEvidenceId(_hash_canonical(_canonical_outcome(outcome)))
+    return EdgeEvidenceId(hash_canonical(canonical_outcome(outcome)))

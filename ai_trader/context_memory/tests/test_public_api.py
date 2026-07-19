@@ -18,6 +18,8 @@ _EXPECTED_PUBLIC_NAMES = {
     "compute_context_snapshot_id", "compute_present_edge_reference_id", "compute_observation_id",
     "compute_edge_evidence_id",
     "ContextMemoryValidationError", "as_of_from_datetime",
+    "ContextMemoryRepository", "RepositoryIntegrityReport", "ContextMemoryRepositoryError",
+    "RepositoryPathError", "RepositoryWriteError", "RepositoryCorruptionError", "ConflictingDuplicateError",
 }
 
 

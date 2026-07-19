@@ -1,10 +1,10 @@
-"""Context Memory -- Phase 7 Checkpoint 9.
+"""Context Memory -- Phase 7 Checkpoints 9-10.
 
-Immutable data contracts, controlled vocabularies, and deterministic identity generation for the
-Context Memory system approved in ``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. This checkpoint
-implements ONLY the foundation: contracts, vocabularies, versioning, and identity. No storage, no
-retrieval, no similarity, no aggregation, no outcome settlement, and no Decision Intelligence
-integration exist anywhere in this package -- see the Checkpoint 9 report for the exact boundary.
+Immutable data contracts, controlled vocabularies, deterministic identity generation (Checkpoint 9), and
+an append-only persistence layer (Checkpoint 10) for the Context Memory system approved in
+``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. No historical similarity, retrieval, episode
+collapsing, aggregation, outcome settlement, or Decision Intelligence integration exist anywhere in this
+package yet -- see each checkpoint's own report for the exact boundary at that point.
 
 Deliberately independent of every execution-adjacent package (Signal Engine, Scoring Engine, Risk
 Manager, Portfolio, Shadow Evidence, Execution Engine, MT5, Decision Intelligence) and of
@@ -51,6 +51,15 @@ from ai_trader.context_memory.identities import (
     compute_observation_id,
     compute_present_edge_reference_id,
 )
+from ai_trader.context_memory.repository import (
+    ConflictingDuplicateError,
+    ContextMemoryRepository,
+    ContextMemoryRepositoryError,
+    RepositoryCorruptionError,
+    RepositoryIntegrityReport,
+    RepositoryPathError,
+    RepositoryWriteError,
+)
 from ai_trader.context_memory.validation import ContextMemoryValidationError, as_of_from_datetime
 
 __all__ = [
@@ -84,4 +93,11 @@ __all__ = [
     "compute_edge_evidence_id",
     "ContextMemoryValidationError",
     "as_of_from_datetime",
+    "ContextMemoryRepository",
+    "RepositoryIntegrityReport",
+    "ContextMemoryRepositoryError",
+    "RepositoryPathError",
+    "RepositoryWriteError",
+    "RepositoryCorruptionError",
+    "ConflictingDuplicateError",
 ]
