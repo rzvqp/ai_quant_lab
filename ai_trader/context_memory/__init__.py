@@ -1,12 +1,13 @@
-"""Context Memory -- Phase 7 Checkpoints 9-12.
+"""Context Memory -- Phase 7 Checkpoints 9-13.
 
 Immutable data contracts, controlled vocabularies, deterministic identity generation (Checkpoint 9), an
 append-only persistence layer (Checkpoint 10), deterministic episode collapsing plus a rebuildable
-historical index (Checkpoint 11), and a deterministic hierarchical-relaxation retrieval mechanism
-(Checkpoint 12) for the Context Memory system approved in
-``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. No contextual statistics/evidence aggregation or
-Decision Intelligence integration exist anywhere in this package yet -- see each checkpoint's own report
-for the exact boundary at that point.
+historical index (Checkpoint 11), a deterministic hierarchical-relaxation retrieval mechanism
+(Checkpoint 12), and per-edge Contextual Evidence Aggregation (Checkpoint 13) for the Context Memory
+system approved in ``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. **No Decision Intelligence
+integration exists anywhere in this package** -- Context Memory produces evidence reports only, never a
+BUY/SELL/entry/stop/target/size/execution recommendation; see each checkpoint's own report for the exact
+boundary at that point.
 
 Deliberately independent of every execution-adjacent package (Signal Engine, Scoring Engine, Risk
 Manager, Portfolio, Shadow Evidence, Execution Engine, MT5, Decision Intelligence) and of
@@ -60,6 +61,14 @@ from ai_trader.context_memory.identities import (
     compute_edge_evidence_id,
     compute_observation_id,
     compute_present_edge_reference_id,
+)
+from ai_trader.context_memory.evidence import (
+    EVIDENCE_POLICY_VERSION,
+    ContextualEvidenceReport,
+    EvidencePolicy,
+    EvidenceStatus,
+    aggregate_all_present_edges,
+    aggregate_evidence,
 )
 from ai_trader.context_memory.index import HistoricalIndex, IndexStatistics
 from ai_trader.context_memory.repository import (
@@ -133,4 +142,10 @@ __all__ = [
     "RetrievalResult",
     "RetrievalStatus",
     "retrieve",
+    "EVIDENCE_POLICY_VERSION",
+    "EvidencePolicy",
+    "EvidenceStatus",
+    "ContextualEvidenceReport",
+    "aggregate_evidence",
+    "aggregate_all_present_edges",
 ]

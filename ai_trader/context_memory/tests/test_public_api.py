@@ -25,6 +25,8 @@ _EXPECTED_PUBLIC_NAMES = {
     "HistoricalIndex", "IndexStatistics",
     "RETRIEVAL_POLICY_VERSION", "RetrievalQuery", "RetrievalMatch", "RetrievalResult", "RetrievalStatus",
     "retrieve",
+    "EVIDENCE_POLICY_VERSION", "EvidencePolicy", "EvidenceStatus", "ContextualEvidenceReport",
+    "aggregate_evidence", "aggregate_all_present_edges",
 }
 
 
