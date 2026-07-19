@@ -222,6 +222,5 @@ final run above.
 
 - Branch: `ai-trader-implementation`
 - Parent commit: `952b2c73e4833c084b3b8e43dae749037f9d8e34` (Official Project Save)
-- This checkpoint's commit hash: recorded in a documentation-only follow-up commit after this report's
-  own commit lands (same pattern used at the close of Checkpoints 5 and 6).
+- This checkpoint's commit hash: `0346e070967228b35c87659a34a829f4aa5cda8f`
 - Working tree: clean after commit (all `decision_intelligence/` files added, nothing else changed).
