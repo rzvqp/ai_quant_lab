@@ -1,5 +1,14 @@
 # PROJECT_AUDIT — open defects, debts, method validity (updated 2026-07-14, pre-Wave1 consolidation)
 
+> **Scope note (added 2026-07-19, Official Project Save)**: this document audits the Research Lab
+> (`code/`, `results/`, `knowledge/`) ONLY — its defect register, method-validity status, and frozen
+> decisions below are unchanged and unaffected by any AI Trader work, since every AI Trader phase to
+> date (6.1 through Phase 7 Checkpoint 6) has confirmed 0-diff against `code/`/`results/`/`knowledge/`
+> at every single close, including this save. For the AI Trader's own current state (Shadow Evidence,
+> Market Intelligence, Edge Intelligence, and every phase's validation results), see
+> `PROJECT_STATE_v2.md` instead — that document is the authoritative source for everything built on top
+> of this frozen Research Lab, not this one.
+
 ## A0. Consolidation & risk register (2026-07-14)
 **Branches integrated into research-main:** master (baseline), matched-null-validation, family-implementation-s21-s40,
 strategy-development. **Not integrated:** none (all merged; original refs retained). Conflicts: CHANGELOG (union),

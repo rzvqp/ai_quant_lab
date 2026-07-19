@@ -1,18 +1,19 @@
-# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL CHECKPOINT SAVE, 2026-07-17)
+# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL PROJECT SAVE, 2026-07-19)
 
 **Purpose**: this is the single, authoritative, consolidated state document for the ENTIRE project —
-both the frozen Research Lab and the AI Trader built on top of it — current as of this checkpoint
-save. A brand-new chat, with no access to any prior conversation, must be able to reconstruct the
-complete project from this document plus the ones it points to. Every fact below was verified directly
-against `git log`/`git status`/`git diff` at this checkpoint's own close, and against the `pytest`/
-`mypy --strict`/`coverage` run from Implementation Checkpoint 1B's own validation (still current: `git
-diff --stat <Checkpoint-1B-commit> HEAD -- ai_trader/` is empty — zero `ai_trader/` code has changed
-since that validation, confirmed live, not assumed) — nothing here is carried forward unverified. This
-document supersedes no prior report — `PROJECT_STATE_v1.0.md`, `ROLLING_HEALTH_BACKTEST_HANDOFF.md`,
-and every phase's own dedicated report remain the authoritative, detailed sources for their own
-respective scopes; this document exists to make the CURRENT, FULL state reachable in one place.
+both the frozen Research Lab and the AI Trader built on top of it — current as of this official save. A
+brand-new chat, with no access to any prior conversation, must be able to reconstruct the complete
+project from this document plus the ones it points to. Every fact below was verified directly against
+`git log`/`git status`/`git diff` at this save's own close, and against the `pytest`/`mypy --strict`/
+`coverage` run from Phase 7 Checkpoint 6's own validation (still current: `git diff --stat
+b94c93f1748f71a08657b5fb348ac240def5f17e HEAD -- ai_trader/` is empty — zero `ai_trader/` code has
+changed since that validation, confirmed live, not assumed) — nothing here is carried forward
+unverified. This document supersedes no prior report — `PROJECT_STATE_v1.0.md`,
+`ROLLING_HEALTH_BACKTEST_HANDOFF.md`, and every phase's own dedicated report remain the authoritative,
+detailed sources for their own respective scopes; this document exists to make the CURRENT, FULL state
+reachable in one place.
 **This update's own scope: documentation and repository-freeze only — no code implemented, no
-architecture changed, Checkpoint 1C not started (§7.6).**
+architecture changed, Phase 7 Checkpoint 7 not started (§8.4).**
 
 ---
 
@@ -21,27 +22,29 @@ architecture changed, Checkpoint 1C not started (§7.6).**
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD:             c4707d30944c3be0168ce425800373048378242c
-                  "Phase 6.10 architectural re-frame: Edge Portfolio direction (documentation only, no code)"
-Working tree:     clean (verified live at this checkpoint save)
+HEAD:             6e3c4ce922baaa2f4008214021e34da7d062b746
+                  "Record Checkpoint 6 commit hash in the final report"
+                  (documentation-only follow-up to b94c93f, Phase 7 Checkpoint 6's own implementation commit)
+Working tree:     clean (verified live at this official save, before its own commit)
 ```
 
 **Re-verify `git branch --show-current`/`git log -1`/`git status --porcelain` directly before trusting
 any git-state claim anywhere in this project's documentation** — the standing discipline every prior
-handoff has followed, re-confirmed at this checkpoint.
+handoff has followed, re-confirmed at this save.
 
-**Verified live, Implementation Checkpoint 1B's own validation (2026-07-17) — still current, since zero
-`ai_trader/` code has changed since that commit (`5244632`), confirmed via `git diff --stat 5244632
-HEAD -- ai_trader/` returning empty:**
+**Verified live, Phase 7 Checkpoint 6's own validation (2026-07-19) — still current, since zero
+`ai_trader/` code has changed since that commit (`b94c93f`), confirmed via `git diff --stat b94c93f
+HEAD -- ai_trader/` returning empty (only this save's own documentation commit follows it):**
 ```
-pytest ai_trader/ -q            -> 1606 passed
-mypy --strict ai_trader/ --exclude 'tests/'  -> Success: no issues found in 169 source files
+pytest ai_trader/ -q            -> 1798 passed
+mypy --strict ai_trader/ --exclude 'tests/'  -> Success: no issues found in 194 source files
 coverage run --source=ai_trader -m pytest ai_trader/ -q
-coverage report --omit="*/tests/*"           -> TOTAL 9783 stmts, 432 miss, 96%
+coverage report --omit="*/tests/*"           -> TOTAL 10776 stmts, 432 miss, 96%
 ```
-(Baseline for comparison, Phase 6.9A's own close: 1576 passed, 165 source files, 9649 stmts/432 miss/
-96%. The 432-miss figure is unchanged end to end despite +134 statements added since — every new
-statement Phase 6.10 has added to date is covered.)
+(Baseline for comparison, Implementation Checkpoint 1B's own close, the last figure this document
+previously cited: 1606 passed, 169 source files, 9783 stmts/432 miss/96%. The 432-miss figure is
+UNCHANGED end to end across Checkpoints 1C/2/3/4 and Phase 7 Checkpoints 5/6 despite +993 statements
+added since — every new statement across five checkpoints' worth of work is covered.)
 
 ---
 
@@ -57,8 +60,9 @@ levels of maturity:
   `PROJECT_STATE_v1.0.md` — summary in §2 below. Nothing in this document changes that state.
 - **AI Trader** (`ai_trader/`) — the execution/simulation system built ON TOP of the Research Lab's
   own discovered strategies, consuming its Strategy Library as a frozen contract. This is where
-  essentially all work across Phases 6.1–6.9A (§3–§6) and Phase 6.10's own Edge Portfolio Evidence
-  System (§7, currently through Implementation Checkpoint 1B) took place.
+  essentially all work across Phases 6.1–6.9A (§3–§6), Phase 6.10's own Edge Portfolio Evidence System
+  (§7, now CLOSED in full), and Phase 7's own AI Trader Intelligence Layer (§8, Checkpoints 5–6) took
+  place.
 
 **Standing, non-negotiable CEO directives that govern ALL AI Trader work:**
 - **Simulation-first**: the AI Trader must prove robust historical profitability in simulation before
@@ -233,7 +237,7 @@ effort has the most measured leverage, not a decision. Full detail, every strate
 funnel, and honest answers to all 8 CEO-required questions:
 `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
 
-## 7. Phase 6.10 — Edge Portfolio Evidence System (pre-scope diagnostic through Implementation Checkpoint 1B)
+## 7. Phase 6.10 — Edge Portfolio Evidence System — CLOSED (pre-scope diagnostic through Implementation Checkpoint 4)
 
 **Official direction (re-confirmed at this checkpoint)**: Phase 6.10's objective is a generic **Edge
 Portfolio** evidence-collection architecture — capable of supporting any validated market edge (New
@@ -332,17 +336,221 @@ chosen), **undesigned** (capital allocation across edges — the largest remaini
 "AI Portfolio Manager" end goal; no document to date proposes an architecture for this). Commit:
 `c4707d30944c3be0168ce425800373048378242c`.
 
-### 7.6 Current authorized next step
+### 7.6 Official Phase 6.10 project checkpoint save (2026-07-17, documentation only)
 
-**Checkpoint 1C is NOT STARTED and NOT AUTHORIZED.** Recommended scope (not yet approved): virtual
-execution for one edge (S10, as the second proof point for the Edge Portfolio's own evidence lifecycle
-— chosen because it is the one edge with independently-verified Phase 6.9A isolated-run ground truth to
-validate against, not because the architecture favors it), following the same generic, multi-edge-tested
-pattern Checkpoint 1B already established. No Strategy Health integration, no capital allocation, no
-multi-position live trading, no code changes of any kind are authorized until the CEO explicitly
-approves Checkpoint 1C.
+Commit `32705567b228ee7de36bf6d2342d946f8ef06221`. The checkpoint save this document's own §0 previously
+described as current: refreshed `PROJECT_STATE_v2.md` §0/§7, rewrote `NEXT_SESSION.md` in full, created
+`RECONSTRUCTION_PROMPT.md` for the first time, created `PHASE_6_10_CHECKPOINT_SAVE_REPORT.md`. No code
+implemented. Checkpoint 1C confirmed NOT STARTED, NOT AUTHORIZED as of this save.
 
-## 8. Modules implemented (`ai_trader/`)
+### 7.7 Implementation Checkpoint 1C — DONE (full virtual position lifecycle) — CEO-CLOSED WITH A
+DOCUMENTED SEMANTIC LIMITATION
+
+**Authorization**: after a CEO-presented implementation plan was reviewed and approved (no code written
+until that approval), Checkpoint 1C was officially authorized to implement the complete generic Shadow
+Virtual Execution lifecycle — virtual entry/exit/position tracking/failure isolation — reusing the
+frozen `RiskManager`/`ExecutionEngine`/`ExecutionSimulator`/`PortfolioSimulator` classes unmodified, one
+fully independent instance set per edge, never touching the real competitive path.
+
+**Implementation** (commit `1f0ec84596951ea83dc65df053c2a9a7ee4e594c`): `ai_trader/shadow_evidence/
+engine.py` gained `_ShadowAccount` (dedicated risk_manager/execution_engine/execution_simulator/
+portfolio_simulator/pending_entries/open_position_id per edge), a `SHADOW-CID`/`SHADOW-REQ` client/
+order-id discriminator prefix (`ExecConfig`), deferred opportunity resolution (`_PendingEntry` — entry
+price unknown until fill confirmed), exit-reason classification purely from client_order_id markers
+(`-TP`/`-SL`/`TIMESTOP-`/`TRAILSTOP-`/`CLOSE-AT-END-`, never inferred ambiguously), and the full
+observe/apply_time_stops/apply_trailing_stops/settle_bar/finalize_at_end lifecycle. `ai_trader/
+simulation/harness.py` gained two new shadow call sites (time-stop/trailing-stop overlays, and
+settle_bar after mark-to-market), each independently failure-isolated; `_finalize_at_end()` restructured
+so the shadow engine's own finalization runs even when the real competitive portfolio holds zero open
+positions. **Position-identity invariant enforced throughout**: one `ShadowOpportunityRecord` maps to
+zero-or-one `ShadowPositionRecord`; all legs of one position share one `position_id`.
+
+**Validated**: competitive execution byte-identical throughout (full `SimulationReportData` parity, 1
+and 4 simultaneously-shadowed edges, 85-day and full 13-month scales). An S10 isolated-ledger validation
+script (`phase610_checkpoint1c_s10_validation.py`/`.json`) compared the shadow S10 ledger against Phase
+6.9A's own independently-verified isolated-run ground truth and found a REAL divergence (only 2 of 117
+trades matched exactly; 68 shadow trades total) — disclosed, not hidden.
+
+**CEO ruling on the divergence (2026-07-18, binding on all future work in this package)**: Checkpoint
+1C is **ACCEPTED WITH A DOCUMENTED SEMANTIC LIMITATION**, not a defect. The validated semantics: "Shadow
+Evidence evaluates how a configured strategy would execute from the conflict-adjusted `score_batch`
+produced inside the competitive run. It does not reconstruct how that strategy would score and trade in
+a fully isolated run with no same-bar strategy conflicts." Standing constraints from this ruling: do NOT
+add isolated re-scoring to `ShadowEvidenceEngine`; do NOT modify competitive scoring/execution to chase
+closer isolated-ledger agreement; exact isolated-strategy equivalence is a separate future research/
+architecture question, only if the CEO ever chooses to open it. A required documentation-only follow-up
+commit (`888986d69330078263d7e1a5238ced341384a272`) corrected `PHASE_6_10_CHECKPOINT_1C_REPORT.md` and
+struck the original design doc's own §7/§14 language implying the divergence was bounded by a "minor
+cooldown tolerance" (§19 of `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md` records the correction
+verbatim). Checkpoint 1C closed only after this clarification commit landed.
+
+### 7.8 Implementation Checkpoint 2 — DONE (generic multi-edge statistics + aggregation layer)
+
+Commit `fdab31dcce50c35596ad9a5898e7507f6bf1d70d`. Evolved Shadow Evidence from single-edge virtual
+execution into a generic multi-edge evidence platform: `ai_trader/shadow_evidence/aggregation.py` (new)
+— pure functions (`strategy_ids_observed`, `summary_for`, `all_summaries`) taking already-recorded
+public engine lists as explicit arguments, never touching engine internals; `ShadowStrategySummary`
+(new type, `__post_init__`-guarded) reusing `strategy_health.metrics.compute_window_metrics()`
+unmodified — pure statistics only, never `scoring.py`/`classifier.py`/`evaluator.py`, never
+`HealthState`/`WindowScore` (that boundary was explicit and verified by grep before committing). Most of
+Checkpoint 2's own named requirements (concurrent multi-strategy execution, isolation, determinism) were
+already satisfied by Checkpoint 1C — re-verified, not re-implemented; only the statistics/aggregation
+piece was genuinely new. `harness.py` NOT touched (the aggregation layer is a pull-based query, already
+reachable via the public `harness.shadow_engine` attribute).
+
+### 7.9 Implementation Checkpoint 3 — DONE (first production strategy set: all 43, at real scale)
+
+Commit `e360da2d1ec8344aef9ad268d0dc92805df36ab3`. Registered the first production strategy set — all 43
+currently-registered strategies (`shadow_evidence.config.all_registered_strategies()`, new helper,
+imports `strategy_runtime.families` then calls `registry.registered_strategy_ids()` — no strategy
+hand-picked). **Running Shadow at real scale (vs. the 1–4-strategy scale every prior checkpoint tested)
+found and fixed a genuine bug invisible at small N**: a strategy's shadow entry is often a LIMIT-priced
+BRACKET order that can stay pending for many bars; `LIMIT_MAX_PER_SYMBOL` only sees OPEN positions,
+never pending orders, so the same `RiskManager` could legitimately ALLOW a second entry for the same
+symbol while the first was still unresolved — `_observe_one`'s own `account.pending_entries[symbol]`
+dict used to silently overwrite the first order's tracking record, orphaning its eventual fill
+(manifesting as "closing TradeRecord with no tracked open position_id" for strategies S1/S6). Fixed by
+denying the second entry with a new, disclosed reason code `SHADOW_ENTRY_ALREADY_PENDING` (never
+silently dropped) — the real competitive portfolio was never at risk (it has no equivalent side table).
+**Standing lesson for this project: an architecture proven correct at N=1/N=4 is not automatically
+correct at N=43 — race conditions in bookkeeping-only code can hide behind low signal density until
+scale exposes them.**
+
+### 7.10 Implementation Checkpoint 4 — DONE (Strategy Research & Comparison layer)
+
+Commit `b1bd95314cf6d3d3bd8d07ac57bc4c3099ed0669`. Three new, standalone, pure-function modules built ON
+TOP of the Shadow platform, entirely read-only/pull-based: `shadow_evidence/research.py`
+(`StrategyResearchSummary` — 12 named metrics: 7 reused from `strategy_health.metrics`'s own frozen
+`WindowMetrics`, 5 new — Sharpe ratio, best/worst month, long-vs-short split, longest winning streak),
+`comparison.py` (`rank_by`/`compare`/`leaderboard`/`export_summary` — single-metric deterministic sorts
+ONLY, never a weighted composite — the whole point of this checkpoint's scope boundary vs. Strategy
+Health's own scoring), `portfolio_research.py` (correlation matrix, trade overlap, simultaneous
+exposure, diversification — no PCA/eigen-decomposition anywhere, deliberately). Because this layer never
+touches engine internals, `engine.py`/`harness.py` are BOTH byte-for-byte unchanged by this checkpoint.
+N=43 genericity verified with fast SYNTHETIC fixtures rather than paying for another real 43-strategy
+harness run (this layer's correctness doesn't depend on how the underlying data was produced, already
+proven at N=43 by Checkpoint 3).
+
+### 7.11 Phase 6.10 status: CLOSED
+
+**Every sub-phase of Phase 6.10 (Edge Portfolio Evidence System) is now CLOSED/DONE**: pre-scope
+diagnostic, Shadow Evidence Architecture Design + adversarial review (ACCEPTED WITH CONDITIONS), the
+official checkpoint save, Implementation Checkpoints 1A/1B/1C/2/3/4, the Edge Portfolio direction
+re-frame. The generic Shadow Evidence platform is feature-complete for its own originally-scoped 7-stage
+lifecycle through "statistics" (opportunities → virtual positions → virtual executions → trade history →
+statistics/research/comparison are all DONE; Strategy Health integration policy remains UNSELECTED;
+capital allocation across edges remains UNDESIGNED — both explicitly out of scope for every Phase 6.10
+checkpoint and never authorized). **Phase 6.10 requires no further checkpoints unless the CEO explicitly
+reopens it** (e.g. to select a Health integration policy or design capital allocation) — Phase 7 (§8
+below) is a deliberate pivot to a different layer of the system (market/edge understanding, not
+statistics/allocation), not a continuation of Phase 6.10's own remaining gaps.
+
+## 8. Phase 7 — AI Trader Intelligence Layer (Checkpoints 5–6, 2026-07-19)
+
+**Official direction**: a deliberate pivot from infrastructure to intelligence, per the CEO's own Phase
+7 opening framing (preserved verbatim in `PHASE_7_CHECKPOINT_5_REPORT.md` §1 and in memory): "We are NOT
+building a rule-based trading bot. We are NOT building a collection of independent strategies. We are
+building an AI Trader" that must OBSERVE, UNDERSTAND, EVALUATE, DECIDE and continuously LEARN, targeting
+~2–4 trades/day, high win rate, quality over quantity, never trading just because a setup exists.
+Checkpoints 5 and 6 are the first two components of that reasoning process — both purely read-only
+recognition layers, neither trades, neither is wired into `harness.py` or any execution path.
+
+**Naming disambiguation (read carefully — these are two different concepts sharing similar words)**:
+Phase 6.10's "**Edge Portfolio**" (§7 above) is the generic multi-strategy Shadow virtual-execution and
+statistics PLATFORM — "edge" there means "one registered `strategy_id`/`RuntimeEvaluator`," and the
+system's job is running/tracking many of them independently. Phase 7's "**Edge Intelligence**" (§8.2
+below) is a NEW, separate, read-only RECOGNITION layer built on top of that platform's own already-
+registered strategy set — its job is answering "which of those strategies' statistical edges currently
+exist in THIS market moment," never executing or tracking anything itself. They are architecturally
+unrelated beyond both reading from the same Strategy Library; `edge_intelligence/` does not import
+`shadow_evidence` at all (by deliberate design, verified by grep — see §8.2).
+
+### 8.1 Checkpoint 5 — Market Intelligence layer — DONE
+
+Commit `8e2748a7980d2447fc3b33b8c9d96192d17f3450` (implementation) + `a68ac1fe1b429acb7b471eaf3705fc57354f0478`
+(documentation-only follow-up recording the commit's own hash in its report). Adds `ai_trader/
+market_intelligence/` (12 source files + 13 test files) — a pure, read-only function,
+`build_market_intelligence(context) -> MarketIntelligenceSnapshot`, answering exactly one question,
+continuously: **"What is the market doing right now?"** — never "what trade should I take?" No BUY, no
+SELL, no execution, no optimization, no portfolio decisions, no health classification.
+
+Nine market dimensions, each independent and explainable: Trend (per M15/H1/H4/D1 timeframe), Market
+Structure (fractal swing-point detection + BOS/CHoCH break classification — **the one genuinely new
+algorithm in this checkpoint**, since nothing centralized existed for it), Momentum (per timeframe RSI-
+based), Volatility regime, Liquidity behaviour, Expansion vs. Compression, Session behaviour,
+Multi-timeframe agreement, Context confidence. Every dimension except Structure reuses this repo's own
+already-computed `market_scanner` features verbatim (`m_trend_up`/`h1_trend_up`/etc., `m_rsi`, `m_atr`/
+`atr_ma`, `m_volrank`, `compress`/`disp`, `session`/`or_high`/`or_low`/`vwap`/`gap`) — never a new
+indicator invented. Deliberately did NOT import concepts from the sibling `AI-Research-Lab`/
+`ai_quant_lab` project's own Trend/Volatility/Structure research (standing repo-reconstruction rule
+against using other repos, plus this layer is intentionally more mechanical/technical-analysis-style
+than that project's own slow, human-verified epistemology).
+
+**Validated**: `pytest ai_trader/ -q` → 1752 passed (Checkpoint 4 baseline 1690 + 62 net new, zero
+regressions); `mypy --strict ai_trader/ --exclude 'tests/'` → clean, 185 source files (up from 173);
+coverage 96% package-wide unchanged despite +363 new statements, every new module 100% individually. A
+real-data integration test drives the actual `MarketScanner`/`ReplayDataSource` over real XAUUSD data
+(`ai_trader/market_intelligence/tests/test_integration.py`). Full detail: `PHASE_7_CHECKPOINT_5_REPORT.md`.
+
+### 8.2 Checkpoint 6 — Edge Intelligence layer — DONE
+
+Commit `b94c93f1748f71a08657b5fb348ac240def5f17e` (implementation) + `6e3c4ce922baaa2f4008214021e34da7d062b746`
+(documentation-only follow-up recording the commit's own hash). Adds `ai_trader/edge_intelligence/` (9
+source files + 11 test files) — a pure, read-only function, `evaluate_edges(context) ->
+EdgeIntelligenceSnapshot`, answering: **"Which validated statistical edges currently exist?"** — for
+every one of the 43 registered production strategies, independently. `present_strategy_ids(snapshot)`
+is the clean, execution-decoupled query surface a future Decision AI is meant to call.
+
+For each strategy, produces a `StrategyEdgeReading` carrying one of three states — **PRESENT / POSSIBLE
+/ ABSENT** — plus the exact tuple of six `EdgeEvidenceItem`s (each with a concrete, disclosed
+explanation string) that produced it: `data_availability`, `directional_trend_alignment` (the strategy's
+own DECLARED `Contract.execution.long_short` vs. the Market Intelligence trend reading on its own
+execution timeframe), `session_suitability` (`Contract.execution.sessions` free text vs. the current
+session — only a small, disclosed set of known session-name tokens is parsed; anything unparseable
+honestly reports UNKNOWN, never guessed), `context_confidence`, `multi_timeframe_agreement`,
+`volatility_regime`. **Verdict rule (deterministic, disclosed)**: any CONTRADICTS → ABSENT; else any
+UNKNOWN → POSSIBLE; else any SUPPORTS → PRESENT; all-NEUTRAL → POSSIBLE (never PRESENT on zero real
+supporting evidence). **Deliberately does NOT produce per-strategy Structure/Liquidity evidence**
+(despite both being named in the CEO's own example list) because `Contract.semantics.market_regime.
+applicable/avoid` is universally `["ANY"]`/`[]` across all 43 real contracts (grep-verified empirically,
+not assumed) — inventing a mapping from free-text `mechanism`/`klass` prose would itself be the "AI
+guess" the CEO's own directive explicitly forbade; both dimensions remain fully available on the Market
+Intelligence snapshot for a future checkpoint once/if strategies declare real requirements for them.
+
+Reads strategy contracts via `ai_trader.strategy_manager.loader.load_all` directly (never
+`StrategyManager` — no Market Scanner handshake needed for a read-only layer) and gets registered ids
+via `strategy_runtime.registry.registered_strategy_ids()` directly (never imports `shadow_evidence` at
+all — tighter isolation than even Checkpoint 3's own `all_registered_strategies()` helper).
+
+**Validated**: `pytest ai_trader/ -q` → 1798 passed (Checkpoint 5 baseline 1752 + 46 net new, zero
+regressions); `mypy --strict ai_trader/ --exclude 'tests/'` → clean, 194 source files (up from 185);
+coverage 96% package-wide unchanged despite +164 new statements, every new module 100% individually (2
+real coverage gaps found on the first full-suite run — `context.py`'s `score is None` branch, `types.py`'s
+empty-evidence guard — both closed with targeted tests before the final, reported run). A real-data
+integration test drives `evaluate_edges()` against the REAL Strategy Library (not a synthetic override)
+over real XAUUSD data and confirms all three `EdgeState` values genuinely appear (not a silently-
+collapsed verdict). Full detail: `PHASE_7_CHECKPOINT_6_REPORT.md`.
+
+### 8.3 Official Project Save (2026-07-19, this document's own current update)
+
+CEO-directed, before any further Phase 7 implementation: a documentation and repository-freeze
+checkpoint synchronizing every official state document (this one, `NEXT_SESSION.md`,
+`RECONSTRUCTION_PROMPT.md`, `CHANGELOG.md`, `PROJECT_AUDIT.md`) to reflect the completion of Phase 6.10
+in full and Phase 7 Checkpoints 5–6. No code implemented, no architecture changed. Full detail:
+`PHASE_7_OFFICIAL_PROJECT_SAVE_REPORT.md`.
+
+### 8.4 Current authorized next step
+
+**Phase 7 Checkpoint 7 is NOT STARTED and NOT AUTHORIZED.** The CEO's own explicit closing instruction
+after Checkpoint 6 named the next, not-yet-authorized component as **Decision AI** — the layer that
+would actually consume `present_strategy_ids()`/`EdgeIntelligenceSnapshot` to choose whether/what to
+trade — but this is a recommended direction from prior context, not a pre-approval; no scope for
+Checkpoint 7 has been proposed or accepted. Also explicitly named as future, NOT-yet-authorized
+components (from the Checkpoint 5 authorization text): Strategy Health integration/promotion policy,
+Portfolio Architect, Learning Engine, Live AI Trader. No code changes of any kind are authorized until
+the CEO explicitly authorizes the next checkpoint.
+
+## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |
 |---|---|---|
@@ -355,9 +563,11 @@ approves Checkpoint 1C.
 | `simulation/` | NOT frozen, extensible | `SimulationHarness`/`ExecutionSimulator`/`PortfolioSimulator`/`PerformanceAnalyzer`; `time_stop.py`/`trailing_stop.py` generic overlays; THREE disclosed touches to date: the Phase 6.9 overlay-isolation fix, the Phase 6.9A `RiskEventRecord.strategy_id` field, the Phase 6.10 Checkpoint 1A/1B `shadow_config` field + Checkpoint 1B's tap call site in `harness.py` |
 | `strategy_runtime/` | NOT frozen | `families/` — all 43 real evaluators; `registry.py`; `context_access.py`; `migration.py` |
 | `strategy_health/` | NOT frozen, scoring UNCHANGED since its own build | `types.py`/`metrics.py`/`scoring.py`/`classifier.py`/`evaluator.py` (frozen scoring, never touched by any phase after its own build) + `rolling_gate.py` (Phase 6.9 addition, thin wrapper) |
-| `shadow_evidence/` | NEW (Phase 6.10, Checkpoints 1A/1B) | `config.py::ShadowConfig`, `types.py` (4 frozen data contracts), `engine.py::ShadowEvidenceEngine` — generic over any configured edge/strategy set; no virtual execution/positions yet (Checkpoint 1C+) |
+| `shadow_evidence/` | COMPLETE for its own scoped lifecycle (Phase 6.10, Checkpoints 1A–4, CLOSED) | `config.py::ShadowConfig`/`all_registered_strategies()`, `types.py` (data contracts incl. `ShadowStrategySummary`), `engine.py::ShadowEvidenceEngine` (full virtual position lifecycle since 1C), `aggregation.py` (Checkpoint 2 statistics), `research.py`/`comparison.py`/`portfolio_research.py` (Checkpoint 4) — generic over any configured edge/strategy set; Strategy Health integration/capital allocation remain UNSELECTED/UNDESIGNED, out of scope |
+| `market_intelligence/` | NEW (Phase 7 Checkpoint 5, DONE) | `engine.py::build_market_intelligence()` — pure, read-only "what is the market doing" snapshot (Trend/Structure/Momentum/Volatility/Liquidity/Expansion/Session/Agreement/Confidence); not wired into `harness.py` |
+| `edge_intelligence/` | NEW (Phase 7 Checkpoint 6, DONE) | `engine.py::evaluate_edges()` — pure, read-only "which edges currently exist" per-strategy PRESENT/POSSIBLE/ABSENT verdict, built on Market Intelligence + each strategy's own declared Contract; not wired into `harness.py` |
 
-## 9. What must NOT be modified (standing, cumulative across every phase)
+## 10. What must NOT be modified (standing, cumulative across every phase)
 
 - `code/`, `results/`, `knowledge/` (Research Lab) — frozen, 0-diff confirmed at every close.
 - Every strategy contract, evaluator, and parameter.
@@ -368,16 +578,23 @@ approves Checkpoint 1C.
   Simulation Framework fixes above (neither touches these frozen modules themselves).
 - The sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) — never opened by anything.
 - No strategy has ever been, or should be, permanently eliminated based on any AI Trader analysis.
-- **Phase 6.10 additions (standing since Checkpoints 1A/1B)**: Checkpoint 1C (or any further
-  implementation) must not begin without its own, separate, explicit CEO approval — Checkpoint 1B being
-  complete, or the Edge Portfolio direction re-frame being accepted, is not itself that approval. No
-  virtual execution, virtual positions/exits, shadow portfolio state, Strategy Health integration,
-  capital allocation across edges, multiple real XAUUSD positions, Portfolio Orchestrator, or Consensus
-  Engine has been authorized to date. No edge/strategy-specific architecture may be introduced into
-  `shadow_evidence/` — the generic, config-driven design (§7 above) is the standing requirement, not an
-  optional style choice.
+- **Phase 6.10 (CLOSED, standing constraints remain in force)**: no edge/strategy-specific architecture
+  may be introduced into `shadow_evidence/` — the generic, config-driven design (§7 above) is the
+  standing requirement, not an optional style choice. No Strategy Health integration policy may be
+  selected, and no capital-allocation-across-edges architecture may be built, without its own separate,
+  explicit CEO decision — neither was authorized by any Checkpoint 1A–4 closing.
+- **Phase 7 additions (standing since Checkpoint 5)**: `market_intelligence/` and `edge_intelligence/`
+  must remain pure and read-only — no BUY/SELL, no order submission, no optimization, no portfolio
+  decision, no health/scoring classification, ever, in either package. Neither package may be wired into
+  `harness.py` or any execution path without its own explicit CEO approval. Decision AI, Strategy Health
+  integration/promotion policy, Portfolio Architect, Learning Engine, and Live AI Trader are all
+  explicitly named future components, NOT authorized by Checkpoints 5 or 6. `edge_intelligence/` must
+  not import `shadow_evidence` (a deliberate isolation choice, not an oversight — re-verify with
+  `grep -r "shadow_evidence" ai_trader/edge_intelligence/` before any future change touches that package).
+- Phase 7 Checkpoint 7 (or any further implementation) must not begin without its own, separate,
+  explicit CEO approval — Checkpoint 6 being complete is not itself that approval.
 
-## 10. Diagnostic artifacts preserved (cumulative, all committed, all referenced by name in their own reports)
+## 11. Diagnostic artifacts preserved (cumulative, all committed, all referenced by name in their own reports)
 
 - Phase 6.9: `phase69_rolling_backtest.py`, `phase69_analysis.py`, `phase69_analysis2.py`,
   `phase69_results.json`, `phase69_analysis.json`, `phase69_analysis2.json`.
@@ -388,31 +605,38 @@ approves Checkpoint 1C.
   `phase69a_analysis.json`.
 - Phase 6.10: `phase610_prescope_analysis.py`/`.json` (the pre-scope diagnostic's own analysis),
   `phase610_checkpoint1b_s10_validation.py`/`.json` (Checkpoint 1B's own full-scale S10-vs-Phase-6.9A
-  validation).
+  validation), `phase610_checkpoint1c_s10_validation.py`/`.json` (Checkpoint 1C's own isolated-ledger
+  comparison, the source of the documented semantic-limitation finding, §7.7).
+- Phase 7: no standalone diagnostic scripts — both Checkpoints 5 and 6 validated entirely through their
+  own committed test suites (`ai_trader/market_intelligence/tests/`, `ai_trader/edge_intelligence/tests/`,
+  including each package's own real-data integration test), nothing scratch-generated to preserve.
 
 All of the above are deliberately preserved (a CEO-instructed exception to the repository's earlier
 "delete scratch scripts after report capture" discipline, first established at Phase 6.9's own close),
 so every phase's own findings stay fully reproducible without re-running anything from scratch.
 
-## 11. Reading order for a brand-new session
+## 12. Reading order for a brand-new session
 
 1. This document (`PROJECT_STATE_v2.md`) — the complete current state.
 2. `RECONSTRUCTION_PROMPT.md` — if starting a genuinely new conversation with no prior context, this is
    the single entry point; it directs the same reading order as below.
 3. `NEXT_SESSION.md` — the exact next-session procedure and git-state re-verification steps.
-4. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the current official architectural direction (generic
-   Edge Portfolio, S10 as validation edge only).
-5. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
-   (including its own §17 adversarial review) — the diagnostic and design behind Checkpoints 1A/1B.
-6. In detail, if deeper Phase 6.9A background is needed:
+4. `PHASE_7_CHECKPOINT_6_REPORT.md` → `PHASE_7_CHECKPOINT_5_REPORT.md` — the current official
+   architectural frontier (Edge Intelligence built on Market Intelligence), most-recent-first.
+5. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the architectural direction behind the now-CLOSED Phase
+   6.10 (generic Edge Portfolio, S10 as validation edge only) — background, not the current frontier.
+6. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
+   (including its own §17 adversarial review and §19 Checkpoint 1C correction) — the diagnostic and
+   design behind Checkpoints 1A–1C.
+7. In detail, if deeper Phase 6.9A background is needed:
    `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md` → `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md` →
    `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
-7. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
+8. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
    there) and Phase 6.9's own original specification (§8 there, now marked CLOSED).
-8. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
-9. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
+9. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
+10. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
 
-**Do not begin Phase 6.10 Implementation Checkpoint 1C, Wave C, Learning Engine, Broker Adapter, MT5,
-live/paper trading, multi-position trading, Strategy Health integration, capital allocation across
-edges, or WATCHLIST activation without its own dedicated CEO approval —
-this document does not grant it.**
+**Do not begin Phase 7 Checkpoint 7 (Decision AI or any other component), Wave C, Learning Engine,
+Broker Adapter, MT5, live/paper trading, multi-position trading, Strategy Health integration, capital
+allocation across edges, or WATCHLIST activation without its own dedicated CEO approval — this document
+does not grant it.**
