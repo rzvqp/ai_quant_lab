@@ -230,6 +230,5 @@ above; the numbers here are from the corrected, final run.
 
 - Branch: `ai-trader-implementation`
 - Parent commit: `a68ac1fe1b429acb7b471eaf3705fc57354f0478` (Checkpoint 5, doc-only follow-up)
-- This checkpoint's commit hash: recorded in a documentation-only follow-up commit after this report's
-  own commit lands (same pattern used at the close of Checkpoint 5).
+- This checkpoint's commit hash: `b94c93f1748f71a08657b5fb348ac240def5f17e`
 - Working tree: clean after commit (all `edge_intelligence/` files added, nothing else changed).
