@@ -1,11 +1,12 @@
-"""Context Memory -- Phase 7 Checkpoints 9-11.
+"""Context Memory -- Phase 7 Checkpoints 9-12.
 
 Immutable data contracts, controlled vocabularies, deterministic identity generation (Checkpoint 9), an
-append-only persistence layer (Checkpoint 10), and deterministic episode collapsing plus a rebuildable
-historical index (Checkpoint 11) for the Context Memory system approved in
-``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. No historical similarity retrieval, contextual
-statistics/evidence aggregation, or Decision Intelligence integration exist anywhere in this package yet
--- see each checkpoint's own report for the exact boundary at that point.
+append-only persistence layer (Checkpoint 10), deterministic episode collapsing plus a rebuildable
+historical index (Checkpoint 11), and a deterministic hierarchical-relaxation retrieval mechanism
+(Checkpoint 12) for the Context Memory system approved in
+``PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md``. No contextual statistics/evidence aggregation or
+Decision Intelligence integration exist anywhere in this package yet -- see each checkpoint's own report
+for the exact boundary at that point.
 
 Deliberately independent of every execution-adjacent package (Signal Engine, Scoring Engine, Risk
 Manager, Portfolio, Shadow Evidence, Execution Engine, MT5, Decision Intelligence) and of
@@ -70,6 +71,14 @@ from ai_trader.context_memory.repository import (
     RepositoryPathError,
     RepositoryWriteError,
 )
+from ai_trader.context_memory.retrieval import (
+    RETRIEVAL_POLICY_VERSION,
+    RetrievalMatch,
+    RetrievalQuery,
+    RetrievalResult,
+    RetrievalStatus,
+    retrieve,
+)
 from ai_trader.context_memory.validation import ContextMemoryValidationError, as_of_from_datetime
 
 __all__ = [
@@ -118,4 +127,10 @@ __all__ = [
     "collapse_into_episodes",
     "HistoricalIndex",
     "IndexStatistics",
+    "RETRIEVAL_POLICY_VERSION",
+    "RetrievalQuery",
+    "RetrievalMatch",
+    "RetrievalResult",
+    "RetrievalStatus",
+    "retrieve",
 ]

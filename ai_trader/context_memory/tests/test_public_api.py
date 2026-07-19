@@ -23,6 +23,8 @@ _EXPECTED_PUBLIC_NAMES = {
     "StateFingerprint", "EpisodeId", "Episode",
     "compute_state_fingerprint", "compute_episode_id", "collapse_into_episodes",
     "HistoricalIndex", "IndexStatistics",
+    "RETRIEVAL_POLICY_VERSION", "RetrievalQuery", "RetrievalMatch", "RetrievalResult", "RetrievalStatus",
+    "retrieve",
 }
 
 
