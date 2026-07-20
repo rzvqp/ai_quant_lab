@@ -1,20 +1,24 @@
-# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL PROJECT SAVE, 2026-07-20, after Checkpoints 14–15)
+# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL PROJECT SAVE, 2026-07-20, official bifurcation into Flow A / Flow B)
 
 **Purpose**: this is the single, authoritative, consolidated state document for the ENTIRE project —
-both the frozen Research Lab and the AI Trader built on top of it — current as of this official save. A
-brand-new chat, with no access to any prior conversation, must be able to reconstruct the complete
-project from this document plus the ones it points to. Every fact below was verified directly against
-`git log`/`git status`/`git diff` at this save's own close, and against the full-repository
-`pytest`/`coverage` run performed at the close of this batch (§8.16) — nothing here is carried forward
-unverified. This document supersedes no prior report — `PROJECT_STATE_v1.0.md`,
-`ROLLING_HEALTH_BACKTEST_HANDOFF.md`, and every phase's own dedicated report remain the authoritative,
-detailed sources for their own respective scopes; this document exists to make the CURRENT, FULL state
-reachable in one place.
-**This update's own scope: Phase 7 Checkpoint 14 (Decision Intelligence v2 — Context Memory
-Integration) and Checkpoint 15 (Decision Intelligence v1 vs v2 Falsification Study), plus this official
-documentation save. Decision Intelligence v1 remains the sole active recommendation system, unmodified;
-v2 is a separate, additive integration whose recommendation is construction-time-guaranteed identical to
-v1's; the Checkpoint 15 falsification study's own verdict is V1_REMAINS_ACTIVE (§8.15).**
+the frozen Research Lab, the AI Trader built on top of it, and (as of this save) the newly-opened Alpha
+Discovery Laboratory — current as of this official save. A brand-new chat, with no access to any prior
+conversation, must be able to reconstruct the complete project from this document plus the ones it
+points to. Every fact below was verified directly against `git log`/`git status`/`git diff` at this
+save's own close — nothing here is carried forward unverified. This document supersedes no prior
+report — `PROJECT_STATE_v1.0.md`, `ROLLING_HEALTH_BACKTEST_HANDOFF.md`, and every phase's own dedicated
+report remain the authoritative, detailed sources for their own respective scopes; this document exists
+to make the CURRENT, FULL state reachable in one place.
+
+**This update's own scope (this is the FIFTH official save; the prior one, §8.17, closed after
+Checkpoints 14–15): (1) documents three interim, non-checkpoint research artifacts produced since the
+Checkpoints 14–15 save — the Strategy Historical Performance Study, the Strategy Constraint
+Root-Cause Study, and the CEO Strategy Performance Atlas (§8.19); (2) records the official opening of
+the 40-Edge Alpha Discovery Program (§8.20); (3) formalizes, per explicit CEO decision, the project's
+development going forward as TWO independent, non-conflicting parallel flows — Flow A (Alpha Discovery
+Laboratory) and Flow B (AI Trader Development) — see §1.1. No code was implemented, no backtest was
+run, no strategy or production module was modified, and no Phase 7 checkpoint beyond 14–15 was opened
+by any of this save's own scope.**
 
 ---
 
@@ -23,9 +27,17 @@ v1's; the Checkpoint 15 falsification study's own verdict is V1_REMAINS_ACTIVE (
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD (pre-save):  069c47948982a82f3a2b801ff60954f28a931d8c
-                  "Phase 7 Checkpoint 15: Decision Intelligence v1 vs v2 Falsification Study"
+HEAD (pre-save):  d60fa63 "docs: launch 40-Edge Alpha Discovery Program infrastructure"
 Working tree:     clean (verified live at this official save, before its own commit)
+```
+
+**Commits since the Checkpoints 14–15 save (`028b620`), in order** — all documentation/research
+artifacts, zero `ai_trader/` diff, detailed in §8.19–§8.20:
+```
+7c3eb62  research: preserve strategy historical performance study
+2650c3b  research: diagnose candidate strategy constraints
+f4eba6b  docs: enrich strategy performance atlas with evidence levels
+d60fa63  docs: launch 40-Edge Alpha Discovery Program infrastructure
 ```
 
 **Re-verify `git branch --show-current`/`git log -1`/`git status --porcelain` directly before trusting
@@ -78,6 +90,39 @@ levels of maturity:
   essentially all work across Phases 6.1–6.9A (§3–§6), Phase 6.10's own Edge Portfolio Evidence System
   (§7, now CLOSED in full), and Phase 7's own AI Trader Intelligence Layer (§8, Checkpoints 5–6) took
   place.
+
+### 1.1 Official bifurcation, this save: Flow A / Flow B (a THIRD stream, added to the two above)
+
+Per explicit CEO decision at this official save, all future development is organized into **two
+independent, parallel flows**, in addition to (not replacing) the frozen Research Lab described above.
+Both flows may proceed without waiting on or conflicting with the other:
+
+- **Flow A — Alpha Discovery Laboratory.** A brand-new, separate research program: the systematic
+  study of 40 raw, unvalidated Alpha Edge hypotheses (`EDGE_DISCOVERY_REGISTRY_v1.md`), all currently
+  `Status = UNSTUDIED`/`Version = V0`, following one shared protocol
+  (`EDGE_RESEARCH_PROTOCOL.md`: V0 → Discovery → Frozen Candidate → Validation → Walk Forward → Final
+  Verdict) and one recommended sequencing (`EDGE_DISCOVERY_ROADMAP.md`). Full detail: §8.20. **Status
+  as of this save: READY TO START** — the program is opened and its next action is authorized (begin
+  systematic Discovery-stage study of the registry, starting from the Roadmap's Tier 1), but no
+  individual edge has entered Discovery yet, no edge has been implemented, and reaching a Final Verdict
+  on any edge does NOT itself authorize implementation (`EDGE_RESEARCH_PROTOCOL.md` §5) — every stage
+  gate the protocol defines still applies per edge.
+- **Flow B — AI Trader Development.** The pre-existing main roadmap (Phases 6.1 onward, §3–§8 of this
+  document) continues, unsuspended, unchanged in direction. **Status: ACTIVE.** Remaining order, per
+  explicit CEO instruction at this save: **Strategy Health (integration/promotion policy) → Portfolio
+  Architect → Learning / Research Feedback → Risk Integration → Execution Integration → MT5 Live.**
+  §8.18's own standing "no further Phase 7 checkpoint without explicit authorization" rule continues to
+  govern exactly which of these steps may begin next.
+
+**Why these two flows cannot conflict**: Flow A's artifacts to date are markdown documents at the repo
+root plus (once Discovery begins) a future `edge_research/` directory of per-edge logs
+(`EDGE_RESEARCH_PROTOCOL.md` §6) — it touches no file inside `ai_trader/`, `code/`, `results/`, or
+`knowledge/`, and produces no strategy, no `RuntimeEvaluator`, no code change of any kind unless and
+until a specific edge earns a Final Verdict AND a separate, explicit CEO decision authorizes turning it
+into an implemented strategy (at which point it would join Flow B's own Strategy Library exactly like
+any of S1–S51, not create a rival system). Flow B continues to own every file already listed in §9/§10.
+Neither flow's own standing prohibitions (Flow A's protocol rules; Flow B's frozen-module list) apply to
+the other.
 
 **Standing, non-negotiable CEO directives that govern ALL AI Trader work:**
 - **Simulation-first**: the AI Trader must prove robust historical profitability in simulation before
@@ -815,6 +860,73 @@ Memory historical population, and any future checkpoint letting Context Memory i
 ranking/scoring. No code changes of any kind are authorized until the CEO explicitly authorizes a next
 step.
 
+### 8.19 Interim research artifacts (between the Checkpoints 14–15 save and this one) — not a checkpoint
+
+Three CEO-directed research studies ran after §8.17's save, none of them a Phase 7 checkpoint, none
+modifying `ai_trader/`, each its own committed artifact set:
+
+- **Strategy Historical Performance Study** (commit `7c3eb62`) — `ceo_strategy_performance_study.py` +
+  `CEO_STRATEGY_PERFORMANCE_STUDY_REPORT.md` + `ceo_strategy_performance_study_tables.md` +
+  `ceo_strategy_performance_study_data.json`. Reconstructs, for all 43 strategies, isolated-vs-competitive
+  performance (Win Rate/PF/Expectancy/Average RR/Recovery Factor/Sharpe where available), a 5-category
+  classification (A-Candidate/B-Promising/C-Reliable-unprofitable/D-Inactive/E-Inconclusive: 6/10/4/14/9
+  strategies respectively — the six A-Candidates are S1, S13, S39, S40, S46, S48), and a corrected
+  blocking-reason breakdown (24/43 strategies principally shared-slot-limited, 7/43 principally
+  BELOW_FLOOR-limited including 3 of the 6 candidates, 12/43 neither — a self-caught correction of an
+  earlier draft's overstated "always shared-slot" claim, disclosed in the report itself). No production
+  file modified; reused only already-saved Phase 6.9A funnel/trade JSON, no fresh backtest.
+- **Strategy Constraint Root-Cause Study** (commit `2650c3b`) — `ceo_strategy_constraint_root_cause_study.py`
+  + `CEO_STRATEGY_CONSTRAINT_ROOT_CAUSE_REPORT.md` + `ceo_strategy_constraint_root_cause_tables.md` +
+  `ceo_strategy_constraint_root_cause_data.json`. One fresh, deeply-instrumented (zero-file-diff
+  monkey-patch, same technique as `phase69a_funnel_recorder.py`) competitive-scenario re-run of the same
+  six A-Candidates, reproduced twice byte-for-byte (sha256-identical). **Major correction made during
+  this study's own build**: `BELOW_FLOOR` is the Scoring Engine's Recommendation-Floor gate, not a
+  sizing gate — sizing never runs for a BELOW_FLOOR denial; the real driver is the Scoring Engine's own
+  cross-strategy `conflict_penalty` (`ai_trader/scoring_engine/conflict.py`), structurally impossible in
+  true single-strategy isolation. **Result: all six A-Candidates verdict as PORTFOLIO-LIMITED** — for
+  S40/S46/S48, 100% of BELOW_FLOOR events are conflict-penalty-caused (would have cleared the
+  recommendation floor without it); for S1/S13/S39, the shared-slot rule blocks 169–1,270 episodes each
+  with positive matched-subset expectancy. **Recommendation issued (closed-choice, per the study's own
+  mandate): C — run a controlled sizing experiment and a controlled portfolio-slot experiment,
+  separately** (not combined, to avoid confounding which mechanism produced any later observed change).
+  No production file modified.
+- **CEO Strategy Performance Atlas** (commit `f4eba6b`) — `CEO_STRATEGY_PERFORMANCE_ATLAS.md`. A
+  pure consolidation (no new metric, no recalculation) of the two studies above into one master table of
+  all 43 strategies plus an Evidence Level column (A: >100 isolated trades / B: 50–99 / C: 25–49 /
+  D: 10–24 / E: <10 — a confidence label only, never a ranking or penalty) and Top-10 leaderboards
+  (Expectancy, Profit Factor, Robustness, Total Realized R), each annotated with its Evidence Level.
+  Cross-checked: only S1 and S39 combine a Top-10 Expectancy result with "Well supported" (B-level)
+  evidence; all ten of the atlas's own PROMISING-classified strategies carry D/E evidence, corroborating
+  (not contradicting) their original "under-sampled" classification.
+
+None of the three studies opened the sealed holdout, eliminated any strategy, or changed any threshold/
+parameter/algorithm.
+
+### 8.20 Fifth Official Project Save (2026-07-20, this document's own current update) — official
+bifurcation into Flow A / Flow B
+
+CEO-directed. Two things happened in this save, both documentation-only:
+
+1. **Flow A opened**: the 40-Edge Alpha Discovery Program's founding infrastructure was created (commit
+   `d60fa63`) — `EDGE_DISCOVERY_REGISTRY_v1.md` (all 40 edges across 6 categories — Session Timing
+   E001-E008, Price Action/Structure E009-E016, Liquidity E017-E024, Mathematical E025-E032, Intermarket
+   E033-E036, News E037-E040 — every one `Status=UNSTUDIED`/`Version=V0`), `EDGE_RESEARCH_PROTOCOL.md`
+   (the shared six-stage pipeline + permanent-record rules, §1.1 above), and `EDGE_DISCOVERY_ROADMAP.md`
+   (a data-availability-driven sequencing: the project's actual data inventory was checked live —
+   XAUUSD OHLCV exists 2022-12-16→2026-07-13 at M15 finest resolution, ~3.5-4 years vs. the protocol's
+   ~5-6 year target; no M1/tick data; a `volume` column of unconfirmed/likely-proxy provenance; no
+   DXY/US10Y/XAGUSD/USDJPY/SPX data; no economic calendar — 23 of 40 edges are startable today, 17 need
+   a data-acquisition decision not made by this save).
+2. **The two-flow structure formalized** (§1.1): `PROJECT_STATE_v2.md` (this document), `PROJECT_AUDIT.md`,
+   and `NEXT_SESSION.md` all updated to state explicitly that Flow A (Alpha Discovery Laboratory, status
+   READY TO START) and Flow B (AI Trader Development, status ACTIVE, roadmap: Strategy Health → Portfolio
+   Architect → Learning/Research Feedback → Risk Integration → Execution Integration → MT5 Live) are
+   independent, non-conflicting, parallel streams.
+
+No code implemented, no backtest run, no strategy or production module touched, no existing document's
+content removed — `git status --porcelain -- ai_trader/ code/ results/ knowledge/` confirmed empty
+immediately before this save's own commit.
+
 ## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |
@@ -917,39 +1029,67 @@ so every phase's own findings stay fully reproducible without re-running anythin
 
 ## 12. Reading order for a brand-new session
 
-1. This document (`PROJECT_STATE_v2.md`) — the complete current state.
+**First, decide which flow the session is continuing** (§1.1) — Flow A and Flow B have almost entirely
+disjoint reading lists below.
+
+1. This document (`PROJECT_STATE_v2.md`) — the complete current state, both flows.
 2. `RECONSTRUCTION_PROMPT.md` — if starting a genuinely new conversation with no prior context, this is
    the single entry point; it directs the same reading order as below.
-3. `NEXT_SESSION.md` — the exact next-session procedure and git-state re-verification steps.
-4. `PHASE_7_CHECKPOINT_15_REPORT.md` → `PHASE_7_CHECKPOINT_14_REPORT.md` — the current official
+3. `NEXT_SESSION.md` — the exact next-session procedure and git-state re-verification steps for
+   whichever flow the session continues.
+
+**If continuing Flow A (Alpha Discovery Laboratory):**
+
+4A. `EDGE_DISCOVERY_ROADMAP.md` — which edge(s) to start with and why (data-availability-driven
+    sequencing).
+5A. `EDGE_RESEARCH_PROTOCOL.md` — the mandatory six-stage pipeline and permanent-record rules every edge
+    must follow.
+6A. `EDGE_DISCOVERY_REGISTRY_v1.md` — the specific edge's own V0 hypothesis, category, and required
+    data/timeframes/instruments/variables.
+
+**If continuing Flow B (AI Trader Development):**
+
+4B. `PHASE_7_CHECKPOINT_15_REPORT.md` → `PHASE_7_CHECKPOINT_14_REPORT.md` — the current official
    architectural frontier: Decision Intelligence v2 (a separate, additive system whose recommendation is
    construction-time-guaranteed identical to v1's, wrapping v1 with an explainable Context Memory
    evidence attachment) and the v1-vs-v2 falsification study (verdict: `V1_REMAINS_ACTIVE`).
-5. `PHASE_7_CHECKPOINT_13_REPORT.md` → `PHASE_7_CHECKPOINT_12_REPORT.md` → `PHASE_7_CHECKPOINT_11_REPORT.md`
+5B. `PHASE_7_CHECKPOINT_13_REPORT.md` → `PHASE_7_CHECKPOINT_12_REPORT.md` → `PHASE_7_CHECKPOINT_11_REPORT.md`
    → `PHASE_7_CHECKPOINT_10_REPORT.md` → `PHASE_7_CHECKPOINT_9_REPORT.md` →
    `PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md` — the complete Context Memory subsystem
    (deterministic per-edge Contextual Evidence Aggregation, built on deterministic hierarchical-
    relaxation Retrieval, built on a deterministic episode-collapsed Historical Index, built on an
    append-only Repository, built on immutable contracts and deterministic identities), most-recent-first
    — the foundation Checkpoint 14 consumes.
-6. `PHASE_7_CHECKPOINT_7_REPORT.md` → `PHASE_7_CHECKPOINT_6_REPORT.md` → `PHASE_7_CHECKPOINT_5_REPORT.md`
+6B. `PHASE_7_CHECKPOINT_7_REPORT.md` → `PHASE_7_CHECKPOINT_6_REPORT.md` → `PHASE_7_CHECKPOINT_5_REPORT.md`
    — Decision Intelligence v1 built on Edge Intelligence built on Market Intelligence — still current,
    unmodified, and the sole active recommendation system (§8.15/§8.18).
-7. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the architectural direction behind the now-CLOSED Phase
+7B. `CEO_STRATEGY_CONSTRAINT_ROOT_CAUSE_REPORT.md` → `CEO_STRATEGY_PERFORMANCE_STUDY_REPORT.md` →
+   `CEO_STRATEGY_PERFORMANCE_ATLAS.md` — the interim research on why the current six A-Candidate
+   strategies are constrained (all six: PORTFOLIO-LIMITED) and how all 43 strategies compare — directly
+   relevant background for the next Flow B step, Strategy Health integration/promotion policy (§1.1).
+8B. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the architectural direction behind the now-CLOSED Phase
    6.10 (generic Edge Portfolio, S10 as validation edge only) — background, not the current frontier.
-8. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
+9B. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
    (including its own §17 adversarial review and §19 Checkpoint 1C correction) — the diagnostic and
    design behind Checkpoints 1A–1C.
-9. In detail, if deeper Phase 6.9A background is needed:
+10B. In detail, if deeper Phase 6.9A background is needed:
    `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md` → `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md` →
    `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
-10. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
+11B. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
     there) and Phase 6.9's own original specification (§8 there, now marked CLOSED).
-11. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
-12. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
 
-**Do not begin any Phase 7 Checkpoint 16 (Context Memory influencing a decision, real Context Memory
-historical population, Decision Intelligence v2 promotion — none proposed, none authorized), Wave C,
-Learning Engine, Broker Adapter, MT5, live/paper trading, multi-position trading, Strategy Health
-integration, capital allocation across edges, or WATCHLIST activation without its own dedicated CEO
-approval — this document does not grant it.**
+**Common to both flows:**
+
+12. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
+13. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
+
+**Flow A**: systematic Discovery-stage study of the Alpha Edge registry is authorized to begin, starting
+from `EDGE_DISCOVERY_ROADMAP.md`'s Tier 1 — but every stage gate in `EDGE_RESEARCH_PROTOCOL.md` still
+applies per edge, and a Final Verdict never itself authorizes implementation (§1.1).
+
+**Flow B: do not begin** any Phase 7 Checkpoint 16 (Context Memory influencing a decision, real Context
+Memory historical population, Decision Intelligence v2 promotion — none proposed, none authorized), Wave
+C, Learning Engine, Broker Adapter, MT5, live/paper trading, multi-position trading, capital allocation
+across edges, or WATCHLIST activation without its own dedicated CEO approval — this document does not
+grant it. **Strategy Health integration/promotion policy is the next named step in Flow B's own roadmap
+(§1.1)** but still requires its own explicit CEO authorization to begin, same as every prior checkpoint.

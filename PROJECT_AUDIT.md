@@ -1,14 +1,22 @@
 # PROJECT_AUDIT — open defects, debts, method validity (updated 2026-07-14, pre-Wave1 consolidation)
 
 > **Scope note (added 2026-07-19, Official Project Save; re-confirmed 2026-07-20 after Checkpoints
-> 14–15)**: this document audits the Research Lab (`code/`, `results/`, `knowledge/`) ONLY — its defect
-> register, method-validity status, and frozen decisions below are unchanged and unaffected by any AI
-> Trader work, since every AI Trader phase to date (6.1 through Phase 7 Checkpoint 15) has confirmed
-> 0-diff against `code/`/`results/`/`knowledge/` at every single close, including this save. For the AI
-> Trader's own current state (Shadow Evidence, Market Intelligence, Edge Intelligence, Decision
-> Intelligence v1/v2, Context Memory, the v1-vs-v2 falsification study, and every phase's validation
-> results), see `PROJECT_STATE_v2.md` instead — that document is the authoritative source for everything
-> built on top of this frozen Research Lab, not this one.
+> 14–15; re-confirmed again 2026-07-20 at the fifth official save, the Flow A/Flow B bifurcation)**: this
+> document audits the Research Lab (`code/`, `results/`, `knowledge/`) ONLY — its defect register,
+> method-validity status, and frozen decisions below are unchanged and unaffected by any AI Trader work,
+> since every AI Trader phase to date (6.1 through Phase 7 Checkpoint 15), the three interim research
+> studies (Strategy Historical Performance Study, Strategy Constraint Root-Cause Study, CEO Strategy
+> Performance Atlas), and the newly-opened 40-Edge Alpha Discovery Program (Flow A) have all confirmed
+> 0-diff against `code/`/`results/`/`knowledge/` at every single close, including this save. **Flow A in
+> particular touches none of this document's own subject matter at all** — it is a wholly separate,
+> root-level-markdown-only research backlog (`EDGE_DISCOVERY_REGISTRY_v1.md`/
+> `EDGE_RESEARCH_PROTOCOL.md`/`EDGE_DISCOVERY_ROADMAP.md`) with its own 40 unrelated hypotheses (E001–
+> E040), sharing no strategy, no code, and no data file with the Research Lab's own S1–S51 strategy
+> universe — see `PROJECT_STATE_v2.md` §1.1 for the full two-flow structure. For the AI Trader's own
+> current state (Shadow Evidence, Market Intelligence, Edge Intelligence, Decision Intelligence v1/v2,
+> Context Memory, the v1-vs-v2 falsification study, the interim research studies, and Flow A's own
+> founding documents), see `PROJECT_STATE_v2.md` instead — that document is the authoritative source for
+> everything built on top of this frozen Research Lab, not this one.
 >
 > **Note (2026-07-20)**: Phase 7 Checkpoint 13's own `ai_trader/context_memory/evidence.py` reuses two
 > of this document's own already-established conventions verbatim, by explicit CEO instruction to ground
