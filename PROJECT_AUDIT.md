@@ -1,7 +1,9 @@
 # PROJECT_AUDIT — open defects, debts, method validity (updated 2026-07-14, pre-Wave1 consolidation)
 
 > **Scope note (added 2026-07-19, Official Project Save; re-confirmed 2026-07-20 after Checkpoints
-> 14–15; re-confirmed again 2026-07-20 at the fifth official save, the Flow A/Flow B bifurcation)**: this
+> 14–15; re-confirmed again 2026-07-20 at the fifth official save, the Flow A/Flow B bifurcation; and
+> once more 2026-07-20 in the Flow B session that produced `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`
+> — a design proposal only, no code, 0-diff against this document's own subject matter confirmed)**: this
 > document audits the Research Lab (`code/`, `results/`, `knowledge/`) ONLY — its defect register,
 > method-validity status, and frozen decisions below are unchanged and unaffected by any AI Trader work,
 > since every AI Trader phase to date (6.1 through Phase 7 Checkpoint 15), the three interim research

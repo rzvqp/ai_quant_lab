@@ -1,15 +1,14 @@
 # NEXT_SESSION.md — Official Handoff (Single Entry Point)
 
-**Rewritten in full on 2026-07-20 as an OFFICIAL PROJECT SAVE — the official bifurcation into two
-independent, parallel development flows.** This is a state-of-project closing (per explicit CEO
-instruction: "Aceasta este o închidere de stare, NU o schimbare de direcție"), not a pivot — the
-existing AI Trader roadmap is unsuspended and continues exactly as planned; a second, wholly separate
-research program is opened alongside it. No code was implemented, no backtest was run, and no existing
-document's content was removed as part of this save. This document, together with `PROJECT_STATE_v2.md`
-(the complete, consolidated state document, §1.1/§8.19/§8.20 cover this save's own scope),
-`RECONSTRUCTION_PROMPT.md` (the single entry point for a genuinely new conversation), `CHANGELOG.md`,
-and every phase's/study's own dedicated report, is designed to let a BRAND-NEW chat reconstruct this
-project 100% with NO access to any prior conversation.
+**Rewritten in full on 2026-07-20; updated same-day (Flow B session) after the Strategy Health status
+check and design proposal.** The original rewrite was an OFFICIAL PROJECT SAVE — the official
+bifurcation into two independent, parallel development flows. This update continues Flow B in the same
+conversation, per explicit CEO instruction: "Continuăm oficial Flow B ... Nu reconstruim proiectul de la
+zero și nu deschidem un nou flux." No code was implemented, no backtest was run, no existing document's
+content was removed. This document, together with `PROJECT_STATE_v2.md` (§1.1/§8.19/§8.20/§8.21 cover
+Flow B's current scope), `RECONSTRUCTION_PROMPT.md`, `CHANGELOG.md`, and every phase's/study's own
+dedicated report, is designed to let a BRAND-NEW chat reconstruct this project 100% with NO access to
+any prior conversation.
 
 ## ⚑ FIRST: which flow is this session continuing?
 
@@ -27,11 +26,12 @@ needing to touch or wait on the other.
 
 | | Flow A — Alpha Discovery Laboratory | Flow B — AI Trader Development |
 |---|---|---|
-| **Status** | **READY TO START** | **ACTIVE** |
-| **What it is** | Systematic research on 40 raw, unvalidated Alpha Edge hypotheses — session-timing, price-action/structure, liquidity, mathematical, intermarket, and news-based ideas. Not strategies. Not believed true. | The pre-existing main roadmap: Market Scanner → ... → Phase 7 Intelligence Layer (Market/Edge/Decision Intelligence, Context Memory) → next steps below. |
-| **Governing documents** | `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog, all `UNSTUDIED`/`V0`), `EDGE_RESEARCH_PROTOCOL.md` (the one shared six-stage pipeline every edge must follow), `EDGE_DISCOVERY_ROADMAP.md` (recommended sequencing, data-gap-driven) | `PROJECT_STATE_v2.md` §1–§9, `PHASE_7_CHECKPOINT_*_REPORT.md` series |
-| **First activity** | Begin systematic Discovery-stage study of the registry, starting from the Roadmap's Tier 1 (18 edges testable with data already on disk — pure-arithmetic and structure-pattern edges first) | Continue the roadmap: **Strategy Health (integration/promotion policy) → Portfolio Architect → Learning / Research Feedback → Risk Integration → Execution Integration → MT5 Live** |
-| **What is NOT authorized by this save** | Skipping a protocol stage for any edge; optimizing an edge until profitable; implementing any edge as a strategy before it earns a Final Verdict AND a separate explicit CEO decision to implement | Beginning Strategy Health integration/promotion policy (or any later step) without its own explicit CEO authorization — same standing rule as every prior Phase 7 checkpoint |
+| **Status** | **READY TO START** (untouched this session — see explicit "do not deviate to Flow A" instruction below) | **ACTIVE — currently on roadmap step 1/6 (Strategy Health)** |
+| **What it is** | Systematic research on 40 raw, unvalidated Alpha Edge hypotheses — session-timing, price-action/structure, liquidity, mathematical, intermarket, and news-based ideas. Not strategies. Not believed true. | The pre-existing main roadmap: Market Scanner → ... → Phase 7 Intelligence Layer (Market/Edge/Decision Intelligence, Context Memory) → **Strategy Health (current step)** → Portfolio Architect → Learning/Research Feedback → Risk Integration → Execution Integration → MT5 Live. |
+| **Governing documents** | `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog, all `UNSTUDIED`/`V0`), `EDGE_RESEARCH_PROTOCOL.md` (the one shared six-stage pipeline every edge must follow), `EDGE_DISCOVERY_ROADMAP.md` (recommended sequencing, data-gap-driven) | `PROJECT_STATE_v2.md` §1–§9/§8.21, `PHASE_7_CHECKPOINT_*_REPORT.md` series, `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` (NEW this session) |
+| **Current stage** | Not touched this session — explicitly deferred to a separate conversation per CEO instruction | **Strategy Health integration/promotion policy: STATUS CHECKED (confirmed NOT STARTED, distinct from the already-COMPLETE scoring system), DESIGN PROPOSED** (`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`), **awaiting CEO review** (ACCEPTED / ACCEPTED WITH CONDITIONS / NEEDS REVISION / REJECTED). No implementation yet. |
+| **Next stage** | Begin systematic Discovery-stage study of the registry, starting from the Roadmap's Tier 1, whenever that separate conversation opens | **If the design is accepted**: implement it (still within roadmap step 1, Strategy Health) — new additive Shadow-Evidence-sourced health module + harness eligibility wiring, proven byte-identical when disabled, per §9 of the design doc. **Only once Strategy Health integration is implemented and validated does Flow B advance to roadmap step 2, Portfolio Architect.** |
+| **What is NOT authorized** | Skipping a protocol stage for any edge; optimizing an edge until profitable; implementing any edge as a strategy before it earns a Final Verdict AND a separate explicit CEO decision to implement | Implementing `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` (or any part of it) before the CEO reviews and accepts it; beginning Portfolio Architect or any later roadmap step before Strategy Health integration is actually implemented and validated |
 | **Where it lives** | New root-level markdown only so far; a future `edge_research/E0XX_*.md` per-edge log directory once Discovery starts (not created yet) | `ai_trader/` (all modules, §9 of `PROJECT_STATE_v2.md`) |
 | **Conflict with the other flow / with the frozen Research Lab** | **None** — touches no file inside `ai_trader/`, `code/`, `results/`, or `knowledge/` | **None** — unchanged from every prior save |
 
@@ -72,29 +72,36 @@ Roadmap tier the edge belongs to, and create that edge's own permanent research 
 1. **This document** — the exact current state and the exact next-session procedure.
 2. **`RECONSTRUCTION_PROMPT.md`** — if this is a genuinely new conversation, start there; it points
    back here with the exact verification steps to run first.
-3. **`PHASE_7_CHECKPOINT_15_REPORT.md`** → **`PHASE_7_CHECKPOINT_14_REPORT.md`** — the current official
+3. **`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`** (NEW this session) — the current, immediate
+   frontier: the design proposal for how Strategy Health states should govern the live/competitive
+   portfolio, PROPOSED and awaiting CEO review. Read this FIRST if continuing the current step.
+4. **`PHASE_7_CHECKPOINT_15_REPORT.md`** → **`PHASE_7_CHECKPOINT_14_REPORT.md`** — the current official
    architectural frontier: **Decision Intelligence v2** (`ai_trader/decision_intelligence_v2/`), a
    SEPARATE, additive system wrapping v1 (unmodified) with an explainable, per-candidate Context Memory
    evidence attachment, and the **v1-vs-v2 falsification study** (`ai_trader/decision_comparison/`),
    whose verdict is **`V1_REMAINS_ACTIVE`**.
-4. **`PHASE_7_CHECKPOINT_13_REPORT.md`** → **`_12_`** → **`_11_`** → **`_10_`** → **`_9_REPORT.md`** →
+5. **`PHASE_7_CHECKPOINT_13_REPORT.md`** → **`_12_`** → **`_11_`** → **`_10_`** → **`_9_REPORT.md`** →
    **`PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md`** — the complete Context Memory subsystem.
-5. **`PHASE_7_CHECKPOINT_7_REPORT.md`** → **`PHASE_7_CHECKPOINT_6_REPORT.md`** →
+6. **`PHASE_7_CHECKPOINT_7_REPORT.md`** → **`PHASE_7_CHECKPOINT_6_REPORT.md`** →
    **`PHASE_7_CHECKPOINT_5_REPORT.md`** — Decision Intelligence v1 built on Edge Intelligence built on
    Market Intelligence — still current, unmodified, and the SOLE ACTIVE recommendation system.
-6. **`CEO_STRATEGY_CONSTRAINT_ROOT_CAUSE_REPORT.md`** → **`CEO_STRATEGY_PERFORMANCE_STUDY_REPORT.md`**
+7. **`CEO_STRATEGY_CONSTRAINT_ROOT_CAUSE_REPORT.md`** → **`CEO_STRATEGY_PERFORMANCE_STUDY_REPORT.md`**
    → **`CEO_STRATEGY_PERFORMANCE_ATLAS.md`** — interim research (not a checkpoint) on why the six
    current A-Candidate strategies (S1, S13, S39, S40, S46, S48) are constrained: **all six verdict as
-   PORTFOLIO-LIMITED**. Directly relevant background for the next Flow B step (Strategy Health
-   integration/promotion policy).
-7. **`PROJECT_STATE_v2.md`** — the complete state through Phase 6.9A, Phase 6.10 (CLOSED), Phase 7
-   Checkpoints 5–15, the interim research studies (§8.19), and this fifth official save (§8.20/§1.1).
-8. **`PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md`** — background only, see §B for disambiguation.
-9. **`PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`** → **`PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`** —
-   background on Shadow Evidence's own design, if depth is needed.
-10. In detail, if deeper Phase 6.9A background is needed: `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`
-    → `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md` → `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
-11. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology.
+   PORTFOLIO-LIMITED**. Directly cited by the Strategy Health design's own diagnosis of Phase 6.9's
+   failure mechanism.
+8. **`PROJECT_STATE_v2.md`** — the complete state through Phase 6.9A, Phase 6.10 (CLOSED), Phase 7
+   Checkpoints 5–15, the interim research studies (§8.19), the fifth official save (§8.20/§1.1), and the
+   Strategy Health design proposal (§8.21).
+9. **`PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md`** — background only, see §B for disambiguation.
+10. **`PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md`** → **`PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`** —
+   background on Shadow Evidence's own design (its own evidence-source data feeds the Strategy Health
+   design's recommended approach).
+11. **`PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md`** — the one prior Strategy Health integration
+    attempt, and precisely why it failed (essential reading before implementing the new design; already
+    summarized in `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` §3) → `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md`
+    → `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md` for deeper background if needed.
+12. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology.
 
 **Common to both flows**: `PROJECT_STATE_v1.0.md` (Research Lab's frozen state), `CHANGELOG.md`'s top
 entries.
@@ -155,13 +162,27 @@ controlled sizing experiment and a controlled portfolio-slot experiment, separat
 `CEO_STRATEGY_PERFORMANCE_ATLAS.md` (all 43 strategies consolidated, with an Evidence Level A–E
 confidence label). No production file modified by any of the three.
 
+## E.1 Strategy Health integration/promotion policy — design proposed, awaiting review (§8.21)
+
+Status checked first (per explicit CEO instruction): the Strategy Health SYSTEM (scoring/classification)
+is COMPLETE, frozen since Wave D; the integration/promotion POLICY (what a Health state actually does to
+the live portfolio) was confirmed NOT STARTED. `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` proposes:
+evidence source = dual (Shadow-Evidence-primary, competitive-evidence-secondary, always labeled, never
+blended); policy = default-in eligibility (ACTIVE/WATCHLIST/PROBATION all remain eligible for new
+signals, only DISABLED excluded), reusing `ai_trader/simulation/harness.py`'s existing
+`strategy_id_filter` exactly as Phase 6.9 already proved safe. Touches zero frozen modules. Two more
+invasive escalations (risk-scaled sizing via `sizing.py`'s existing `quality_factor` pattern;
+Health-aware ranking priority in `scoring_engine/ranker.py`) are named as explicit, separate, FUTURE
+options requiring their own dedicated unfreezing decision — neither is part of this recommendation.
+**PROPOSED, not yet implemented, not yet reviewed.**
+
 ## F. Official Git state (verify live — do not trust blindly)
 
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD (pre-save):  d60fa63 "docs: launch 40-Edge Alpha Discovery Program infrastructure"
-Working tree:     clean (verified live before this save's own commit)
+HEAD (pre-session): 9aff28b "docs: official project split into alpha discovery and ai trader development"
+Working tree:     clean (verified live before this session's own commit)
 ```
 
 **Commits since the Checkpoints 14–15 save (`028b620`), in order:**
@@ -170,11 +191,12 @@ Working tree:     clean (verified live before this save's own commit)
 2650c3b  research: diagnose candidate strategy constraints
 f4eba6b  docs: enrich strategy performance atlas with evidence levels
 d60fa63  docs: launch 40-Edge Alpha Discovery Program infrastructure
+9aff28b  docs: official project split into alpha discovery and ai trader development
 ```
 
-**This save's own commit** (this file, `PROJECT_STATE_v2.md`, `PROJECT_AUDIT.md`) lands ONE commit
-after `d60fa63` — run `git log -1` for the exact current HEAD; do not assume it is still that commit in
-any future session.
+**This session's own commit** (this file, `PROJECT_STATE_v2.md`, plus the new
+`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`) lands ONE commit after `9aff28b` — run `git log -1` for
+the exact current HEAD; do not assume it is still that commit in any future session.
 
 **Re-verify `git branch --show-current`/`git log -1`/`git status --porcelain` directly before trusting
 any git-state claim anywhere in this project's documentation.**
@@ -224,9 +246,11 @@ any doubt exists before trusting it in a future session.
 3. **Report the reconstructed state back to the CEO** before proceeding on anything new.
 4. **Flow A**: begin Discovery on the Roadmap's Tier 1, one edge (or a small batch) at a time, creating
    that edge's own permanent research log before recording any finding.
-   **Flow B**: Strategy Health integration/promotion policy is the next named step, but still requires
-   its own explicit CEO authorization to begin — **stop and ask before starting any further
-   implementation.**
+   **Flow B**: read `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` first — it is PROPOSED, awaiting CEO
+   review. If the CEO has accepted it (with or without conditions) since this document was last updated,
+   implement it (still roadmap step 1, Strategy Health); if not yet reviewed, **stop and ask for a
+   verdict before writing any code.** Do not begin Portfolio Architect or any later step until Strategy
+   Health integration is implemented and validated.
 
 ---
 

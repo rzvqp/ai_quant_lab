@@ -927,6 +927,40 @@ No code implemented, no backtest run, no strategy or production module touched, 
 content removed — `git status --porcelain -- ai_trader/ code/ results/ knowledge/` confirmed empty
 immediately before this save's own commit.
 
+### 8.21 Flow B resumed: Strategy Health integration/promotion policy — DESIGN PROPOSED, awaiting CEO review
+
+CEO-directed: continue Flow B in this conversation, per the official roadmap (§1.1), starting with
+Strategy Health. Status check performed first, per explicit instruction: the underlying Strategy Health
+System (scoring/classification, §3/§9) is COMPLETE and unchanged; the **integration/promotion policy**
+(what a Health state actually does to the live/competitive portfolio) was confirmed **NOT STARTED**
+(never selected — §8.18, §10). Per CEO decision, a design proposal was drafted before any
+implementation — `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` — rather than implementing directly,
+matching the design-first pattern already used for Shadow Evidence and Context Memory.
+
+**The design's own central finding**: Phase 6.9's prior integration attempt (monthly ACTIVE-only
+gating) failed via an absorbing lockout — once its own bootstrap evidence aged out of the 365-day
+window, the ACTIVE roster stayed empty for the remaining ~2.6 years, because competitive trades were too
+scarce for most strategies to ever score, and the binary ACTIVE-only cutoff meant zero new evidence once
+that happened. The design connects this directly to the separate, more recent Root-Cause Study
+(§8.19/`2650c3b`): both findings trace to the same mechanism — competitive trade counts are a scarce,
+shared-slot-contested resource, not a fair per-strategy sample. **Recommended v1 design**: (1) evidence
+source — dual, Shadow-Evidence-primary/competitive-evidence-secondary, both labeled, never blended
+(Shadow Evidence decouples per-strategy evidence accumulation from shared-slot contention, directly
+targeting Phase 6.9's own failure mechanism); (2) policy — default-in eligibility (ACTIVE/WATCHLIST/
+PROBATION all remain eligible for new signals; only DISABLED is excluded), reusing the existing,
+already-proven-safe `strategy_id_filter` mechanism in `ai_trader/simulation/harness.py` exactly as Phase
+6.9 already used it (overlay/exit management stays unfiltered). **Deliberately touches zero frozen
+modules** — two more invasive options (risk-scaled sizing via `sizing.py`'s existing `quality_factor`
+pattern; Health-aware ranking priority via `scoring_engine/ranker.py`) are named as explicit, separate,
+FUTURE escalations requiring their own dedicated decision to unfreeze Risk Manager/Scoring Engine
+respectively — neither bundled into this v1 recommendation. A self-adversarial risk section is included
+(the design may be a practical no-op today since DISABLED is currently 0/43 strategies — treated as an
+intentional, low-risk v1 property, not a flaw).
+
+**Status: PROPOSED, awaiting CEO review (ACCEPTED / ACCEPTED WITH CONDITIONS / NEEDS REVISION /
+REJECTED).** No implementation has begun. Flow B's roadmap does not advance to Portfolio Architect until
+Strategy Health integration is implemented per an accepted design (or the CEO redirects this step).
+
 ## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |
