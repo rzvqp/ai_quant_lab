@@ -1,14 +1,19 @@
 # Edge Discovery Registry — v1
 
 **Program**: 40-Edge Alpha Discovery Program. **Date opened**: 2026-07-20. **Status of this document**:
-infrastructure only — no edge below has been studied, backtested, or implemented. Every entry is a raw,
-unverified V0 hypothesis, not a strategy, not a trading rule, and not believed to be true.
+infrastructure, PLUS the first 5 Discovery-stage passes (E025, E026, E029, E032, E028 — 2026-07-20,
+first Flow A research session; see `edge_research/` and `NEXT_SESSION.md` §Flow A for the session
+summary). No edge below has been implemented, and no Final Verdict has been issued on any edge (the
+available data, ~3.6 years, is short of the protocol's own ~5-6 year requirement for any Final Verdict
+— see `EDGE_RESEARCH_PROTOCOL.md` §2). Every entry's own V0 hypothesis below remains exactly as
+originally registered, unedited, per protocol §1.
 
 ## How to read this registry
 
-- **Status = UNSTUDIED** for all 40 entries. This will only ever change by passing through the stages
-  defined in `EDGE_RESEARCH_PROTOCOL.md` (V0 → Discovery → Frozen Candidate → Validation →
-  Walk Forward → Final Verdict). No status is changed by this document.
+- **Status = UNSTUDIED for 35 of 40 entries; DISCOVERY_IN_PROGRESS for 5 (E025, E026, E028, E029,
+  E032, all studied 2026-07-20)**. Status changes only by passing through the stages defined in
+  `EDGE_RESEARCH_PROTOCOL.md` (V0 → Discovery → Frozen Candidate → Validation → Walk Forward → Final
+  Verdict); no edge has advanced past Stage 2 (Discovery) yet.
 - **Version = V0** for all 40 entries — the original, unmodified hypothesis as registered here. Per the
   protocol, V0 is never edited retroactively; any refinement discovered during research becomes V1, V2,
   etc., appended to the edge's own permanent research log (not created yet — see
@@ -393,8 +398,9 @@ unverified V0 hypothesis, not a strategy, not a trading rule, and not believed t
   magnitude, session
 - **Measured outcome**: Reaction rate/magnitude at each round-number granularity vs. a matched
   non-round-level control
-- **Status**: UNSTUDIED
-- **Version**: V0
+- **Status**: DISCOVERY_IN_PROGRESS (Stage 2, first pass complete 2026-07-20; no Final Verdict —
+  below the protocol's ~5-6yr horizon; full record in `edge_research/E025_round_numbers.md`)
+- **Version**: V0 (frozen; an informal, unfrozen V1 candidate framing is recorded in the research log)
 
 ### E026 — ADR Exhaustion
 - **Category**: Mathematical
@@ -406,8 +412,9 @@ unverified V0 hypothesis, not a strategy, not a trading rule, and not believed t
 - **Instruments required**: XAUUSD
 - **Observable variables**: % of ADR already consumed, time-of-day, day of week, volatility regime
 - **Measured outcome**: Continuation-rate change conditioned on % of ADR already used
-- **Status**: UNSTUDIED
-- **Version**: V0
+- **Status**: DISCOVERY_IN_PROGRESS (Stage 2, first pass complete 2026-07-20; no Final Verdict —
+  below the protocol's ~5-6yr horizon; full record in `edge_research/E026_adr_exhaustion.md`)
+- **Version**: V0 (frozen; an informal, unfrozen V1 candidate framing is recorded in the research log)
 
 ### E027 — Midnight Open Anchor
 - **Category**: Mathematical
@@ -432,8 +439,9 @@ unverified V0 hypothesis, not a strategy, not a trading rule, and not believed t
   outcome
 - **Measured outcome**: Continuation rate/magnitude from the OTE zone vs. shallower or deeper
   retracements
-- **Status**: UNSTUDIED
-- **Version**: V0
+- **Status**: DISCOVERY_IN_PROGRESS (Stage 2, first pass complete 2026-07-20; no Final Verdict —
+  below the protocol's ~5-6yr horizon; full record in `edge_research/E028_fibonacci_ote.md`)
+- **Version**: V0 (frozen; an informal, unfrozen V1 candidate framing is recorded in the research log)
 
 ### E029 — Weekly Gap Fill
 - **Category**: Mathematical
@@ -445,8 +453,9 @@ unverified V0 hypothesis, not a strategy, not a trading rule, and not believed t
 - **Observable variables**: Gap size/direction, time-to-fill, week-of-month, whether filled same day or
   later in the week
 - **Measured outcome**: Fill rate and time-to-fill distribution
-- **Status**: UNSTUDIED
-- **Version**: V0
+- **Status**: DISCOVERY_IN_PROGRESS (Stage 2, first pass complete 2026-07-20; no Final Verdict —
+  below the protocol's ~5-6yr horizon; full record in `edge_research/E029_weekly_gap_fill.md`)
+- **Version**: V0 (frozen; no refinement written yet, blocked on a control per the research log)
 
 ### E030 — Tick Speed Acceleration
 - **Category**: Mathematical
@@ -483,8 +492,9 @@ unverified V0 hypothesis, not a strategy, not a trading rule, and not believed t
 - **Instruments required**: XAUUSD
 - **Observable variables**: Range-defining logic used, distance from equilibrium, day of week
 - **Measured outcome**: Rate/magnitude of movement toward equilibrium vs. away from it
-- **Status**: UNSTUDIED
-- **Version**: V0
+- **Status**: DISCOVERY_IN_PROGRESS (Stage 2, first pass complete 2026-07-20; no Final Verdict —
+  below the protocol's ~5-6yr horizon; full record in `edge_research/E032_premium_discount_flip.md`)
+- **Version**: V0 (frozen; no refinement written yet, blocked on a control per the research log)
 
 ---
 

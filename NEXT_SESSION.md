@@ -29,8 +29,8 @@ needing to touch or wait on the other.
 | **Status** | **READY TO START** (untouched this session — see explicit "do not deviate to Flow A" instruction below) | **ACTIVE — currently on roadmap step 1/6 (Strategy Health)** |
 | **What it is** | Systematic research on 40 raw, unvalidated Alpha Edge hypotheses — session-timing, price-action/structure, liquidity, mathematical, intermarket, and news-based ideas. Not strategies. Not believed true. | The pre-existing main roadmap: Market Scanner → ... → Phase 7 Intelligence Layer (Market/Edge/Decision Intelligence, Context Memory) → **Strategy Health (current step)** → Portfolio Architect → Learning/Research Feedback → Risk Integration → Execution Integration → MT5 Live. |
 | **Governing documents** | `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog, all `UNSTUDIED`/`V0`), `EDGE_RESEARCH_PROTOCOL.md` (the one shared six-stage pipeline every edge must follow), `EDGE_DISCOVERY_ROADMAP.md` (recommended sequencing, data-gap-driven) | `PROJECT_STATE_v2.md` §1–§9/§8.21, `PHASE_7_CHECKPOINT_*_REPORT.md` series, `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` (NEW this session) |
-| **Current stage** | Not touched this session — explicitly deferred to a separate conversation per CEO instruction | **Strategy Health integration/promotion policy: STATUS CHECKED (confirmed NOT STARTED, distinct from the already-COMPLETE scoring system), DESIGN PROPOSED** (`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`), **awaiting CEO review** (ACCEPTED / ACCEPTED WITH CONDITIONS / NEEDS REVISION / REJECTED). No implementation yet. |
-| **Next stage** | Begin systematic Discovery-stage study of the registry, starting from the Roadmap's Tier 1, whenever that separate conversation opens | **If the design is accepted**: implement it (still within roadmap step 1, Strategy Health) — new additive Shadow-Evidence-sourced health module + harness eligibility wiring, proven byte-identical when disabled, per §9 of the design doc. **Only once Strategy Health integration is implemented and validated does Flow B advance to roadmap step 2, Portfolio Architect.** |
+| **Current stage** | Not touched this session — explicitly deferred to a separate conversation per CEO instruction | **Strategy Health integration/promotion policy: ACCEPTED WITH CONDITIONS** (`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`, now with §§11–15: explicit lifecycle, per-state influence table, module contracts, non-absorbing recovery, structural performance-impact argument). **Implementation NOT yet started** — awaiting CEO confirmation the clarified architecture is complete. |
+| **Next stage** | Begin systematic Discovery-stage study of the registry, starting from the Roadmap's Tier 1, whenever that separate conversation opens | **Awaiting CEO confirmation the architecture (§§1–15 of the design doc) is complete before implementation begins** (still within roadmap step 1, Strategy Health) — new additive Shadow-Evidence-sourced health module + a new Eligibility Policy layer + harness `strategy_id_filter` wiring (PROBATION/DISABLED excluded from real trades, ACTIVE/WATCHLIST unaffected, Shadow Evidence never gated for anyone), proven byte-identical when disabled, per §9 of the design doc. **Only once Strategy Health integration is implemented and validated does Flow B advance to roadmap step 2, Portfolio Architect.** |
 | **What is NOT authorized** | Skipping a protocol stage for any edge; optimizing an edge until profitable; implementing any edge as a strategy before it earns a Final Verdict AND a separate explicit CEO decision to implement | Implementing `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` (or any part of it) before the CEO reviews and accepts it; beginning Portfolio Architect or any later roadmap step before Strategy Health integration is actually implemented and validated |
 | **Where it lives** | New root-level markdown only so far; a future `edge_research/E0XX_*.md` per-edge log directory once Discovery starts (not created yet) | `ai_trader/` (all modules, §9 of `PROJECT_STATE_v2.md`) |
 | **Conflict with the other flow / with the frozen Research Lab** | **None** — touches no file inside `ai_trader/`, `code/`, `results/`, or `knowledge/` | **None** — unchanged from every prior save |
@@ -41,6 +41,66 @@ no `RuntimeEvaluator`, no code change of any kind unless and until a specific ed
 implementation authorization (at which point it would join Flow B's own Strategy Library like any of
 S1–S51, not create a competing system). Flow B continues to own everything it already owned. Both flows
 can run in the same session or in entirely separate sessions/conversations without coordination.
+
+---
+
+## Flow A — session log (append-only; newest first)
+
+**Session 2026-07-20 (first Flow A research session)**: completed first Discovery-stage passes on the
+first 5 edges of the Roadmap's Tier 1 pure-arithmetic sub-group, in order: **E025 (Round Numbers) →
+E026 (ADR Exhaustion) → E029 (Weekly Gap Fill) → E032 (Premium Discount Flip) → E028 (Fibonacci OTE)**.
+Full per-edge evidence, method disclosure, and answers to all 9 mandatory Discovery questions live in
+`edge_research/E0XX_<slug>.md` (one file per edge, permanent, append-only) plus each edge's own analysis
+script + JSON/CSV output (also in `edge_research/`, committed). **No Final Verdict was issued on any
+edge** — the M15/H1/H4/D1 data on disk (~3.6 years, 2022-12-16→2026-07-13) is short of the protocol's
+own §2 ~5-6 year requirement for any Final Verdict (including an early REFUTED verdict); every edge
+below remains in **Stage 2 — Discovery, first pass complete**, not Frozen, not Validated, not
+Walk-Forwarded. Every edge's registry `Status` field was updated from `UNSTUDIED` to
+`DISCOVERY_IN_PROGRESS`; every `V0` hypothesis wording is unedited (per protocol §1) — informal,
+unfrozen "V1 candidate" framings suggested by this session's own evidence live only in the per-edge
+logs, not in the registry.
+
+**Headline findings this session (Discovery-stage, exploratory, no multiple-comparison correction
+applied — none of these are Final Verdicts)**:
+- **E025 Round Numbers**: NOT supported as stated at $10 or $100 granularity. At **$50 granularity, a
+  significant EFFECT IN THE OPPOSITE DIRECTION from V0** was found — round $50 levels break through
+  more often than a matched non-round control (p=0.0022 pooled, p=0.0059 approaching-from-above), i.e.
+  a tentative liquidity-sweep/breakthrough pattern rather than a magnet/support-resistance one. Sign is
+  consistent across an out-of-time split-half check.
+- **E026 ADR Exhaustion**: Real, significant, and monotonic for **upside** ADR consumption (p=2.4e-6);
+  absent for **downside** consumption. The upside effect may be partly confounded with session-of-day
+  (only individually significant in the Asia session) — flagged as unresolved.
+- **E029 Weekly Gap Fill**: Clean rate/size/speed pattern (88.9% overall fill rate within 5 trading
+  days; large gaps fill far less reliably (77.8%) and 11× slower than small gaps (100%, same-bar)) —
+  but this pass found **43% of raw week-boundary "gaps" are a data-feed artifact** (exact $0.00 gap,
+  excluded before analysis) and did not yet build a control to rule out plain generic level-
+  revisitation as the explanation.
+- **E032 Premium Discount Flip**: A strong, highly significant reversion pattern using a **daily**
+  range definition (Spearman r=0.53, p≈4e-299) but a much weaker one using a **weekly** range
+  definition (r=0.04–0.07) — the registry's own "range-defining logic used" variable is confirmed
+  load-bearing. Not yet distinguished from generic overextension mean-reversion (same open question as
+  E026's own finding).
+- **E028 Fibonacci OTE**: NOT supported on the continuation-RATE dimension — shallow retracements
+  continue significantly MORE often (64.6%) than the OTE zone (57.3%, p=0.0023) — the reverse of V0.
+  Continuation magnitude, conditional on continuation happening, is modestly higher in the OTE zone by
+  median (0.117 vs 0.087) — a much weaker, non-decisive signal on that second dimension.
+
+**Recurring open question across this session's edges**: several of the "significant" patterns found
+(E026 upside, E032 daily-range) may be restatements of a single, generic, already-known market property
+— large/stretched recent moves partially mean-revert — rather than edge-specific mechanisms. No edge
+studied this session has yet been checked against that generic-reversion control. This is the single
+most important methodological gap to close on any revisit of E026 or E032, and is worth checking before
+studying any further "reversion-flavored" edge in the registry (E031 3-SD VWAP is a likely future
+candidate for the same confound).
+
+**Next edge, per `EDGE_DISCOVERY_ROADMAP.md` Tier 1 order**: **E017 — Equal Highs / Lows Target**
+(candidate reuse: a from-scratch structure/swing detector analogous in spirit to, but not imported
+from, `ai_trader/market_intelligence/structure.py` — Flow A does not import ai_trader code, per the
+two-flow separation). After E017: E009, E010, E012, E015, E013, E016, E011, E014, then the
+session-timing edges E006/E008/E005/E027.
+
+**Verify before continuing**: `git status --porcelain` clean, `git log -1` matches this session's own
+closing commit (see this document's own §F once refreshed at that commit).
 
 ---
 
@@ -162,19 +222,24 @@ controlled sizing experiment and a controlled portfolio-slot experiment, separat
 `CEO_STRATEGY_PERFORMANCE_ATLAS.md` (all 43 strategies consolidated, with an Evidence Level A–E
 confidence label). No production file modified by any of the three.
 
-## E.1 Strategy Health integration/promotion policy — design proposed, awaiting review (§8.21)
+## E.1 Strategy Health integration/promotion policy — ACCEPTED WITH CONDITIONS, clarified, not yet implemented (§8.21/§8.22)
 
 Status checked first (per explicit CEO instruction): the Strategy Health SYSTEM (scoring/classification)
 is COMPLETE, frozen since Wave D; the integration/promotion POLICY (what a Health state actually does to
-the live portfolio) was confirmed NOT STARTED. `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` proposes:
-evidence source = dual (Shadow-Evidence-primary, competitive-evidence-secondary, always labeled, never
-blended); policy = default-in eligibility (ACTIVE/WATCHLIST/PROBATION all remain eligible for new
-signals, only DISABLED excluded), reusing `ai_trader/simulation/harness.py`'s existing
-`strategy_id_filter` exactly as Phase 6.9 already proved safe. Touches zero frozen modules. Two more
-invasive escalations (risk-scaled sizing via `sizing.py`'s existing `quality_factor` pattern;
-Health-aware ranking priority in `scoring_engine/ranker.py`) are named as explicit, separate, FUTURE
-options requiring their own dedicated unfreezing decision — neither is part of this recommendation.
-**PROPOSED, not yet implemented, not yet reviewed.**
+the live portfolio) was confirmed NOT STARTED. `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` (FINAL)
+proposes: evidence source = dual (Shadow-Evidence-primary, competitive-evidence-secondary, always
+labeled, never blended); policy = **ACTIVE/WATCHLIST retain full real-portfolio eligibility (unchanged
+from today); PROBATION/DISABLED are Shadow-only** (excluded from new real trades, but Shadow Evidence
+tracking never stops for anyone, in any state — the load-bearing invariant that makes recovery genuine
+and non-absorbing), reusing `ai_trader/simulation/harness.py`'s existing `strategy_id_filter` exactly as
+Phase 6.9 already proved safe. Touches zero frozen modules. Two more invasive escalations (risk-scaled
+sizing via `sizing.py`'s existing `quality_factor` pattern; Health-aware ranking priority in
+`scoring_engine/ranker.py`) are named as explicit, separate, FUTURE options requiring their own dedicated
+unfreezing decision — neither is part of this recommendation. **CEO verdict: ACCEPTED WITH CONDITIONS.**
+Five requested architectural clarifications (explicit lifecycle state machine; per-state influence with
+zero ambiguity; inter-module contracts, interfaces only; non-absorbing recovery mechanism; structural
+performance-impact argument) were added to the same document as §§11–15. **Implementation NOT started**
+— awaiting CEO confirmation the clarified architecture is complete.
 
 ## F. Official Git state (verify live — do not trust blindly)
 

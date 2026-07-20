@@ -1,0 +1,66 @@
+{
+  "edge": "E029",
+  "n_bars": 84152,
+  "date_range": [
+    "2022-12-16 10:45:00+00:00",
+    "2026-07-13 06:00:00+00:00"
+  ],
+  "n_weekend_boundaries_detected": 191,
+  "n_excluded_near_zero_artifact": 83,
+  "n_weekly_gaps": 108,
+  "overall_fill_rate": 0.8888888888888888,
+  "overall_median_ttf_hours": 1.0,
+  "by_direction": {
+    "down": {
+      "n": 48,
+      "fill_rate": 0.9375,
+      "median_ttf_hours": 1.0,
+      "mean_abs_gap": 11.517812499999962
+    },
+    "up": {
+      "n": 60,
+      "fill_rate": 0.85,
+      "median_ttf_hours": 1.0,
+      "mean_abs_gap": 10.968800000000025
+    }
+  },
+  "by_gap_tercile": {
+    "small": {
+      "n": 36,
+      "fill_rate": 1.0,
+      "median_ttf_hours": 0.0
+    },
+    "medium": {
+      "n": 36,
+      "fill_rate": 0.8888888888888888,
+      "median_ttf_hours": 1.375
+    },
+    "large": {
+      "n": 36,
+      "fill_rate": 0.7777777777777778,
+      "median_ttf_hours": 11.0
+    }
+  },
+  "by_week_of_month": {
+    "1": {
+      "n": 26,
+      "fill_rate": 0.8846153846153846
+    },
+    "2": {
+      "n": 24,
+      "fill_rate": 0.875
+    },
+    "3": {
+      "n": 23,
+      "fill_rate": 0.8695652173913043
+    },
+    "4": {
+      "n": 27,
+      "fill_rate": 0.8888888888888888
+    },
+    "5": {
+      "n": 8,
+      "fill_rate": 1.0
+    }
+  }
+}
