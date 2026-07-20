@@ -1,20 +1,20 @@
-# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL PROJECT SAVE, 2026-07-20, after Checkpoints 10–13)
+# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL PROJECT SAVE, 2026-07-20, after Checkpoints 14–15)
 
 **Purpose**: this is the single, authoritative, consolidated state document for the ENTIRE project —
 both the frozen Research Lab and the AI Trader built on top of it — current as of this official save. A
 brand-new chat, with no access to any prior conversation, must be able to reconstruct the complete
 project from this document plus the ones it points to. Every fact below was verified directly against
 `git log`/`git status`/`git diff` at this save's own close, and against the full-repository
-`pytest`/`coverage` run performed at the close of this batch (§8.12) — nothing here is carried forward
+`pytest`/`coverage` run performed at the close of this batch (§8.16) — nothing here is carried forward
 unverified. This document supersedes no prior report — `PROJECT_STATE_v1.0.md`,
 `ROLLING_HEALTH_BACKTEST_HANDOFF.md`, and every phase's own dedicated report remain the authoritative,
 detailed sources for their own respective scopes; this document exists to make the CURRENT, FULL state
 reachable in one place.
-**This update's own scope: Phase 7 Checkpoints 8 (design), 9 (contracts/identities), 10 (repository), 11
-(episodes/index), 12 (retrieval), and 13 (evidence aggregation) — the full Context Memory subsystem —
-plus this official documentation save. Context Memory remains fully disconnected from Decision
-Intelligence and every execution-adjacent package; Checkpoint 14 (Decision Intelligence v2 integration)
-is proposed but NOT authorized (§8.14).**
+**This update's own scope: Phase 7 Checkpoint 14 (Decision Intelligence v2 — Context Memory
+Integration) and Checkpoint 15 (Decision Intelligence v1 vs v2 Falsification Study), plus this official
+documentation save. Decision Intelligence v1 remains the sole active recommendation system, unmodified;
+v2 is a separate, additive integration whose recommendation is construction-time-guaranteed identical to
+v1's; the Checkpoint 15 falsification study's own verdict is V1_REMAINS_ACTIVE (§8.15).**
 
 ---
 
@@ -23,8 +23,8 @@ is proposed but NOT authorized (§8.14).**
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD (pre-save):  24457858c9c0da7d3b6b65f1e16d0589575c37df
-                  "Phase 7 Checkpoint 13: Contextual Evidence Aggregation"
+HEAD (pre-save):  069c47948982a82f3a2b801ff60954f28a931d8c
+                  "Phase 7 Checkpoint 15: Decision Intelligence v1 vs v2 Falsification Study"
 Working tree:     clean (verified live at this official save, before its own commit)
 ```
 
@@ -32,18 +32,26 @@ Working tree:     clean (verified live at this official save, before its own com
 any git-state claim anywhere in this project's documentation** — the standing discipline every prior
 handoff has followed, re-confirmed at this save.
 
-**Verified live, at the close of the Checkpoints 10–13 batch (2026-07-20) — the ONE full-repository run
-this batch's own validation policy authorizes (four checkpoints closing together):**
+**Verified live, at the close of the Checkpoints 14–15 batch (2026-07-20) — the ONE full-repository run
+this batch's own validation policy authorizes (two checkpoints closing together):**
 ```
-pytest ai_trader/ -q                                   -> 2051 passed
-mypy --strict ai_trader/ --exclude 'tests/'              -> Success: no issues found in 210 source files
+pytest ai_trader/ -q                                    -> 2101 passed
+mypy --strict ai_trader/ --exclude 'tests/'              -> Success: no issues found in 222 source files
 coverage run --source=ai_trader -m pytest ai_trader/ -q
-coverage report --omit="*/tests/*"                      -> TOTAL 11813 stmts, 432 miss, 96%
+coverage report --omit="*/tests/*"                       -> TOTAL 12087 stmts, 432 miss, 96%
 ```
-(Baseline for comparison, Phase 7 Checkpoint 7's own close, the last figure this document previously
-cited: 1830 passed, 199 mypy-clean source files, 10879 stmts/432 miss/96%. The 432-miss figure is
-UNCHANGED end to end since — every one of the +934 statements added by the full Context Memory subsystem,
-Checkpoints 9–13, reaches 100% targeted coverage individually, §8.12.)
+(Baseline for comparison, the Checkpoints 10–13 batch's own close, the last figure this document
+previously cited: 2051 passed, 210 mypy-clean source files, 11813 stmts/432 miss/96%. The 432-miss
+figure is UNCHANGED end to end since — every one of the +274 statements added by
+`decision_intelligence_v2`/`decision_comparison` reaches 100% targeted coverage individually, §8.16.)
+
+**Combined Context Memory + Decision Intelligence validation** (`ai_trader/context_memory/` +
+`ai_trader/decision_intelligence/` + `ai_trader/decision_intelligence_v2/` +
+`ai_trader/decision_comparison/`, re-confirmed at §8.16):
+```
+pytest ai_trader/context_memory/ ai_trader/decision_intelligence/ ai_trader/decision_intelligence_v2/ ai_trader/decision_comparison/ -q  -> 303 passed
+mypy --strict (same four packages) --exclude 'tests/'    -> Success: no issues found in 28 source files
+```
 
 **Context-Memory-scoped validation** (`ai_trader/context_memory/`, run independently at each of
 Checkpoints 9–13's own close and re-confirmed once combined at §8.12):
@@ -721,19 +729,91 @@ checkpoint synchronizing every official state document (this one, `NEXT_SESSION.
 Context Memory subsystem (Checkpoints 8–13). No code implemented, no architecture changed, no existing
 package modified. Full detail: `PHASE_7_CHECKPOINTS_10_13_OFFICIAL_SAVE_REPORT.md`.
 
-### 8.14 Current authorized next step
+### 8.14 Checkpoint 14 — Decision Intelligence v2 — Context Memory Integration — DONE
 
-**Phase 7 Checkpoint 14 (Decision Intelligence v2 — the first component that would actually CONSUME
-Context Memory's evidence) is explicitly PROPOSED (named in Checkpoint 8's own design doc §17 Checkpoint
-decomposition) but NOT AUTHORIZED.** The CEO's own Checkpoints 10–13 batch authorization explicitly
-excluded it: "do not begin Checkpoint 14... do not connect Context Memory to Decision Intelligence during
-this batch." Context Memory remains a complete, independently usable evidence subsystem (Context
-contracts → append-only repository → historical index and episodes → deterministic retrieval → per-edge
-contextual evidence) while remaining fully disconnected from Decision Intelligence, Risk, Execution, and
-MT5 — verified by the same AST-based import-independence scan at every one of Checkpoints 9–13's own
-close. Other explicitly named, still-not-authorized future components: Strategy Health integration/
-promotion policy, Portfolio Architect, Learning Engine, Live AI Trader. No code changes of any kind are
-authorized until the CEO explicitly authorizes Checkpoint 14 or another next step.
+Commit `dbcdb666ab7bbaffc3d19675fea13685844562e5`. CEO batch authorization ("Phase 7 Checkpoints 14–15,
+authorized consecutively"). New, SEPARATE package `ai_trader/decision_intelligence_v2/` (5 source files:
+`adapters.py`, `types.py`, `explanation.py`, `engine.py`, `__init__.py`) wraps Decision Intelligence v1
+(`ai_trader/decision_intelligence/`, called UNCHANGED) and attaches, per candidate, an explainable
+Context Memory evidence report. **Decision Intelligence v1 is neither modified nor replaced** — 0-diff
+confirmed since Checkpoint 7. `DecisionReportV2.__post_init__` structurally enforces
+`recommended_strategy_id == v1_report.recommended_strategy_id` — not a convention, a construction-time
+invariant, proven live over 20 real XAUUSD bars. `adapters.py::build_context_snapshot` bridges a real
+`MarketIntelligenceSnapshot` into Context Memory's own local `ContextSnapshot` (the adapter Checkpoint
+9's own `PresentEdgeReference` docstring anticipated). Per the CEO's own explicit rules, Context Memory
+in this integration never changes eligibility, ranking, scoring, Risk, Position Sizing, or Execution, and
+never generates BUY/SELL — verified structurally (embedding v1's own candidates by reference) and by a
+5-test static scan (no forbidden import, no repository-write call, no order/BUY/SELL vocabulary
+anywhere in the package). Every attachment discloses why the context was found, what evidence exists,
+what limitations apply, and why the evidence status is what it is — no opaque algorithm. **Disclosed
+limitation**: Context Memory's own repository holds no real AI Trader historical observations yet — this
+checkpoint validates the integration MECHANISM with synthetic repository data; real historical
+population is a separate, unauthorized future undertaking. **Validated**: 26 tests, 100% coverage (5
+modules, 95 stmts), `mypy --strict` clean.
+
+### 8.15 Checkpoint 15 — Decision Intelligence v1 vs v2 Falsification Study — DONE
+
+Commit `069c47948982a82f3a2b801ff60954f28a931d8c`. New, read-only package `ai_trader/decision_comparison/`
+builds the complete comparison framework across every CEO-named dimension (final recommendation, NO
+TRADE frequency, edge selection, expectancy, win rate, drawdown, false positives, false negatives,
+stability, regime robustness, confidence calibration, explanation quality) — never modifies v1, v2, or
+Context Memory. **Central finding, a proof rather than an assumption**: under Checkpoint 14's own
+architecture, v2's recommendation stream is construction-time-identical to v1's, so every trade-outcome
+dimension (recommendation, NO TRADE frequency, edge selection, expectancy, win rate, drawdown, false
+positive/negative rate, recommendation-level regime robustness) is PROVABLY identical between v1 and v2
+— stated explicitly in `trade_outcome_proof.py` rather than re-confirmed via a redundant multi-hour
+backtest, and verified directly (not assumed) over 20 real XAUUSD bars: 0 divergences. Two dimensions
+that genuinely CAN differ were measured for real: explanation quality (v2 strictly richer whenever
+Context Memory evidence attaches, since v1 has zero such content) and confidence calibration (machinery
+built and tested with synthetic data; `n_samples=0` on real data today, since no real historical Context
+Memory population exists — the same disclosed Checkpoint 14 limitation). **Falsification verdict:
+`V1_REMAINS_ACTIVE`** — per the CEO's own explicit rule, absent proof of a v2 benefit, v1 remains the
+active system; `V2_SUPERIOR_CONFIRMED` exists in the type vocabulary but is not reachable under the
+current architecture. **Validated**: 24 tests, 100% coverage (7 modules, 179 stmts), `mypy --strict`
+clean.
+
+### 8.16 Combined Context Memory + Decision Intelligence validation + full-repository validation — PASSED
+
+After both Checkpoints 14–15 closed independently (each its own commit, each its own targeted
+validation), one combined check ran across `context_memory`/`decision_intelligence`/
+`decision_intelligence_v2`/`decision_comparison`: 303 tests passing, `mypy --strict` clean on 28 source
+files — **TARGETED CONTEXT MEMORY + DECISION INTELLIGENCE VALIDATION PASSED**. Then, justified once
+because two checkpoints were closing together as a batch, the complete repository suite ran ONCE: `pytest
+ai_trader/ -q` → **2101 passed** (zero failures, zero regressions against the Checkpoints 10–13 baseline
+of 2051), `mypy --strict ai_trader/ --exclude 'tests/'` → clean on 222 source files (up from 210),
+`coverage run --source=ai_trader -m pytest ai_trader/ -q` then `coverage report` → **TOTAL 12087 stmts,
+432 miss, 96%** — the 432-miss figure is the exact same absolute count carried since Implementation
+Checkpoint 1B, unchanged across every phase since, confirming zero coverage regression anywhere outside
+the newly-added, 100%-covered `decision_intelligence_v2`/`decision_comparison` packages — **FULL
+REPOSITORY VALIDATION PASSED**. Protected-path verification: `code/`/`results/`/`knowledge/` 0-diff
+confirmed; `ai_trader/decision_intelligence/` 0-diff since Checkpoint 7; `ai_trader/context_memory/`
+0-diff since Checkpoint 13's own close.
+
+### 8.17 Fourth Official Project Save (2026-07-20, this document's own current update, after Checkpoints 14–15)
+
+CEO-directed, before any further Phase 7 implementation: a documentation and repository-freeze
+checkpoint synchronizing every official state document (this one, `NEXT_SESSION.md`,
+`RECONSTRUCTION_PROMPT.md`, `CHANGELOG.md`, `PROJECT_AUDIT.md`) to reflect the completion of Decision
+Intelligence v2 and the v1-vs-v2 falsification study (Checkpoints 14–15). No code implemented, no
+architecture changed, no existing package modified. Full detail:
+`PHASE_7_CHECKPOINTS_14_15_OFFICIAL_SAVE_REPORT.md`.
+
+### 8.18 Current authorized next step
+
+**No further Phase 7 checkpoint is authorized.** The CEO's own Checkpoints 14–15 batch authorization
+ends with an explicit stop instruction: "Nu incepe niciun checkpoint ulterior fara autorizatie explicita
+a CEO." Decision Intelligence v1 (`ai_trader/decision_intelligence/`) remains the sole active
+recommendation system — unmodified since Checkpoint 7, and confirmed by Checkpoint 15's own
+falsification study to have no measured or measurable competitor today. Decision Intelligence v2
+(`ai_trader/decision_intelligence_v2/`) exists, is fully tested, and is available for future use, but
+is not wired into `harness.py` or any execution path, same as v1. `ai_trader/decision_comparison/`
+exists as reusable, tested infrastructure for any FUTURE re-run of the falsification study (e.g. once
+real Context Memory historical data exists, or if a future checkpoint authorizes Context Memory to
+actually influence a decision). Other explicitly named, still-not-authorized future components: Strategy
+Health integration/promotion policy, Portfolio Architect, Learning Engine, Live AI Trader, real Context
+Memory historical population, and any future checkpoint letting Context Memory influence eligibility/
+ranking/scoring. No code changes of any kind are authorized until the CEO explicitly authorizes a next
+step.
 
 ## 9. Modules implemented (`ai_trader/`)
 
@@ -753,6 +833,8 @@ authorized until the CEO explicitly authorizes Checkpoint 14 or another next ste
 | `edge_intelligence/` | NEW (Phase 7 Checkpoint 6, DONE) | `engine.py::evaluate_edges()` — pure, read-only "which edges currently exist" per-strategy PRESENT/POSSIBLE/ABSENT verdict, built on Market Intelligence + each strategy's own declared Contract; not wired into `harness.py` |
 | `decision_intelligence/` | NEW (Phase 7 Checkpoint 7, DONE) | `engine.py::make_decision()` — "which edge deserves execution": 4 disclosed eligibility gates (contract status/maturity/confidence/optional expectancy) + deterministic ranking → one recommended strategy_id or NO TRADE; independent of Signal/Scoring/Risk/Execution/Shadow/MT5 (verified by grep); not wired into `harness.py` |
 | `context_memory/` | NEW (Phase 7 Checkpoints 9–13, DONE) | 11 source files: `contracts.py`/`enums.py`/`validation.py`/`identities.py` (Checkpoint 9 — immutable contracts + deterministic SHA-256 identities), `codec.py`/`repository.py` (Checkpoint 10 — append-only JSONL storage), `episodes.py`/`index.py` (Checkpoint 11 — deterministic episode collapsing + rebuildable historical index), `retrieval.py` (Checkpoint 12 — fixed-priority hierarchical relaxation ladder, no k-NN/weighted-distance), `evidence.py` (Checkpoint 13 — per-edge `ContextualEvidenceReport`, sufficiency threshold reused from `code/alpha_lab.py`'s own `MINTR=25`); produces evidence reports only, NEVER BUY/SELL/entry/stop/target/size/execution/an edge ranking; fully independent of Decision Intelligence/Signal/Scoring/Risk/Execution/Shadow Evidence/MT5 (verified by grep + a static AST import-independence scan at every checkpoint's close); not wired into `harness.py` or `decision_intelligence/` |
+| `decision_intelligence_v2/` | NEW (Phase 7 Checkpoint 14, DONE) | `engine.py::make_decision_v2()` — wraps v1's own `make_decision()` UNCHANGED and attaches, per candidate, an explainable Context Memory evidence report; `types.py::DecisionReportV2` structurally enforces its own recommendation equals v1's; `adapters.py` bridges live Market Intelligence snapshots into Context Memory's own local types; `explanation.py` narrates why context was found/what evidence exists/limitations/why status; never changes eligibility/ranking/scoring/Risk/Sizing/Execution, never generates BUY/SELL (verified by static scan); not wired into `harness.py` |
+| `decision_comparison/` | NEW (Phase 7 Checkpoint 15, DONE) | Read-only v1-vs-v2 falsification framework — `recommendation.py`/`trade_outcome_proof.py`/`explanation_quality.py`/`calibration.py`/`falsification.py`; never modifies v1/v2/Context Memory; current verdict `V1_REMAINS_ACTIVE` (§8.15) — recommendation-stream metrics provably identical by construction, confirmed over real data; explanation-quality/confidence-calibration are the only genuinely differing dimensions, the latter awaiting real historical Context Memory data; not wired into `harness.py` |
 
 ## 10. What must NOT be modified (standing, cumulative across every phase)
 
@@ -792,9 +874,21 @@ authorized until the CEO explicitly authorizes Checkpoint 14 or another next ste
   `test_import_independence.py` before any future change), must not be wired into `harness.py`, and must
   not have its relaxation ladder order (§8.10) or its evidence-sufficiency policy (§8.11) silently
   changed — both are explicit, versioned, disclosed choices, not implementation details to "clean up."
-  **Phase 7 Checkpoint 14 (Decision Intelligence v2 — the first consumer of Context Memory's evidence)
-  must not begin without its own, separate, explicit CEO approval** — Checkpoint 13 being complete is not
-  itself that approval, and the CEO's own Checkpoints 10–13 batch authorization explicitly excluded it.
+- **Phase 7 Decision Intelligence v2 + falsification study (standing since Checkpoint 14, CLOSED through
+  Checkpoint 15)**: Decision Intelligence v1 (`ai_trader/decision_intelligence/`) is the sole active
+  recommendation system and must NEVER be modified to accommodate v2 — v2 is additive only.
+  `ai_trader/decision_intelligence_v2/` must not change eligibility, ranking, scoring, Risk, Position
+  Sizing, or Execution, must never generate a BUY/SELL/order-submission token, and
+  `DecisionReportV2.__post_init__`'s own recommendation-equality invariant must never be relaxed or
+  bypassed. `ai_trader/decision_comparison/` must remain read-only — it must never modify v1, v2, or
+  Context Memory's repository. The Checkpoint 15 falsification verdict (`V1_REMAINS_ACTIVE`) must not be
+  silently overridden or reinterpreted as "v2 is better" without a genuinely new, separately-authorized
+  study measuring a real difference on real data.
+- **Phase 7 Checkpoint 16+ (any checkpoint letting Context Memory influence a decision, any real
+  historical Context Memory population, any Decision Intelligence v2 promotion to active status) must not
+  begin without its own, separate, explicit CEO approval** — Checkpoint 15 being complete is not itself
+  that approval; the CEO's own Checkpoints 14–15 batch authorization ends with an explicit stop
+  instruction and names no next topic.
 
 ## 11. Diagnostic artifacts preserved (cumulative, all committed, all referenced by name in their own reports)
 
@@ -827,31 +921,35 @@ so every phase's own findings stay fully reproducible without re-running anythin
 2. `RECONSTRUCTION_PROMPT.md` — if starting a genuinely new conversation with no prior context, this is
    the single entry point; it directs the same reading order as below.
 3. `NEXT_SESSION.md` — the exact next-session procedure and git-state re-verification steps.
-4. `PHASE_7_CHECKPOINT_13_REPORT.md` → `PHASE_7_CHECKPOINT_12_REPORT.md` → `PHASE_7_CHECKPOINT_11_REPORT.md`
+4. `PHASE_7_CHECKPOINT_15_REPORT.md` → `PHASE_7_CHECKPOINT_14_REPORT.md` — the current official
+   architectural frontier: Decision Intelligence v2 (a separate, additive system whose recommendation is
+   construction-time-guaranteed identical to v1's, wrapping v1 with an explainable Context Memory
+   evidence attachment) and the v1-vs-v2 falsification study (verdict: `V1_REMAINS_ACTIVE`).
+5. `PHASE_7_CHECKPOINT_13_REPORT.md` → `PHASE_7_CHECKPOINT_12_REPORT.md` → `PHASE_7_CHECKPOINT_11_REPORT.md`
    → `PHASE_7_CHECKPOINT_10_REPORT.md` → `PHASE_7_CHECKPOINT_9_REPORT.md` →
-   `PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md` — the current official architectural frontier: the
-   complete Context Memory subsystem (deterministic per-edge Contextual Evidence Aggregation, built on
-   deterministic hierarchical-relaxation Retrieval, built on a deterministic episode-collapsed Historical
-   Index, built on an append-only Repository, built on immutable contracts and deterministic identities),
-   most-recent-first, still fully disconnected from Decision Intelligence and every execution-adjacent
-   package.
-5. `PHASE_7_CHECKPOINT_7_REPORT.md` → `PHASE_7_CHECKPOINT_6_REPORT.md` → `PHASE_7_CHECKPOINT_5_REPORT.md`
-   — the prior architectural frontier (Decision Intelligence built on Edge Intelligence built on Market
-   Intelligence) — still current and unmodified, background relative to Context Memory above.
-6. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the architectural direction behind the now-CLOSED Phase
+   `PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md` — the complete Context Memory subsystem
+   (deterministic per-edge Contextual Evidence Aggregation, built on deterministic hierarchical-
+   relaxation Retrieval, built on a deterministic episode-collapsed Historical Index, built on an
+   append-only Repository, built on immutable contracts and deterministic identities), most-recent-first
+   — the foundation Checkpoint 14 consumes.
+6. `PHASE_7_CHECKPOINT_7_REPORT.md` → `PHASE_7_CHECKPOINT_6_REPORT.md` → `PHASE_7_CHECKPOINT_5_REPORT.md`
+   — Decision Intelligence v1 built on Edge Intelligence built on Market Intelligence — still current,
+   unmodified, and the sole active recommendation system (§8.15/§8.18).
+7. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the architectural direction behind the now-CLOSED Phase
    6.10 (generic Edge Portfolio, S10 as validation edge only) — background, not the current frontier.
-7. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
+8. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
    (including its own §17 adversarial review and §19 Checkpoint 1C correction) — the diagnostic and
    design behind Checkpoints 1A–1C.
-8. In detail, if deeper Phase 6.9A background is needed:
+9. In detail, if deeper Phase 6.9A background is needed:
    `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md` → `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md` →
    `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
-9. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
-   there) and Phase 6.9's own original specification (§8 there, now marked CLOSED).
-10. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
-11. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
+10. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
+    there) and Phase 6.9's own original specification (§8 there, now marked CLOSED).
+11. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
+12. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
 
-**Do not begin Phase 7 Checkpoint 14 (Decision Intelligence v2 / Context Memory integration — proposed,
-NOT authorized), Wave C, Learning Engine, Broker Adapter, MT5, live/paper trading, multi-position
-trading, Strategy Health integration, capital allocation across edges, or WATCHLIST activation without
-its own dedicated CEO approval — this document does not grant it.**
+**Do not begin any Phase 7 Checkpoint 16 (Context Memory influencing a decision, real Context Memory
+historical population, Decision Intelligence v2 promotion — none proposed, none authorized), Wave C,
+Learning Engine, Broker Adapter, MT5, live/paper trading, multi-position trading, Strategy Health
+integration, capital allocation across edges, or WATCHLIST activation without its own dedicated CEO
+approval — this document does not grant it.**
