@@ -4,6 +4,32 @@
 **Category**: Mathematical. **This file is the permanent, append-only research log for this edge —
 nothing below is ever deleted or retroactively edited; refinements are new, dated, appended versions.**
 
+## ⚠ HOLDOUT BREACH — QUARANTINE NOTICE (added 2026-07-21, documentation-only incident record)
+
+**Status: HOLDOUT-CONTAMINATED. CLEAN RERUN REQUIRED.** Full incident record:
+`PROJECT_STATE_v2.md` §8.23.
+
+The Discovery pass below accidentally loaded and analyzed data from the Research Lab's own terminal
+holdout period (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC). The shared Flow A loader
+(`edge_research/_common.py::load()`) applied no date cutoff at the time this pass ran; this edge's own
+output artifacts (`e025_round_numbers_results.json`) record a `date_range` extending through
+2026-07-13 06:00 UTC, and the event-detection loop below ran to within 17 bars of the file's own last
+bar — deep inside the holdout window — so holdout-period observations fed directly into the statistics
+below. **The old terminal holdout is CONSUMED / INVALIDATED** by this and four other edges' own breach,
+project-wide (`PROJECT_STATE_v2.md` §8.23) — this is a process/governance breach, not evidence that
+this edge's findings below are false.
+
+**Consequences, effective immediately**: the statistics and headline result below are
+HOLDOUT-CONTAMINATED and **cannot support promotion** to Frozen Candidate, Validation, or a Final
+Verdict in their current form. This edge requires a **CLEAN RERUN**, using only the data-split period
+Flow A research is actually permitted to use, once `EDGE_RESEARCH_PROTOCOL.md` §8's own centralized
+holdout-exclusion enforcement is implemented (not yet done — documentation only at this stage). The V0
+hypothesis below is unchanged. Every result below is preserved verbatim as an audit trail — nothing is
+deleted or edited.
+
+Registry status (`EDGE_DISCOVERY_REGISTRY_v1.md`): `DISCOVERY_IN_PROGRESS` / `HOLDOUT_CONTAMINATED` /
+`CLEAN_RERUN_REQUIRED`, simultaneously.
+
 ## V0 (frozen, registered 2026-07-20, verbatim from `EDGE_DISCOVERY_REGISTRY_v1.md`)
 
 > Price reacts (as support/resistance/magnet) at round psychological levels (e.g. multiples of

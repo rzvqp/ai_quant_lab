@@ -28,6 +28,19 @@
 > trigger). This is a downstream REUSE only — nothing in this document itself was changed by that
 > checkpoint. Phase 7 Checkpoint 15's own falsification study reused no additional convention from this
 > document beyond what Checkpoint 13 already established.
+>
+> **Incident note (2026-07-21) — TERMINAL HOLDOUT BREACHED**: this document's own §D "Frozen decisions"
+> below records the Research Lab's terminal-holdout split ("terminal holdout 20% SEALED (never
+> opened)"). On 2026-07-21 it was confirmed that Flow A's first five studied edges (E025, E026, E028,
+> E029, E032, commit `eed1634`) had in fact loaded and analyzed data from that exact sealed period
+> (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC), because the shared Flow A loader applied no date
+> cutoff. **The old terminal holdout is CONSUMED / INVALIDATED** — it can no longer serve as an
+> independent terminal evaluation for the Research Lab or for Flow A; simply re-running the five
+> analyses with a cutoff does not restore its integrity. This is a process/governance breach, not a
+> retraction of any Research Lab conclusion above (nothing in §A–§E below is changed by this note) — the
+> breach originated entirely in Flow A's own tooling, which never read from or wrote to `code/`,
+> `results/`, or `knowledge/`. Full incident record: `PROJECT_STATE_v2.md` §8.23. No new holdout period
+> is designated by this note.
 
 ## A0. Consolidation & risk register (2026-07-14)
 **Branches integrated into research-main:** master (baseline), matched-null-validation, family-implementation-s21-s40,

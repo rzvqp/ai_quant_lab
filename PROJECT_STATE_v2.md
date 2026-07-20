@@ -1004,6 +1004,69 @@ recommendation and the later clarifications. **Status: ACCEPTED WITH CONDITIONS,
 delivered, implementation still not started** — the CEO's own next step is to review the completed
 architecture before implementation begins.
 
+### 8.23 Flow A Data Governance Incident — TERMINAL HOLDOUT BREACHED (identified/recorded 2026-07-21)
+
+**Official factual verdict, CEO-confirmed**: **TERMINAL HOLDOUT BREACHED.** The period **2025-10-23
+09:15 UTC → 2026-07-13 06:00 UTC** — the Research Lab's own sealed terminal holdout, defined in
+`PROJECT_STATE_v1.0.md`, `PROJECT_AUDIT.md` §D, and this document's own §1 (16,831 M15 bars, "never
+opened by anything") — **can no longer be considered SEALED or unseen at the project level.**
+
+**What happened**: all five Flow A analyses committed in `eed1634` (E025 Round Numbers, E026 ADR
+Exhaustion, E028 Fibonacci OTE, E029 Weekly Gap Fill, E032 Premium Discount Flip) loaded the complete
+on-disk XAUUSD history via the shared Flow A loader (`edge_research/_common.py::load()`), which applied
+**no date cutoff at all**. Verified directly against each edge's own committed output artifacts (a
+CEO-authorized, read-only verification pass — no script rerun, no file modified): every one of the five
+analyses' `date_range` recorded the full file range (2022-12-16 → 2026-07-13), and each has at least one
+concrete observation dated inside the holdout window that fed directly into its reported statistics —
+e.g. `e026_events_up.csv`/`e026_events_down.csv` rows dated 2026-07-08/2026-07-09;
+`e029_gap_events.csv`'s last row dated 2026-07-12; E028's last analyzed swing leg at 2026-07-13 04:15
+UTC; E032's last sampled snapshot at 2026-07-10 11:15 UTC; E025's event-detection loop running to bar
+84,135 of 84,152 (deep inside the holdout). Full evidence table preserved in this session's own
+verification report (not a separate committed artifact — see git history of this document's own
+authoring conversation if the detail is needed again; the finding itself is what is recorded here).
+
+**Official decision, recorded verbatim per explicit CEO instruction:**
+
+- **The old terminal holdout is CONSUMED / INVALIDATED.** It can no longer serve as an independent
+  terminal evaluation for the Research Lab or for Flow A.
+- **Simply re-running the five analyses with a cutoff does NOT restore the old holdout's integrity.**
+  A new holdout period, if/when one is designated, is a separate future decision — **not made by this
+  entry** (no new holdout is designated here).
+- **This is a process and governance breach, not evidence that the five edges' own Discovery-stage
+  findings are false.** The findings themselves (§ the Flow A session log, superseded by
+  `NEXT_SESSION_FLOW_A.md`) are neither retracted nor endorsed by this entry — they are **HOLDOUT-
+  CONTAMINATED** and cannot be relied on for promotion until a **CLEAN RERUN** exists.
+- **Neither Flow A's nor Flow B's own founding/governing documents explicitly authorized holdout
+  access** (verified directly: `EDGE_DISCOVERY_ROADMAP.md`, `EDGE_RESEARCH_PROTOCOL.md`, and
+  `EDGE_DISCOVERY_REGISTRY_v1.md` contain zero mentions of "holdout" or "sealed" prior to this entry) —
+  the breach was an omission (no loader-level enforcement existed), not a deliberate access.
+- **History is not rewritten and the incident is not hidden.** `edge_research/E025_round_numbers.md`,
+  `E026_adr_exhaustion.md`, `E028_fibonacci_ote.md`, `E029_weekly_gap_fill.md`, and
+  `E032_premium_discount_flip.md` each carry their own visible quarantine notice (added this entry, no
+  existing content in those files removed or altered); `EDGE_DISCOVERY_REGISTRY_v1.md`'s own Status
+  field for these five now reads `DISCOVERY_IN_PROGRESS / HOLDOUT_CONTAMINATED / CLEAN_RERUN_REQUIRED`
+  simultaneously — never reset to `UNSTUDIED`, never promoted.
+
+**Protocol change (documentation only — the loader-level enforcement itself is NOT implemented by this
+entry)**: `EDGE_RESEARCH_PROTOCOL.md` gained a new, mandatory §8 requiring every Flow A loader to
+centrally enforce a temporal cutoff excluding the sealed holdout, applying to Discovery, negative
+controls, falsification, parameter exploration, and every analysis script without exception, and
+requiring every future result to record its own min/max date used, bar count, data-split identifier,
+and an explicit `holdout_excluded=true` confirmation — absent evidence invalidates the run. Accidental
+future access must be reported as an incident, never silently patched by dropping bars after the fact.
+
+**Flow A status: PAUSED for remediation.** `EDGE_DISCOVERY_ROADMAP.md`'s own next action is no longer
+E017 — it is now **"Holdout Remediation — protocol enforcement and clean rerun of
+E025/E026/E028/E029/E032"**. New-edge research (E017 onward) does not resume until that remediation is
+complete. Strategy Health (Flow B) is unaffected in its own current status (still awaiting CEO
+confirmation the accepted architecture is complete, §8.22) but this entry is recorded in both flows'
+own operational documents for full visibility.
+
+**Verified, this entry**: no script was rerun, no numeric result was modified, no artifact was deleted.
+`git status --porcelain -- ai_trader/ code/ results/ knowledge/ edge_research/*.py edge_research/*.json
+edge_research/*.csv` confirmed empty before this entry's own commit — only markdown/documentation files
+changed.
+
 ## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |

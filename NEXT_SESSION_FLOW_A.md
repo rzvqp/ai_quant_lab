@@ -9,14 +9,18 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: IN PROGRESS** (5 of 40 edges have completed a first Discovery-stage pass; the remaining 35
-are still `UNSTUDIED`/`V0`, unchanged since the registry's own opening). The program itself opened
-`READY TO START` (commit `d60fa63`) and its first research session has now run.
+**Status: PAUSED — remediation required (TERMINAL HOLDOUT BREACHED, identified 2026-07-21).** All 5
+edges studied so far (E025, E026, E028, E029, E032) loaded and analyzed data from the Research Lab's
+own sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC). **The old terminal holdout
+is CONSUMED / INVALIDATED.** All five are now HOLDOUT-CONTAMINATED / CLEAN_RERUN_REQUIRED. New-edge
+research (E017 onward) does not resume until remediation completes — see "Next step" below. Full
+incident record: `PROJECT_STATE_v2.md` §8.23. The remaining 35 edges are unaffected and still
+`UNSTUDIED`/`V0`.
 
-**Governing documents** (unchanged since the program opened): `EDGE_DISCOVERY_REGISTRY_v1.md` (the
-40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md` (the one shared six-stage pipeline: V0 → Discovery →
-Frozen Candidate → Validation → Walk Forward → Final Verdict, plus the permanent-record rules), and
-`EDGE_DISCOVERY_ROADMAP.md` (recommended sequencing, data-availability-driven).
+**Governing documents**: `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md`
+(the six-stage pipeline, the permanent-record rules, and — new as of this incident — §8's mandatory
+holdout-exclusion rule), and `EDGE_DISCOVERY_ROADMAP.md` (recommended sequencing, data-availability-
+driven; its own top section now records the same pause and remediation-first next action).
 
 ## Last Flow A commit
 
@@ -41,7 +45,12 @@ in the per-edge logs, never in the registry itself.
 
 **No Final Verdict was issued on any edge.**
 
-## Results (Discovery-stage, exploratory — none of these are Final Verdicts)
+## Results (Discovery-stage, exploratory, HOLDOUT-CONTAMINATED — none of these are Final Verdicts)
+
+**All five results below are HOLDOUT-CONTAMINATED** (see "Current state" above and
+`PROJECT_STATE_v2.md` §8.23) — preserved verbatim below as an audit trail, per the protocol's own
+permanent-record rule. They cannot support promotion to Frozen Candidate, Validation, or a Final
+Verdict in their current form; a CLEAN RERUN is required first.
 
 - **E025 Round Numbers**: NOT supported as stated at $10 or $100 granularity. At **$50 granularity, a
   significant EFFECT IN THE OPPOSITE DIRECTION from V0** was found — round $50 levels break through
@@ -83,13 +92,19 @@ in the per-edge logs, never in the registry itself.
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next edge (per `EDGE_DISCOVERY_ROADMAP.md` Tier 1 order)
+## Next step: Holdout Remediation (NOT E017)
 
-**E017 — Equal Highs / Lows Target** (candidate reuse noted by the prior session: a from-scratch
-structure/swing detector analogous in spirit to, but not imported from,
-`ai_trader/market_intelligence/structure.py` — Flow A does not import `ai_trader` code, per the
-two-flow separation). After E017, in order: **E009, E010, E012, E015, E013, E016, E011, E014**, then
-the session-timing edges **E006, E008, E005, E027**.
+**The next Flow A action is NOT E017.** Per `EDGE_DISCOVERY_ROADMAP.md`'s own updated status:
+
+> **Holdout Remediation — protocol enforcement and clean rerun of E025/E026/E028/E029/E032.**
+
+In order: (1) implement `EDGE_RESEARCH_PROTOCOL.md` §8's centralized holdout-exclusion enforcement in
+the shared loader(s) (`edge_research/_common.py::load()` and any future loader) — not yet done,
+documentation only as of this incident; (2) cleanly rerun each of the five contaminated edges under
+that enforcement, each producing a genuinely new, holdout-excluded result set; (3) only then resume the
+Tier 1 sequence at **E017 — Equal Highs / Lows Target**, then in order **E009, E010, E012, E015, E013,
+E016, E011, E014**, then the session-timing edges **E006, E008, E005, E027** — this sequencing itself
+is unchanged, only deferred.
 
 ## Resume instructions
 
@@ -107,14 +122,23 @@ the session-timing edges **E006, E008, E005, E027**.
      hypothesis, category, required data/timeframes/instruments/observable variables/measured outcome.
    - **`PROJECT_STATE_v2.md` §1.1/§8.19/§8.20** — how Flow A relates to the rest of the project
      (context only, not required to continue research).
-3. **Before starting or continuing Discovery on any edge**: verify `git status --porcelain` is clean,
-   confirm which Roadmap tier the edge belongs to, and create (or continue) that edge's own permanent
-   research log (`edge_research/E0XX_<slug>.md`, per `EDGE_RESEARCH_PROTOCOL.md` §6) before recording
-   any finding.
+3. **Do not resume new-edge Discovery (E017 or any other edge) until Holdout Remediation is complete**
+   — see "Next step" above. If continuing remediation work: verify `git status --porcelain` is clean,
+   and confirm `EDGE_RESEARCH_PROTOCOL.md` §8's enforcement has actually been implemented in the shared
+   loader(s) before relying on any new run's own `holdout_excluded=true` claim.
 4. Report the reconstructed state back to the CEO before proceeding on anything new.
 
 ## Warnings relevant to research
 
+- **TERMINAL HOLDOUT BREACHED, CONSUMED / INVALIDATED (2026-07-21)** — the old sealed period
+  (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) can no longer be treated as unseen. Do not describe it
+  as "intact." Do not describe a future cutoff-enforced rerun as "restoring" it — it does not; only a
+  new, separately-designated holdout (not yet decided) would give the project a genuinely unseen period
+  again, and that decision has not been made.
+- **`EDGE_RESEARCH_PROTOCOL.md` §8 (new, 2026-07-21)**: Alpha Discovery may not read, load, aggregate,
+  or use data from a sealed holdout period, under any circumstance or research stage. Every future
+  result must record its own min/max date used, bar count, data-split identifier, and an explicit
+  `holdout_excluded=true` confirmation — absent evidence invalidates the run.
 - **No edge may be optimized until it becomes profitable.**
 - **No negative observation/exception/falsification may ever be removed** from an edge's own permanent
   record, at any stage.

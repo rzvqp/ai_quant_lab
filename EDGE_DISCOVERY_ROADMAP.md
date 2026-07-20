@@ -1,8 +1,26 @@
 # Edge Discovery Roadmap
 
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
-through `EDGE_RESEARCH_PROTOCOL.md`, and justify it. **Status**: planning only — no edge has entered
-Discovery, no data has been acquired, no code has been written or modified.
+through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
+
+## ⚠ CURRENT STATUS (updated 2026-07-21): PAUSED — remediation required before further edges
+
+**TERMINAL HOLDOUT BREACHED** (`PROJECT_STATE_v2.md` §8.23): the five edges studied in this program's
+first research session (E025, E026, E028, E029, E032) all loaded and analyzed data from the Research
+Lab's own sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) — the shared Flow A
+loader applied no date cutoff. **The old terminal holdout is CONSUMED / INVALIDATED.** All five edges
+are now HOLDOUT-CONTAMINATED / CLEAN_RERUN_REQUIRED (`EDGE_DISCOVERY_REGISTRY_v1.md`).
+
+**The next Flow A action is NOT E017.** New-edge research (E017 onward, and every edge below) is
+**PAUSED** until remediation is complete. The next action is:
+
+> **Holdout Remediation — protocol enforcement and clean rerun of E025/E026/E028/E029/E032.**
+
+This means, in order: (1) implement `EDGE_RESEARCH_PROTOCOL.md` §8's centralized holdout-exclusion
+enforcement in the shared loader(s) — not yet done, documentation only as of this update; (2)
+cleanly rerun each of the five contaminated edges under that enforcement; (3) only then resume the
+Tier 1 sequence below at E017. This pause and reordering is recorded here, not silently — the tier
+sequencing below is otherwise unchanged and remains the plan for after remediation completes.
 
 ## 1. Data-availability gap analysis (verified against what is actually on disk today)
 

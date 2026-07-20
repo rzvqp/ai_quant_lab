@@ -175,3 +175,36 @@ document.
 - No edge may skip a stage in §3.
 - A Final Verdict does not authorize implementation, strategy creation, or any code change — that
   requires a separate, future, explicitly-authorized decision.
+
+## 8. Mandatory holdout exclusion (added 2026-07-21, following the TERMINAL HOLDOUT BREACH incident —
+`PROJECT_STATE_v2.md` §8.23)
+
+**Background**: on 2026-07-21 it was confirmed that all five edges studied in this program's first
+research session (E025, E026, E028, E029, E032) had loaded and analyzed data from the Research Lab's
+own sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC), because the shared Flow A
+data loader applied no date cutoff at all. **The old terminal holdout is CONSUMED / INVALIDATED** as a
+result. This section is the resulting mandatory rule — **documentation only; the loader-level
+enforcement itself is NOT implemented by this entry.**
+
+- **Alpha Discovery may not read, load, aggregate, or otherwise use data from a sealed holdout period,
+  under any circumstance.** This applies to every stage and every kind of analysis without exception:
+  Discovery, negative controls, falsification checks, parameter exploration, and every analysis script,
+  regardless of whether the holdout data would appear to support or refute the hypothesis under study.
+- **The temporal limit must be enforced centrally, in the shared loader(s)**, not left to each analysis
+  script to remember individually — the exact failure mode that produced this incident (a shared loader
+  with no cutoff, silently trusted by five independent scripts).
+- **Every result produced from this point forward must record, alongside its findings**:
+  - the minimum date actually used;
+  - the maximum date actually used;
+  - the number of bars used;
+  - the data-split identifier the run claims to respect (e.g. "research" vs. "validation-OOS" vs.
+    "holdout" — see the Research Lab's own `PROJECT_STATE_v1.0.md`/`PROJECT_AUDIT.md` §D split);
+  - an explicit `holdout_excluded=true` confirmation.
+- **The absence of this evidence invalidates the run.** A result that does not carry all five items
+  above is not a valid Discovery-stage (or any later-stage) result under this protocol, regardless of
+  what its own findings say.
+- **Accidental holdout access must be reported as an incident, in the open, in the affected edge's own
+  permanent research log and in the project's own official state documents — it can never be repaired
+  retroactively by silently dropping the offending bars and re-presenting the same run as clean.** A
+  contaminated run stays contaminated; the only remedy is a fresh, clean rerun that itself satisfies the
+  five requirements above from the start.

@@ -5,11 +5,22 @@ out of the former single `NEXT_SESSION.md` on 2026-07-20, per explicit CEO instr
 Flow B each have their own operational document. Do not write Flow A (Alpha Discovery Laboratory)
 content here — see `NEXT_SESSION_FLOW_A.md` for that. See `NEXT_SESSION.md` for the short, common
 orientation pointer. This document, together with `PROJECT_STATE_v2.md` (the complete, consolidated
-state document — §1.1/§8.19–§8.22 cover Flow B's current scope) and `RECONSTRUCTION_PROMPT.md`, is
+state document — §1.1/§8.19–§8.23 cover Flow B's current scope) and `RECONSTRUCTION_PROMPT.md`, is
 designed to let a BRAND-NEW chat reconstruct Flow B's state 100% with no access to any prior
 conversation.
 
 ---
+
+## Cross-flow incident notice (2026-07-21) — TERMINAL HOLDOUT BREACHED
+
+**Not a Flow B defect** — recorded here for visibility only, since the breached period is defined by
+Flow B's own Research Lab documents. Flow A's first five studied edges loaded and analyzed data from
+the Research Lab's sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC). **The old
+terminal holdout is CONSUMED / INVALIDATED** — it can no longer serve as an independent terminal
+evaluation for the Research Lab or for Flow A. No Flow B file, script, or result was touched by the
+breach or by this remediation entry; `ai_trader/`, `code/`, `results/`, and `knowledge/` all remain
+0-diff. Full incident record: `PROJECT_STATE_v2.md` §8.23. Flow A is PAUSED for remediation
+(`NEXT_SESSION_FLOW_A.md`) — this has no effect on Flow B's own roadmap or timeline.
 
 ## Current state
 
@@ -17,7 +28,10 @@ conversation.
 CEO instruction: **Strategy Health (integration/promotion policy) → Portfolio Architect → Learning /
 Research Feedback → Risk Integration → Execution Integration → MT5 Live.** `§8.18`'s own standing rule
 continues to govern exactly which step may begin next: no further Phase 7 checkpoint, and no roadmap
-step, begins without its own explicit CEO authorization.
+step, begins without its own explicit CEO authorization. **Strategy Health implementation remains NOT
+STARTED** — still awaiting CEO confirmation that the accepted, clarified architecture
+(`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` §§1–15) is complete, unaffected by the Flow A holdout
+incident above.
 
 ## Last Flow B commit
 
