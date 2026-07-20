@@ -9,7 +9,8 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: E009 DISCOVERY PASS COMPLETE (2026-07-21) — awaiting CEO approval to resume at E010.**
+**Status: OVERNIGHT FULL-PROFILE SESSION IN PROGRESS (2026-07-22) — E010 done, auto-continuing to
+E012 per standing CEO authorization (no per-edge approval required unless a governance issue arises).**
 Following the TERMINAL HOLDOUT BREACH (identified 2026-07-21: all 5 edges studied first — E025, E026,
 E028, E029, E032 — had loaded and analyzed data from the Research Lab's own sealed terminal holdout,
 2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC; **the old terminal holdout is CONSUMED / INVALIDATED**,
@@ -22,10 +23,14 @@ preserved verbatim) and clean results in each edge's own permanent log. **Regist
 Highs / Lows Target** (V0 NOT supported — see below) and, after resolving a factual mismatch (an
 earlier reference to "E009 — Previous Day High/Low" did not exist in the registry and was withdrawn),
 **E009 — Change of Character Retest** (also V0 NOT supported — see below), both run entirely under the
-post-remediation centralized-loader enforcement from the start (no contamination possible). **New-edge
-research (E010 onward) does not resume without its own separate CEO approval** — completing E009 is not
-itself that approval; see "Next step" below. The remaining 33 edges are unaffected and still
-`UNSTUDIED`/`V0`.
+post-remediation centralized-loader enforcement from the start (no contamination possible). The CEO then
+authorized an **"overnight full edge profile" directive (2026-07-22)**: each edge now also gets a
+timeframe profile, a 7-horizon/5-ATR-threshold movement profile, a context profile, controls/
+falsification, a disciplined V1 search, and robustness checks — see `edge_research/_profile.py`, the
+new shared library this required. **E010 — Breaker Block Snatch** was completed under this directive
+(V0 NOT supported — see below); per the same authorization, this session auto-continues to the next
+eligible edge without stopping for approval between edges unless a governance issue arises. The
+remaining edges are unaffected and still `UNSTUDIED`/`V0`.
 
 **Governing documents**: `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md`
 (the six-stage pipeline, the permanent-record rules, and — new as of this incident — §8's mandatory
@@ -39,7 +44,8 @@ eed1634  Flow A: first Alpha Discovery session — Discovery pass on E025/E026/E
 411a04b  docs: record holdout breach and quarantine affected edge research
 360a410  Flow A: holdout remediation — centralized cutoff enforcement + clean rerun of 5 edges
 be0e8d3  Flow A: E017 Discovery pass — Equal Highs/Lows Target (V0 not supported)
-<pending this session's own commit — E009 Discovery pass — see the E009 report for the exact hash>
+58338d7  Flow A: E009 Discovery pass — Change of Character Retest (V0 not supported)
+<pending this session's own commit — E010 full-profile pass — see the E010 report for the exact hash>
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
@@ -54,16 +60,17 @@ worktree, per CEO decision 2026-07-21).
 2026-07-21)**: **E025 (Round Numbers) → E026 (ADR Exhaustion) → E029 (Weekly Gap Fill) → E032 (Premium
 Discount Flip) → E028 (Fibonacci OTE)**.
 
-**2026-07-21 session, run entirely under the post-remediation centralized-loader enforcement (no
-contamination possible)**: **E017 (Equal Highs / Lows Target) → E009 (Change of Character Retest)**.
+**2026-07-21/22 session, run entirely under the post-remediation centralized-loader enforcement (no
+contamination possible)**: **E017 (Equal Highs / Lows Target) → E009 (Change of Character Retest) →
+E010 (Breaker Block Snatch, first edge under the "overnight full profile" directive)**.
 
 Full per-edge evidence, method disclosure, and answers to all 9 mandatory Discovery questions live in
 `edge_research/E0XX_<slug>.md` (one file per edge, permanent, append-only), alongside each edge's own
 analysis script and JSON/CSV output (also in `edge_research/`, committed). Every studied edge's registry
 `Status` field was updated from `UNSTUDIED` to `DISCOVERY_IN_PROGRESS`; every `V0` hypothesis wording is
 unedited (per protocol §1) — any informal, unfrozen "V1 candidate" framing suggested by a session's own
-evidence lives only in the per-edge logs, never in the registry itself (neither E017's nor E009's own
-log offers a V1 candidate — see each log for why).
+evidence lives only in the per-edge logs, never in the registry itself (none of E017's, E009's, or
+E010's own logs offer a V1 candidate — see each log for why).
 
 **No Final Verdict was issued on any edge.**
 
@@ -133,6 +140,27 @@ before any research began — this pass studies the registry's own real, frozen 
 
 **No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
 
+## Result — E010 Breaker Block Snatch (2026-07-22, full profile, clean-from-the-start)
+
+**V0 NOT supported — one of the cleanest nulls found this program.** Tested on M15 (5,833 breaker
+events) and H1 (1,550) — M1/M5 confirmed unavailable anywhere in this project's data.
+- **After a breaker flip, continuation in the NEW direction is a coin flip**: 49.9% (M15) / 51.4% (H1),
+  with MFE≈MAE at every horizon (1/3/5/10/20/50 bars) and every ATR threshold (0.25-2.0×) — the clearest
+  possible signature of non-directional noise. Stable across 3 displacement thresholds (1.2/1.5/2.0×
+  ATR), every session, volatility regime, trend context, day of week, and year in the sample.
+- **Its own natural control — unflipped (never-violated) order blocks — shows a large, real,
+  directional continuation effect instead**: 88.0% (M15) / 86.2% (H1) continuation in their ORIGINAL
+  polarity, +1 ATR mean move within 1 bar. The gap between breaker (49.9%) and unflipped (88.0%)
+  continuation is enormous (p=5.9e-119, M15) — this control also proves the methodology CAN detect a
+  real effect when one exists, sharpening rather than undermining the breaker null.
+- **No V1 candidate offered.** The unflipped-OB effect is flagged as a strong candidate for a future,
+  separately-registered edge (not folded into E010, which would improperly substitute a different claim
+  for V0's own).
+- New shared library `edge_research/_profile.py` (movement/context/robustness helpers) built this pass,
+  reusable for all edges going forward under the CEO's "full profile" directive.
+
+**No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
+
 ## Limitations (must be respected on any revisit)
 
 - **No Final Verdict is possible yet on any edge studied so far.** The M15/H1/H4/D1 data on disk
@@ -150,15 +178,15 @@ before any research began — this pass studies the registry's own real, frozen 
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: awaiting CEO approval to resume at E010 (E009 itself is DONE)
+## Next step: auto-continuing to E012 (standing authorization, no per-edge approval needed)
 
-**The next Flow A action is NOT E010 yet — it is a CEO decision.** E009's Discovery pass is complete
-(see "Result" above), run entirely under the centralized loader enforcement. Per the CEO's own E009
-authorization ("Stop after completing the E009 Discovery pass and await CEO verdict"), this session
-stops here and does not begin E010 or any new edge on its own — that requires its own separate, explicit
-approval. Once granted, the Tier 1 sequence resumes at **E010 — Breaker Block Snatch**, then in order
-**E012, E015, E013, E016, E011, E014**, then the session-timing edges **E006, E008, E005, E027** — this
-sequencing itself is unchanged, only deferred.
+Per the CEO's own "overnight full edge profile" authorization (2026-07-22), this session does **not**
+stop between edges to ask approval — it continues automatically to the next Tier 1 edge after each
+commit, one edge at a time, stopping only for a genuine governance issue (a contradictory registry, a
+V0 that can't be operationalized without a CEO decision, a required protocol change, missing data, a
+loader/test failure, anything that would require touching Flow B, or an audit-trail risk). **Next: E012
+— Inverted Fair Value Gap**, then in order **E015, E013, E016, E011, E014**, then the session-timing
+edges **E006, E008, E005, E027**.
 
 ## Resume instructions
 
@@ -176,12 +204,15 @@ sequencing itself is unchanged, only deferred.
      hypothesis, category, required data/timeframes/instruments/observable variables/measured outcome.
    - **`PROJECT_STATE_v2.md` §1.1/§8.19/§8.20** — how Flow A relates to the rest of the project
      (context only, not required to continue research).
-3. **Do not resume new-edge Discovery (E010 or any other edge) without its own separate CEO approval**
-   — completing E009 is not that approval; see "Next step" above. Verify `git status --porcelain` is
-   clean, and confirm `EDGE_RESEARCH_PROTOCOL.md` §8's enforcement is actually present in
+3. **Under the standing "overnight full profile" authorization, new-edge Discovery may continue
+   automatically** (one edge at a time, per commit) — stop only for a genuine governance issue (see
+   "Next step" above for the exact stop conditions). Verify `git status --porcelain` is clean, and
+   confirm `EDGE_RESEARCH_PROTOCOL.md` §8's enforcement is actually present in
    `edge_research/_common.py::load()` (it should require `data_split_id`/`cutoff` and raise if either
    is missing) before relying on any run's own `holdout_excluded=true` claim.
-4. Report the reconstructed state back to the CEO before proceeding on anything new.
+4. If resuming a fresh session (not a direct continuation), report the reconstructed state back to the
+   CEO once before proceeding — the standing authorization covers continuing within an already-briefed
+   session, not silently skipping the report on a brand-new one.
 
 ## Warnings relevant to research
 

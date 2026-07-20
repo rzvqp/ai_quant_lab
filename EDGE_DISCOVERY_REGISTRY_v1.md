@@ -1,26 +1,30 @@
 # Edge Discovery Registry — v1
 
 **Program**: 40-Edge Alpha Discovery Program. **Date opened**: 2026-07-20. **Status of this document**:
-infrastructure, PLUS seven Discovery-stage passes: the first 5 (E025, E026, E029, E032, E028 —
+infrastructure, PLUS eight Discovery-stage passes: the first 5 (E025, E026, E029, E032, E028 —
 2026-07-20), then E017 and E009 (2026-07-21, both run under the post-remediation centralized-loader
-regime). **The first 5 passes' original run was found 2026-07-21 to have breached the Research Lab's
-own sealed terminal holdout (`PROJECT_STATE_v2.md` §8.23) — the old holdout is CONSUMED/INVALIDATED
-project-wide. A holdout-excluded CLEAN RERUN of all 5 completed the same day** (`EDGE_RESEARCH_PROTOCOL.md`
-§8's centralized enforcement, `edge_research/_common.py::load()`); E017 and E009 were each run directly
-under that same enforcement from the start. See `edge_research/` (each of the first 5 edges' own log
-carries both the original contaminated run, preserved verbatim, and the clean rerun; E017's and E009's
-logs have only their own clean-from-the-start pass) and `NEXT_SESSION_FLOW_A.md` for the full session
-summary. No edge below has been implemented, and no Final Verdict has been issued on any edge, in any
-run (the available data — ~3.6yr contaminated / ~2.85yr clean — is short of the protocol's own ~5-6 year
+regime), then E010 (2026-07-22, the first edge run under the CEO's own "full edge profile" directive —
+timeframe/movement/context/robustness profiling in addition to the binary V0 test; see
+`edge_research/_profile.py`, the new shared profiling library). **The first 5 passes' original run was
+found 2026-07-21 to have breached the Research Lab's own sealed terminal holdout
+(`PROJECT_STATE_v2.md` §8.23) — the old holdout is CONSUMED/INVALIDATED project-wide. A holdout-excluded
+CLEAN RERUN of all 5 completed the same day** (`EDGE_RESEARCH_PROTOCOL.md` §8's centralized enforcement,
+`edge_research/_common.py::load()`); E017, E009, and E010 were each run directly under that same
+enforcement from the start. See `edge_research/` (each of the first 5 edges' own log carries both the
+original contaminated run, preserved verbatim, and the clean rerun; E017's, E009's, and E010's logs have
+only their own clean-from-the-start pass) and `NEXT_SESSION_FLOW_A.md` for the full session summary. No
+edge below has been implemented, and no Final Verdict has been issued on any edge, in any run (the
+available data — ~3.6yr contaminated / ~2.85yr clean — is short of the protocol's own ~5-6 year
 requirement for any Final Verdict — see `EDGE_RESEARCH_PROTOCOL.md` §2). Every entry's own V0 hypothesis
 below remains exactly as originally registered, unedited, per protocol §1.
 
 ## How to read this registry
 
-- **Status = UNSTUDIED for 33 of 40 entries; DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE for 5 (E025,
+- **Status = UNSTUDIED for 32 of 40 entries; DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE for 5 (E025,
   E026, E028, E029, E032 — studied 2026-07-20, holdout-breach-remediated 2026-07-21); DISCOVERY_IN_PROGRESS
-  for 2 more (E017, E009 — both studied clean-from-the-start, 2026-07-21; both V0 NOT SUPPORTED, no V1
-  candidate offered for either)**. Status changes only by passing through the stages defined in
+  for 3 more (E017, E009, E010 — all studied clean-from-the-start, 2026-07-21/22; all three V0 NOT
+  SUPPORTED, no V1 candidate offered for any)**. Status changes only by passing through the stages
+  defined in
   `EDGE_RESEARCH_PROTOCOL.md` (V0 → Discovery → Frozen Candidate → Validation →
   Walk Forward → Final Verdict); no edge has advanced past Stage 2 (Discovery) yet.
 - **Version = V0** for all 40 entries — the original, unmodified hypothesis as registered here. Per the
@@ -197,8 +201,14 @@ below remains exactly as originally registered, unedited, per protocol §1.
 - **Observable variables**: Breaker formation context (candidate: `structure.py`), revisit rate, reaction
   magnitude, day of week
 - **Measured outcome**: Rate at which the breaker level produces a reaction, and reaction magnitude
-- **Status**: UNSTUDIED
-- **Version**: V0
+- **Status**: DISCOVERY_IN_PROGRESS (Stage 2, full profile complete 2026-07-22 under the CEO's
+  "full edge profile" directive — `holdout_excluded=true`, `data_split_id =
+  pre_holdout_2025-10-23T09-15-00Z_v1`, tested on M15+H1; no Final Verdict — below the protocol's
+  ~5-6yr horizon; V0 NOT SUPPORTED — breaker reaction is a coin flip (~50%) on both timeframes, every
+  displacement threshold, session, volatility regime, trend context, day of week, and year; a large,
+  real directional effect WAS found for the natural unflipped-OB control, flagged as a possible future,
+  separate edge, not folded into E010; full detail `edge_research/E010_breaker_block_snatch.md`)
+- **Version**: V0 (frozen; no V1 candidate offered — see the research log's own explanation)
 
 ### E011 — Failed 3 Drive Pattern
 - **Category**: Price Action / Structure

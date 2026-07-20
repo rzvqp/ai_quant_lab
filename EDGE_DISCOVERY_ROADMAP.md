@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-21): E009 DONE — awaiting CEO approval to resume at E010
+## ⚠ CURRENT STATUS (updated 2026-07-22): OVERNIGHT FULL-PROFILE SESSION IN PROGRESS — E010 done, E012 next
 
 **TERMINAL HOLDOUT BREACHED, then REMEDIATED** (`PROJECT_STATE_v2.md` §8.23/§8.24): the five edges
 studied in this program's first research session (E025, E026, E028, E029, E032) originally loaded data
@@ -31,11 +31,30 @@ itself was found to be near-saturated (90%+) even for a random, no-structure, di
 an important disclosed methodological limit on this pass's own power. No Final Verdict issued. Full
 detail: `edge_research/E009_choch_retest.md`.
 
-**The next Flow A action (E010) is NOT yet authorized.** Per the CEO's own E009 authorization ("Stop
-after completing the E009 Discovery pass and await CEO verdict"), resuming the Tier 1 sequence requires
-its own separate CEO approval. Once granted, the sequence resumes at **E010 — Breaker Block Snatch**,
-then in order **E012, E015, E013, E016, E011, E014**, then the session-timing edges **E006, E008, E005,
-E027**.
+**CEO authorized (2026-07-22) an "overnight full edge profile" directive**: beyond the binary V0 test,
+each edge now also gets a timeframe profile, a 7-horizon/5-ATR-threshold movement profile, a context
+profile (session/volatility/trend/day-of-week), controls/falsification, a disciplined V1 search (no
+combination-hunting, no retrospective V0 changes), and robustness checks (parameter sensitivity, yearly
+stability) — see `edge_research/_profile.py`, the new shared library this requires, and each edge's own
+log for the full template. One edge at a time, auto-continuing after each commit, per that
+authorization.
+
+**E010 — Breaker Block Snatch — full profile complete, 2026-07-22** (M15 + H1; M1/M5 confirmed
+unavailable, per §1's own gap analysis). **Result: V0 NOT supported** — after a breaker flip, price
+continuation-in-the-new-direction is a coin flip (~50%) on both timeframes, at every displacement
+threshold (1.2×/1.5×/2.0×ATR), session, volatility regime, trend context, day of week, and year tested.
+**A large, real, robust directional effect was found instead for the natural unflipped-OB control**
+(ordinary, never-violated order blocks respected in their ORIGINAL polarity, ~86-88% continuation,
++1 ATR mean move by 1 bar) — flagged as a possible future, separately-registered edge, not folded into
+E010's own V1 (none offered). No Final Verdict issued. Full detail:
+`edge_research/E010_breaker_block_snatch.md`.
+
+**Per the CEO's own standing "overnight full profile" authorization, the session auto-continues to the
+next eligible edge without stopping for approval between edges** (stopping only for a genuine
+governance issue, an unoperationalizable V0, a missing-data blocker, a loader/test failure, a
+Flow-B-touching requirement, or an audit-trail risk — none of which occurred for E010). **Next: E012 —
+Inverted Fair Value Gap**, then in order **E015, E013, E016, E011, E014**, then the session-timing edges
+**E006, E008, E005, E027**.
 
 ## 1. Data-availability gap analysis (verified against what is actually on disk today)
 
