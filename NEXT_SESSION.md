@@ -246,8 +246,10 @@ performance-impact argument) were added to the same document as §§11–15. **I
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD (pre-session): 9aff28b "docs: official project split into alpha discovery and ai trader development"
-Working tree:     clean (verified live before this session's own commit)
+HEAD (pre-session): a53a3bc "docs: propose Strategy Health integration/promotion policy design"
+Working tree:     NOT clean at this point — a concurrent Flow A session's own uncommitted work
+                   (`edge_research/`, in-progress edits to `EDGE_DISCOVERY_REGISTRY_v1.md` and this
+                   file) is present alongside this Flow B session's own changes; see the note below.
 ```
 
 **Commits since the Checkpoints 14–15 save (`028b620`), in order:**
@@ -257,11 +259,19 @@ Working tree:     clean (verified live before this session's own commit)
 f4eba6b  docs: enrich strategy performance atlas with evidence levels
 d60fa63  docs: launch 40-Edge Alpha Discovery Program infrastructure
 9aff28b  docs: official project split into alpha discovery and ai trader development
+a53a3bc  docs: propose Strategy Health integration/promotion policy design
 ```
 
-**This session's own commit** (this file, `PROJECT_STATE_v2.md`, plus the new
-`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`) lands ONE commit after `9aff28b` — run `git log -1` for
-the exact current HEAD; do not assume it is still that commit in any future session.
+**This Flow B session's own commit** (this file, `PROJECT_STATE_v2.md`, plus the updated
+`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`) lands after `a53a3bc`. **Note on concurrent editing**: a
+Flow A session was working in this same repository at the same time (see the "Flow A — session log"
+section above and `edge_research/`), with its own uncommitted changes to this file and to
+`EDGE_DISCOVERY_REGISTRY_v1.md` still present in the working tree when this Flow B commit was made —
+those files/changes were deliberately left untouched/unstaged by this Flow B commit (per the explicit
+"do not deviate to Flow A" instruction), so this file's own committed version may carry forward Flow A's
+own in-progress content alongside Flow B's, and further commits from that other session may follow. Run
+`git log -1` for the exact current HEAD; do not assume it is still any specific hash in any future
+session.
 
 **Re-verify `git branch --show-current`/`git log -1`/`git status --porcelain` directly before trusting
 any git-state claim anywhere in this project's documentation.**
@@ -309,13 +319,14 @@ any doubt exists before trusting it in a future session.
 1. **Decide which flow** (§1) — read that flow's list above.
 2. **Verify Git state directly** — `git branch --show-current`, `git log -1`, `git status --porcelain`.
 3. **Report the reconstructed state back to the CEO** before proceeding on anything new.
-4. **Flow A**: begin Discovery on the Roadmap's Tier 1, one edge (or a small batch) at a time, creating
-   that edge's own permanent research log before recording any finding.
-   **Flow B**: read `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` first — it is PROPOSED, awaiting CEO
-   review. If the CEO has accepted it (with or without conditions) since this document was last updated,
-   implement it (still roadmap step 1, Strategy Health); if not yet reviewed, **stop and ask for a
-   verdict before writing any code.** Do not begin Portfolio Architect or any later step until Strategy
-   Health integration is implemented and validated.
+4. **Flow A**: continue Discovery per the Roadmap's Tier 1 order and this document's own Flow A session
+   log above, one edge (or small batch) at a time, creating each edge's own permanent research log
+   before recording any finding.
+   **Flow B**: read `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` first (now FINAL, §§1–15, ACCEPTED
+   WITH CONDITIONS). If a subsequent CEO message has since confirmed the architecture is complete,
+   implement it (still roadmap step 1, Strategy Health); if not yet confirmed, **stop and ask for
+   confirmation before writing any code.** Do not begin Portfolio Architect or any later step until
+   Strategy Health integration is implemented and validated.
 
 ---
 

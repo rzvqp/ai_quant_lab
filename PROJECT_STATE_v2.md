@@ -961,6 +961,49 @@ intentional, low-risk v1 property, not a flaw).
 REJECTED).** No implementation has begun. Flow B's roadmap does not advance to Portfolio Architect until
 Strategy Health integration is implemented per an accepted design (or the CEO redirects this step).
 
+### 8.22 Strategy Health design — ACCEPTED WITH CONDITIONS; five architectural clarifications added
+
+CEO verdict on `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`: **ACCEPTED WITH CONDITIONS** — general
+direction and all five stated principles confirmed (Strategy Health stays a separate evaluation system;
+frozen modules stay frozen; Shadow Evidence is the primary new-evidence source; Phase 6.9's ACTIVE-only
+lockout must not repeat; reuse existing infrastructure where sufficient). Before implementation, the CEO
+required five architectural clarifications, added to the same document as §§11–15 (no new file, per
+instruction: "pregătește versiunea finală a designului"):
+
+1. **Explicit lifecycle** (§11): five states — `NEW` (a policy-layer label only, derived from the frozen
+   classifier's own existing "no evidence → WATCHLIST" default, never a fifth classifier band) →
+   `WATCHLIST` → `ACTIVE` → `PROBATION` → `DISABLED` — as a bidirectional state machine (not a one-way
+   pipeline), each with precise entry/exit conditions and capabilities.
+2. **Per-state influence, zero ambiguity** (§12): ACTIVE and WATCHLIST both retain full real-portfolio
+   competition (identical to today); PROBATION and DISABLED are both Shadow-only (excluded from new REAL
+   trades, but Shadow Evidence tracking continues unconditionally for both) — **this refines the original
+   v1 recommendation**, which had only excluded DISABLED; PROBATION is now excluded from real trades too,
+   directly answering the CEO's own question ("PROBATION — poate rămâne doar în Shadow?" → yes).
+3. **Module contracts** (§13, interfaces only, no implementation): Shadow Evidence → Strategy Health
+   (unconditional, per-strategy, read-only); Strategy Health → a new Eligibility Policy layer (not yet
+   built); Eligibility Policy → `harness.py`'s existing `strategy_id_filter` (Risk Manager's own contract
+   unchanged — it never sees why an opportunity is or isn't present); **no contract to Decision
+   Intelligence in v1** (deliberately, flagged as a future open question); Portfolio Architect's expected
+   future contract stated for foresight only. "Edge Selection AI" has no existing named module — treated
+   as referring to Decision Intelligence, flagged rather than silently assumed.
+4. **Non-absorbing recovery** (§14): the load-bearing invariant is that Shadow Evidence tracks every
+   strategy, in every state, forever, regardless of real-portfolio eligibility — so PROBATION/DISABLED
+   strategies keep accumulating genuine new evidence and can recover (PROBATION→WATCHLIST at ≥45,
+   DISABLED→PROBATION at ≥25) via real improved Shadow performance, never via a timer or evidence simply
+   expiring.
+5. **Performance-impact argument** (§15, structural/architectural, not empirical — no backtest run):
+   ACTIVE/WATCHLIST strategies are completely unaffected; the lockout mechanism is broken by construction
+   (Shadow Evidence has no Health-state gate anywhere, so the population whose exclusion could otherwise
+   cause a Phase-6.9-style lockout keeps generating fresh evidence regardless); the exact roster shift is
+   explicitly NOT claimed without a live recomputation (disclosed: PROBATION is 7/43 under the old
+   competitive-evidence snapshot, not necessarily the same under Shadow-sourced scoring).
+
+Reconciled: the document's own earlier sections (§4.2 Option D, §5, §6, §7) were corrected to match the
+refined PROBATION-is-Shadow-only policy, so no internal contradiction remains between the early
+recommendation and the later clarifications. **Status: ACCEPTED WITH CONDITIONS, clarifications
+delivered, implementation still not started** — the CEO's own next step is to review the completed
+architecture before implementation begins.
+
 ## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |
