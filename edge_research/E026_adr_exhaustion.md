@@ -123,4 +123,51 @@ not completed in this pass; (c) add an explicit out-of-time split check (as done
 the Tier-0 history extension before any Frozen Candidate/Validation/Walk-Forward/Final Verdict.
 
 **Artifacts**: `e026_adr_exhaustion.py`, `e026_adr_exhaustion_results.json`, `e026_events_up.csv`,
-`e026_events_down.csv`.
+`e026_events_down.csv`. **This original run is HOLDOUT-CONTAMINATED — see the quarantine notice at the
+top of this file and the clean rerun below.**
+
+## CLEAN RERUN (2026-07-21, holdout-excluded) — supersedes the contaminated run above for any future
+promotion decision; the contaminated run above is preserved verbatim, not deleted
+
+**Split metadata** (`e026_adr_exhaustion_clean_results.json`, `data_split_id =
+pre_holdout_2025-10-23T09-15-00Z_v1`): D1 and M15 both loaded with `holdout_cutoff =
+2025-10-23T09:15:00+00:00`, `holdout_excluded = true`; M15 `max_date_used = 2025-10-23 09:00:00 UTC`,
+887 calendar days (down from 1,111). Method is byte-identical to the contaminated run (same THRESH
+list, same event/continuation construction — `e026_adr_exhaustion_clean.py` differs only in how D1/M15
+are loaded).
+
+**Result vs. the contaminated run — CONFIRMED, and if anything strengthened, for the upside effect;
+the downside null and the session-confound caveat both replicate essentially unchanged:**
+
+| Metric | Contaminated (original) | Clean (holdout-excluded) |
+|---|---|---|
+| Up: low(≤0.5) vs high(≥1.1) continuation | 0.344 vs 0.258, **p=0.00021** | 0.348 vs 0.181, **p=9.2e-7** (CONFIRMS, stronger) |
+| Up: Spearman r (threshold vs continuation) | r=−0.137, **p=2.4e-6** | r=−0.171, **p=8.4e-8** (CONFIRMS, stronger) |
+| Up: continuation rate, th 0.3→1.1 | 0.746→0.683→0.665→0.607→0.552 | 0.736→0.706→0.673→0.613→0.517 (CONFIRMS, same monotonic shape) |
+| Down: low vs high | 0.353 vs 0.396, p=0.79 (n.s.) | 0.333 vs 0.376, p=0.79 (n.s.) (CONFIRMS the null, essentially identical) |
+| Down: Spearman r | r=−0.058, p=0.059 (n.s.) | r=−0.069, **p=0.047** (borderline flips to nominally significant, but still far weaker than the up-direction effect and non-monotonic at the threshold level — see the th=1.3 bucket below) |
+| Down: th=1.3 (most extreme) continuation rate | 0.750 (highest of any bucket — "more continuation, not less") | 0.789 (n=19, thin — same anomalous "more not less" pattern replicates) |
+
+**Session-confound caveat re-checked and CONFIRMED to persist**: re-running the up-direction,
+per-session Spearman check on the clean event set gives Asia r=−0.190 (n=296, **p=0.0010**), London
+r=+0.125 (n=219, p=0.066, still wrong sign), NY r=−0.068 (n=409, p=0.171, still ~zero), late (n=50,
+p=0.83). This is the same pattern as the contaminated run (Asia was the only session individually
+significant there too) — **the open question of whether the pooled up-direction effect is partly a
+session-composition confound is NEITHER resolved NOR weakened by holdout removal; it stands exactly as
+before** and remains the single most important open item for any future revisit.
+
+**Honest reading**: this edge's finding is robust — the upside ADR-exhaustion effect is not an artifact
+of the holdout-period data; if anything it is slightly stronger in the clean sample. The downside null
+and the Asia-session-only significance pattern both replicate essentially unchanged.
+
+**No Final Verdict is issued.** Per `EDGE_RESEARCH_PROTOCOL.md` §2, a Final Verdict requires the full
+~5-6 year horizon; the clean data is now ~2.85 years (887 days), further from Final-Verdict-eligible
+than the original ~3.6-year contaminated window. This remains **Stage 2 — Discovery, clean rerun
+complete**.
+
+**V1 candidate framing is unchanged by this clean rerun** (see the pre-remediation framing above) — the
+clean rerun confirms rather than revises it; the session-confound question remains open and unresolved,
+exactly as flagged originally.
+
+**Artifacts (clean rerun)**: `e026_adr_exhaustion_clean.py`, `e026_adr_exhaustion_clean_results.json`,
+`e026_events_up_clean.csv`, `e026_events_down_clean.csv`.

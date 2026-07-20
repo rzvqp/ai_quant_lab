@@ -119,3 +119,49 @@ split check; (d) Tier-0 history extension before any Frozen Candidate/Validation
 Verdict.
 
 **Artifacts**: `e029_weekly_gap_fill.py`, `e029_weekly_gap_fill_results.json`, `e029_gap_events.csv`.
+**This original run is HOLDOUT-CONTAMINATED — see the quarantine notice at the top of this file and the
+clean rerun below.**
+
+## CLEAN RERUN (2026-07-21, holdout-excluded) — supersedes the contaminated run above for any future
+promotion decision; the contaminated run above is preserved verbatim, not deleted
+
+**Split metadata** (`e029_weekly_gap_fill_clean_results.json`, `data_split_id =
+pre_holdout_2025-10-23T09-15-00Z_v1`): `holdout_cutoff = 2025-10-23T09:15:00+00:00`,
+`holdout_excluded = true`, `max_date_used = 2025-10-23 09:00:00 UTC`. 151 week-boundaries detected (down
+from 191), 82 excluded as the same $0.00–0.05 data-feed artifact (down from 83 — consistent
+proportion), leaving **69 genuine gaps** (down from 108). Method is byte-identical (same 20h
+week-boundary threshold, same $0.05 artifact-exclusion rule, same 480-bar fill horizon).
+
+**Result vs. the contaminated run — the rate/direction pattern CONFIRMS; the large-gap time-to-fill
+figure changes substantially (WEAKENS/CHANGES) on a much smaller sample:**
+
+| Metric | Contaminated (original, n=108) | Clean (holdout-excluded, n=69) |
+|---|---|---|
+| Overall fill rate | 88.9% | 91.3% (CONFIRMS, consistent) |
+| Small tercile fill rate | 100% (n=36) | 100% (n=23) (CONFIRMS) |
+| Medium tercile fill rate | 88.9% (n=36) | 95.7% (n=23) (CONFIRMS the direction; higher on a smaller sample) |
+| **Large tercile fill rate** | 77.8% (n=36) | **78.3% (n=23)** (CONFIRMS closely) |
+| **Large tercile median time-to-fill** | **11.0h** | **1.875h** (**CHANGES substantially** — see caveat below) |
+| Down-gap fill rate | 93.75% (n=48) | 96.9% (n=32) (CONFIRMS) |
+| Up-gap fill rate | 85.0% (n=60) | 86.5% (n=37) (CONFIRMS) |
+
+**Honest reading**: the **fill-RATE-by-size pattern replicates closely** (large gaps fill distinctly
+less reliably than small ones, in both runs, at very similar rates: 77.8%→78.3%). The **large-tercile
+time-to-fill figure does not replicate** (11.0h contaminated vs 1.875h clean) — with only n=23–36 in
+this tercile in either run, this single summary statistic is highly sensitive to a small number of
+slow-filling gaps, and at least one such slow fill appears to have fallen inside the now-excluded
+holdout period, pulling the contaminated run's median up. **This specific figure (large-gap
+time-to-fill) should not be relied on from either run without a larger sample** — it is flagged, not
+silently resolved in either direction.
+
+**The interpretive caution already on record is unchanged and unresolved**: this pass still has not
+built the matched intraday-revisitation control needed to distinguish "weekly gaps get filled" from
+"prices in general get revisited at this ATR scale" — that gap applies identically to the clean rerun.
+
+**No Final Verdict is issued.** Per `EDGE_RESEARCH_PROTOCOL.md` §2, a Final Verdict requires the full
+~5-6 year horizon; the clean data is now ~2.85 years, further from Final-Verdict-eligible than the
+original ~3.6-year contaminated window, and the genuine-gap sample size has shrunk from 108 to 69. This
+remains **Stage 2 — Discovery, clean rerun complete**.
+
+**Artifacts (clean rerun)**: `e029_weekly_gap_fill_clean.py`, `e029_weekly_gap_fill_clean_results.json`,
+`e029_gap_events_clean.csv`.

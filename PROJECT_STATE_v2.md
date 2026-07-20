@@ -1067,6 +1067,77 @@ own operational documents for full visibility.
 edge_research/*.csv` confirmed empty before this entry's own commit — only markdown/documentation files
 changed.
 
+### 8.24 Flow A Holdout Remediation — COMPLETE (2026-07-21, CEO-authorized, same day as §8.23)
+
+**Scope, per explicit CEO authorization**: (1) centralized technical enforcement of the approved
+holdout boundary; (2) a clean rerun of the five contaminated edges; (3) documentation of the clean
+results. Not authorized and not done: E017 or any new edge, any Flow B change, any access to the
+`ai_quant_lab-research-main` worktree.
+
+**Worktree separation, preceding this remediation (CEO decision)**: Flow A now has its own dedicated
+git worktree, `C:\Users\MEDION GAMING\ai_quant_lab-alpha-discovery`, branch `alpha-discovery` (baseline
+`411a04b`, the same commit that closed §8.23) — separate from Flow B's `ai_quant_lab-research-main`
+(`ai-trader-implementation` branch). This remediation was carried out entirely on the `alpha-discovery`
+worktree/branch; the `ai_quant_lab-research-main` worktree was not accessed.
+
+**(1) Centralized enforcement**: `edge_research/_common.py::load(tf, *, data_split_id, cutoff)` is now
+the module's only data-reading entry point. Both `data_split_id` and `cutoff` are mandatory keyword-only
+arguments with no default (a call omitting either raises `TypeError`; an explicitly empty/unparseable
+value raises the new `HoldoutConfigError`) — the loader fails closed rather than ever silently loading
+the full, unfiltered file. `cutoff` (approved value: `2025-10-23T09:15:00+00:00`, exclusive upper bound)
+is applied to the UTC `dt` column immediately after parsing, before ATR/session/day-of-week are
+computed, so no holdout-period row is ever aggregated into any indicator. Every successful call returns
+an auditable metadata dict: `data_split_id`, `holdout_cutoff`, `holdout_excluded`, `min_date_used`,
+`max_date_used`, `n_bars_used`, `n_bars_before_cutoff`, `n_bars_excluded_by_cutoff`, `loader_version`,
+`timeframe`. `edge_research/test_loader.py` (17 tests, all passing) verifies: exact-boundary exclusion
+(a real M15 bar lands exactly on 2025-10-23T09:15:00 UTC and is confirmed excluded), retention of
+pre-cutoff bars, exclusion of post-cutoff bars across all four timeframes, fail-closed behavior for
+missing/empty/None/unparseable split config and for a cutoff that would exclude all data, metadata
+correctness, and — via source/static inspection — that no edge script bypasses this loader by reading
+`data/market/*.csv` directly.
+
+**(2) Clean rerun, all five edges, same disclosed method as the original contaminated pass in each
+case (no parameter searched or tuned to change the outcome)**: E025 Round Numbers, E026 ADR Exhaustion,
+E028 Fibonacci OTE, E029 Weekly Gap Fill, E032 Premium Discount Flip. Clean split:
+`data_split_id=pre_holdout_2025-10-23T09-15-00Z_v1`, M15 `n_bars_used=67,321` (of 84,152; 16,831
+excluded — exactly the sealed holdout's own documented bar count, an independent consistency check),
+`max_date_used=2025-10-23 09:00:00 UTC`, ~2.85 years (shorter than the original ~3.6-year contaminated
+window, since the removed period is real data, not restored from elsewhere).
+
+**Result, reported honestly, not forced toward consistency with the original**: E026 (ADR Exhaustion),
+E028 (Fibonacci OTE), and E032 (Premium Discount Flip) **CONFIRM** their original findings closely (E026
+if anything slightly stronger; E032 nearly identical; E028's rates replicate closely though one
+significance test weakens from p=0.0023 to p=0.027 on a smaller sample). E029 (Weekly Gap Fill)
+**CONFIRMS** its fill-rate-by-size pattern but its large-tercile time-to-fill figure changes
+substantially (11.0h → 1.875h, flagged as small-n-sensitive, not resolved in either direction). E025
+(Round Numbers) **PARTIALLY WEAKENS**: its short (~1h) horizon $50 finding confirms closely, but its
+longer (~4h) horizon finding and its approach-from-above subslice no longer clear conventional
+significance. No open falsification caveat already on record (E026's session confound, E029's missing
+matched control, E032's missing overextension-confound control, E028's untested fractal granularity) is
+resolved by holdout removal — all remain exactly as open as before.
+
+**(3) Documentation**: each of the five edges' own permanent log (`edge_research/E0XX_*.md`) now
+contains, in order: the original V0/Discovery-pass-1 section (unchanged), the HOLDOUT BREACH quarantine
+notice from §8.23 (unchanged), and a new appended "CLEAN RERUN" section with the comparison table above
+and an honest reading of what confirmed/weakened. Nothing in any log was deleted or retroactively
+edited. Registry status (`EDGE_DISCOVERY_REGISTRY_v1.md`) for these five: `DISCOVERY_IN_PROGRESS /
+CLEAN_RERUN_COMPLETE` (no longer `HOLDOUT_CONTAMINATED`/`CLEAN_RERUN_REQUIRED`).
+
+**No Final Verdict was issued on any edge, in either the contaminated or the clean run.** Per
+`EDGE_RESEARCH_PROTOCOL.md` §2, a Final Verdict requires the full ~5-6 year horizon; the clean data
+(~2.85 years) is, if anything, further from that requirement than the contaminated data (~3.6 years)
+was. This entry does not restore the old sealed holdout — `PROJECT_STATE_v2.md` §8.23's own ruling on
+that stands unchanged; a new, separately-designated holdout remains a distinct, future, unmade decision.
+
+**Flow B untouched, verified**: `NEXT_SESSION_FLOW_B.md`, `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`,
+and every file under `ai_trader/` were not opened for writing during this remediation; this entire
+remediation was carried out on the separate `alpha-discovery` worktree, which does not contain Flow B's
+own uncommitted work-in-progress from the `ai_quant_lab-research-main` worktree at all.
+
+**Flow A status after this entry: remediation COMPLETE. New-edge research (E017 onward) awaits its own
+separate CEO approval** — this entry's own completion is not that approval, per the CEO's explicit
+instruction opening this remediation.
+
 ## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |

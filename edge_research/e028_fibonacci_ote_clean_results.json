@@ -1,0 +1,56 @@
+{
+  "edge": "E028",
+  "run_id": "clean_rerun_2026-07-21",
+  "supersedes_contaminated_artifact": "e028_fibonacci_ote_results.json",
+  "split_metadata": {
+    "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+    "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+    "holdout_excluded": true,
+    "min_date_used": "2022-12-16 10:45:00+00:00",
+    "max_date_used": "2025-10-23 09:00:00+00:00",
+    "n_bars_used": 67321,
+    "n_bars_before_cutoff": 84152,
+    "n_bars_excluded_by_cutoff": 16831,
+    "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+    "timeframe": "M15"
+  },
+  "n_bars": 67321,
+  "n_swings": 6533,
+  "n_legs": 6530,
+  "date_range": [
+    "2022-12-16 10:45:00+00:00",
+    "2025-10-23 09:00:00+00:00"
+  ],
+  "by_zone": {
+    "lt_382": {
+      "n": 608,
+      "continuation_rate": 0.6299342105263158,
+      "mean_cont_mag": 0.20937185391253302,
+      "median_cont_mag": 0.07832549827299834
+    },
+    "382_618": {
+      "n": 1039,
+      "continuation_rate": 0.6102021174205967,
+      "mean_cont_mag": 0.3193958112673914,
+      "median_cont_mag": 0.11055045871558873
+    },
+    "OTE_618_79": {
+      "n": 817,
+      "continuation_rate": 0.5703794369645043,
+      "mean_cont_mag": 0.3663796460722252,
+      "median_cont_mag": 0.10391363022943975
+    },
+    "79_100": {
+      "n": 900,
+      "continuation_rate": 0.5244444444444445,
+      "mean_cont_mag": 0.35779211165519187,
+      "median_cont_mag": 0.06224449206059671
+    },
+    "gt_100_full_reversal": {
+      "n": 3166,
+      "continuation_rate": 0.3812381554011371,
+      "mean_cont_mag": -0.15323641164943996,
+      "median_cont_mag": -0.3063935618467376
+    }
+  }
+}

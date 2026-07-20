@@ -183,8 +183,23 @@ document.
 research session (E025, E026, E028, E029, E032) had loaded and analyzed data from the Research Lab's
 own sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC), because the shared Flow A
 data loader applied no date cutoff at all. **The old terminal holdout is CONSUMED / INVALIDATED** as a
-result. This section is the resulting mandatory rule — **documentation only; the loader-level
-enforcement itself is NOT implemented by this entry.**
+result. This section is the resulting mandatory rule.
+
+**Implementation status (updated 2026-07-21, CEO-authorized remediation)**: the loader-level
+enforcement described below is now implemented, in `edge_research/_common.py::load()` — the module's
+only data-reading entry point. `load(tf, *, data_split_id, cutoff)` requires both arguments (no
+defaults; a missing/empty/unparseable value raises `HoldoutConfigError` or `TypeError`, fail-closed —
+it never silently falls back to loading the full, unfiltered file); the cutoff is applied as an
+exclusive upper bound on the UTC `dt` column BEFORE any indicator is computed; every successful call
+returns an auditable metadata dict (`data_split_id`, `holdout_cutoff`, `holdout_excluded`,
+`min_date_used`, `max_date_used`, `n_bars_used`, `n_bars_before_cutoff`, `n_bars_excluded_by_cutoff`,
+`loader_version`, `timeframe`) satisfying every item required below. `edge_research/test_loader.py`
+(17 tests) verifies exact-boundary behavior, fail-closed configuration handling, metadata correctness,
+and that no edge script bypasses this loader. The approved cutoff for the current remediation batch is
+`2025-10-23T09:15:00+00:00` (`_common.RESEARCH_HOLDOUT_CUTOFF_UTC`); the split identifier is
+`pre_holdout_2025-10-23T09-15-00Z_v1` (`_common.PRE_HOLDOUT_SPLIT_ID`). This does not restore the old
+sealed holdout — it produces a holdout-clean rerun only; a new, separately-designated holdout (if the
+CEO chooses to define one) is a distinct, future, unmade decision.
 
 - **Alpha Discovery may not read, load, aggregate, or otherwise use data from a sealed holdout period,
   under any circumstance.** This applies to every stage and every kind of analysis without exception:

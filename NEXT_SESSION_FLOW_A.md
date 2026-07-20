@@ -9,28 +9,38 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: PAUSED — remediation required (TERMINAL HOLDOUT BREACHED, identified 2026-07-21).** All 5
-edges studied so far (E025, E026, E028, E029, E032) loaded and analyzed data from the Research Lab's
-own sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC). **The old terminal holdout
-is CONSUMED / INVALIDATED.** All five are now HOLDOUT-CONTAMINATED / CLEAN_RERUN_REQUIRED. New-edge
-research (E017 onward) does not resume until remediation completes — see "Next step" below. Full
-incident record: `PROJECT_STATE_v2.md` §8.23. The remaining 35 edges are unaffected and still
-`UNSTUDIED`/`V0`.
+**Status: REMEDIATION COMPLETE (2026-07-21) — awaiting CEO approval to resume new-edge research.**
+Following the TERMINAL HOLDOUT BREACH (identified 2026-07-21: all 5 edges studied so far — E025, E026,
+E028, E029, E032 — had loaded and analyzed data from the Research Lab's own sealed terminal holdout,
+2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC; **the old terminal holdout is CONSUMED / INVALIDATED**,
+full incident record `PROJECT_STATE_v2.md` §8.23), the CEO authorized and this session completed:
+(1) centralized holdout-cutoff enforcement in `edge_research/_common.py::load()`, with a 17-test suite
+(`edge_research/test_loader.py`, all passing); (2) a clean rerun of all five contaminated edges
+(`e0XX_..._clean.py`); (3) documentation of both the original (contaminated, preserved verbatim) and
+clean results in each edge's own permanent log. **Registry status for these 5 is now
+`DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE`** — no longer `HOLDOUT_CONTAMINATED`/
+`CLEAN_RERUN_REQUIRED`. **New-edge research (E017 onward) still does not resume without its own
+separate CEO approval** — remediation completing is not itself that approval; see "Next step" below.
+The remaining 35 edges are unaffected and still `UNSTUDIED`/`V0`.
 
 **Governing documents**: `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md`
 (the six-stage pipeline, the permanent-record rules, and — new as of this incident — §8's mandatory
 holdout-exclusion rule), and `EDGE_DISCOVERY_ROADMAP.md` (recommended sequencing, data-availability-
 driven; its own top section now records the same pause and remediation-first next action).
 
-## Last Flow A commit
+## Last Flow A commits
 
 ```
 eed1634  Flow A: first Alpha Discovery session — Discovery pass on E025/E026/E029/E032/E028
+411a04b  docs: record holdout breach and quarantine affected edge research
+<pending this session's own commit — see the remediation report for the exact hash>
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
---porcelain` — do not assume it is still the current HEAD in any future session (Flow B and other work
-may have landed commits since).
+--porcelain` — do not assume it is still the current HEAD in any future session. This work now lives on
+its own dedicated worktree/branch: `C:\Users\MEDION GAMING\ai_quant_lab-alpha-discovery`, branch
+`alpha-discovery` (separated from Flow B's own `ai_quant_lab-research-main` / `ai-trader-implementation`
+worktree, per CEO decision 2026-07-21).
 
 ## Edges studied (first Discovery-stage pass, 2026-07-20 session)
 
@@ -45,35 +55,26 @@ in the per-edge logs, never in the registry itself.
 
 **No Final Verdict was issued on any edge.**
 
-## Results (Discovery-stage, exploratory, HOLDOUT-CONTAMINATED — none of these are Final Verdicts)
+## Results — ORIGINAL (contaminated) vs. CLEAN RERUN (holdout-excluded, 2026-07-21)
 
-**All five results below are HOLDOUT-CONTAMINATED** (see "Current state" above and
-`PROJECT_STATE_v2.md` §8.23) — preserved verbatim below as an audit trail, per the protocol's own
-permanent-record rule. They cannot support promotion to Frozen Candidate, Validation, or a Final
-Verdict in their current form; a CLEAN RERUN is required first.
+**The original results below were HOLDOUT-CONTAMINATED** (see "Current state" above and
+`PROJECT_STATE_v2.md` §8.23) — preserved verbatim as an audit trail, per the protocol's own
+permanent-record rule; they never supported and still do not support promotion to Frozen Candidate,
+Validation, or a Final Verdict. **The clean-rerun column is the one to rely on going forward.** Full
+detail, including per-slice/per-session breakdowns, is in each edge's own `edge_research/E0XX_*.md` log.
 
-- **E025 Round Numbers**: NOT supported as stated at $10 or $100 granularity. At **$50 granularity, a
-  significant EFFECT IN THE OPPOSITE DIRECTION from V0** was found — round $50 levels break through
-  more often than a matched non-round control (p=0.0022 pooled, p=0.0059 approaching-from-above), i.e.
-  a tentative liquidity-sweep/breakthrough pattern rather than a magnet/support-resistance one. Sign is
-  consistent across an out-of-time split-half check.
-- **E026 ADR Exhaustion**: Real, significant, and monotonic for **upside** ADR consumption (p=2.4e-6);
-  absent for **downside** consumption. The upside effect may be partly confounded with session-of-day
-  (only individually significant in the Asia session) — flagged as unresolved.
-- **E029 Weekly Gap Fill**: Clean rate/size/speed pattern (88.9% overall fill rate within 5 trading
-  days; large gaps fill far less reliably (77.8%) and 11× slower than small gaps (100%, same-bar)) —
-  but this pass found **43% of raw week-boundary "gaps" are a data-feed artifact** (exact $0.00 gap,
-  excluded before analysis) and did not yet build a control to rule out plain generic level-
-  revisitation as the explanation.
-- **E032 Premium Discount Flip**: A strong, highly significant reversion pattern using a **daily**
-  range definition (Spearman r=0.53, p≈4e-299) but a much weaker one using a **weekly** range
-  definition (r=0.04–0.07) — the registry's own "range-defining logic used" variable is confirmed
-  load-bearing. Not yet distinguished from generic overextension mean-reversion (same open question as
-  E026's own finding).
-- **E028 Fibonacci OTE**: NOT supported on the continuation-RATE dimension — shallow retracements
-  continue significantly MORE often (64.6%) than the OTE zone (57.3%, p=0.0023) — the reverse of V0.
-  Continuation magnitude, conditional on continuation happening, is modestly higher in the OTE zone by
-  median (0.117 vs 0.087) — a much weaker, non-decisive signal on that second dimension.
+| Edge | Original (contaminated) headline | Clean rerun (holdout-excluded) headline | Outcome |
+|---|---|---|---|
+| **E025 Round Numbers** | $50: round vs control p=0.0022 (4h horizon); approach-from-above p=0.0059 | $50 reaction_4 (~1h) CONFIRMS (p=0.00011); reaction_16 (~4h) and approach-from-above subslice no longer clear p<0.05 (p=0.072, p=0.121) | **PARTIALLY WEAKENED** |
+| **E026 ADR Exhaustion** | Upside: Spearman r=−0.137, p=2.4e-6; downside null; Asia-only session significance | Upside: r=−0.171, **p=8.4e-8** (stronger); downside null unchanged; Asia-only pattern replicates identically | **CONFIRMED** (strengthened) |
+| **E029 Weekly Gap Fill** | Fill rate 88.9%; large-tercile 77.8%, median TTF 11.0h; 43% artifact rate | Fill rate 91.3%; large-tercile 78.3% (CONFIRMS), median TTF 1.875h (**CHANGED**, small-n-sensitive); ~45% artifact rate (CONFIRMS) | **RATE PATTERN CONFIRMED; TTF FIGURE CHANGED** |
+| **E032 Premium Discount Flip** | Daily-range Spearman r=0.527, p≈4e-299; weekly r=0.039, p=0.0049 | Daily r=0.522, p≈6.5e-235; weekly r=0.039, p=0.012 | **CONFIRMED** (near-identical, most robust of the five) |
+| **E028 Fibonacci OTE** | Shallow 64.6% vs OTE 57.3% continuation rate, χ²=9.28, p=0.0023 | Shallow 63.0% vs OTE 57.0%, χ²=4.89, **p=0.027** (weaker test, same rates) | **CONFIRMED** |
+
+**Open questions carried forward unresolved by the clean rerun** (identical in both runs): E026's
+upside effect may still be a session-composition confound (only individually significant in Asia); E029
+still lacks a matched intraday-revisitation control; E032 still lacks an overextension-confound control;
+E028 still hasn't tested a coarser fractal `k`. None of these are resolved by holdout removal alone.
 
 ## Limitations (must be respected on any revisit)
 
@@ -92,19 +93,17 @@ Verdict in their current form; a CLEAN RERUN is required first.
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: Holdout Remediation (NOT E017)
+## Next step: awaiting CEO approval to resume at E017 (remediation itself is DONE)
 
-**The next Flow A action is NOT E017.** Per `EDGE_DISCOVERY_ROADMAP.md`'s own updated status:
-
-> **Holdout Remediation — protocol enforcement and clean rerun of E025/E026/E028/E029/E032.**
-
-In order: (1) implement `EDGE_RESEARCH_PROTOCOL.md` §8's centralized holdout-exclusion enforcement in
-the shared loader(s) (`edge_research/_common.py::load()` and any future loader) — not yet done,
-documentation only as of this incident; (2) cleanly rerun each of the five contaminated edges under
-that enforcement, each producing a genuinely new, holdout-excluded result set; (3) only then resume the
-Tier 1 sequence at **E017 — Equal Highs / Lows Target**, then in order **E009, E010, E012, E015, E013,
-E016, E011, E014**, then the session-timing edges **E006, E008, E005, E027** — this sequencing itself
-is unchanged, only deferred.
+**The next Flow A action is NOT E017 yet — it is a CEO decision.** Remediation is complete: (1)
+`EDGE_RESEARCH_PROTOCOL.md` §8's centralized holdout-exclusion enforcement is implemented in
+`edge_research/_common.py::load()`, tested (17/17 passing, `edge_research/test_loader.py`); (2) all five
+contaminated edges have a clean, holdout-excluded rerun; (3) both original and clean results are
+documented in each edge's own permanent log. Per the CEO's own remediation authorization, this session
+stops here and does not begin E017 or any new edge on its own — that requires its own separate,
+explicit approval. Once granted, the Tier 1 sequence resumes at **E017 — Equal Highs / Lows Target**,
+then in order **E009, E010, E012, E015, E013, E016, E011, E014**, then the session-timing edges **E006,
+E008, E005, E027** — this sequencing itself is unchanged, only deferred.
 
 ## Resume instructions
 
@@ -122,10 +121,11 @@ is unchanged, only deferred.
      hypothesis, category, required data/timeframes/instruments/observable variables/measured outcome.
    - **`PROJECT_STATE_v2.md` §1.1/§8.19/§8.20** — how Flow A relates to the rest of the project
      (context only, not required to continue research).
-3. **Do not resume new-edge Discovery (E017 or any other edge) until Holdout Remediation is complete**
-   — see "Next step" above. If continuing remediation work: verify `git status --porcelain` is clean,
-   and confirm `EDGE_RESEARCH_PROTOCOL.md` §8's enforcement has actually been implemented in the shared
-   loader(s) before relying on any new run's own `holdout_excluded=true` claim.
+3. **Do not resume new-edge Discovery (E017 or any other edge) without its own separate CEO approval**
+   — remediation being complete is not that approval; see "Next step" above. Verify `git status
+   --porcelain` is clean, and confirm `EDGE_RESEARCH_PROTOCOL.md` §8's enforcement is actually present
+   in `edge_research/_common.py::load()` (it should require `data_split_id`/`cutoff` and raise if either
+   is missing) before relying on any run's own `holdout_excluded=true` claim.
 4. Report the reconstructed state back to the CEO before proceeding on anything new.
 
 ## Warnings relevant to research
@@ -135,10 +135,12 @@ is unchanged, only deferred.
   as "intact." Do not describe a future cutoff-enforced rerun as "restoring" it — it does not; only a
   new, separately-designated holdout (not yet decided) would give the project a genuinely unseen period
   again, and that decision has not been made.
-- **`EDGE_RESEARCH_PROTOCOL.md` §8 (new, 2026-07-21)**: Alpha Discovery may not read, load, aggregate,
-  or use data from a sealed holdout period, under any circumstance or research stage. Every future
-  result must record its own min/max date used, bar count, data-split identifier, and an explicit
-  `holdout_excluded=true` confirmation — absent evidence invalidates the run.
+- **`EDGE_RESEARCH_PROTOCOL.md` §8 (new, 2026-07-21; enforcement live as of this remediation)**: Alpha
+  Discovery may not read, load, aggregate, or use data from a sealed holdout period, under any
+  circumstance or research stage. Every future result must record its own min/max date used, bar count,
+  data-split identifier, and an explicit `holdout_excluded=true` confirmation — absent evidence
+  invalidates the run. Enforced centrally by `edge_research/_common.py::load()` — the module's only
+  data-reading entry point; it takes no default split/cutoff and fails closed if either is missing.
 - **No edge may be optimized until it becomes profitable.**
 - **No negative observation/exception/falsification may ever be removed** from an edge's own permanent
   record, at any stage.
@@ -155,7 +157,12 @@ is unchanged, only deferred.
 - **Flow A does not import `ai_trader` code** — any candidate reuse of an `ai_trader/market_intelligence/`
   concept (e.g. `structure.py`'s swing/BOS/CHoCH logic) is built from scratch, analogous in spirit only,
   never imported directly, per the two-flow separation (`PROJECT_STATE_v2.md` §1.1).
-- **No branch or worktree separation exists yet** — Flow A and Flow B currently share one branch
-  (`ai-trader-implementation`) and one working tree. A concurrent Flow B (or other) session may be
-  editing shared files at the same time; verify git state live before assuming any prior session's
-  described state still holds.
+- **Branch/worktree separation now exists (CEO decision, 2026-07-21)**: Flow A's official location is
+  `C:\Users\MEDION GAMING\ai_quant_lab-alpha-discovery`, branch `alpha-discovery` — a dedicated git
+  worktree, separate from Flow B's own `C:\Users\MEDION GAMING\ai_quant_lab-research-main`
+  (`ai-trader-implementation` branch). Do not access or modify the `ai_quant_lab-research-main` worktree
+  from a Flow A session, and do not modify `NEXT_SESSION_FLOW_B.md`,
+  `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`, `ai_trader/`, or any Flow B report/implementation from
+  here. Still verify git state live (`git branch --show-current`, `git log -1`, `git status
+  --porcelain`) before assuming any prior session's described state still holds — other sessions may
+  land commits on this branch too.

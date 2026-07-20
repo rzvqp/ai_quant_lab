@@ -153,4 +153,55 @@ no cost model, no execution simulation — consistent with Discovery scope, per 
 made profitable").
 
 **Artifacts**: `e025_round_numbers.py` (analysis script), `e025_round_numbers_results.json` (full
-output incl. all slices).
+output incl. all slices). **This original run is HOLDOUT-CONTAMINATED — see the quarantine notice at
+the top of this file and the clean rerun below.**
+
+## CLEAN RERUN (2026-07-21, holdout-excluded) — supersedes the contaminated run above for any future
+promotion decision; the contaminated run above is preserved verbatim, not deleted
+
+**Split metadata** (`e025_round_numbers_clean_results.json`, `data_split_id =
+pre_holdout_2025-10-23T09-15-00Z_v1`): `holdout_cutoff = 2025-10-23T09:15:00+00:00`,
+`holdout_excluded = true`, `min_date_used = 2022-12-16 10:45:00 UTC`,
+`max_date_used = 2025-10-23 09:00:00 UTC`, `n_bars_used = 67,321` (of 84,152 before the cutoff filter;
+16,831 bars excluded — exactly the sealed holdout's own documented bar count, a useful independent
+consistency check), `loader_version = flowA_common_v2_holdout_enforced_2026-07-21`. Method is
+byte-identical to the contaminated run (`e025_round_numbers_clean.py` differs from
+`e025_round_numbers.py` only in how data is loaded) — same COOLDOWN=8, same N∈{4,16}, same
+granularities, no parameter changed.
+
+**Result vs. the contaminated run — mixed: the short-horizon (~1h) $50 effect CONFIRMS; the
+longer-horizon (~4h) effect and the approach-from-above subslice WEAKEN below the conventional 0.05
+significance threshold:**
+
+| Slice | Contaminated (original) | Clean (holdout-excluded) |
+|---|---|---|
+| $50, reaction_4 (~1h): round vs control | −0.143 vs +0.105, **p=1.68e-6** | −0.148 vs +0.112, **p=0.00011** (CONFIRMS — nearly identical magnitude and still highly significant) |
+| $50, reaction_16 (~4h): round vs control | −0.207 vs +0.078, **p=0.0022** | −0.152 vs +0.070, p=0.072 (WEAKENS — same sign, no longer significant at 0.05) |
+| $50, approach-from-above (N=16) | −0.127 vs +0.236, **p=0.0059** | +0.017 vs +0.285, p=0.121 (WEAKENS — sign of the round-vs-control gap unchanged (control still higher), but no longer significant, and the round side itself is no longer negative) |
+| $10, reaction_4 | −0.018 vs +0.016, p=0.028 | −0.027 vs +0.030, p=0.023 (CONFIRMS, still marginal/nominal) |
+| $10, reaction_16 | n.s. (p=0.33) | n.s. (p=0.26) (CONFIRMS the null) |
+| $100, both windows | n.s. | n.s. (CONFIRMS the null) |
+
+**Honest reading**: the part of this edge's original finding that holds up cleanly is the **short
+(~1h) horizon $50 effect** — round $50 levels break through more than a matched control shortly after
+being touched, and this replicates almost exactly in magnitude and significance once the (~8.7-month,
+20% of the sample) holdout period is removed. The **longer (~4h) horizon effect and the
+approach-from-above-specific subslice were meaningfully inflated by the holdout-period data** — they do
+not clear conventional significance in the clean rerun, though the direction of the underlying
+round-vs-control gap is unchanged in every case (round always ≤ control). This is exactly the kind of
+result the CEO's remediation authorization anticipated: neither a full confirmation nor a full
+reversal, but a real, disclosed **weakening** of two of the pass's four headline sub-findings.
+
+**No Final Verdict is issued.** Per `EDGE_RESEARCH_PROTOCOL.md` §2, a Final Verdict requires the full
+~5-6 year horizon; the clean data is now only ~2.85 years (67,321 M15 bars), even shorter than the
+original ~3.6-year (contaminated) window — if anything, further from Final-Verdict-eligible than
+before. This remains **Stage 2 — Discovery, clean rerun complete**.
+
+**Revised V1 candidate framing (supersedes the pre-remediation V1 framing above only in scope, not by
+deleting it)**: "At $50-multiple round levels in XAUUSD, price breaks through more than a matched
+non-round control over a short (~1h) horizon; this is the part of the original finding that survives
+holdout-clean re-verification. The longer (~4h) horizon effect and the approach-from-above-specific
+claim are NOT currently supported net of the holdout-period data and should not be carried forward
+without further, cleanly-sourced evidence."
+
+**Artifacts (clean rerun)**: `e025_round_numbers_clean.py`, `e025_round_numbers_clean_results.json`.

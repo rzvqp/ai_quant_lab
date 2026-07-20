@@ -119,4 +119,49 @@ whether the shallow>OTE rate finding is an artifact of using very short, noisy s
 volatility/day slices; (c) formal out-of-time split; (d) Tier-0 history extension before any Frozen
 Candidate/Validation/Walk-Forward/Final Verdict.
 
-**Artifacts**: `e028_fibonacci_ote.py`, `e028_fibonacci_ote_results.json`, `e028_legs.csv`.
+**Artifacts**: `e028_fibonacci_ote.py`, `e028_fibonacci_ote_results.json`, `e028_legs.csv`. **This
+original run is HOLDOUT-CONTAMINATED — see the quarantine notice at the top of this file and the clean
+rerun below.**
+
+## CLEAN RERUN (2026-07-21, holdout-excluded) — supersedes the contaminated run above for any future
+promotion decision; the contaminated run above is preserved verbatim, not deleted
+
+**Split metadata** (`e028_fibonacci_ote_clean_results.json`, `data_split_id =
+pre_holdout_2025-10-23T09-15-00Z_v1`): `holdout_cutoff = 2025-10-23T09:15:00+00:00`,
+`holdout_excluded = true`, `max_date_used = 2025-10-23 09:00:00 UTC`. 6,533 swings / 6,530 legs (down
+from 8,207 / 8,204). Method is byte-identical (same k=5 fractal, same zigzag construction, same zone
+bins).
+
+**Result vs. the contaminated run — CONFIRMED closely; the shallow>OTE rate inversion survives, at
+somewhat reduced (but still conventionally significant) strength:**
+
+| Zone | Contaminated rate (n) | Clean rate (n) | Contaminated median mag | Clean median mag |
+|---|---|---|---|---|
+| <38.2% (shallow) | 64.6% (723) | 63.0% (608) (CONFIRMS) | 0.087 | 0.078 (CONFIRMS) |
+| 38.2–61.8% | 60.3% (1,346) | 61.0% (1,039) (CONFIRMS) | 0.098 | 0.111 (CONFIRMS) |
+| **61.8–79% (OTE)** | 57.3% (1,046) | 57.0% (817) (CONFIRMS, near-identical) | 0.117 | 0.104 (CONFIRMS) |
+| 79–100% | 51.8% (1,140) | 52.4% (900) (CONFIRMS) | 0.038 | 0.062 (CONFIRMS direction) |
+| >100% (full reversal) | 37.6% (3,949) | 38.1% (3,166) (CONFIRMS) | −0.319 | −0.306 (CONFIRMS) |
+
+**Shallow-vs-OTE significance test, rerun on the clean event counts**: chi-square = 4.89, **p=0.027**
+(vs. the contaminated run's χ²=9.28, p=0.0023) — **still significant at the conventional 0.05
+threshold, but weaker**, consistent with the smaller clean sample (n=608 vs 723 shallow, n=817 vs 1,046
+OTE) rather than any change in the underlying rates, which are nearly identical between the two runs.
+
+**Honest reading**: this edge's core, V0-contradicting finding — shallow retracements continue more
+often than the OTE zone, not less — replicates almost exactly in every zone's rate and median magnitude
+once the holdout period is excluded. The monotonic decline in continuation rate across zones is
+preserved intact. This is a **CONFIRMED** result, not weakened in direction or magnitude, only in the
+strength of one specific significance test due to the smaller sample.
+
+**The open swing-granularity caveat already on record is unchanged and unresolved**: this pass still
+has not tested a coarser fractal `k` (e.g. 10, 20) to check whether the shallow>OTE finding is specific
+to this pass's short, noisy k=5 swing definition — that question applies identically to the clean
+rerun.
+
+**No Final Verdict is issued.** Per `EDGE_RESEARCH_PROTOCOL.md` §2, a Final Verdict requires the full
+~5-6 year horizon; the clean data is now ~2.85 years, further from Final-Verdict-eligible than the
+original ~3.6-year contaminated window. This remains **Stage 2 — Discovery, clean rerun complete**.
+
+**Artifacts (clean rerun)**: `e028_fibonacci_ote_clean.py`, `e028_fibonacci_ote_clean_results.json`,
+`e028_legs_clean.csv`.

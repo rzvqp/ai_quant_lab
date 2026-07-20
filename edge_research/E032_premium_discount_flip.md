@@ -115,4 +115,45 @@ rolling swing-based range akin to `s1.py`'s `rmax20/rmin20`, deliberately NOT im
 separation but reproducible independently); (c) session/volatility/day slices; (d) formal out-of-time
 split; (e) Tier-0 history extension before any Frozen Candidate/Validation/Walk-Forward/Final Verdict.
 
-**Artifacts**: `e032_premium_discount_flip.py`, `e032_premium_discount_flip_results.json`.
+**Artifacts**: `e032_premium_discount_flip.py`, `e032_premium_discount_flip_results.json`. **This
+original run is HOLDOUT-CONTAMINATED — see the quarantine notice at the top of this file and the clean
+rerun below.**
+
+## CLEAN RERUN (2026-07-21, holdout-excluded) — supersedes the contaminated run above for any future
+promotion decision; the contaminated run above is preserved verbatim, not deleted
+
+**Split metadata** (`e032_premium_discount_flip_clean_results.json`, `data_split_id =
+pre_holdout_2025-10-23T09-15-00Z_v1`): M15 and both D1 loads (daily- and weekly-range definitions) all
+enforce `holdout_cutoff = 2025-10-23T09:15:00+00:00`, `holdout_excluded = true`,
+`max_date_used = 2025-10-23 09:00:00 UTC`. Method is byte-identical (same two range definitions, same
+STEP=16, same N∈{16,64}, same quartile bucketing).
+
+**Result vs. the contaminated run — CONFIRMED almost exactly; this edge's finding is the most robust
+of the five to the holdout removal:**
+
+| Metric | Contaminated (original) | Clean (holdout-excluded) |
+|---|---|---|
+| Daily range, N=16: near-quartile mean | −0.138 | −0.136 (CONFIRMS, near-identical) |
+| Daily range, N=16: extreme-quartile mean | +0.093 | +0.090 (CONFIRMS, near-identical) |
+| Daily range, N=16: Spearman r | 0.527 | 0.522 (CONFIRMS) |
+| Daily range, N=16: p-value | ~4e-299 | ~6.5e-235 (CONFIRMS — still overwhelming; nominally "less extreme" only because the smaller clean sample (n=3,363 vs 4,206) reduces the tail of an already-saturated p-value, not because the effect weakened) |
+| Weekly range, N=16: Spearman r | 0.039, p=0.0049 | 0.039, **p=0.012** (CONFIRMS, same magnitude, still significant) |
+| Weekly range, N=64: Spearman r | 0.074, p≈1e-7 | 0.064, p≈4.6e-5 (CONFIRMS) |
+
+**Honest reading**: essentially nothing about this edge's finding changed once the holdout period was
+excluded — the daily-range reversion pattern and the (much weaker) weekly-range pattern both replicate
+closely in sign, magnitude, and statistical strength. This is expected given how strong and broad-based
+the original signal was relative to the ~20% of the sample removed.
+
+**The central falsification concern already on record is unchanged and unresolved**: this pass still
+has not built the overextension-confound control (distance from a plain moving average of matched
+lookback) needed to determine whether "premium/discount equilibrium" adds anything beyond generic
+mean-reversion of a stretched move — that open question applies identically to the clean rerun and is
+not resolved by holdout removal.
+
+**No Final Verdict is issued.** Per `EDGE_RESEARCH_PROTOCOL.md` §2, a Final Verdict requires the full
+~5-6 year horizon; the clean data is now ~2.85 years, further from Final-Verdict-eligible than the
+original ~3.6-year contaminated window. This remains **Stage 2 — Discovery, clean rerun complete**.
+
+**Artifacts (clean rerun)**: `e032_premium_discount_flip_clean.py`,
+`e032_premium_discount_flip_clean_results.json`.

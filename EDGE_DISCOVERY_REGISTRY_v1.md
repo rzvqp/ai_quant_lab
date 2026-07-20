@@ -2,18 +2,24 @@
 
 **Program**: 40-Edge Alpha Discovery Program. **Date opened**: 2026-07-20. **Status of this document**:
 infrastructure, PLUS the first 5 Discovery-stage passes (E025, E026, E029, E032, E028 — 2026-07-20,
-first Flow A research session; see `edge_research/` and `NEXT_SESSION.md` §Flow A for the session
-summary). No edge below has been implemented, and no Final Verdict has been issued on any edge (the
-available data, ~3.6 years, is short of the protocol's own ~5-6 year requirement for any Final Verdict
-— see `EDGE_RESEARCH_PROTOCOL.md` §2). Every entry's own V0 hypothesis below remains exactly as
-originally registered, unedited, per protocol §1.
+first Flow A research session). **Those 5 passes' original run was found 2026-07-21 to have breached
+the Research Lab's own sealed terminal holdout (`PROJECT_STATE_v2.md` §8.23) — the old holdout is
+CONSUMED/INVALIDATED project-wide. A holdout-excluded CLEAN RERUN of all 5 completed the same day**
+(`EDGE_RESEARCH_PROTOCOL.md` §8's centralized enforcement, `edge_research/_common.py::load()`) — see
+`edge_research/` (each edge's own log carries both the original contaminated run, preserved verbatim,
+and the clean rerun) and `NEXT_SESSION_FLOW_A.md` for the full session summary. No edge below has been
+implemented, and no Final Verdict has been issued on any edge, in either the contaminated or the clean
+run (the available data — ~3.6yr contaminated, ~2.85yr clean — is short of the protocol's own ~5-6 year
+requirement for any Final Verdict — see `EDGE_RESEARCH_PROTOCOL.md` §2). Every entry's own V0 hypothesis
+below remains exactly as originally registered, unedited, per protocol §1.
 
 ## How to read this registry
 
-- **Status = UNSTUDIED for 35 of 40 entries; DISCOVERY_IN_PROGRESS for 5 (E025, E026, E028, E029,
-  E032, all studied 2026-07-20)**. Status changes only by passing through the stages defined in
-  `EDGE_RESEARCH_PROTOCOL.md` (V0 → Discovery → Frozen Candidate → Validation → Walk Forward → Final
-  Verdict); no edge has advanced past Stage 2 (Discovery) yet.
+- **Status = UNSTUDIED for 35 of 40 entries; DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE for 5 (E025,
+  E026, E028, E029, E032 — studied 2026-07-20, holdout-breach-remediated 2026-07-21)**. Status changes
+  only by passing through the stages defined in `EDGE_RESEARCH_PROTOCOL.md` (V0 → Discovery → Frozen
+  Candidate → Validation → Walk Forward → Final Verdict); no edge has advanced past Stage 2 (Discovery)
+  yet.
 - **Version = V0** for all 40 entries — the original, unmodified hypothesis as registered here. Per the
   protocol, V0 is never edited retroactively; any refinement discovered during research becomes V1, V2,
   etc., appended to the edge's own permanent research log (not created yet — see
@@ -398,11 +404,14 @@ originally registered, unedited, per protocol §1.
   magnitude, session
 - **Measured outcome**: Reaction rate/magnitude at each round-number granularity vs. a matched
   non-round-level control
-- **Status**: DISCOVERY_IN_PROGRESS / HOLDOUT_CONTAMINATED / CLEAN_RERUN_REQUIRED (Stage 2, first pass
-  complete 2026-07-20; TERMINAL HOLDOUT BREACHED 2026-07-21 — this pass's own data included the sealed
-  2025-10-23→2026-07-13 window; no Final Verdict; full incident record `PROJECT_STATE_v2.md` §8.23,
-  quarantine notice in `edge_research/E025_round_numbers.md`)
-- **Version**: V0 (frozen; an informal, unfrozen V1 candidate framing is recorded in the research log)
+- **Status**: DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE (Stage 2, first pass 2026-07-20 was
+  TERMINAL-HOLDOUT-BREACHED — see `PROJECT_STATE_v2.md` §8.23 — and is preserved as a contaminated
+  audit-trail record; a holdout-excluded clean rerun completed 2026-07-21 partially CONFIRMS (short
+  ~1h horizon) and WEAKENS (longer ~4h horizon, approach-from-above subslice) the original findings;
+  no Final Verdict — below the ~5-6yr horizon either way; full detail
+  `edge_research/E025_round_numbers.md`)
+- **Version**: V0 (frozen; the research log's V1 candidate framing was revised 2026-07-21 to reflect
+  only the clean-rerun-confirmed portion of the original finding)
 
 ### E026 — ADR Exhaustion
 - **Category**: Mathematical
@@ -414,11 +423,14 @@ originally registered, unedited, per protocol §1.
 - **Instruments required**: XAUUSD
 - **Observable variables**: % of ADR already consumed, time-of-day, day of week, volatility regime
 - **Measured outcome**: Continuation-rate change conditioned on % of ADR already used
-- **Status**: DISCOVERY_IN_PROGRESS / HOLDOUT_CONTAMINATED / CLEAN_RERUN_REQUIRED (Stage 2, first pass
-  complete 2026-07-20; TERMINAL HOLDOUT BREACHED 2026-07-21 — this pass's own data included the sealed
-  2025-10-23→2026-07-13 window; no Final Verdict; full incident record `PROJECT_STATE_v2.md` §8.23,
-  quarantine notice in `edge_research/E026_adr_exhaustion.md`)
-- **Version**: V0 (frozen; an informal, unfrozen V1 candidate framing is recorded in the research log)
+- **Status**: DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE (Stage 2, first pass 2026-07-20 was
+  TERMINAL-HOLDOUT-BREACHED — see `PROJECT_STATE_v2.md` §8.23 — and is preserved as a contaminated
+  audit-trail record; a holdout-excluded clean rerun completed 2026-07-21 CONFIRMS the original finding
+  (upside effect even slightly stronger, downside null and session-confound caveat both replicate
+  unchanged); no Final Verdict — below the ~5-6yr horizon either way; full detail
+  `edge_research/E026_adr_exhaustion.md`)
+- **Version**: V0 (frozen; the research log's V1 candidate framing is unchanged/confirmed by the clean
+  rerun)
 
 ### E027 — Midnight Open Anchor
 - **Category**: Mathematical
@@ -443,11 +455,14 @@ originally registered, unedited, per protocol §1.
   outcome
 - **Measured outcome**: Continuation rate/magnitude from the OTE zone vs. shallower or deeper
   retracements
-- **Status**: DISCOVERY_IN_PROGRESS / HOLDOUT_CONTAMINATED / CLEAN_RERUN_REQUIRED (Stage 2, first pass
-  complete 2026-07-20; TERMINAL HOLDOUT BREACHED 2026-07-21 — this pass's own data included the sealed
-  2025-10-23→2026-07-13 window; no Final Verdict; full incident record `PROJECT_STATE_v2.md` §8.23,
-  quarantine notice in `edge_research/E028_fibonacci_ote.md`)
-- **Version**: V0 (frozen; an informal, unfrozen V1 candidate framing is recorded in the research log)
+- **Status**: DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE (Stage 2, first pass 2026-07-20 was
+  TERMINAL-HOLDOUT-BREACHED — see `PROJECT_STATE_v2.md` §8.23 — and is preserved as a contaminated
+  audit-trail record; a holdout-excluded clean rerun completed 2026-07-21 CONFIRMS the original finding
+  (shallow-retracement > OTE-zone continuation rate replicates closely, chi-square weaker but still
+  p=0.027); no Final Verdict — below the ~5-6yr horizon either way; full detail
+  `edge_research/E028_fibonacci_ote.md`)
+- **Version**: V0 (frozen; the research log's V1 candidate framing is unchanged/confirmed by the clean
+  rerun)
 
 ### E029 — Weekly Gap Fill
 - **Category**: Mathematical
@@ -459,11 +474,15 @@ originally registered, unedited, per protocol §1.
 - **Observable variables**: Gap size/direction, time-to-fill, week-of-month, whether filled same day or
   later in the week
 - **Measured outcome**: Fill rate and time-to-fill distribution
-- **Status**: DISCOVERY_IN_PROGRESS / HOLDOUT_CONTAMINATED / CLEAN_RERUN_REQUIRED (Stage 2, first pass
-  complete 2026-07-20; TERMINAL HOLDOUT BREACHED 2026-07-21 — this pass's own data included the sealed
-  2025-10-23→2026-07-13 window; no Final Verdict; full incident record `PROJECT_STATE_v2.md` §8.23,
-  quarantine notice in `edge_research/E029_weekly_gap_fill.md`)
-- **Version**: V0 (frozen; no refinement written yet, blocked on a control per the research log)
+- **Status**: DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE (Stage 2, first pass 2026-07-20 was
+  TERMINAL-HOLDOUT-BREACHED — see `PROJECT_STATE_v2.md` §8.23 — and is preserved as a contaminated
+  audit-trail record; a holdout-excluded clean rerun completed 2026-07-21 CONFIRMS the fill-rate-by-size
+  pattern (large gaps still ~78% vs 100% for small) but the large-tercile time-to-fill figure changed
+  substantially (11.0h contaminated vs 1.875h clean, small-n-sensitive, flagged not resolved); no Final
+  Verdict — below the ~5-6yr horizon either way; full detail
+  `edge_research/E029_weekly_gap_fill.md`)
+- **Version**: V0 (frozen; no refinement written yet, still blocked on the matched-control question per
+  the research log)
 
 ### E030 — Tick Speed Acceleration
 - **Category**: Mathematical
@@ -500,11 +519,13 @@ originally registered, unedited, per protocol §1.
 - **Instruments required**: XAUUSD
 - **Observable variables**: Range-defining logic used, distance from equilibrium, day of week
 - **Measured outcome**: Rate/magnitude of movement toward equilibrium vs. away from it
-- **Status**: DISCOVERY_IN_PROGRESS / HOLDOUT_CONTAMINATED / CLEAN_RERUN_REQUIRED (Stage 2, first pass
-  complete 2026-07-20; TERMINAL HOLDOUT BREACHED 2026-07-21 — this pass's own data included the sealed
-  2025-10-23→2026-07-13 window; no Final Verdict; full incident record `PROJECT_STATE_v2.md` §8.23,
-  quarantine notice in `edge_research/E032_premium_discount_flip.md`)
-- **Version**: V0 (frozen; no refinement written yet, blocked on a control per the research log)
+- **Status**: DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE (Stage 2, first pass 2026-07-20 was
+  TERMINAL-HOLDOUT-BREACHED — see `PROJECT_STATE_v2.md` §8.23 — and is preserved as a contaminated
+  audit-trail record; a holdout-excluded clean rerun completed 2026-07-21 CONFIRMS the original finding
+  almost exactly, the most robust of the five edges rerun this batch; no Final Verdict — below the
+  ~5-6yr horizon either way; full detail `edge_research/E032_premium_discount_flip.md`)
+- **Version**: V0 (frozen; no refinement written yet, still blocked on the overextension-confound
+  control per the research log)
 
 ---
 
