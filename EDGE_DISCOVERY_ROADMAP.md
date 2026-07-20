@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-21): E017 DONE — awaiting CEO approval to resume at E009
+## ⚠ CURRENT STATUS (updated 2026-07-21): E009 DONE — awaiting CEO approval to resume at E010
 
 **TERMINAL HOLDOUT BREACHED, then REMEDIATED** (`PROJECT_STATE_v2.md` §8.23/§8.24): the five edges
 studied in this program's first research session (E025, E026, E028, E029, E032) originally loaded data
@@ -13,19 +13,29 @@ implemented centralized holdout-exclusion enforcement (`edge_research/_common.py
 passing) and cleanly reran all five — 4 of 5 CONFIRM their original finding, 1 (E025) partially weakens.
 Registry status: `DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE` for those five.
 
-**E017 — Equal Highs / Lows Target — Discovery pass complete, 2026-07-21, CEO-authorized, run entirely
-under the post-remediation centralized-loader enforcement from the start** (no contamination possible).
-**Result: V0 NOT supported** — equal-highs/lows show no reach-rate or reversal-magnitude advantage over
-ordinary isolated swings, robust across every tolerance (0.10–0.40×ATR) and horizon (1/5/20 trading
-days) tested; a random-matched-distance control reaches its target *more* reliably than real swing
-points, the opposite of a "magnet" story. No Final Verdict issued (below the ~5-6yr horizon). Full
-detail: `edge_research/E017_equal_highs_lows.md`.
+**E017 — Equal Highs / Lows Target — Discovery pass complete, 2026-07-21** (run entirely under the
+post-remediation centralized-loader enforcement, no contamination possible). **Result: V0 NOT
+supported** — equal-highs/lows show no reach-rate or reversal-magnitude advantage over ordinary
+isolated swings, robust across every tolerance (0.10–0.40×ATR) and horizon (1/5/20 trading days) tested;
+a random-matched-distance control reaches its target *more* reliably than real swing points, the
+opposite of a "magnet" story. No Final Verdict issued. Full detail:
+`edge_research/E017_equal_highs_lows.md`.
 
-**The next Flow A action (E009) is NOT yet authorized.** Per the CEO's own E017 authorization ("Do not
-begin E009 or any later edge during this authorization... Stop after E017 and await CEO verdict"),
-resuming the Tier 1 sequence requires its own separate CEO approval. Once granted, the sequence resumes
-at **E009 — Change of Character Retest**, then in order **E010, E012, E015, E013, E016, E011, E014**,
-then the session-timing edges **E006, E008, E005, E027**.
+**E009 — Change of Character Retest — Discovery pass complete, 2026-07-21** (an earlier reference to
+"E009 — Previous Day High/Low" was a factual error, verified against the registry and withdrawn by
+explicit CEO decision before any research began; this pass studies the registry's own real, frozen E009
+only). **Result: V0 NOT supported** — CHoCH shows no retest-rate, continuation-rate, or failure-rate
+advantage over an ordinary BOS break (its natural, on-topic, same-mechanism control), at any tested
+fractal-k (3/5/8), horizon (1/5/20 trading days), session, or volatility regime; the retest metric
+itself was found to be near-saturated (90%+) even for a random, no-structure, distance-matched control,
+an important disclosed methodological limit on this pass's own power. No Final Verdict issued. Full
+detail: `edge_research/E009_choch_retest.md`.
+
+**The next Flow A action (E010) is NOT yet authorized.** Per the CEO's own E009 authorization ("Stop
+after completing the E009 Discovery pass and await CEO verdict"), resuming the Tier 1 sequence requires
+its own separate CEO approval. Once granted, the sequence resumes at **E010 — Breaker Block Snatch**,
+then in order **E012, E015, E013, E016, E011, E014**, then the session-timing edges **E006, E008, E005,
+E027**.
 
 ## 1. Data-availability gap analysis (verified against what is actually on disk today)
 

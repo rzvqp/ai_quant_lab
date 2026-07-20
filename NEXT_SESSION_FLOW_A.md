@@ -9,7 +9,7 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: E017 DISCOVERY PASS COMPLETE (2026-07-21) — awaiting CEO approval to resume at E009.**
+**Status: E009 DISCOVERY PASS COMPLETE (2026-07-21) — awaiting CEO approval to resume at E010.**
 Following the TERMINAL HOLDOUT BREACH (identified 2026-07-21: all 5 edges studied first — E025, E026,
 E028, E029, E032 — had loaded and analyzed data from the Research Lab's own sealed terminal holdout,
 2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC; **the old terminal holdout is CONSUMED / INVALIDATED**,
@@ -19,12 +19,13 @@ with a 17-test suite (`edge_research/test_loader.py`, all passing); (2) a clean 
 contaminated edges (`e0XX_..._clean.py`); (3) documentation of both the original (contaminated,
 preserved verbatim) and clean results in each edge's own permanent log. **Registry status for these 5:
 `DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE`.** The CEO then separately authorized **E017 — Equal
-Highs / Lows Target**, run entirely under the post-remediation centralized-loader enforcement from the
-start (no contamination possible). **Result: V0 NOT supported** — no reach-rate or reversal-magnitude
-advantage for equal-highs/lows over ordinary isolated swings, robust across every tolerance/horizon
-tested; full detail below and in `edge_research/E017_equal_highs_lows.md`. **New-edge research (E009
-onward) does not resume without its own separate CEO approval** — completing E017 is not itself that
-approval; see "Next step" below. The remaining 34 edges are unaffected and still `UNSTUDIED`/`V0`.
+Highs / Lows Target** (V0 NOT supported — see below) and, after resolving a factual mismatch (an
+earlier reference to "E009 — Previous Day High/Low" did not exist in the registry and was withdrawn),
+**E009 — Change of Character Retest** (also V0 NOT supported — see below), both run entirely under the
+post-remediation centralized-loader enforcement from the start (no contamination possible). **New-edge
+research (E010 onward) does not resume without its own separate CEO approval** — completing E009 is not
+itself that approval; see "Next step" below. The remaining 33 edges are unaffected and still
+`UNSTUDIED`/`V0`.
 
 **Governing documents**: `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md`
 (the six-stage pipeline, the permanent-record rules, and — new as of this incident — §8's mandatory
@@ -37,7 +38,8 @@ driven; its own top section now records the same pause and remediation-first nex
 eed1634  Flow A: first Alpha Discovery session — Discovery pass on E025/E026/E029/E032/E028
 411a04b  docs: record holdout breach and quarantine affected edge research
 360a410  Flow A: holdout remediation — centralized cutoff enforcement + clean rerun of 5 edges
-<pending this session's own commit — E017 Discovery pass — see the E017 report for the exact hash>
+be0e8d3  Flow A: E017 Discovery pass — Equal Highs/Lows Target (V0 not supported)
+<pending this session's own commit — E009 Discovery pass — see the E009 report for the exact hash>
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
@@ -53,15 +55,15 @@ worktree, per CEO decision 2026-07-21).
 Discount Flip) → E028 (Fibonacci OTE)**.
 
 **2026-07-21 session, run entirely under the post-remediation centralized-loader enforcement (no
-contamination possible)**: **E017 (Equal Highs / Lows Target)**.
+contamination possible)**: **E017 (Equal Highs / Lows Target) → E009 (Change of Character Retest)**.
 
 Full per-edge evidence, method disclosure, and answers to all 9 mandatory Discovery questions live in
 `edge_research/E0XX_<slug>.md` (one file per edge, permanent, append-only), alongside each edge's own
 analysis script and JSON/CSV output (also in `edge_research/`, committed). Every studied edge's registry
 `Status` field was updated from `UNSTUDIED` to `DISCOVERY_IN_PROGRESS`; every `V0` hypothesis wording is
 unedited (per protocol §1) — any informal, unfrozen "V1 candidate" framing suggested by a session's own
-evidence lives only in the per-edge logs, never in the registry itself (E017's own log offers no V1
-candidate at all — see its own log for why).
+evidence lives only in the per-edge logs, never in the registry itself (neither E017's nor E009's own
+log offers a V1 candidate — see each log for why).
 
 **No Final Verdict was issued on any edge.**
 
@@ -107,6 +109,30 @@ E028 still hasn't tested a coarser fractal `k`. None of these are resolved by ho
 
 **No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
 
+## Result — E009 Change of Character Retest (2026-07-21, clean-from-the-start)
+
+**V0 NOT supported.** An earlier reference in this session to "E009 — Previous Day High/Low" was
+verified against the registry, found not to exist anywhere in it, and withdrawn by explicit CEO decision
+before any research began — this pass studies the registry's own real, frozen E009.
+
+- **CHoCH vs. its natural on-topic control, BOS** (both are real structural breaks; the only difference
+  is whether the break agrees with (BOS) or contradicts (CHoCH) the preceding trend): no significant
+  retest-rate, continuation-rate, or failure-rate difference at the primary config (k=5, 5-day horizon)
+  — low-break p=0.516/0.220, high-break p=0.648/0.586 — nor at any of 3 fractal-k values (3/5/8) or 3
+  horizons (1/5/20 trading days), nor in any session or volatility slice.
+- **Important disclosed methodological finding**: the retest metric itself is close to saturated
+  (90-99%) for CHoCH, BOS, **and** a random, no-structure, distance-matched control alike — at this
+  swing scale, "does price touch a nearby recently-broken level again" is close to a foregone conclusion
+  regardless of structural meaning, limiting how much this dimension alone could have discriminated a
+  true effect even if one existed. The continuation and compound-outcome dimensions (86-94%, less
+  saturated) told the same null story independently.
+- **No V1 candidate offered** — CHoCH's defining property was tested directly against BOS and found to
+  add nothing; see `edge_research/E009_choch_retest.md` for the full analysis, including a flagged
+  concern (relevant to E010/E012/E015/E013/E016/E011/E014) about retest-metric saturation at this swing
+  scale for any future "retest"-flavored edge.
+
+**No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
+
 ## Limitations (must be respected on any revisit)
 
 - **No Final Verdict is possible yet on any edge studied so far.** The M15/H1/H4/D1 data on disk
@@ -124,15 +150,15 @@ E028 still hasn't tested a coarser fractal `k`. None of these are resolved by ho
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: awaiting CEO approval to resume at E009 (E017 itself is DONE)
+## Next step: awaiting CEO approval to resume at E010 (E009 itself is DONE)
 
-**The next Flow A action is NOT E009 yet — it is a CEO decision.** E017's Discovery pass is complete
-(see "Result" above), run entirely under the centralized loader enforcement. Per the CEO's own E017
-authorization ("Do not begin E009 or any later edge during this authorization... Stop after E017 and
-await CEO verdict"), this session stops here and does not begin E009 or any new edge on its own — that
-requires its own separate, explicit approval. Once granted, the Tier 1 sequence resumes at **E009 —
-Change of Character Retest**, then in order **E010, E012, E015, E013, E016, E011, E014**, then the
-session-timing edges **E006, E008, E005, E027** — this sequencing itself is unchanged, only deferred.
+**The next Flow A action is NOT E010 yet — it is a CEO decision.** E009's Discovery pass is complete
+(see "Result" above), run entirely under the centralized loader enforcement. Per the CEO's own E009
+authorization ("Stop after completing the E009 Discovery pass and await CEO verdict"), this session
+stops here and does not begin E010 or any new edge on its own — that requires its own separate, explicit
+approval. Once granted, the Tier 1 sequence resumes at **E010 — Breaker Block Snatch**, then in order
+**E012, E015, E013, E016, E011, E014**, then the session-timing edges **E006, E008, E005, E027** — this
+sequencing itself is unchanged, only deferred.
 
 ## Resume instructions
 
@@ -150,8 +176,8 @@ session-timing edges **E006, E008, E005, E027** — this sequencing itself is un
      hypothesis, category, required data/timeframes/instruments/observable variables/measured outcome.
    - **`PROJECT_STATE_v2.md` §1.1/§8.19/§8.20** — how Flow A relates to the rest of the project
      (context only, not required to continue research).
-3. **Do not resume new-edge Discovery (E009 or any other edge) without its own separate CEO approval**
-   — completing E017 is not that approval; see "Next step" above. Verify `git status --porcelain` is
+3. **Do not resume new-edge Discovery (E010 or any other edge) without its own separate CEO approval**
+   — completing E009 is not that approval; see "Next step" above. Verify `git status --porcelain` is
    clean, and confirm `EDGE_RESEARCH_PROTOCOL.md` §8's enforcement is actually present in
    `edge_research/_common.py::load()` (it should require `data_split_id`/`cutoff` and raise if either
    is missing) before relying on any run's own `holdout_excluded=true` claim.

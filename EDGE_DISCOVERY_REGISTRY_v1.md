@@ -1,26 +1,27 @@
 # Edge Discovery Registry — v1
 
 **Program**: 40-Edge Alpha Discovery Program. **Date opened**: 2026-07-20. **Status of this document**:
-infrastructure, PLUS six Discovery-stage passes: the first 5 (E025, E026, E029, E032, E028 — 2026-07-20)
-and E017 (2026-07-21, the first edge run under the post-remediation centralized-loader regime). **The
-first 5 passes' original run was found 2026-07-21 to have breached the Research Lab's own sealed
-terminal holdout (`PROJECT_STATE_v2.md` §8.23) — the old holdout is CONSUMED/INVALIDATED project-wide. A
-holdout-excluded CLEAN RERUN of all 5 completed the same day** (`EDGE_RESEARCH_PROTOCOL.md` §8's
-centralized enforcement, `edge_research/_common.py::load()`); E017 was run directly under that same
-enforcement from the start. See `edge_research/` (each of the first 5 edges' own log carries both the
-original contaminated run, preserved verbatim, and the clean rerun; E017's log has only its own
-clean-from-the-start pass) and `NEXT_SESSION_FLOW_A.md` for the full session summary. No edge below has
-been implemented, and no Final Verdict has been issued on any edge, in any run (the available data —
-~3.6yr contaminated / ~2.85yr clean — is short of the protocol's own ~5-6 year requirement for any Final
-Verdict — see `EDGE_RESEARCH_PROTOCOL.md` §2). Every entry's own V0 hypothesis below remains exactly as
-originally registered, unedited, per protocol §1.
+infrastructure, PLUS seven Discovery-stage passes: the first 5 (E025, E026, E029, E032, E028 —
+2026-07-20), then E017 and E009 (2026-07-21, both run under the post-remediation centralized-loader
+regime). **The first 5 passes' original run was found 2026-07-21 to have breached the Research Lab's
+own sealed terminal holdout (`PROJECT_STATE_v2.md` §8.23) — the old holdout is CONSUMED/INVALIDATED
+project-wide. A holdout-excluded CLEAN RERUN of all 5 completed the same day** (`EDGE_RESEARCH_PROTOCOL.md`
+§8's centralized enforcement, `edge_research/_common.py::load()`); E017 and E009 were each run directly
+under that same enforcement from the start. See `edge_research/` (each of the first 5 edges' own log
+carries both the original contaminated run, preserved verbatim, and the clean rerun; E017's and E009's
+logs have only their own clean-from-the-start pass) and `NEXT_SESSION_FLOW_A.md` for the full session
+summary. No edge below has been implemented, and no Final Verdict has been issued on any edge, in any
+run (the available data — ~3.6yr contaminated / ~2.85yr clean — is short of the protocol's own ~5-6 year
+requirement for any Final Verdict — see `EDGE_RESEARCH_PROTOCOL.md` §2). Every entry's own V0 hypothesis
+below remains exactly as originally registered, unedited, per protocol §1.
 
 ## How to read this registry
 
-- **Status = UNSTUDIED for 34 of 40 entries; DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE for 5 (E025,
+- **Status = UNSTUDIED for 33 of 40 entries; DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE for 5 (E025,
   E026, E028, E029, E032 — studied 2026-07-20, holdout-breach-remediated 2026-07-21); DISCOVERY_IN_PROGRESS
-  for 1 more (E017 — studied clean-from-the-start, 2026-07-21)**. Status changes only by passing through
-  the stages defined in `EDGE_RESEARCH_PROTOCOL.md` (V0 → Discovery → Frozen Candidate → Validation →
+  for 2 more (E017, E009 — both studied clean-from-the-start, 2026-07-21; both V0 NOT SUPPORTED, no V1
+  candidate offered for either)**. Status changes only by passing through the stages defined in
+  `EDGE_RESEARCH_PROTOCOL.md` (V0 → Discovery → Frozen Candidate → Validation →
   Walk Forward → Final Verdict); no edge has advanced past Stage 2 (Discovery) yet.
 - **Version = V0** for all 40 entries — the original, unmodified hypothesis as registered here. Per the
   protocol, V0 is never edited retroactively; any refinement discovered during research becomes V1, V2,
@@ -179,8 +180,12 @@ originally registered, unedited, per protocol §1.
 - **Observable variables**: Swing-structure classification (candidate: `structure.py`), retest depth,
   time-to-retest, whether continuation follows, volatility regime
 - **Measured outcome**: Retest rate, and continuation-vs-failure rate after the retest
-- **Status**: UNSTUDIED
-- **Version**: V0
+- **Status**: DISCOVERY_IN_PROGRESS (Stage 2, first pass complete 2026-07-21, run under the
+  post-remediation centralized-loader regime — `holdout_excluded=true`, `data_split_id =
+  pre_holdout_2025-10-23T09-15-00Z_v1`; no Final Verdict — below the protocol's ~5-6yr horizon;
+  V0 NOT SUPPORTED — no CHoCH-vs-BOS advantage on retest/continuation/failure at any k/horizon/session/
+  volatility slice tested; full detail `edge_research/E009_choch_retest.md`)
+- **Version**: V0 (frozen; no V1 candidate offered — see the research log's own explanation)
 
 ### E010 — Breaker Block Snatch
 - **Category**: Price Action / Structure
