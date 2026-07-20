@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-22): OVERNIGHT FULL-PROFILE SESSION IN PROGRESS — E010 done, E012 next
+## ⚠ CURRENT STATUS (updated 2026-07-22): OVERNIGHT FULL-PROFILE SESSION IN PROGRESS — E010, E012 done, E015 next
 
 **TERMINAL HOLDOUT BREACHED, then REMEDIATED** (`PROJECT_STATE_v2.md` §8.23/§8.24): the five edges
 studied in this program's first research session (E025, E026, E028, E029, E032) originally loaded data
@@ -49,11 +49,20 @@ threshold (1.2×/1.5×/2.0×ATR), session, volatility regime, trend context, day
 E010's own V1 (none offered). No Final Verdict issued. Full detail:
 `edge_research/E010_breaker_block_snatch.md`.
 
+**E012 — Inverted Fair Value Gap — full profile complete, 2026-07-22** (M15 + H1; M1/M5 unavailable,
+same as E010). **Result: V0 NOT supported** — the same qualitative pattern as E010: after an FVG
+inverts, continuation in the new direction is a coin flip (~50-53%) on both timeframes, every gap-size
+filter, session, volatility regime, trend context, day of week, and year. **The natural un-inverted-FVG
+control again shows a large, real, directional continuation effect in the ORIGINAL role** (~86-87%,
+mirroring E010's own unflipped-OB finding) — two independent structural concepts now both suggest that
+violating/flipping a zone destroys its predictive power rather than reversing it. No V1 candidate
+offered. No Final Verdict issued. Full detail: `edge_research/E012_inverted_fvg.md`.
+
 **Per the CEO's own standing "overnight full profile" authorization, the session auto-continues to the
 next eligible edge without stopping for approval between edges** (stopping only for a genuine
 governance issue, an unoperationalizable V0, a missing-data blocker, a loader/test failure, a
-Flow-B-touching requirement, or an audit-trail risk — none of which occurred for E010). **Next: E012 —
-Inverted Fair Value Gap**, then in order **E015, E013, E016, E011, E014**, then the session-timing edges
+Flow-B-touching requirement, or an audit-trail risk — none occurred for E010 or E012). **Next: E015 —
+Order Block Re-Mitigation**, then in order **E013, E016, E011, E014**, then the session-timing edges
 **E006, E008, E005, E027**.
 
 ## 1. Data-availability gap analysis (verified against what is actually on disk today)

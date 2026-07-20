@@ -9,8 +9,8 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: OVERNIGHT FULL-PROFILE SESSION IN PROGRESS (2026-07-22) — E010 done, auto-continuing to
-E012 per standing CEO authorization (no per-edge approval required unless a governance issue arises).**
+**Status: OVERNIGHT FULL-PROFILE SESSION IN PROGRESS (2026-07-22) — E010, E012 done, auto-continuing to
+E015 per standing CEO authorization (no per-edge approval required unless a governance issue arises).**
 Following the TERMINAL HOLDOUT BREACH (identified 2026-07-21: all 5 edges studied first — E025, E026,
 E028, E029, E032 — had loaded and analyzed data from the Research Lab's own sealed terminal holdout,
 2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC; **the old terminal holdout is CONSUMED / INVALIDATED**,
@@ -27,10 +27,12 @@ post-remediation centralized-loader enforcement from the start (no contamination
 authorized an **"overnight full edge profile" directive (2026-07-22)**: each edge now also gets a
 timeframe profile, a 7-horizon/5-ATR-threshold movement profile, a context profile, controls/
 falsification, a disciplined V1 search, and robustness checks — see `edge_research/_profile.py`, the
-new shared library this required. **E010 — Breaker Block Snatch** was completed under this directive
-(V0 NOT supported — see below); per the same authorization, this session auto-continues to the next
-eligible edge without stopping for approval between edges unless a governance issue arises. The
-remaining edges are unaffected and still `UNSTUDIED`/`V0`.
+new shared library this required. **E010 — Breaker Block Snatch** and **E012 — Inverted Fair Value Gap**
+were completed under this directive (both V0 NOT supported — see below; both independently surfaced the
+same "unbroken zone predicts continuation, broken/flipped one predicts nothing" pattern via their own
+natural controls); per the same authorization, this session auto-continues to the next eligible edge
+without stopping for approval between edges unless a governance issue arises. The remaining edges are
+unaffected and still `UNSTUDIED`/`V0`.
 
 **Governing documents**: `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md`
 (the six-stage pipeline, the permanent-record rules, and — new as of this incident — §8's mandatory
@@ -45,7 +47,8 @@ eed1634  Flow A: first Alpha Discovery session — Discovery pass on E025/E026/E
 360a410  Flow A: holdout remediation — centralized cutoff enforcement + clean rerun of 5 edges
 be0e8d3  Flow A: E017 Discovery pass — Equal Highs/Lows Target (V0 not supported)
 58338d7  Flow A: E009 Discovery pass — Change of Character Retest (V0 not supported)
-<pending this session's own commit — E010 full-profile pass — see the E010 report for the exact hash>
+8b1bcc7  Flow A: E010 full-profile pass — Breaker Block Snatch (V0 not supported)
+<pending this session's own commit — E012 full-profile pass — see the E012 report for the exact hash>
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
@@ -62,7 +65,8 @@ Discount Flip) → E028 (Fibonacci OTE)**.
 
 **2026-07-21/22 session, run entirely under the post-remediation centralized-loader enforcement (no
 contamination possible)**: **E017 (Equal Highs / Lows Target) → E009 (Change of Character Retest) →
-E010 (Breaker Block Snatch, first edge under the "overnight full profile" directive)**.
+E010 (Breaker Block Snatch) → E012 (Inverted Fair Value Gap)** — the latter two under the "overnight
+full profile" directive.
 
 Full per-edge evidence, method disclosure, and answers to all 9 mandatory Discovery questions live in
 `edge_research/E0XX_<slug>.md` (one file per edge, permanent, append-only), alongside each edge's own
@@ -161,6 +165,22 @@ events) and H1 (1,550) — M1/M5 confirmed unavailable anywhere in this project'
 
 **No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
 
+## Result — E012 Inverted Fair Value Gap (2026-07-22, full profile, clean-from-the-start)
+
+**V0 NOT supported — the same pattern as E010, found independently.** Tested on M15 (12,433 inverted
+FVGs) and H1 (2,898) — M1/M5 unavailable, same as E010.
+- **After an FVG inverts, continuation in the NEW direction is a coin flip**: 50.0% (M15) / 52.9% (H1),
+  MFE≈MAE at every horizon/threshold. Stable across 3 gap-size filters, every session, volatility
+  regime, trend context, day of week, and year.
+- **Its own natural control — un-inverted (never-violated) FVGs — shows a large, real, directional
+  continuation effect instead**: 86.8% (M15) / 86.2% (H1) in their ORIGINAL role, +0.48 ATR by 1 bar
+  (p=4.4e-80, M15). **This is the SECOND independent structural concept this session (after E010's
+  unflipped-OB) to show the same qualitative pattern**: an unbroken zone predicts continuation; a
+  broken/flipped one predicts nothing — the opposite of what both V0s claim.
+- **No V1 candidate offered** — same reasoning as E010.
+
+**No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
+
 ## Limitations (must be respected on any revisit)
 
 - **No Final Verdict is possible yet on any edge studied so far.** The M15/H1/H4/D1 data on disk
@@ -178,14 +198,14 @@ events) and H1 (1,550) — M1/M5 confirmed unavailable anywhere in this project'
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: auto-continuing to E012 (standing authorization, no per-edge approval needed)
+## Next step: auto-continuing to E015 (standing authorization, no per-edge approval needed)
 
 Per the CEO's own "overnight full edge profile" authorization (2026-07-22), this session does **not**
 stop between edges to ask approval — it continues automatically to the next Tier 1 edge after each
 commit, one edge at a time, stopping only for a genuine governance issue (a contradictory registry, a
 V0 that can't be operationalized without a CEO decision, a required protocol change, missing data, a
-loader/test failure, anything that would require touching Flow B, or an audit-trail risk). **Next: E012
-— Inverted Fair Value Gap**, then in order **E015, E013, E016, E011, E014**, then the session-timing
+loader/test failure, anything that would require touching Flow B, or an audit-trail risk). **Next: E015
+— Order Block Re-Mitigation**, then in order **E013, E016, E011, E014**, then the session-timing
 edges **E006, E008, E005, E027**.
 
 ## Resume instructions

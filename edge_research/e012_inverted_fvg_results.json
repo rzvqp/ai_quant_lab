@@ -1,0 +1,3938 @@
+{
+  "edge": "E012",
+  "edge_id": "E012",
+  "hypothesis_version": "V0",
+  "run_id": "discovery_pass_1_full_profile_2026-07-22",
+  "timeframes_tested": [
+    "M15",
+    "H1"
+  ],
+  "timeframes_unavailable": {
+    "M1": "not present anywhere in this project's data (EDGE_DISCOVERY_ROADMAP.md SS1)",
+    "M5": "not present anywhere in this project's data (EDGE_DISCOVERY_ROADMAP.md SS1)"
+  },
+  "params": {
+    "MIN_GAP_MULTS": [
+      0.0,
+      0.1,
+      0.25
+    ],
+    "PRIMARY_MIN_GAP": 0.0,
+    "REVISIT_HORIZON": 480,
+    "RNG_SEED": 42,
+    "movement_horizons": [
+      1,
+      3,
+      5,
+      10,
+      20,
+      50
+    ],
+    "atr_thresholds": [
+      0.25,
+      0.5,
+      1.0,
+      1.5,
+      2.0
+    ]
+  },
+  "by_timeframe": {
+    "M15": {
+      "timeframe": "M15",
+      "split_metadata": {
+        "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+        "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+        "holdout_excluded": true,
+        "min_date_used": "2022-12-16 10:45:00+00:00",
+        "max_date_used": "2025-10-23 09:00:00+00:00",
+        "n_bars_used": 67321,
+        "n_bars_before_cutoff": 84152,
+        "n_bars_excluded_by_cutoff": 16831,
+        "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+        "timeframe": "M15"
+      },
+      "n_bars": 67321,
+      "date_range": [
+        "2022-12-16 10:45:00+00:00",
+        "2025-10-23 09:00:00+00:00"
+      ],
+      "n_all_fvgs": 14000,
+      "n_inverted": 12804,
+      "n_uninverted": 1196,
+      "n_random": 12804,
+      "primary": {
+        "inverted": {
+          "n": 12804,
+          "revisit_rate": 0.9710246797875663,
+          "n_revisited_with_outcome": 12433,
+          "continuation_rate": 0.5003619399983914,
+          "reversal_rate": 0.4968229711252312,
+          "stall_rate": 0.002815088876377383,
+          "movement_summary": {
+            "n": 12433,
+            "by_horizon": {
+              "1": {
+                "n": 12433,
+                "mean_ret": -0.012846502843850955,
+                "mean_mfe": 0.6113587082353643,
+                "mean_mae": 0.6306160703887314
+              },
+              "3": {
+                "n": 12433,
+                "mean_ret": -0.04106415028095053,
+                "mean_mfe": 1.0670219108614318,
+                "mean_mae": 1.1144943473381754
+              },
+              "5": {
+                "n": 12433,
+                "mean_ret": -0.05016452439123735,
+                "mean_mfe": 1.3883768569016706,
+                "mean_mae": 1.4491796192918125
+              },
+              "10": {
+                "n": 12433,
+                "mean_ret": -0.055267605332157056,
+                "mean_mfe": 1.9746498145327143,
+                "mean_mae": 2.048246816559795
+              },
+              "20": {
+                "n": 12433,
+                "mean_ret": -0.011860297825093074,
+                "mean_mfe": 2.8194347571116696,
+                "mean_mae": 2.865922187209542
+              },
+              "50": {
+                "n": 12433,
+                "mean_ret": 0.007906195844986372,
+                "mean_mfe": 4.778207252400836,
+                "mean_mae": 4.780913634464185
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9498914180004826,
+                "adverse_rate": 0.9567280624145419,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9056543070859808,
+                "adverse_rate": 0.9105606048419529,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8142845652698464,
+                "adverse_rate": 0.8197538808010939,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7301536234215394,
+                "adverse_rate": 0.7388401833829326,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6561570015281911,
+                "adverse_rate": 0.6621089037239605,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5003619399983914,
+              "reversal": 0.4968229711252312,
+              "stall": 0.002815088876377383
+            }
+          }
+        },
+        "uninverted_control": {
+          "n": 1196,
+          "revisit_rate": 0.5886287625418061,
+          "n_revisited_with_outcome": 704,
+          "continuation_rate": 0.8678977272727273,
+          "reversal_rate": 0.125,
+          "stall_rate": 0.007102272727272727,
+          "movement_summary": {
+            "n": 704,
+            "by_horizon": {
+              "1": {
+                "n": 704,
+                "mean_ret": 0.4765318074630082,
+                "mean_mfe": 0.887718503241804,
+                "mean_mae": 0.39433272621672494
+              },
+              "3": {
+                "n": 704,
+                "mean_ret": 1.0894716448774433,
+                "mean_mfe": 1.7711266839562294,
+                "mean_mae": 0.5421154623491297
+              },
+              "5": {
+                "n": 704,
+                "mean_ret": 1.5841490592171354,
+                "mean_mfe": 2.4305130322049604,
+                "mean_mae": 0.6063911970463521
+              },
+              "10": {
+                "n": 704,
+                "mean_ret": 2.576010447134298,
+                "mean_mfe": 3.66961080285798,
+                "mean_mae": 0.6528205140346359
+              },
+              "20": {
+                "n": 704,
+                "mean_ret": 3.7909914249634995,
+                "mean_mfe": 5.2612774343885995,
+                "mean_mae": 0.720457579228082
+              },
+              "50": {
+                "n": 704,
+                "mean_ret": 6.758858234152044,
+                "mean_mfe": 9.044032477307764,
+                "mean_mae": 0.8102056911995341
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 1.0,
+                "adverse_rate": 0.7585227272727273,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9985795454545454,
+                "adverse_rate": 0.546875,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.9886363636363636,
+                "adverse_rate": 0.2727272727272727,
+                "median_favorable_ttf": 1.0
+              },
+              "1.5": {
+                "favorable_rate": 0.9715909090909091,
+                "adverse_rate": 0.13920454545454544,
+                "median_favorable_ttf": 3.0
+              },
+              "2.0": {
+                "favorable_rate": 0.9460227272727273,
+                "adverse_rate": 0.08522727272727272,
+                "median_favorable_ttf": 5.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.8678977272727273,
+              "reversal": 0.125,
+              "stall": 0.007102272727272727
+            }
+          }
+        },
+        "random_matched_revisit_rate": 0.9689940643548891,
+        "p_revisit_vs_uninverted": 0.0,
+        "p_revisit_vs_random": 0.35969348920773114,
+        "p_reaction_vs_uninverted": 4.384158142567815e-80
+      },
+      "slices": {
+        "session_asia": {
+          "n": 4560,
+          "revisit_rate": 0.9769736842105263,
+          "n_revisited_with_outcome": 4455,
+          "continuation_rate": 0.5061728395061729,
+          "reversal_rate": 0.49337822671156006,
+          "stall_rate": 0.0004489337822671156,
+          "movement_summary": {
+            "n": 4455,
+            "by_horizon": {
+              "1": {
+                "n": 4455,
+                "mean_ret": -0.0196451028803449,
+                "mean_mfe": 0.6765316566011971,
+                "mean_mae": 0.6995170327998763
+              },
+              "3": {
+                "n": 4455,
+                "mean_ret": -0.05962447511335757,
+                "mean_mfe": 1.1694351661668165,
+                "mean_mae": 1.2361916946745501
+              },
+              "5": {
+                "n": 4455,
+                "mean_ret": -0.07567846399654568,
+                "mean_mfe": 1.5115691383171366,
+                "mean_mae": 1.5979433396317495
+              },
+              "10": {
+                "n": 4455,
+                "mean_ret": -0.057263038346859585,
+                "mean_mfe": 2.118237357056688,
+                "mean_mae": 2.1887349615600185
+              },
+              "20": {
+                "n": 4455,
+                "mean_ret": -0.04437132631038876,
+                "mean_mfe": 3.088591436314149,
+                "mean_mae": 3.134106918727956
+              },
+              "50": {
+                "n": 4455,
+                "mean_ret": 0.024178614503328703,
+                "mean_mfe": 6.338171840196684,
+                "mean_mae": 6.2815706211758195
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9667789001122334,
+                "adverse_rate": 0.9726150392817059,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9364758698092032,
+                "adverse_rate": 0.9367003367003367,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8725028058361392,
+                "adverse_rate": 0.8713804713804714,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.8175084175084175,
+                "adverse_rate": 0.8150392817059484,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7674523007856341,
+                "adverse_rate": 0.7593714927048261,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5061728395061729,
+              "reversal": 0.49337822671156006,
+              "stall": 0.0004489337822671156
+            }
+          }
+        },
+        "session_london": {
+          "n": 3072,
+          "revisit_rate": 0.9710286458333334,
+          "n_revisited_with_outcome": 2983,
+          "continuation_rate": 0.49815621857190745,
+          "reversal_rate": 0.5015085484411667,
+          "stall_rate": 0.00033523298692591353,
+          "movement_summary": {
+            "n": 2983,
+            "by_horizon": {
+              "1": {
+                "n": 2983,
+                "mean_ret": -0.02440123646437421,
+                "mean_mfe": 0.6587236530224613,
+                "mean_mae": 0.6879924973606822
+              },
+              "3": {
+                "n": 2983,
+                "mean_ret": -0.04379168431403833,
+                "mean_mfe": 1.202360445255825,
+                "mean_mae": 1.2522849793204156
+              },
+              "5": {
+                "n": 2983,
+                "mean_ret": -0.058917215210446065,
+                "mean_mfe": 1.594228424513697,
+                "mean_mae": 1.6661397673535663
+              },
+              "10": {
+                "n": 2983,
+                "mean_ret": -0.0673411159416084,
+                "mean_mfe": 2.388766004996065,
+                "mean_mae": 2.52125382176363
+              },
+              "20": {
+                "n": 2983,
+                "mean_ret": 0.0007206187179144359,
+                "mean_mfe": 3.5289127973737564,
+                "mean_mae": 3.641411854469151
+              },
+              "50": {
+                "n": 2983,
+                "mean_ret": -0.006921493696462861,
+                "mean_mfe": 4.717299422212093,
+                "mean_mae": 4.8394437813306395
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9520616828695944,
+                "adverse_rate": 0.9591015755950385,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9044585987261147,
+                "adverse_rate": 0.9228964130070398,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8152866242038217,
+                "adverse_rate": 0.8384177003017097,
+                "median_favorable_ttf": 2.5
+              },
+              "1.5": {
+                "favorable_rate": 0.7412001340931947,
+                "adverse_rate": 0.7626550452564532,
+                "median_favorable_ttf": 4.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6751592356687898,
+                "adverse_rate": 0.6982903117666779,
+                "median_favorable_ttf": 7.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.49815621857190745,
+              "reversal": 0.5015085484411667,
+              "stall": 0.00033523298692591353
+            }
+          }
+        },
+        "session_ny": {
+          "n": 4285,
+          "revisit_rate": 0.9647607934655776,
+          "n_revisited_with_outcome": 4134,
+          "continuation_rate": 0.4915336236090953,
+          "reversal_rate": 0.5007256894049347,
+          "stall_rate": 0.0077406869859700045,
+          "movement_summary": {
+            "n": 4134,
+            "by_horizon": {
+              "1": {
+                "n": 4134,
+                "mean_ret": -0.0033850437050880994,
+                "mean_mfe": 0.5091365133382295,
+                "mean_mae": 0.5227698650542245
+              },
+              "3": {
+                "n": 4134,
+                "mean_ret": -0.031006572937264668,
+                "mean_mfe": 0.8595803170006138,
+                "mean_mae": 0.8947335331529995
+              },
+              "5": {
+                "n": 4134,
+                "mean_ret": -0.04893194567662063,
+                "mean_mfe": 1.0771279273136878,
+                "mean_mae": 1.135624785817814
+              },
+              "10": {
+                "n": 4134,
+                "mean_ret": -0.07863252897177497,
+                "mean_mfe": 1.420120037217069,
+                "mean_mae": 1.5041527163489774
+              },
+              "20": {
+                "n": 4134,
+                "mean_ret": -0.01935537798799772,
+                "mean_mfe": 1.9180188387019939,
+                "mean_mae": 1.9706227929083888
+              },
+              "50": {
+                "n": 4134,
+                "mean_ret": -0.0727484193585885,
+                "mean_mfe": 2.9485554396751463,
+                "mean_mae": 3.0046318665095506
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9259796806966618,
+                "adverse_rate": 0.9356555394291244,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8621190130624092,
+                "adverse_rate": 0.8693759071117562,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7331881954523464,
+                "adverse_rate": 0.743347847121432,
+                "median_favorable_ttf": 5.0
+              },
+              "1.5": {
+                "favorable_rate": 0.6076439283986453,
+                "adverse_rate": 0.6325592646347363,
+                "median_favorable_ttf": 9.0
+              },
+              "2.0": {
+                "favorable_rate": 0.49903241412675375,
+                "adverse_rate": 0.5200774068698597,
+                "median_favorable_ttf": 13.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4915336236090953,
+              "reversal": 0.5007256894049347,
+              "stall": 0.0077406869859700045
+            }
+          }
+        },
+        "session_late": {
+          "n": 887,
+          "revisit_rate": 0.9706877113866967,
+          "n_revisited_with_outcome": 861,
+          "continuation_rate": 0.5203252032520326,
+          "reversal_rate": 0.4796747967479675,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 861,
+            "by_horizon": {
+              "1": {
+                "n": 861,
+                "mean_ret": 0.01693498551033689,
+                "mean_mfe": 0.6008493452098815,
+                "mean_mae": 0.5931347041330652
+              },
+              "3": {
+                "n": 861,
+                "mean_ret": 0.01613034032332009,
+                "mean_mfe": 1.0642317233314194,
+                "mean_mae": 1.0625780503055902
+              },
+              "5": {
+                "n": 861,
+                "mean_ret": 0.10625637833712814,
+                "mean_mfe": 1.5321936223187964,
+                "mean_mae": 1.4332692659804047
+              },
+              "10": {
+                "n": 861,
+                "mean_ret": 0.10907098996943834,
+                "mean_mfe": 2.4594756000453764,
+                "mean_mae": 2.2949720520679042
+              },
+              "20": {
+                "n": 861,
+                "mean_ret": 0.14875807528483567,
+                "mean_mfe": 3.2967720471891906,
+                "mean_mae": 3.0902184005556745
+              },
+              "50": {
+                "n": 861,
+                "mean_ret": 0.3623354084243203,
+                "mean_mfe": 5.702512028975193,
+                "mean_mae": 5.3420361952324615
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9698025551684089,
+                "adverse_rate": 0.967479674796748,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.959349593495935,
+                "adverse_rate": 0.9303135888501742,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8989547038327527,
+                "adverse_rate": 0.8548199767711963,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.8281068524970964,
+                "adverse_rate": 0.7723577235772358,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7688734030197445,
+                "adverse_rate": 0.7154471544715447,
+                "median_favorable_ttf": 7.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5203252032520326,
+              "reversal": 0.4796747967479675,
+              "stall": 0.0
+            }
+          }
+        },
+        "vol_low": {
+          "n": 3866,
+          "revisit_rate": 0.9842214174857734,
+          "n_revisited_with_outcome": 3805,
+          "continuation_rate": 0.5032851511169514,
+          "reversal_rate": 0.4961892247043364,
+          "stall_rate": 0.0005256241787122207,
+          "movement_summary": {
+            "n": 3805,
+            "by_horizon": {
+              "1": {
+                "n": 3805,
+                "mean_ret": -0.02217998781369045,
+                "mean_mfe": 0.7166299224810405,
+                "mean_mae": 0.7482315514083828
+              },
+              "3": {
+                "n": 3805,
+                "mean_ret": -0.06118922666598409,
+                "mean_mfe": 1.2571004895559001,
+                "mean_mae": 1.3491352329434878
+              },
+              "5": {
+                "n": 3805,
+                "mean_ret": -0.05507959866677923,
+                "mean_mfe": 1.6518369727678666,
+                "mean_mae": 1.746436719406776
+              },
+              "10": {
+                "n": 3805,
+                "mean_ret": -0.003069249189416603,
+                "mean_mfe": 2.4218639103799866,
+                "mean_mae": 2.485797925661753
+              },
+              "20": {
+                "n": 3805,
+                "mean_ret": 0.0559723442405768,
+                "mean_mfe": 3.506040556369052,
+                "mean_mae": 3.5023839086803674
+              },
+              "50": {
+                "n": 3805,
+                "mean_ret": 0.007515424926504235,
+                "mean_mfe": 6.753487979991534,
+                "mean_mae": 6.738218914583197
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9692509855453351,
+                "adverse_rate": 0.9710906701708278,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9453350854139291,
+                "adverse_rate": 0.9408672798948752,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8909329829172142,
+                "adverse_rate": 0.8804204993429697,
+                "median_favorable_ttf": 2.0
+              },
+              "1.5": {
+                "favorable_rate": 0.8360052562417871,
+                "adverse_rate": 0.8291721419185283,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7884362680683311,
+                "adverse_rate": 0.7792378449408672,
+                "median_favorable_ttf": 7.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5032851511169514,
+              "reversal": 0.4961892247043364,
+              "stall": 0.0005256241787122207
+            }
+          }
+        },
+        "vol_mid": {
+          "n": 4066,
+          "revisit_rate": 0.9731923266109198,
+          "n_revisited_with_outcome": 3957,
+          "continuation_rate": 0.5026535253980288,
+          "reversal_rate": 0.497093757897397,
+          "stall_rate": 0.00025271670457417233,
+          "movement_summary": {
+            "n": 3957,
+            "by_horizon": {
+              "1": {
+                "n": 3957,
+                "mean_ret": -0.021851401589704274,
+                "mean_mfe": 0.6130506269601853,
+                "mean_mae": 0.6355156431502208
+              },
+              "3": {
+                "n": 3957,
+                "mean_ret": -0.02753697559256399,
+                "mean_mfe": 1.096866023685731,
+                "mean_mae": 1.122023899832748
+              },
+              "5": {
+                "n": 3957,
+                "mean_ret": -0.055071964282078,
+                "mean_mfe": 1.4322752700834496,
+                "mean_mae": 1.4906368133803811
+              },
+              "10": {
+                "n": 3957,
+                "mean_ret": -0.06785166441899555,
+                "mean_mfe": 2.0841402151804775,
+                "mean_mae": 2.1503528114879926
+              },
+              "20": {
+                "n": 3957,
+                "mean_ret": -0.004638035239620727,
+                "mean_mfe": 3.08997464605564,
+                "mean_mae": 3.1350013889877553
+              },
+              "50": {
+                "n": 3957,
+                "mean_ret": 0.12828682750673687,
+                "mean_mfe": 4.953385869104956,
+                "mean_mae": 4.857170956924187
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9575435936315391,
+                "adverse_rate": 0.9646196613596159,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9150871872630781,
+                "adverse_rate": 0.9201415213545615,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8352287086176396,
+                "adverse_rate": 0.8382613090725297,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7687642153146323,
+                "adverse_rate": 0.7687642153146323,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7010361384887541,
+                "adverse_rate": 0.7017942886024766,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5026535253980288,
+              "reversal": 0.497093757897397,
+              "stall": 0.00025271670457417233
+            }
+          }
+        },
+        "vol_high": {
+          "n": 4838,
+          "revisit_rate": 0.958453906572964,
+          "n_revisited_with_outcome": 4637,
+          "continuation_rate": 0.4955790381712314,
+          "reversal_rate": 0.4975199482423981,
+          "stall_rate": 0.006901013586370498,
+          "movement_summary": {
+            "n": 4637,
+            "by_horizon": {
+              "1": {
+                "n": 4637,
+                "mean_ret": 0.002467575118134213,
+                "mean_mfe": 0.5235170251446124,
+                "mean_mae": 0.5301157127256428
+              },
+              "3": {
+                "n": 4637,
+                "mean_ret": -0.036132786461619104,
+                "mean_mfe": 0.8856552471975234,
+                "mean_mae": 0.9156630078657161
+              },
+              "5": {
+                "n": 4637,
+                "mean_ret": -0.04122650862491031,
+                "mean_mfe": 1.1338102486577997,
+                "mean_mae": 1.1684025478785736
+              },
+              "10": {
+                "n": 4637,
+                "mean_ret": -0.08677613336593529,
+                "mean_mfe": 1.5142610318090233,
+                "mean_mae": 1.60125443796391
+              },
+              "20": {
+                "n": 4637,
+                "mean_ret": -0.0806080816394539,
+                "mean_mfe": 2.0239673006971723,
+                "mean_mae": 2.11342158578244
+              },
+              "50": {
+                "n": 4637,
+                "mean_ret": -0.10957590349708533,
+                "mean_mfe": 2.9991543542318073,
+                "mean_mae": 3.113810117679247
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9271080439939616,
+                "adverse_rate": 0.9385378477463877,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8645676083674789,
+                "adverse_rate": 0.87836963554022,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7334483502264395,
+                "adverse_rate": 0.7547983610092732,
+                "median_favorable_ttf": 4.0
+              },
+              "1.5": {
+                "favorable_rate": 0.6103083890446409,
+                "adverse_rate": 0.6402846668104378,
+                "median_favorable_ttf": 7.0
+              },
+              "2.0": {
+                "favorable_rate": 0.5091654086693983,
+                "adverse_rate": 0.533103299547121,
+                "median_favorable_ttf": 11.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4955790381712314,
+              "reversal": 0.4975199482423981,
+              "stall": 0.006901013586370498
+            }
+          }
+        },
+        "trend_bull": {
+          "n": 5570,
+          "revisit_rate": 0.9678635547576302,
+          "n_revisited_with_outcome": 5391,
+          "continuation_rate": 0.4986087924318308,
+          "reversal_rate": 0.4978668150621406,
+          "stall_rate": 0.003524392506028566,
+          "movement_summary": {
+            "n": 5391,
+            "by_horizon": {
+              "1": {
+                "n": 5391,
+                "mean_ret": -0.009760548723429185,
+                "mean_mfe": 0.6196319812938285,
+                "mean_mae": 0.6481881528660614
+              },
+              "3": {
+                "n": 5391,
+                "mean_ret": -0.006760601575252536,
+                "mean_mfe": 1.0799286651713864,
+                "mean_mae": 1.1240604385743687
+              },
+              "5": {
+                "n": 5391,
+                "mean_ret": -0.011368119314147948,
+                "mean_mfe": 1.414057389630938,
+                "mean_mae": 1.4656688416230725
+              },
+              "10": {
+                "n": 5391,
+                "mean_ret": -0.029455062374900677,
+                "mean_mfe": 1.9999058057127022,
+                "mean_mae": 2.0759951984692364
+              },
+              "20": {
+                "n": 5391,
+                "mean_ret": 0.09309325495401687,
+                "mean_mfe": 2.90012679030038,
+                "mean_mae": 2.8996520395325622
+              },
+              "50": {
+                "n": 5391,
+                "mean_ret": 0.29065160401544576,
+                "mean_mfe": 5.0218591805921475,
+                "mean_mae": 4.794048677103318
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9493600445186422,
+                "adverse_rate": 0.960304210721573,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9085512891856798,
+                "adverse_rate": 0.9152290855128918,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8247078464106845,
+                "adverse_rate": 0.8209979595622333,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7456872565386756,
+                "adverse_rate": 0.7399369319235763,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6724169912817659,
+                "adverse_rate": 0.6648117232424411,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4986087924318308,
+              "reversal": 0.4978668150621406,
+              "stall": 0.003524392506028566
+            }
+          }
+        },
+        "trend_bear": {
+          "n": 5461,
+          "revisit_rate": 0.9703351034609046,
+          "n_revisited_with_outcome": 5299,
+          "continuation_rate": 0.4985846386110587,
+          "reversal_rate": 0.49933949801849403,
+          "stall_rate": 0.0020758633704472543,
+          "movement_summary": {
+            "n": 5299,
+            "by_horizon": {
+              "1": {
+                "n": 5299,
+                "mean_ret": -0.02574130505195934,
+                "mean_mfe": 0.5971010462608191,
+                "mean_mae": 0.6184810783258603
+              },
+              "3": {
+                "n": 5299,
+                "mean_ret": -0.06502033349149912,
+                "mean_mfe": 1.04518161328904,
+                "mean_mae": 1.0985261480705109
+              },
+              "5": {
+                "n": 5299,
+                "mean_ret": -0.08360826642708515,
+                "mean_mfe": 1.3547849203916789,
+                "mean_mae": 1.428967669229721
+              },
+              "10": {
+                "n": 5299,
+                "mean_ret": -0.05668001118269075,
+                "mean_mfe": 1.9429608129724731,
+                "mean_mae": 2.0035718332532313
+              },
+              "20": {
+                "n": 5299,
+                "mean_ret": -0.10115281826339961,
+                "mean_mfe": 2.712869207397885,
+                "mean_mae": 2.7791164395021486
+              },
+              "50": {
+                "n": 5299,
+                "mean_ret": -0.1672803609590436,
+                "mean_mfe": 4.498195431021988,
+                "mean_mae": 4.642215317160564
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9494244197018306,
+                "adverse_rate": 0.9520664276278543,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8997924136629553,
+                "adverse_rate": 0.9050764295150028,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7993961124740517,
+                "adverse_rate": 0.8177014531043593,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7112662766559729,
+                "adverse_rate": 0.734855633138328,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6355916210605774,
+                "adverse_rate": 0.6533308171353085,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4985846386110587,
+              "reversal": 0.49933949801849403,
+              "stall": 0.0020758633704472543
+            }
+          }
+        },
+        "trend_range": {
+          "n": 1773,
+          "revisit_rate": 0.9830795262267343,
+          "n_revisited_with_outcome": 1743,
+          "continuation_rate": 0.5111876075731497,
+          "reversal_rate": 0.4859437751004016,
+          "stall_rate": 0.002868617326448652,
+          "movement_summary": {
+            "n": 1743,
+            "by_horizon": {
+              "1": {
+                "n": 1743,
+                "mean_ret": 0.016811086506448865,
+                "mean_mfe": 0.629115527366136,
+                "mean_mae": 0.6131589426238819
+              },
+              "3": {
+                "n": 1743,
+                "mean_ret": -0.07433243269042888,
+                "mean_mfe": 1.0935000659682248,
+                "mean_mae": 1.1334528614317125
+              },
+              "5": {
+                "n": 1743,
+                "mean_ret": -0.06848525343462891,
+                "mean_mfe": 1.4110733110743414,
+                "mean_mae": 1.4596269662747143
+              },
+              "10": {
+                "n": 1743,
+                "mean_ret": -0.13081039390392482,
+                "mean_mfe": 1.9928741236643281,
+                "mean_mae": 2.098241773339876
+              },
+              "20": {
+                "n": 1743,
+                "mean_ret": -0.06501206904115463,
+                "mean_mfe": 2.893835271749078,
+                "mean_mae": 3.0255010875125117
+              },
+              "50": {
+                "n": 1743,
+                "mean_ret": -0.3340140169733683,
+                "mean_mfe": 4.87588659640953,
+                "mean_mae": 5.161952859090869
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9529546758462422,
+                "adverse_rate": 0.9598393574297188,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9145152036718301,
+                "adverse_rate": 0.912794033275961,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8273092369477911,
+                "adverse_rate": 0.8221457257601836,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7395295467584624,
+                "adverse_rate": 0.7475616752725186,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6683878370625359,
+                "adverse_rate": 0.6804360298336202,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5111876075731497,
+              "reversal": 0.4859437751004016,
+              "stall": 0.002868617326448652
+            }
+          }
+        },
+        "dow_Monday": {
+          "n": 2411,
+          "revisit_rate": 0.9713811696391539,
+          "n_revisited_with_outcome": 2342,
+          "continuation_rate": 0.5,
+          "reversal_rate": 0.4987190435525192,
+          "stall_rate": 0.0012809564474807857,
+          "movement_summary": {
+            "n": 2342,
+            "by_horizon": {
+              "1": {
+                "n": 2342,
+                "mean_ret": 0.0007678479035713226,
+                "mean_mfe": 0.5791573317639224,
+                "mean_mae": 0.5798809416240678
+              },
+              "3": {
+                "n": 2342,
+                "mean_ret": -0.026357040031491148,
+                "mean_mfe": 0.9948745322483917,
+                "mean_mae": 1.0202105564752766
+              },
+              "5": {
+                "n": 2342,
+                "mean_ret": 0.011027932089363663,
+                "mean_mfe": 1.2941339263478882,
+                "mean_mae": 1.3106301087994356
+              },
+              "10": {
+                "n": 2342,
+                "mean_ret": -0.02493193669005941,
+                "mean_mfe": 1.8419666928451637,
+                "mean_mae": 1.8511828881458086
+              },
+              "20": {
+                "n": 2342,
+                "mean_ret": -0.041098926119733946,
+                "mean_mfe": 2.5597075212590923,
+                "mean_mae": 2.621825559351879
+              },
+              "50": {
+                "n": 2342,
+                "mean_ret": -0.04209735154756888,
+                "mean_mfe": 4.171997620543425,
+                "mean_mae": 4.201782908466849
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9474807856532877,
+                "adverse_rate": 0.9594363791631084,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8975234842015372,
+                "adverse_rate": 0.9116140051238258,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8057216054654142,
+                "adverse_rate": 0.8159692570452605,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7181895815542272,
+                "adverse_rate": 0.7322801024765158,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6443210930828351,
+                "adverse_rate": 0.6524338172502135,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5,
+              "reversal": 0.4987190435525192,
+              "stall": 0.0012809564474807857
+            }
+          }
+        },
+        "dow_Tuesday": {
+          "n": 2663,
+          "revisit_rate": 0.9759669545625235,
+          "n_revisited_with_outcome": 2599,
+          "continuation_rate": 0.4994228549442093,
+          "reversal_rate": 0.4971142747210466,
+          "stall_rate": 0.0034628703347441324,
+          "movement_summary": {
+            "n": 2599,
+            "by_horizon": {
+              "1": {
+                "n": 2599,
+                "mean_ret": -0.00993380730315641,
+                "mean_mfe": 0.6079672087067903,
+                "mean_mae": 0.6214124744553603
+              },
+              "3": {
+                "n": 2599,
+                "mean_ret": -0.030534918404688454,
+                "mean_mfe": 1.0567534040956066,
+                "mean_mae": 1.095271427427258
+              },
+              "5": {
+                "n": 2599,
+                "mean_ret": -0.05281036613898334,
+                "mean_mfe": 1.36638293293524,
+                "mean_mae": 1.435503900144233
+              },
+              "10": {
+                "n": 2599,
+                "mean_ret": -0.05274686934170189,
+                "mean_mfe": 1.9424419302623872,
+                "mean_mae": 2.0146120100332707
+              },
+              "20": {
+                "n": 2599,
+                "mean_ret": -0.010639638303761077,
+                "mean_mfe": 2.7695530398541,
+                "mean_mae": 2.8051615463105155
+              },
+              "50": {
+                "n": 2599,
+                "mean_ret": -0.023425480992387778,
+                "mean_mfe": 4.624576310500197,
+                "mean_mae": 4.668490457843659
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9561369757599076,
+                "adverse_rate": 0.9503655252020008,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9091958445555983,
+                "adverse_rate": 0.9072720277029627,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8210850327048865,
+                "adverse_rate": 0.816467872258561,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7310504040015391,
+                "adverse_rate": 0.7356675644478645,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6444786456329358,
+                "adverse_rate": 0.6529434397845325,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4994228549442093,
+              "reversal": 0.4971142747210466,
+              "stall": 0.0034628703347441324
+            }
+          }
+        },
+        "dow_Wednesday": {
+          "n": 2608,
+          "revisit_rate": 0.9766104294478528,
+          "n_revisited_with_outcome": 2547,
+          "continuation_rate": 0.5025520219866509,
+          "reversal_rate": 0.49469964664310956,
+          "stall_rate": 0.0027483313702394976,
+          "movement_summary": {
+            "n": 2547,
+            "by_horizon": {
+              "1": {
+                "n": 2547,
+                "mean_ret": -0.02116776117246765,
+                "mean_mfe": 0.624118287728681,
+                "mean_mae": 0.6505303442603162
+              },
+              "3": {
+                "n": 2547,
+                "mean_ret": -0.05357817530518948,
+                "mean_mfe": 1.0853539914252994,
+                "mean_mae": 1.15382569220506
+              },
+              "5": {
+                "n": 2547,
+                "mean_ret": -0.08825987317326504,
+                "mean_mfe": 1.4065411852593432,
+                "mean_mae": 1.5090831695133349
+              },
+              "10": {
+                "n": 2547,
+                "mean_ret": -0.08133873863991181,
+                "mean_mfe": 2.0064008867781413,
+                "mean_mae": 2.1117149835523183
+              },
+              "20": {
+                "n": 2547,
+                "mean_ret": 0.04457407984121041,
+                "mean_mfe": 2.8977309861952,
+                "mean_mae": 2.944702517784146
+              },
+              "50": {
+                "n": 2547,
+                "mean_ret": 0.16455150175472077,
+                "mean_mfe": 4.903552797155276,
+                "mean_mae": 4.837071004776593
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9583824106792305,
+                "adverse_rate": 0.9685904986258344,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9179426776599922,
+                "adverse_rate": 0.9246171967020024,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8276403612092658,
+                "adverse_rate": 0.8292108362779741,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7510797016097369,
+                "adverse_rate": 0.7561837455830389,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6784452296819788,
+                "adverse_rate": 0.6815861798193954,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5025520219866509,
+              "reversal": 0.49469964664310956,
+              "stall": 0.0027483313702394976
+            }
+          }
+        },
+        "dow_Thursday": {
+          "n": 2542,
+          "revisit_rate": 0.9728560188827695,
+          "n_revisited_with_outcome": 2473,
+          "continuation_rate": 0.5006065507480792,
+          "reversal_rate": 0.49413667610190054,
+          "stall_rate": 0.005256773150020219,
+          "movement_summary": {
+            "n": 2473,
+            "by_horizon": {
+              "1": {
+                "n": 2473,
+                "mean_ret": -0.008977287090998463,
+                "mean_mfe": 0.6285703942516705,
+                "mean_mae": 0.6317795256813936
+              },
+              "3": {
+                "n": 2473,
+                "mean_ret": -0.059656052657528755,
+                "mean_mfe": 1.0700409844781424,
+                "mean_mae": 1.1147289625438261
+              },
+              "5": {
+                "n": 2473,
+                "mean_ret": -0.09201934711373642,
+                "mean_mfe": 1.3847523614997421,
+                "mean_mae": 1.464403247783979
+              },
+              "10": {
+                "n": 2473,
+                "mean_ret": -0.14208756232068795,
+                "mean_mfe": 1.9499032106095253,
+                "mean_mae": 2.0836452479836343
+              },
+              "20": {
+                "n": 2473,
+                "mean_ret": -0.13576827668588518,
+                "mean_mfe": 2.816288612917844,
+                "mean_mae": 2.938370603377808
+              },
+              "50": {
+                "n": 2473,
+                "mean_ret": -0.16921271667659393,
+                "mean_mfe": 4.748350094485954,
+                "mean_mae": 4.947410597286955
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9389405580266882,
+                "adverse_rate": 0.957541447634452,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8944601698342095,
+                "adverse_rate": 0.9073999191265669,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7929640113222807,
+                "adverse_rate": 0.8164173069146785,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7048119692680954,
+                "adverse_rate": 0.7270521633643349,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6356651839870603,
+                "adverse_rate": 0.651839870602507,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5006065507480792,
+              "reversal": 0.49413667610190054,
+              "stall": 0.005256773150020219
+            }
+          }
+        },
+        "dow_Friday": {
+          "n": 2349,
+          "revisit_rate": 0.9608343976160069,
+          "n_revisited_with_outcome": 2257,
+          "continuation_rate": 0.4984492689410722,
+          "reversal_rate": 0.5002215330084182,
+          "stall_rate": 0.001329198050509526,
+          "movement_summary": {
+            "n": 2257,
+            "by_horizon": {
+              "1": {
+                "n": 2257,
+                "mean_ret": -0.0192403307067919,
+                "mean_mfe": 0.6201228047413417,
+                "mean_mae": 0.6678424445436673
+              },
+              "3": {
+                "n": 2257,
+                "mean_ret": -0.027730322028118867,
+                "mean_mfe": 1.1336131599663777,
+                "mean_mae": 1.1829850352449212
+              },
+              "5": {
+                "n": 2257,
+                "mean_ret": -0.02514097132526136,
+                "mean_mfe": 1.48989961992327,
+                "mean_mae": 1.5174870927763238
+              },
+              "10": {
+                "n": 2257,
+                "mean_ret": 0.012046048638391874,
+                "mean_mfe": 2.1155347981927717,
+                "mean_mae": 2.162479211544022
+              },
+              "20": {
+                "n": 2257,
+                "mean_ret": 0.08378177545933581,
+                "mean_mfe": 3.0488310856997867,
+                "mean_mae": 3.008459273694784
+              },
+              "50": {
+                "n": 2257,
+                "mean_ret": 0.0762947737410237,
+                "mean_mfe": 5.4788069753259645,
+                "mean_mae": 5.298986671177703
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9459459459459459,
+                "adverse_rate": 0.9459459459459459,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9034116083296411,
+                "adverse_rate": 0.896322552060257,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8174568010633585,
+                "adverse_rate": 0.8156845369960124,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7394771821001329,
+                "adverse_rate": 0.7390341160832964,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.669029685423128,
+                "adverse_rate": 0.6699158174568011,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4984492689410722,
+              "reversal": 0.5002215330084182,
+              "stall": 0.001329198050509526
+            }
+          }
+        }
+      },
+      "gap_size_sensitivity": {
+        "0.0": {
+          "n_inverted": 12804,
+          "summary": {
+            "n": 12804,
+            "revisit_rate": 0.9710246797875663,
+            "n_revisited_with_outcome": 12433,
+            "continuation_rate": 0.5003619399983914,
+            "reversal_rate": 0.4968229711252312,
+            "stall_rate": 0.002815088876377383,
+            "movement_summary": {
+              "n": 12433,
+              "by_horizon": {
+                "1": {
+                  "n": 12433,
+                  "mean_ret": -0.012846502843850955,
+                  "mean_mfe": 0.6113587082353643,
+                  "mean_mae": 0.6306160703887314
+                },
+                "3": {
+                  "n": 12433,
+                  "mean_ret": -0.04106415028095053,
+                  "mean_mfe": 1.0670219108614318,
+                  "mean_mae": 1.1144943473381754
+                },
+                "5": {
+                  "n": 12433,
+                  "mean_ret": -0.05016452439123735,
+                  "mean_mfe": 1.3883768569016706,
+                  "mean_mae": 1.4491796192918125
+                },
+                "10": {
+                  "n": 12433,
+                  "mean_ret": -0.055267605332157056,
+                  "mean_mfe": 1.9746498145327143,
+                  "mean_mae": 2.048246816559795
+                },
+                "20": {
+                  "n": 12433,
+                  "mean_ret": -0.011860297825093074,
+                  "mean_mfe": 2.8194347571116696,
+                  "mean_mae": 2.865922187209542
+                },
+                "50": {
+                  "n": 12433,
+                  "mean_ret": 0.007906195844986372,
+                  "mean_mfe": 4.778207252400836,
+                  "mean_mae": 4.780913634464185
+                }
+              },
+              "by_threshold": {
+                "0.25": {
+                  "favorable_rate": 0.9498914180004826,
+                  "adverse_rate": 0.9567280624145419,
+                  "median_favorable_ttf": 0.0
+                },
+                "0.5": {
+                  "favorable_rate": 0.9056543070859808,
+                  "adverse_rate": 0.9105606048419529,
+                  "median_favorable_ttf": 1.0
+                },
+                "1.0": {
+                  "favorable_rate": 0.8142845652698464,
+                  "adverse_rate": 0.8197538808010939,
+                  "median_favorable_ttf": 3.0
+                },
+                "1.5": {
+                  "favorable_rate": 0.7301536234215394,
+                  "adverse_rate": 0.7388401833829326,
+                  "median_favorable_ttf": 6.0
+                },
+                "2.0": {
+                  "favorable_rate": 0.6561570015281911,
+                  "adverse_rate": 0.6621089037239605,
+                  "median_favorable_ttf": 9.0
+                }
+              },
+              "outcome_rates": {
+                "continuation": 0.5003619399983914,
+                "reversal": 0.4968229711252312,
+                "stall": 0.002815088876377383
+              }
+            }
+          }
+        },
+        "0.1": {
+          "n_inverted": 9972,
+          "summary": {
+            "n": 9972,
+            "revisit_rate": 0.9703168872843964,
+            "n_revisited_with_outcome": 9676,
+            "continuation_rate": 0.5018602728400166,
+            "reversal_rate": 0.49524596940884663,
+            "stall_rate": 0.0028937577511368336,
+            "movement_summary": {
+              "n": 9676,
+              "by_horizon": {
+                "1": {
+                  "n": 9676,
+                  "mean_ret": -0.013060072893495128,
+                  "mean_mfe": 0.6147958553103957,
+                  "mean_mae": 0.6314494881308749
+                },
+                "3": {
+                  "n": 9676,
+                  "mean_ret": -0.038235017816111924,
+                  "mean_mfe": 1.0691147637774727,
+                  "mean_mae": 1.112357538101973
+                },
+                "5": {
+                  "n": 9676,
+                  "mean_ret": -0.051072690850423506,
+                  "mean_mfe": 1.389961868482909,
+                  "mean_mae": 1.4416411329648222
+                },
+                "10": {
+                  "n": 9676,
+                  "mean_ret": -0.06809994567769499,
+                  "mean_mfe": 1.9623915899503095,
+                  "mean_mae": 2.0406938531725767
+                },
+                "20": {
+                  "n": 9676,
+                  "mean_ret": -0.028410029467399463,
+                  "mean_mfe": 2.7983598043090376,
+                  "mean_mae": 2.856293272697296
+                },
+                "50": {
+                  "n": 9676,
+                  "mean_ret": -0.03158883476913075,
+                  "mean_mfe": 4.745319921508519,
+                  "mean_mae": 4.771708574182831
+                }
+              },
+              "by_threshold": {
+                "0.25": {
+                  "favorable_rate": 0.9495659363373294,
+                  "adverse_rate": 0.9563869367507234,
+                  "median_favorable_ttf": 0.0
+                },
+                "0.5": {
+                  "favorable_rate": 0.9048160396858206,
+                  "adverse_rate": 0.9096734187680859,
+                  "median_favorable_ttf": 1.0
+                },
+                "1.0": {
+                  "favorable_rate": 0.8136626705250103,
+                  "adverse_rate": 0.8199669284828441,
+                  "median_favorable_ttf": 3.0
+                },
+                "1.5": {
+                  "favorable_rate": 0.7288135593220338,
+                  "adverse_rate": 0.7378048780487805,
+                  "median_favorable_ttf": 6.0
+                },
+                "2.0": {
+                  "favorable_rate": 0.6549193881769326,
+                  "adverse_rate": 0.65988011575031,
+                  "median_favorable_ttf": 9.0
+                }
+              },
+              "outcome_rates": {
+                "continuation": 0.5018602728400166,
+                "reversal": 0.49524596940884663,
+                "stall": 0.0028937577511368336
+              }
+            }
+          }
+        },
+        "0.25": {
+          "n_inverted": 6748,
+          "summary": {
+            "n": 6748,
+            "revisit_rate": 0.967397747480735,
+            "n_revisited_with_outcome": 6528,
+            "continuation_rate": 0.5036764705882353,
+            "reversal_rate": 0.4928002450980392,
+            "stall_rate": 0.0035232843137254903,
+            "movement_summary": {
+              "n": 6528,
+              "by_horizon": {
+                "1": {
+                  "n": 6528,
+                  "mean_ret": -0.020246340551189287,
+                  "mean_mfe": 0.6176078252468433,
+                  "mean_mae": 0.6409169926467723
+                },
+                "3": {
+                  "n": 6528,
+                  "mean_ret": -0.03144932765185657,
+                  "mean_mfe": 1.0714696662728034,
+                  "mean_mae": 1.1113748988546197
+                },
+                "5": {
+                  "n": 6528,
+                  "mean_ret": -0.04957179696093315,
+                  "mean_mfe": 1.3886390002760731,
+                  "mean_mae": 1.4352099425976659
+                },
+                "10": {
+                  "n": 6528,
+                  "mean_ret": -0.06238803900181278,
+                  "mean_mfe": 1.9524497250026644,
+                  "mean_mae": 2.019296483339683
+                },
+                "20": {
+                  "n": 6528,
+                  "mean_ret": -0.03301047969029858,
+                  "mean_mfe": 2.7756543254597354,
+                  "mean_mae": 2.822567515098782
+                },
+                "50": {
+                  "n": 6528,
+                  "mean_ret": 0.0529546727508498,
+                  "mean_mfe": 4.741189883066684,
+                  "mean_mae": 4.711858730329372
+                }
+              },
+              "by_threshold": {
+                "0.25": {
+                  "favorable_rate": 0.9503676470588235,
+                  "adverse_rate": 0.9552696078431373,
+                  "median_favorable_ttf": 0.0
+                },
+                "0.5": {
+                  "favorable_rate": 0.9071691176470589,
+                  "adverse_rate": 0.907015931372549,
+                  "median_favorable_ttf": 1.0
+                },
+                "1.0": {
+                  "favorable_rate": 0.8140318627450981,
+                  "adverse_rate": 0.8155637254901961,
+                  "median_favorable_ttf": 3.0
+                },
+                "1.5": {
+                  "favorable_rate": 0.7267156862745098,
+                  "adverse_rate": 0.7328431372549019,
+                  "median_favorable_ttf": 6.0
+                },
+                "2.0": {
+                  "favorable_rate": 0.6527267156862745,
+                  "adverse_rate": 0.6548713235294118,
+                  "median_favorable_ttf": 9.0
+                }
+              },
+              "outcome_rates": {
+                "continuation": 0.5036764705882353,
+                "reversal": 0.4928002450980392,
+                "stall": 0.0035232843137254903
+              }
+            }
+          }
+        }
+      },
+      "yearly_stability": {
+        "2022": {
+          "n": 169,
+          "revisit_rate": 0.9822485207100592,
+          "n_revisited_with_outcome": 166,
+          "continuation_rate": 0.4759036144578313,
+          "reversal_rate": 0.5240963855421686,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 166,
+            "by_horizon": {
+              "1": {
+                "n": 166,
+                "mean_ret": -0.09482874251736927,
+                "mean_mfe": 0.531654353268135,
+                "mean_mae": 0.6650045848474492
+              },
+              "3": {
+                "n": 166,
+                "mean_ret": -0.14072162564926946,
+                "mean_mfe": 0.9718042119092185,
+                "mean_mae": 1.2046342020314826
+              },
+              "5": {
+                "n": 166,
+                "mean_ret": -0.09699567034864871,
+                "mean_mfe": 1.2867857160643261,
+                "mean_mae": 1.5646273312835377
+              },
+              "10": {
+                "n": 166,
+                "mean_ret": -0.45509531168488415,
+                "mean_mfe": 1.683069941314594,
+                "mean_mae": 2.239319213774445
+              },
+              "20": {
+                "n": 166,
+                "mean_ret": 0.512570602905342,
+                "mean_mfe": 2.703771104295659,
+                "mean_mae": 2.915956265387455
+              },
+              "50": {
+                "n": 166,
+                "mean_ret": 0.7383112903890169,
+                "mean_mfe": 5.374899614470279,
+                "mean_mae": 4.8945318339764885
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9096385542168675,
+                "adverse_rate": 0.963855421686747,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8734939759036144,
+                "adverse_rate": 0.9156626506024096,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8072289156626506,
+                "adverse_rate": 0.8433734939759037,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.6987951807228916,
+                "adverse_rate": 0.7710843373493976,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6204819277108434,
+                "adverse_rate": 0.6987951807228916,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4759036144578313,
+              "reversal": 0.5240963855421686,
+              "stall": 0.0
+            }
+          }
+        },
+        "2023": {
+          "n": 4454,
+          "revisit_rate": 0.9721598563089358,
+          "n_revisited_with_outcome": 4330,
+          "continuation_rate": 0.5032332563510392,
+          "reversal_rate": 0.49191685912240185,
+          "stall_rate": 0.004849884526558892,
+          "movement_summary": {
+            "n": 4330,
+            "by_horizon": {
+              "1": {
+                "n": 4330,
+                "mean_ret": -0.009545002234710127,
+                "mean_mfe": 0.6345177401921388,
+                "mean_mae": 0.6404383187084121
+              },
+              "3": {
+                "n": 4330,
+                "mean_ret": -0.040397550950847294,
+                "mean_mfe": 1.1118223442712554,
+                "mean_mae": 1.1465099018235645
+              },
+              "5": {
+                "n": 4330,
+                "mean_ret": -0.0821884702197329,
+                "mean_mfe": 1.4324189397982976,
+                "mean_mae": 1.5136601870328565
+              },
+              "10": {
+                "n": 4330,
+                "mean_ret": -0.11705989051399847,
+                "mean_mfe": 2.0111552419433694,
+                "mean_mae": 2.1340404863539324
+              },
+              "20": {
+                "n": 4330,
+                "mean_ret": -0.089171192762432,
+                "mean_mfe": 2.876182295350994,
+                "mean_mae": 3.0021706642211656
+              },
+              "50": {
+                "n": 4330,
+                "mean_ret": -0.01120426547829791,
+                "mean_mfe": 5.035062748095959,
+                "mean_mae": 5.087664725185087
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9494226327944573,
+                "adverse_rate": 0.9533487297921478,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9048498845265589,
+                "adverse_rate": 0.9071593533487298,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8210161662817552,
+                "adverse_rate": 0.8150115473441109,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7387990762124711,
+                "adverse_rate": 0.7387990762124711,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6595842956120093,
+                "adverse_rate": 0.6618937644341801,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5032332563510392,
+              "reversal": 0.49191685912240185,
+              "stall": 0.004849884526558892
+            }
+          }
+        },
+        "2024": {
+          "n": 4524,
+          "revisit_rate": 0.9719274977895668,
+          "n_revisited_with_outcome": 4397,
+          "continuation_rate": 0.5019331362292472,
+          "reversal_rate": 0.4955651580623152,
+          "stall_rate": 0.002501705708437571,
+          "movement_summary": {
+            "n": 4397,
+            "by_horizon": {
+              "1": {
+                "n": 4397,
+                "mean_ret": -0.017399897258211314,
+                "mean_mfe": 0.6103768581342125,
+                "mean_mae": 0.6435876305906874
+              },
+              "3": {
+                "n": 4397,
+                "mean_ret": -0.0240533575855966,
+                "mean_mfe": 1.0686232737901387,
+                "mean_mae": 1.1065285958308861
+              },
+              "5": {
+                "n": 4397,
+                "mean_ret": -0.04107572682864624,
+                "mean_mfe": 1.395253349101478,
+                "mean_mae": 1.4389211570549527
+              },
+              "10": {
+                "n": 4397,
+                "mean_ret": -0.02729797650960602,
+                "mean_mfe": 1.978088324992023,
+                "mean_mae": 2.05232235250023
+              },
+              "20": {
+                "n": 4397,
+                "mean_ret": 0.012097733956635433,
+                "mean_mfe": 2.830622670373117,
+                "mean_mae": 2.8713214735247448
+              },
+              "50": {
+                "n": 4397,
+                "mean_ret": -0.027323316403863564,
+                "mean_mfe": 4.8170579904523025,
+                "mean_mae": 4.829115635188761
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.950648169206277,
+                "adverse_rate": 0.9565612917898567,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9069820332044576,
+                "adverse_rate": 0.9113031612463043,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8114623607004776,
+                "adverse_rate": 0.8239708892426655,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7266317944052764,
+                "adverse_rate": 0.7368660450307027,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6479417784853309,
+                "adverse_rate": 0.6618148737775756,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5019331362292472,
+              "reversal": 0.4955651580623152,
+              "stall": 0.002501705708437571
+            }
+          }
+        },
+        "2025": {
+          "n": 3657,
+          "revisit_rate": 0.9680065627563577,
+          "n_revisited_with_outcome": 3540,
+          "continuation_rate": 0.496045197740113,
+          "reversal_rate": 0.5031073446327684,
+          "stall_rate": 0.000847457627118644,
+          "movement_summary": {
+            "n": 3540,
+            "by_horizon": {
+              "1": {
+                "n": 3540,
+                "mean_ret": -0.007384686632504407,
+                "mean_mfe": 0.5879885131637514,
+                "mean_mae": 0.6008774323004927
+              },
+              "3": {
+                "n": 3540,
+                "mean_ret": -0.058335249057695486,
+                "mean_mfe": 1.014699613845615,
+                "mean_mae": 1.081001365015217
+              },
+              "5": {
+                "n": 3540,
+                "mean_ret": -0.020087063152931434,
+                "mean_mfe": 1.3307288270242843,
+                "mean_mae": 1.3776376079771586
+              },
+              "10": {
+                "n": 3540,
+                "mean_ret": 0.004322659119585607,
+                "mean_mfe": 1.93939970938483,
+                "mean_mae": 1.9292850256907723
+              },
+              "20": {
+                "n": 3540,
+                "mean_ret": 0.028353594777495925,
+                "mean_mfe": 2.741550596428222,
+                "mean_mae": 2.690215344168353
+              },
+              "50": {
+                "n": 3540,
+                "mean_ret": 0.040789025560722246,
+                "mean_mfe": 4.3877942796110885,
+                "mean_mae": 4.340507690643135
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9514124293785311,
+                "adverse_rate": 0.9607344632768362,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.906497175141243,
+                "adverse_rate": 0.9135593220338983,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8098870056497175,
+                "adverse_rate": 0.8192090395480226,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7254237288135593,
+                "adverse_rate": 0.7398305084745763,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6638418079096046,
+                "adverse_rate": 0.6610169491525424,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.496045197740113,
+              "reversal": 0.5031073446327684,
+              "stall": 0.000847457627118644
+            }
+          }
+        }
+      }
+    },
+    "H1": {
+      "timeframe": "H1",
+      "split_metadata": {
+        "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+        "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+        "holdout_excluded": true,
+        "min_date_used": "2023-01-02 23:00:00+00:00",
+        "max_date_used": "2025-10-23 09:00:00+00:00",
+        "n_bars_used": 16623,
+        "n_bars_before_cutoff": 20832,
+        "n_bars_excluded_by_cutoff": 4209,
+        "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+        "timeframe": "H1"
+      },
+      "n_bars": 16623,
+      "date_range": [
+        "2023-01-02 23:00:00+00:00",
+        "2025-10-23 09:00:00+00:00"
+      ],
+      "n_all_fvgs": 3310,
+      "n_inverted": 2994,
+      "n_uninverted": 316,
+      "n_random": 2994,
+      "primary": {
+        "inverted": {
+          "n": 2994,
+          "revisit_rate": 0.9679358717434869,
+          "n_revisited_with_outcome": 2898,
+          "continuation_rate": 0.5289855072463768,
+          "reversal_rate": 0.47101449275362317,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 2898,
+            "by_horizon": {
+              "1": {
+                "n": 2898,
+                "mean_ret": 0.003900613824241875,
+                "mean_mfe": 0.6199823382148724,
+                "mean_mae": 0.623885580106655
+              },
+              "3": {
+                "n": 2898,
+                "mean_ret": 0.05235240211694212,
+                "mean_mfe": 1.0878825930232354,
+                "mean_mae": 1.0202013290901377
+              },
+              "5": {
+                "n": 2898,
+                "mean_ret": 0.03638639677977761,
+                "mean_mfe": 1.4038787774793173,
+                "mean_mae": 1.3279434698521015
+              },
+              "10": {
+                "n": 2898,
+                "mean_ret": 0.039758062291745076,
+                "mean_mfe": 1.9572696931154452,
+                "mean_mae": 1.8549806487636677
+              },
+              "20": {
+                "n": 2898,
+                "mean_ret": 0.06317021585381807,
+                "mean_mfe": 2.7173634150601016,
+                "mean_mae": 2.6162552750857304
+              },
+              "50": {
+                "n": 2898,
+                "mean_ret": 0.026926510858620467,
+                "mean_mfe": 4.484848216115348,
+                "mean_mae": 4.433784894903579
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9489302967563837,
+                "adverse_rate": 0.9496204278812974,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9075224292615597,
+                "adverse_rate": 0.9099378881987578,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8309178743961353,
+                "adverse_rate": 0.8209109730848861,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7522429261559697,
+                "adverse_rate": 0.748792270531401,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6746031746031746,
+                "adverse_rate": 0.6766735679779158,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5289855072463768,
+              "reversal": 0.47101449275362317,
+              "stall": 0.0
+            }
+          }
+        },
+        "uninverted_control": {
+          "n": 316,
+          "revisit_rate": 0.5981012658227848,
+          "n_revisited_with_outcome": 189,
+          "continuation_rate": 0.8624338624338624,
+          "reversal_rate": 0.13227513227513227,
+          "stall_rate": 0.005291005291005291,
+          "movement_summary": {
+            "n": 189,
+            "by_horizon": {
+              "1": {
+                "n": 189,
+                "mean_ret": 0.47988757274973,
+                "mean_mfe": 0.8947211796319664,
+                "mean_mae": 0.37989053831700453
+              },
+              "3": {
+                "n": 189,
+                "mean_ret": 1.102428037854849,
+                "mean_mfe": 1.734640024454562,
+                "mean_mae": 0.5097201327838732
+              },
+              "5": {
+                "n": 189,
+                "mean_ret": 1.6363002697153952,
+                "mean_mfe": 2.329428762292672,
+                "mean_mae": 0.5609144325684513
+              },
+              "10": {
+                "n": 189,
+                "mean_ret": 2.541812300010642,
+                "mean_mfe": 3.432173868355941,
+                "mean_mae": 0.6074582726765584
+              },
+              "20": {
+                "n": 189,
+                "mean_ret": 3.760058155090068,
+                "mean_mfe": 5.01952309221662,
+                "mean_mae": 0.6520971031204565
+              },
+              "50": {
+                "n": 189,
+                "mean_ret": 7.010363859186857,
+                "mean_mfe": 8.991997759347795,
+                "mean_mae": 0.6984684309240222
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 1.0,
+                "adverse_rate": 0.7619047619047619,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 1.0,
+                "adverse_rate": 0.5132275132275133,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.9947089947089947,
+                "adverse_rate": 0.21693121693121692,
+                "median_favorable_ttf": 2.0
+              },
+              "1.5": {
+                "favorable_rate": 0.9788359788359788,
+                "adverse_rate": 0.1111111111111111,
+                "median_favorable_ttf": 3.0
+              },
+              "2.0": {
+                "favorable_rate": 0.9735449735449735,
+                "adverse_rate": 0.06349206349206349,
+                "median_favorable_ttf": 6.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.8624338624338624,
+              "reversal": 0.13227513227513227,
+              "stall": 0.005291005291005291
+            }
+          }
+        },
+        "random_matched_revisit_rate": 0.9676018704074816,
+        "p_revisit_vs_uninverted": 4.6684107165502245e-136,
+        "p_revisit_vs_random": 1.0,
+        "p_reaction_vs_uninverted": 8.638671224174005e-19
+      },
+      "slices": {
+        "session_asia": {
+          "n": 990,
+          "revisit_rate": 0.9828282828282828,
+          "n_revisited_with_outcome": 973,
+          "continuation_rate": 0.5426515930113053,
+          "reversal_rate": 0.4573484069886948,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 973,
+            "by_horizon": {
+              "1": {
+                "n": 973,
+                "mean_ret": 0.01038326951038277,
+                "mean_mfe": 0.5836500446762457,
+                "mean_mae": 0.5629795288566455
+              },
+              "3": {
+                "n": 973,
+                "mean_ret": 0.048881437694843016,
+                "mean_mfe": 1.0321937694712788,
+                "mean_mae": 0.9620178589728556
+              },
+              "5": {
+                "n": 973,
+                "mean_ret": 0.06645176621378884,
+                "mean_mfe": 1.445817058453658,
+                "mean_mae": 1.35804177814665
+              },
+              "10": {
+                "n": 973,
+                "mean_ret": 0.21798638397613632,
+                "mean_mfe": 2.3420638443585893,
+                "mean_mae": 2.0672636304262855
+              },
+              "20": {
+                "n": 973,
+                "mean_ret": 0.22842683075704567,
+                "mean_mfe": 3.1505749207197606,
+                "mean_mae": 2.8410073022799334
+              },
+              "50": {
+                "n": 973,
+                "mean_ret": 0.28024379935394156,
+                "mean_mfe": 4.891194919457087,
+                "mean_mae": 4.553818847938382
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9558067831449126,
+                "adverse_rate": 0.9373072970195272,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9116135662898253,
+                "adverse_rate": 0.8910585817060637,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8509763617677287,
+                "adverse_rate": 0.8016443987667009,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7687564234326825,
+                "adverse_rate": 0.7379239465570401,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7091469681397738,
+                "adverse_rate": 0.6700924974306269,
+                "median_favorable_ttf": 7.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5426515930113053,
+              "reversal": 0.4573484069886948,
+              "stall": 0.0
+            }
+          }
+        },
+        "session_london": {
+          "n": 745,
+          "revisit_rate": 0.9610738255033557,
+          "n_revisited_with_outcome": 716,
+          "continuation_rate": 0.5614525139664804,
+          "reversal_rate": 0.43854748603351956,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 716,
+            "by_horizon": {
+              "1": {
+                "n": 716,
+                "mean_ret": -0.007550224916429346,
+                "mean_mfe": 0.8732408697438534,
+                "mean_mae": 0.9082839994839704
+              },
+              "3": {
+                "n": 716,
+                "mean_ret": 0.108042940313644,
+                "mean_mfe": 1.6242783369872955,
+                "mean_mae": 1.5187257993916394
+              },
+              "5": {
+                "n": 716,
+                "mean_ret": 0.07024976601689986,
+                "mean_mfe": 1.9996183894254838,
+                "mean_mae": 1.8755112318332052
+              },
+              "10": {
+                "n": 716,
+                "mean_ret": 0.013735796624216198,
+                "mean_mfe": 2.3689869775855312,
+                "mean_mae": 2.3372900441321858
+              },
+              "20": {
+                "n": 716,
+                "mean_ret": 0.2456948990202119,
+                "mean_mfe": 3.149562431473177,
+                "mean_mae": 2.87690699402448
+              },
+              "50": {
+                "n": 716,
+                "mean_ret": 0.5393506791543522,
+                "mean_mfe": 5.508831458652635,
+                "mean_mae": 4.955069977901288
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9455307262569832,
+                "adverse_rate": 0.9664804469273743,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9203910614525139,
+                "adverse_rate": 0.9231843575418994,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8687150837988827,
+                "adverse_rate": 0.8393854748603352,
+                "median_favorable_ttf": 1.0
+              },
+              "1.5": {
+                "favorable_rate": 0.8184357541899442,
+                "adverse_rate": 0.7737430167597765,
+                "median_favorable_ttf": 2.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7597765363128491,
+                "adverse_rate": 0.6913407821229051,
+                "median_favorable_ttf": 5.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5614525139664804,
+              "reversal": 0.43854748603351956,
+              "stall": 0.0
+            }
+          }
+        },
+        "session_ny": {
+          "n": 1125,
+          "revisit_rate": 0.9591111111111111,
+          "n_revisited_with_outcome": 1079,
+          "continuation_rate": 0.5004633920296571,
+          "reversal_rate": 0.4995366079703429,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 1079,
+            "by_horizon": {
+              "1": {
+                "n": 1079,
+                "mean_ret": 0.004168371446599736,
+                "mean_mfe": 0.49351262632712184,
+                "mean_mae": 0.5052174432820823
+              },
+              "3": {
+                "n": 1079,
+                "mean_ret": 0.02027095161423811,
+                "mean_mfe": 0.8097606714246747,
+                "mean_mae": 0.7685210173554154
+              },
+              "5": {
+                "n": 1079,
+                "mean_ret": -0.011005361913422728,
+                "mean_mfe": 1.0146657778412222,
+                "mean_mae": 0.9775055982439664
+              },
+              "10": {
+                "n": 1079,
+                "mean_ret": -0.10458776343760101,
+                "mean_mfe": 1.389631308210803,
+                "mean_mae": 1.3951235302079688
+              },
+              "20": {
+                "n": 1079,
+                "mean_ret": -0.21128928033565478,
+                "mean_mfe": 2.093218551478472,
+                "mean_mae": 2.2829705976959795
+              },
+              "50": {
+                "n": 1079,
+                "mean_ret": -0.5122222080645081,
+                "mean_mfe": 3.5549721764892723,
+                "mean_mae": 4.089518096247211
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9453197405004634,
+                "adverse_rate": 0.9527340129749768,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8962001853568119,
+                "adverse_rate": 0.9212233549582948,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7961075069508804,
+                "adverse_rate": 0.8341056533827618,
+                "median_favorable_ttf": 6.0
+              },
+              "1.5": {
+                "favorable_rate": 0.6969416126042632,
+                "adverse_rate": 0.7451343836886005,
+                "median_favorable_ttf": 10.0
+              },
+              "2.0": {
+                "favorable_rate": 0.5940685820203893,
+                "adverse_rate": 0.6811862835959221,
+                "median_favorable_ttf": 14.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5004633920296571,
+              "reversal": 0.4995366079703429,
+              "stall": 0.0
+            }
+          }
+        },
+        "session_late": {
+          "n": 134,
+          "revisit_rate": 0.9701492537313433,
+          "n_revisited_with_outcome": 130,
+          "continuation_rate": 0.4846153846153846,
+          "reversal_rate": 0.5153846153846153,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 130,
+            "by_horizon": {
+              "1": {
+                "n": 130,
+                "mean_ret": 0.01622573752563719,
+                "mean_mfe": 0.5467441241011499,
+                "mean_mae": 0.4983104972283092
+              },
+              "3": {
+                "n": 130,
+                "mean_ret": 0.037880926165261355,
+                "mean_mfe": 0.8588012548896495,
+                "mean_mae": 0.7989094217824861
+              },
+              "5": {
+                "n": 130,
+                "mean_ret": 0.018201249063552135,
+                "mean_mfe": 1.0393042933871361,
+                "mean_mae": 0.9954687922837344
+              },
+              "10": {
+                "n": 130,
+                "mean_ret": 0.04718060983791776,
+                "mean_mfe": 1.5210199428996707,
+                "mean_mae": 1.4265265155329998
+              },
+              "20": {
+                "n": 130,
+                "mean_ret": 0.09901203847276244,
+                "mean_mfe": 2.2749250846444644,
+                "mean_mae": 2.2647461495737127
+              },
+              "50": {
+                "n": 130,
+                "mean_ret": -0.21639624673857724,
+                "mean_mfe": 3.521685929564032,
+                "mean_mae": 3.5217135104497217
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9461538461538461,
+                "adverse_rate": 0.9230769230769231,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9,
+                "adverse_rate": 0.8846153846153846,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7615384615384615,
+                "adverse_rate": 0.7538461538461538,
+                "median_favorable_ttf": 5.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7230769230769231,
+                "adverse_rate": 0.7230769230769231,
+                "median_favorable_ttf": 7.5
+              },
+              "2.0": {
+                "favorable_rate": 0.6153846153846154,
+                "adverse_rate": 0.6076923076923076,
+                "median_favorable_ttf": 10.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4846153846153846,
+              "reversal": 0.5153846153846153,
+              "stall": 0.0
+            }
+          }
+        },
+        "vol_low": {
+          "n": 958,
+          "revisit_rate": 0.9864300626304802,
+          "n_revisited_with_outcome": 945,
+          "continuation_rate": 0.544973544973545,
+          "reversal_rate": 0.455026455026455,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 945,
+            "by_horizon": {
+              "1": {
+                "n": 945,
+                "mean_ret": -0.03335721633613958,
+                "mean_mfe": 0.7767056815918314,
+                "mean_mae": 0.8358889601522352
+              },
+              "3": {
+                "n": 945,
+                "mean_ret": 0.03664452892559253,
+                "mean_mfe": 1.432414966846647,
+                "mean_mae": 1.3801838065953913
+              },
+              "5": {
+                "n": 945,
+                "mean_ret": 0.006371254445667781,
+                "mean_mfe": 1.8945572229007723,
+                "mean_mae": 1.8472389122918311
+              },
+              "10": {
+                "n": 945,
+                "mean_ret": 0.07618427540025616,
+                "mean_mfe": 2.6499763709542314,
+                "mean_mae": 2.537613585184032
+              },
+              "20": {
+                "n": 945,
+                "mean_ret": 0.17631697301575858,
+                "mean_mfe": 3.5341523708361815,
+                "mean_mae": 3.3103358117995745
+              },
+              "50": {
+                "n": 945,
+                "mean_ret": 0.48419105926895223,
+                "mean_mfe": 5.899516126039176,
+                "mean_mae": 5.473926829651408
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9619047619047619,
+                "adverse_rate": 0.9608465608465608,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9333333333333333,
+                "adverse_rate": 0.9248677248677248,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8899470899470899,
+                "adverse_rate": 0.8444444444444444,
+                "median_favorable_ttf": 2.0
+              },
+              "1.5": {
+                "favorable_rate": 0.8222222222222222,
+                "adverse_rate": 0.7947089947089947,
+                "median_favorable_ttf": 3.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7693121693121693,
+                "adverse_rate": 0.746031746031746,
+                "median_favorable_ttf": 6.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.544973544973545,
+              "reversal": 0.455026455026455,
+              "stall": 0.0
+            }
+          }
+        },
+        "vol_mid": {
+          "n": 872,
+          "revisit_rate": 0.9724770642201835,
+          "n_revisited_with_outcome": 848,
+          "continuation_rate": 0.5389150943396226,
+          "reversal_rate": 0.46108490566037735,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 848,
+            "by_horizon": {
+              "1": {
+                "n": 848,
+                "mean_ret": 0.0533555493814305,
+                "mean_mfe": 0.6405619423524812,
+                "mean_mae": 0.5763267754647011
+              },
+              "3": {
+                "n": 848,
+                "mean_ret": 0.11979186897751773,
+                "mean_mfe": 1.081832221192047,
+                "mean_mae": 0.9373711963713833
+              },
+              "5": {
+                "n": 848,
+                "mean_ret": 0.09235487059239422,
+                "mean_mfe": 1.3329852744756543,
+                "mean_mae": 1.1844645118064967
+              },
+              "10": {
+                "n": 848,
+                "mean_ret": 0.03000000341779708,
+                "mean_mfe": 1.8356314215365783,
+                "mean_mae": 1.7408863220243729
+              },
+              "20": {
+                "n": 848,
+                "mean_ret": -0.028757110778432717,
+                "mean_mfe": 2.5815442987149035,
+                "mean_mae": 2.6014453766104144
+              },
+              "50": {
+                "n": 848,
+                "mean_ret": -0.2391827726738425,
+                "mean_mfe": 4.25645750190261,
+                "mean_mae": 4.485018085486889
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9587264150943396,
+                "adverse_rate": 0.9481132075471698,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9186320754716981,
+                "adverse_rate": 0.9115566037735849,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8466981132075472,
+                "adverse_rate": 0.8408018867924528,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7700471698113207,
+                "adverse_rate": 0.7712264150943396,
+                "median_favorable_ttf": 7.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6969339622641509,
+                "adverse_rate": 0.6910377358490566,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5389150943396226,
+              "reversal": 0.46108490566037735,
+              "stall": 0.0
+            }
+          }
+        },
+        "vol_high": {
+          "n": 1131,
+          "revisit_rate": 0.9478337754199824,
+          "n_revisited_with_outcome": 1072,
+          "continuation_rate": 0.5102611940298507,
+          "reversal_rate": 0.48973880597014924,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 1072,
+            "by_horizon": {
+              "1": {
+                "n": 1072,
+                "mean_ret": -0.007639424083165082,
+                "mean_mfe": 0.4620147862303454,
+                "mean_mae": 0.4762450015580378
+              },
+              "3": {
+                "n": 1072,
+                "mean_ret": 0.016160560996492705,
+                "mean_mfe": 0.7859515560373244,
+                "mean_mae": 0.7629818802972169
+              },
+              "5": {
+                "n": 1072,
+                "mean_ret": 0.018078425733216625,
+                "mean_mfe": 1.023738526920894,
+                "mean_mae": 0.9802643051796462
+              },
+              "10": {
+                "n": 1072,
+                "mean_ret": 0.011481289435497087,
+                "mean_mfe": 1.4397228573699963,
+                "mean_mae": 1.3424572251215903
+              },
+              "20": {
+                "n": 1072,
+                "mean_ret": 0.05821390004014743,
+                "mean_mfe": 2.1079533767063525,
+                "mean_mae": 1.9993450113263849
+              },
+              "50": {
+                "n": 1072,
+                "mean_ret": -0.10333190486102757,
+                "mean_mfe": 3.448438477114085,
+                "mean_mae": 3.453892025502428
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9300373134328358,
+                "adverse_rate": 0.9421641791044776,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.875,
+                "adverse_rate": 0.8955223880597015,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7686567164179104,
+                "adverse_rate": 0.7826492537313433,
+                "median_favorable_ttf": 5.0
+              },
+              "1.5": {
+                "favorable_rate": 0.6772388059701493,
+                "adverse_rate": 0.6884328358208955,
+                "median_favorable_ttf": 8.0
+              },
+              "2.0": {
+                "favorable_rate": 0.5783582089552238,
+                "adverse_rate": 0.601679104477612,
+                "median_favorable_ttf": 12.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5102611940298507,
+              "reversal": 0.48973880597014924,
+              "stall": 0.0
+            }
+          }
+        },
+        "trend_bull": {
+          "n": 1301,
+          "revisit_rate": 0.9546502690238279,
+          "n_revisited_with_outcome": 1242,
+          "continuation_rate": 0.5466988727858293,
+          "reversal_rate": 0.4533011272141707,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 1242,
+            "by_horizon": {
+              "1": {
+                "n": 1242,
+                "mean_ret": 0.017726027403245716,
+                "mean_mfe": 0.6566122191797875,
+                "mean_mae": 0.6405397248862263
+              },
+              "3": {
+                "n": 1242,
+                "mean_ret": 0.06659238123487653,
+                "mean_mfe": 1.1407531253936967,
+                "mean_mae": 1.0621955663105975
+              },
+              "5": {
+                "n": 1242,
+                "mean_ret": 0.06872677703929503,
+                "mean_mfe": 1.4873873601272436,
+                "mean_mae": 1.3880772535032513
+              },
+              "10": {
+                "n": 1242,
+                "mean_ret": 0.1377284489175542,
+                "mean_mfe": 2.082521019614492,
+                "mean_mae": 1.8768926838107238
+              },
+              "20": {
+                "n": 1242,
+                "mean_ret": 0.24399991756751918,
+                "mean_mfe": 2.9109938365401655,
+                "mean_mae": 2.6211199668491636
+              },
+              "50": {
+                "n": 1242,
+                "mean_ret": 0.5647974019146753,
+                "mean_mfe": 4.983707775798579,
+                "mean_mae": 4.3493393742217235
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9557165861513688,
+                "adverse_rate": 0.9412238325281803,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9162640901771336,
+                "adverse_rate": 0.9009661835748792,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8478260869565217,
+                "adverse_rate": 0.8115942028985508,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7721417069243156,
+                "adverse_rate": 0.7367149758454107,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7069243156199678,
+                "adverse_rate": 0.6690821256038647,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5466988727858293,
+              "reversal": 0.4533011272141707,
+              "stall": 0.0
+            }
+          }
+        },
+        "trend_bear": {
+          "n": 1293,
+          "revisit_rate": 0.9775715390564579,
+          "n_revisited_with_outcome": 1264,
+          "continuation_rate": 0.5150316455696202,
+          "reversal_rate": 0.4849683544303797,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 1264,
+            "by_horizon": {
+              "1": {
+                "n": 1264,
+                "mean_ret": -0.011967904620688564,
+                "mean_mfe": 0.5891524033337473,
+                "mean_mae": 0.6070176679105493
+              },
+              "3": {
+                "n": 1264,
+                "mean_ret": 0.02441899232874675,
+                "mean_mfe": 1.0326036774374656,
+                "mean_mae": 0.9854279292577153
+              },
+              "5": {
+                "n": 1264,
+                "mean_ret": 0.009366730098098262,
+                "mean_mfe": 1.3288488918107044,
+                "mean_mae": 1.2649565319788785
+              },
+              "10": {
+                "n": 1264,
+                "mean_ret": -0.01980158334010817,
+                "mean_mfe": 1.8421356903593393,
+                "mean_mae": 1.7778899437171793
+              },
+              "20": {
+                "n": 1264,
+                "mean_ret": -0.07543215832501557,
+                "mean_mfe": 2.5196653125564774,
+                "mean_mae": 2.513456317098611
+              },
+              "50": {
+                "n": 1264,
+                "mean_ret": -0.4177043104074617,
+                "mean_mfe": 3.9803720561712272,
+                "mean_mae": 4.35306525722688
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9477848101265823,
+                "adverse_rate": 0.9604430379746836,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9042721518987342,
+                "adverse_rate": 0.9208860759493671,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.819620253164557,
+                "adverse_rate": 0.8306962025316456,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7318037974683544,
+                "adverse_rate": 0.7555379746835443,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6542721518987342,
+                "adverse_rate": 0.6764240506329114,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5150316455696202,
+              "reversal": 0.4849683544303797,
+              "stall": 0.0
+            }
+          }
+        },
+        "trend_range": {
+          "n": 400,
+          "revisit_rate": 0.98,
+          "n_revisited_with_outcome": 392,
+          "continuation_rate": 0.5178571428571429,
+          "reversal_rate": 0.48214285714285715,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 392,
+            "by_horizon": {
+              "1": {
+                "n": 392,
+                "mean_ret": 0.01126450068462276,
+                "mean_mfe": 0.6033362298763958,
+                "mean_mae": 0.6255095423506597
+              },
+              "3": {
+                "n": 392,
+                "mean_ret": 0.09730591208583088,
+                "mean_mfe": 1.0986156238811449,
+                "mean_mae": 0.9992746320502667
+              },
+              "5": {
+                "n": 392,
+                "mean_ret": 0.021044831482129718,
+                "mean_mfe": 1.3812260117558535,
+                "mean_mae": 1.3405182917322707
+              },
+              "10": {
+                "n": 392,
+                "mean_ret": -0.07859864207201117,
+                "mean_mfe": 1.9316758971254002,
+                "mean_mae": 2.0341334641981517
+              },
+              "20": {
+                "n": 392,
+                "mean_ret": -0.06284276518284296,
+                "mean_mfe": 2.741346624464031,
+                "mean_mae": 2.9323163356100563
+              },
+              "50": {
+                "n": 392,
+                "mean_ret": -0.2435385111089615,
+                "mean_mfe": 4.530956106530648,
+                "mean_mae": 4.961618973245959
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9311224489795918,
+                "adverse_rate": 0.9413265306122449,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8903061224489796,
+                "adverse_rate": 0.9030612244897959,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8137755102040817,
+                "adverse_rate": 0.8188775510204082,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7551020408163265,
+                "adverse_rate": 0.7653061224489796,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6377551020408163,
+                "adverse_rate": 0.701530612244898,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5178571428571429,
+              "reversal": 0.48214285714285715,
+              "stall": 0.0
+            }
+          }
+        },
+        "dow_Monday": {
+          "n": 550,
+          "revisit_rate": 0.98,
+          "n_revisited_with_outcome": 539,
+          "continuation_rate": 0.4712430426716141,
+          "reversal_rate": 0.5287569573283859,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 539,
+            "by_horizon": {
+              "1": {
+                "n": 539,
+                "mean_ret": -0.021370544833500656,
+                "mean_mfe": 0.5133397798578414,
+                "mean_mae": 0.5429020232958405
+              },
+              "3": {
+                "n": 539,
+                "mean_ret": -0.056108459785284004,
+                "mean_mfe": 0.8495321467313471,
+                "mean_mae": 0.8806722876810558
+              },
+              "5": {
+                "n": 539,
+                "mean_ret": -0.11255192791907798,
+                "mean_mfe": 1.0836619102334353,
+                "mean_mae": 1.1617889452791954
+              },
+              "10": {
+                "n": 539,
+                "mean_ret": -0.02291600123814781,
+                "mean_mfe": 1.523605495852272,
+                "mean_mae": 1.5731573738409113
+              },
+              "20": {
+                "n": 539,
+                "mean_ret": -0.007174344528471199,
+                "mean_mfe": 2.246315898495891,
+                "mean_mae": 2.242398562515578
+              },
+              "50": {
+                "n": 539,
+                "mean_ret": -0.06435613670156781,
+                "mean_mfe": 3.7794839266789224,
+                "mean_mae": 3.8606265049229695
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9276437847866419,
+                "adverse_rate": 0.9499072356215214,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8645640074211502,
+                "adverse_rate": 0.9035250463821892,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.7792207792207793,
+                "adverse_rate": 0.8107606679035251,
+                "median_favorable_ttf": 4.0
+              },
+              "1.5": {
+                "favorable_rate": 0.6938775510204082,
+                "adverse_rate": 0.7402597402597403,
+                "median_favorable_ttf": 8.0
+              },
+              "2.0": {
+                "favorable_rate": 0.5899814471243042,
+                "adverse_rate": 0.6289424860853432,
+                "median_favorable_ttf": 12.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.4712430426716141,
+              "reversal": 0.5287569573283859,
+              "stall": 0.0
+            }
+          }
+        },
+        "dow_Tuesday": {
+          "n": 623,
+          "revisit_rate": 0.9727126805778491,
+          "n_revisited_with_outcome": 606,
+          "continuation_rate": 0.5594059405940595,
+          "reversal_rate": 0.4405940594059406,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 606,
+            "by_horizon": {
+              "1": {
+                "n": 606,
+                "mean_ret": 0.007952498284711201,
+                "mean_mfe": 0.6735290789032645,
+                "mean_mae": 0.6750862794090785
+              },
+              "3": {
+                "n": 606,
+                "mean_ret": 0.05451449719342633,
+                "mean_mfe": 1.161494223271669,
+                "mean_mae": 1.071370999480289
+              },
+              "5": {
+                "n": 606,
+                "mean_ret": 0.06457465321289631,
+                "mean_mfe": 1.460110220496309,
+                "mean_mae": 1.3508804651485287
+              },
+              "10": {
+                "n": 606,
+                "mean_ret": -0.02957961388652288,
+                "mean_mfe": 1.960746121950473,
+                "mean_mae": 1.8819824034188317
+              },
+              "20": {
+                "n": 606,
+                "mean_ret": 0.042058105779676794,
+                "mean_mfe": 2.6964696860488893,
+                "mean_mae": 2.597188981955282
+              },
+              "50": {
+                "n": 606,
+                "mean_ret": 0.13141595853286664,
+                "mean_mfe": 4.6303570420240625,
+                "mean_mae": 4.494330807319157
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9554455445544554,
+                "adverse_rate": 0.9504950495049505,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9191419141914191,
+                "adverse_rate": 0.9224422442244224,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8597359735973598,
+                "adverse_rate": 0.8217821782178217,
+                "median_favorable_ttf": 2.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7739273927392739,
+                "adverse_rate": 0.731023102310231,
+                "median_favorable_ttf": 6.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6963696369636964,
+                "adverse_rate": 0.6798679867986799,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5594059405940595,
+              "reversal": 0.4405940594059406,
+              "stall": 0.0
+            }
+          }
+        },
+        "dow_Wednesday": {
+          "n": 598,
+          "revisit_rate": 0.9816053511705686,
+          "n_revisited_with_outcome": 587,
+          "continuation_rate": 0.5383304940374787,
+          "reversal_rate": 0.4616695059625213,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 587,
+            "by_horizon": {
+              "1": {
+                "n": 587,
+                "mean_ret": 0.03451858467456962,
+                "mean_mfe": 0.6472935197749493,
+                "mean_mae": 0.621543707750177
+              },
+              "3": {
+                "n": 587,
+                "mean_ret": 0.0464269892543224,
+                "mean_mfe": 1.1232391714054948,
+                "mean_mae": 1.0610910901971413
+              },
+              "5": {
+                "n": 587,
+                "mean_ret": -0.004377038233637735,
+                "mean_mfe": 1.489699885990131,
+                "mean_mae": 1.4397882092405698
+              },
+              "10": {
+                "n": 587,
+                "mean_ret": 0.057979532549260616,
+                "mean_mfe": 2.081884208430494,
+                "mean_mae": 1.928379300314132
+              },
+              "20": {
+                "n": 587,
+                "mean_ret": 0.20579256156937242,
+                "mean_mfe": 2.945191903028514,
+                "mean_mae": 2.7893525108207253
+              },
+              "50": {
+                "n": 587,
+                "mean_ret": 0.19033803609006356,
+                "mean_mfe": 4.854341842139629,
+                "mean_mae": 4.551897588120726
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9659284497444633,
+                "adverse_rate": 0.9625212947189097,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9403747870528109,
+                "adverse_rate": 0.9267461669505963,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8603066439522998,
+                "adverse_rate": 0.8364565587734242,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7853492333901193,
+                "adverse_rate": 0.7836456558773425,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.706984667802385,
+                "adverse_rate": 0.7308347529812607,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5383304940374787,
+              "reversal": 0.4616695059625213,
+              "stall": 0.0
+            }
+          }
+        },
+        "dow_Thursday": {
+          "n": 599,
+          "revisit_rate": 0.9632721202003339,
+          "n_revisited_with_outcome": 577,
+          "continuation_rate": 0.5528596187175043,
+          "reversal_rate": 0.44714038128249567,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 577,
+            "by_horizon": {
+              "1": {
+                "n": 577,
+                "mean_ret": -0.028443249112512416,
+                "mean_mfe": 0.6017696747783454,
+                "mean_mae": 0.6260917746049878
+              },
+              "3": {
+                "n": 577,
+                "mean_ret": 0.11447423703048204,
+                "mean_mfe": 1.1218156152786054,
+                "mean_mae": 0.9915124769034436
+              },
+              "5": {
+                "n": 577,
+                "mean_ret": 0.09209634657719915,
+                "mean_mfe": 1.4364192350384117,
+                "mean_mae": 1.32529322914257
+              },
+              "10": {
+                "n": 577,
+                "mean_ret": 0.08874819656328004,
+                "mean_mfe": 1.9569638792809612,
+                "mean_mae": 1.8330796071348097
+              },
+              "20": {
+                "n": 577,
+                "mean_ret": 0.038302695194440343,
+                "mean_mfe": 2.713084215912157,
+                "mean_mae": 2.6335171162250908
+              },
+              "50": {
+                "n": 577,
+                "mean_ret": -0.020810585249401145,
+                "mean_mfe": 4.725827808798403,
+                "mean_mae": 4.765399732988268
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.949740034662045,
+                "adverse_rate": 0.9393414211438474,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9064124783362218,
+                "adverse_rate": 0.8994800693240901,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8388214904679376,
+                "adverse_rate": 0.8266897746967071,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7642980935875217,
+                "adverse_rate": 0.7521663778162911,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.7001733102253033,
+                "adverse_rate": 0.6915077989601387,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5528596187175043,
+              "reversal": 0.44714038128249567,
+              "stall": 0.0
+            }
+          }
+        },
+        "dow_Friday": {
+          "n": 574,
+          "revisit_rate": 0.9407665505226481,
+          "n_revisited_with_outcome": 540,
+          "continuation_rate": 0.524074074074074,
+          "reversal_rate": 0.4759259259259259,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 540,
+            "by_horizon": {
+              "1": {
+                "n": 540,
+                "mean_ret": 0.022083474231526217,
+                "mean_mfe": 0.6607704869301667,
+                "mean_mae": 0.660614158554473
+              },
+              "3": {
+                "n": 540,
+                "mean_ret": 0.10831402734729727,
+                "mean_mfe": 1.1885896752797314,
+                "mean_mae": 1.1059220016197606
+              },
+              "5": {
+                "n": 540,
+                "mean_ret": 0.1442038517142054,
+                "mean_mfe": 1.5712432415935382,
+                "mean_mae": 1.3854888794662215
+              },
+              "10": {
+                "n": 540,
+                "mean_ret": 0.09685166882196185,
+                "mean_mfe": 2.302941608545665,
+                "mean_mae": 2.1006179442745325
+              },
+              "20": {
+                "n": 540,
+                "mean_ret": 0.027123507039901986,
+                "mean_mfe": 3.0238071817579564,
+                "mean_mae": 2.851522882391528
+              },
+              "50": {
+                "n": 540,
+                "mean_ret": -0.13960319412995315,
+                "mean_mfe": 4.462535739975242,
+                "mean_mae": 4.574533055865789
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9462962962962963,
+                "adverse_rate": 0.9481481481481482,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9055555555555556,
+                "adverse_rate": 0.9,
+                "median_favorable_ttf": 0.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8148148148148148,
+                "adverse_rate": 0.8148148148148148,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7388888888888889,
+                "adverse_rate": 0.7388888888888889,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6777777777777778,
+                "adverse_rate": 0.6574074074074074,
+                "median_favorable_ttf": 7.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.524074074074074,
+              "reversal": 0.4759259259259259,
+              "stall": 0.0
+            }
+          }
+        }
+      },
+      "gap_size_sensitivity": {
+        "0.0": {
+          "n_inverted": 2994,
+          "summary": {
+            "n": 2994,
+            "revisit_rate": 0.9679358717434869,
+            "n_revisited_with_outcome": 2898,
+            "continuation_rate": 0.5289855072463768,
+            "reversal_rate": 0.47101449275362317,
+            "stall_rate": 0.0,
+            "movement_summary": {
+              "n": 2898,
+              "by_horizon": {
+                "1": {
+                  "n": 2898,
+                  "mean_ret": 0.003900613824241875,
+                  "mean_mfe": 0.6199823382148724,
+                  "mean_mae": 0.623885580106655
+                },
+                "3": {
+                  "n": 2898,
+                  "mean_ret": 0.05235240211694212,
+                  "mean_mfe": 1.0878825930232354,
+                  "mean_mae": 1.0202013290901377
+                },
+                "5": {
+                  "n": 2898,
+                  "mean_ret": 0.03638639677977761,
+                  "mean_mfe": 1.4038787774793173,
+                  "mean_mae": 1.3279434698521015
+                },
+                "10": {
+                  "n": 2898,
+                  "mean_ret": 0.039758062291745076,
+                  "mean_mfe": 1.9572696931154452,
+                  "mean_mae": 1.8549806487636677
+                },
+                "20": {
+                  "n": 2898,
+                  "mean_ret": 0.06317021585381807,
+                  "mean_mfe": 2.7173634150601016,
+                  "mean_mae": 2.6162552750857304
+                },
+                "50": {
+                  "n": 2898,
+                  "mean_ret": 0.026926510858620467,
+                  "mean_mfe": 4.484848216115348,
+                  "mean_mae": 4.433784894903579
+                }
+              },
+              "by_threshold": {
+                "0.25": {
+                  "favorable_rate": 0.9489302967563837,
+                  "adverse_rate": 0.9496204278812974,
+                  "median_favorable_ttf": 0.0
+                },
+                "0.5": {
+                  "favorable_rate": 0.9075224292615597,
+                  "adverse_rate": 0.9099378881987578,
+                  "median_favorable_ttf": 1.0
+                },
+                "1.0": {
+                  "favorable_rate": 0.8309178743961353,
+                  "adverse_rate": 0.8209109730848861,
+                  "median_favorable_ttf": 3.0
+                },
+                "1.5": {
+                  "favorable_rate": 0.7522429261559697,
+                  "adverse_rate": 0.748792270531401,
+                  "median_favorable_ttf": 6.0
+                },
+                "2.0": {
+                  "favorable_rate": 0.6746031746031746,
+                  "adverse_rate": 0.6766735679779158,
+                  "median_favorable_ttf": 9.0
+                }
+              },
+              "outcome_rates": {
+                "continuation": 0.5289855072463768,
+                "reversal": 0.47101449275362317,
+                "stall": 0.0
+              }
+            }
+          }
+        },
+        "0.1": {
+          "n_inverted": 2303,
+          "summary": {
+            "n": 2303,
+            "revisit_rate": 0.9683022145028224,
+            "n_revisited_with_outcome": 2230,
+            "continuation_rate": 0.5286995515695068,
+            "reversal_rate": 0.4713004484304933,
+            "stall_rate": 0.0,
+            "movement_summary": {
+              "n": 2230,
+              "by_horizon": {
+                "1": {
+                  "n": 2230,
+                  "mean_ret": 0.008313348522275341,
+                  "mean_mfe": 0.6311705081611896,
+                  "mean_mae": 0.6307550007126064
+                },
+                "3": {
+                  "n": 2230,
+                  "mean_ret": 0.06168233451475915,
+                  "mean_mfe": 1.1070717732614226,
+                  "mean_mae": 1.0351209604576779
+                },
+                "5": {
+                  "n": 2230,
+                  "mean_ret": 0.050651018339378406,
+                  "mean_mfe": 1.4267241353414781,
+                  "mean_mae": 1.3388788841131156
+                },
+                "10": {
+                  "n": 2230,
+                  "mean_ret": 0.016061135748974456,
+                  "mean_mfe": 1.9495456359989014,
+                  "mean_mae": 1.866290223440669
+                },
+                "20": {
+                  "n": 2230,
+                  "mean_ret": 0.0716729951870134,
+                  "mean_mfe": 2.6860175715491765,
+                  "mean_mae": 2.595048771899386
+                },
+                "50": {
+                  "n": 2230,
+                  "mean_ret": 0.11667872049533429,
+                  "mean_mfe": 4.493536834506258,
+                  "mean_mae": 4.386089320044762
+                }
+              },
+              "by_threshold": {
+                "0.25": {
+                  "favorable_rate": 0.9484304932735426,
+                  "adverse_rate": 0.9475336322869955,
+                  "median_favorable_ttf": 0.0
+                },
+                "0.5": {
+                  "favorable_rate": 0.9089686098654709,
+                  "adverse_rate": 0.9103139013452914,
+                  "median_favorable_ttf": 1.0
+                },
+                "1.0": {
+                  "favorable_rate": 0.8318385650224215,
+                  "adverse_rate": 0.8197309417040358,
+                  "median_favorable_ttf": 3.0
+                },
+                "1.5": {
+                  "favorable_rate": 0.7547085201793722,
+                  "adverse_rate": 0.7448430493273542,
+                  "median_favorable_ttf": 6.0
+                },
+                "2.0": {
+                  "favorable_rate": 0.6739910313901345,
+                  "adverse_rate": 0.673542600896861,
+                  "median_favorable_ttf": 9.0
+                }
+              },
+              "outcome_rates": {
+                "continuation": 0.5286995515695068,
+                "reversal": 0.4713004484304933,
+                "stall": 0.0
+              }
+            }
+          }
+        },
+        "0.25": {
+          "n_inverted": 1554,
+          "summary": {
+            "n": 1554,
+            "revisit_rate": 0.9697554697554698,
+            "n_revisited_with_outcome": 1507,
+            "continuation_rate": 0.5381552753815527,
+            "reversal_rate": 0.4618447246184472,
+            "stall_rate": 0.0,
+            "movement_summary": {
+              "n": 1507,
+              "by_horizon": {
+                "1": {
+                  "n": 1507,
+                  "mean_ret": 0.00639121911514837,
+                  "mean_mfe": 0.6241215712270758,
+                  "mean_mae": 0.6179155894289081
+                },
+                "3": {
+                  "n": 1507,
+                  "mean_ret": 0.07277515204268323,
+                  "mean_mfe": 1.0851721155777172,
+                  "mean_mae": 1.0151103415374712
+                },
+                "5": {
+                  "n": 1507,
+                  "mean_ret": 0.07558322834423999,
+                  "mean_mfe": 1.4123231226447641,
+                  "mean_mae": 1.312576971064733
+                },
+                "10": {
+                  "n": 1507,
+                  "mean_ret": 0.014281085821502454,
+                  "mean_mfe": 1.9164627084441987,
+                  "mean_mae": 1.8374888357618684
+                },
+                "20": {
+                  "n": 1507,
+                  "mean_ret": 0.09804785559749661,
+                  "mean_mfe": 2.6269918648397352,
+                  "mean_mae": 2.53317779304749
+                },
+                "50": {
+                  "n": 1507,
+                  "mean_ret": 0.2033630238327797,
+                  "mean_mfe": 4.406573543360803,
+                  "mean_mae": 4.2202583311237
+                }
+              },
+              "by_threshold": {
+                "0.25": {
+                  "favorable_rate": 0.9475779694757797,
+                  "adverse_rate": 0.946914399469144,
+                  "median_favorable_ttf": 0.0
+                },
+                "0.5": {
+                  "favorable_rate": 0.9097544790975448,
+                  "adverse_rate": 0.9044459190444591,
+                  "median_favorable_ttf": 1.0
+                },
+                "1.0": {
+                  "favorable_rate": 0.8327803583278036,
+                  "adverse_rate": 0.8175182481751825,
+                  "median_favorable_ttf": 3.0
+                },
+                "1.5": {
+                  "favorable_rate": 0.7571333775713338,
+                  "adverse_rate": 0.7451891174518912,
+                  "median_favorable_ttf": 5.0
+                },
+                "2.0": {
+                  "favorable_rate": 0.6808228268082283,
+                  "adverse_rate": 0.6721964167219642,
+                  "median_favorable_ttf": 9.0
+                }
+              },
+              "outcome_rates": {
+                "continuation": 0.5381552753815527,
+                "reversal": 0.4618447246184472,
+                "stall": 0.0
+              }
+            }
+          }
+        }
+      },
+      "yearly_stability": {
+        "2023": {
+          "n": 1039,
+          "revisit_rate": 0.9557266602502407,
+          "n_revisited_with_outcome": 993,
+          "continuation_rate": 0.5337361530715005,
+          "reversal_rate": 0.4662638469284995,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 993,
+            "by_horizon": {
+              "1": {
+                "n": 993,
+                "mean_ret": -0.030376436198041472,
+                "mean_mfe": 0.6419642842574834,
+                "mean_mae": 0.6751059276072705
+              },
+              "3": {
+                "n": 993,
+                "mean_ret": 0.004834798253912983,
+                "mean_mfe": 1.113224621778507,
+                "mean_mae": 1.1050332662259041
+              },
+              "5": {
+                "n": 993,
+                "mean_ret": -0.06825478880105508,
+                "mean_mfe": 1.4156900248391244,
+                "mean_mae": 1.4083135640364346
+              },
+              "10": {
+                "n": 993,
+                "mean_ret": -0.039191138081940344,
+                "mean_mfe": 1.9821157773249354,
+                "mean_mae": 2.0025882774729897
+              },
+              "20": {
+                "n": 993,
+                "mean_ret": -0.05087124396183253,
+                "mean_mfe": 2.684830398990514,
+                "mean_mae": 2.8056831162362066
+              },
+              "50": {
+                "n": 993,
+                "mean_ret": 0.06415163669603964,
+                "mean_mfe": 4.594252732356565,
+                "mean_mae": 4.650715578875103
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9526686807653575,
+                "adverse_rate": 0.9446122860020141,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9224572004028198,
+                "adverse_rate": 0.9123867069486404,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8439073514602216,
+                "adverse_rate": 0.8328298086606244,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7673716012084593,
+                "adverse_rate": 0.7643504531722054,
+                "median_favorable_ttf": 7.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6898288016112789,
+                "adverse_rate": 0.7039274924471299,
+                "median_favorable_ttf": 10.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5337361530715005,
+              "reversal": 0.4662638469284995,
+              "stall": 0.0
+            }
+          }
+        },
+        "2024": {
+          "n": 1072,
+          "revisit_rate": 0.9869402985074627,
+          "n_revisited_with_outcome": 1058,
+          "continuation_rate": 0.5122873345935728,
+          "reversal_rate": 0.4877126654064272,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 1058,
+            "by_horizon": {
+              "1": {
+                "n": 1058,
+                "mean_ret": 0.006813975087149108,
+                "mean_mfe": 0.6338144386517248,
+                "mean_mae": 0.6394085859001507
+              },
+              "3": {
+                "n": 1058,
+                "mean_ret": 0.07254907224141748,
+                "mean_mfe": 1.1178174969622139,
+                "mean_mae": 1.028494186796889
+              },
+              "5": {
+                "n": 1058,
+                "mean_ret": 0.0946843893538662,
+                "mean_mfe": 1.4463342230616947,
+                "mean_mae": 1.3412080309952437
+              },
+              "10": {
+                "n": 1058,
+                "mean_ret": 0.08215079521664942,
+                "mean_mfe": 2.003479205701175,
+                "mean_mae": 1.8201270225463075
+              },
+              "20": {
+                "n": 1058,
+                "mean_ret": 0.18093944033580975,
+                "mean_mfe": 2.8164530874873557,
+                "mean_mae": 2.552411257060572
+              },
+              "50": {
+                "n": 1058,
+                "mean_ret": 0.07018342609526292,
+                "mean_mfe": 4.571405109036161,
+                "mean_mae": 4.4352649576673695
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.94234404536862,
+                "adverse_rate": 0.9565217391304348,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.8979206049149339,
+                "adverse_rate": 0.9234404536862004,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8289224952741021,
+                "adverse_rate": 0.8279773156899811,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7476370510396976,
+                "adverse_rate": 0.7561436672967864,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6625708884688091,
+                "adverse_rate": 0.6795841209829868,
+                "median_favorable_ttf": 9.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5122873345935728,
+              "reversal": 0.4877126654064272,
+              "stall": 0.0
+            }
+          }
+        },
+        "2025": {
+          "n": 883,
+          "revisit_rate": 0.9592298980747452,
+          "n_revisited_with_outcome": 847,
+          "continuation_rate": 0.5442739079102715,
+          "reversal_rate": 0.4557260920897285,
+          "stall_rate": 0.0,
+          "movement_summary": {
+            "n": 847,
+            "by_horizon": {
+              "1": {
+                "n": 847,
+                "mean_ret": 0.04044698272149278,
+                "mean_mfe": 0.5769334188730745,
+                "mean_mae": 0.544446211514412
+              },
+              "3": {
+                "n": 847,
+                "mean_ret": 0.08283280783629633,
+                "mean_mfe": 1.0207801574607518,
+                "mean_mae": 0.9103879205546487
+              },
+              "5": {
+                "n": 847,
+                "mean_ret": 0.08624403684870456,
+                "mean_mfe": 1.3369998754079555,
+                "mean_mae": 1.2171507789259066
+              },
+              "10": {
+                "n": 847,
+                "mean_ret": 0.07936260129590189,
+                "mean_mfe": 1.8704198395903855,
+                "mean_mae": 1.7254656088930782
+              },
+              "20": {
+                "n": 847,
+                "mean_ret": 0.04976210498604208,
+                "mean_mfe": 2.6317298985654918,
+                "mean_mae": 2.4739236632890313
+              },
+              "50": {
+                "n": 847,
+                "mean_ret": -0.0707480656194492,
+                "mean_mfe": 4.2484658343706645,
+                "mean_mae": 4.177612432580307
+              }
+            },
+            "by_threshold": {
+              "0.25": {
+                "favorable_rate": 0.9527744982290437,
+                "adverse_rate": 0.9468713105076741,
+                "median_favorable_ttf": 0.0
+              },
+              "0.5": {
+                "favorable_rate": 0.9020070838252656,
+                "adverse_rate": 0.8902007083825265,
+                "median_favorable_ttf": 1.0
+              },
+              "1.0": {
+                "favorable_rate": 0.8181818181818182,
+                "adverse_rate": 0.7981109799291618,
+                "median_favorable_ttf": 3.0
+              },
+              "1.5": {
+                "favorable_rate": 0.7402597402597403,
+                "adverse_rate": 0.7213695395513577,
+                "median_favorable_ttf": 5.0
+              },
+              "2.0": {
+                "favorable_rate": 0.6717827626918536,
+                "adverse_rate": 0.641086186540732,
+                "median_favorable_ttf": 8.0
+              }
+            },
+            "outcome_rates": {
+              "continuation": 0.5442739079102715,
+              "reversal": 0.4557260920897285,
+              "stall": 0.0
+            }
+          }
+        }
+      }
+    }
+  }
+}
