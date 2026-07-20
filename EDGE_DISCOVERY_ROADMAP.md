@@ -3,31 +3,29 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-21): REMEDIATION COMPLETE — awaiting CEO approval to resume at E017
+## ⚠ CURRENT STATUS (updated 2026-07-21): E017 DONE — awaiting CEO approval to resume at E009
 
-**TERMINAL HOLDOUT BREACHED** (`PROJECT_STATE_v2.md` §8.23): the five edges studied in this program's
-first research session (E025, E026, E028, E029, E032) all loaded and analyzed data from the Research
-Lab's own sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) — the shared Flow A
-loader applied no date cutoff. **The old terminal holdout is CONSUMED / INVALIDATED** — this remediation
-does not and cannot restore it; it only produces holdout-clean research reruns.
+**TERMINAL HOLDOUT BREACHED, then REMEDIATED** (`PROJECT_STATE_v2.md` §8.23/§8.24): the five edges
+studied in this program's first research session (E025, E026, E028, E029, E032) originally loaded data
+from the Research Lab's own sealed terminal holdout (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) — **the
+old terminal holdout is CONSUMED / INVALIDATED**, permanently. CEO-authorized remediation (2026-07-21)
+implemented centralized holdout-exclusion enforcement (`edge_research/_common.py::load()`, 17 tests
+passing) and cleanly reran all five — 4 of 5 CONFIRM their original finding, 1 (E025) partially weakens.
+Registry status: `DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE` for those five.
 
-**Remediation completed 2026-07-21, CEO-authorized**: (1) `EDGE_RESEARCH_PROTOCOL.md` §8's centralized
-holdout-exclusion enforcement implemented in `edge_research/_common.py::load()` (mandatory
-`data_split_id`/`cutoff`, exclusive upper bound `2025-10-23T09:15:00Z`, fail-closed on missing/invalid
-config, auditable split metadata on every call), with a 17-test suite (`edge_research/test_loader.py`,
-all passing); (2) all five contaminated edges cleanly rerun (`e0XX_..._clean.py` /
-`e0XX_..._clean_results.json`) — 4 of 5 (E026, E028, E029's rate pattern, E032) **CONFIRM** their
-original finding, 1 (E025) **partially WEAKENS** (its longer-horizon/subslice claims no longer clear
-significance; its short-horizon claim confirms); (3) each edge's permanent log
-(`edge_research/E0XX_*.md`) now carries both the original contaminated result (preserved verbatim) and
-the clean result, clearly distinguished. Registry status: `DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE`
-for all five (`EDGE_DISCOVERY_REGISTRY_v1.md`).
+**E017 — Equal Highs / Lows Target — Discovery pass complete, 2026-07-21, CEO-authorized, run entirely
+under the post-remediation centralized-loader enforcement from the start** (no contamination possible).
+**Result: V0 NOT supported** — equal-highs/lows show no reach-rate or reversal-magnitude advantage over
+ordinary isolated swings, robust across every tolerance (0.10–0.40×ATR) and horizon (1/5/20 trading
+days) tested; a random-matched-distance control reaches its target *more* reliably than real swing
+points, the opposite of a "magnet" story. No Final Verdict issued (below the ~5-6yr horizon). Full
+detail: `edge_research/E017_equal_highs_lows.md`.
 
-**The next Flow A action is NOT yet E017.** Per the CEO's own remediation authorization ("Do not
-continue to E017 or any new edge... Stop after the remediation report and await CEO verdict"), resuming
-the Tier 1 sequence at E017 requires its own separate CEO approval, not granted by remediation
-completing. Once granted, the Tier 1 sequence below (unchanged, only deferred) resumes at E017, then in
-order E009, E010, E012, E015, E013, E016, E011, E014, then the session-timing edges E006/E008/E005/E027.
+**The next Flow A action (E009) is NOT yet authorized.** Per the CEO's own E017 authorization ("Do not
+begin E009 or any later edge during this authorization... Stop after E017 and await CEO verdict"),
+resuming the Tier 1 sequence requires its own separate CEO approval. Once granted, the sequence resumes
+at **E009 — Change of Character Retest**, then in order **E010, E012, E015, E013, E016, E011, E014**,
+then the session-timing edges **E006, E008, E005, E027**.
 
 ## 1. Data-availability gap analysis (verified against what is actually on disk today)
 
