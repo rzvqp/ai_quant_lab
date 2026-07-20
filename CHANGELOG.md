@@ -1,5 +1,195 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-20 — OFFICIAL PROJECT SAVE (documentation and repository-freeze only, no code) — after Checkpoints 10–13
+- CEO-directed, after the full Checkpoints 10–13 batch closed and passed combined + full-repository
+  validation: a documentation and repository-freeze checkpoint synchronizing every official state
+  document with the completion of the entire Context Memory subsystem (Checkpoints 8–13). No code
+  implemented, no runtime modified, no architecture changed, Checkpoint 14 not started.
+- **Verified live**: combined Context Memory validation (all 221 `context_memory` tests, `mypy --strict`
+  on 11 source files, 100% package-wide coverage — 934/934 statements) — TARGETED CONTEXT MEMORY
+  VALIDATION PASSED. Then, justified once because four checkpoints closed together as a batch, the
+  complete repository suite ran ONCE: `pytest ai_trader/ -q` → 2051 passed (zero failures, zero
+  regressions against the Checkpoint 7 baseline of 1830); `mypy --strict ai_trader/ --exclude 'tests/'`
+  → clean on 210 source files (up from 199); `coverage run --source=ai_trader -m pytest ai_trader/ -q`
+  then `coverage report` → TOTAL 11813 stmts, 432 miss, 96% — the exact same 432-miss absolute count
+  carried unchanged since Implementation Checkpoint 1B, confirming zero coverage regression anywhere
+  outside the newly-added, 100%-covered Context Memory package — FULL REPOSITORY VALIDATION PASSED.
+- **Updated `PROJECT_STATE_v2.md`**: refreshed §0 (git state, verified-live full-repository AND
+  Context-Memory-scoped statistics); added new §8.6–§8.11 (Checkpoints 8 design/9 contracts/10
+  repository/11 episodes+index/12 retrieval/13 evidence, each DONE with its own commit hash), §8.12
+  (combined + full-repository validation, PASSED), §8.13 (this third official save), renumbering the
+  prior §8.6 ("Current authorized next step") to §8.14 and updating it to name Checkpoint 14 (Decision
+  Intelligence v2 / Context Memory integration) as PROPOSED but NOT AUTHORIZED; updated the modules table
+  (§9, added a `context_memory/` row), standing constraints (§10, added the Context Memory
+  never-outputs-a-recommendation principle + import-independence requirements + the "do not silently
+  change the relaxation ladder or the evidence-sufficiency policy" constraint), diagnostic artifacts
+  (§11), and reading order (§12, now leading with the Checkpoint 8–13 report chain).
+- **Rewrote `NEXT_SESSION.md` in full**: status table now covers Checkpoints 8–13 plus the third
+  official save; §B (naming disambiguation) extended to cover Context Memory as the fourth, newest, and
+  architecturally distinct layer (evidence about history, never the present, never a recommendation); §D
+  extended with a one-paragraph summary of each of Checkpoints 8–13; §E/§F refreshed with the new HEAD,
+  the full-repository AND package-scoped validation figures, and the Context Memory-specific standing
+  constraints.
+- **Updated `RECONSTRUCTION_PROMPT.md`**: reading order now leads with the Checkpoint 8–13 report chain
+  ahead of the Checkpoint 5–7 chain; the required reconstruction report now covers all nine Phase 7
+  checkpoints and all three official saves; the naming-disambiguation note extended to include Context
+  Memory.
+- **Updated `PROJECT_AUDIT.md`**: refreshed its own scope-note cross-reference to cite Phase 7 Checkpoint
+  13 (was Checkpoint 7) as the latest confirmed-0-diff AI Trader phase; added an explicit downstream-reuse
+  note recording that Checkpoint 13's `evidence.py` reuses this document's own `MINTR=25` and
+  CI-straddles-zero conventions verbatim — no content in this document's own defect register or
+  method-validity findings was changed.
+- **Created `PHASE_7_CHECKPOINTS_10_13_OFFICIAL_SAVE_REPORT.md`**: completed work / repository status /
+  documentation status / implementation status / remaining roadmap / exact next authorized checkpoint,
+  in one place, matching the precedent of all three prior official-save reports.
+- **No code was written or modified.** `git status --porcelain -- code/ results/ knowledge/ ai_trader/`
+  confirmed empty before and after this session's own documentation work.
+- **Status at this save: Phase 6.10 fully CLOSED (unchanged). Phase 7 Checkpoints 5 through 13 all DONE.
+  Context Memory is a complete, independently usable evidence subsystem, fully disconnected from
+  Decision Intelligence and every execution-adjacent package. Checkpoint 14 PROPOSED, NOT AUTHORIZED —
+  no code changes of any kind until the CEO explicitly authorizes it, in a new conversation if the CEO
+  chooses.**
+
+## Session 2026-07-20 — Phase 7 Checkpoint 13: Contextual Evidence Aggregation
+- CEO-authorized as part of the Checkpoints 10–13 batch (executed sequentially without re-authorization
+  between checkpoints, each independently validated and committed, per the batch's own explicit rules).
+  Build per-edge Contextual Evidence Aggregation over the Checkpoint 12 retrieval mechanism — evidence
+  reports only, never a BUY/SELL/entry/stop/target/size/execution output, never an edge ranking.
+- **Added `ai_trader/context_memory/evidence.py`**: `aggregate_evidence(index, retrieval, strategy_id,
+  policy) -> ContextualEvidenceReport` and `aggregate_all_present_edges(...)` (deterministically
+  `strategy_id`-sorted, never a cross-edge ranking). Episode-collapsed statistics only (one outcome per
+  episode, drawn from its FIRST member observation — Checkpoint 8 design §9.3's own "resolution point is
+  the first bar" convention) — `raw_outcome_count` reported separately for transparency, never used in
+  any statistic. Computes mean/median/sample stdev/a 95% normal-approximation CI (stdlib
+  `statistics.NormalDist`, no third-party dependency)/win-rate/sign counts/evidence consistency.
+- **Sufficiency policy grounded in already-validated project convention, not invented**: per the CEO's
+  own explicit instruction to inspect existing Research Layer statistical conventions first,
+  `code/alpha_lab.py`/`mstrat.py`/`mtf.py`/`s1.py`/`campaign.py` were read directly — all five already
+  gate on `CFG['MINTR']=25`. `EvidencePolicy.min_episodes_sufficient` defaults to this exact value,
+  reused verbatim. `CONTRADICTORY` reuses `PROJECT_AUDIT.md`'s own established "UNRESOLVED if the CI
+  straddles zero" small-n rule rather than a new one. No staleness threshold is invented — disabled
+  unless a caller explicitly supplies one. `EvidencePolicy` is an explicit, versioned, caller-overridable
+  object, never a hidden constant.
+- **Six-value controlled `EvidenceStatus`** (`SUFFICIENT`/`LIMITED`/`CONTRADICTORY`/`STALE`/
+  `UNAVAILABLE`/`INCOMPATIBLE`), derived by a fixed priority chain, never manually set. Outcomes under an
+  incompatible `outcome_definition_version`/horizon/`cost_model_ref` triple are excluded and disclosed,
+  never silently pooled. Every report unconditionally discloses the CI is descriptive, not a validated
+  bootstrap (reusing `PROJECT_AUDIT.md` D1's own prior finding about this exact approximation risk).
+- **Full validation**: 221 tests (198 carried forward + 21 new + 2 gap-closing), 100% targeted coverage
+  across all 11 modules (934 stmts), `mypy --strict` clean. `git status --porcelain` before staging
+  showed only `evidence.py`/`tests/test_evidence.py`/`__init__.py`/`tests/test_public_api.py`.
+- Report: `PHASE_7_CHECKPOINT_13_REPORT.md`. Commit: `24457858c9c0da7d3b6b65f1e16d0589575c37df`.
+
+## Session 2026-07-20 — Phase 7 Checkpoint 12: Deterministic Context Retrieval
+- CEO-authorized as part of the Checkpoints 10–13 batch. Implement the accepted Checkpoint 8 design's
+  own fixed-priority hierarchical relaxation ladder over the Checkpoint 11 historical index — must
+  return historical contexts or explicit NO SUFFICIENT HISTORY, never rank/score continuously.
+- **Added `ai_trader/context_memory/retrieval.py`**: `retrieve(index, query) -> RetrievalResult`. The
+  design doc's own §8 proposed relaxation order adopted VERBATIM (`session_state → expansion_state →
+  liquidity_state → momentum_d1 → momentum_h4 → momentum_h1 → momentum_m15 → trend_d1 → trend_h4 →
+  trend_h1 → trend_m15`), relaxed cumulatively one dimension at a time; floor (never relaxed) =
+  `instrument` + `structure_state`/`volatility_regime`/`multi_timeframe_agreement`. No weighted
+  distance, k-NN, embeddings, or clustering anywhere — the relaxation path itself is the similarity
+  explanation. Six explicit statuses (`SUCCESSFUL`/`NO_ELIGIBLE_HISTORY`/`NO_SUFFICIENTLY_SIMILAR`/
+  `INCOMPATIBLE`/`DEGRADED_DATA`/`UNSUPPORTED_VERSION`).
+- **Minimum-sample floor deliberately NOT implemented**: the design doc's own §17 leaves the exact
+  threshold unresolved; a tier is accepted as soon as it yields ≥1 eligible episode (the smallest
+  non-arbitrary choice), and whether that evidence is *enough* is explicitly deferred to Checkpoint 13.
+- Deterministic recency-first match ordering (`EpisodeId` as the final tie-break); the current
+  observation can never retrieve itself (falls out structurally from the strict `end_as_of < as_of_cutoff`
+  cutoff, no special-cased self-check needed).
+- **Full validation**: 198 tests (173 carried forward + 22 new + 3 gap-closing), 100% targeted coverage
+  across all 10 modules (779 stmts), `mypy --strict` clean.
+- Report: `PHASE_7_CHECKPOINT_12_REPORT.md`. Commit: `cf36e9879aed56c61011aad7d538e9ee48a53f2e`.
+
+## Session 2026-07-20 — Phase 7 Checkpoint 11: Episode Collapsing and Historical Index
+- CEO-authorized as part of the Checkpoints 10–13 batch. Build deterministic derived indexing over the
+  Checkpoint 10 repository's immutable source records, plus episode collapsing to prevent persistent
+  market states from inflating apparent sample size — consumes, never modifies, repository records.
+- **Added `ai_trader/context_memory/episodes.py`**: a maximal contiguous run of `as_of`-sorted
+  Observations per instrument sharing the same categorical `StateFingerprint` (excludes `as_of`,
+  `context_confidence_score`, `data_quality_state`) AND the same PRESENT-edge set is one `Episode`.
+  Boundary triggers: fingerprint change (folds in instrument + session automatically — no separate rule
+  needed for either), present-edge-set change, `market_intelligence_schema_version` change,
+  `data_quality_state != OK` (excludes that observation entirely, ends the prior episode). **No maximum
+  temporal gap enforced** — no bar-interval field exists on `ContextSnapshot` to define one without an
+  arbitrary threshold; disclosed as a limitation, proven directly by a ~116-day-gap test.
+- **Added `ai_trader/context_memory/index.py`**: `HistoricalIndex` — rebuildable, in-memory, never a
+  second source of truth. `observations_matching(...)` (deterministic AND-filter intersection),
+  `episodes()`/`episodes_with_edge()`, `outcomes_for_observation(observation_id, visible_as_of=...)`
+  implementing temporal safety (a resolved-in-the-future outcome is invisible before its own resolution
+  time, never re-labeled as pending — proven live: 0 results before resolution, 1 result after).
+  `IndexStatistics.episode_count` explicitly labeled a conservative effective-observation proxy, never a
+  mathematically exact effective sample size.
+- **Full validation**: 173 tests (150 carried forward + 22 new + 3 gap-closing), 100% targeted coverage
+  across all 9 modules (672 stmts), `mypy --strict` clean.
+- Report: `PHASE_7_CHECKPOINT_11_REPORT.md`. Commit: `9d273c49b000d6aaa1c0361c92c131225b04465d`.
+
+## Session 2026-07-20 — Phase 7 Checkpoint 10: Append-Only Context Repository
+- CEO batch-authorized ("Context Memory Functional Buildout," Checkpoints 10–13, executed sequentially
+  without re-authorization between them, each architecturally isolated with its own report/commit/
+  targeted validation). Storage only — no episode collapsing, similarity, aggregation, or Decision
+  Intelligence integration.
+- **Added `ai_trader/context_memory/codec.py`**: canonical encode/decode for every Checkpoint 9 contract,
+  reusing `identities.py`'s own canonicalization functions (promoted from private to package-internal).
+- **Added `ai_trader/context_memory/repository.py`**: `ContextMemoryRepository` — append-only, one JSON
+  Lines file per record type (`context_snapshots.jsonl`/`observations.jsonl`/`outcomes.jsonl`;
+  `PresentEdgeReference` deliberately NOT independently persisted, since it only has meaning nested
+  inside an `Observation`). Integrity IS identity — no separate hash field, verification recomputes each
+  record's own ID from its decoded payload. Idempotent-exact-duplicate / `ConflictingDuplicateError`-
+  on-conflict policy. Documented single-writer-process contract + in-process `threading.Lock` per stream
+  (tested with 4 concurrent threads). Corruption/malformed/truncated/unsupported-schema-version reads
+  never silently repaired.
+- **Full validation**: 132 tests (92 carried forward + 32 new + 8 gap-closing), 100% targeted coverage
+  across all 7 modules (518 stmts), `mypy --strict` clean.
+- Report: `PHASE_7_CHECKPOINT_10_REPORT.md`. Commit: `486aa61de180d8d0daca0b4bd14fe1938d5f566c`.
+
+## Session 2026-07-19/20 — Phase 7 Checkpoint 9: Context Memory Immutable Contracts and Deterministic Identities
+- CEO-authorized only after the accepted Checkpoint 8 design was committed and the tree was clean.
+  Implement the smallest foundational slice — immutable public contracts, controlled vocabularies,
+  deterministic identity generation, explicit schema versioning — NOT storage/retrieval/similarity/
+  aggregation/historical indexing/Decision Intelligence integration.
+- **Added `ai_trader/context_memory/`** (new, fully isolated package; not wired into `harness.py` or any
+  other package): `contracts.py` (`SchemaVersion`, `ContextSnapshot`, `PresentEdgeReference`,
+  `Observation`, `Outcome`, each with `__post_init__`-enforced invariants — `Outcome`'s status-conditional
+  rules in particular: PENDING ⇒ no result/no resolution timestamp, RESOLVED ⇒ both set and
+  `resolution_as_of >= observation_as_of`, INVALID/UNAVAILABLE ⇒ result always `None`); `enums.py`
+  (every upstream controlled vocabulary — Market Intelligence's 7 regime enums, Edge Intelligence's
+  `EdgeState`, `market_scanner`'s `DataQualityLevel` — mirrored as a LOCAL string-valued enum with
+  identical values, never imported live, verified byte-exact against the real source files);
+  `identities.py` (canonical JSON serialization + SHA-256 identity computation — `hashlib` only, never
+  Python's built-in `hash()`, never `uuid`, never clock/filesystem state); `validation.py`.
+- **Full validation (TARGETED, not full-suite, per the batch's own policy — reported as "TARGETED
+  VALIDATION PASSED," never "FULL SUITE PASSED")**: 92 new tests, 100% coverage, `mypy --strict` clean (5
+  source files), a static AST-based `test_import_independence.py` confirming zero forbidden imports
+  (Signal/Scoring/Risk/Portfolio/Harness/Shadow Evidence/Decision Intelligence/Market Intelligence
+  runtime/Edge Intelligence runtime/`market_scanner`) and zero `"harness"` string reference.
+- Report: `PHASE_7_CHECKPOINT_9_REPORT.md`. Commit: `30213d0adf5c3fb6f2d860a84c8a81bc4b848cb2`.
+
+## Session 2026-07-19 — Phase 7 Checkpoint 8: Context Memory Architecture Design (DESIGN ONLY)
+- CEO-authorized: design (not implement) a Context Memory architecture letting future components compare
+  the current market context with historical contexts and retrieve contextual evidence about edge
+  performance. Explicit exclusions: no production code, no final similarity algorithm, no modification of
+  Decision/Market/Edge Intelligence or Signal/Scoring/Risk/Portfolio/Harness/Shadow Evidence/Execution/
+  MT5. Core architectural principle: Context Memory must NEVER output BUY/SELL/entry/stop/target/size/
+  execution/a final recommendation — evidence only.
+- **Created `PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md`** (17 sections + 10 Q&A): Context Snapshot/
+  Outcome contracts; storage architecture; identity/versioning scheme; a comparison of 6 similarity
+  approaches (recommending deterministic hierarchical filtering + relaxation, explicitly rejecting
+  weighted-feature-distance and nearest-neighbor retrieval as incompatible with the CEO's own
+  "resistant to arbitrary weights"/"resistant to high-dimensional false similarity" requirements);
+  temporal-safety/leakage-prevention rules (a hard as-of cutoff, episode collapsing to prevent
+  overlapping-sample inflation, respect for the standing sealed terminal holdout); the Contextual
+  Evidence output contract (a five-value evidence-sufficiency vocabulary — SUFFICIENT/LIMITED/
+  CONTRADICTORY/STALE/UNAVAILABLE — derived deterministically, never manually set); the Decision
+  Intelligence v2 integration boundary; a 13-item failure-mode/red-team analysis; sample/evidence
+  sufficiency discussion; a testing/validation plan; a proposed Checkpoint 9–13 decomposition.
+- **Validation policy for this checkpoint (disclosed, not a defect)**: consistency review, contract
+  inspection, import/dependency analysis, terminology review, git-diff verification — NOT a full
+  pytest/coverage suite, since no code was written. Reported as "DESIGN REVIEW COMPLETED."
+- No code was implemented; no existing package was touched; `git status --porcelain` before staging
+  showed only the new design document. Commit: `263b950d498c2f431e958c3ce09c85676d85838f`.
+
 ## Session 2026-07-19 — OFFICIAL PROJECT SAVE (documentation and repository-freeze only, no code) — after Checkpoint 7
 - CEO-directed, before any further Phase 7 implementation: a documentation and repository-freeze
   checkpoint synchronizing every official state document with the completion of Phase 7 Checkpoint 7.

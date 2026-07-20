@@ -1,19 +1,20 @@
-# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL PROJECT SAVE, 2026-07-19, after Checkpoint 7)
+# PROJECT_STATE — AI Quant Research Lab → AI Trader — v2 (UPDATED: OFFICIAL PROJECT SAVE, 2026-07-20, after Checkpoints 10–13)
 
 **Purpose**: this is the single, authoritative, consolidated state document for the ENTIRE project —
 both the frozen Research Lab and the AI Trader built on top of it — current as of this official save. A
 brand-new chat, with no access to any prior conversation, must be able to reconstruct the complete
 project from this document plus the ones it points to. Every fact below was verified directly against
-`git log`/`git status`/`git diff` at this save's own close, and against the `pytest`/`mypy --strict`/
-`coverage` run from Phase 7 Checkpoint 7's own validation (still current: `git diff --stat
-0346e070967228b35c87659a34a829f4aa5cda8f HEAD -- ai_trader/` is empty — zero `ai_trader/` code has
-changed since that validation, confirmed live, not assumed) — nothing here is carried forward
+`git log`/`git status`/`git diff` at this save's own close, and against the full-repository
+`pytest`/`coverage` run performed at the close of this batch (§8.12) — nothing here is carried forward
 unverified. This document supersedes no prior report — `PROJECT_STATE_v1.0.md`,
 `ROLLING_HEALTH_BACKTEST_HANDOFF.md`, and every phase's own dedicated report remain the authoritative,
 detailed sources for their own respective scopes; this document exists to make the CURRENT, FULL state
 reachable in one place.
-**This update's own scope: documentation and repository-freeze only — no code implemented, no
-architecture changed, Phase 7 Checkpoint 8 not started (§8.6).**
+**This update's own scope: Phase 7 Checkpoints 8 (design), 9 (contracts/identities), 10 (repository), 11
+(episodes/index), 12 (retrieval), and 13 (evidence aggregation) — the full Context Memory subsystem —
+plus this official documentation save. Context Memory remains fully disconnected from Decision
+Intelligence and every execution-adjacent package; Checkpoint 14 (Decision Intelligence v2 integration)
+is proposed but NOT authorized (§8.14).**
 
 ---
 
@@ -22,9 +23,8 @@ architecture changed, Phase 7 Checkpoint 8 not started (§8.6).**
 ```
 Repository path:  C:\Users\MEDION GAMING\ai_quant_lab-research-main
 Branch:           ai-trader-implementation
-HEAD:             d2d75de509087892241b6ade4f78de18b7051ea7
-                  "Record Checkpoint 7 commit hash in the final report"
-                  (documentation-only follow-up to 0346e07, Phase 7 Checkpoint 7's own implementation commit)
+HEAD (pre-save):  24457858c9c0da7d3b6b65f1e16d0589575c37df
+                  "Phase 7 Checkpoint 13: Contextual Evidence Aggregation"
 Working tree:     clean (verified live at this official save, before its own commit)
 ```
 
@@ -32,19 +32,26 @@ Working tree:     clean (verified live at this official save, before its own com
 any git-state claim anywhere in this project's documentation** — the standing discipline every prior
 handoff has followed, re-confirmed at this save.
 
-**Verified live, Phase 7 Checkpoint 7's own validation (2026-07-19) — still current, since zero
-`ai_trader/` code has changed since that commit (`0346e07`), confirmed via `git diff --stat 0346e07
-HEAD -- ai_trader/` returning empty (only this save's own documentation commit follows it):**
+**Verified live, at the close of the Checkpoints 10–13 batch (2026-07-20) — the ONE full-repository run
+this batch's own validation policy authorizes (four checkpoints closing together):**
 ```
-pytest ai_trader/ -q            -> 1830 passed
-mypy --strict ai_trader/ --exclude 'tests/'  -> Success: no issues found in 199 source files
+pytest ai_trader/ -q                                   -> 2051 passed
+mypy --strict ai_trader/ --exclude 'tests/'              -> Success: no issues found in 210 source files
 coverage run --source=ai_trader -m pytest ai_trader/ -q
-coverage report --omit="*/tests/*"           -> TOTAL 10879 stmts, 432 miss, 96%
+coverage report --omit="*/tests/*"                      -> TOTAL 11813 stmts, 432 miss, 96%
 ```
-(Baseline for comparison, Implementation Checkpoint 1B's own close, the last figure this document
-previously cited: 1606 passed, 169 source files, 9783 stmts/432 miss/96%. The 432-miss figure is
-UNCHANGED end to end across Checkpoints 1C/2/3/4 and Phase 7 Checkpoints 5/6/7 despite +1096 statements
-added since — every new statement across six checkpoints' worth of work is covered.)
+(Baseline for comparison, Phase 7 Checkpoint 7's own close, the last figure this document previously
+cited: 1830 passed, 199 mypy-clean source files, 10879 stmts/432 miss/96%. The 432-miss figure is
+UNCHANGED end to end since — every one of the +934 statements added by the full Context Memory subsystem,
+Checkpoints 9–13, reaches 100% targeted coverage individually, §8.12.)
+
+**Context-Memory-scoped validation** (`ai_trader/context_memory/`, run independently at each of
+Checkpoints 9–13's own close and re-confirmed once combined at §8.12):
+```
+pytest ai_trader/context_memory/ -q                     -> 221 passed
+mypy --strict ai_trader/context_memory/ --exclude 'tests/'  -> Success: no issues found in 11 source files
+coverage report --source=ai_trader.context_memory --omit tests/  -> TOTAL 934 stmts, 0 miss, 100%
+```
 
 ---
 
@@ -598,17 +605,135 @@ checkpoint synchronizing every official state document (this one, `NEXT_SESSION.
 7 (Decision Intelligence). No code implemented, no architecture changed. Full detail:
 `PHASE_7_CHECKPOINT_7_OFFICIAL_SAVE_REPORT.md`.
 
-### 8.6 Current authorized next step
+### 8.6 Checkpoint 8 — Context Memory architecture design — DESIGN ONLY, ACCEPTED
 
-**Phase 7 Checkpoint 8 is NOT STARTED and NOT AUTHORIZED.** Unlike the transition into Checkpoint 7 (where
-the CEO's own Checkpoint 6 closing text previewed "Decision AI" as likely-next context), the CEO's own
-Checkpoint 7 authorization text named no specific topic for Checkpoint 8 — no scope, direction, or
-component name has been proposed or accepted for it anywhere in this repository. Explicitly named,
-still-not-authorized future components from earlier authorization text (Checkpoint 5/6): Strategy Health
-integration/promotion policy, Portfolio Architect, Learning Engine, Live AI Trader; Decision Intelligence
-itself (Checkpoint 7) is now DONE but remains unwired from `harness.py` — wiring it into any execution
-path is itself a future, separately-gated decision, not implied by its own completion. No code changes
-of any kind are authorized until the CEO explicitly authorizes the next checkpoint.
+Commit `263b950d498c2f431e958c3ce09c85676d85838f`. CEO authorization: design (not implement) a **Context
+Memory** system letting future components compare the current market context against historical
+contexts and retrieve contextual evidence about edge performance — explicitly excluding any final
+similarity algorithm, production code, or modification of any existing package. Deliverable:
+`PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md` (17 sections + 10 Q&A) — Context Snapshot/Outcome
+contracts, storage architecture, identity/versioning scheme, a comparison of 6 similarity approaches
+(recommending deterministic hierarchical relaxation, explicitly rejecting weighted-distance and k-NN),
+temporal-safety/leakage rules, the Contextual Evidence output contract, the Decision Intelligence v2
+integration boundary, a 13-item failure-mode/red-team analysis, sample-sufficiency discussion, a testing
+plan, and a proposed Checkpoint 9–13 decomposition. **Core architectural principle, binding on every
+later checkpoint: Context Memory must NEVER output BUY/SELL/entry/stop/target/size/execution/a final
+recommendation — evidence only.** No code was written; no existing package was touched. Verdict:
+**ACCEPTED** as the governing architecture for Checkpoints 9–13.
+
+### 8.7 Checkpoint 9 — Context Memory immutable contracts and deterministic identities — DONE
+
+Commit `30213d0adf5c3fb6f2d860a84c8a81bc4b848cb2`. First implementation slice, authorized only after
+Checkpoint 8's design was committed. New, fully isolated package `ai_trader/context_memory/` (5 source
+files: `__init__.py`, `enums.py`, `contracts.py`, `validation.py`, `identities.py`) — immutable public
+data contracts (`ContextSnapshot`, `PresentEdgeReference`, `Observation`, `Outcome`), controlled
+vocabularies LOCALLY mirroring Market Intelligence's 7 regime enums / Edge Intelligence's `EdgeState` /
+`market_scanner`'s `DataQualityLevel` (never imported live — package independence + historical
+interpretability across future upstream schema changes), a generic `SchemaVersion(namespace, version)`
+type serving all 6 version kinds, and deterministic SHA-256-over-canonical-JSON identity generation
+(`hashlib` only — never Python's built-in `hash()`, never `uuid`, never clock/filesystem state). Not
+wired into `harness.py` or any other package; storage/retrieval/similarity/aggregation explicitly NOT
+implemented. **Validated (TARGETED, not full-suite)**: 92 tests, 100% coverage, `mypy --strict` clean (5
+source files), import-independence AST scan clean.
+
+### 8.8 Checkpoint 10 — Append-Only Context Repository — DONE
+
+Commit `486aa61de180d8d0daca0b4bd14fe1938d5f566c`. First of the CEO's batch-authorized Checkpoints
+10–13 ("Context Memory Functional Buildout," executed sequentially without re-authorization between
+them, each independently validated and committed). Adds `codec.py` (canonical encode/decode for every
+contract) and `repository.py` (`ContextMemoryRepository` — append-only, one JSON Lines file per record
+type: `context_snapshots.jsonl`/`observations.jsonl`/`outcomes.jsonl`; `PresentEdgeReference`
+deliberately NOT independently persisted — it only has meaning nested inside an `Observation`).
+Integrity IS identity (no separate hash field — verification recomputes each record's own ID from its
+decoded payload); idempotent-exact-duplicate / `ConflictingDuplicateError`-on-conflict policy; a
+documented single-writer-process contract plus in-process `threading.Lock` per stream. **Validated**:
+132 tests, 100% coverage (7 modules, 518 stmts), `mypy --strict` clean.
+
+### 8.9 Checkpoint 11 — Episode Collapsing and Historical Index — DONE
+
+Commit `9d273c49b000d6aaa1c0361c92c131225b04465d`. Adds `episodes.py` (deterministic episode collapsing:
+a maximal contiguous run of `as_of`-sorted Observations per instrument sharing the same categorical
+`StateFingerprint` AND the same PRESENT-edge set is one Episode — prevents a persistent multi-hour
+regime from inflating apparent sample size) and `index.py` (`HistoricalIndex` — a rebuildable, in-memory
+derived structure over the Checkpoint 10 repository: deterministic AND-filter observation queries,
+episode queries, and `outcomes_for_observation(..., visible_as_of=...)` implementing temporal safety — a
+resolved-in-the-future outcome is invisible before its own resolution time, never re-labeled as
+pending). Deliberately NO maximum-temporal-gap split rule (no bar-interval field exists on
+`ContextSnapshot` to define one without an arbitrary threshold — disclosed limitation, not an
+oversight). `IndexStatistics.episode_count` explicitly labeled a conservative effective-observation
+proxy, never claimed to be a mathematically exact effective sample size. **Validated**: 173 tests, 100%
+coverage (9 modules, 672 stmts), `mypy --strict` clean.
+
+### 8.10 Checkpoint 12 — Deterministic Context Retrieval — DONE
+
+Commit `cf36e9879aed56c61011aad7d538e9ee48a53f2e`. Adds `retrieval.py`: `retrieve(index, query) ->
+RetrievalResult` implementing the Checkpoint 8 design's own §8 fixed-priority relaxation ladder
+**verbatim** — `session_state → expansion_state → liquidity_state → momentum_d1 → momentum_h4 →
+momentum_h1 → momentum_m15 → trend_d1 → trend_h4 → trend_h1 → trend_m15`, floor = `instrument` +
+`structure_state`/`volatility_regime`/`multi_timeframe_agreement` (never relaxed) — no weighted
+distance, no k-NN, no embeddings, no clustering anywhere. Six explicit result statuses (`SUCCESSFUL`,
+`NO_ELIGIBLE_HISTORY`, `NO_SUFFICIENTLY_SIMILAR`, `INCOMPATIBLE`, `DEGRADED_DATA`,
+`UNSUPPORTED_VERSION`). **The minimum-sample sufficiency threshold is deliberately left unresolved here**
+(the accepted design's own §17 open question) — a tier is accepted as soon as it yields ≥1 eligible
+episode; whether that evidence is *enough* is explicitly deferred to Checkpoint 13. Deterministic
+recency-first ordering with `EpisodeId` as the final tie-break. **Validated**: 198 tests, 100% coverage
+(10 modules, 779 stmts), `mypy --strict` clean.
+
+### 8.11 Checkpoint 13 — Contextual Evidence Aggregation — DONE
+
+Commit `24457858c9c0da7d3b6b65f1e16d0589575c37df`. Adds `evidence.py`: `aggregate_evidence(index,
+retrieval, strategy_id, policy) -> ContextualEvidenceReport` — per-edge, episode-collapsed outcome
+statistics (mean/median/sample stdev/95% normal-approximation CI via stdlib `statistics.NormalDist`/
+win-rate/sign counts) and a controlled `EvidenceStatus` (`SUFFICIENT`/`LIMITED`/`CONTRADICTORY`/
+`STALE`/`UNAVAILABLE`/`INCOMPATIBLE`) derived by a fixed priority chain. **Both thresholds are grounded
+in already-validated project convention, not invented**: the `SUFFICIENT` boundary reuses
+`code/alpha_lab.py`'s own live `MINTR = 25` minimum-trade-count gate verbatim (`EvidencePolicy` is an
+explicit, versioned, caller-overridable object); `CONTRADICTORY` reuses this project's own established
+"UNRESOLVED if the CI straddles zero" convention (`PROJECT_AUDIT.md` §A0/§28) rather than a new rule; no
+staleness threshold is invented (disabled unless a caller explicitly supplies one). Every report
+unconditionally discloses that its CI is a descriptive normal-approximation, not a validated bootstrap
+(`PROJECT_AUDIT.md` D1's own prior finding about this exact class of approximation error, reused as a
+caveat here). **Produces evidence reports only — never a BUY/SELL/entry/stop/target/size/execution
+output, never an edge ranking.** `aggregate_evidence`/`aggregate_all_present_edges`/
+`ContextualEvidenceReport`/`EvidencePolicy`/`EvidenceStatus` are the only names exported for future
+Decision Intelligence v2 consumption. **Validated**: 221 tests, 100% coverage (11 modules, 934 stmts),
+`mypy --strict` clean.
+
+### 8.12 Combined Context Memory validation + full-repository validation — PASSED
+
+After all four Checkpoints 10–13 closed independently (each its own commit, each its own targeted
+validation), one combined check ran across the whole `context_memory` package (all 221 tests, `mypy
+--strict` on 11 source files, 100% package-wide coverage — 934/934 statements, zero exceptions needed)
+— **TARGETED CONTEXT MEMORY VALIDATION PASSED**. Then, justified once because four checkpoints were
+closing together as a batch, the complete repository suite ran ONCE: `pytest ai_trader/ -q` → **2051
+passed** (zero failures, zero regressions against the Checkpoint 7 baseline of 1830), `mypy --strict
+ai_trader/ --exclude 'tests/'` → clean on 210 source files (up from 199), `coverage run --source=
+ai_trader -m pytest ai_trader/ -q` then `coverage report` → **TOTAL 11813 stmts, 432 miss, 96%** — the
+432-miss figure is the exact same absolute count carried since Implementation Checkpoint 1B, unchanged
+across every phase since, confirming zero coverage regression anywhere outside the newly-added,
+100%-covered Context Memory package — **FULL REPOSITORY VALIDATION PASSED**.
+
+### 8.13 Third Official Project Save (2026-07-20, this document's own current update, after Checkpoints 10–13)
+
+CEO-directed, before any further Phase 7 implementation: a documentation and repository-freeze
+checkpoint synchronizing every official state document (this one, `NEXT_SESSION.md`,
+`RECONSTRUCTION_PROMPT.md`, `CHANGELOG.md`, `PROJECT_AUDIT.md`) to reflect the completion of the full
+Context Memory subsystem (Checkpoints 8–13). No code implemented, no architecture changed, no existing
+package modified. Full detail: `PHASE_7_CHECKPOINTS_10_13_OFFICIAL_SAVE_REPORT.md`.
+
+### 8.14 Current authorized next step
+
+**Phase 7 Checkpoint 14 (Decision Intelligence v2 — the first component that would actually CONSUME
+Context Memory's evidence) is explicitly PROPOSED (named in Checkpoint 8's own design doc §17 Checkpoint
+decomposition) but NOT AUTHORIZED.** The CEO's own Checkpoints 10–13 batch authorization explicitly
+excluded it: "do not begin Checkpoint 14... do not connect Context Memory to Decision Intelligence during
+this batch." Context Memory remains a complete, independently usable evidence subsystem (Context
+contracts → append-only repository → historical index and episodes → deterministic retrieval → per-edge
+contextual evidence) while remaining fully disconnected from Decision Intelligence, Risk, Execution, and
+MT5 — verified by the same AST-based import-independence scan at every one of Checkpoints 9–13's own
+close. Other explicitly named, still-not-authorized future components: Strategy Health integration/
+promotion policy, Portfolio Architect, Learning Engine, Live AI Trader. No code changes of any kind are
+authorized until the CEO explicitly authorizes Checkpoint 14 or another next step.
 
 ## 9. Modules implemented (`ai_trader/`)
 
@@ -627,6 +752,7 @@ of any kind are authorized until the CEO explicitly authorizes the next checkpoi
 | `market_intelligence/` | NEW (Phase 7 Checkpoint 5, DONE) | `engine.py::build_market_intelligence()` — pure, read-only "what is the market doing" snapshot (Trend/Structure/Momentum/Volatility/Liquidity/Expansion/Session/Agreement/Confidence); not wired into `harness.py` |
 | `edge_intelligence/` | NEW (Phase 7 Checkpoint 6, DONE) | `engine.py::evaluate_edges()` — pure, read-only "which edges currently exist" per-strategy PRESENT/POSSIBLE/ABSENT verdict, built on Market Intelligence + each strategy's own declared Contract; not wired into `harness.py` |
 | `decision_intelligence/` | NEW (Phase 7 Checkpoint 7, DONE) | `engine.py::make_decision()` — "which edge deserves execution": 4 disclosed eligibility gates (contract status/maturity/confidence/optional expectancy) + deterministic ranking → one recommended strategy_id or NO TRADE; independent of Signal/Scoring/Risk/Execution/Shadow/MT5 (verified by grep); not wired into `harness.py` |
+| `context_memory/` | NEW (Phase 7 Checkpoints 9–13, DONE) | 11 source files: `contracts.py`/`enums.py`/`validation.py`/`identities.py` (Checkpoint 9 — immutable contracts + deterministic SHA-256 identities), `codec.py`/`repository.py` (Checkpoint 10 — append-only JSONL storage), `episodes.py`/`index.py` (Checkpoint 11 — deterministic episode collapsing + rebuildable historical index), `retrieval.py` (Checkpoint 12 — fixed-priority hierarchical relaxation ladder, no k-NN/weighted-distance), `evidence.py` (Checkpoint 13 — per-edge `ContextualEvidenceReport`, sufficiency threshold reused from `code/alpha_lab.py`'s own `MINTR=25`); produces evidence reports only, NEVER BUY/SELL/entry/stop/target/size/execution/an edge ranking; fully independent of Decision Intelligence/Signal/Scoring/Risk/Execution/Shadow Evidence/MT5 (verified by grep + a static AST import-independence scan at every checkpoint's close); not wired into `harness.py` or `decision_intelligence/` |
 
 ## 10. What must NOT be modified (standing, cumulative across every phase)
 
@@ -658,9 +784,17 @@ of any kind are authorized until the CEO explicitly authorizes the next checkpoi
   package). `decision_intelligence/`'s own `ResearchStats` type is deliberately LOCAL, never the
   `shadow_evidence.types.StrategyResearchSummary` type — do not "simplify" this by importing the Shadow
   Evidence type directly; that would violate the standing independence requirement.
-- Phase 7 Checkpoint 8 (or any further implementation) must not begin without its own, separate,
-  explicit CEO approval — Checkpoint 7 being complete is not itself that approval, and no topic for
-  Checkpoint 8 has been proposed or accepted anywhere in this repository yet.
+- **Phase 7 Context Memory (standing since Checkpoint 8, CLOSED through Checkpoint 13)**: `ai_trader/
+  context_memory/` must NEVER output BUY/SELL/entry/stop/target/size/execution/a final recommendation —
+  evidence only, by the accepted Checkpoint 8 design's own core architectural principle. It must not
+  import `decision_intelligence`/`signal_engine`/`scoring_engine`/`risk_manager`/`execution_engine`/
+  `shadow_evidence` (deliberate isolation, re-verify with the package's own AST-based
+  `test_import_independence.py` before any future change), must not be wired into `harness.py`, and must
+  not have its relaxation ladder order (§8.10) or its evidence-sufficiency policy (§8.11) silently
+  changed — both are explicit, versioned, disclosed choices, not implementation details to "clean up."
+  **Phase 7 Checkpoint 14 (Decision Intelligence v2 — the first consumer of Context Memory's evidence)
+  must not begin without its own, separate, explicit CEO approval** — Checkpoint 13 being complete is not
+  itself that approval, and the CEO's own Checkpoints 10–13 batch authorization explicitly excluded it.
 
 ## 11. Diagnostic artifacts preserved (cumulative, all committed, all referenced by name in their own reports)
 
@@ -678,7 +812,10 @@ of any kind are authorized until the CEO explicitly authorizes the next checkpoi
 - Phase 7: no standalone diagnostic scripts — Checkpoints 5, 6, and 7 all validated entirely through
   their own committed test suites (`ai_trader/market_intelligence/tests/`,
   `ai_trader/edge_intelligence/tests/`, `ai_trader/decision_intelligence/tests/`, each including its own
-  real-data integration test), nothing scratch-generated to preserve.
+  real-data integration test), nothing scratch-generated to preserve. Checkpoints 8–13 (Context Memory)
+  likewise: no standalone diagnostic scripts — validated entirely through `ai_trader/context_memory/
+  tests/` (221 tests across 9 files, 100% coverage), the Checkpoint 8 design doc, and each checkpoint's
+  own `PHASE_7_CHECKPOINT_N_REPORT.md`.
 
 All of the above are deliberately preserved (a CEO-instructed exception to the repository's earlier
 "delete scratch scripts after report capture" discipline, first established at Phase 6.9's own close),
@@ -690,23 +827,31 @@ so every phase's own findings stay fully reproducible without re-running anythin
 2. `RECONSTRUCTION_PROMPT.md` — if starting a genuinely new conversation with no prior context, this is
    the single entry point; it directs the same reading order as below.
 3. `NEXT_SESSION.md` — the exact next-session procedure and git-state re-verification steps.
-4. `PHASE_7_CHECKPOINT_7_REPORT.md` → `PHASE_7_CHECKPOINT_6_REPORT.md` → `PHASE_7_CHECKPOINT_5_REPORT.md`
-   — the current official architectural frontier (Decision Intelligence built on Edge Intelligence built
-   on Market Intelligence), most-recent-first.
-5. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the architectural direction behind the now-CLOSED Phase
+4. `PHASE_7_CHECKPOINT_13_REPORT.md` → `PHASE_7_CHECKPOINT_12_REPORT.md` → `PHASE_7_CHECKPOINT_11_REPORT.md`
+   → `PHASE_7_CHECKPOINT_10_REPORT.md` → `PHASE_7_CHECKPOINT_9_REPORT.md` →
+   `PHASE_7_CHECKPOINT_8_CONTEXT_MEMORY_DESIGN.md` — the current official architectural frontier: the
+   complete Context Memory subsystem (deterministic per-edge Contextual Evidence Aggregation, built on
+   deterministic hierarchical-relaxation Retrieval, built on a deterministic episode-collapsed Historical
+   Index, built on an append-only Repository, built on immutable contracts and deterministic identities),
+   most-recent-first, still fully disconnected from Decision Intelligence and every execution-adjacent
+   package.
+5. `PHASE_7_CHECKPOINT_7_REPORT.md` → `PHASE_7_CHECKPOINT_6_REPORT.md` → `PHASE_7_CHECKPOINT_5_REPORT.md`
+   — the prior architectural frontier (Decision Intelligence built on Edge Intelligence built on Market
+   Intelligence) — still current and unmodified, background relative to Context Memory above.
+6. `PHASE_6_10_EDGE_PORTFOLIO_DIRECTION.md` — the architectural direction behind the now-CLOSED Phase
    6.10 (generic Edge Portfolio, S10 as validation edge only) — background, not the current frontier.
-6. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
+7. `PHASE_6_10_PRE_SCOPE_DIAGNOSTIC.md` → `PHASE_6_10_SHADOW_EVIDENCE_ARCHITECTURE_DESIGN.md`
    (including its own §17 adversarial review and §19 Checkpoint 1C correction) — the diagnostic and
    design behind Checkpoints 1A–1C.
-7. In detail, if deeper Phase 6.9A background is needed:
+8. In detail, if deeper Phase 6.9A background is needed:
    `PHASE_6_9_ROLLING_HEALTH_GATED_BACKTEST_REPORT.md` → `CURRENT_XAUUSD_12M_RELEVANCE_REPORT.md` →
    `PHASE_6_9A_STRATEGY_EVIDENCE_FLOW_AUDIT_REPORT.md`.
-8. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
+9. `ROLLING_HEALTH_BACKTEST_HANDOFF.md` for the Strategy Health System's own full methodology (§5
    there) and Phase 6.9's own original specification (§8 there, now marked CLOSED).
-9. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
-10. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
+10. `PROJECT_STATE_v1.0.md` for the Research Lab's own frozen state (unchanged since 2026-07-14).
+11. `CHANGELOG.md`'s own top entries for verified, dated, session-by-session detail.
 
-**Do not begin Phase 7 Checkpoint 8 (no topic yet named), Wave C, Learning Engine,
-Broker Adapter, MT5, live/paper trading, multi-position trading, Strategy Health integration, capital
-allocation across edges, or WATCHLIST activation without its own dedicated CEO approval — this document
-does not grant it.**
+**Do not begin Phase 7 Checkpoint 14 (Decision Intelligence v2 / Context Memory integration — proposed,
+NOT authorized), Wave C, Learning Engine, Broker Adapter, MT5, live/paper trading, multi-position
+trading, Strategy Health integration, capital allocation across edges, or WATCHLIST activation without
+its own dedicated CEO approval — this document does not grant it.**

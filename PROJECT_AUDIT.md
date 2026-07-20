@@ -1,13 +1,22 @@
 # PROJECT_AUDIT — open defects, debts, method validity (updated 2026-07-14, pre-Wave1 consolidation)
 
-> **Scope note (added 2026-07-19, Official Project Save; re-confirmed 2026-07-19 after Checkpoint 7)**:
-> this document audits the Research Lab (`code/`, `results/`, `knowledge/`) ONLY — its defect register,
-> method-validity status, and frozen decisions below are unchanged and unaffected by any AI Trader work,
-> since every AI Trader phase to date (6.1 through Phase 7 Checkpoint 7) has confirmed 0-diff against
-> `code/`/`results/`/`knowledge/` at every single close, including this save. For the AI Trader's own
-> current state (Shadow Evidence, Market Intelligence, Edge Intelligence, Decision Intelligence, and
-> every phase's validation results), see `PROJECT_STATE_v2.md` instead — that document is the
-> authoritative source for everything built on top of this frozen Research Lab, not this one.
+> **Scope note (added 2026-07-19, Official Project Save; re-confirmed 2026-07-20 after Checkpoints
+> 10–13)**: this document audits the Research Lab (`code/`, `results/`, `knowledge/`) ONLY — its defect
+> register, method-validity status, and frozen decisions below are unchanged and unaffected by any AI
+> Trader work, since every AI Trader phase to date (6.1 through Phase 7 Checkpoint 13) has confirmed
+> 0-diff against `code/`/`results/`/`knowledge/` at every single close, including this save. For the AI
+> Trader's own current state (Shadow Evidence, Market Intelligence, Edge Intelligence, Decision
+> Intelligence, Context Memory, and every phase's validation results), see `PROJECT_STATE_v2.md` instead
+> — that document is the authoritative source for everything built on top of this frozen Research Lab,
+> not this one.
+>
+> **Note (2026-07-20)**: Phase 7 Checkpoint 13's own `ai_trader/context_memory/evidence.py` reuses two
+> of this document's own already-established conventions verbatim, by explicit CEO instruction to ground
+> new statistical thresholds in existing validated practice rather than inventing them: the
+> `code/alpha_lab.py` `MINTR=25` minimum-trade-count gate (as the evidence-sufficiency default) and the
+> §A0/§28 "UNRESOLVED if the CI straddles zero" small-n rule (as the `CONTRADICTORY` evidence-status
+> trigger). This is a downstream REUSE only — nothing in this document itself was changed by that
+> checkpoint.
 
 ## A0. Consolidation & risk register (2026-07-14)
 **Branches integrated into research-main:** master (baseline), matched-null-validation, family-implementation-s21-s40,
