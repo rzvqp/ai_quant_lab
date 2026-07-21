@@ -1,0 +1,468 @@
+{
+  "edge": "E011",
+  "edge_id": "E011",
+  "hypothesis_version": "V0",
+  "run_id": "discovery_pass_1_full_profile_2026-07-21",
+  "timeframes_tested": [
+    "M15",
+    "H1",
+    "H4"
+  ],
+  "timeframes_unavailable": {
+    "M1": "not present anywhere in this project's data (EDGE_DISCOVERY_ROADMAP.md SS1)",
+    "M5": "not present anywhere in this project's data (EDGE_DISCOVERY_ROADMAP.md SS1)"
+  },
+  "params": {
+    "FRACTAL_K_PRIMARY": 3,
+    "FRACTAL_K_VARIANTS": [
+      3,
+      5,
+      8
+    ],
+    "RNG_SEED": 42,
+    "movement_horizons": [
+      1,
+      3,
+      5,
+      10,
+      20,
+      50
+    ],
+    "atr_thresholds": [
+      0.25,
+      0.5,
+      1.0,
+      1.5,
+      2.0
+    ]
+  },
+  "by_timeframe": {
+    "M15": {
+      "timeframe": "M15",
+      "split_metadata": {
+        "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+        "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+        "holdout_excluded": true,
+        "min_date_used": "2022-12-16 10:45:00+00:00",
+        "max_date_used": "2025-10-23 09:00:00+00:00",
+        "n_bars_used": 67321,
+        "n_bars_before_cutoff": 84152,
+        "n_bars_excluded_by_cutoff": 16831,
+        "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+        "timeframe": "M15"
+      },
+      "n_bars": 67321,
+      "date_range": [
+        "2022-12-16 10:45:00+00:00",
+        "2025-10-23 09:00:00+00:00"
+      ],
+      "n_swings": 10414,
+      "n_3drive_events": 4993,
+      "primary": {
+        "failed": {
+          "n": 2738,
+          "rate": 0.527027027027027
+        },
+        "completed": {
+          "n": 2255,
+          "rate": 0.542350332594235
+        },
+        "p_failed_vs_completed": 0.292949192434769
+      },
+      "controls": {
+        "control_A_generic_swing": {
+          "overall": {
+            "n": 2738,
+            "rate": 0.5379839298758218
+          },
+          "p_vs_failed": 0.4321924980049201
+        },
+        "control_B_random_matched": {
+          "overall": {
+            "n": 2738,
+            "rate": 0.5135135135135135
+          },
+          "p_vs_failed": 0.3301690048735818
+        }
+      },
+      "cross_control_A_vs_B_p": 0.07407436173435306,
+      "slices": {
+        "vol_low": {
+          "n": 864,
+          "rate": 0.5104166666666666,
+          "p_vs_failed_overall": 0.4161044148303339
+        },
+        "vol_mid": {
+          "n": 904,
+          "rate": 0.543141592920354,
+          "p_vs_failed_overall": 0.4217533314540035
+        },
+        "vol_high": {
+          "n": 963,
+          "rate": 0.5275181723779855,
+          "p_vs_failed_overall": 1.0
+        },
+        "direction_bullish_setup": {
+          "n": 1366,
+          "rate": 0.4985358711566618,
+          "p_vs_failed_overall": 0.09138970698124127
+        },
+        "direction_bearish_setup": {
+          "n": 1372,
+          "rate": 0.5553935860058309,
+          "p_vs_failed_overall": 0.0916800528184156
+        },
+        "symmetry_low": {
+          "n": 913,
+          "rate": 0.5334063526834611,
+          "p_vs_failed_overall": 0.7671395832819669
+        },
+        "symmetry_mid": {
+          "n": 912,
+          "rate": 0.5317982456140351,
+          "p_vs_failed_overall": 0.832345093985018
+        },
+        "symmetry_high": {
+          "n": 913,
+          "rate": 0.515881708652793,
+          "p_vs_failed_overall": 0.585276578842795
+        }
+      },
+      "k_sensitivity": {
+        "3": {
+          "n_events": 4993,
+          "failed": {
+            "n": 2738,
+            "rate": 0.527027027027027
+          },
+          "completed": {
+            "n": 2255,
+            "rate": 0.542350332594235
+          }
+        },
+        "5": {
+          "n_events": 3165,
+          "failed": {
+            "n": 1760,
+            "rate": 0.5369318181818182
+          },
+          "completed": {
+            "n": 1405,
+            "rate": 0.5295373665480427
+          }
+        },
+        "8": {
+          "n_events": 2050,
+          "failed": {
+            "n": 1143,
+            "rate": 0.537182852143482
+          },
+          "completed": {
+            "n": 907,
+            "rate": 0.5435501653803748
+          }
+        }
+      },
+      "yearly_stability": {
+        "2022": {
+          "n": 34,
+          "rate": 0.5
+        },
+        "2023": {
+          "n": 960,
+          "rate": 0.5125
+        },
+        "2024": {
+          "n": 966,
+          "rate": 0.5227743271221532
+        },
+        "2025": {
+          "n": 778,
+          "rate": 0.5514138817480719
+        }
+      }
+    },
+    "H1": {
+      "timeframe": "H1",
+      "split_metadata": {
+        "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+        "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+        "holdout_excluded": true,
+        "min_date_used": "2023-01-02 23:00:00+00:00",
+        "max_date_used": "2025-10-23 09:00:00+00:00",
+        "n_bars_used": 16623,
+        "n_bars_before_cutoff": 20832,
+        "n_bars_excluded_by_cutoff": 4209,
+        "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+        "timeframe": "H1"
+      },
+      "n_bars": 16623,
+      "date_range": [
+        "2023-01-02 23:00:00+00:00",
+        "2025-10-23 09:00:00+00:00"
+      ],
+      "n_swings": 2467,
+      "n_3drive_events": 1193,
+      "primary": {
+        "failed": {
+          "n": 664,
+          "rate": 0.5481927710843374
+        },
+        "completed": {
+          "n": 529,
+          "rate": 0.553875236294896
+        },
+        "p_failed_vs_completed": 0.8906822594929257
+      },
+      "controls": {
+        "control_A_generic_swing": {
+          "overall": {
+            "n": 664,
+            "rate": 0.5481927710843374
+          },
+          "p_vs_failed": 1.0
+        },
+        "control_B_random_matched": {
+          "overall": {
+            "n": 664,
+            "rate": 0.5557228915662651
+          },
+          "p_vs_failed": 0.8253077384690639
+        }
+      },
+      "cross_control_A_vs_B_p": 0.8253077384690639,
+      "slices": {
+        "vol_low": {
+          "n": 258,
+          "rate": 0.5426356589147286,
+          "p_vs_failed_overall": 0.9374475818549501
+        },
+        "vol_mid": {
+          "n": 215,
+          "rate": 0.5395348837209303,
+          "p_vs_failed_overall": 0.8864373142185443
+        },
+        "vol_high": {
+          "n": 181,
+          "rate": 0.580110497237569,
+          "p_vs_failed_overall": 0.4954968693787061
+        },
+        "direction_bullish_setup": {
+          "n": 328,
+          "rate": 0.5182926829268293,
+          "p_vs_failed_overall": 0.4116503842719661
+        },
+        "direction_bearish_setup": {
+          "n": 336,
+          "rate": 0.5773809523809523,
+          "p_vs_failed_overall": 0.41766997650023097
+        },
+        "symmetry_low": {
+          "n": 221,
+          "rate": 0.5610859728506787,
+          "p_vs_failed_overall": 0.7981489447506482
+        },
+        "symmetry_mid": {
+          "n": 222,
+          "rate": 0.545045045045045,
+          "p_vs_failed_overall": 0.9970544143993357
+        },
+        "symmetry_high": {
+          "n": 221,
+          "rate": 0.5384615384615384,
+          "p_vs_failed_overall": 0.8621132835550999
+        }
+      },
+      "k_sensitivity": {
+        "3": {
+          "n_events": 1193,
+          "failed": {
+            "n": 664,
+            "rate": 0.5481927710843374
+          },
+          "completed": {
+            "n": 529,
+            "rate": 0.553875236294896
+          }
+        },
+        "5": {
+          "n_events": 792,
+          "failed": {
+            "n": 414,
+            "rate": 0.5772946859903382
+          },
+          "completed": {
+            "n": 378,
+            "rate": 0.5740740740740741
+          }
+        },
+        "8": {
+          "n_events": 513,
+          "failed": {
+            "n": 289,
+            "rate": 0.5224913494809689
+          },
+          "completed": {
+            "n": 224,
+            "rate": 0.5669642857142857
+          }
+        }
+      },
+      "yearly_stability": {
+        "2023": {
+          "n": 234,
+          "rate": 0.5
+        },
+        "2024": {
+          "n": 237,
+          "rate": 0.5611814345991561
+        },
+        "2025": {
+          "n": 193,
+          "rate": 0.5906735751295337
+        }
+      }
+    },
+    "H4": {
+      "timeframe": "H4",
+      "split_metadata": {
+        "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+        "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+        "holdout_excluded": true,
+        "min_date_used": "2023-01-02 22:00:00+00:00",
+        "max_date_used": "2025-10-23 09:00:00+00:00",
+        "n_bars_used": 4350,
+        "n_bars_before_cutoff": 5450,
+        "n_bars_excluded_by_cutoff": 1100,
+        "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+        "timeframe": "H4"
+      },
+      "n_bars": 4350,
+      "date_range": [
+        "2023-01-02 22:00:00+00:00",
+        "2025-10-23 09:00:00+00:00"
+      ],
+      "n_swings": 717,
+      "n_3drive_events": 344,
+      "primary": {
+        "failed": {
+          "n": 188,
+          "rate": 0.5425531914893617
+        },
+        "completed": {
+          "n": 156,
+          "rate": 0.5705128205128205
+        },
+        "p_failed_vs_completed": 0.6814132460447845
+      },
+      "controls": {
+        "control_A_generic_swing": {
+          "overall": {
+            "n": 188,
+            "rate": 0.6170212765957447
+          },
+          "p_vs_failed": 0.17438360525078722
+        },
+        "control_B_random_matched": {
+          "overall": {
+            "n": 188,
+            "rate": 0.5
+          },
+          "p_vs_failed": 0.4698952816230836
+        }
+      },
+      "cross_control_A_vs_B_p": 0.02918569712564671,
+      "slices": {
+        "vol_low": {
+          "n": 95,
+          "rate": 0.5263157894736842,
+          "p_vs_failed_overall": 0.8946115936126305
+        },
+        "vol_mid": {
+          "n": 34,
+          "rate": 0.7352941176470589,
+          "p_vs_failed_overall": 0.057177143119650234
+        },
+        "vol_high": {
+          "n": 49,
+          "rate": 0.42857142857142855,
+          "p_vs_failed_overall": 0.20703690508836164
+        },
+        "direction_bullish_setup": {
+          "n": 99,
+          "rate": 0.47474747474747475,
+          "p_vs_failed_overall": 0.3327411601227115
+        },
+        "direction_bearish_setup": {
+          "n": 89,
+          "rate": 0.6179775280898876,
+          "p_vs_failed_overall": 0.2922629691026979
+        },
+        "symmetry_low": {
+          "n": 63,
+          "rate": 0.6031746031746031,
+          "p_vs_failed_overall": 0.48899294833387474
+        },
+        "symmetry_mid": {
+          "n": 62,
+          "rate": 0.5483870967741935,
+          "p_vs_failed_overall": 1.0
+        },
+        "symmetry_high": {
+          "n": 63,
+          "rate": 0.47619047619047616,
+          "p_vs_failed_overall": 0.44297159916474327
+        }
+      },
+      "k_sensitivity": {
+        "3": {
+          "n_events": 344,
+          "failed": {
+            "n": 188,
+            "rate": 0.5425531914893617
+          },
+          "completed": {
+            "n": 156,
+            "rate": 0.5705128205128205
+          }
+        },
+        "5": {
+          "n_events": 209,
+          "failed": {
+            "n": 106,
+            "rate": 0.5566037735849056
+          },
+          "completed": {
+            "n": 103,
+            "rate": 0.6116504854368932
+          }
+        },
+        "8": {
+          "n_events": 122,
+          "failed": {
+            "n": 61,
+            "rate": 0.5409836065573771
+          },
+          "completed": {
+            "n": 61,
+            "rate": 0.4918032786885246
+          }
+        }
+      },
+      "yearly_stability": {
+        "2023": {
+          "n": 66,
+          "rate": 0.5606060606060606
+        },
+        "2024": {
+          "n": 72,
+          "rate": 0.5833333333333334
+        },
+        "2025": {
+          "n": 50,
+          "rate": 0.46
+        }
+      }
+    }
+  }
+}

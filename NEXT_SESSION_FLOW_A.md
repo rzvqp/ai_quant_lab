@@ -22,7 +22,7 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 ## Current state
 
 **Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
-audit; E006, E014, and E008 Discovery complete; awaiting CEO authorization for E011.**
+audit; E006, E014, E008, and E011 Discovery complete; awaiting CEO authorization for E005.**
 
 E015-SCALP is closed (EVIDENCE LIMIT REACHED, see below) and no further Replay investigation is
 authorized per the CEO's explicit priority-shift instruction; the laboratory returned to its primary
@@ -34,7 +34,7 @@ full audit and sensitivity analysis available in this session's transcript, summ
 Tier-1 edges (their V0 objects substantially overlap already-completed E010/E012/E015 findings), and
 ranked **E006 highest** on both raw knowledge value and reusable-infrastructure leverage.
 
-**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 (done) → E011 → E005 → E027 → E016 → E013
+**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 → E027 → E016 → E013
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass).
 
 **E006 — Asia Range Expansion Failure: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
@@ -72,7 +72,16 @@ consistently quietest, Wednesday afternoon consistently most volatile, both M15 
 involve Friday and is unrelated to E008's own proposed mechanism — disclosed as an out-of-scope
 observation only, per the CEC-001 precedent, not studied further without separate CEO authorization.
 Full detail: `edge_research/E008_friday_profit_taking_shift.md`.
-**Awaiting CEO authorization before starting E011.**
+
+**E011 — Failed 3 Drive Pattern: Discovery complete (2026-07-21).** V0 NOT SUPPORTED — the first
+pattern-family diversification in this program (a swing/leg detector, distinct from
+OB/FVG/CHoCH/compression and session-timing). A clean, complete null across the entire predeclared
+battery on all three timeframes (M15/H1/H4): failed-3rd-leg reversal rate, completed-3-drive reversal
+rate, a generic isolated swing point, and a fully synthetic random point are all statistically
+indistinguishable from each other and from a coin flip (~50-57%), at every fractal-k tested (3/5/8)
+and across every context slice examined. No V1 proposed. Full detail:
+`edge_research/E011_failed_3_drive_pattern.md`.
+**Awaiting CEO authorization before starting E005.**
 
 ---
 

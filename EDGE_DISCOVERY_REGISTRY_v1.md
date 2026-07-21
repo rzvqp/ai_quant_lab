@@ -250,7 +250,12 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Pattern completeness (2 vs. 3 legs), leg symmetry, volatility regime
 - **Measured outcome**: Reversal rate and magnitude following a failed third leg vs. a completed
   three-drive
-- **Status**: UNSTUDIED
+- **Status**: DISCOVERY_COMPLETE — V0 NOT SUPPORTED (2026-07-21). Clean, complete null across the
+  entire predeclared battery on all three timeframes (M15/H1/H4): failed-3rd-leg reversal rate,
+  completed-3-drive reversal rate, a generic isolated swing point, and a fully synthetic random point
+  are all statistically indistinguishable from each other and from a coin flip (~50-57%), at every
+  fractal-k tested (3/5/8) and across every context slice. No V1 proposed. Full detail:
+  `edge_research/E011_failed_3_drive_pattern.md`.
 - **Version**: V0
 
 ### E012 — Inverted Fair Value Gap

@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E008 Discovery complete, awaiting authorization for E011
+## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E011 Discovery complete, awaiting authorization for E005
 
 E015-SCALP Phase 0/0A/root-cause investigation is CLOSED at EVIDENCE LIMIT REACHED (no feasibility
 verdict; see `edge_research/E015-SCALP_protocol_and_pilot.md`). Per explicit CEO priority-shift
@@ -41,7 +41,16 @@ reversal-of-week's-trend test. No V1 proposed. A real, replicated, but Friday-un
 volatility pattern (Monday quietest, Wednesday most volatile) was found and disclosed as an
 out-of-scope observation only, per the CEC-001 precedent — not studied further. Full detail:
 `edge_research/E008_friday_profit_taking_shift.md`.
-**Awaiting CEO authorization before starting E011.**
+
+**E011 — Failed 3 Drive Pattern: Discovery complete (2026-07-21).** V0 NOT SUPPORTED — the first
+pattern-family diversification in this program (a swing/leg detector, not OB/FVG/CHoCH/compression or
+session-timing). A clean, complete null across the entire predeclared battery on all three timeframes
+(M15/H1/H4): failed-3rd-leg reversal rate, completed-3-drive reversal rate, a generic isolated swing
+point, and a fully synthetic random point are all statistically indistinguishable from each other and
+from a coin flip (~50-57%), at every fractal-k tested (3/5/8) and across every context slice. No V1
+proposed — no residual effect anywhere to build one from. Full detail:
+`edge_research/E011_failed_3_drive_pattern.md`.
+**Awaiting CEO authorization before starting E005.**
 
 <details><summary>Superseded status entries (kept for the record, not current)</summary>
 
@@ -228,7 +237,7 @@ a CEO-approved, pre-committed scoring framework (Novelty, Expected Information V
 Execution Cost, Independence — see `NEXT_SESSION_FLOW_A.md` for the full audit) found E013 and E016
 carry the highest redundancy risk in this remaining set (their V0 objects substantially overlap
 already-completed E010/E012/E015 findings) rather than being natural next steps. **Authorized order for
-the remaining items is now: E006 (done) → E014 (done) → E008 (done) → E011 → E005 → E027 → E016 → E013**
+the remaining items is now: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 → E027 → E016 → E013**
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass). The numbered
 list above is kept as-is for the historical record; this note is the current authority on sequencing.
 
