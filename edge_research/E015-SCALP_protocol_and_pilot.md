@@ -475,3 +475,63 @@ timeframe-preservation mechanism — is the specific unresolved blocker.
 
 **E015-SCALP remains at Phase 0, incomplete.** E015's own structural result
 (`E015_order_block_remitigation.md`) is unaffected.
+
+---
+
+## Phase 0 — Root-Cause Investigation of the Non-Reproducible Result (2026-07-21) — CLOSED,
+## EVIDENCE LIMIT REACHED
+
+Following the retraction above, the CEO rejected a premature feasibility verdict and required a
+root-cause investigation into why the one earlier apparent success (a click starting Bar Replay,
+stepping correctly, and preserving position across a 4H→M1 switch) could not be reproduced.
+
+### Categories tested, each an attempt to falsify
+
+| Category | Test performed | Result |
+|---|---|---|
+| Blocking dialog/modal (current attempts) | Explicit DOM check (`[role="dialog"]`, `[class*="modal"]`) immediately before a click | Empty — no dialog present when the click still failed |
+| Chart layout | Two independent layouts tested (original 3-indicator layout; a second, unrelated layout with 5 indicators + Volume Delta panel) | Identical failure on both |
+| Renderer/session state | Full `Page.reload()` (fresh JS context) before activating | Still failed |
+| Automation timing | Delays from 500ms to 2000ms between activation and click | No difference |
+| Click coordinates | 7 vertical positions spanning the full canvas height; both a precise time-computed x and a generic 40%/50% x | All failed |
+| Replay toolbar state | Confirmed genuinely present (`[data-name="replay-bottom-toolbar"]`) before every attempt | Present every time; not itself blocking |
+| Pine overlays | Tested with an entirely different indicator set | Same failure |
+| Viewport positioning (lazy-load taint) | Tested on unscrolled/already-loaded recent data vs. deeply-scrolled/lazy-loaded historical data | Both failed identically — falsifies "only lazy-loaded bars are unclickable" |
+| Stale WebContents / tab identity | Tested on a reloaded existing tab, and on a genuinely new tab (different chart_id, never touched before, opened directly by the CEO) | Both failed |
+| CDP target attachment | Fresh CDP connection created for every test | No difference |
+| Shared/synced replay state across duplicate-layout tabs | Activated + clicked on one tab sharing a chart_id with another, checked the other for reflected state | Inconclusive — no positive state was achievable in either tab to test propagation |
+
+### Conclusion (recorded verbatim, per CEO instruction)
+
+> Current evidence most strongly supports Category C (stale/pre-existing replay state), but this
+> remains an unproven hypothesis due to the lack of an independent manual confirmation.
+
+**STATUS: EVIDENCE LIMIT REACHED.** No feasibility verdict is issued. No implementation or
+workaround was attempted or is proposed. The investigation is closed pending new evidence.
+
+### What would upgrade or falsify this conclusion
+
+- **To upgrade toward Category A (genuine, reproducible click-driven start)**: a human operator
+  performs the exact click sequence through the real TradingView UI (real mouse/keyboard, not
+  CDP-dispatched input) on a tab with **no prior Bar Replay activity of any kind** (verified via a
+  screenshot taken immediately beforehand showing no modal, no toolbar, no stale state), and it
+  succeeds — ideally repeated on a second, independently fresh tab to rule out a one-off.
+- **To upgrade toward Category C (confirmed stale/pre-existing state)**: reproduce a "Continue your
+  last replay?" modal deliberately (e.g., by starting a real replay session via the TradingView UI,
+  then closing and reopening a duplicate tab of the same layout), screenshot the exact modal
+  position, and confirm that a click at the coordinates used in the original successful test
+  (40%/45% of the canvas) would have geometrically landed on the modal's "Continue" control.
+- **To falsify Category C entirely**: demonstrate that no "Continue your last replay?" modal (or any
+  other stale-state artifact) was possible at the time of the original success — e.g., if TradingView
+  access logs, network capture, or an account activity trail from that exact timestamp show no prior
+  replay session existed to be "stale."
+- **To rule out Category B (detection bug)**: not currently indicated by any evidence — 
+  `isReplayStarted()`/`currentDate()` behaved consistently and correctly in every other test, before
+  and since — but would be reinforced by unit-testing the exact unwrap/read logic (`uw()` helper)
+  against a mocked CDP response matching the original success's raw values.
+
+### Governance
+
+No tooling change was made or proposed in this investigation. No new edge, no formal validation, no
+E013, no Phase 1. E015's own structural result is unaffected. This investigation is closed;
+resuming it requires explicit CEO reauthorization.

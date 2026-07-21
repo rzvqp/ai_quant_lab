@@ -9,14 +9,22 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: PAUSED (2026-07-21) — E015-SCALP Phase 0 manual-navigation retry complete, verdict C —
-NOT FEASIBLE (retry). A previously-reported "Verdict A — manual replay start works" finding has
-been RETRACTED as not reproducible under rigorous re-testing (10+ clean attempts across 2 healthy
-chart tabs, no successes). Normal 4H chart scrolling and historical data reachability back through
-2023 ARE confirmed sound; the specific blocker is replay-start candle *selection* via click, which
-could not be made to work. Full detail: `edge_research/E015-SCALP_protocol_and_pilot.md`
-§"Phase 0 — Manual-Navigation Retry (2026-07-21/22) — CORRECTED, retraction of an earlier mechanism
-claim". Awaiting CEO decision. Do not begin E013. Do not resume E015-SCALP formal validation.**
+**Status: EVIDENCE LIMIT REACHED (2026-07-21) — E015-SCALP Phase 0 root-cause investigation CLOSED,
+no feasibility verdict issued. A previously-reported "Verdict A — manual replay start works" finding
+was RETRACTED as not reproducible under rigorous re-testing (10+ clean attempts across multiple
+healthy chart tabs, no successes). A CEO-directed root-cause investigation across 11 candidate
+categories (modal state, layout, renderer/session state, timing, coordinates, toolbar state, Pine
+overlays, lazy-load/viewport positioning, tab/WebContents identity, CDP target attachment,
+cross-tab shared state) could not identify the cause with certainty. Recorded conclusion (verbatim):
+"Current evidence most strongly supports Category C (stale/pre-existing replay state), but this
+remains an unproven hypothesis due to the lack of an independent manual confirmation." No
+implementation or workaround was attempted. Normal 4H chart scrolling and historical data
+reachability back through 2023 ARE confirmed sound; the specific unresolved blocker is replay-start
+candle *selection* via click. Full detail, falsification table, and what evidence would upgrade or
+falsify the conclusion: `edge_research/E015-SCALP_protocol_and_pilot.md` §"Phase 0 — Root-Cause
+Investigation of the Non-Reproducible Result (2026-07-21) — CLOSED, EVIDENCE LIMIT REACHED".
+**Investigation closed — do not resume without explicit CEO reauthorization. Do not begin E013. Do
+not resume E015-SCALP formal validation. Awaiting next assignment.**
 
 **Phase 0A update (supersedes the Phase 0 "NOT FEASIBLE" framing below with a more precise
 diagnosis)**: root-caused and fixed a real tooling defect (a "success" report that silently landed
