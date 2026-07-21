@@ -106,7 +106,7 @@ Implementation is now complete and validated per that authorization.
 **Strategy Health Integration (roadmap step 1/6) is ACCEPTED COMPLETE** (CEO verdict, commits `dc79cb5`/
 `eb6f9eb`). **Portfolio Architect (roadmap step 2/6) design was ACCEPTED** (`PORTFOLIO_ARCHITECT_DESIGN.md`,
 commit `1ea29c9`), and **Phase 1 (PASSTHROUGH scaffold) is now IMPLEMENTED and fully validated** (commit
-`<see git log -1>` — see `PROJECT_STATE_v2.md` §8.25 for the full record). New package
+`bf41d5e` — see `PROJECT_STATE_v2.md` §8.25 for the full record). New package
 `ai_trader/portfolio_architect/` (stateless `PortfolioArchitect.evaluate()`, PASSTHROUGH-only), wired
 into `harness.py` via a new `portfolio_architect_config` parameter (default `None`, no-op). 722 tests
 pass; zero diff in every frozen module and Flow A artifact. Awaiting CEO verdict on Phase 1.
