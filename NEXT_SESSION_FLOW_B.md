@@ -37,7 +37,7 @@ implementation is complete and fully validated (see `PROJECT_STATE_v2.md` §8.24
 ## Last Flow B commit
 
 ```
-<FILLED IN AFTER COMMIT — see git log -1>  feat: implement Strategy Health Integration eligibility policy
+dc79cb5  feat: implement Strategy Health Integration eligibility policy
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
