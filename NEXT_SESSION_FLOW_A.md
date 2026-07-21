@@ -7,6 +7,18 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ---
 
+## Backlog (recorded, not started)
+
+- **`DISCOVERY_CONTROL_STANDARD.md`** (recorded 2026-07-21, CEO directive): standardize the reusable
+  control classes used across Discovery-stage edges (e.g. the generic-single-bar / generic-compression
+  / random-matched-synthetic ladder used by E014, the structural-random-window control used by E006,
+  the swing/random-matched controls used by E011) into one shared, documented reference, so future
+  edges reuse a common naming and construction convention instead of each edge re-deriving its own
+  control set from scratch. **Do not start this until the current Discovery batch is complete** — this
+  is a backlog item only, explicitly not authorized to begin now.
+
+---
+
 ## Current state
 
 **Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
