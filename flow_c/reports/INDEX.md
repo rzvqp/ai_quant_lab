@@ -9,4 +9,5 @@ Registrul tuturor output-urilor Research Intelligence. O linie per document.
 | [RI-REPORT-0003](RI-REPORT-0003.md) | Research Report | 2026-07-21 | S1 dedicat — populația dominantă (1152), normal intern | C1 — Speculativ | Faza 1 — OFICIAL (commit d573e70) |
 | [RI-REPORT-0004](RI-REPORT-0004.md) | Research Report | 2026-07-21 | Familiile zero-profit (S4,S7,S10,S11,S12,S15) — cunoaștere negativă + Family Identity | C1 — Speculativ | Faza 1 — OFICIAL (commit e4e6010) |
 | [RI-REPORT-0005](RI-REPORT-0005.md) | Research Report | 2026-07-21 | 13 familii profitabile non-S1 — side + temporal + Family Identity | C1 — Speculativ | Faza 1 — OFICIAL (commit 42cd565) |
-| [RI-META-0001](RI-META-0001.md) | Meta Analysis (P2/WP1) | 2026-07-21 | Enumerare/mărime-familie ↔ rezultat: NUL; dominanța S1 = enumerare | C1 — Speculativ | P2/WP1 — livrat pentru review CEO (necommis) |
+| [RI-META-0001](RI-META-0001.md) | Meta Analysis (P2/WP1) | 2026-07-21 | Enumerare/mărime-familie ↔ rezultat: NUL; dominanța S1 = enumerare | C1 — Speculativ | P2/WP1 — OFICIAL CLOSED (commit 65db1e2) |
+| [RI-META-0002](RI-META-0002.md) | Meta Analysis (P2/WP2) | 2026-07-21 | val_exp (OOS 60-80%) sistematic > exp (+0,072, 77%); period-confounded, nu robustețe | C2 (asociere) | P2/WP2 — livrat + clarificare semantică; await review (necommis) · Alpha Impact HIGH |
