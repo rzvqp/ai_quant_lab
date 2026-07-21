@@ -19,6 +19,11 @@ with real evidence, using adapters that already exist
 (`decision_intelligence_v2/adapters.py::build_context_snapshot`/`build_present_edge_reference`) but have
 never been called to write anything.**
 
+**Status update (2026-07-21): CEO REVIEW — ACCEPTED WITH REFINEMENTS.** Two design questions were
+raised before implementation and are answered in the **Addendum** at the end of this document, which
+supersedes §4's original single-Outcome-type framing and §8's original Invariant 6/"no new schema"
+framing. Read the Addendum together with §§1–10 below, not as a replacement for them.
+
 ---
 
 ## 1. Purpose
@@ -136,10 +141,10 @@ justification:
 | Market context (regime, session, multi-timeframe agreement) | **Yes** | This is exactly `ContextSnapshot`'s own existing shape — already defined, already adapter-translatable, the whole reason Context Memory exists. |
 | Volatility, structure, momentum, liquidity, expansion | **Yes** | Already individual fields on `ContextSnapshot` — no new modeling required. |
 | "Edge present" verdicts (Edge Intelligence's own recognition) | **Yes** | `PresentEdgeReference`'s own existing shape. |
-| Execution outcome / trade lifecycle result | **Yes, but from Shadow Evidence, not the real competitive ledger** | See the reasoning below — this is the single most important design decision in this document. |
-| Accepted signals (real Risk Manager ALLOW) | **No, not as new Learning-owned data** | Already captured by the existing competitive `TradeRecord`/`trade_ledger`; duplicating it into Context Memory would violate `PresentEdgeReference`'s own documented design choice to exclude "any strategy Contract copy or performance figure" — the same discipline applies here. |
-| Rejected signals (real Risk Manager DENY) | **No** | Already captured by the existing `RiskEventRecord` with strategy attribution (Phase 6.9A). Re-deriving it into a second, parallel record would duplicate Risk Manager's own attribution work for no new information. |
-| Strategy Health decisions (`PolicyState`) | **No** | A separate, already-serving classification (`shadow_gate.py`) with its own evidence source and its own purpose (real-trade eligibility). Embedding it into Context Memory's own `Observation` would conflate two independent axes and risk exactly the kind of responsibility drift §5 forbids. |
+| Execution outcome / trade lifecycle result | **Yes — but see the Addendum below: this is now TWO distinct outcome types (Strategy Outcome, Shadow-sourced; Portfolio Outcome, real-ledger-sourced), not one.** | Originally stated here as "Shadow Evidence only" — refined by CEO review; superseded by the Addendum's own §A1. |
+| Accepted signals (real Risk Manager ALLOW) | **Not as new Learning-owned DATA, but see the Addendum: preserved as read-only, non-statistical operational METADATA.** | Original reasoning (avoid duplicating `TradeRecord`) still holds for the DATA itself; refined by CEO review to distinguish "new data" from "preserved metadata" — see Addendum §A2. |
+| Rejected signals (real Risk Manager DENY) | **Not as new Learning-owned DATA, but see the Addendum: denial reason + rejection stage preserved as operational metadata.** | Original reasoning (already in `RiskEventRecord`) still holds; refined per Addendum §A2. |
+| Strategy Health decisions (`PolicyState`) | **Not as a new classification, but see the Addendum: the already-computed `PolicyState` AT that `as_of` preserved as operational metadata.** | Original reasoning (a separate, already-serving classification) still holds for OWNERSHIP of the classification logic; refined per Addendum §A2 to distinguish "re-deriving/owning" from "recording an already-computed output." |
 | Slippage, spread, latency | **No, not as new fields** | Already implicitly reconstructable from `TradeRecord`/`SimFillEvent`'s own existing entry-price-vs-signal-price and timestamp fields where needed for OFFLINE research; Context Memory's own contract is deliberately market-regime-and-outcome-shaped, not an execution-quality ledger — adding new fields to `ContextSnapshot`/`Outcome` is explicitly out of this document's own proposed scope (§3). |
 | Portfolio Architect diagnostics | **No, currently** | `ArchitectMode.PASSTHROUGH` produces no decision-relevant diagnostic worth preserving; if a future, separately-authorized policy exists, whether ITS diagnostics belong in Context Memory is a question for THAT authorization, not this one. |
 
@@ -265,11 +270,17 @@ with, Context Memory's own already-built and already-tested guarantees:
 4. **One-way data flow.** Learning reads from the live pipeline and Shadow Evidence; it writes only to
    Context Memory. Nothing downstream of Context Memory (retrieval/evidence/decision_intelligence_v2)
    ever writes back into Learning or into any upstream module.
-5. **No new schema.** Every field Learning populates already exists on `ContextSnapshot`/
-   `PresentEdgeReference`/`Observation`/`Outcome` — this design proposes zero new fields, zero new types.
-6. **Shadow-sourced outcomes only** (§4) — real competitive trade data is never used to compute
-   `Outcome.normalized_result`, preventing the capacity-conflation and evidence-sparsity failure modes
-   already proven in this project's own history.
+5. **Minimal schema extension, explicitly justified, never silent.** ~~Originally stated as "no new
+   schema" — SUPERSEDED by the Addendum below.~~ Two extensions are now proposed, each with its own
+   explicit justification: one new `SourceType` member (Addendum §A1) and one new, separate, optional
+   `OperationalMetadata` companion type (Addendum §A2) — never new fields bolted onto
+   `ContextSnapshot`/`PresentEdgeReference`/`Observation`/`Outcome` themselves.
+6. **Outcome sourcing is explicit and per-type, never blended.** ~~Originally stated as "Shadow-sourced
+   outcomes only" — SUPERSEDED by the Addendum below.~~ Strategy Outcome is always Shadow-sourced
+   (preventing the capacity-conflation and evidence-sparsity failure modes already proven in this
+   project's own history); Portfolio Outcome is always real-ledger-sourced; the two are never merged
+   into one number, and every `Outcome` row's own `source_type` field makes which is which
+   unambiguous and machine-checkable (Addendum §A1).
 7. **Reproducibility.** Given the same underlying simulation run (same seed, same data, same config),
    Learning's own output (the full sequence of appended records) must be byte-for-byte reproducible —
    inherited directly from the harness's own existing, already-proven determinism guarantee.
@@ -328,6 +339,122 @@ How to prove this component is not silently becoming an optimizer, once (if) it 
    -relaxation-ladder and `evidence.py`'s own statistics (already built, already tested) are consumed
    as-is; Learning proposes zero changes to either, so no new statistical/learned weighting could enter
    through this design even inadvertently.
+
+---
+
+## Addendum (2026-07-21) — CEO-requested refinements: Outcome semantics and operational metadata
+
+**Verdict this addendum implements: ACCEPTED WITH REFINEMENTS.** The overall architecture (§§1–10 above)
+stands; this addendum resolves two design questions raised before implementation. Both refinements
+**continue from Context Memory's own existing contracts**, per the CEO's own instruction — neither
+proposes a parallel subsystem.
+
+### A1. Outcome semantics — Strategy Outcome vs. Portfolio Outcome are both required, and must never merge
+
+The original document's Invariant 6 stated outcomes must always come from Shadow Evidence. **This was too
+strong, and is superseded here.** "How did the strategy itself perform?" and "what actually happened in
+the live AI Trader?" are genuinely different questions, and collapsing them into one number would hide
+exactly the phenomenon this project's own research has spent the most effort measuring this session —
+the gap between an edge's own intrinsic quality and what the shared-slot-contested competitive system
+actually realized (`CEO_STRATEGY_CONSTRAINT_ROOT_CAUSE_REPORT.md`, `PORTFOLIO_ARCHITECT_PHASE2A_
+CALIBRATION_REPORT.md`).
+
+**Both outcome types are required, distinguished by `Outcome.source_type`, never blended:**
+
+| | A. Strategy Outcome | B. Portfolio Outcome |
+|---|---|---|
+| **Question answered** | How did the strategy itself perform? | What actually happened in the live AI Trader? |
+| **Evidence source** | Shadow Evidence (`ShadowPositionRecord`/`ShadowTradeLegRecord`) | Real portfolio/execution ledger (`portfolio_simulator.account.trade_ledger`) |
+| **Existence** | Written for essentially every `Observation` — Shadow tracks every configured strategy unconditionally, regardless of real eligibility or capacity | Written ONLY when a real position for that strategy actually opened and closed — the common case, per Phase 2A's own measured evidence (19 real ALLOWs vs. 88 Shadow-isolated ALLOWs in the same window), is that NO Portfolio Outcome exists for a given Observation. **Absence is the expected, correct state, never an error** — it must not be papered over with a fabricated `UNAVAILABLE` row; simply no row is written. |
+| **Why this source** | Avoids the evidence-sparsity (Phase 2A) and capacity-conflation failure modes (§4 of the main design) | Answers the genuinely different, system-level question of realized performance under real, capacity-constrained competition — the exact question the Root-Cause Report, Performance Atlas, and Portfolio Architect's own research this session were built to answer, now made retrievable by regime/context instead of requiring a fresh offline study each time |
+| **Contract mechanism** | Existing `SourceType.SHADOW_EVIDENCE_ADAPTER` (already present in `enums.py` — no change needed) | **One new `SourceType` member required — the sole schema extension this addendum proposes**: e.g. `PORTFOLIO_LEDGER_ADAPTER`. This is additive to an existing enum, not a new type, not a new field on any dataclass. |
+| **Scope** | Per `(observation_id, strategy_id)`, exactly like `Outcome` already is today | Same — the real ledger's own winning strategy for that bar maps directly onto the SAME `Outcome.strategy_id` field; no new scoping concept is introduced |
+
+**How they remain conceptually separate, structurally, not just by convention** (mirroring
+`ShadowStrategySummary.source`'s own already-established discipline — *"always `'shadow'` here, never
+silently merged with a competitive stream by any downstream consumer"*, `shadow_evidence/types.py`):
+
+- `source_type` is present on every `Outcome` row and is the sole, unambiguous discriminator — never
+  inferred from context, never defaulted.
+- Any future `evidence.py`-style aggregation MUST group by `source_type` before computing any statistic
+  (win rate, mean result, etc.) — aggregating across both types into one number is exactly the failure
+  this separation exists to prevent. This is a requirement on any FUTURE implementation, not something
+  this addendum builds.
+- A single `Observation` may have zero, one, or two `Outcome` rows attached (Strategy only; Portfolio
+  only — architecturally rare given real trades require real eligibility; or both) — the retrieval layer
+  must treat these as independent, co-existing facts about the same decision moment, never as
+  alternates where one supersedes the other.
+- **New research question this unlocks** (illustrative only, not proposed for implementation): comparing
+  Strategy Outcome against Portfolio Outcome for the same `Observation` set directly measures the
+  "realization gap" — how much of an edge's own intrinsic quality was actually captured by the real,
+  contested system versus lost to shared-slot competition — a quantified, retrievable-by-regime version
+  of what the Root-Cause Study and Phase 2A each had to measure from scratch with bespoke instrumentation.
+
+### A2. Operational metadata — Risk Manager and Strategy Health outputs belong as a separate, optional, non-statistical companion record
+
+**Risk Manager's and Strategy Health's own decisions must never become learning targets — this is
+unchanged and non-negotiable.** The question is narrower: should their already-computed OUTPUTS (not
+their logic, not a re-derivation) be preserved as read-only historical facts for future diagnostics.
+
+**Answer: yes, they belong — but NOT as new fields on `ContextSnapshot`/`PresentEdgeReference`/
+`Observation`/`Outcome` themselves.** Adding them there would risk exactly the failure mode the main
+design already flagged (§9, "Silent schema drift") and would blur a boundary the existing package has
+already drawn once, deliberately: `PresentEdgeReference`'s own documented exclusion of "any strategy
+Contract copy or performance figure" is about not re-embedding a LIVING, evolving reference into a frozen
+snapshot. A single bar's ALLOW/DENY outcome and that moment's own `PolicyState`, by contrast, are
+discrete, point-in-time historical facts, permanently fixed the instant they occur — architecturally
+closer to `ContextSnapshot`'s own "frozen belief-state at one moment" pattern than to a "living reference"
+the exclusion warns against. That distinction is what makes preservation legitimate here where a Contract
+copy would not be.
+
+**Proposed shape (design only, not implemented)** — a new, small, strictly optional companion type,
+e.g. `OperationalMetadata`, one row per `(observation_id, strategy_id)`, mirroring `Outcome`'s own
+existing scope:
+
+```
+observation_id: ObservationId          # FK, same pattern as Outcome
+strategy_id: str
+risk_decision: "ALLOW" | "DENY"        # Risk Manager's own already-computed output, recorded, not re-derived
+denied_reason_code: str | None         # from the existing DeniedReason, unchanged
+rejection_stage: str | None            # which gate (pre-trade filter / portfolio limit / guard / cooldown / sizing) -- mirrors AppliedRule's own existing concept, unchanged
+strategy_health_policy_state: str | None   # shadow_gate.py's own already-computed PolicyState at this as_of, read only
+```
+
+**Why this does not violate ownership boundaries**:
+- Risk Manager still, and only, OWNS the act of deciding ALLOW/DENY — Learning never re-executes any gate,
+  never re-derives a denial reason; it records a fact Risk Manager already produced, exactly the same
+  relationship `PresentEdgeReference` already has with Edge Intelligence's own `declared_status` (records
+  Edge Intelligence's OUTPUT, never re-implements Edge Intelligence).
+- Strategy Health still, and only, OWNS the classification logic (`shadow_gate.py`'s frozen, unmodified
+  `policy_states_at()`) — Learning reads its OUTPUT at one `as_of`, never recomputes or second-guesses it.
+- The field is explicitly, structurally kept OUT of any statistical computation: `retrieval.py`'s own
+  matching dimensions and `evidence.py`'s own aggregated statistics must never read
+  `OperationalMetadata` — it exists purely for direct, human/offline diagnostic queries (e.g. "show every
+  DENY reason for strategy X under HIGH volatility, cross-referenced with its own Strategy Outcome") —
+  satisfying the CEO's own framing precisely: *"The purpose is NOT decision making. The purpose is future
+  diagnostics and research."*
+- Being a SEPARATE, optional type (not new fields on the core four) means it can be entirely absent
+  (e.g., for observations predating Strategy Health's own policy layer) without touching any existing
+  type's own already-tested shape, and a future maintainer cannot accidentally wire it into
+  `retrieval.py`'s own query dimensions without that itself being a visible, separate, reviewable change.
+
+### Revised invariants (supersede §8 items 5 and 6 above, all other invariants unchanged)
+
+- **Item 5, revised**: "No new schema" is replaced by "minimal, explicit, additive schema extension" — one
+  new `SourceType` enum member (A1) and one new, separate, optional `OperationalMetadata` type (A2).
+  Both are additive to existing structures; neither modifies an existing field or an existing type's own
+  already-tested shape.
+- **Item 6, revised**: "Shadow-sourced outcomes only" is replaced by "outcome sourcing is explicit and
+  per-type, never blended" (A1's own table).
+- **New invariant 8**: `OperationalMetadata` is never read by `retrieval.py` or `evidence.py` — it is a
+  write-once, read-only-by-humans-or-offline-scripts record, structurally excluded from every statistical
+  or matching computation this package performs.
+
+### Updated negative control (extends §10)
+
+6. **`OperationalMetadata` never appears in any `RetrievalQuery` field or any `ContextualEvidenceReport`
+   statistic** — directly checkable once implemented by confirming neither `retrieval.py` nor
+   `evidence.py` imports or references the new type at all.
 
 ---
 
