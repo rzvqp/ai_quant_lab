@@ -179,3 +179,13 @@ question rather than re-deriving it independently each time.
 
 **Artifacts**: `e017_equal_highs_lows.py` (analysis script), `e017_equal_highs_lows_results.json` (full
 output incl. all tolerances, horizons, slices, and the distance-matched comparison).
+
+## Scope clarification (added 2026-07-22, Protocol v2 — `EDGE_RESEARCH_PROTOCOL.md` §9)
+
+**This study is structural-behavior Discovery, not direct scalping validation.** It tested whether
+equal-highs/lows carry a statistically distinguishable directional signal over multi-bar/multi-day
+horizons (§§1-8 of the protocol) — it did NOT test whether the market recognizes the concept
+immediately, or whether it produces a mechanically-defined, cost-aware scalp trade reaching TP=2R
+before SL=1R within minutes (the new §9 question). No such test has been run for this edge; §9's own
+tests are currently blocked project-wide (no M1/M5/tick data exists — §9.6). This note does not change
+this edge's own V0 result, verdict, or status above, all of which stand unedited.

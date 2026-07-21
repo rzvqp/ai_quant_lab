@@ -1,8 +1,10 @@
 # Edge Research Protocol
 
 **Program**: 40-Edge Alpha Discovery Program. **Applies to**: every edge in
-`EDGE_DISCOVERY_REGISTRY_v1.md`, without exception. **Status**: protocol definition only — no edge has
-been run through any stage of this protocol yet.
+`EDGE_DISCOVERY_REGISTRY_v1.md`, without exception. **Protocol version: v2 (updated 2026-07-22)** — §9
+adds the Immediate Scalping Response Protocol (CEO directive) as an additional, later-stage check
+alongside §§1-8's own structural-behavior Discovery pipeline; see §9.1 for how the two relate. §9's own
+tests are currently BLOCKED project-wide — no M1/M5/tick data exists (§9.6).
 
 ## 0. Purpose and philosophy
 
@@ -223,3 +225,111 @@ CEO chooses to define one) is a distinct, future, unmade decision.
   retroactively by silently dropping the offending bars and re-presenting the same run as clean.** A
   contaminated run stays contaminated; the only remedy is a fresh, clean rerun that itself satisfies the
   five requirements above from the start.
+
+## 9. Immediate Scalping Response Protocol — PROTOCOL v2 (added 2026-07-22, CEO directive)
+
+**Scope change, explicit and non-retroactive**: §§1-8 above define what this document now calls
+**structural-behavior Discovery** — does a market-structure concept produce a statistically
+distinguishable directional signal at all, tested over multi-bar/multi-day horizons. This section adds
+a **second, separate, additional** research question that a structural-behavior Discovery result does
+**NOT** by itself answer:
+
+> After the event is confirmed, does a mechanically defined trade initiated immediately or on the first
+> valid retest reach TP = 2R before SL = 1R within a short, session-relevant time horizon?
+
+**Every edge studied to date under §§1-8 alone (E017, E009, E010, E012, E015) is a structural-behavior
+Discovery result ONLY, not a direct scalping validation** — this label is retroactively attached to
+those five edges' own permanent logs (as an appended scope clarification, not a change to any V0,
+verdict, or conclusion) and applies to every edge studied under §§1-8 alone going forward, unless and
+until that edge separately passes the extension defined below.
+
+### 9.1 Relationship to §§1-8
+
+This is an **additional, later-stage check**, not a replacement for Stage 2 (Discovery) under §3. An
+edge must still complete a structural-behavior Discovery pass (or already have one) before an
+Immediate Scalping Response study is meaningful — there is no market-structure signal to test the
+speed/tradability of otherwise. Passing this section's own tests does **not** by itself authorize
+implementation (§7's own standing rule continues to apply in full) — it only tells the CEO whether a
+structural-behavior finding is *additionally* a candidate for closer, cost-aware, execution-level study,
+which itself would still require its own separate Frozen Candidate → Validation → Walk Forward →
+Final Verdict pipeline under §§3-6 before any real-world consideration.
+
+### 9.2 Mandatory data resolution — NOT NEGOTIABLE
+
+- **M1 is the required execution-resolution dataset.** M5 may be used for setup confirmation where the
+  edge's own concept calls for it. M15/H1 may be used for higher-timeframe context only, never as a
+  substitute for M1 execution.
+- **Approximating a 5/10/15/30/60-minute scalp using M15 or coarser bars is explicitly prohibited.** An
+  M15 bar cannot resolve which of a 2R target or a 1R stop was hit first within a 15-minute window, nor
+  can it establish sub-15-minute latency between event confirmation and threshold-touch — attempting to
+  approximate this from M15 closes/highs/lows would silently manufacture a result the data cannot
+  support.
+- **If M1 (or credible tick-level) data is not available for the instrument/period in question, this
+  section's own tests may not be run at all** — not with a caveat, not "as an approximation," not scaled
+  down to whatever resolution happens to exist. The correct action is to stop, report the exact gap
+  (§9.6), and await a separate, explicit data-acquisition decision — mirroring this project's own
+  standing rule for the Tier-0 history-extension gap (`EDGE_DISCOVERY_ROADMAP.md` §1).
+
+### 9.3 Required time horizons
+
+5, 10, 15, 30, and 60 minutes, plus "until session end" where session structure is relevant to the
+edge's own concept. These are fixed, disclosed checkpoints — not searched for a favorable one.
+
+### 9.4 Mandatory trade simulation — per event, mechanically defined in advance
+
+1. Event confirmation time (from the edge's own structural-behavior definition, unchanged).
+2. Earliest valid entry time (immediate, or first valid retest — defined per edge, disclosed, not
+   tuned to the outcome).
+3. Entry price.
+4. Stop-loss rule (structural, e.g. beyond the zone/level that defines the event).
+5. Risk distance (entry to stop).
+6. TP = 2 × risk distance (fixed 1:2 RR, per this section's own standing convention).
+7. Maximum holding time (one of §9.3's horizons).
+8. Tie-breaking rule for a bar that touches both TP and SL (must be pre-registered per edge — e.g.
+   "assume the worse outcome," "use sub-bar path reconstruction from M1 if available," disclosed before
+   any result is examined).
+9. Spread (disclosed, instrument-appropriate).
+10. Slippage (disclosed, instrument-appropriate).
+11. Transaction costs (disclosed, instrument-appropriate).
+
+**Every event must be classified** as: TP hit first / SL hit first / timeout / invalid setup /
+ambiguous intrabar path (and the ambiguous-path rate itself must be reported, not silently resolved by
+assumption unless item 8's own pre-registered tie-break rule genuinely resolves it).
+
+**Required reported metrics**: win rate, loss rate, timeout rate, invalid rate, expectancy in R, profit
+factor, average and median holding time, MFE in R, MAE in R, maximum losing streak, sample size, a
+confidence interval, and the result net of costs. **For a 1:2 RR trade, the relevant comparison is the
+approximate break-even win rate after costs (≈33-35% depending on the exact cost model), not 50%** —
+comparisons against 50% are a category error for an asymmetric-RR trade and must not be used.
+
+### 9.5 Context discovery — staged, not an unrestricted search
+
+- **Stage A**: test the edge alone (no context conditioning).
+- **Stage B**: test each context variable individually (first-vs-repeated occurrence, session, HTF
+  direction, trend/range, volatility regime, displacement strength, sweep presence, acceptance/
+  rejection, position within session/daily range, proximity to session open, fresh-vs-aged level, and
+  any other variable the specific edge's own concept motivates — not an arbitrary list).
+- **Stage C**: test only a small number of interactions, and only ones justified by Stage B's own
+  results plus market logic — never an unrestricted combination search.
+- **Stage D**: any improved variant is registered as a new, separately-versioned V1 candidate — never a
+  retroactive edit of V0 or of an already-issued Stage-A/B/C result.
+- **Multiple-testing correction and a minimum sample-size threshold are mandatory** at every stage;
+  results below the threshold, or unadjusted for the number of comparisons made, may not be reported as
+  confirmatory.
+
+### 9.6 Data-resolution audit — required before any edge enters this section's own testing
+
+Before running ANY Immediate Scalping Response study, the exact raw timeframes physically present in
+`data/market/` must be (re-)verified and reported: as of 2026-07-22, this is
+**D1, H1, H4, M15 only — no M1, no M5, no tick-level data exists anywhere in this project**
+(re-confirmed by direct filesystem audit this session; consistent with `EDGE_DISCOVERY_ROADMAP.md` §1's
+own prior finding, not a new discovery). **This means Section 9's own tests cannot currently be run for
+any edge, on any instrument, in this project.** Any future session must re-verify this audit before
+assuming it still holds, and must not proceed past this check by substituting coarser data.
+
+### 9.7 Standing rule
+
+No edge's structural-behavior Discovery result (§§1-8) may be described, in this project's own
+documentation, as a validated scalp opportunity, a tradable setup, or evidence of tradability, until it
+has separately passed this section's own tests. The correct standing description for every edge studied
+under §§1-8 alone is: **"structural-behavior Discovery, not direct scalping validation."**

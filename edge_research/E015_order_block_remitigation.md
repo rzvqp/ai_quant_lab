@@ -221,3 +221,18 @@ edge's own, more sequential/lower-risk construction before treating either as in
 
 **Artifacts**: `e015_order_block_remitigation.py`, `e015_order_block_remitigation_results.json` (full
 output, both timeframes, all slices, sensitivity, and yearly stability).
+
+## Scope clarification (added 2026-07-22, Protocol v2 — `EDGE_RESEARCH_PROTOCOL.md` §9)
+
+**This study is structural-behavior Discovery, not direct scalping validation — including the V1
+candidate in section F/"Current status" above.** The 76% first-mitigation continuation rate was
+measured over multi-bar/multi-day horizons (§§1-8 of the protocol), not the immediate few-minute path
+the CEO's new §9 objective requires. **The V1 candidate is explicitly NOT yet considered a tradable
+scalp edge** — a separate extension, **E015-SCALP (First Order Block Mitigation Immediate Response)**,
+is required to test whether TP=2R is reached before SL=1R within a 5-60 minute window at M1 execution
+resolution. That extension has been scoped but **not run**: `data/market/` contains only D1/H1/H4/M15 —
+no M1, M5, or tick-level data exists anywhere in this project (verified 2026-07-22, consistent with
+`EDGE_DISCOVERY_ROADMAP.md` §1's own prior finding), so E015-SCALP cannot currently be executed without
+approximating from coarser bars, which §9.2 explicitly prohibits. See `NEXT_SESSION_FLOW_A.md` for the
+full data-gap report and proposed minimal ingestion plan. This note does not change this edge's own V0
+result, verdict, or status above, all of which stand unedited.

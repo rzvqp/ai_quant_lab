@@ -179,3 +179,14 @@ if a future revisit wants to test sensitivity to that specific choice.
 
 **Artifacts**: `e012_inverted_fvg.py`, `e012_inverted_fvg_results.json` (full output, both timeframes,
 all slices, sensitivity, and yearly stability).
+
+## Scope clarification (added 2026-07-22, Protocol v2 — `EDGE_RESEARCH_PROTOCOL.md` §9)
+
+**This study is structural-behavior Discovery, not direct scalping validation.** It tested whether an
+FVG inversion carries a statistically distinguishable directional signal over multi-bar/multi-day
+horizons (§§1-8 of the protocol) — it did NOT test whether the market recognizes the concept
+immediately, or whether it (or the un-inverted-FVG comparator, CEC-001) produces a mechanically-defined,
+cost-aware scalp trade reaching TP=2R before SL=1R within minutes (the new §9 question). No such test
+has been run for this edge; §9's own tests are currently blocked project-wide (no M1/M5/tick data
+exists — §9.6). This note does not change this edge's own V0 result, verdict, or status above, all of
+which stand unedited.

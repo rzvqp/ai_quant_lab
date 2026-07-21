@@ -20,6 +20,15 @@ below remains exactly as originally registered, unedited, per protocol §1. **A 
 cross-edge observation, CEC-001, is tracked separately in `CROSS_EDGE_RESEARCH_CANDIDATES.md`** — it is
 NOT part of this 40-edge structure and NOT a numbered edge.
 
+**Protocol v2 (2026-07-22)**: `EDGE_RESEARCH_PROTOCOL.md` §9 adds an Immediate Scalping Response check
+as a separate, additional, later-stage test — a structural-behavior Discovery result (all ten passes to
+date) is NOT itself scalping validation. **Every edge studied so far (E025/E026/E029/E032/E028/E017/
+E009/E010/E012/E015) is "structural-behavior Discovery, not direct scalping validation"** (each of
+E017/E009/E010/E012/E015's own logs carries this note verbatim, added as an appended scope
+clarification, not a change to any V0/verdict). §9's own tests require M1 execution-resolution data,
+which does not exist anywhere in this project (`data/market/` = D1/H1/H4/M15 only) — see
+`NEXT_SESSION_FLOW_A.md` for the full data-gap report and proposed ingestion plan.
+
 ## How to read this registry
 
 - **Status = UNSTUDIED for 30 of 40 entries; DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE for 5 (E025,

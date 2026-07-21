@@ -9,9 +9,58 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: OVERNIGHT FULL-PROFILE SESSION IN PROGRESS (2026-07-22) — E010, E012, E015 done,
-CEC-001 registered, auto-continuing to E013 per standing CEO authorization (no per-edge approval
-required unless a governance issue arises).**
+**Status: PAUSED (2026-07-22) — Protocol v2 (Immediate Scalping Response) blocked on missing M1/M5
+data; awaiting CEO decision. Do not begin E013. Do not run E015-SCALP.**
+
+**What changed**: the CEO redirected the research objective from multi-day structural-behavior
+Discovery to testing whether each edge produces an IMMEDIATELY tradable scalp (a mechanically defined
+entry/stop/TP=2R trade, resolved within 5-60 minutes at M1 execution resolution) —
+`EDGE_RESEARCH_PROTOCOL.md` §9, Protocol v2. Before continuing to E013, or running the requested
+E015-SCALP extension, a data-resolution audit was required.
+
+**Data audit result (re-confirmed by direct filesystem check this session)**: `data/market/` contains
+**only** `OANDA_XAUUSD_{D1,H4,H1,M15}.csv` — 84,152 M15 bars, 20,833 H1 bars, 5,451 H4 bars, 910 D1 bars.
+**No M1, no M5, no tick-level data exists anywhere in this project** — a repo-wide search for M1/M5/tick
+CSV files found none (only unrelated matches inside third-party test fixtures in `venv/`). This is the
+same gap `EDGE_DISCOVERY_ROADMAP.md` §1 already identified for the Tier-0 history extension, now
+independently re-confirmed for this different purpose. **Per the CEO's own explicit instruction ("do
+not approximate a 5-minute scalp using H1 bars"), no attempt was made to approximate §9's tests from
+M15/H1 data.** §9's own tests, and the requested E015-SCALP extension specifically, cannot be run.
+
+**E015-SCALP feasibility determination: NOT FEASIBLE with current data. Not run.** See "Proposed minimal
+data-ingestion plan" below.
+
+**Governance actions taken this step** (documentation only, no code/data change beyond the audit
+itself): `EDGE_RESEARCH_PROTOCOL.md` §9 registers Protocol v2 in full (the new primary research
+question, required horizons, the 11-field mandatory trade simulation, the required outcome
+classifications and metrics, the staged A→B→C→D context-discovery process, and this data-resolution
+audit requirement itself). Each of E017/E009/E010/E012/E015's own permanent logs (append-only) now
+carries a "Scope clarification (2026-07-22, Protocol v2)" section stating **"structural-behavior
+Discovery, not direct scalping validation"** — none of their V0 results, verdicts, or statuses were
+changed. E015's own log additionally records that E015-SCALP was scoped but not run, and why.
+
+## Proposed minimal data-ingestion plan (for CEO decision — not started)
+
+To make Protocol v2 (§9) and the E015-SCALP extension runnable at all, this project would need, at
+minimum:
+1. **XAUUSD M1 OHLCV** (OANDA or an equivalent, methodologically consistent source) covering at least
+   the existing clean-research window (2022-12-16 → 2025-10-23, i.e. matching `PRE_HOLDOUT_SPLIT_ID`) —
+   ideally the same feed/provider as the existing D1/H1/H4/M15 files, to avoid introducing a
+   cross-provider data-quality confound into the comparison.
+2. **M5 OHLCV for the same window**, if not trivially derivable from M1 by resampling (M5 can likely be
+   built by resampling M1 once M1 exists, avoiding a separate ingestion step).
+3. A **disclosed, spread/slippage/cost model** appropriate to M1-resolution XAUUSD execution (the
+   existing M15-scale cost conventions used elsewhere in this project's `code/` engine may not directly
+   transfer to a 1-minute holding-time trade and should be re-examined, not assumed, once real M1 data
+   exists).
+4. Confirmation of the **new data's own provenance and volume-field meaning** (the existing M15/H1/H4/D1
+   `volume` column is already flagged elsewhere in this project as an unconfirmed OTC/CFD proxy, not
+   verified exchange volume — the same caveat would need re-checking for any new M1 feed).
+5. **This is a data-acquisition decision, not an edge-research action** — consistent with this
+   project's own standing treatment of the Tier-0 history-extension gap (`EDGE_DISCOVERY_ROADMAP.md`
+   §1: "data acquisition... is not part of this program's current authorization"). No fetch, download,
+   or vendor engagement was attempted or should be attempted without a separate, explicit CEO decision
+   on source, cost, and provider.
 Following the TERMINAL HOLDOUT BREACH (identified 2026-07-21: all 5 edges studied first — E025, E026,
 E028, E029, E032 — had loaded and analyzed data from the Research Lab's own sealed terminal holdout,
 2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC; **the old terminal holdout is CONSUMED / INVALIDATED**,
@@ -244,15 +293,19 @@ candidate.** Tested on M15 (6,929 order blocks) and H1 (1,875) — M1/M5 unavail
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: auto-continuing to E013 (standing authorization, no per-edge approval needed)
+## Next step: PAUSED — awaiting CEO decision on data acquisition (standing auto-continue authorization
+suspended by this specific blocker)
 
-Per the CEO's own "overnight full edge profile" authorization (2026-07-22), this session does **not**
-stop between edges to ask approval — it continues automatically to the next Tier 1 edge after each
-commit, one edge at a time, stopping only for a genuine governance issue (a contradictory registry, a
-V0 that can't be operationalized without a CEO decision, a required protocol change, missing data, a
-loader/test failure, anything that would require touching Flow B, or an audit-trail risk). **Next: E013
-— Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing
-edges **E006, E008, E005, E027**.
+**This is one of the standing authorization's own explicit stop conditions ("missing data").** Do not
+begin E013. Do not run E015-SCALP. Do not attempt to approximate §9's tests from M15/H1 data. Once the
+CEO makes a decision on the proposed minimal data-ingestion plan above (acquire M1 data / accept the
+scalp objective cannot be tested with current data / redirect the objective back to structural-behavior
+Discovery for now), resume accordingly:
+- If M1 data is acquired: run E015-SCALP first (as explicitly requested), then proceed with `EDGE_RESEARCH_PROTOCOL.md`
+  §9's own tests for E017/E009/E010/E012 as the CEO directs.
+- If the scalp objective is deferred: the Tier 1 sequence's own next structural-behavior edge remains
+  **E013 — Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing edges
+  **E006, E008, E005, E027** — unchanged, only paused.
 
 ## Resume instructions
 
@@ -282,6 +335,12 @@ edges **E006, E008, E005, E027**.
 
 ## Warnings relevant to research
 
+- **`EDGE_RESEARCH_PROTOCOL.md` §9, Protocol v2 (new, 2026-07-22) — BLOCKED, no M1/M5/tick data
+  exists.** Do not describe any structural-behavior Discovery result (§§1-8, i.e. every edge studied to
+  date) as scalp-tradable or implementable — the correct standing description is "structural-behavior
+  Discovery, not direct scalping validation." Do not attempt to approximate a 5/10/15/30/60-minute scalp
+  test using M15 or H1 bars under any circumstance — re-verify the data audit above before assuming this
+  has changed in a future session.
 - **TERMINAL HOLDOUT BREACHED, CONSUMED / INVALIDATED (2026-07-21)** — the old sealed period
   (2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC) can no longer be treated as unseen. Do not describe it
   as "intact." Do not describe a future cutoff-enforced rerun as "restoring" it — it does not; only a

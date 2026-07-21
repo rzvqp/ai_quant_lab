@@ -3,7 +3,20 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-22): OVERNIGHT FULL-PROFILE SESSION IN PROGRESS — E010, E012, E015 done, E013 next
+## ⚠ CURRENT STATUS (updated 2026-07-22): PAUSED — Protocol v2 (Immediate Scalping Response) blocked on missing M1/M5 data; awaiting CEO decision
+
+**CEO directive (2026-07-22)**: the research objective shifted from multi-day structural-behavior
+Discovery to testing whether each edge is an IMMEDIATELY tradable scalp (TP=2R before SL=1R within
+5-60 minutes, M1 execution resolution). `EDGE_RESEARCH_PROTOCOL.md` §9 registers this as Protocol v2.
+**Data audit (re-confirmed by direct filesystem check this session): `data/market/` contains only
+OANDA_XAUUSD_{D1,H4,H1,M15}.csv — no M1, no M5, no tick-level data exists anywhere in this project.**
+Per the CEO's own explicit instruction, this blocks §9's tests entirely — no approximation from M15/H1
+was attempted. **E015-SCALP (the requested extension of E015) was scoped but NOT run** — see
+`NEXT_SESSION_FLOW_A.md` for the full report and the proposed minimal data-ingestion plan. **E013 has
+NOT begun.** All five edges studied under §§1-8 alone (E017/E009/E010/E012/E015) now carry an appended
+"structural-behavior Discovery, not direct scalping validation" scope clarification in their own logs —
+no V0/verdict/conclusion changed. Awaiting CEO decision on data acquisition before any further Flow A
+research.
 
 **TERMINAL HOLDOUT BREACHED, then REMEDIATED** (`PROJECT_STATE_v2.md` §8.23/§8.24): the five edges
 studied in this program's first research session (E025, E026, E028, E029, E032) originally loaded data
