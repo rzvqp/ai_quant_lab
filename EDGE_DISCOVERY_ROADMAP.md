@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-22): OVERNIGHT FULL-PROFILE SESSION IN PROGRESS — E010, E012 done, E015 next
+## ⚠ CURRENT STATUS (updated 2026-07-22): OVERNIGHT FULL-PROFILE SESSION IN PROGRESS — E010, E012, E015 done, E013 next
 
 **TERMINAL HOLDOUT BREACHED, then REMEDIATED** (`PROJECT_STATE_v2.md` §8.23/§8.24): the five edges
 studied in this program's first research session (E025, E026, E028, E029, E032) originally loaded data
@@ -58,11 +58,32 @@ mirroring E010's own unflipped-OB finding) — two independent structural concep
 violating/flipping a zone destroys its predictive power rather than reversing it. No V1 candidate
 offered. No Final Verdict issued. Full detail: `edge_research/E012_inverted_fvg.md`.
 
+**CEO-directed governance step (2026-07-22)**: before continuing past E010/E012, a registration-only
+cross-edge research candidate, **CEC-001**, was recorded in the new `CROSS_EDGE_RESEARCH_CANDIDATES.md`
+— NOT part of this 40-edge structure, NOT a numbered edge, no study conducted. It documents the
+recurring "unbroken structural zone predicts continuation; broken/flipped one predicts nothing" pattern
+(E010's unflipped-OB control, E012's un-inverted-FVG control) alongside a serious risk register
+(look-ahead bias in the unbroken/unviolated classification itself, event-definition leakage,
+tautological continuation labels, survivorship, unmatched distance/age, dependent samples) explaining
+why it is explicitly NOT yet an accepted edge. E010's and E012's own conclusions are unchanged.
+
+**E015 — Order Block Re-Mitigation — full profile complete, 2026-07-22** (M15 + H1; M1/M5 unavailable).
+**Result: V0 NOT supported — but not a flat null; a sharp, well-evidenced DECAY.** Reaction is real and
+substantial on the FIRST mitigation (~76% continuation, both timeframes, matching the magnitude of
+E010's own unflipped-OB/CEC-001 effect) but collapses to a random-matched-control-level coin flip
+(~50-54%) by the SECOND mitigation and stays there for the third and later — robust across 3
+displacement thresholds, every session, volatility regime, trend context, and year. **A V1 candidate IS
+offered** (the first this program): "reaction concentrated in the first mitigation only" — Discovery-
+stage, unfrozen, not Frozen Candidate. Deliberately designed to avoid CEC-001's own look-ahead risk
+(visit numbering is purely sequential/forward-only, unlike the unbroken/unviolated classification that
+risk concerns). No Final Verdict issued. Full detail:
+`edge_research/E015_order_block_remitigation.md`.
+
 **Per the CEO's own standing "overnight full profile" authorization, the session auto-continues to the
 next eligible edge without stopping for approval between edges** (stopping only for a genuine
 governance issue, an unoperationalizable V0, a missing-data blocker, a loader/test failure, a
-Flow-B-touching requirement, or an audit-trail risk — none occurred for E010 or E012). **Next: E015 —
-Order Block Re-Mitigation**, then in order **E013, E016, E011, E014**, then the session-timing edges
+Flow-B-touching requirement, or an audit-trail risk — none occurred for E010, E012, or E015). **Next:
+E013 — Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing edges
 **E006, E008, E005, E027**.
 
 ## 1. Data-availability gap analysis (verified against what is actually on disk today)

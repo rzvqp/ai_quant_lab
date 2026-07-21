@@ -9,8 +9,9 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: OVERNIGHT FULL-PROFILE SESSION IN PROGRESS (2026-07-22) — E010, E012 done, auto-continuing to
-E015 per standing CEO authorization (no per-edge approval required unless a governance issue arises).**
+**Status: OVERNIGHT FULL-PROFILE SESSION IN PROGRESS (2026-07-22) — E010, E012, E015 done,
+CEC-001 registered, auto-continuing to E013 per standing CEO authorization (no per-edge approval
+required unless a governance issue arises).**
 Following the TERMINAL HOLDOUT BREACH (identified 2026-07-21: all 5 edges studied first — E025, E026,
 E028, E029, E032 — had loaded and analyzed data from the Research Lab's own sealed terminal holdout,
 2025-10-23 09:15 UTC → 2026-07-13 06:00 UTC; **the old terminal holdout is CONSUMED / INVALIDATED**,
@@ -27,11 +28,14 @@ post-remediation centralized-loader enforcement from the start (no contamination
 authorized an **"overnight full edge profile" directive (2026-07-22)**: each edge now also gets a
 timeframe profile, a 7-horizon/5-ATR-threshold movement profile, a context profile, controls/
 falsification, a disciplined V1 search, and robustness checks — see `edge_research/_profile.py`, the
-new shared library this required. **E010 — Breaker Block Snatch** and **E012 — Inverted Fair Value Gap**
-were completed under this directive (both V0 NOT supported — see below; both independently surfaced the
-same "unbroken zone predicts continuation, broken/flipped one predicts nothing" pattern via their own
-natural controls); per the same authorization, this session auto-continues to the next eligible edge
-without stopping for approval between edges unless a governance issue arises. The remaining edges are
+new shared library this required. **E010 — Breaker Block Snatch**, **E012 — Inverted Fair Value Gap**,
+and **E015 — Order Block Re-Mitigation** were completed under this directive (all V0 NOT supported as
+registered — see below; E010/E012 independently surfaced the same "unbroken zone predicts continuation,
+broken/flipped one predicts nothing" pattern via their own natural controls, now registered — CEO
+decision — as **CEC-001** in the new `CROSS_EDGE_RESEARCH_CANDIDATES.md`, not a numbered edge, no study
+conducted; E015 additionally produced this program's first V1 candidate). Per the same authorization,
+this session auto-continues to the next eligible edge without stopping for approval between edges
+unless a governance issue arises. The remaining edges are
 unaffected and still `UNSTUDIED`/`V0`.
 
 **Governing documents**: `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md`
@@ -54,7 +58,9 @@ eed1634  Flow A: first Alpha Discovery session — Discovery pass on E025/E026/E
 be0e8d3  Flow A: E017 Discovery pass — Equal Highs/Lows Target (V0 not supported)
 58338d7  Flow A: E009 Discovery pass — Change of Character Retest (V0 not supported)
 8b1bcc7  Flow A: E010 full-profile pass — Breaker Block Snatch (V0 not supported)
-<pending this session's own commit — E012 full-profile pass — see the E012 report for the exact hash>
+192f0d2  Flow A: E012 full-profile pass — Inverted Fair Value Gap (V0 not supported)
+d43fd93  Flow A: register cross-edge research candidate CEC-001 (governance step, no study conducted)
+<pending this session's own commit — E015 full-profile pass — see the E015 report for the exact hash>
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
@@ -71,8 +77,8 @@ Discount Flip) → E028 (Fibonacci OTE)**.
 
 **2026-07-21/22 session, run entirely under the post-remediation centralized-loader enforcement (no
 contamination possible)**: **E017 (Equal Highs / Lows Target) → E009 (Change of Character Retest) →
-E010 (Breaker Block Snatch) → E012 (Inverted Fair Value Gap)** — the latter two under the "overnight
-full profile" directive.
+E010 (Breaker Block Snatch) → E012 (Inverted Fair Value Gap) → E015 (Order Block Re-Mitigation)** — the
+latter three under the "overnight full profile" directive.
 
 Full per-edge evidence, method disclosure, and answers to all 9 mandatory Discovery questions live in
 `edge_research/E0XX_<slug>.md` (one file per edge, permanent, append-only), alongside each edge's own
@@ -187,6 +193,40 @@ FVGs) and H1 (2,898) — M1/M5 unavailable, same as E010.
 
 **No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
 
+## CEC-001 registered (2026-07-22) — before continuing to E015
+
+`CROSS_EDGE_RESEARCH_CANDIDATES.md` created per explicit CEO decision: a registration-only entry for
+the E010/E012 pattern above (unbroken zone predicts continuation; broken one predicts nothing) — NOT a
+numbered edge, NOT subject to the protocol's stage pipeline, no study conducted. Documents the exact
+observations, sample sizes, control definitions, p-values, and (its real content) a serious risk
+register — look-ahead bias in the unbroken/unviolated classification itself (it's defined using the
+same future window the outcome is measured over), event-definition leakage, tautological continuation
+labels, event/outcome window overlap, survivorship, unmatched distance/age between groups, dependent/
+repeated samples from the same structural episode — explaining exactly why this is NOT yet an accepted
+edge, plus what independent falsification would require. E010's and E012's own conclusions are
+unchanged.
+
+## Result — E015 Order Block Re-Mitigation (2026-07-22, full profile, clean-from-the-start)
+
+**V0 NOT supported — but not a flat null; a sharp, well-evidenced DECAY, and this program's first V1
+candidate.** Tested on M15 (6,929 order blocks) and H1 (1,875) — M1/M5 unavailable.
+- **Reaction is real and large on the FIRST mitigation** (~76% continuation both timeframes, matching
+  the magnitude of E010's/CEC-001's own unflipped-OB effect — unsurprising, similar population) **but
+  collapses to a random-matched-control-level coin flip (~50-54%) by the SECOND mitigation and stays
+  there for the third-plus** — robust across 3 displacement thresholds, every session, volatility
+  regime, trend context, and year (visit-1 vs visit-2 χ² p=3.1e-123, M15; p=1.2e-35, H1).
+- **Random-matched control confirms this is OB-specific, not generic**: it starts near 50% at "visit 1"
+  already (pure noise) and stays flat — unlike the real OB group, which starts high and decays down to
+  that floor.
+- **V1 candidate (unfrozen, Discovery-stage)**: "An order block's reaction is concentrated in its FIRST
+  mitigation; the second and later mitigations show no directional edge over a random-matched control" —
+  meets the CEO's own 7 V1 criteria (economic logic, large n, consistent effect, beats control,
+  parameter-insensitive, stable across segments/years, not yet cost-tested). Deliberately designed to
+  avoid CEC-001's own look-ahead risk — visit numbering is purely sequential/forward-only, not dependent
+  on the OB's more-distant future.
+
+**No Final Verdict issued** (below the ~5-6yr horizon, same as every other edge studied so far).
+
 ## Limitations (must be respected on any revisit)
 
 - **No Final Verdict is possible yet on any edge studied so far.** The M15/H1/H4/D1 data on disk
@@ -204,14 +244,14 @@ FVGs) and H1 (2,898) — M1/M5 unavailable, same as E010.
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: auto-continuing to E015 (standing authorization, no per-edge approval needed)
+## Next step: auto-continuing to E013 (standing authorization, no per-edge approval needed)
 
 Per the CEO's own "overnight full edge profile" authorization (2026-07-22), this session does **not**
 stop between edges to ask approval — it continues automatically to the next Tier 1 edge after each
 commit, one edge at a time, stopping only for a genuine governance issue (a contradictory registry, a
 V0 that can't be operationalized without a CEO decision, a required protocol change, missing data, a
-loader/test failure, anything that would require touching Flow B, or an audit-trail risk). **Next: E015
-— Order Block Re-Mitigation**, then in order **E013, E016, E011, E014**, then the session-timing
+loader/test failure, anything that would require touching Flow B, or an audit-trail risk). **Next: E013
+— Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing
 edges **E006, E008, E005, E027**.
 
 ## Resume instructions
