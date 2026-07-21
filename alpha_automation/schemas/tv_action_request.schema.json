@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TvActionRequest",
+  "description": "A single follow-up observation/research action Alpha requests during an investigation (hybrid mode). The orchestrator authorizes each via the capability gate before executing; denied verbs are refused, not run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["verb"],
+  "properties": {
+    "verb": {"type": "string", "minLength": 2, "maxLength": 40},
+    "params": {"type": "object"},
+    "why": {"type": "string", "maxLength": 300}
+  }
+}

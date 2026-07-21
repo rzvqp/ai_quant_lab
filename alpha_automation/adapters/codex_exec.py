@@ -19,13 +19,17 @@ from typing import Callable, List, Optional
 from .base import AlphaAdapter, AlphaContext, AlphaAdapterError
 from .. import schemas
 
-RunFn = Callable[[str, Optional[str], float], str]
+RunFn = Callable[..., str]  # (prompt, model, timeout_s, images=None) -> str
 
 
-def _default_run(prompt: str, model: Optional[str], timeout_s: float) -> str:
+def _default_run(prompt: str, model: Optional[str], timeout_s: float,
+                 images: Optional[list] = None) -> str:
     cmd = ["codex", "exec"]
     if model:
         cmd += ["-m", model]
+    # Attach screenshots (multimodal) so Alpha can literally see the chart.
+    for img in (images or []):
+        cmd += ["-i", str(img)]
     # Read the prompt from stdin ('-'), keep the agent from touching the repo, ask for full-auto
     # non-interactive execution. These flags are conservative; Phase 4 finalizes them against the
     # installed codex version.
@@ -69,6 +73,7 @@ class CodexAdapter(AlphaAdapter):
             json.dumps(context.data_summary, indent=2, default=str),
             "\n--- PREVIOUSLY ASKED QUESTIONS (avoid restating these) ---",
             json.dumps(prior, indent=2),
+            _actions_block(context),
             "\n--- REQUIRED OUTPUT ---",
             "Respond with EXACTLY ONE JSON object and nothing else. It MUST validate against "
             "this JSON schema:",
@@ -81,4 +86,18 @@ class CodexAdapter(AlphaAdapter):
 
     def _invoke(self, context: AlphaContext) -> str:
         prompt = self.build_prompt(context)
-        return self._run(prompt, self._model, self._timeout)
+        return self._run(prompt, self._model, self._timeout, context.screenshots or None)
+
+
+def _actions_block(context: AlphaContext) -> str:
+    if not context.available_actions:
+        return ""
+    return (
+        "\n--- AVAILABLE FOLLOW-UP OBSERVATIONS (optional) ---\n"
+        "You are researching on TradingView. If (and only if) you need more observation before "
+        "concluding, you MAY include an \"observation_requests\" array in your JSON, each item "
+        "{\"verb\":..., \"params\":{...}, \"why\":...} using ONLY these verbs:\n"
+        + json.dumps(sorted(context.available_actions))
+        + "\nThese are observation/research actions only. Never request trades, alerts, or "
+        "Strategy-Tester results. Omit the array when you have observed enough."
+    )

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorkspaceSnapshot",
+  "description": "Provenance snapshot of the TradingView workspace state an investigation was observed under. Replaces workspace-restore for reproducibility.",
+  "type": "object",
+  "required": ["task_id", "ts", "mode", "data_regime"],
+  "properties": {
+    "task_id": {"type": "string"},
+    "ts": {"type": "string"},
+    "mode": {"type": ["string", "null"], "enum": ["replay_pre_cutoff", "live_observation", null]},
+    "data_regime": {"type": ["string", "null"]},
+    "symbol": {"type": ["string", "null"]},
+    "resolution": {"type": ["string", "null"]},
+    "chart_type": {"type": ["integer", "string", "null"]},
+    "studies": {"type": "array", "items": {"type": "object"}},
+    "drawings": {"type": "array", "items": {"type": "object"}},
+    "replay": {"type": "object"},
+    "note": {"type": ["string", "null"]}
+  }
+}

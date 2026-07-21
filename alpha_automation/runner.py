@@ -46,6 +46,7 @@ class Runner:
         memory: Optional[ResearchMemory] = None,
         data_access: Optional[DataAccess] = None,
         adapter=None,
+        tv_env=None,
         clock: Callable[[], str] = _utc_iso,
         install_signals: bool = True,
     ):
@@ -68,6 +69,15 @@ class Runner:
         self.task_sel = ResearchTaskSelector(config.seed)
         self.window_sel = MarketWindowSelector(
             config.seed, config.instrument_csv, config.data_split_id, config.holdout_cutoff)
+
+        # TVRE (Phase 2.5): built lazily only when Alpha researches on TradingView.
+        self.tv_env = tv_env
+        if self.config.use_tv_research and self.tv_env is None:
+            from .tv.client import TvClient
+            from .tv.workspace import WorkspaceLog
+            from .tv.environment import ResearchEnvironment
+            wlog = WorkspaceLog(config.state_dir)
+            self.tv_env = ResearchEnvironment(config, TvClient(config, action_log=wlog.action_sink()), wlog)
 
         self._stop = False
         self.logger: Optional[JsonlLogger] = None
@@ -112,17 +122,23 @@ class Runner:
                     pass  # not in main thread / unsupported platform
 
     # ---------- one pass ----------
+    def _select_window(self, task: dict, pass_no: int) -> dict:
+        """Select a holdout-safe window from the CSV catalog (used by both data paths)."""
+        tf = task["window_hint"]["timeframe"]
+        timestamps = self.data.timestamps(tf)
+        reviewed = self.memory.reviewed_windows(tf)
+        window = self.window_sel.select(task, pass_no, timestamps, reviewed)
+        if window is None:
+            raise RuntimeError(f"no timestamps available for {tf}")
+        return window
+
     def _acquire_window_and_data(self, task: dict, pass_no: int):
         """Select a window and obtain its data, with bounded retries. Returns (window, summary, provenance)."""
         tf = task["window_hint"]["timeframe"]
         last_err = None
         for attempt in range(self.config.max_retries + 1):
             try:
-                timestamps = self.data.timestamps(tf)
-                reviewed = self.memory.reviewed_windows(tf)
-                window = self.window_sel.select(task, pass_no, timestamps, reviewed)
-                if window is None:
-                    raise RuntimeError(f"no timestamps available for {tf}")
+                window = self._select_window(task, pass_no)
                 summary, provenance = self.data.get_window(window)
                 return window, summary, provenance
             except Exception as e:  # transient data/selection failure
@@ -140,25 +156,29 @@ class Runner:
         asked = self.memory.asked_question_norms()
         task = self.task_sel.select(perspective, pass_no, asked, task_id)
 
+        prior = sorted(asked)[: self.config.avoid_recent_questions]
+
         if self.config.dry_run:
             window = None
-            data_summary = {"note": "dry_run: data pull skipped"}
             provenance = {"data_source": "none"}
-            adapter = self._dry_adapter
+            context = AlphaContext(
+                task_id=task_id, mission=MISSION, perspective=perspective, task=task,
+                window=window, data_summary={"note": "dry_run: data pull skipped"},
+                prior_questions=prior)
+            response = self._dry_adapter.investigate(context)
+        elif self.config.use_tv_research:
+            # Alpha researches on TradingView: build the observation dossier + hybrid follow-ups.
+            window = self._select_window(task, pass_no)
+            response, provenance = self.tv_env.investigate(
+                task=task, window=window, task_id=task_id, adapter=self.adapter,
+                mission=MISSION, perspective=perspective, prior_questions=prior)
         else:
             window, data_summary, provenance = self._acquire_window_and_data(task, pass_no)
-            adapter = self.adapter
+            context = AlphaContext(
+                task_id=task_id, mission=MISSION, perspective=perspective, task=task,
+                window=window, data_summary=data_summary, prior_questions=prior)
+            response = self.adapter.investigate(context)
 
-        context = AlphaContext(
-            task_id=task_id,
-            mission=MISSION,
-            perspective=perspective,
-            task=task,
-            window=window,
-            data_summary=data_summary,
-            prior_questions=sorted(asked)[: self.config.avoid_recent_questions],
-        )
-        response = adapter.investigate(context)  # validated or raises AlphaAdapterError
         outcome = response["finding_type"]
 
         record = {
@@ -304,6 +324,8 @@ def _build_config_from_args(args) -> Config:
         data_source=args.data_source,
         dry_run=True if args.dry_run else None,
         state_dir=args.state_dir,
+        use_tv_research=True if args.use_tv_research else None,
+        research_mode=args.research_mode,
     )
 
 
@@ -320,6 +342,10 @@ def main(argv=None) -> int:
     p.add_argument("--seed", type=int, default=None)
     p.add_argument("--adapter", choices=["stub", "codex"], default=None)
     p.add_argument("--data-source", choices=["auto", "live", "csv"], default=None, dest="data_source")
+    p.add_argument("--use-tv-research", action="store_true", dest="use_tv_research",
+                   help="Alpha researches on the live TradingView instance (TVRE)")
+    p.add_argument("--research-mode", choices=["replay_pre_cutoff", "live_observation"],
+                   default=None, dest="research_mode")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--state-dir", default=None, dest="state_dir")
     p.add_argument("--resume", metavar="RUN_ID", default=None,

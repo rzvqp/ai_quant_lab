@@ -57,6 +57,16 @@ class Config:
     avoid_recent_perspectives: int = 4         # do not repeat the last K research stances
     avoid_recent_questions: int = 200          # de-dup horizon for asked questions
 
+    # --- TradingView Research Environment (Phase 2.5) ---
+    use_tv_research: bool = False              # when True, build the observation dossier via TVRE
+    research_mode: str = "replay_pre_cutoff"  # replay_pre_cutoff (holdout-safe) | live_observation
+    tv_multi_tf: List[str] = field(default_factory=lambda: ["H1", "H4", "D1"])  # context TFs for dossier
+    tv_replay_samples: int = 8                 # bar-by-bar replay snapshots per dossier
+    tv_screenshots: bool = True                # capture chart screenshots into the dossier
+    tv_pine_apply: bool = False                # allow applying Pine to chart (kept off: may cloud-save)
+    max_followup_rounds: int = 2               # bounded Alpha-directed observation follow-ups (hybrid)
+    max_followup_requests: int = 4             # max observation requests honored per round
+
     # --- safety / observability ---
     max_retries: int = 2                       # per-pass bounded retries (data/adapter transient)
     max_consecutive_failures: int = 5          # circuit-breaker threshold -> run FAILED
@@ -96,6 +106,9 @@ class Config:
             raise ValueError(f"adapter must be stub|codex, got {self.adapter!r}")
         if self.data_source not in ("auto", "live", "csv"):
             raise ValueError(f"data_source must be auto|live|csv, got {self.data_source!r}")
+        if self.research_mode not in ("replay_pre_cutoff", "live_observation"):
+            raise ValueError(
+                f"research_mode must be replay_pre_cutoff|live_observation, got {self.research_mode!r}")
         if self.max_passes < 1:
             raise ValueError("max_passes must be >= 1")
         for tf in self.timeframes:

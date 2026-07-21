@@ -15,9 +15,40 @@ against a schema, and persists the result — repeating without manual "continue
 ## Delivery status
 
 - **Phase 1** — reconstruction & design: **accepted** by CEO.
-- **Phase 2** — minimum working orchestrator: **this delivery** (bounded runs + resume).
+- **Phase 2** — minimum working orchestrator: **done** (bounded runs + resume).
+- **Phase 2.5** — TradingView Research Environment (TVRE): **done** — Alpha researches on the live
+  TradingView instance (see below).
 - **Phase 3** — candidate freeze/hash/handoff + duplicate/novelty gate + notification: *pending*.
 - **Phase 4** — controlled continuous mode + endurance: *pending*.
+
+## Phase 2.5 — TradingView Research Environment (`tv/`)
+
+Alpha becomes an active researcher on the TradingView Desktop instance (dedicated to Alpha per CEO
+decision 2026-07-22). Every action passes a **capability gate** (`tv/capabilities.py`) and is
+**logged + linked** to the investigation (`tv/workspace.py`). Alpha may read the chart, indicators
+and custom Pine output, navigate symbols/timeframes/replay, add research indicators, author Pine
+research tools, draw research objects, and capture screenshots. Hard-denied: trades, broker,
+alerts, and Strategy-Tester/backtest as edge evidence (also scanned in `boundaries.py`).
+
+- **Data discipline** (`tv/mode.py`): `replay_pre_cutoff` (holdout-safe — replay anchored < cutoff,
+  fail-closed cursor verification before every observation) or `live_observation` (tagged
+  `live_post_holdout`, never validation). Selectable per run via `--research-mode`.
+- **Observation Dossier** (`tv/dossier.py`): chart state + OHLCV + indicators + Pine
+  lines/labels/tables/boxes + quote + bar-by-bar replay track + screenshots + optional numeric
+  multi-TF context. Screenshots attach to the codex adapter via `-i` (multimodal).
+- **Hybrid follow-ups** (`tv/environment.py`): Alpha may request a bounded number of extra
+  observations (allowlisted verbs only); the orchestrator authorizes, executes, logs, and feeds
+  them back for up to `max_followup_rounds`.
+- **Node bridge** (`tv/bridge/tv_exec.mjs`): dispatches allowlisted verbs to tradingview-mcp's own
+  `core/*` functions (batch-capable). A parity test keeps the bridge verbs ⊆ the capability registry.
+
+Enable with `--use-tv-research`:
+```bash
+python -m alpha_automation.runner --use-tv-research --research-mode replay_pre_cutoff --adapter codex --max-passes 3
+```
+Known limits: the tradingview-mcp connection binds to one chart target, so multi-symbol/TF work is
+sequential (panes/layouts), not parallel tabs (target-pinning enhancement deferred by CEO). Pine
+compile/save is gated off by default (`tv_pine_apply`) since it may write to the account.
 
 ## Architecture (Phase 2)
 

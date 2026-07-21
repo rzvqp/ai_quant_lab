@@ -30,6 +30,10 @@ class AlphaContext:
     window: Optional[dict]
     data_summary: dict
     prior_questions: List[str] = field(default_factory=list)
+    # TVRE (Phase 2.5): the observation menu Alpha may request follow-ups from, and screenshot
+    # image paths to attach to a multimodal backend. Empty in the plain Phase-2 data path.
+    available_actions: List[str] = field(default_factory=list)
+    screenshots: List[str] = field(default_factory=list)
 
 
 def extract_json(text: str) -> dict:

@@ -56,6 +56,20 @@
       "maxItems": 25,
       "items": {"type": "string"}
     },
+    "observation_requests": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["verb"],
+        "properties": {
+          "verb": {"type": "string"},
+          "params": {"type": "object"},
+          "why": {"type": "string", "maxLength": 300}
+        }
+      }
+    },
     "scope_caveats": {"type": "string", "maxLength": 1500}
   }
 }

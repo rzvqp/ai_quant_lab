@@ -49,6 +49,13 @@ FORBIDDEN_PATTERNS: List[str] = [
     r"proves that",
     r"is caused by",
     r"\bguarantee\w*",
+    # Strategy Tester as edge evidence / parameter optimization (TVRE charter, CEO 2026-07-22)
+    r"strategy tester",
+    r"backtest\w* result\w*",
+    r"optimiz\w* (the )?param\w*",
+    r"parameter optimiz\w*",
+    r"best[\s\-]?performing param\w*",
+    r"curve[\s\-]?fit\w*",
 ]
 
 _COMPILED = [re.compile(p, re.IGNORECASE) for p in FORBIDDEN_PATTERNS]

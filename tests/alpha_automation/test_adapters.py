@@ -57,7 +57,7 @@ def test_extract_json_from_prose():
 
 def test_codex_build_prompt_contains_contract():
     cfg = Config(adapter="codex")
-    ad = CodexAdapter(cfg, run=lambda prompt, model, timeout: "{}")
+    ad = CodexAdapter(cfg, run=lambda prompt, model, timeout, images=None: "{}")
     prompt = ad.build_prompt(_ctx("INV-000042"))
     assert "INV-000042" in prompt
     assert "JSON" in prompt
@@ -73,7 +73,7 @@ def test_codex_investigate_with_fake_run():
                  "descriptive_not_causal": True, "not_noise": True, "not_strategy_or_profit_claim": True},
     }
     import json
-    ad = CodexAdapter(cfg, run=lambda prompt, model, timeout: "prefix " + json.dumps(valid))
+    ad = CodexAdapter(cfg, run=lambda prompt, model, timeout, images=None: "prefix " + json.dumps(valid))
     obj = ad.investigate(_ctx("INV-000001"))
     assert obj["finding_type"] == "NEGATIVE"
 
@@ -89,7 +89,7 @@ def test_codex_retries_then_succeeds():
     }
     calls = {"n": 0}
 
-    def flaky(prompt, model, timeout):
+    def flaky(prompt, model, timeout, images=None):
         calls["n"] += 1
         return "not json" if calls["n"] == 1 else json.dumps(valid)
 
