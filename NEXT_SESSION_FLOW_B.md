@@ -157,6 +157,42 @@ unfixable by tie-break policy alone (0.20% of tie-bars, fully characterized and 
 accept/reject choice for the CEO, not resolved here. Recommended frozen specification provided (§7 of
 the report), not adopted. **No code, no new `ArchitectMode`, implementation NOT authorized.**
 
+## OFFICIAL CLOSURE — Portfolio Architect tie-break policy research (2026-07-21)
+
+**CEO verdict on Phase 2B: REPORT ACCEPTED, IMPLEMENTATION NOT AUTHORIZED.** All 10 scientific findings
+in `PORTFOLIO_ARCHITECT_TIEBREAK_PHASE2B_REPORT.md` are accepted (ties are frequent; alphabetical
+ordering is the effective tie-break; a real theoretical fairness bias exists; winner-slot-only round-
+robin is the cleanest tested corrective policy, deterministic and replayable; the 6 denial-reason drifts
+are bounded attribution effects with no bystander trade gained or lost; Risk Manager remained final
+authority throughout). **CEO's implementation decision is proportionality, not invalidity**: the
+practical allocation effect (1–2 winners changed of 3,065 tie-bars; ordinal difference among allocation-
+relevant ties small and not clearly distinguishable from noise) does not currently justify introducing
+persistent fairness state, per-tie-group cursors, restart/replay contracts, cold-start behavior, added
+production complexity, or a new `ArchitectMode`.
+
+**Official classification: KNOWN DETERMINISTIC TIE-BREAK BIAS — NON-BLOCKING.** Scientifically confirmed,
+architecturally understood, not production-critical, no remediation currently authorized. This is a
+documented deterministic behavior, not open technical debt.
+
+**Portfolio Architect policy research is CLOSED.** `ArchitectMode.PASSTHROUGH` remains the only
+authorized and implemented runtime mode — no `ROUND_ROBIN`/`FAIRNESS`/`TIE_BREAK`/or any other mode may
+be added without new, separate CEO authorization. Scoring Engine's existing tie-break and Risk Manager's
+own sequencing/denial-reason attribution are untouched and must remain so under this closure.
+
+**Reopening conditions** (evidence-gated, not to be pursued proactively — "do not collect additional
+evidence now merely to rescue this policy"): tie resolution later shown to change a materially larger
+share of real ALLOW winners; alphabetical bias shown to cause measurable strategy starvation; a
+demonstrated effect on portfolio risk/expectancy/drawdown/regime coverage; a stateless solution becomes
+available; or Portfolio Architect later requires state for another, independently-justified policy that
+materially reduces the marginal complexity of adding fairness state.
+
+**Roadmap status**: Portfolio Architect Phase 1 (PASSTHROUGH scaffold) remains ACCEPTED and CLOSED. Phase
+2/2A/2B (policy design, calibration, tie-break research) are all CLOSED — Phase 2A's `STRATEGY_
+CONCENTRATION_REORDER` was REJECTED (evidence-sparsity), and the tie-break candidate from Policy Research
+is REJECTED FOR IMPLEMENTATION on proportionality grounds (not invalidated). **No Portfolio Architect
+runtime policy exists beyond PASSTHROUGH. Flow B roadmap step 2/6 has no currently-authorized next
+action; the next roadmap step (step 3/6, Learning / Research Feedback) has NOT been authorized.**
+
 ## Resume instructions
 
 1. Re-verify git state live: `git branch --show-current`, `git log -1`, `git status --porcelain`.

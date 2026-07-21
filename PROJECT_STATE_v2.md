@@ -1232,6 +1232,55 @@ requires its own separate CEO authorization.
 **Status: Portfolio Architect Phase 1 (PASSTHROUGH scaffold) IMPLEMENTED and fully validated except
 mypy. Awaiting CEO verdict. Phase 2 (active policy) has NOT been authorized and has not begun.**
 
+**Update (2026-07-21): CEO verdict ACCEPTED — PORTFOLIO ARCHITECT PHASE 1 COMPLETE** (commits `bf41d5e`/
+`c1b0fd2`). Phase 2 policy design, Phase 2A calibration, Policy Research, and tie-break Phase 2B all
+followed and are now closed — see §8.26.
+
+### 8.26 Portfolio Architect roadmap step 2/6 — OFFICIALLY CLOSED (2026-07-21)
+
+**Full sequence, CEO-authorized and CEO-verdicted at every step, none self-initiated:**
+
+1. **Phase 1 (PASSTHROUGH scaffold)** — IMPLEMENTED, ACCEPTED, CLOSED (commits `bf41d5e`/`c1b0fd2`).
+2. **Phase 2 (policy design)** — `PORTFOLIO_ARCHITECT_PHASE2_DESIGN.md` ACCEPTED (commit `c0fb366`),
+   proposing `STRATEGY_CONCENTRATION_REORDER`.
+3. **Phase 2A (calibration)** — `PORTFOLIO_ARCHITECT_PHASE2A_CALIBRATION_REPORT.md`, verdict **C. NOT
+   CALIBRATABLE** (commit `64e7401`): real competitive ALLOW events too sparse (19 over an 85-day/
+   43-strategy window) to ever cross the predeclared evidence floor. `STRATEGY_CONCENTRATION_REORDER`
+   REJECTED for the tested grid.
+4. **Policy Research** — `PORTFOLIO_ARCHITECT_POLICY_RESEARCH.md` ACCEPTED (commit `c005ea1`): 3 fresh
+   candidates proposed from first principles (not a recalibration); Candidate 1 (genuine-tie round-robin
+   fairness) authorized for evidence generation only.
+5. **Tie-break evidence** — `PORTFOLIO_ARCHITECT_TIEBREAK_EVIDENCE_REPORT.md` ACCEPTED (commit
+   `120ca54`): confirmed frequent exact ties, alphabetical `strategy_id` as the effective tie-break, and
+   a measurable systematic bias, over the CEO-approved 12-month non-holdout window.
+6. **Tie-break Phase 2B (strict specification)** — `PORTFOLIO_ARCHITECT_TIEBREAK_PHASE2B_REPORT.md`
+   ACCEPTED (commit `808812c`), verdict **B. SPECIFIABLE WITH BOUNDED SIDE EFFECTS**: root-caused all 6
+   denial-reason-drift cases to one precise, proven mechanism (Risk Manager's own fixed `portfolio_
+   limits`-before-`sizing` gate order); recommended Variant B (winner-slot-only rotation) as a candidate
+   frozen specification, not adopted.
+
+**Final CEO decision (this entry): IMPLEMENTATION NOT AUTHORIZED, on proportionality grounds, not
+invalidity.** The practical allocation effect (1–2 real winners changed across 3,065 tie-bars; ordinal
+difference among allocation-relevant ties small and not clearly distinguishable from noise) does not
+currently justify the added production complexity of persistent fairness state, per-tie-group cursors,
+restart/replay contracts, cold-start behavior, or a new `ArchitectMode`.
+
+**Official classification: KNOWN DETERMINISTIC TIE-BREAK BIAS — NON-BLOCKING.** Scientifically confirmed,
+architecturally understood, not production-critical, no remediation currently authorized — a documented
+deterministic behavior, not open technical debt.
+
+**Reopening conditions** (evidence-gated only, not to be proactively pursued): tie resolution later shown
+to change a materially larger share of real ALLOW winners; alphabetical bias shown to cause measurable
+strategy starvation; a demonstrated effect on portfolio risk/expectancy/drawdown/regime coverage; a
+stateless solution becomes available; or Portfolio Architect later requires state for another,
+independently-justified policy that materially reduces the marginal complexity of adding fairness state.
+
+**Status: Portfolio Architect roadmap step 2/6 CLOSED. `ArchitectMode.PASSTHROUGH` remains the only
+authorized and implemented runtime mode — no `ROUND_ROBIN`/`FAIRNESS`/`TIE_BREAK`/or any other mode
+exists or is authorized. Scoring Engine's tie-break and Risk Manager's own sequencing/denial-reason
+attribution remain untouched. No Portfolio Architect runtime policy exists beyond PASSTHROUGH. Flow B
+roadmap step 3/6 (Learning / Research Feedback) has NOT been authorized and has not begun.**
+
 ## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |
