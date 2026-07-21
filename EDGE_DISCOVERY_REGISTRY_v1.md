@@ -29,6 +29,12 @@ clarification, not a change to any V0/verdict). §9's own tests require M1 execu
 which does not exist anywhere in this project (`data/market/` = D1/H1/H4/M15 only) — see
 `NEXT_SESSION_FLOW_A.md` for the full data-gap report and proposed ingestion plan.
 
+**E015-SCALP Phase 0 (TradingView Replay pilot, 2026-07-22)**: CEO-authorized as an alternative
+execution-validation source given the M1 data gap above. Verdict: **NOT FEASIBLE** — `replay_start`'s
+own historical-date seeking did not work reliably (reproduced on two independent dates); no manual
+workaround was substituted, per instruction. E015's own structural result is unchanged. Full report:
+`edge_research/E015-SCALP_protocol_and_pilot.md`.
+
 ## How to read this registry
 
 - **Status = UNSTUDIED for 30 of 40 entries; DISCOVERY_IN_PROGRESS / CLEAN_RERUN_COMPLETE for 5 (E025,

@@ -108,7 +108,113 @@ reported per event once real entry/stop prices are recorded — not assumed in a
 
 ---
 
-## Phase B/C — Pilot replay (this document's own results section)
+## Phase B — Pilot replay: narrative walkthrough
 
-See `edge_research/e015_scalp_pilot_events.json` for the complete, structured per-event record (all
-fields required by the CEO's own mandatory event schema) and the narrative walkthrough below.
+**Environment check**: `tv_health_check` confirmed a live CDP connection to TradingView Desktop
+(`cdp_connected: true`), chart initially on `FUSIONMARKETS:XAUUSD`, 45-min resolution, with the user's
+own SMC/ICT indicator set loaded (irrelevant to raw OHLCV replay, noted for completeness).
+
+**Setup steps taken** (verified working correctly):
+1. `chart_set_symbol("OANDA:XAUUSD")` — succeeded. Switched away from the original
+   `FUSIONMARKETS:XAUUSD` feed specifically to match this repository's own OANDA data provenance and
+   avoid an unnecessary cross-provider confound, per the mandatory event schema's own
+   "provider/feed shown in TradingView" field.
+2. `chart_set_timeframe("1")` — succeeded, chart confirmed ready at M1.
+
+**Pilot attempt 1 (`E015SCALP-PILOT-01`, 2023-03-22, ~asia session)**:
+- `chart_scroll_to_date("2023-03-22")` reported success with a plausible-looking centered timestamp.
+- `replay_start(date="2023-03-22")` reported `success: true`, but the returned `current_date` field
+  (1753075260) decoded to the **live, real-time bar** (2026-07-21), not 2023-03-22.
+- Repeated with a fresh `chart_scroll_to_date` immediately before `replay_start`, and again with no
+  `date` argument at all (letting the tool "select first available date") — same result each time:
+  the reported/actual position stayed at the live bar.
+- A screenshot taken at this point (`e015_scalp_evidence/e015_scalp_diag_scroll_2023-03-22.png`) shows
+  two decisive facts directly from the TradingView UI itself (not inferred): (a) an unhandled **"Continue
+  your last replay?"** modal dialog was open, and (b) a native TradingView toast reading **"Data point
+  unavailable — The selected date is not available for playback."** The dialog was cleared via
+  `ui_click(by="text", value="Start new")`.
+
+**Pilot attempt 2 (`E015SCALP-PILOT-05`, 2025-05-28, ~late session)** — deliberately chosen recent
+(~8 weeks before this session) to separate "date too old for this feed's retention" from "the tool's
+own seek mechanism is broken":
+- Same `chart_scroll_to_date` → `replay_start(date="2025-05-28")` sequence. `replay_start` again
+  reported success, `current_date` again decoded to the live real-time bar.
+- **No "data unavailable" toast appeared this time** — a screenshot
+  (`e015_scalp_evidence/e015_scalp_diag_2025-05-28.png`) shows the "Replay" watermark active (confirming
+  replay mode genuinely engaged) but the visible price/date is the live one ($3,364.50, matching the
+  live quote), not 2025-05-28.
+- `replay_step()` was then called once: `current_date` advanced from 1753075380 to 1753075439 — **exactly
+  59-60 seconds, i.e. a correct, precise one-minute step**. This confirms candle-by-candle advancement
+  itself works correctly **once replay is active** — the defect is specifically in seeking to a
+  requested **start** date, not in stepping forward from wherever replay happens to be.
+
+**Remaining 3 pilot events (`PILOT-02/03/04`) were not attempted.** The blocking defect was reproduced
+identically on two independent dates (one ~3.3 years back, one ~8 weeks back); attempting the same
+diagnostic a third, fourth, and fifth time would not add information, consistent with Phase 0's own
+purpose (expose workflow problems, not accumulate a large sample once the blocker is confirmed).
+
+**Full structured record**: `edge_research/e015_scalp_pilot_events.json` (all fields from the mandatory
+event schema, for all 5 pilot events).
+
+## Phase D — Feasibility report
+
+**What worked**: CDP connection, symbol switching, timeframe switching, entering replay mode itself
+(confirmed via the "Replay" watermark), single-bar step precision (exactly 1 minute per `replay_step`
+call), screenshot evidence capture, and UI-dialog handling via `ui_click`.
+
+**What did not work**: `replay_start`'s own `date` parameter did not seek the chart/replay to the
+requested historical date in either test — the position consistently remained at (or reverted to) the
+live real-time bar. This was tested with a prior `chart_scroll_to_date` to the same date immediately
+beforehand (which itself reported a plausible-looking centered timestamp), and without any prior scroll
+at all — same failure both ways.
+
+**Two distinct signals, not fully separated by this pilot**:
+1. For the older date (2023-03-22, ~3.3 years back), TradingView's own native UI produced a **"Data
+   point unavailable — The selected date is not available for playback"** toast — consistent with a
+   real feed-retention limit on how far back M1 replay history extends for `OANDA:XAUUSD` on this
+   TradingView connection/plan, independent of any tooling defect.
+2. For the recent date (2025-05-28, ~8 weeks back — almost certainly within any reasonable M1 retention
+   window), no such toast appeared, yet the seek still failed identically — pointing to a genuine
+   **automation/tool-integration defect** in how `replay_start`'s `date` argument is wired to
+   TradingView's own internal replay-seek mechanism, separate from any data-retention question.
+
+**Per the CEO's own explicit instruction** ("If automation skips candles, loses replay position...
+stop and document the issue. Do not silently substitute manual visual assumptions for missing
+automation capability"), no attempt was made to work around this by manually estimating candle
+positions, clicking blindly at inferred chart-pixel coordinates to select a historical bar, or otherwise
+approximating the seek. This is a **tooling-capability finding**, not a claim that TradingView Bar
+Replay is inherently unusable by a human operator through the ordinary UI — a person manually
+scrolling/clicking through TradingView's own Bar Replay panel might well succeed where this specific
+automated `date`-parameter path did not; that distinction is explicitly not resolved by this pilot.
+
+### Mandatory feasibility verdict
+
+**C. NOT FEASIBLE** — with the currently available automated TradingView Replay tooling, specifically:
+timestamp-seeking to a precise historical event start point is unreliable (reproduced on two
+independent dates, one additionally implicating a possible feed-retention limit), which makes formal,
+scaled validation (10+ events, let alone the full 6,919-event visit-1 population) impractical and
+untrustworthy at this time. This is a **tooling/data-access limitation finding, not a judgment on E015's
+own structural finding** (unchanged, see `E015_order_block_remitigation.md`) and not a judgment on
+whether TradingView Replay could ever work for this purpose via a different automation approach or
+manual operation.
+
+### What would need to change before re-attempting Phase 0
+
+1. **Diagnose and fix (or replace) the `replay_start` date-seek path** — e.g. confirm whether the
+   underlying CDP script actually passes the date through to TradingView's own replay-selection API, or
+   whether a UI-click-based date selection (via `ui_find_element`/`ui_mouse_click` on TradingView's own
+   Bar Replay date picker) is required instead of the current parameterized call.
+2. **Separately confirm the feed's own M1 replay retention window** for `OANDA:XAUUSD` (or an
+   alternative broker feed) on this TradingView plan — e.g. by manually testing Bar Replay via the
+   ordinary UI (outside automation) at a few known dates to establish the actual lookback boundary,
+   before assuming any specific historical event is reachable.
+3. Only once both of the above are resolved should Phase 0 be re-attempted, ideally against the full
+   5-event pilot sample already selected (`e015_scalp_pilot_sample.json`) plus enough of the remaining
+   6,914 unused visit-1 events to reach the CEO's own recommended 10-20 count.
+
+**E015-SCALP is NOT accepted, NOT rejected, and remains at Phase 0 — incomplete due to a tooling
+blocker**, not due to any finding about the underlying market behavior. E015's own structural result
+(V0 NOT SUPPORTED as registered; V1 candidate = "reaction concentrated in the first mitigation only")
+is unchanged and continues to stand as a **structural-behavior Discovery** result only — its own status
+already states this is not yet a validated scalp, and this pilot has not changed that determination
+either way.

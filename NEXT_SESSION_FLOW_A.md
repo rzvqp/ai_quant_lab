@@ -9,8 +9,8 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: PAUSED (2026-07-22) — Protocol v2 (Immediate Scalping Response) blocked on missing M1/M5
-data; awaiting CEO decision. Do not begin E013. Do not run E015-SCALP.**
+**Status: PAUSED (2026-07-22) — E015-SCALP Phase 0 (TradingView Replay pilot) complete, verdict NOT
+FEASIBLE; awaiting CEO decision. Do not begin E013. Do not resume E015-SCALP formal validation.**
 
 **What changed**: the CEO redirected the research objective from multi-day structural-behavior
 Discovery to testing whether each edge produces an IMMEDIATELY tradable scalp (a mechanically defined
@@ -27,17 +27,47 @@ independently re-confirmed for this different purpose. **Per the CEO's own expli
 not approximate a 5-minute scalp using H1 bars"), no attempt was made to approximate §9's tests from
 M15/H1 data.** §9's own tests, and the requested E015-SCALP extension specifically, cannot be run.
 
-**E015-SCALP feasibility determination: NOT FEASIBLE with current data. Not run.** See "Proposed minimal
-data-ingestion plan" below.
-
-**Governance actions taken this step** (documentation only, no code/data change beyond the audit
+**Governance actions taken at this point** (documentation only, no code/data change beyond the audit
 itself): `EDGE_RESEARCH_PROTOCOL.md` §9 registers Protocol v2 in full (the new primary research
 question, required horizons, the 11-field mandatory trade simulation, the required outcome
 classifications and metrics, the staged A→B→C→D context-discovery process, and this data-resolution
-audit requirement itself). Each of E017/E009/E010/E012/E015's own permanent logs (append-only) now
-carries a "Scope clarification (2026-07-22, Protocol v2)" section stating **"structural-behavior
-Discovery, not direct scalping validation"** — none of their V0 results, verdicts, or statuses were
-changed. E015's own log additionally records that E015-SCALP was scoped but not run, and why.
+audit requirement itself). Each of E017/E009/E010/E012/E015's own permanent logs (append-only) carries a
+"Scope clarification (2026-07-22, Protocol v2)" section stating **"structural-behavior Discovery, not
+direct scalping validation"** — none of their V0 results, verdicts, or statuses were changed.
+
+## E015-SCALP Phase 0 — TradingView Replay feasibility pilot (2026-07-22) — VERDICT: NOT FEASIBLE
+
+The CEO subsequently authorized **TradingView Bar Replay on XAUUSD M1** as the execution-validation
+source (repository M1 data being absent), and directed a Phase 0 feasibility pilot specifically on
+**E015-SCALP — First Order Block Mitigation Immediate Response**, before resuming E013.
+
+**What was done**: confirmed a live CDP connection to TradingView Desktop; reconstructed E015's own
+frozen detector to recover real timestamps for all 6,919 visit-1 ("first mitigation") events
+(`edge_research/e015_scalp_all_visit1_events.json`); selected a 5-event, outcome-blind pilot sample via
+a pre-registered rule (`edge_research/e015_scalp_pilot_sample.json`); froze the confirmation/entry/
+stop/TP=2R/timeout/tie-break/cost rules before any replay
+(`edge_research/E015-SCALP_protocol_and_pilot.md`); switched the chart to `OANDA:XAUUSD` (matching the
+repo's own data provenance) at M1; then attempted to replay to 2 of the 5 pilot events' historical
+dates.
+
+**Result**: `replay_start`'s own date-seeking did not work in either test (~3.3 years back, and ~8 weeks
+back) — the chart/replay consistently reverted to the live real-time bar instead of the requested
+historical date. One attempt surfaced a native TradingView "Data point unavailable" toast (a possible
+feed-retention limit); the other showed no such toast, isolating a genuine tool-integration defect
+independent of retention (candle-by-candle stepping itself was confirmed precise — `replay_step`
+advanced exactly 1 minute once replay was active). Per explicit instruction, no manual/visual workaround
+was substituted; the remaining 3 pilot events were not attempted once the blocker was reproduced twice.
+
+**Verdict: C — NOT FEASIBLE**, specifically for automated historical-date seeking with the current
+tooling — not a judgment on E015's own structural finding (unchanged) and not a judgment on whether
+TradingView Replay could work via a fixed tool or manual operation. Full report, screenshots, and the
+complete 5-event mandatory record: `edge_research/E015-SCALP_protocol_and_pilot.md`,
+`edge_research/e015_scalp_pilot_events.json`, `edge_research/e015_scalp_evidence/`.
+
+**What would need to change before retrying**: (1) diagnose/fix `replay_start`'s date-seek (or use a
+UI-click-based date-picker interaction instead of the parameterized call); (2) separately establish this
+feed's actual M1 replay retention window via manual (non-automated) testing. See the full report for
+detail.
 
 ## Proposed minimal data-ingestion plan (for CEO decision — not started)
 
@@ -293,19 +323,25 @@ candidate.** Tested on M15 (6,929 order blocks) and H1 (1,875) — M1/M5 unavail
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: PAUSED — awaiting CEO decision on data acquisition (standing auto-continue authorization
-suspended by this specific blocker)
+## Next step: PAUSED — awaiting CEO decision after E015-SCALP Phase 0's own NOT FEASIBLE verdict
+(standing auto-continue authorization suspended by this specific blocker)
 
-**This is one of the standing authorization's own explicit stop conditions ("missing data").** Do not
-begin E013. Do not run E015-SCALP. Do not attempt to approximate §9's tests from M15/H1 data. Once the
-CEO makes a decision on the proposed minimal data-ingestion plan above (acquire M1 data / accept the
-scalp objective cannot be tested with current data / redirect the objective back to structural-behavior
-Discovery for now), resume accordingly:
-- If M1 data is acquired: run E015-SCALP first (as explicitly requested), then proceed with `EDGE_RESEARCH_PROTOCOL.md`
-  §9's own tests for E017/E009/E010/E012 as the CEO directs.
-- If the scalp objective is deferred: the Tier 1 sequence's own next structural-behavior edge remains
-  **E013 — Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing edges
-  **E006, E008, E005, E027** — unchanged, only paused.
+**Per explicit CEO instruction, this session stops after the Phase 0 pilot, its feasibility verdict,
+and clean commits — no formal E015-SCALP validation, no E013, no other edge, no rule optimization, no
+AI Trader implementation.** Options for the CEO to choose from:
+1. **Fix the replay-seek tooling** (diagnose `replay_start`'s date parameter, or switch to a UI-click-
+   based date-picker interaction) and **retry E015-SCALP Phase 0** against the same 5-event pilot sample
+   already selected, or a fresh one.
+2. **Separately verify this feed's actual M1 replay retention window** via manual (non-automated)
+   TradingView use, to determine whether recent-enough events could be tested even without fixing the
+   tooling defect.
+3. **Acquire repository M1 data** (the originally proposed ingestion plan, still valid, see the git
+   history of this section for its full detail) as an alternative to TradingView Replay entirely.
+4. **Redirect back to structural-behavior Discovery for now** — resume the Tier 1 sequence at
+   **E013 — Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing
+   edges **E006, E008, E005, E027** — unchanged, only paused — with every future result continuing to
+   carry the "structural-behavior Discovery, not direct scalping validation" label until Stage 2 is
+   separately passed for that edge.
 
 ## Resume instructions
 

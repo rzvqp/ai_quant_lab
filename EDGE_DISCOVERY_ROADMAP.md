@@ -3,20 +3,32 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-22): PAUSED — Protocol v2 (Immediate Scalping Response) blocked on missing M1/M5 data; awaiting CEO decision
+## ⚠ CURRENT STATUS (updated 2026-07-22): PAUSED — E015-SCALP Phase 0 (TradingView Replay) verdict: NOT FEASIBLE; awaiting CEO decision
 
 **CEO directive (2026-07-22)**: the research objective shifted from multi-day structural-behavior
 Discovery to testing whether each edge is an IMMEDIATELY tradable scalp (TP=2R before SL=1R within
-5-60 minutes, M1 execution resolution). `EDGE_RESEARCH_PROTOCOL.md` §9 registers this as Protocol v2.
-**Data audit (re-confirmed by direct filesystem check this session): `data/market/` contains only
-OANDA_XAUUSD_{D1,H4,H1,M15}.csv — no M1, no M5, no tick-level data exists anywhere in this project.**
-Per the CEO's own explicit instruction, this blocks §9's tests entirely — no approximation from M15/H1
-was attempted. **E015-SCALP (the requested extension of E015) was scoped but NOT run** — see
-`NEXT_SESSION_FLOW_A.md` for the full report and the proposed minimal data-ingestion plan. **E013 has
-NOT begun.** All five edges studied under §§1-8 alone (E017/E009/E010/E012/E015) now carry an appended
-"structural-behavior Discovery, not direct scalping validation" scope clarification in their own logs —
-no V0/verdict/conclusion changed. Awaiting CEO decision on data acquisition before any further Flow A
-research.
+5-60 minutes). `EDGE_RESEARCH_PROTOCOL.md` §9 registers this as Protocol v2. Repository M1/M5 data was
+confirmed absent (`data/market/` = D1/H1/H4/M15 only); the CEO then authorized TradingView Bar Replay on
+XAUUSD M1 as the execution-validation source and directed a Phase 0 feasibility pilot on **E015-SCALP —
+First Order Block Mitigation Immediate Response**.
+
+**E015-SCALP Phase 0 result: NOT FEASIBLE (verdict C)** — a live TradingView CDP connection was
+confirmed, the frozen E015 detector was reconstructed (6,919 visit-1 events), a 5-event outcome-blind
+pilot sample was selected, and trade rules were frozen before any replay. Two independent replay
+attempts (dates ~3.3 years and ~8 weeks back) both showed `replay_start`'s own date-seek failing to
+reach the requested historical point — the chart/replay consistently reverted to the live real-time bar.
+One attempt additionally surfaced a native TradingView "Data point unavailable" toast (a possible feed
+retention limit); the other showed no such toast, isolating a genuine tool-integration defect
+independent of retention. Per explicit instruction, no manual/visual workaround was substituted. Full
+report, evidence screenshots, and the mandatory per-event record: `edge_research/
+E015-SCALP_protocol_and_pilot.md`, `edge_research/e015_scalp_pilot_events.json`.
+
+**E015's own structural result is unchanged** (V0 NOT SUPPORTED as registered; V1 candidate = "first
+mitigation only"; both stand exactly as before). **E013 has NOT begun.** All five edges studied under
+§§1-8 alone (E017/E009/E010/E012/E015) carry an appended "structural-behavior Discovery, not direct
+scalping validation" scope clarification — no V0/verdict/conclusion changed. Awaiting CEO decision on
+how to proceed (fix the replay-seek tooling and retry Phase 0 / investigate feed retention / redirect
+back to structural-behavior Discovery for now / another path).
 
 **TERMINAL HOLDOUT BREACHED, then REMEDIATED** (`PROJECT_STATE_v2.md` §8.23/§8.24): the five edges
 studied in this program's first research session (E025, E026, E028, E029, E032) originally loaded data
