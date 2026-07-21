@@ -101,6 +101,27 @@ Validation or Walk Forward results come out. If Validation fails, the correct re
 Verdict reflecting that failure (or, if warranted, a **new**, separately-versioned candidate re-entering
 Discovery) — never a silent edit to the frozen definition.
 
+#### Discovery Identity (added 2026-07-21, CEO governance directive — applies to every V1 candidate
+frozen from this point forward; does not retroactively reopen any already-frozen candidate)
+
+Every frozen V1/Discovery Candidate contract must open with a short **Discovery Identity** block,
+immediately before its own numbered contract items, containing:
+
+1. **Edge ID** and **V1 candidate name** (short, descriptive label, e.g. "E014-V1 — Compression-Driven
+   False-Breakout Fade").
+2. **Parent V0** — the frozen, verbatim registry hypothesis this candidate descends from.
+3. **Date frozen** and **freezing commit hash** (the commit that closed the contract, once known).
+4. **Discovery classification** — per Protocol v2 §9's own labeling convention, e.g.
+   "structural-behavior Discovery, not scalping-validated."
+5. **Status**: always "Discovery Candidate" at this point in the pipeline — explicitly not validated
+   alpha, not a production signal, not an execution rule, not a trading strategy, until it clears
+   Stages 4-6.
+6. **Authorizing decision reference** — the CEO decision (by date/topic) that accepted the candidate.
+
+This is a documentation-format enhancement only — it does not change any scientific verdict, does not
+require rerunning any already-frozen candidate, and does not reopen E014-V1 or any other
+already-closed contract.
+
 ### Stage 4 — Validation
 
 The frozen candidate is tested against the remaining, previously-unexamined portion of the ~5-6 year
