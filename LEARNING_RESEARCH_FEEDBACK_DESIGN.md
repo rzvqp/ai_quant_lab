@@ -270,17 +270,12 @@ with, Context Memory's own already-built and already-tested guarantees:
 4. **One-way data flow.** Learning reads from the live pipeline and Shadow Evidence; it writes only to
    Context Memory. Nothing downstream of Context Memory (retrieval/evidence/decision_intelligence_v2)
    ever writes back into Learning or into any upstream module.
-5. **Minimal schema extension, explicitly justified, never silent.** ~~Originally stated as "no new
-   schema" — SUPERSEDED by the Addendum below.~~ Two extensions are now proposed, each with its own
-   explicit justification: one new `SourceType` member (Addendum §A1) and one new, separate, optional
-   `OperationalMetadata` companion type (Addendum §A2) — never new fields bolted onto
-   `ContextSnapshot`/`PresentEdgeReference`/`Observation`/`Outcome` themselves.
-6. **Outcome sourcing is explicit and per-type, never blended.** ~~Originally stated as "Shadow-sourced
-   outcomes only" — SUPERSEDED by the Addendum below.~~ Strategy Outcome is always Shadow-sourced
-   (preventing the capacity-conflation and evidence-sparsity failure modes already proven in this
-   project's own history); Portfolio Outcome is always real-ledger-sourced; the two are never merged
-   into one number, and every `Outcome` row's own `source_type` field makes which is which
-   unambiguous and machine-checkable (Addendum §A1).
+5. ~~Originally stated as "no new schema," then revised to "one new `SourceType` member" — BOTH
+   superseded. See "Revised invariants" item 5 below (final, current text) for the approved shape:
+   `OutcomeKind` enum, `SourceType` member, and `OperationalMetadata` type.~~
+6. ~~Originally stated as "Shadow-sourced outcomes only," then revised to "`source_type` is the sole
+   discriminator" — BOTH superseded. See "Revised invariants" item 6 below (final, current text) for the
+   approved model: `OutcomeKind` and `SourceType` are separate, orthogonal fields.~~
 7. **Reproducibility.** Given the same underlying simulation run (same seed, same data, same config),
    Learning's own output (the full sequence of appended records) must be byte-for-byte reproducible —
    inherited directly from the harness's own existing, already-proven determinism guarantee.
@@ -349,6 +344,12 @@ stands; this addendum resolves two design questions raised before implementation
 **continue from Context Memory's own existing contracts**, per the CEO's own instruction — neither
 proposes a parallel subsystem.
 
+**Status update (2026-07-21): `ADR_OUTCOME_IDENTITY_VS_SOURCE.md` APPROVED — OPTION B.** A1 below is
+revised in place to reflect the approved verdict: `OutcomeKind` and `SourceType` are separate, orthogonal
+fields — `OutcomeKind` (`STRATEGY` | `PORTFOLIO`) answers *what an outcome represents*; `SourceType`
+answers *where its evidence came from*. The single-field `Outcome.source_type`-only framing originally
+written below is superseded; nothing else in this Addendum changes.
+
 ### A1. Outcome semantics — Strategy Outcome vs. Portfolio Outcome are both required, and must never merge
 
 The original document's Invariant 6 stated outcomes must always come from Shadow Evidence. **This was too
@@ -359,27 +360,59 @@ the gap between an edge's own intrinsic quality and what the shared-slot-contest
 actually realized (`CEO_STRATEGY_CONSTRAINT_ROOT_CAUSE_REPORT.md`, `PORTFOLIO_ARCHITECT_PHASE2A_
 CALIBRATION_REPORT.md`).
 
-**Both outcome types are required, distinguished by `Outcome.source_type`, never blended:**
+**Both outcome types are required, distinguished by the orthogonal pair `OutcomeKind` × `SourceType`
+(per `ADR_OUTCOME_IDENTITY_VS_SOURCE.md`, APPROVED — Option B), never blended:**
 
 | | A. Strategy Outcome | B. Portfolio Outcome |
 |---|---|---|
 | **Question answered** | How did the strategy itself perform? | What actually happened in the live AI Trader? |
+| **`OutcomeKind`** | `STRATEGY` | `PORTFOLIO` |
 | **Evidence source** | Shadow Evidence (`ShadowPositionRecord`/`ShadowTradeLegRecord`) | Real portfolio/execution ledger (`portfolio_simulator.account.trade_ledger`) |
+| **`SourceType`** | `SHADOW_EVIDENCE_ADAPTER` (already present in `enums.py` — no change needed) | `REAL_PORTFOLIO_LEDGER` (new member — the sole enum-member addition this addendum proposes) |
 | **Existence** | Written for essentially every `Observation` — Shadow tracks every configured strategy unconditionally, regardless of real eligibility or capacity | Written ONLY when a real position for that strategy actually opened and closed — the common case, per Phase 2A's own measured evidence (19 real ALLOWs vs. 88 Shadow-isolated ALLOWs in the same window), is that NO Portfolio Outcome exists for a given Observation. **Absence is the expected, correct state, never an error** — it must not be papered over with a fabricated `UNAVAILABLE` row; simply no row is written. |
 | **Why this source** | Avoids the evidence-sparsity (Phase 2A) and capacity-conflation failure modes (§4 of the main design) | Answers the genuinely different, system-level question of realized performance under real, capacity-constrained competition — the exact question the Root-Cause Report, Performance Atlas, and Portfolio Architect's own research this session were built to answer, now made retrievable by regime/context instead of requiring a fresh offline study each time |
-| **Contract mechanism** | Existing `SourceType.SHADOW_EVIDENCE_ADAPTER` (already present in `enums.py` — no change needed) | **One new `SourceType` member required — the sole schema extension this addendum proposes**: e.g. `PORTFOLIO_LEDGER_ADAPTER`. This is additive to an existing enum, not a new type, not a new field on any dataclass. |
 | **Scope** | Per `(observation_id, strategy_id)`, exactly like `Outcome` already is today | Same — the real ledger's own winning strategy for that bar maps directly onto the SAME `Outcome.strategy_id` field; no new scoping concept is introduced |
 
-**How they remain conceptually separate, structurally, not just by convention** (mirroring
-`ShadowStrategySummary.source`'s own already-established discipline — *"always `'shadow'` here, never
-silently merged with a competitive stream by any downstream consumer"*, `shadow_evidence/types.py`):
+**Conceptual model (approved, per the ADR)**:
 
-- `source_type` is present on every `Outcome` row and is the sole, unambiguous discriminator — never
-  inferred from context, never defaulted.
-- Any future `evidence.py`-style aggregation MUST group by `source_type` before computing any statistic
-  (win rate, mean result, etc.) — aggregating across both types into one number is exactly the failure
-  this separation exists to prevent. This is a requirement on any FUTURE implementation, not something
-  this addendum builds.
+```
+OutcomeKind:                       SourceType:
+  STRATEGY                           SHADOW_EVIDENCE_ADAPTER
+  PORTFOLIO                          REAL_PORTFOLIO_LEDGER
+                                      (further members only when separately authorized)
+```
+
+`OutcomeKind` is a small, closed, stable set — answering *what an outcome represents*, expected to remain
+`{STRATEGY, PORTFOLIO}` for the foreseeable future. `SourceType` is open-ended and will grow as new
+evidence-computation methods are authorized (e.g. a future MT5 Live broker-execution source would be a
+THIRD `SourceType`, still under the already-existing `PORTFOLIO` kind — no new `OutcomeKind` member
+needed). The two fields vary independently on every `Outcome` row.
+
+**Required validation invariant** (per the ADR's own resolution of Option B's one identified risk —
+control it through explicit contract validation, not by conflating kind with source): not every
+`(OutcomeKind, SourceType)` combination is currently meaningful — e.g. `(PORTFOLIO,
+SHADOW_EVIDENCE_ADAPTER)` is invalid today, since Shadow Evidence's entire purpose is isolation from
+real portfolio-level capacity constraints. A future implementation must enforce a compatibility rule at
+construction time, mirroring `Outcome`'s own already-existing `__post_init__` cross-field validation
+pattern (`contracts.py:371-398`, e.g. `RESOLVED` requires `normalized_result` set): today, the only valid
+pairings are `(STRATEGY, SHADOW_EVIDENCE_ADAPTER)` and `(PORTFOLIO, REAL_PORTFOLIO_LEDGER)`; any other
+combination must be rejected at the type's own boundary, not merely discouraged by convention. This
+invariant is a requirement on whatever future implementation defines the type — not built by this
+document, which proposes no code.
+
+**How they remain conceptually and statistically separate, structurally, not just by convention**
+(mirroring `ShadowStrategySummary.source`'s own already-established discipline — *"always `'shadow'`
+here, never silently merged with a competitive stream by any downstream consumer"*,
+`shadow_evidence/types.py`):
+
+- `OutcomeKind` is present on every `Outcome` row and is the sole, unambiguous SEMANTIC discriminator —
+  never inferred from `SourceType`, never defaulted, never conflated with provenance.
+- Any future `evidence.py`-style aggregation MUST group by `OutcomeKind` before computing any statistic
+  (win rate, mean result, etc.) — aggregating Strategy and Portfolio outcomes into one number is exactly
+  the failure this separation exists to prevent. `SourceType` may additionally be used to filter WITHIN a
+  kind (e.g. once multiple sources exist for the same kind) but must never itself be the sole grouping
+  key for a cross-kind statistic. This is a requirement on any FUTURE implementation, not something this
+  addendum builds.
 - A single `Observation` may have zero, one, or two `Outcome` rows attached (Strategy only; Portfolio
   only — architecturally rare given real trades require real eligibility; or both) — the retrieval layer
   must treat these as independent, co-existing facts about the same decision moment, never as
@@ -441,20 +474,36 @@ strategy_health_policy_state: str | None   # shadow_gate.py's own already-comput
 ### Revised invariants (supersede §8 items 5 and 6 above, all other invariants unchanged)
 
 - **Item 5, revised**: "No new schema" is replaced by "minimal, explicit, additive schema extension" — one
-  new `SourceType` enum member (A1) and one new, separate, optional `OperationalMetadata` type (A2).
-  Both are additive to existing structures; neither modifies an existing field or an existing type's own
+  new `OutcomeKind` enum (`STRATEGY`/`PORTFOLIO`), one new `SourceType` enum member
+  (`REAL_PORTFOLIO_LEDGER`), and one new, separate, optional `OperationalMetadata` type (A2). All three
+  are additive to existing structures; none modifies an existing field or an existing type's own
   already-tested shape.
-- **Item 6, revised**: "Shadow-sourced outcomes only" is replaced by "outcome sourcing is explicit and
-  per-type, never blended" (A1's own table).
+- **Item 6, revised (per `ADR_OUTCOME_IDENTITY_VS_SOURCE.md`, APPROVED — Option B)**: "Shadow-sourced
+  outcomes only" is replaced by: **`OutcomeKind` and `SourceType` are separate, orthogonal fields — kind
+  answers what an outcome represents, source answers where its evidence came from — and Strategy vs.
+  Portfolio outcomes are never blended, at either the identity or the statistical level** (A1's own
+  table).
 - **New invariant 8**: `OperationalMetadata` is never read by `retrieval.py` or `evidence.py` — it is a
   write-once, read-only-by-humans-or-offline-scripts record, structurally excluded from every statistical
   or matching computation this package performs.
+- **New invariant 9 (per the ADR)**: only explicitly validated `(OutcomeKind, SourceType)` combinations
+  may be constructed — today, exactly `(STRATEGY, SHADOW_EVIDENCE_ADAPTER)` and `(PORTFOLIO,
+  REAL_PORTFOLIO_LEDGER)` — enforced at construction time, mirroring `Outcome`'s own existing
+  `__post_init__` validation pattern. The risk of a nonsensical combination (Option B's one identified
+  drawback) is controlled through this explicit contract validation, never by re-conflating semantic
+  identity with evidence provenance.
 
-### Updated negative control (extends §10)
+### Updated negative controls (extends §10)
 
 6. **`OperationalMetadata` never appears in any `RetrievalQuery` field or any `ContextualEvidenceReport`
    statistic** — directly checkable once implemented by confirming neither `retrieval.py` nor
    `evidence.py` imports or references the new type at all.
+7. **No invalid `(OutcomeKind, SourceType)` pairing can be constructed** — directly checkable once
+   implemented via a dedicated test asserting the `__post_init__` validation rejects every combination
+   outside the two currently-valid pairings.
+8. **`evidence.py`'s own future aggregation never groups solely by `SourceType` across different
+   `OutcomeKind` values** — directly checkable by confirming any statistic (win rate, mean result, etc.)
+   is always computed within one `OutcomeKind` at a time.
 
 ---
 
