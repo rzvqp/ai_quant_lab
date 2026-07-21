@@ -1,0 +1,4331 @@
+{
+  "run_id": "PA-TIEBREAK-PHASE2B",
+  "bars_processed": 23839,
+  "n_tie_bars_captured": 3065,
+  "variant_comparison": {
+    "results_by_variant": {
+      "A_full_rotation": {
+        "n_replayed": 3065,
+        "n_winner_changed_vs_actual": 2,
+        "n_denial_type_drift_vs_actual": 6,
+        "n_reorders_applied": 3065
+      },
+      "B_winner_slot_only": {
+        "n_replayed": 3065,
+        "n_winner_changed_vs_actual": 2,
+        "n_denial_type_drift_vs_actual": 6,
+        "n_reorders_applied": 3065
+      },
+      "C_stable_adjacent_swap": {
+        "n_replayed": 3065,
+        "n_winner_changed_vs_actual": 3,
+        "n_denial_type_drift_vs_actual": 15,
+        "n_reorders_applied": 3065
+      },
+      "E_no_reorder": {
+        "n_replayed": 3065,
+        "n_winner_changed_vs_actual": 0,
+        "n_denial_type_drift_vs_actual": 0,
+        "n_reorders_applied": 0
+      },
+      "D_shared_slot_aware": {
+        "n_replayed": 3065,
+        "n_winner_changed_vs_actual": 1,
+        "n_denial_type_drift_vs_actual": 8,
+        "n_reorders_applied": 468
+      }
+    },
+    "bias_by_variant": {
+      "A_full_rotation": {
+        "n_wins": 45,
+        "mean_winner_ordinal": 27.444444444444443
+      },
+      "B_winner_slot_only": {
+        "n_wins": 45,
+        "mean_winner_ordinal": 27.444444444444443
+      },
+      "C_stable_adjacent_swap": {
+        "n_wins": 45,
+        "mean_winner_ordinal": 27.511111111111113
+      },
+      "E_no_reorder": {
+        "n_wins": 45,
+        "mean_winner_ordinal": 27.155555555555555
+      },
+      "D_shared_slot_aware": {
+        "n_wins": 45,
+        "mean_winner_ordinal": 27.22222222222222
+      }
+    },
+    "deep_traces": [
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1733755500,
+        "tied_groups": [
+          [
+            "S39",
+            "S5",
+            "S6"
+          ]
+        ],
+        "pre_existing_open_position_for_symbol_before_this_bar": false,
+        "round_robin_rank_reassignment_applied": {
+          "S6": 1,
+          "S39": 2,
+          "S5": 3
+        },
+        "original_order_full_trace": [
+          {
+            "strategy_id": "S39",
+            "rank": 1,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 2,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "round_robin_order_full_trace": [
+          {
+            "strategy_id": "S6",
+            "rank": 1,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 2,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "first_diverging_strategy_id": "S6"
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1738247400,
+        "tied_groups": [
+          [
+            "S39",
+            "S5",
+            "S6"
+          ]
+        ],
+        "pre_existing_open_position_for_symbol_before_this_bar": false,
+        "round_robin_rank_reassignment_applied": {
+          "S5": 1,
+          "S39": 2,
+          "S6": 3
+        },
+        "original_order_full_trace": [
+          {
+            "strategy_id": "S39",
+            "rank": 1,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 2,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "round_robin_order_full_trace": [
+          {
+            "strategy_id": "S5",
+            "rank": 1,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 2,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "first_diverging_strategy_id": "S5"
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1738594800,
+        "tied_groups": [
+          [
+            "S39",
+            "S5",
+            "S6"
+          ]
+        ],
+        "pre_existing_open_position_for_symbol_before_this_bar": false,
+        "round_robin_rank_reassignment_applied": {
+          "S5": 1,
+          "S39": 2,
+          "S6": 3
+        },
+        "original_order_full_trace": [
+          {
+            "strategy_id": "S39",
+            "rank": 1,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 2,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "round_robin_order_full_trace": [
+          {
+            "strategy_id": "S5",
+            "rank": 1,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 2,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "first_diverging_strategy_id": "S5"
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1744359300,
+        "tied_groups": [
+          [
+            "S12",
+            "S44"
+          ]
+        ],
+        "pre_existing_open_position_for_symbol_before_this_bar": false,
+        "round_robin_rank_reassignment_applied": {
+          "S44": 1,
+          "S12": 2
+        },
+        "original_order_full_trace": [
+          {
+            "strategy_id": "S12",
+            "rank": 1,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 2,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "round_robin_order_full_trace": [
+          {
+            "strategy_id": "S44",
+            "rank": 1,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 2,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "first_diverging_strategy_id": "S12"
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1756167300,
+        "tied_groups": [
+          [
+            "S40",
+            "S44"
+          ],
+          [
+            "S12",
+            "S50"
+          ],
+          [
+            "S10",
+            "S28"
+          ]
+        ],
+        "pre_existing_open_position_for_symbol_before_this_bar": false,
+        "round_robin_rank_reassignment_applied": {
+          "S44": 3,
+          "S40": 4,
+          "S12": 6,
+          "S50": 7,
+          "S28": 8,
+          "S10": 9
+        },
+        "original_order_full_trace": [
+          {
+            "strategy_id": "S16",
+            "rank": 1,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 2,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 3,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "INVALID_INPUT"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "round_robin_order_full_trace": [
+          {
+            "strategy_id": "S16",
+            "rank": 1,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 2,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 4,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "INVALID_INPUT"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "first_diverging_strategy_id": "S44"
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1758304800,
+        "tied_groups": [
+          [
+            "S39",
+            "S5"
+          ]
+        ],
+        "pre_existing_open_position_for_symbol_before_this_bar": false,
+        "round_robin_rank_reassignment_applied": {
+          "S5": 1,
+          "S39": 2
+        },
+        "original_order_full_trace": [
+          {
+            "strategy_id": "S39",
+            "rank": 1,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S5",
+            "rank": 2,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "round_robin_order_full_trace": [
+          {
+            "strategy_id": "S5",
+            "rank": 1,
+            "decision": "DENY",
+            "denied_reasons": [
+              "SIZE_BELOW_MIN"
+            ]
+          },
+          {
+            "strategy_id": "S39",
+            "rank": 2,
+            "decision": "ALLOW",
+            "denied_reasons": []
+          },
+          {
+            "strategy_id": "S40",
+            "rank": 3,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S13",
+            "rank": 4,
+            "decision": "DENY",
+            "denied_reasons": [
+              "LIMIT_MAX_PER_SYMBOL"
+            ]
+          },
+          {
+            "strategy_id": "S43",
+            "rank": 5,
+            "decision": "DENY",
+            "denied_reasons": [
+              "BELOW_FLOOR"
+            ]
+          },
+          {
+            "strategy_id": "S1",
+            "rank": 6,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S10",
+            "rank": 7,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S11",
+            "rank": 8,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S12",
+            "rank": 9,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S14",
+            "rank": 10,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S15",
+            "rank": 11,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S16",
+            "rank": 12,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S17",
+            "rank": 13,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S18",
+            "rank": 14,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S19",
+            "rank": 15,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S2",
+            "rank": 16,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S20",
+            "rank": 17,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S21",
+            "rank": 18,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S22",
+            "rank": 19,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S23",
+            "rank": 20,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S24",
+            "rank": 21,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S25",
+            "rank": 22,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S26",
+            "rank": 23,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S27",
+            "rank": 24,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S28",
+            "rank": 25,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S29",
+            "rank": 26,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S3",
+            "rank": 27,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S30",
+            "rank": 28,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S31",
+            "rank": 29,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S38",
+            "rank": 30,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S4",
+            "rank": 31,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S41",
+            "rank": 32,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S42",
+            "rank": 33,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S44",
+            "rank": 34,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S45",
+            "rank": 35,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S46",
+            "rank": 36,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S48",
+            "rank": 37,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S50",
+            "rank": 38,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S51",
+            "rank": 39,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S6",
+            "rank": 40,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S7",
+            "rank": 41,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S8",
+            "rank": 42,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          },
+          {
+            "strategy_id": "S9",
+            "rank": 43,
+            "decision": "DENY",
+            "denied_reasons": [
+              "NOT_ACTIONABLE"
+            ]
+          }
+        ],
+        "first_diverging_strategy_id": "S5"
+      }
+    ]
+  },
+  "negative_controls": {
+    "control_no_exact_ties_untouched": {
+      "n_no_tie_bars_checked": 20574,
+      "note": "structurally guaranteed -- every variant fn only ever iterates tied_groups, which is empty here"
+    },
+    "control_single_candidate_batches": {
+      "n_checked": 0,
+      "unchanged": true
+    },
+    "control_near_ties_excluded": "re-confirmed via shared _tie_key(), see prior evidence report",
+    "control_id_relabeling_or_reversal": "analytical: rotation state is keyed by the tied SET, not by absolute alphabetical value -- relabeling/reversing changes only the rotation's own starting phase, not its long-run fairness",
+    "control_missing_fairness_state_cold_start": "first occurrence of any tie signature defaults to index 0 (today's alphabetical winner) -- structurally guaranteed by state.get(group, 0)",
+    "control_reset_fairness_state_mid_run": "equivalent to control 7, re-derived analytically",
+    "control_repeated_identical_tie_groups": {
+      "n_distinct_tie_signatures_recurring_more_than_once": 82,
+      "max_recurrence_count": 412
+    },
+    "control_interleaved_unrelated_symbols": "NOT_APPLICABLE -- single-symbol run, flagged as a design requirement not an empirical result",
+    "control_health_ineligible_tied_strategy": "NOT_APPLICABLE_BASELINE_RUN_NO_HEALTH_FILTER_ACTIVE",
+    "control_all_tied_candidates_denied": {
+      "n_tie_bars_with_no_allow_at_all": 3020,
+      "n_total_tie_bars": 3065,
+      "share": 0.9853181076672104
+    },
+    "control_admission_count_per_tie_bar": "at most ONE real ALLOW ever occurs per tie-bar (LIMIT_MAX_PER_SYMBOL enforces this) -- 'all tied candidates admitted simultaneously' is architecturally impossible for this single-slot symbol, not an untested scenario"
+  }
+}

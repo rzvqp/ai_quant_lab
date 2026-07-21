@@ -145,6 +145,18 @@ Manager's own sequential evaluation, not a flaw in round-robin itself) — this 
 or explicitly accepted before any implementation. **Evidence only — no code, no new `ArchitectMode`,
 implementation NOT authorized.**
 
+**Phase 2B (strict specification + side-effect elimination) delivered — verdict B, SPECIFIABLE WITH
+BOUNDED SIDE EFFECTS**: `PORTFOLIO_ARCHITECT_TIEBREAK_PHASE2B_REPORT.md`. Deep-traced all 6 drift cases
+to one precise, identical mechanism (Risk Manager's own `portfolio_limits`-before-`sizing` gate order:
+a candidate evaluated before vs. after the shared slot is claimed sees `LIMIT_MAX_PER_SYMBOL` vs.
+`SIZE_BELOW_MIN` — never a real DENY↔ALLOW flip for that candidate). Compared 5 predeclared variants
+against the full 3,065-tie population: recommends Variant B (winner-slot-only rotation); Variant C is
+measurably worse (15 drift vs. 6); Variant D (shared-slot-aware) revealed a genuine, non-obvious
+rotation-cursor-desynchronization lesson for fairness-state design. The drift is proven structurally
+unfixable by tie-break policy alone (0.20% of tie-bars, fully characterized and bounded) — an explicit
+accept/reject choice for the CEO, not resolved here. Recommended frozen specification provided (§7 of
+the report), not adopted. **No code, no new `ArchitectMode`, implementation NOT authorized.**
+
 ## Resume instructions
 
 1. Re-verify git state live: `git branch --show-current`, `git log -1`, `git status --porcelain`.
