@@ -37,7 +37,13 @@ unaffected and still `UNSTUDIED`/`V0`.
 **Governing documents**: `EDGE_DISCOVERY_REGISTRY_v1.md` (the 40-edge backlog), `EDGE_RESEARCH_PROTOCOL.md`
 (the six-stage pipeline, the permanent-record rules, and — new as of this incident — §8's mandatory
 holdout-exclusion rule), and `EDGE_DISCOVERY_ROADMAP.md` (recommended sequencing, data-availability-
-driven; its own top section now records the same pause and remediation-first next action).
+driven; its own top section now records the same pause and remediation-first next action). **New
+(2026-07-22)**: `CROSS_EDGE_RESEARCH_CANDIDATES.md` — a registration-only log (not part of the 40-edge
+registry, not a Discovery-stage study) for the recurring "unbroken structural zone retains directional
+information; broken/flipped one loses it" observation surfaced independently by E010's and E012's own
+control groups. CEC-001 there records the exact observations, sample sizes, control definitions,
+p-values, and — most importantly — the specific look-ahead/tautology/survivorship risks that make this
+NOT yet an accepted edge. Does not change E010's or E012's own conclusions.
 
 ## Last Flow A commits
 
