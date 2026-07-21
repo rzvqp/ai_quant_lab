@@ -125,6 +125,15 @@ are in the report. **No code was written; `ArchitectMode.PASSTHROUGH` remains th
 Phase 2 implementation has NOT been authorized and has not begun; the calibration itself does not
 currently support it.**
 
+**Policy Research (new phase, not a continuation of Phase 2A) delivered**:
+`PORTFOLIO_ARCHITECT_POLICY_RESEARCH.md` — a first-principles search for portfolio-level decisions
+distinct from the rejected concentration policy. 3 candidates proposed (genuine-tie round-robin fairness;
+cross-klass directional consensus; denial-stream starvation fairness — deliberately using an ABUNDANT
+evidence source, unlike the rejected policy's sparse one) plus 2 explicitly rejected ideas, ranked by
+architectural value, not profitability. **Research only — none measured against real data, none
+proposed for implementation. Awaiting CEO direction on which (if any) to carry into a fresh, freshly-
+predeclared evidence pass.**
+
 ## Resume instructions
 
 1. Re-verify git state live: `git branch --show-current`, `git log -1`, `git status --porcelain`.
