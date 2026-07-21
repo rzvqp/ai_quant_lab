@@ -10,7 +10,7 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 ## Current state
 
 **Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
-audit; E006 Discovery complete; awaiting CEO authorization for E014.**
+audit; E006 and E014 Discovery complete; awaiting CEO authorization for E008.**
 
 E015-SCALP is closed (EVIDENCE LIMIT REACHED, see below) and no further Replay investigation is
 authorized per the CEO's explicit priority-shift instruction; the laboratory returned to its primary
@@ -22,7 +22,7 @@ full audit and sensitivity analysis available in this session's transcript, summ
 Tier-1 edges (their V0 objects substantially overlap already-completed E010/E012/E015 findings), and
 ranked **E006 highest** on both raw knowledge value and reusable-infrastructure leverage.
 
-**New authorized Tier-1 order**: E006 (done) → E014 → E008 → E011 → E005 → E027 → E016 → E013
+**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 → E011 → E005 → E027 → E016 → E013
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass).
 
 **E006 — Asia Range Expansion Failure: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
@@ -34,7 +34,20 @@ specific to the Asia range's own formation. A same-session (composition-controll
 only a weak, inconsistently-replicated excess effect (significant on M15, p=0.0105; not significant on
 H1, p=0.119, same direction) — below this program's own replication bar for a V1 candidate, so none is
 proposed. Full detail: `edge_research/E006_asia_range_expansion_failure.md`. Commit: see repository log.
-**Awaiting CEO authorization before starting E014.**
+
+**E014 — Inside Bar False Breakout: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
+inside-bar-SPECIFIC mechanism. A real, replicated (M15/H1/H4) false-breakout-fade effect (~71-76%,
+well above a random/synthetic control on every timeframe) was found — but it is driven by generic
+range **compression** relative to volatility, not the strict "inside bar" containment condition: a
+compression-only control (no containment requirement) matches or exceeds real inside bars on all
+three timeframes, while an uncompressed real bar performs no better than a fully synthetic random
+range. **V1 PROPOSED**: compression-driven false-breakout fade, satisfying the program's replication
+and non-cherry-picking criteria (the winning control was one of four predeclared before any result was
+seen). A dramatic-looking attempt-1-vs-attempt-2 decay (72%→12%) was found and explicitly falsified as
+a generic artifact of the attempt-selection mechanism itself — it appears identically in a fully
+synthetic control with no market structure at all, so it is NOT proposed as a V1. Full detail:
+`edge_research/E014_inside_bar_false_breakout.md`.
+**Awaiting CEO authorization before starting E008.**
 
 ---
 

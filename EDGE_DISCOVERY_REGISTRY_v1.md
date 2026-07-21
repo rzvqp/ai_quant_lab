@@ -288,7 +288,12 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Inside-bar range width, breakout direction, time-to-reversal, volatility
   regime
 - **Measured outcome**: False-breakout rate and magnitude of the reverse move
-- **Status**: UNSTUDIED
+- **Status**: DISCOVERY_COMPLETE — V0 NOT SUPPORTED as an inside-bar-specific mechanism (2026-07-21).
+  Real, replicated (M15/H1/H4) false-breakout-fade effect found (~71-76%, well above a random/synthetic
+  baseline), but driven by generic range compression relative to volatility, not the strict "inside
+  bar" containment condition (a compression-only control matches or exceeds real inside bars on every
+  timeframe). **V1 PROPOSED**: compression-driven false-breakout fade. Full detail:
+  `edge_research/E014_inside_bar_false_breakout.md`.
 - **Version**: V0
 
 ### E015 — Order Block Re-Mitigation

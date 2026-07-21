@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E006 Discovery complete, awaiting authorization for E014
+## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E014 Discovery complete, awaiting authorization for E008
 
 E015-SCALP Phase 0/0A/root-cause investigation is CLOSED at EVIDENCE LIMIT REACHED (no feasibility
 verdict; see `edge_research/E015-SCALP_protocol_and_pilot.md`). Per explicit CEO priority-shift
@@ -21,7 +21,17 @@ Discovery pass, given their high redundancy risk with already-completed results)
 Asia-specific mechanism — real, replicated session-dependent failure-rate heterogeneity found, but a
 structural control shows the same pattern is substantially generic to session timing, not the Asia
 range itself. No V1 proposed. Full detail: `edge_research/E006_asia_range_expansion_failure.md`.
-**Awaiting CEO authorization before starting E014.**
+
+**E014 — Inside Bar False Breakout: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
+inside-bar-SPECIFIC mechanism — but a real, replicated (M15/H1/H4) false-breakout-fade effect (~71-76%,
+well above a random/synthetic control) was found, driven by generic range **compression** relative to
+volatility rather than the strict "inside bar" containment condition (a compression-only control
+matches or exceeds real inside bars on every timeframe). **V1 PROPOSED**: compression-driven
+false-breakout fade. A dramatic-looking attempt-1-vs-attempt-2 decay was found and explicitly
+falsified as a generic artifact of the attempt-selection mechanism (present identically in a fully
+synthetic control) — not proposed as a V1. Full detail:
+`edge_research/E014_inside_bar_false_breakout.md`.
+**Awaiting CEO authorization before starting E008.**
 
 <details><summary>Superseded status entries (kept for the record, not current)</summary>
 
@@ -208,9 +218,9 @@ a CEO-approved, pre-committed scoring framework (Novelty, Expected Information V
 Execution Cost, Independence — see `NEXT_SESSION_FLOW_A.md` for the full audit) found E013 and E016
 carry the highest redundancy risk in this remaining set (their V0 objects substantially overlap
 already-completed E010/E012/E015 findings) rather than being natural next steps. **Authorized order for
-the remaining items is now: E006 (done) → E014 → E008 → E011 → E005 → E027 → E016 → E013** (E016/E013
-gated on a cheap definitional-overlap check before any full Discovery pass). The numbered list above is
-kept as-is for the historical record; this note is the current authority on sequencing.
+the remaining items is now: E006 (done) → E014 (done) → E008 → E011 → E005 → E027 → E016 → E013**
+(E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass). The numbered
+list above is kept as-is for the historical record; this note is the current authority on sequencing.
 
 ## Tier 2 — Testable today but need finer-than-M15 timing to do properly
 
