@@ -3,7 +3,29 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-22): PAUSED — E015-SCALP Phase 0 (TradingView Replay) verdict: NOT FEASIBLE; awaiting CEO decision
+## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E006 Discovery complete, awaiting authorization for E014
+
+E015-SCALP Phase 0/0A/root-cause investigation is CLOSED at EVIDENCE LIMIT REACHED (no feasibility
+verdict; see `edge_research/E015-SCALP_protocol_and_pilot.md`). Per explicit CEO priority-shift
+instruction, no further Replay investigation time is authorized unless materially new evidence
+emerges, and §9 (scalping validation) remains deferred project-wide. The laboratory has returned to
+its primary Discovery mission (Protocol §§1-8 only).
+
+**Tier 1 reordered (2026-07-21) per a CEO-approved, pre-committed scoring framework** (see
+`NEXT_SESSION_FLOW_A.md` for the full audit) — the historical registration order was NOT assumed
+optimal. New authorized order: **E006 → E014 → E008 → E011 → E005 → E027 → E016 → E013** (E016/E013
+gated on a cheap definitional-overlap check against E015's/E010's existing detectors before any full
+Discovery pass, given their high redundancy risk with already-completed results).
+
+**E006 — Asia Range Expansion Failure: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
+Asia-specific mechanism — real, replicated session-dependent failure-rate heterogeneity found, but a
+structural control shows the same pattern is substantially generic to session timing, not the Asia
+range itself. No V1 proposed. Full detail: `edge_research/E006_asia_range_expansion_failure.md`.
+**Awaiting CEO authorization before starting E014.**
+
+<details><summary>Superseded status entries (kept for the record, not current)</summary>
+
+### Original entry (2026-07-22): PAUSED — E015-SCALP Phase 0 (TradingView Replay) verdict: NOT FEASIBLE; awaiting CEO decision
 
 **CEO directive (2026-07-22)**: the research objective shifted from multi-day structural-behavior
 Discovery to testing whether each edge is an IMMEDIATELY tradable scalp (TP=2R before SL=1R within
@@ -107,9 +129,12 @@ risk concerns). No Final Verdict issued. Full detail:
 **Per the CEO's own standing "overnight full profile" authorization, the session auto-continues to the
 next eligible edge without stopping for approval between edges** (stopping only for a genuine
 governance issue, an unoperationalizable V0, a missing-data blocker, a loader/test failure, a
-Flow-B-touching requirement, or an audit-trail risk — none occurred for E010, E012, or E015). **Next:
+Flow-B-touching requirement, or an audit-trail risk — none occurred for E010, E012, or E015). ~~**Next:
 E013 — Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing edges
-**E006, E008, E005, E027**.
+**E006, E008, E005, E027**.~~ **Superseded 2026-07-21 by the CEO-approved priority-audit reorder above
+— this auto-continue note no longer reflects the authorized sequence.**
+
+</details>
 
 ## 1. Data-availability gap analysis (verified against what is actually on disk today)
 
@@ -177,6 +202,15 @@ Sub-ordering rationale: pure-arithmetic edges (1-5) first because they have zero
 definition and the fastest possible Discovery pass; structure-pattern edges (6-14) next because they can
 lean on an existing analyzer instead of building pattern-detection logic from scratch; session-behavior
 edges with only moderate precision loss from M15 (15-18) last in this tier.
+
+**Remaining-items order superseded 2026-07-21** (items 11-18 above, i.e. everything after E015):
+a CEO-approved, pre-committed scoring framework (Novelty, Expected Information Value, Leverage,
+Execution Cost, Independence — see `NEXT_SESSION_FLOW_A.md` for the full audit) found E013 and E016
+carry the highest redundancy risk in this remaining set (their V0 objects substantially overlap
+already-completed E010/E012/E015 findings) rather than being natural next steps. **Authorized order for
+the remaining items is now: E006 (done) → E014 → E008 → E011 → E005 → E027 → E016 → E013** (E016/E013
+gated on a cheap definitional-overlap check before any full Discovery pass). The numbered list above is
+kept as-is for the historical record; this note is the current authority on sequencing.
 
 ## Tier 2 — Testable today but need finer-than-M15 timing to do properly
 

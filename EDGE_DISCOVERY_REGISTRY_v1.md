@@ -160,7 +160,11 @@ workaround was substituted, per instruction. E015's own structural result is unc
   later session the breakout occurs in
 - **Measured outcome**: Breakout failure rate (price returns inside the Asia range within a defined
   window) vs. sustained-breakout rate
-- **Status**: UNSTUDIED
+- **Status**: DISCOVERY_COMPLETE — V0 NOT SUPPORTED as an Asia-specific mechanism (2026-07-21). Real,
+  replicated session-dependent failure-rate heterogeneity found, but a structural control (random
+  reference window) shows the same session ordering nearly as strongly — the pattern is substantially
+  generic to session timing, not the Asia range specifically. No V1 proposed. Full detail:
+  `edge_research/E006_asia_range_expansion_failure.md`.
 - **Version**: V0
 
 ### E007 — Central Bank Whisper

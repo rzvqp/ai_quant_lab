@@ -9,6 +9,37 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
+**Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
+audit; E006 Discovery complete; awaiting CEO authorization for E014.**
+
+E015-SCALP is closed (EVIDENCE LIMIT REACHED, see below) and no further Replay investigation is
+authorized per the CEO's explicit priority-shift instruction; the laboratory returned to its primary
+Discovery mission. Before resuming the historical Tier-1 order, the CEO required a research-priority
+audit demonstrating the sequence wasn't assumed optimal by default. A pre-committed, weighted scoring
+framework (Novelty, Expected Information Value, Leverage/Reusability, Execution Cost, Independence —
+full audit and sensitivity analysis available in this session's transcript, summarized in
+`EDGE_DISCOVERY_ROADMAP.md`) found E013 and E016 carry the highest redundancy risk of the remaining
+Tier-1 edges (their V0 objects substantially overlap already-completed E010/E012/E015 findings), and
+ranked **E006 highest** on both raw knowledge value and reusable-infrastructure leverage.
+
+**New authorized Tier-1 order**: E006 (done) → E014 → E008 → E011 → E005 → E027 → E016 → E013
+(E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass).
+
+**E006 — Asia Range Expansion Failure: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
+Asia-specific mechanism. Real, replicated session-dependent breakout-failure heterogeneity was found
+(London-hour breakouts fail significantly more than NY-hour breakouts, on both M15 and H1) — but a
+structural control (random, non-Asia reference window) shows the same session ordering nearly as
+strongly, meaning the pattern is substantially a generic session-timing property, not something
+specific to the Asia range's own formation. A same-session (composition-controlled) comparison found
+only a weak, inconsistently-replicated excess effect (significant on M15, p=0.0105; not significant on
+H1, p=0.119, same direction) — below this program's own replication bar for a V1 candidate, so none is
+proposed. Full detail: `edge_research/E006_asia_range_expansion_failure.md`. Commit: see repository log.
+**Awaiting CEO authorization before starting E014.**
+
+---
+
+### Superseded (2026-07-21) — E015-SCALP root-cause closure, kept for the record
+
 **Status: EVIDENCE LIMIT REACHED (2026-07-21) — E015-SCALP Phase 0 root-cause investigation CLOSED,
 no feasibility verdict issued. A previously-reported "Verdict A — manual replay start works" finding
 was RETRACTED as not reproducible under rigorous re-testing (10+ clean attempts across multiple
