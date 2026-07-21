@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Perspective",
+  "description": "A whole research stance -- lens family x analytical style x framing x regime bias. Deliberately varied per pass to avoid the loop converging on a single style of investigation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["perspective_id", "lens", "analytical_style", "framing", "regime_bias", "timeframe_scope"],
+  "properties": {
+    "perspective_id": {"type": "string", "pattern": "^P[0-9]{4,}$"},
+    "lens": {
+      "type": "string",
+      "enum": ["time", "behaviour", "sequence", "structure", "volatility", "cross_timeframe", "regime", "anomaly", "falsification"]
+    },
+    "analytical_style": {
+      "type": "string",
+      "enum": ["descriptive_scan", "comparative_contrast", "conditional_slicing", "sequence_tracing", "distributional"]
+    },
+    "framing": {
+      "type": "string",
+      "enum": ["neutral_observation", "adversarial_falsification", "anomaly_hunt", "regime_conditioned"]
+    },
+    "regime_bias": {
+      "type": "string",
+      "enum": ["any", "low_vol", "high_vol", "trending", "ranging"]
+    },
+    "timeframe_scope": {
+      "type": "string",
+      "enum": ["single_tf", "cross_tf"]
+    },
+    "rationale": {"type": "string", "maxLength": 500}
+  }
+}

@@ -1,0 +1,10 @@
+# Alpha Automation v1.0 -- runtime dependencies.
+#
+# The orchestrator core (perspective/task/window selection, memory, adapters, runner, schema
+# validation) is PURE STDLIB and needs nothing here. These are only for the CSV-fallback data
+# path, which reuses the lab's existing loader (edge_research/_common.py).
+#
+# Execution path: the `codex` CLI (installed separately, not via pip) provides Alpha reasoning.
+# Live data path: Node + the tradingview-mcp repo (installed separately). No Python SDK required.
+pandas>=2.0
+numpy>=1.24

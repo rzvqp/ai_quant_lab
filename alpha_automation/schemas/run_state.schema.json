@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RunState",
+  "description": "The resumable checkpoint for a run. Rewritten atomically after every pass so an interrupted run can resume from the next pass deterministically.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "mode", "seed", "next_pass", "max_passes", "status"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "mode": {"type": "string", "enum": ["bounded", "continuous"]},
+    "seed": {"type": "integer"},
+    "next_pass": {"type": "integer", "minimum": 0},
+    "max_passes": {"type": "integer", "minimum": 1},
+    "delay_s": {"type": "number", "minimum": 0},
+    "adapter": {"type": "string"},
+    "dry_run": {"type": "boolean"},
+    "consecutive_failures": {"type": "integer", "minimum": 0},
+    "passes_completed": {"type": "integer", "minimum": 0},
+    "started_ts": {"type": "string"},
+    "updated_ts": {"type": "string"},
+    "status": {
+      "type": "string",
+      "enum": ["running", "stopping", "stopped", "completed", "failed"]
+    },
+    "config_snapshot": {"type": "object"}
+  }
+}

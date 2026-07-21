@@ -1,0 +1,4 @@
+# Runtime state (runs, memory ledgers, id allocator) is machine-local; do not commit it.
+*
+!.gitignore
+!.gitkeep

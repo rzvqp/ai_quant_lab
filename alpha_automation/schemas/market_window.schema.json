@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MarketWindow",
+  "description": "A reproducibly-selected slice of the historical dataset. Never crosses the holdout cutoff. Records why it was chosen.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["instrument", "timeframe", "start", "end", "data_split_id", "holdout_cutoff", "selection_reason"],
+  "properties": {
+    "instrument": {"type": "string"},
+    "timeframe": {"type": "string", "enum": ["M15", "H1", "H4", "D1"]},
+    "start": {"type": "string"},
+    "end": {"type": "string"},
+    "n_bars_requested": {"type": ["integer", "null"], "minimum": 0},
+    "data_split_id": {"type": "string"},
+    "holdout_cutoff": {"type": "string"},
+    "selection_reason": {"type": "string", "maxLength": 500},
+    "overlap_key": {"type": "string"}
+  }
+}

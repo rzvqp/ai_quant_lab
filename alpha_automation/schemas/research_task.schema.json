@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResearchTask",
+  "description": "A concrete investigation chosen within a Perspective: a precise, answerable research question bound to an edge/topic and a set of window constraints.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "perspective_id", "lens", "question", "question_norm", "selection_reason", "window_hint"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^INV-[0-9]{6}$"},
+    "perspective_id": {"type": "string", "pattern": "^P[0-9]{4}$"},
+    "lens": {"type": "string"},
+    "edge_ref": {"type": ["string", "null"]},
+    "topic": {"type": "string"},
+    "question": {"type": "string", "minLength": 8, "maxLength": 400},
+    "question_norm": {"type": "string", "minLength": 4},
+    "selection_reason": {"type": "string", "maxLength": 500},
+    "window_hint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeframe", "span_bars"],
+      "properties": {
+        "timeframe": {"type": "string", "enum": ["M15", "H1", "H4", "D1"]},
+        "span_bars": {"type": "integer", "minimum": 20, "maximum": 5000},
+        "prefer_regime": {"type": "string", "enum": ["any", "low_vol", "high_vol", "trending", "ranging"]}
+      }
+    }
+  }
+}

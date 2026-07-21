@@ -1,0 +1,17 @@
+{
+  "mode": "bounded",
+  "max_passes": 5,
+  "delay_s": 0.0,
+  "seed": 20260721,
+  "dry_run": false,
+  "adapter": "stub",
+  "codex_model": null,
+  "data_source": "auto",
+  "instrument_live": "OANDA:XAUUSD",
+  "instrument_csv": "XAUUSD",
+  "timeframes": ["M15", "H1", "H4", "D1"],
+  "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+  "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+  "max_retries": 2,
+  "max_consecutive_failures": 5
+}

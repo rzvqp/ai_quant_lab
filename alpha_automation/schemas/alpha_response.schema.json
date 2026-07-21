@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AlphaResponse",
+  "description": "The strict, machine-readable output contract Alpha must return. Parsing arbitrary prose is forbidden. Boundary language (strategy/profit/validation/causal claims) is rejected by a separate scan (boundaries.py), not by this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "finding_type", "summary", "observation", "confidence", "gate"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^INV-[0-9]{6}$"},
+    "finding_type": {
+      "type": "string",
+      "enum": ["NEGATIVE", "TENTATIVE", "CANDIDATE_PROPOSED"]
+    },
+    "summary": {"type": "string", "minLength": 1, "maxLength": 280},
+    "observation": {"type": "string", "minLength": 1, "maxLength": 4000},
+    "evidence": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["what"],
+        "properties": {
+          "window": {"type": "string"},
+          "what": {"type": "string", "maxLength": 500},
+          "count": {"type": ["integer", "null"], "minimum": 0}
+        }
+      }
+    },
+    "why_attracted_attention": {"type": "string", "maxLength": 1500},
+    "why_may_repeat": {"type": "string", "maxLength": 1500},
+    "why_investigate": {"type": "string", "maxLength": 1500},
+    "confidence": {"type": "string", "enum": ["Low", "Medium", "High"]},
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "novel",
+        "evidence_supported",
+        "reproducible_or_concrete",
+        "descriptive_not_causal",
+        "not_noise",
+        "not_strategy_or_profit_claim"
+      ],
+      "properties": {
+        "novel": {"type": "boolean"},
+        "evidence_supported": {"type": "boolean"},
+        "reproducible_or_concrete": {"type": "boolean"},
+        "descriptive_not_causal": {"type": "boolean"},
+        "not_noise": {"type": "boolean"},
+        "not_strategy_or_profit_claim": {"type": "boolean"}
+      }
+    },
+    "self_reported_related": {
+      "type": "array",
+      "maxItems": 25,
+      "items": {"type": "string"}
+    },
+    "scope_caveats": {"type": "string", "maxLength": 1500}
+  }
+}

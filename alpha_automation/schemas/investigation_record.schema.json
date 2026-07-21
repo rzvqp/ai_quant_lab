@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InvestigationRecord",
+  "description": "The persisted result of one research pass: perspective + task + window + data provenance + validated Alpha response + derived outcome. This is the internal record; it is NOT a Discovery Candidate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "run_id", "pass", "perspective", "task", "window", "data_provenance", "response", "outcome", "ts"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^INV-[0-9]{6}$"},
+    "run_id": {"type": "string"},
+    "pass": {"type": "integer", "minimum": 0},
+    "seed": {"type": "integer"},
+    "perspective": {"type": "object"},
+    "task": {"type": "object"},
+    "window": {"type": ["object", "null"]},
+    "data_provenance": {
+      "type": "object",
+      "required": ["data_source"],
+      "properties": {
+        "data_source": {"type": "string", "enum": ["live_tv", "csv_fallback", "none"]}
+      }
+    },
+    "response": {"type": ["object", "null"]},
+    "outcome": {
+      "type": "string",
+      "enum": ["NEGATIVE", "TENTATIVE", "CANDIDATE_PROPOSED", "ERROR", "QUARANTINED"]
+    },
+    "gate_pending": {"type": "boolean"},
+    "error": {"type": ["string", "null"]},
+    "ts": {"type": "string"}
+  }
+}
