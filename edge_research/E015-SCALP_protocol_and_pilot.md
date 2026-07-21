@@ -218,3 +218,142 @@ blocker**, not due to any finding about the underlying market behavior. E015's o
 is unchanged and continues to stand as a **structural-behavior Discovery** result only — its own status
 already states this is not yet a validated scalp, and this pilot has not changed that determination
 either way.
+
+---
+
+## Phase 0A — TradingView Historical-Seek Tooling Remediation (2026-07-22)
+
+**Authorized scope**: repair/replace the historical-date-seeking workflow only. No new edge, no
+formal validation, no external data acquisition, no change to the frozen E015-SCALP rules or pilot
+sample (all preserved exactly as defined in Phase 0 above — detector, 6,919-event universe,
+selection method, seed=42, selected event IDs/timestamps/strata, confirmation/entry/stop/TP=2R/
+timeout/cost/ambiguity rules, outcome schema).
+
+**Note on repository boundary**: the actual tooling code lives in a separate, third repository —
+`C:\Users\MEDION GAMING\tradingview-mcp` — the shared TradingView control/integration project this
+program's replay tools depend on, distinct from both Flow A (`ai_quant_lab-alpha-discovery`) and
+Flow B (`ai_quant_lab-research-main`). All code changes described below were made and committed
+there; this document records the investigation and its outcome for Flow A's own governance trail.
+
+### Root-cause investigation
+
+Live-tested (not assumed) against the real TradingView connection, in isolated steps, per the CEO's
+own required checklist:
+
+- **Exact command/API sequence**: `replay.start()` calls TradingView's own internal replay
+  controller (`window.TradingViewApi._replayApi`) via CDP `Runtime.evaluate` — `showReplayToolbar()`,
+  then `selectDate(ts)` (or `selectFirstAvailableDate()`), then polls `isReplayStarted()`/
+  `currentDate()`. This is a JS-API path, not a DOM/UI-click path — the same underlying API a human
+  clicking TradingView's own Bar Replay calendar would ultimately invoke.
+- **selectDate() promise handling**: confirmed properly awaited (wrapped in `.then()`, called via
+  `awaitPromise`-aware evaluation in diagnostics) — the promise **resolves** (`RESOLVED_OK`), it does
+  not reject. The original "issue #26" fix (awaiting the promise inside the page context) remains
+  correct; this was **not** the defect.
+- **Whether a subsequent command invokes "Go to real-time"**: no — nothing in the code path calls
+  `goToRealtime()`.
+- **Whether the "Continue your last replay?" modal steals focus**: a real, observed modal (screenshot
+  evidence from Phase 0), but proven **not to be the root cause** — the same failure reproduced
+  identically after the modal was dismissed, after a full page reload (which clears all modal/session
+  state), and on a symbol (`EURUSD`) that had never shown the modal at all.
+- **Whether symbol/timeframe change resets replay state**: tested and ruled out — failure is
+  identical on `OANDA:XAUUSD` and `EURUSD`.
+- **Whether the seek command runs before the chart finishes loading**: ruled out — a ~1.5s settle
+  delay after symbol/timeframe changes was already present and did not change the outcome; the same
+  failure occurred with much longer delays between steps.
+- **Whether CDP selectors are stale**: ruled out — `isReplayAvailable()`, `isReplayStarted()`, and
+  `currentDate()` all read back consistent, correctly-typed values throughout (e.g. `currentDate()`
+  correctly returned `null` at true baseline and advanced by exactly 60s on a single `doStep()`
+  call), meaning the API path itself is wired correctly.
+- **Whether the current tool verifies the final visible timestamp**: **this was the actual defect** —
+  it did not. `isReplayStarted()===true && currentDate()!==null` was treated as sufficient evidence of
+  success, with no check that `currentDate` corresponds to the requested date at all.
+- **Whether TradingView returns an explicit success/failure state**: **yes, but the code never read
+  it** — a native TradingView toast, full text: *"Data point unavailable — The selected date is not
+  available for playback. The chart was moved to the first point available for playback."* — appears
+  every time a request cannot be honored, and was not being checked.
+
+### Decisive live test sequence (TEST 1–3, per the CEO's own required steps)
+
+| Test | Requested date | Result | Toast shown |
+|---|---|---|---|
+| Recent (~15 min back) | 2025-07-21T05:30Z | Landed on a substituted point | Yes |
+| Recent (~2h/12h/24h/3d/1wk back), repeated 6×, same symbol | various | Landed on the same substituted point every time | Yes, every time |
+| `selectFirstAvailableDate()` (TradingView's own "earliest available" call, no date at all) | — | Landed on the same substituted point | Yes |
+| Different symbol (`EURUSD`, `selectFirstAvailableDate()`) | — | Landed on the same substituted point | Yes |
+| Full page reload, then repeat recent-date test | 2025-07-15 | Landed on a substituted point (now correctly tracking real time, ruling out a frozen/cached value) | Yes |
+| Original frozen pilot date (via the **remediated** `start()`) | 2025-05-28 | Correctly classified **DATA_UNAVAILABLE** (no longer a false success) | Yes |
+
+**Conclusion**: the failure is symbol-independent, survives a full page reload, and occurs even for
+TradingView's own "give me the earliest available point" call with no historical target at all —
+this is not plausibly a client-side automation bug in this codebase. It is far more consistent with
+an **account/subscription-plan restriction on intraday (M1) Bar Replay historical depth** — TradingView
+gates extended Bar Replay history behind certain plan tiers, and this account/connection appears not
+to have access to it for intraday resolutions, for any symbol tested. This was not independently
+confirmed against TradingView's own plan/feature documentation (out of scope for this remediation) —
+noted as the recommended next check if historical M1 replay is still wanted.
+
+### Remediation implemented (tradingview-mcp commit `c839e91`)
+
+In `src/core/replay.js::start()`:
+1. Detects and dismisses a lingering "Continue your last replay?" modal before selecting a new date;
+   fails closed with **MODAL_BLOCKED** if a modal is present and cannot be dismissed, instead of
+   proceeding against unknown UI state.
+2. After the existing polling loop succeeds, checks for TradingView's own "Data point unavailable"
+   toast; if present, throws **DATA_UNAVAILABLE** (with the toast's own text and the substituted
+   `current_date` attached) instead of returning success.
+3. Verifies the resulting `currentDate` is within a documented tolerance (2 days, accommodating
+   weekend/holiday bar gaps) of the requested date; throws **TIMESTAMP_MISMATCH** if not, even when no
+   toast appeared.
+4. `src/tools/replay.js` now surfaces the new `.code` (and `current_date`, when present) to the MCP
+   tool caller on failure, not just the error message.
+
+**Every non-success path now throws an explicit, checkable code**
+(`TOOLING_FAILURE`/`DATA_UNAVAILABLE`/`MODAL_BLOCKED`/`TIMESTAMP_MISMATCH`) instead of ever silently
+reporting `success: true` on a substituted date. Per the CEO's own standard — "a false success is
+worse than a declared failure" — this is a genuine, verified fix, independent of whether the deeper
+plan/data limitation is ever resolved.
+
+### Tests
+
+`tests/replay.test.js`: **45/45 passing** (6 new — modal dismissal, MODAL_BLOCKED,
+DATA_UNAVAILABLE, TIMESTAMP_MISMATCH, in-tolerance acceptance, first-available-date path correctly
+skips date comparison; 1 existing test's mock `currentDate` corrected to be internally consistent
+with its own requested date — a pre-existing inconsistency unrelated to the polling behavior that
+test actually verifies). Mocked at the control layer (DI pattern, `_deps`) per existing convention.
+
+### Mandatory live verification (required before declaring remediation complete)
+
+Ran the **remediated** `start()` (not a diagnostic script) against the live TradingView connection
+four times: two repeated recent-date attempts (repeatability), the original frozen `E015-SCALP`
+pilot date (2025-05-28), and the no-date `selectFirstAvailableDate()` path. **All four now correctly
+and deterministically report `DATA_UNAVAILABLE`** — zero false successes, zero crashes, consistent
+classification every time.
+
+### Feasibility verdict (Phase 0A) — exactly one, per the CEO's own taxonomy
+
+**C — TOOLING STILL BLOCKED.** The remediation genuinely succeeded at its own stated goal — historical
+seek failures are now deterministic, explicit, and correctly classified, with no possibility of a
+silent false success remaining. It did **not**, however, unlock the ability to reach any historical
+point: every tested date (from 15 minutes back through the original ~2-3-year-old pilot dates),
+across two symbols, before and after a page reload, and via TradingView's own "first available date"
+call, is rejected identically. This is assessed as a data/plan-level limitation, not a remaining
+client-side defect — but that assessment was not independently confirmed against TradingView's own
+subscription documentation, so it is reported as the most likely explanation, not a certainty.
+**Verdict A/B are not reached** (no historical date is reachable at all, so the frozen pilot cannot
+resume); **verdict D is not adopted** either, since TradingView's own "Data point unavailable" toast —
+which even its own `selectFirstAvailableDate()` API triggers — is native platform behavior, not
+something specific to this automation's own approach, making it unlikely (though not proven) that
+manual UI operation would fare differently.
+
+**No E015-SCALP performance verdict is issued.** Per the CEO's own explicit instruction, the frozen
+pilot is **not** retried under this verdict (that step is gated on verdict A or B only).
+
+### What would unlock further progress
+
+1. **Confirm the actual TradingView plan/subscription tier** attached to this connection and whether
+   it includes extended intraday Bar Replay history — a billing/account question, not a code fix.
+2. If confirmed unavailable on the current plan: either upgrade, or pursue the previously-proposed
+   M1 data-ingestion plan (`NEXT_SESSION_FLOW_A.md`) as an alternative to TradingView Replay entirely.
+3. If a plan upgrade or alternative feed resolves the underlying limitation, Phase 0 can be
+   re-attempted directly against the already-frozen 5-event pilot sample with **no changes needed**
+   to this remediation's own code — the fix is orthogonal to the data-availability question.

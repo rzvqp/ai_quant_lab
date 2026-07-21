@@ -9,8 +9,22 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: PAUSED (2026-07-22) — E015-SCALP Phase 0 (TradingView Replay pilot) complete, verdict NOT
-FEASIBLE; awaiting CEO decision. Do not begin E013. Do not resume E015-SCALP formal validation.**
+**Status: PAUSED (2026-07-22) — E015-SCALP Phase 0A (TradingView historical-seek tooling
+remediation) complete, verdict C — TOOLING STILL BLOCKED; awaiting CEO decision. Do not begin E013.
+Do not resume E015-SCALP formal validation.**
+
+**Phase 0A update (supersedes the Phase 0 "NOT FEASIBLE" framing below with a more precise
+diagnosis)**: root-caused and fixed a real tooling defect (a "success" report that silently landed
+on the wrong date) in the separate `tradingview-mcp` repo's `replay_start` — commit `c839e91`, 45/45
+tests passing, live-verified. The fix makes every failure explicit and correctly classified
+(`DATA_UNAVAILABLE`/`MODAL_BLOCKED`/`TIMESTAMP_MISMATCH`/`TOOLING_FAILURE`) instead of silently
+succeeding on a substituted date — a genuine improvement. **It did not unlock historical replay**:
+every date tested (15 minutes back through ~2-3 years back, two symbols, before/after a page reload,
+and TradingView's own "first available date" call) is rejected identically with a native "Data point
+unavailable" toast — now assessed as a likely TradingView plan/subscription limitation on intraday
+Bar Replay depth, not a remaining client-side bug. Full root-cause detail, the live test matrix, and
+the verdict: `edge_research/E015-SCALP_protocol_and_pilot.md` §"Phase 0A". No E015-SCALP performance
+verdict issued; the frozen pilot was not retried (gated on verdict A/B only, not reached).
 
 **What changed**: the CEO redirected the research objective from multi-day structural-behavior
 Discovery to testing whether each edge produces an IMMEDIATELY tradable scalp (a mechanically defined
@@ -323,21 +337,21 @@ candidate.** Tested on M15 (6,929 order blocks) and H1 (1,875) — M1/M5 unavail
 - No multiple-comparison correction has been applied to any of the above p-values — they are
   Discovery-stage screening signals, not confirmed findings.
 
-## Next step: PAUSED — awaiting CEO decision after E015-SCALP Phase 0's own NOT FEASIBLE verdict
-(standing auto-continue authorization suspended by this specific blocker)
+## Next step: PAUSED — awaiting CEO decision after E015-SCALP Phase 0A's own verdict C (standing
+auto-continue authorization suspended by this specific blocker)
 
-**Per explicit CEO instruction, this session stops after the Phase 0 pilot, its feasibility verdict,
-and clean commits — no formal E015-SCALP validation, no E013, no other edge, no rule optimization, no
-AI Trader implementation.** Options for the CEO to choose from:
-1. **Fix the replay-seek tooling** (diagnose `replay_start`'s date parameter, or switch to a UI-click-
-   based date-picker interaction) and **retry E015-SCALP Phase 0** against the same 5-event pilot sample
-   already selected, or a fresh one.
-2. **Separately verify this feed's actual M1 replay retention window** via manual (non-automated)
-   TradingView use, to determine whether recent-enough events could be tested even without fixing the
-   tooling defect.
-3. **Acquire repository M1 data** (the originally proposed ingestion plan, still valid, see the git
+**Per explicit CEO instruction, this session stops after the Phase 0A remediation, its verdict, and
+clean commits — no formal E015-SCALP validation, no E013, no other edge, no rule optimization, no
+AI Trader implementation.** The replay tooling itself is now fixed (deterministic, correctly
+classified failures — `tradingview-mcp` commit `c839e91`); the remaining blocker is data/plan
+availability, not code. Options for the CEO to choose from:
+1. **Confirm the TradingView plan/subscription tier** for this connection and whether it includes
+   extended intraday Bar Replay history — a billing/account question. If it does and something else
+   is misconfigured, retry Phase 0 against the same frozen 5-event pilot sample with no code changes
+   needed (the remediation is orthogonal to this question).
+2. **Acquire repository M1 data** (the originally proposed ingestion plan, still valid, see the git
    history of this section for its full detail) as an alternative to TradingView Replay entirely.
-4. **Redirect back to structural-behavior Discovery for now** — resume the Tier 1 sequence at
+3. **Redirect back to structural-behavior Discovery for now** — resume the Tier 1 sequence at
    **E013 — Mitigation Block Sniping**, then in order **E016, E011, E014**, then the session-timing
    edges **E006, E008, E005, E027** — unchanged, only paused — with every future result continuing to
    carry the "structural-behavior Discovery, not direct scalping validation" label until Stage 2 is
