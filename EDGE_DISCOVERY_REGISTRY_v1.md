@@ -146,7 +146,11 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Pre-close trend direction/strength, day of week, size of the reversal,
   duration until reversal exhausts
 - **Measured outcome**: Reversal rate and magnitude in a fixed post-London-close window
-- **Status**: UNSTUDIED
+- **Status**: DISCOVERY_COMPLETE — V0 NOT SUPPORTED (2026-07-21). Reversal rate (~52%, both M15 and H1)
+  is statistically indistinguishable from the Asia→London boundary or a random reference hour (all
+  p>0.16); no heterogeneity by day-of-week, volatility, or pre-close trend strength. A genuine daily
+  data gap at UTC hour 21 (OANDA rollover) made the NY→late control boundary untestable, disclosed as
+  a limitation. No V1 proposed. Full detail: `edge_research/E005_london_close_reversal.md`.
 - **Version**: V0
 
 ### E006 — Asia Range Expansion Failure

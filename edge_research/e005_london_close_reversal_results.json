@@ -1,0 +1,295 @@
+{
+  "edge": "E005",
+  "edge_id": "E005",
+  "hypothesis_version": "V0",
+  "run_id": "discovery_pass_1_full_profile_2026-07-21",
+  "timeframes_tested": [
+    "M15",
+    "H1"
+  ],
+  "timeframes_unavailable": {
+    "M1": "not present anywhere in this project's data (EDGE_DISCOVERY_ROADMAP.md SS1)",
+    "M5": "not present anywhere in this project's data (EDGE_DISCOVERY_ROADMAP.md SS1)"
+  },
+  "params": {
+    "PRE_WINDOW_HOURS": 2,
+    "POST_WINDOW_HOURS": 2,
+    "MIN_COMPLETENESS_FRAC": 0.75,
+    "RNG_SEED": 42,
+    "movement_horizons": [
+      1,
+      3,
+      5,
+      10,
+      20,
+      50
+    ],
+    "atr_thresholds": [
+      0.25,
+      0.5,
+      1.0,
+      1.5,
+      2.0
+    ]
+  },
+  "by_timeframe": {
+    "M15": {
+      "timeframe": "M15",
+      "split_metadata": {
+        "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+        "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+        "holdout_excluded": true,
+        "min_date_used": "2022-12-16 10:45:00+00:00",
+        "max_date_used": "2025-10-23 09:00:00+00:00",
+        "n_bars_used": 67321,
+        "n_bars_before_cutoff": 84152,
+        "n_bars_excluded_by_cutoff": 16831,
+        "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+        "timeframe": "M15"
+      },
+      "n_bars": 67321,
+      "date_range": [
+        "2022-12-16 10:45:00+00:00",
+        "2025-10-23 09:00:00+00:00"
+      ],
+      "n_events": 730,
+      "primary": {
+        "overall": {
+          "n": 730,
+          "rate": 0.5205479452054794
+        },
+        "reversal_magnitude": {
+          "n": 380,
+          "mean": 2.7626890542599063,
+          "median": 1.8516858559549236,
+          "std": 3.1221407487147936
+        },
+        "duration_to_exhaust_bars": {
+          "n": 368,
+          "mean": 1.7065217391304348,
+          "median": 1.0,
+          "std": 3.4358659546354633
+        }
+      },
+      "control_A_other_boundaries": {
+        "asia_to_london_08": {
+          "n": 733,
+          "rate": 0.4829467939972715,
+          "p_vs_london_close": 0.16576840889508948
+        },
+        "ny_to_late_21": {
+          "n": 0,
+          "p_vs_london_close": null
+        }
+      },
+      "control_B_random_matched": {
+        "n": 734,
+        "rate": 0.4986376021798365,
+        "random_hour_used": 2,
+        "p_vs_london_close": 0.4317452108524964
+      },
+      "slices": {
+        "dow_Monday": {
+          "n": 144,
+          "rate": 0.5486111111111112,
+          "p_vs_overall": 0.5995698843202427
+        },
+        "dow_Tuesday": {
+          "n": 146,
+          "rate": 0.5136986301369864,
+          "p_vs_overall": 0.9517690721470611
+        },
+        "dow_Wednesday": {
+          "n": 147,
+          "rate": 0.46938775510204084,
+          "p_vs_overall": 0.2975370648149358
+        },
+        "dow_Thursday": {
+          "n": 148,
+          "rate": 0.5743243243243243,
+          "p_vs_overall": 0.2692187471976252
+        },
+        "dow_Friday": {
+          "n": 145,
+          "rate": 0.496551724137931,
+          "p_vs_overall": 0.66198452643543
+        },
+        "vol_low": {
+          "n": 64,
+          "rate": 0.546875,
+          "p_vs_overall": 0.784225367983183
+        },
+        "vol_mid": {
+          "n": 295,
+          "rate": 0.5084745762711864,
+          "p_vs_overall": 0.7785768038821242
+        },
+        "vol_high": {
+          "n": 369,
+          "rate": 0.5257452574525745,
+          "p_vs_overall": 0.9211694385516292
+        },
+        "pretrend_weak": {
+          "n": 243,
+          "rate": 0.522633744855967,
+          "p_vs_overall": 1.0
+        },
+        "pretrend_mid": {
+          "n": 244,
+          "rate": 0.5491803278688525,
+          "p_vs_overall": 0.48297245360540797
+        },
+        "pretrend_strong": {
+          "n": 243,
+          "rate": 0.4897119341563786,
+          "p_vs_overall": 0.4479099542752376
+        }
+      },
+      "yearly_stability": {
+        "2022": {
+          "n": 9,
+          "rate": 0.5555555555555556
+        },
+        "2023": {
+          "n": 254,
+          "rate": 0.5590551181102362
+        },
+        "2024": {
+          "n": 259,
+          "rate": 0.528957528957529
+        },
+        "2025": {
+          "n": 208,
+          "rate": 0.46153846153846156
+        }
+      }
+    },
+    "H1": {
+      "timeframe": "H1",
+      "split_metadata": {
+        "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+        "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+        "holdout_excluded": true,
+        "min_date_used": "2023-01-02 23:00:00+00:00",
+        "max_date_used": "2025-10-23 09:00:00+00:00",
+        "n_bars_used": 16623,
+        "n_bars_before_cutoff": 20832,
+        "n_bars_excluded_by_cutoff": 4209,
+        "loader_version": "flowA_common_v2_holdout_enforced_2026-07-21",
+        "timeframe": "H1"
+      },
+      "n_bars": 16623,
+      "date_range": [
+        "2023-01-02 23:00:00+00:00",
+        "2025-10-23 09:00:00+00:00"
+      ],
+      "n_events": 720,
+      "primary": {
+        "overall": {
+          "n": 720,
+          "rate": 0.5208333333333334
+        },
+        "reversal_magnitude": {
+          "n": 375,
+          "mean": 1.3920936091125597,
+          "median": 0.9959373186302828,
+          "std": 1.3508495680202859
+        },
+        "duration_to_exhaust_bars": {
+          "n": 341,
+          "mean": 3.967741935483871,
+          "median": 0.0,
+          "std": 8.508516547872853
+        }
+      },
+      "control_A_other_boundaries": {
+        "asia_to_london_08": {
+          "n": 724,
+          "rate": 0.48342541436464087,
+          "p_vs_london_close": 0.17103819439734347
+        },
+        "ny_to_late_21": {
+          "n": 0,
+          "p_vs_london_close": null
+        }
+      },
+      "control_B_random_matched": {
+        "n": 724,
+        "rate": 0.4958563535911602,
+        "random_hour_used": 2,
+        "p_vs_london_close": 0.36992510798528777
+      },
+      "slices": {
+        "dow_Monday": {
+          "n": 143,
+          "rate": 0.5524475524475524,
+          "p_vs_overall": 0.5485816462433024
+        },
+        "dow_Tuesday": {
+          "n": 143,
+          "rate": 0.5104895104895105,
+          "p_vs_overall": 0.892999274195824
+        },
+        "dow_Wednesday": {
+          "n": 145,
+          "rate": 0.4689655172413793,
+          "p_vs_overall": 0.29420976268341165
+        },
+        "dow_Thursday": {
+          "n": 146,
+          "rate": 0.5753424657534246,
+          "p_vs_overall": 0.2659863327079452
+        },
+        "dow_Friday": {
+          "n": 143,
+          "rate": 0.4965034965034965,
+          "p_vs_overall": 0.6597998383716757
+        },
+        "vol_low": {
+          "n": 170,
+          "rate": 0.5352941176470588,
+          "p_vs_overall": 0.7993551849742774
+        },
+        "vol_mid": {
+          "n": 310,
+          "rate": 0.5064516129032258,
+          "p_vs_overall": 0.7220800074838225
+        },
+        "vol_high": {
+          "n": 232,
+          "rate": 0.5258620689655172,
+          "p_vs_overall": 0.95391876229231
+        },
+        "pretrend_weak": {
+          "n": 240,
+          "rate": 0.5416666666666666,
+          "p_vs_overall": 0.6275771424879955
+        },
+        "pretrend_mid": {
+          "n": 240,
+          "rate": 0.5166666666666667,
+          "p_vs_overall": 0.9702481733051296
+        },
+        "pretrend_strong": {
+          "n": 240,
+          "rate": 0.5041666666666667,
+          "p_vs_overall": 0.7092338784673438
+        }
+      },
+      "yearly_stability": {
+        "2023": {
+          "n": 253,
+          "rate": 0.5612648221343873
+        },
+        "2024": {
+          "n": 259,
+          "rate": 0.528957528957529
+        },
+        "2025": {
+          "n": 208,
+          "rate": 0.46153846153846156
+        }
+      }
+    }
+  }
+}

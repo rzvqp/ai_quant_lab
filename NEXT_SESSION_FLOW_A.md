@@ -22,7 +22,7 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 ## Current state
 
 **Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
-audit; E006, E014, E008, and E011 Discovery complete; awaiting CEO authorization for E005.**
+audit; E006, E014, E008, E011, and E005 Discovery complete; awaiting CEO authorization for E027.**
 
 E015-SCALP is closed (EVIDENCE LIMIT REACHED, see below) and no further Replay investigation is
 authorized per the CEO's explicit priority-shift instruction; the laboratory returned to its primary
@@ -34,7 +34,7 @@ full audit and sensitivity analysis available in this session's transcript, summ
 Tier-1 edges (their V0 objects substantially overlap already-completed E010/E012/E015 findings), and
 ranked **E006 highest** on both raw knowledge value and reusable-infrastructure leverage.
 
-**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 → E027 → E016 → E013
+**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 (done) → E027 → E016 → E013
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass).
 
 **E006 — Asia Range Expansion Failure: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
@@ -81,7 +81,15 @@ rate, a generic isolated swing point, and a fully synthetic random point are all
 indistinguishable from each other and from a coin flip (~50-57%), at every fractal-k tested (3/5/8)
 and across every context slice examined. No V1 proposed. Full detail:
 `edge_research/E011_failed_3_drive_pattern.md`.
-**Awaiting CEO authorization before starting E005.**
+
+**E005 — London Close Reversal: Discovery complete (2026-07-21).** V0 NOT SUPPORTED — reversal rate
+(~52%, both M15 and H1) is statistically indistinguishable from the Asia→London session boundary or a
+random reference hour (all p>0.16); no heterogeneity found by day-of-week, volatility regime, or
+pre-close trend strength. A genuine daily data gap at UTC hour 21 (OANDA rollover/maintenance, ~896
+bars vs. ~2,900+ at every other hour) made the NY→late control boundary untestable — disclosed as a
+data limitation, not worked around. No V1 proposed. Full detail:
+`edge_research/E005_london_close_reversal.md`.
+**Awaiting CEO authorization before starting E027.**
 
 ---
 
