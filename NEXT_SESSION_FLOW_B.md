@@ -111,13 +111,19 @@ commit `1ea29c9`), and **Phase 1 (PASSTHROUGH scaffold) is now IMPLEMENTED and f
 into `harness.py` via a new `portfolio_architect_config` parameter (default `None`, no-op). 722 tests
 pass; zero diff in every frozen module and Flow A artifact. **Phase 1 is ACCEPTED, CLOSED** — CEO verdict, no further action on Phase 1.
 
-**Phase 2 (policy design) delivered, design-only**: `PORTFOLIO_ARCHITECT_PHASE2_DESIGN.md` — proposes a
-candidate first real policy (`STRATEGY_CONCENTRATION_REORDER`: portfolio-level re-ranking by rolling
-per-strategy allocation share, sourced from Shadow Evidence, expressed as a `rank` reassignment only —
-never exclusion/sizing/capacity) and resolves the 7 open decisions from `PORTFOLIO_ARCHITECT_DESIGN.md`
-§14 with explicit, individually-approvable recommendations. **No code was written; `ArchitectMode.
-PASSTHROUGH` remains the only mode that exists. Phase 2 implementation has NOT been authorized and has
-not begun.**
+**Phase 2 (policy design) ACCEPTED, design-only**: `PORTFOLIO_ARCHITECT_PHASE2_DESIGN.md` (commit
+`c0fb366`) proposed `STRATEGY_CONCENTRATION_REORDER` and resolved the 7 open decisions from
+`PORTFOLIO_ARCHITECT_DESIGN.md` §14 with explicit recommendations.
+
+**Phase 2A (calibration) delivered — verdict C. NOT CALIBRATABLE** for the predeclared grid tested:
+`PORTFOLIO_ARCHITECT_PHASE2A_CALIBRATION_REPORT.md`. An offline, zero-production-diff instrumented
+43-strategy/85-day simulation found only 19 real competitive Risk-Manager-ALLOW events total across the
+entire run — far too sparse for the predeclared `MIN_EVIDENCE=25` floor to ever be crossed; every
+concentration-state computation returned `INSUFFICIENT_EVIDENCE` for the full run. Full evidence,
+negative controls, and unresolved limitations (longer window / alternative denominator, both untested)
+are in the report. **No code was written; `ArchitectMode.PASSTHROUGH` remains the only mode that exists.
+Phase 2 implementation has NOT been authorized and has not begun; the calibration itself does not
+currently support it.**
 
 ## Resume instructions
 

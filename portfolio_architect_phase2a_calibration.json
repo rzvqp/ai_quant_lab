@@ -1,0 +1,442 @@
+{
+  "run_id": "PA-PHASE2A-CALIBRATION",
+  "window": {
+    "start": 1672617600,
+    "end": 1680000000
+  },
+  "bars_processed": 5752,
+  "n_score_events": 238736,
+  "n_decision_events": 238736,
+  "distribution_analysis": {
+    "per_strategy": {
+      "S1": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 10,
+        "sparse_history": true
+      },
+      "S10": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 1,
+        "filled_count": 1,
+        "shadow_isolated_allow_count": 12,
+        "sparse_history": true
+      },
+      "S11": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S12": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S13": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 3,
+        "sparse_history": true
+      },
+      "S14": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S15": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S16": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 1,
+        "sparse_history": true
+      },
+      "S17": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S18": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S19": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S2": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 1,
+        "sparse_history": true
+      },
+      "S20": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S21": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S22": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 2,
+        "sparse_history": true
+      },
+      "S23": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S24": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S25": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 3,
+        "sparse_history": true
+      },
+      "S26": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 5,
+        "sparse_history": true
+      },
+      "S27": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S28": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 4,
+        "sparse_history": true
+      },
+      "S29": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S3": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S30": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 2,
+        "sparse_history": true
+      },
+      "S31": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S38": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S39": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 7,
+        "filled_count": 7,
+        "shadow_isolated_allow_count": 11,
+        "sparse_history": true
+      },
+      "S4": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 2,
+        "sparse_history": true
+      },
+      "S40": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 14,
+        "sparse_history": true
+      },
+      "S41": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 2,
+        "sparse_history": true
+      },
+      "S42": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S43": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 1,
+        "sparse_history": true
+      },
+      "S44": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 6,
+        "sparse_history": true
+      },
+      "S45": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 1,
+        "sparse_history": true
+      },
+      "S46": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 11,
+        "filled_count": 11,
+        "shadow_isolated_allow_count": 4,
+        "sparse_history": true
+      },
+      "S48": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 1,
+        "sparse_history": true
+      },
+      "S5": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 1,
+        "sparse_history": true
+      },
+      "S50": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S51": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S6": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 2,
+        "sparse_history": true
+      },
+      "S7": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S8": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      },
+      "S9": {
+        "opportunity_count": 5552,
+        "eligible_count": 5552,
+        "risk_manager_allow_count": 0,
+        "filled_count": 0,
+        "shadow_isolated_allow_count": 0,
+        "sparse_history": true
+      }
+    },
+    "n_strategies": 43
+  },
+  "concentration_analysis": {
+    "n_global_allows": 19,
+    "by_window": {
+      "10": {
+        "max_share_observed": null,
+        "mean_share": null,
+        "top_strategy_turnover_rate": 0.058823529411764705,
+        "state_distribution": {
+          "INSUFFICIENT_EVIDENCE": 19
+        },
+        "n_events_with_evidence": 0
+      },
+      "25": {
+        "max_share_observed": null,
+        "mean_share": null,
+        "top_strategy_turnover_rate": 0.058823529411764705,
+        "state_distribution": {
+          "INSUFFICIENT_EVIDENCE": 19
+        },
+        "n_events_with_evidence": 0
+      },
+      "50": {
+        "max_share_observed": null,
+        "mean_share": null,
+        "top_strategy_turnover_rate": 0.058823529411764705,
+        "state_distribution": {
+          "INSUFFICIENT_EVIDENCE": 19
+        },
+        "n_events_with_evidence": 0
+      },
+      "100": {
+        "max_share_observed": null,
+        "mean_share": null,
+        "top_strategy_turnover_rate": 0.058823529411764705,
+        "state_distribution": {
+          "INSUFFICIENT_EVIDENCE": 19
+        },
+        "n_events_with_evidence": 0
+      }
+    },
+    "calendar_half_split_top_share": {
+      "first_half": 0.5555555555555556,
+      "second_half": 0.6
+    }
+  },
+  "counterfactual_reorder_analysis": {
+    "window_used": 25,
+    "n_multi_candidate_bars": 5552,
+    "n_bars_order_moved": 0,
+    "n_bars_top_candidate_changed": 0,
+    "n_bars_replayed_through_risk_manager": 0,
+    "n_bars_where_actual_winner_would_change": 0,
+    "total_actual_allow_count": 19,
+    "replay_sample": []
+  },
+  "stability_analysis": {
+    "max_share_by_window": {
+      "10": null,
+      "25": null,
+      "50": null,
+      "100": null
+    },
+    "boundary_sensitivity_24_25_26": {
+      "24": null,
+      "25": null,
+      "26": null
+    },
+    "deterministic_recomputation_identical": true
+  },
+  "negative_controls": {
+    "control_1_random_permutation": {
+      "real_mean_share": null,
+      "permuted_mean_share": null,
+      "permutation_reduces_apparent_concentration": null
+    },
+    "control_2_equal_shares_reproduce_original_order": true,
+    "control_3_missing_evidence_reproduces_original_order": true,
+    "control_4_single_opportunity_batches_checked": 0,
+    "control_4_single_opportunity_unchanged": true,
+    "control_5_health_ineligible_strategies_reappear": "NOT_APPLICABLE_BASELINE_RUN_NO_HEALTH_FILTER_ACTIVE",
+    "control_6_see_counterfactual_reorder_analysis": true,
+    "control_7_only_rank_field_changes": "GUARANTEED_BY_DESIGN_DATACLASSES_REPLACE_RANK_ONLY"
+  }
+}
