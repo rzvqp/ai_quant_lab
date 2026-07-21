@@ -134,6 +134,17 @@ architectural value, not profitability. **Research only — none measured agains
 proposed for implementation. Awaiting CEO direction on which (if any) to carry into a fresh, freshly-
 predeclared evidence pass.**
 
+**Tie-break evidence generation delivered** (Candidate 1 only, evidence-only per CEO authorization):
+`PORTFOLIO_ARCHITECT_TIEBREAK_EVIDENCE_REPORT.md` — 12-month, 43-strategy instrumented run (CEO-approved
+non-holdout window). Exact score ties are frequent (38.7% of multi-candidate bars), alphabetical
+`strategy_id` confirmed as the effective tie-break in 100% of cases, and a measurable systematic bias
+favors early-alphabet strategies (mean winner ordinal 20.37 vs. participant-pool mean 27.22). Round-robin
+counterfactual replay: changes the real ALLOW winner in 2/3,065 tie-bars; separately, in 6/3,065 bars a
+*bystander* candidate's own denial-reason TYPE shifts (a genuine, disclosed second-order effect of Risk
+Manager's own sequential evaluation, not a flaw in round-robin itself) — this exception must be resolved
+or explicitly accepted before any implementation. **Evidence only — no code, no new `ArchitectMode`,
+implementation NOT authorized.**
+
 ## Resume instructions
 
 1. Re-verify git state live: `git branch --show-current`, `git log -1`, `git status --porcelain`.

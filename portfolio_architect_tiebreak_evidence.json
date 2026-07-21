@@ -1,0 +1,995 @@
+{
+  "run_id": "PA-TIEBREAK-EVIDENCE",
+  "window": {
+    "start": 1729674000,
+    "end": 1761210000
+  },
+  "bars_processed": 23839,
+  "n_strategies": 43,
+  "tie_frequency_analysis": {
+    "n_bars_with_multi_actionable_candidates": 7916,
+    "n_bars_with_a_genuine_tie": 3065,
+    "tie_rate_among_multi_candidate_bars": 0.38719050025265284,
+    "n_tied_groups_total": 3217,
+    "tie_group_size_distribution": {
+      "2": 2751,
+      "3": 399,
+      "4": 59,
+      "5": 7,
+      "6": 1
+    },
+    "strategies_ever_in_a_tie": [
+      "S10",
+      "S12",
+      "S13",
+      "S14",
+      "S18",
+      "S2",
+      "S21",
+      "S22",
+      "S24",
+      "S26",
+      "S28",
+      "S29",
+      "S39",
+      "S4",
+      "S40",
+      "S41",
+      "S44",
+      "S45",
+      "S46",
+      "S48",
+      "S5",
+      "S50",
+      "S51",
+      "S6",
+      "S8"
+    ],
+    "tie_participation_count_by_strategy": {
+      "S24": 43,
+      "S28": 84,
+      "S10": 94,
+      "S4": 374,
+      "S48": 374,
+      "S26": 985,
+      "S40": 1158,
+      "S51": 777,
+      "S50": 694,
+      "S41": 333,
+      "S12": 570,
+      "S44": 434,
+      "S5": 381,
+      "S6": 380,
+      "S13": 76,
+      "S45": 55,
+      "S18": 23,
+      "S22": 55,
+      "S8": 5,
+      "S39": 48,
+      "S2": 13,
+      "S29": 2,
+      "S46": 7,
+      "S21": 6,
+      "S14": 5
+    },
+    "alphabetical_confirmed_as_effective_tiebreak": 3217,
+    "alphabetical_contradicted": 0
+  },
+  "systematic_bias_analysis": {
+    "n_ties": 3217,
+    "mean_winner_ordinal": 20.368666459434255,
+    "mean_participant_ordinal_if_random": 27.21817660550459,
+    "winner_ordinal_below_participant_mean": true,
+    "interpretation": "winner ordinal systematically LOWER than the participant pool's own mean ordinal indicates early-alphabet strategies win ties more often than chance would predict"
+  },
+  "near_tie_negative_control": {
+    "n_bars_with_near_tie_but_not_exact_tie": 3277,
+    "control_purpose": "confirms the tie analysis above is restricted to EXACT matches only, not near-misses -- a near-tie (score differs by 1) must never be counted as a genuine tie by _tie_key()"
+  },
+  "round_robin_replay": {
+    "n_tie_bars_replayed": 3065,
+    "n_bars_where_round_robin_changes_the_winner": 2,
+    "n_bars_with_denial_reason_type_drift": 6,
+    "interesting_cases": [
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1733755500,
+        "tied_groups": [
+          [
+            "S39",
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": "S39",
+        "round_robin_winner": "S39",
+        "winner_changed": false,
+        "denial_reason_types_unchanged": false,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1738247400,
+        "tied_groups": [
+          [
+            "S39",
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": "S39",
+        "round_robin_winner": "S39",
+        "winner_changed": false,
+        "denial_reason_types_unchanged": false,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1738594800,
+        "tied_groups": [
+          [
+            "S39",
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": "S39",
+        "round_robin_winner": "S39",
+        "winner_changed": false,
+        "denial_reason_types_unchanged": false,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1743977700,
+        "tied_groups": [
+          [
+            "S26",
+            "S40"
+          ]
+        ],
+        "actual_winner": "S26",
+        "round_robin_winner": "S40",
+        "winner_changed": true,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1744299900,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": "S5",
+        "round_robin_winner": "S6",
+        "winner_changed": true,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1744359300,
+        "tied_groups": [
+          [
+            "S12",
+            "S44"
+          ]
+        ],
+        "actual_winner": "S44",
+        "round_robin_winner": "S44",
+        "winner_changed": false,
+        "denial_reason_types_unchanged": false,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1756167300,
+        "tied_groups": [
+          [
+            "S40",
+            "S44"
+          ],
+          [
+            "S12",
+            "S50"
+          ],
+          [
+            "S10",
+            "S28"
+          ]
+        ],
+        "actual_winner": "S40",
+        "round_robin_winner": "S40",
+        "winner_changed": false,
+        "denial_reason_types_unchanged": false,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "INVALID_INPUT",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "INVALID_INPUT",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1758304800,
+        "tied_groups": [
+          [
+            "S39",
+            "S5"
+          ]
+        ],
+        "actual_winner": "S39",
+        "round_robin_winner": "S39",
+        "winner_changed": false,
+        "denial_reason_types_unchanged": false,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ]
+      }
+    ],
+    "sample": [
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729690200,
+        "tied_groups": [
+          [
+            "S24",
+            "S28"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "NOT_ACTIONABLE",
+          "SIZE_BELOW_MIN"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729692000,
+        "tied_groups": [
+          [
+            "S10",
+            "S28"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729732500,
+        "tied_groups": [
+          [
+            "S4",
+            "S48"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729746900,
+        "tied_groups": [
+          [
+            "S26",
+            "S40"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729755000,
+        "tied_groups": [
+          [
+            "S26",
+            "S40"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729770300,
+        "tied_groups": [
+          [
+            "S40",
+            "S51"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729773000,
+        "tied_groups": [
+          [
+            "S50",
+            "S51"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729773900,
+        "tied_groups": [
+          [
+            "S41",
+            "S50"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729777500,
+        "tied_groups": [
+          [
+            "S40",
+            "S50"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729779300,
+        "tied_groups": [
+          [
+            "S10",
+            "S28"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729781100,
+        "tied_groups": [
+          [
+            "S26",
+            "S40"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729816200,
+        "tied_groups": [
+          [
+            "S4",
+            "S48"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729820700,
+        "tied_groups": [
+          [
+            "S10",
+            "S28"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729821600,
+        "tied_groups": [
+          [
+            "S4",
+            "S48"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729824300,
+        "tied_groups": [
+          [
+            "S26",
+            "S51"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729826100,
+        "tied_groups": [
+          [
+            "S4",
+            "S48"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "INVALID_INPUT",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "INVALID_INPUT",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729830600,
+        "tied_groups": [
+          [
+            "S40",
+            "S51"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729839600,
+        "tied_groups": [
+          [
+            "S12",
+            "S44"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729848600,
+        "tied_groups": [
+          [
+            "S40",
+            "S50"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729863000,
+        "tied_groups": [
+          [
+            "S10",
+            "S24"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729865700,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729866600,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729867500,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729868400,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729869300,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729870200,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729871100,
+        "tied_groups": [
+          [
+            "S5",
+            "S6"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729878300,
+        "tied_groups": [
+          [
+            "S13",
+            "S45"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1729885500,
+        "tied_groups": [
+          [
+            "S12",
+            "S44",
+            "S51"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      },
+      {
+        "symbol": "XAUUSD",
+        "as_of": 1730067300,
+        "tied_groups": [
+          [
+            "S40",
+            "S44"
+          ]
+        ],
+        "actual_winner": null,
+        "round_robin_winner": null,
+        "winner_changed": false,
+        "denial_reason_types_unchanged": true,
+        "actual_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ],
+        "round_robin_denied_types": [
+          "BELOW_FLOOR",
+          "LIMIT_MAX_PER_SYMBOL",
+          "NOT_ACTIONABLE"
+        ]
+      }
+    ]
+  }
+}
