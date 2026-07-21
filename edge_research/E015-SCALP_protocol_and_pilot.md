@@ -376,3 +376,102 @@ point fails identically on M1, 4H, and D1, regardless of how recent the date is,
 TradingView connection. This further supports (does not merely repeat) the Phase 0A conclusion: a
 plan/subscription-level restriction on Bar Replay itself, not a timeframe- or code-specific defect.
 The proposed HTF-then-switch-to-M1 route does not exist as a viable workaround on this account.
+
+---
+
+## Phase 0 — Manual-Navigation Retry (2026-07-21/22) — CORRECTED, retraction of an earlier
+## mechanism claim
+
+**Authorized scope**: same as above — frozen detector, event list, seed=42, selected event
+IDs/timestamps/strata, confirmation/entry/stop/TP=2R/timeout/cost/ambiguity rules, and outcome
+schema all unchanged. No new edge, no formal validation, no external data acquisition. E013 not
+resumed.
+
+### Step 1 — manual chart navigation (CEO-directed, distinct from the `replay_start(date)` API path)
+
+Tested normal (non-replay) chart scrolling, driven by real mouse-wheel input, with no date-seek API
+call anywhere in the path:
+
+- **4H historical scroll depth**: reached **2023-01-20** (past the oldest frozen pilot event,
+  2023-03-22) in 16 scroll rounds, and reached each of the 5 frozen event dates directly in 5–16
+  rounds each. **This refutes the Phase 0A "plan/subscription-level restriction" theory** — the
+  underlying 4H history is present and reachable back through all 5 pilot dates; the earlier
+  `replay_start(date)` failures were specific to that API's own seek path, not to data availability.
+- Manually clicking a visible historical candle (real trusted CDP `Input.dispatchMouseEvent`
+  sequences: `mouseMoved` → `mousePressed` → `mouseReleased`, not JS-synthetic events) **appeared to
+  start Bar Replay successfully once**, in an earlier diagnostic session, on a freshly-duplicated
+  chart tab, including a clean 4H→M1 timeframe switch that preserved the historical position. That
+  single result was reported as **"Verdict A — MANUAL START REMEDIATED"** and accepted as such.
+
+### Step 2 — this retry attempted to execute the frozen 5-event pilot using that mechanism
+
+**Result: the click-based mechanism could not be reproduced.** Across a rigorous re-test —
+
+- 2 different chart tab sessions, one a fully page-reloaded existing tab, one a genuinely new tab
+  opened by the CEO directly through the TradingView UI (ruling out any tab-specific staleness);
+- both confirmed rendering real historical candles correctly, with no blocking dialog/modal (a
+  leftover "Continue your last replay?" modal was found and dismissed as a separate, real bug in the
+  test harness — not the cause of this result, since failures continued after fixing it);
+- the Bar Replay toolbar confirmed genuinely active (`[data-name="replay-bottom-toolbar"]` present)
+  before every click attempt;
+- click coordinates verified against the chart's own actual on-screen time window
+  (`getVisibleBarsRange()`), not an internal loaded-buffer index (an unrelated harness bug, also
+  found and fixed, that had been placing earlier clicks off the visible candle entirely);
+- 7 different vertical (price-level) click positions tested across the full canvas height, one
+  right-click tested (opened TradingView's ordinary context menu — no "start replay here" option
+  exists in it), delays between activation and click varied from 500ms to 2000ms —
+
+**`is_replay_started` remained `false` after every single attempt** (10+ clean, independently
+verified attempts total this session). `document.elementFromPoint()` at the click coordinates
+confirmed the click was landing on the plain chart canvas (`cursor: crosshair`, no intercepting
+overlay) every time.
+
+### Retraction
+
+**The earlier "Verdict A — MANUAL START REMEDIATED" finding is retracted as not reproducible.**
+Given it could not be reproduced under materially more rigorous, controlled conditions than the
+original observation, the most likely explanation is that the original single success was a
+measurement artifact (e.g. a stale/in-flight state from adjacent manual testing in that session),
+not a genuinely working click-to-select-replay-start-candle mechanism. This is reported plainly
+rather than allowed to stand uncorrected — the CEO's own governance instruction ("a false success
+is worse than a declared failure") applies here to my own prior report, not only to the tooling.
+
+### Outcome for the 5 frozen pilot events
+
+**Evidence (screenshots)**:
+`edge_research/e015_scalp_evidence/phase0_retry_2026-07-21_scroll_reached_2025-05-28.png` (normal
+4H scroll landed correctly on the target event date, real candles rendering),
+`edge_research/e015_scalp_evidence/phase0_retry_2026-07-21_replay_toolbar_active_no_start.png`
+(Bar Replay toolbar genuinely active, candles rendering, no blocking dialog, immediately before a
+click attempt), `edge_research/e015_scalp_evidence/phase0_retry_2026-07-21_rightclick_context_menu_no_replay_option.png`
+(TradingView's own right-click context menu on the chart canvas — no replay-start option present).
+
+**No event's recorded outcome changes.** All 5 (`E015SCALP-PILOT-01` through `-05`) remain exactly
+as classified in Phase 0/0A (`e015_scalp_pilot_events.json`, unedited). This retry did not reach the
+point of selecting a replay start candle for any event, so no WIN/LOSS/TIMEOUT/INVALID/AMBIGUOUS/
+DATA_UNAVAILABLE determination could be made for any of them today. Every attempt this session is
+an operational tooling log (`TOOLING_RETRY`), not a research outcome, per the CEO's own explicit
+instruction, and is not recorded as a pilot event outcome.
+
+### Feasibility verdict (this retry) — exactly one, per the CEO's own taxonomy
+
+**C — NOT FEASIBLE.** The frozen pilot could not be executed today: the manual click-based
+replay-start mechanism this verdict depends on could not be made to work reliably, or at all, under
+rigorous re-testing, despite normal chart navigation and historical data reachability both being
+independently confirmed sound. Replay *selection* — not seeking, not stepping, not the
+timeframe-preservation mechanism — is the specific unresolved blocker.
+
+### What would need to change before re-attempting
+
+1. A human operator manually performing the exact click sequence through the real TradingView UI
+   (mouse and keyboard, not CDP-dispatched events) to establish, independent of any automation
+   question, whether a left-click on a visible candle in Bar-Replay-selection mode is a genuine
+   TradingView feature on this account at all — this retry's evidence (no context-menu option, no
+   success at any of 7 tested vertical positions) leaves this genuinely open again.
+2. If confirmed to work manually but not via CDP-dispatched input, the automation gap would need a
+   different input-injection strategy than `Input.dispatchMouseEvent` (untested in this retry).
+3. Tooling hardening deferred pending (1) and (2) — no further harness changes are proposed until
+   the underlying interaction is confirmed to exist at all.
+
+**E015-SCALP remains at Phase 0, incomplete.** E015's own structural result
+(`E015_order_block_remitigation.md`) is unaffected.

@@ -9,22 +9,26 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ## Current state
 
-**Status: PAUSED (2026-07-22) — E015-SCALP Phase 0A (TradingView historical-seek tooling
-remediation) complete, verdict C — TOOLING STILL BLOCKED; awaiting CEO decision. Do not begin E013.
-Do not resume E015-SCALP formal validation.**
+**Status: PAUSED (2026-07-21) — E015-SCALP Phase 0 manual-navigation retry complete, verdict C —
+NOT FEASIBLE (retry). A previously-reported "Verdict A — manual replay start works" finding has
+been RETRACTED as not reproducible under rigorous re-testing (10+ clean attempts across 2 healthy
+chart tabs, no successes). Normal 4H chart scrolling and historical data reachability back through
+2023 ARE confirmed sound; the specific blocker is replay-start candle *selection* via click, which
+could not be made to work. Full detail: `edge_research/E015-SCALP_protocol_and_pilot.md`
+§"Phase 0 — Manual-Navigation Retry (2026-07-21/22) — CORRECTED, retraction of an earlier mechanism
+claim". Awaiting CEO decision. Do not begin E013. Do not resume E015-SCALP formal validation.**
 
 **Phase 0A update (supersedes the Phase 0 "NOT FEASIBLE" framing below with a more precise
 diagnosis)**: root-caused and fixed a real tooling defect (a "success" report that silently landed
 on the wrong date) in the separate `tradingview-mcp` repo's `replay_start` — commit `c839e91`, 45/45
 tests passing, live-verified. The fix makes every failure explicit and correctly classified
 (`DATA_UNAVAILABLE`/`MODAL_BLOCKED`/`TIMESTAMP_MISMATCH`/`TOOLING_FAILURE`) instead of silently
-succeeding on a substituted date — a genuine improvement. **It did not unlock historical replay**:
-every date tested (15 minutes back through ~2-3 years back, two symbols, before/after a page reload,
-and TradingView's own "first available date" call) is rejected identically with a native "Data point
-unavailable" toast — now assessed as a likely TradingView plan/subscription limitation on intraday
-Bar Replay depth, not a remaining client-side bug. Full root-cause detail, the live test matrix, and
-the verdict: `edge_research/E015-SCALP_protocol_and_pilot.md` §"Phase 0A". No E015-SCALP performance
-verdict issued; the frozen pilot was not retried (gated on verdict A/B only, not reached).
+succeeding on a substituted date — a genuine improvement. **It did not unlock historical replay** via
+that API path: every date tested via `replay_start(date=...)` is rejected identically with a native
+"Data point unavailable" toast. The 2026-07-21 manual-navigation retry (above) subsequently disproved
+the broader "plan/subscription-level restriction" theory this had been assessed as — normal chart
+scrolling reaches all 5 frozen pilot dates without issue — but did not find a working alternative to
+`replay_start(date=...)` for actually selecting a replay start point.
 
 **What changed**: the CEO redirected the research objective from multi-day structural-behavior
 Discovery to testing whether each edge produces an IMMEDIATELY tradable scalp (a mechanically defined
