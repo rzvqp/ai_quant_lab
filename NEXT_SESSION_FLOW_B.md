@@ -103,11 +103,13 @@ Implementation is now complete and validated per that authorization.
 
 ## Next Flow B step
 
-**Strategy Health Integration (roadmap step 1/6) is implemented and validated — awaiting CEO verdict on
-whether it may be declared COMPLETE.** `health_eligible_ids=None` (the default) is proven byte-identical
-to pre-existing competitive execution across the full validation suite, including the 43-production-
-strategy run. **Portfolio Architect (roadmap step 2) must not begin without its own separate, explicit
-CEO authorization** — the implementation being validated is not itself that authorization.
+**Strategy Health Integration (roadmap step 1/6) is ACCEPTED COMPLETE** (CEO verdict, commits `dc79cb5`/
+`eb6f9eb`). **Portfolio Architect (roadmap step 2/6) is at the DESIGN-ONLY stage** — CEO authorized design
+work only (reconstruct current architecture, answer 12 mandatory design questions, produce a 14-item
+report; no code, no implementation). Deliverable: `PORTFOLIO_ARCHITECT_DESIGN.md` — recommends a minimal
+PASSTHROUGH-only scaffold as the eventual first implementation step, but implementation itself has **not
+begun and awaits its own separate CEO authorization**. Several policy choices (arbitration mechanism,
+correlation source, thresholds) are left as open decisions in that document's §14, not yet resolved.
 
 ## Resume instructions
 
@@ -115,8 +117,11 @@ CEO authorization** — the implementation being validated is not itself that au
 2. Read, in this order:
    - **This document** — current state, summarized above.
    - **`RECONSTRUCTION_PROMPT.md`** — if this is a genuinely new conversation, start there.
-   - **`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`** (FINAL, §§1–15) — the current, immediate
-     frontier. Read this FIRST if continuing the current roadmap step.
+   - **`PORTFOLIO_ARCHITECT_DESIGN.md`** — the current, immediate frontier (roadmap step 2/6,
+     DESIGN-ONLY, awaiting CEO review of its open decisions before any implementation). Read this FIRST
+     if continuing the current roadmap step.
+   - **`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`** (FINAL, §§1–15) — roadmap step 1/6, ACCEPTED
+     COMPLETE. Background for how Strategy Health's eligibility output feeds into Portfolio Architect.
    - **`PHASE_7_CHECKPOINT_15_REPORT.md`** → **`PHASE_7_CHECKPOINT_14_REPORT.md`** — Decision
      Intelligence v2 (additive, wraps v1 unmodified, attaches Context Memory evidence) and the
      v1-vs-v2 falsification study (verdict: `V1_REMAINS_ACTIVE`).
