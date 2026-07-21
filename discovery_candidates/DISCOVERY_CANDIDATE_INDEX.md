@@ -17,4 +17,4 @@ whichever division currently owns the candidate.
 
 | ID | Title | Origin | Date Frozen | Current Version | Lifecycle Status | Folder |
 |---|---|---|---|---|---|---|
-| _(none yet)_ | | | | | | |
+| DC-0001 | Isolated Single-Bar Velocity Outlier Followed by Gradual Multi-Bar Continuation | discretionary-observation, Discovery Cycle #3 | 2026-07-21 | v1 | FROZEN | `DC-0001_isolated_velocity_outlier_then_gradual_continuation/` |

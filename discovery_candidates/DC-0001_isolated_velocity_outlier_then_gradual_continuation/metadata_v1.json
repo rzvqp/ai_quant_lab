@@ -1,0 +1,31 @@
+{
+  "candidate_id": "DC-0001",
+  "title": "Isolated Single-Bar Velocity Outlier Followed by Gradual Multi-Bar Continuation",
+  "origin_mode": "discretionary-observation, Discovery Cycle #3",
+  "date_first_observed": "2026-07-21",
+  "date_frozen": "2026-07-21",
+  "version": "v1",
+  "instrument": "XAUUSD (OANDA)",
+  "timeframes_examined": ["H1", "H4", "M15"],
+  "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+  "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+  "source_artifacts": [
+    "H1 2023-02-06/2023-02-27",
+    "H1 2023-06-05/2023-06-26",
+    "H1 2023-12-01/2023-12-22",
+    "H1 2024-06-03/2024-06-24",
+    "H1 2024-12-02/2024-12-23",
+    "H1 2025-05-05/2025-05-26",
+    "H4 2023-03-01/2023-06-01",
+    "H4 2024-09-01/2024-12-01",
+    "M15 2023-12-03T18:00Z/2023-12-04T06:00Z",
+    "M15 2023-06-08T15:00Z/2023-06-09T03:00Z",
+    "M15 2024-02-13T13:00Z/2024-02-14T01:00Z",
+    "M15 2024-08-04T19:00Z/2024-08-05T13:00Z",
+    "M15 2024-12-18T18:00Z/2024-12-19T06:00Z"
+  ],
+  "related_ids": [],
+  "content_hash": "sha256:1f1b3d399f2e9613b18d1d4ecaede8d7e3b0dec085ab709482b4d2c3f40cf75c",
+  "content_hash_method": "sha256 of candidate_v1.md computed with the content_hash field and the Handoff Statement hash value both holding the literal placeholder 'PENDING'; recompute after restoring those two spots to 'PENDING' to verify.",
+  "lifecycle_status_note": "Not recorded here by design. Current lifecycle status lives only in DISCOVERY_CANDIDATE_INDEX.md."
+}
