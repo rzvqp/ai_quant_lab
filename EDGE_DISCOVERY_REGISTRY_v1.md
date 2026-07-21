@@ -523,7 +523,12 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Instruments required**: XAUUSD
 - **Observable variables**: Distance from midnight open, time-to-revisit, reaction magnitude, session
 - **Measured outcome**: Revisit rate and reaction magnitude relative to the midnight open level
-- **Status**: UNSTUDIED
+- **Status**: DISCOVERY_COMPLETE — V0 NOT SUPPORTED (2026-07-21). A random-matched-distance control
+  (reused directly from E017's own construction) reaches its synthetic target MORE reliably than price
+  reaches the real midnight-open level, on all three timeframes (M15 p=0.027, H1 p=5.3e-17, H4
+  p=4.5e-56) — the same "opposite of a magnet" signature E017 found for swing highs/lows, now
+  generalized to a second, time-anchored level-type. No V1 proposed. Full detail:
+  `edge_research/E027_midnight_open_anchor.md`.
 - **Version**: V0
 
 ### E028 — Fibonacci OTE

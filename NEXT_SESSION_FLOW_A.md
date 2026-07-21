@@ -36,7 +36,8 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 ## Current state
 
 **Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
-audit; E006, E014, E008, E011, and E005 Discovery complete; awaiting CEO authorization for E027.**
+audit; E006, E014, E008, E011, E005, and E027 Discovery complete; awaiting CEO authorization for
+E016/E013 (both gated on a definitional-overlap check).**
 
 E015-SCALP is closed (EVIDENCE LIMIT REACHED, see below) and no further Replay investigation is
 authorized per the CEO's explicit priority-shift instruction; the laboratory returned to its primary
@@ -48,7 +49,7 @@ full audit and sensitivity analysis available in this session's transcript, summ
 Tier-1 edges (their V0 objects substantially overlap already-completed E010/E012/E015 findings), and
 ranked **E006 highest** on both raw knowledge value and reusable-infrastructure leverage.
 
-**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 (done) → E027 → E016 → E013
+**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 (done) → E027 (done) → E016 → E013
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass).
 
 **E006 — Asia Range Expansion Failure: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
@@ -103,7 +104,16 @@ pre-close trend strength. A genuine daily data gap at UTC hour 21 (OANDA rollove
 bars vs. ~2,900+ at every other hour) made the NY→late control boundary untestable — disclosed as a
 data limitation, not worked around. No V1 proposed. Full detail:
 `edge_research/E005_london_close_reversal.md`.
-**Awaiting CEO authorization before starting E027.**
+
+**E027 — Midnight Open Anchor: Discovery complete (2026-07-21).** V0 NOT SUPPORTED — deliberately run
+as a second, methodologically-continuous test of the "reference level as magnet" mechanism class E017
+already tested (reusing E017's own random-matched-distance control construction directly). A
+random-matched-distance control reaches its synthetic target MORE reliably than price reaches the real
+midnight-open level, on all three timeframes (M15 p=0.027, H1 p=5.3e-17, H4 p=4.5e-56) — the same
+"opposite of a magnet" signature E017 found for swing highs/lows, now generalized to a second,
+time-anchored level-type. No V1 proposed. Full detail: `edge_research/E027_midnight_open_anchor.md`.
+**Awaiting CEO authorization before starting E016/E013** (both gated on the cheap definitional-overlap
+check against E015's/E010's existing detectors, per the priority audit).
 
 ---
 

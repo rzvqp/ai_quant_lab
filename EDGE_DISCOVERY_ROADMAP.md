@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E005 Discovery complete, awaiting authorization for E027
+## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E027 Discovery complete, awaiting authorization for E016/E013 (definitional-overlap check)
 
 E015-SCALP Phase 0/0A/root-cause investigation is CLOSED at EVIDENCE LIMIT REACHED (no feasibility
 verdict; see `edge_research/E015-SCALP_protocol_and_pilot.md`). Per explicit CEO priority-shift
@@ -58,7 +58,16 @@ pre-close trend strength. A genuine daily data gap at UTC hour 21 (OANDA rollove
 ~896 bars vs. ~2,900+ at every other hour) made the NY→late control boundary untestable — disclosed as
 a data limitation, not worked around. No V1 proposed. Full detail:
 `edge_research/E005_london_close_reversal.md`.
-**Awaiting CEO authorization before starting E027.**
+
+**E027 — Midnight Open Anchor: Discovery complete (2026-07-21).** V0 NOT SUPPORTED — deliberately run
+as a second, methodologically-continuous test of the "reference level as magnet" mechanism class
+E017 already tested (reusing E017's own random-matched-distance control construction directly). A
+random-matched-distance control reaches its synthetic target MORE reliably than price reaches the real
+midnight-open level, on all three timeframes (M15 p=0.027, H1 p=5.3e-17, H4 p=4.5e-56) — the same
+"opposite of a magnet" signature E017 found for swing highs/lows, now generalized to a second,
+time-anchored level-type. No V1 proposed. Full detail: `edge_research/E027_midnight_open_anchor.md`.
+**Awaiting CEO authorization before starting E016/E013** (both gated on the cheap definitional-overlap
+check against E015's/E010's existing detectors, per the priority audit).
 
 <details><summary>Superseded status entries (kept for the record, not current)</summary>
 
@@ -245,7 +254,7 @@ a CEO-approved, pre-committed scoring framework (Novelty, Expected Information V
 Execution Cost, Independence — see `NEXT_SESSION_FLOW_A.md` for the full audit) found E013 and E016
 carry the highest redundancy risk in this remaining set (their V0 objects substantially overlap
 already-completed E010/E012/E015 findings) rather than being natural next steps. **Authorized order for
-the remaining items is now: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 (done) → E027 → E016 → E013**
+the remaining items is now: E006 (done) → E014 (done) → E008 (done) → E011 (done) → E005 (done) → E027 (done) → E016 → E013**
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass). The numbered
 list above is kept as-is for the historical record; this note is the current authority on sequencing.
 
