@@ -19,6 +19,20 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 
 ---
 
+## Data quality notes (dataset/infrastructure limitations, not market findings)
+
+- **UTC 21:00 bar-coverage gap** (found during E005, 2026-07-21): `OANDA_XAUUSD_M15` has a material,
+  recurring daily bar-count drop at UTC hour 21 (~896 bars vs. ~2,900+ at every other hour, across the
+  full ~2.85-year clean dataset) — consistent with a daily OANDA rollover/maintenance window. This
+  made the NY→late (21:00) session-boundary control **formally untestable** in E005 (0 qualifying
+  events after the standard completeness filter). Per explicit CEO instruction: **this gap is not
+  imputed, and is not reinterpreted as market behavior** (e.g., not treated as evidence of "quiet
+  markets at 21:00 UTC") — it is recorded here purely as a dataset/infrastructure limitation for
+  future data-quality governance. Any future edge whose window construction spans UTC hour 21 should
+  check for this same coverage gap before drawing a conclusion from it.
+
+---
+
 ## Current state
 
 **Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
