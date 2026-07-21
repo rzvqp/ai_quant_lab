@@ -1001,8 +1001,8 @@ instruction: "pregătește versiunea finală a designului"):
 Reconciled: the document's own earlier sections (§4.2 Option D, §5, §6, §7) were corrected to match the
 refined PROBATION-is-Shadow-only policy, so no internal contradiction remains between the early
 recommendation and the later clarifications. **Status: ACCEPTED WITH CONDITIONS, clarifications
-delivered, implementation still not started** — the CEO's own next step is to review the completed
-architecture before implementation begins.
+delivered — CEO subsequently reviewed the completed architecture and authorized implementation; see
+§8.24 for the implementation record.**
 
 ### 8.23 Flow A Data Governance Incident — TERMINAL HOLDOUT BREACHED (identified/recorded 2026-07-21)
 
@@ -1066,6 +1066,88 @@ own operational documents for full visibility.
 `git status --porcelain -- ai_trader/ code/ results/ knowledge/ edge_research/*.py edge_research/*.json
 edge_research/*.csv` confirmed empty before this entry's own commit — only markdown/documentation files
 changed.
+
+### 8.24 Strategy Health Integration — IMPLEMENTED (roadmap Flow B step 1/6, 2026-07-21)
+
+**CEO authorization, verbatim scope**: implement the mandatory five-state architecture (NEW →
+Shadow-only until minimum evidence; ACTIVE/WATCHLIST → real competitive eligibility + Shadow;
+PROBATION/DISABLED → Shadow-only), governed by `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` §§1–15.
+Frozen modules (`ai_trader/strategy_health/{types,metrics,scoring,classifier,evaluator}.py`) and all Flow
+A artifacts (`NEXT_SESSION_FLOW_A.md`, `edge_research/`, `EDGE_DISCOVERY_REGISTRY_v1.md`,
+`EDGE_RESEARCH_PROTOCOL.md`, `EDGE_DISCOVERY_ROADMAP.md`) explicitly off-limits; no Risk Manager
+change; no Portfolio Architect start; the `ai_quant_lab-alpha-discovery` worktree never accessed.
+
+**Files created**:
+- `ai_trader/strategy_health/shadow_gate.py` — the Eligibility Policy layer. Pure functions only, zero
+  new scoring logic, mirrors `rolling_gate.py`'s own established pattern. Public API:
+  `PolicyState` (5-state enum: NEW/ACTIVE/WATCHLIST/PROBATION/DISABLED — NEW is policy-layer-only, never
+  emitted by the frozen classifier), `shadow_closed_trades_by_strategy`, `shadow_health_reports_at`,
+  `classify_policy_state` (applies `MIN_EVIDENCE_TRADES = 25`, reused from `code/alpha_lab.py`'s own
+  `MINTR`, as a defensive floor below which a strategy is always NEW regardless of the frozen
+  classifier's own band), `policy_states_at`, `real_eligible_strategy_ids_at` (the roster to pass as
+  `health_eligible_ids` — ACTIVE/WATCHLIST only).
+- `ai_trader/strategy_health/tests/test_shadow_gate.py` — 19 tests (policy mapping, eligibility-set
+  logic, the adapter/grouping layer, PROBATION/DISABLED recovery via genuine new evidence at a later
+  `as_of`, and structural provenance proofs). All pass.
+- `ai_trader/simulation/tests/test_health_eligible_ids.py` — 8 harness-level tests over real strategy
+  runtimes/real data. All pass, including the two central Phase-6.9-lockout-cannot-recur proofs (an
+  empty `health_eligible_ids` produces zero real trades for anyone yet Shadow Evidence keeps
+  accumulating for everyone).
+
+**File modified**: `ai_trader/simulation/harness.py` — one small, disclosed, additive touch (the 4th
+such touch to this explicitly-non-frozen module, following the same convention as the three prior Phase
+6.9/6.9A/6.10 touches): a new `health_eligible_ids: frozenset[str] | None = None` constructor parameter,
+stored as a plain mutable attribute, filtering ONLY the opportunity list handed to
+`risk_manager.evaluate()` — applied strictly AFTER Signal/Scoring Engine and the Shadow Evidence tap have
+both already run unfiltered on the full `score_batch`. Full diff is 29 insertions / 2 deletions (mostly
+docstring/comment).
+
+**Why not `strategy_id_filter`**: that pre-existing hook gates which strategies `build_runtime_handles()`
+even asks the Signal Engine to evaluate — an excluded strategy never produces a `score_batch` entry, so
+`shadow_engine.observe()` (which only taps the already-computed `score_batch`) would never see it either.
+Reusing it for Health eligibility would silently recreate Phase 6.9's own absorbing-lockout mechanism
+(evidence source and eligibility gate sharing one resource). `health_eligible_ids` is a separate,
+later-stage gate, structurally guaranteeing Shadow's independence by construction, not merely by test.
+
+**Recovery mechanism**: `real_eligible_strategy_ids_at()` is a pure function of `(trade_legs, as_of,
+strategy_ids)`. Recomputing it at a later `as_of` over a longer accumulated Shadow ledger is the entire
+recovery path — there is no separate "recovery" code, and no timer or window-expiry mechanism. Proven
+directly: `test_probation_recovers_after_new_shadow_evidence` and
+`test_disabled_recovers_after_new_shadow_evidence` each start a strategy in the named band, let its old
+losing trades age out of the 12m window, and confirm a fresh run of Shadow winners flips it back to
+real-eligible.
+
+**Empirical finding surfaced during testing (disclosed, not a defect)**: excluding one strategy from
+`health_eligible_ids` can change *other*, non-excluded strategies' own real trade timing/exits, because
+this project's shared single-XAUUSD-slot architecture (`CEO_STRATEGY_CONSTRAINT_ROOT_CAUSE_REPORT.md`)
+means freeing the excluded strategy's own ranking contention lets a different competitor win the slot at
+a given bar. This is a correct second-order effect of shared-slot contention, not a bug in
+`health_eligible_ids` — and it empirically confirms the design doc's own §15 hypothesis. An initial test
+assumed false independence between strategies under this constraint; it was replaced with
+`test_excluding_a_strategy_may_redistribute_shared_slot_contention_to_others`, which documents the
+finding and asserts the invariant that actually holds (the excluded strategy has zero real trades; every
+trade present belongs to a strategy that was actually eligible).
+
+**Validation**:
+- `ai_trader/strategy_health/` (full directory, frozen modules' own existing tests + new `shadow_gate`
+  tests): **72/72 passed**.
+- `ai_trader/simulation/tests/test_health_eligible_ids.py`: **8/8 passed**.
+- `ai_trader/simulation/tests/{test_harness_integration,test_overlay_survives_demotion,
+  test_conformance_vs_research_engine,test_risk_event_strategy_attribution}.py` (directly affected by
+  the `harness.py` touch): **9/9 passed**.
+- `ai_trader/simulation/tests/test_shadow_disabled_parity.py` (the project's own established
+  byte-identical-competitive-execution regression suite, including the 43-production-strategy run):
+  **28/28 passed**.
+- `git diff --stat` confirms zero diff in all 5 frozen Strategy Health modules and all 5 Flow A
+  artifacts; the `ai_quant_lab-alpha-discovery` worktree was never accessed this session.
+- **mypy could not be run**: blocked by a machine-level Application Control policy on mypy's own native
+  DLL dependency (`ImportError: DLL load failed while importing fscache: An Application Control policy
+  has blocked this file`), unrelated to this implementation's own code — an environment limitation,
+  disclosed rather than bypassed.
+
+**Status: Strategy Health Integration (roadmap step 1/6) IMPLEMENTED, fully validated except mypy
+(environment-blocked). Awaiting CEO verdict on whether this may be declared COMPLETE. Portfolio
+Architect (roadmap step 2) has NOT been authorized and has not begun.**
 
 ## 9. Modules implemented (`ai_trader/`)
 

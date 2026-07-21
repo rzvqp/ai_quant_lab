@@ -24,19 +24,20 @@ breach or by this remediation entry; `ai_trader/`, `code/`, `results/`, and `kno
 
 ## Current state
 
-**Status: ACTIVE — currently on roadmap step 1 of 6 (Strategy Health).** Roadmap order, per explicit
-CEO instruction: **Strategy Health (integration/promotion policy) → Portfolio Architect → Learning /
-Research Feedback → Risk Integration → Execution Integration → MT5 Live.** `§8.18`'s own standing rule
-continues to govern exactly which step may begin next: no further Phase 7 checkpoint, and no roadmap
-step, begins without its own explicit CEO authorization. **Strategy Health implementation remains NOT
-STARTED** — still awaiting CEO confirmation that the accepted, clarified architecture
-(`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md` §§1–15) is complete, unaffected by the Flow A holdout
-incident above.
+**Status: ACTIVE — roadmap step 1 of 6 (Strategy Health) IMPLEMENTED and validated, awaiting CEO
+verdict before advancing to step 2.** Roadmap order, per explicit CEO instruction: **Strategy Health
+(integration/promotion policy) → Portfolio Architect → Learning / Research Feedback → Risk Integration →
+Execution Integration → MT5 Live.** `§8.18`'s own standing rule continues to govern exactly which step
+may begin next: no further Phase 7 checkpoint, and no roadmap step, begins without its own explicit CEO
+authorization. The CEO authorized implementation (verdict: mandatory five-state architecture NEW →
+ACTIVE/WATCHLIST → PROBATION/DISABLED, Shadow Evidence active in every state, no absorbing lockout);
+implementation is complete and fully validated (see `PROJECT_STATE_v2.md` §8.24 for the full record).
+**Portfolio Architect (roadmap step 2) has NOT been authorized and has not begun.**
 
 ## Last Flow B commit
 
 ```
-b2a79fd  docs: finalize Strategy Health integration design with architecture clarifications
+<FILLED IN AFTER COMMIT — see git log -1>  feat: implement Strategy Health Integration eligibility policy
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
@@ -47,16 +48,23 @@ branch).
 
 ## Strategy Health situation
 
-Two different things share the name "Strategy Health," and only one of them is unstarted:
+Two different things share the name "Strategy Health," and both are now complete:
 
 - **The Strategy Health SYSTEM** (scoring/classification: `ai_trader/strategy_health/types.py`/
   `metrics.py`/`scoring.py`/`classifier.py`/`evaluator.py`) — **COMPLETE**, built at Wave D, frozen
-  since. Computes a 0–100 Health Score and a 4-band classification (ACTIVE/WATCHLIST/PROBATION/
-  DISABLED) for any strategy at any point in time.
+  since, **untouched by this implementation** (confirmed zero-diff). Computes a 0–100 Health Score and
+  a 4-band classification (ACTIVE/WATCHLIST/PROBATION/DISABLED) for any strategy at any point in time.
 - **The integration/promotion POLICY** (what a Health state actually does to the live/competitive
-  portfolio) — was confirmed **NOT STARTED** when this roadmap step began (never selected — see
-  `PROJECT_STATE_v2.md` §8.18/§10). A design proposal was drafted, reviewed, and clarified this roadmap
-  step (below) — **implementation has still not begun.**
+  portfolio) — **IMPLEMENTED**. New files: `ai_trader/strategy_health/shadow_gate.py` (the Eligibility
+  Policy layer — `PolicyState` 5-state enum, `classify_policy_state`, `policy_states_at`,
+  `real_eligible_strategy_ids_at`, all pure functions over Shadow Evidence's own trade ledger, zero new
+  scoring logic, mirrors `rolling_gate.py`'s own established pattern) and a new, additive
+  `health_eligible_ids: frozenset[str] | None = None` constructor parameter on
+  `ai_trader.simulation.harness.SimulationHarness` (filters ONLY the opportunity list handed to the
+  Risk Manager, strictly after Signal/Scoring Engine and the Shadow Evidence tap have both already run
+  unfiltered — deliberately NOT a reuse of `strategy_id_filter`, which would starve Shadow Evidence and
+  recreate the Phase 6.9 lockout). Full contract, test results, and validation record:
+  `PROJECT_STATE_v2.md` §8.24.
 
 ## Approved design and remaining conditions
 
@@ -88,20 +96,18 @@ the same document as §§11–15:
    lockout mechanism is broken by construction; the exact real-eligible roster under Shadow-sourced
    scoring is explicitly not claimed without a live recomputation.
 
-**Remaining condition, precisely**: the CEO's own next step is to confirm the clarified architecture
-(§§1–15 of the design doc) is complete. That confirmation is the one thing standing between this design
-and implementation — it is not yet given as of this document's own writing.
+**Remaining condition — SATISFIED**: the CEO confirmed the clarified architecture and explicitly
+authorized implementation (mandatory five-state architecture, frozen-module list, implementation scope,
+12 required tests, validation checklist — see `PROJECT_STATE_v2.md` §8.24 for the verbatim record).
+Implementation is now complete and validated per that authorization.
 
 ## Next Flow B step
 
-**Awaiting CEO confirmation that the architecture is complete before implementation begins** (still
-within roadmap step 1, Strategy Health). If/when confirmed: implement the design — a new additive
-Shadow-Evidence-sourced Health module, a new Eligibility Policy layer, and `harness.py`
-`strategy_id_filter` wiring (PROBATION/DISABLED excluded from real trades, ACTIVE/WATCHLIST unaffected,
-Shadow Evidence never gated for anyone) — proven byte-identical competitive execution when the new
-filter is disabled, per §9 of the design doc's own proposed validation plan. **Only once Strategy
-Health integration is implemented and validated does Flow B advance to roadmap step 2, Portfolio
-Architect.**
+**Strategy Health Integration (roadmap step 1/6) is implemented and validated — awaiting CEO verdict on
+whether it may be declared COMPLETE.** `health_eligible_ids=None` (the default) is proven byte-identical
+to pre-existing competitive execution across the full validation suite, including the 43-production-
+strategy run. **Portfolio Architect (roadmap step 2) must not begin without its own separate, explicit
+CEO authorization** — the implementation being validated is not itself that authorization.
 
 ## Resume instructions
 
@@ -144,13 +150,14 @@ Architect.**
 
 ## Warnings relevant to implementation
 
-- **Strategy Health integration must not begin implementation without explicit CEO confirmation that
-  the architecture is complete** — the acceptance-with-conditions verdict is not itself that
-  confirmation.
+- **Portfolio Architect (roadmap step 2) must not begin without its own separate, explicit CEO
+  authorization** — Strategy Health Integration being implemented and validated is not itself that
+  authorization.
 - `code/`, `results/`, `knowledge/` (Research Lab) — frozen, 0-diff, confirmed at every close to date.
 - Every strategy contract, evaluator, and parameter.
-- `ai_trader/strategy_health/`'s own scoring methodology — frozen since its own build; the new
-  Eligibility Policy layer must be additive, never a modification of `classifier.py`/`scoring.py`.
+- `ai_trader/strategy_health/`'s own scoring methodology — frozen since its own build; confirmed 0-diff
+  by this implementation (`types.py`/`metrics.py`/`scoring.py`/`classifier.py`/`evaluator.py`). The new
+  Eligibility Policy layer (`shadow_gate.py`) is additive only, per the CEO's own mandatory scope.
 - Scoring Engine weights, Risk Policy, Execution Engine rules — the Strategy Health design's own v1
   recommendation touches none of these; any future escalation to risk-scaled sizing or ranking-priority
   integration requires its own separate, explicit CEO decision to unfreeze the relevant module.

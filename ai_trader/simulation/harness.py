@@ -67,6 +67,7 @@ class SimulationHarness:
         manager_config: ManagerConfig | None = None, use_strategy_runtime: bool = False,
         risk_config: RiskConfig | None = None, enable_time_stops: bool = False,
         enable_trailing_stops: bool = False, strategy_id_filter: frozenset[str] | None = None,
+        health_eligible_ids: frozenset[str] | None = None,
     ) -> None:
         """``manager_config``/``use_strategy_runtime``/``risk_config`` default to Phase 6.7's own
         original, verified-fail-safe behavior (a bare ``ManagerConfig()``/``RiskConfig()`` with no
@@ -91,7 +92,20 @@ class SimulationHarness:
         every active strategy participates, unchanged) restricts real evaluation to specific
         strategy ids -- generically useful for isolating one strategy's own behavior from the rest
         of the shared, ever-growing active set (e.g. a per-strategy conformance test), never a
-        strategy-specific mechanism in this module's own logic."""
+        strategy-specific mechanism in this module's own logic. ``health_eligible_ids`` (default
+        ``None``: no filtering, unchanged) is a SEPARATE, additive gate for Strategy Health
+        integration (``ai_trader.strategy_health.shadow_gate``) -- deliberately NOT the same knob as
+        ``strategy_id_filter``, because that one gates which strategies ``build_runtime_handles()``
+        even asks the Signal Engine to evaluate, which would ALSO starve ``shadow_engine`` (Shadow
+        Evidence only ever taps the already-computed ``score_batch`` below, never re-scores
+        independently) -- reusing it for Health eligibility would silently recreate Phase 6.9's own
+        absorbing-lockout failure (the evidence source and the eligibility gate becoming the same
+        gated resource). ``health_eligible_ids``, in contrast, filters only the opportunity list
+        handed to the Risk Manager, strictly AFTER Signal/Scoring Engine and the Shadow Evidence tap
+        have both already run unfiltered -- see the per-bar loop below. Like
+        ``strategy_id_filter``, this is a plain mutable attribute a caller may reassign between
+        ``step()`` calls to implement a periodic re-evaluation cadence (mirroring the one proven
+        precedent for this pattern, ``phase69_rolling_backtest.py``)."""
         self.context = context
         self._symbol_meta = symbol_meta
         self._data_dir = data_dir
@@ -101,6 +115,7 @@ class SimulationHarness:
         self._enable_time_stops = enable_time_stops
         self._enable_trailing_stops = enable_trailing_stops
         self._strategy_id_filter = strategy_id_filter
+        self._health_eligible_ids = health_eligible_ids
         self._trailing_entry_atr: dict[str, float] = {}  # keyed by symbol (one position per symbol)
         self.state = RunState.UNINITIALIZED
         self.fail_reason: str | None = None
@@ -361,7 +376,16 @@ class SimulationHarness:
                 tick_size = self._symbol_meta[symbol].tick_size if symbol in self._symbol_meta else 0.01
                 risk_context = _build_risk_context(ctx, as_of, tick_size, self.context.cost_model.spread_ticks)
                 portfolio_state = self.portfolio_simulator.to_portfolio_state(as_of)
-                decision_batch = self._risk_manager.evaluate(score_batch.scores, risk_context, portfolio_state)
+                # Strategy Health integration: `health_eligible_ids` filters ONLY the opportunity list
+                # handed to the Risk Manager below -- score_batch itself (and the shadow_engine tap
+                # two lines down) stays the full, unfiltered set Signal/Scoring Engine already
+                # computed for every configured strategy this bar. See __init__'s own docstring for
+                # why this must be a separate gate from `strategy_id_filter`.
+                risk_opportunities = (
+                    score_batch.scores if self._health_eligible_ids is None
+                    else tuple(s for s in score_batch.scores if s.strategy_id in self._health_eligible_ids)
+                )
+                decision_batch = self._risk_manager.evaluate(risk_opportunities, risk_context, portfolio_state)
                 # Phase 6.10 Implementation Checkpoint 1B: a read-only tap on the already-computed
                 # score_batch/risk_context, strictly AFTER the real decision above. shadow_engine is
                 # None unless context.shadow_config.active_strategy_ids() is non-empty (Checkpoint 1A's
@@ -374,6 +398,9 @@ class SimulationHarness:
                 # bug iterating score_batch.scores itself), so a shadow failure can NEVER fail the real
                 # run via step()'s own outer exception handler -- "competitive execution continues" is
                 # a hard guarantee, not contingent on shadow_engine's own internal code being bug-free.
+                # NOTE (Strategy Health integration): deliberately fed the FULL, unfiltered
+                # `score_batch` here, never `risk_opportunities` -- Shadow Evidence must remain active
+                # for every configured strategy regardless of its current real-trade eligibility.
                 if self.shadow_engine is not None:
                     try:
                         self.shadow_engine.observe(as_of, score_batch, risk_context)

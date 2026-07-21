@@ -29,6 +29,13 @@
 > checkpoint. Phase 7 Checkpoint 15's own falsification study reused no additional convention from this
 > document beyond what Checkpoint 13 already established.
 >
+> **Note (2026-07-21)**: the Strategy Health Integration Eligibility Policy layer
+> (`ai_trader/strategy_health/shadow_gate.py`, roadmap Flow B step 1/6) reuses this document's own
+> `code/alpha_lab.py` `MINTR=25` convention a second time, as `MIN_EVIDENCE_TRADES` — the minimum
+> lifetime Shadow-sourced trade count below which a strategy is always classified `NEW` (Shadow-only)
+> regardless of what the frozen Strategy Health classifier's own band would otherwise say. A downstream
+> reuse only, matching the 2026-07-20 note above; nothing in this document itself was changed.
+>
 > **Incident note (2026-07-21) — TERMINAL HOLDOUT BREACHED**: this document's own §D "Frozen decisions"
 > below records the Research Lab's terminal-holdout split ("terminal holdout 20% SEALED (never
 > opened)"). On 2026-07-21 it was confirmed that Flow A's first five studied edges (E025, E026, E028,
