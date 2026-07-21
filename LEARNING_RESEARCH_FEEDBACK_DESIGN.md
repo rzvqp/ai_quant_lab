@@ -24,6 +24,59 @@ raised before implementation and are answered in the **Addendum** at the end of 
 supersedes §4's original single-Outcome-type framing and §8's original Invariant 6/"no new schema"
 framing. Read the Addendum together with §§1–10 below, not as a replacement for them.
 
+**Status update (2026-07-21): FINAL DESIGN APPROVED (commit `3f5b024`).** The design phase is CLOSED.
+The **Normative Model** immediately below is the single, consolidated, authoritative summary of every
+approved decision — future implementation work follows THAT section. Every other section in this
+document (§§1–10, the Addendum, and any inline strikethrough text) is retained as supporting rationale,
+architecture context, and historical record of how the design arrived at the Normative Model — not as a
+second, independent source of truth. Where any wording elsewhere in this document appears to conflict
+with the Normative Model, the Normative Model governs.
+
+---
+
+## NORMATIVE MODEL (current, authoritative — consolidates §§1–10 + Addendum + `ADR_OUTCOME_IDENTITY_VS_SOURCE.md`)
+
+**Component**: Learning / Research Feedback populates Context Memory's existing, already-built repository
+with real evidence — nothing else. No new storage engine, no new retrieval logic, no decision authority
+(full architecture: §§1–3).
+
+**Outcome identity vs. source** (per `ADR_OUTCOME_IDENTITY_VS_SOURCE.md`, APPROVED — Option B):
+`OutcomeKind` and `SourceType` are separate, orthogonal fields on `Outcome`.
+
+```
+OutcomeKind (what the outcome represents):      SourceType (where the evidence came from):
+  STRATEGY                                        SHADOW_EVIDENCE_ADAPTER
+  PORTFOLIO                                       REAL_PORTFOLIO_LEDGER
+                                                   (further members only when separately authorized)
+```
+
+**Valid combinations, enforced at construction time** — only these two pairings may exist; every other
+combination must be rejected by the contract itself, not merely discouraged by convention:
+- `(STRATEGY, SHADOW_EVIDENCE_ADAPTER)` — "how did the strategy itself perform," sourced from Shadow
+  Evidence's own unconditional, per-strategy virtual execution.
+- `(PORTFOLIO, REAL_PORTFOLIO_LEDGER)` — "what actually happened in the live AI Trader," sourced from the
+  real competitive portfolio/execution ledger.
+
+**Absence rule**: a Strategy Outcome exists for essentially every `Observation` (Shadow tracks
+unconditionally). A Portfolio Outcome exists ONLY when a real position for that strategy actually opened
+and closed. **Absence of a Portfolio Outcome is valid and expected, never an error** — no row is written;
+nothing is fabricated as `UNAVAILABLE` to fill the gap.
+
+**Statistical separation**: Strategy Outcome and Portfolio Outcome are never blended, at either the
+identity or the statistical level. Any future aggregation groups by `OutcomeKind` first; `SourceType` may
+filter within a kind once multiple sources exist for it, but never substitutes as the sole grouping key
+across kinds.
+
+**Operational metadata**: a separate, optional, immutable, diagnostic-only companion type
+(`OperationalMetadata` — Risk Manager's own already-computed ALLOW/DENY + reason + rejection stage, and
+Strategy Health's own already-computed `PolicyState` at that `as_of`). Structurally excluded from
+`retrieval.py`'s own matching dimensions and `evidence.py`'s own statistics — write-once, read only by
+humans or offline scripts, never a learning target, never re-derived.
+
+**Full detail and rationale**: §§1–10 (architecture, scope, responsibilities, invariants, failure modes,
+negative controls), the Addendum (§A1 outcome semantics, §A2 operational metadata), and
+`ADR_OUTCOME_IDENTITY_VS_SOURCE.md` (the identity-vs-source decision itself).
+
 ---
 
 ## 1. Purpose
