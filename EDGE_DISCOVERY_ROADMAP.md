@@ -3,7 +3,7 @@
 **Program**: 40-Edge Alpha Discovery Program. **Purpose**: recommend an order to run the 40 edges
 through `EDGE_RESEARCH_PROTOCOL.md`, and justify it.
 
-## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E014 Discovery complete, awaiting authorization for E008
+## ⚠ CURRENT STATUS (updated 2026-07-21): ACTIVE — E008 Discovery complete, awaiting authorization for E011
 
 E015-SCALP Phase 0/0A/root-cause investigation is CLOSED at EVIDENCE LIMIT REACHED (no feasibility
 verdict; see `edge_research/E015-SCALP_protocol_and_pilot.md`). Per explicit CEO priority-shift
@@ -30,8 +30,18 @@ matches or exceeds real inside bars on every timeframe). **V1 PROPOSED**: compre
 false-breakout fade. A dramatic-looking attempt-1-vs-attempt-2 decay was found and explicitly
 falsified as a generic artifact of the attempt-selection mechanism (present identically in a fully
 synthetic control) — not proposed as a V1. Full detail:
-`edge_research/E014_inside_bar_false_breakout.md`.
-**Awaiting CEO authorization before starting E008.**
+`edge_research/E014_inside_bar_false_breakout.md`. **E014-V1 frozen as a Discovery Candidate contract
+(2026-07-21)** — not validated alpha, not an execution rule; see the same file's own
+"Frozen Discovery Candidate Contract" section.
+
+**E008 — Friday Profit Taking Shift: Discovery complete (2026-07-21).** V0 NOT SUPPORTED — no
+significant difference between Friday afternoon and the rest of the week in directional persistence
+or volatility, on M15 or H1, confirmed null by a placebo/permutation control and a
+reversal-of-week's-trend test. No V1 proposed. A real, replicated, but Friday-unrelated day-of-week
+volatility pattern (Monday quietest, Wednesday most volatile) was found and disclosed as an
+out-of-scope observation only, per the CEC-001 precedent — not studied further. Full detail:
+`edge_research/E008_friday_profit_taking_shift.md`.
+**Awaiting CEO authorization before starting E011.**
 
 <details><summary>Superseded status entries (kept for the record, not current)</summary>
 
@@ -218,7 +228,7 @@ a CEO-approved, pre-committed scoring framework (Novelty, Expected Information V
 Execution Cost, Independence — see `NEXT_SESSION_FLOW_A.md` for the full audit) found E013 and E016
 carry the highest redundancy risk in this remaining set (their V0 objects substantially overlap
 already-completed E010/E012/E015 findings) rather than being natural next steps. **Authorized order for
-the remaining items is now: E006 (done) → E014 (done) → E008 → E011 → E005 → E027 → E016 → E013**
+the remaining items is now: E006 (done) → E014 (done) → E008 (done) → E011 → E005 → E027 → E016 → E013**
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass). The numbered
 list above is kept as-is for the historical record; this note is the current authority on sequencing.
 

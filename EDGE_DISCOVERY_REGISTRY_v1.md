@@ -191,7 +191,13 @@ workaround was substituted, per instruction. E015's own structural result is unc
   regime, week-of-month
 - **Measured outcome**: Change in directional persistence/volatility on Friday afternoon vs. the rest of
   the week
-- **Status**: UNSTUDIED
+- **Status**: DISCOVERY_COMPLETE — V0 NOT SUPPORTED (2026-07-21). No significant difference between
+  Friday afternoon and the rest of the week in directional persistence or volatility, on M15 or H1;
+  confirmed null by a placebo/permutation control and a reversal-of-week's-trend test. No V1 proposed.
+  A real, replicated, but Friday-UNRELATED day-of-week volatility pattern (Monday quietest, Wednesday
+  most volatile) was found and disclosed as an out-of-scope observation only, per the CEC-001
+  precedent — not studied further, not promoted, awaiting separate CEO authorization if ever revisited.
+  Full detail: `edge_research/E008_friday_profit_taking_shift.md`.
 - **Version**: V0
 
 ---

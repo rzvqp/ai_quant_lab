@@ -10,7 +10,7 @@ have their own operational document. Do not write Flow B (AI Trader Development)
 ## Current state
 
 **Status (2026-07-21, most recent): ACTIVE — Tier 1 roadmap reordered per a CEO-approved priority
-audit; E006 and E014 Discovery complete; awaiting CEO authorization for E008.**
+audit; E006, E014, and E008 Discovery complete; awaiting CEO authorization for E011.**
 
 E015-SCALP is closed (EVIDENCE LIMIT REACHED, see below) and no further Replay investigation is
 authorized per the CEO's explicit priority-shift instruction; the laboratory returned to its primary
@@ -22,7 +22,7 @@ full audit and sensitivity analysis available in this session's transcript, summ
 Tier-1 edges (their V0 objects substantially overlap already-completed E010/E012/E015 findings), and
 ranked **E006 highest** on both raw knowledge value and reusable-infrastructure leverage.
 
-**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 → E011 → E005 → E027 → E016 → E013
+**New authorized Tier-1 order**: E006 (done) → E014 (done) → E008 (done) → E011 → E005 → E027 → E016 → E013
 (E016/E013 gated on a cheap definitional-overlap check before any full Discovery pass).
 
 **E006 — Asia Range Expansion Failure: Discovery complete (2026-07-21).** V0 NOT SUPPORTED as an
@@ -46,8 +46,21 @@ and non-cherry-picking criteria (the winning control was one of four predeclared
 seen). A dramatic-looking attempt-1-vs-attempt-2 decay (72%→12%) was found and explicitly falsified as
 a generic artifact of the attempt-selection mechanism itself — it appears identically in a fully
 synthetic control with no market structure at all, so it is NOT proposed as a V1. Full detail:
-`edge_research/E014_inside_bar_false_breakout.md`.
-**Awaiting CEO authorization before starting E008.**
+`edge_research/E014_inside_bar_false_breakout.md`. **E014-V1 frozen as a Discovery Candidate contract
+(2026-07-21)** — not validated alpha, not an execution rule.
+
+**E008 — Friday Profit Taking Shift: Discovery complete (2026-07-21).** V0 NOT SUPPORTED — no
+significant difference between Friday afternoon and pooled Monday-Thursday afternoons in directional
+persistence (efficiency ratio) or volatility, on M15 or H1. Corroborated null: a placebo/permutation
+control (random ~1/5 of days as "pseudo-Friday") shows Friday's apparent difference is no larger than
+pure chance, and a reversal-of-week's-trend test (the most direct test of the stated "profit-taking"
+mechanism) found Friday's opposition rate (~51%) statistically indistinguishable from other days
+(~49%). No V1 proposed. A real, replicated day-of-week volatility pattern WAS found (Monday afternoon
+consistently quietest, Wednesday afternoon consistently most volatile, both M15 and H1) but does not
+involve Friday and is unrelated to E008's own proposed mechanism — disclosed as an out-of-scope
+observation only, per the CEC-001 precedent, not studied further without separate CEO authorization.
+Full detail: `edge_research/E008_friday_profit_taking_shift.md`.
+**Awaiting CEO authorization before starting E011.**
 
 ---
 
