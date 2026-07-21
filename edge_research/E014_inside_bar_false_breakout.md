@@ -177,3 +177,128 @@ scalping validation performed, no claim about tradability. No Validation-stage w
 
 This Discovery pass answers §§1-8 only. No Immediate Scalping Response (§9) check was performed —
 per the CEO's explicit priority-shift instruction, §9 work is deferred project-wide, not attempted here.
+
+---
+
+## E014-V1 — Frozen Discovery Candidate Contract (2026-07-21, CEO-authorized closure)
+
+**Status of this contract**: This is a **Discovery Candidate**, not a validated edge, not an
+executable strategy, not a claim of positive net expectancy, not an optimized threshold, and not a
+proven causal mechanism. "Compression-driven" is an **operational label**, not a causal conclusion.
+No values below were re-derived by re-running the research — every number is taken directly from the
+already-completed, already-committed run (`e014_inside_bar_false_breakout.py`,
+`e014_inside_bar_false_breakout_results.json`, commit `815ef65`), except the exact compression
+threshold values (item 3 below), which were extracted read-only from the same seed=42, already-run
+construction for the sole purpose of recording them precisely in this contract — no new experiment,
+no new decision, no rerun of any test. **The scientific verdict is unchanged.**
+
+### 1. Exact event definition
+A bar (any bar in the series — **containment within the preceding "mother" bar is explicitly NOT
+required** for V1, unlike the original inside-bar V0 definition) whose own range, relative to its own
+ATR14, falls at or below the 33.33rd percentile of that ratio's whole-sample distribution (see item 3).
+This is the exact construction used by `compression_only_control()` in
+`e014_inside_bar_false_breakout.py`.
+
+### 2. Exact compression metric
+`compression_ratio = (bar_high − bar_low) / atr14[bar]`, where `atr14` is `_common.py`'s standard
+rolling-14 true-range average, computed at the **same bar** (not a prior-shifted reference — see
+Known Limitation, item 13). This is a whole-sample, in-dataset ratio, not normalized against any
+external or out-of-sample reference.
+
+### 3. Exact predeclared bucket/threshold used in Discovery
+Lowest tercile (≤33.33rd percentile) of the compression-ratio distribution, computed once over the
+full valid-bar population per timeframe. The resulting numeric thresholds actually used (extracted
+directly from the completed run, read-only, for the record):
+
+| Timeframe | Valid candidate bars | Compression threshold (range/ATR14) |
+|---|---|---|
+| M15 | 67,099 | ≤ 0.7356 |
+| H1 | 16,401 | ≤ 0.6911 |
+| H4 | 4,128 | ≤ 0.6929 |
+
+The Discovery-stage control additionally drew a **random sample** of this compressed population, seed
+= 42, sized to match the real inside-bar attempt-1 event count per timeframe (M15: 9,091; H1: 2,386;
+H4: 683) — this was a like-for-like sample-size match for a fair control comparison, not itself part
+of the V1's own operational definition (a future Validation pass may use the full compressed
+population rather than a size-matched subsample; this would need to be a new, separately-versioned
+step, not a silent edit to this frozen definition).
+
+### 4. Breakout definition
+The first bar, after the reference bar (item 1), whose CLOSE is beyond the reference bar's own range
+(> reference_high for an upside breakout, < reference_low for downside). Identical convention to
+E006's and every other structure-pattern edge's own breakout definition in this program.
+
+### 5. Fade-through outcome definition
+Primary (frozen) definition: within the response horizon (item 6), price's CLOSE crosses beyond the
+**opposite** boundary of the reference range at any point — a full traversal, not merely a return to
+neutral, per V0's own literal wording ("reverses back through the range"). A weaker "returns inside at
+all" metric was tracked internally but is explicitly NOT part of the frozen V1 outcome definition.
+
+### 6. Response horizon
+50 bars — the shared ceiling of `_profile.HORIZONS`, identical across every edge in this program.
+Not tuned or selected after seeing results.
+
+### 7. Handling of overlapping events
+Not directly applicable to the V1's own compressed-bar definition (which does not require chain/
+containment relationships) — each qualifying bar is an independent reference-range candidate. For the
+original inside-bar detector (used only for the primary V0 test and the real-vs-control comparisons,
+not for the V1's own event population), only the FIRST bar of a compression chain was counted as a
+primary event; later chain members were not counted separately.
+
+### 8. Handling of dual-side breakouts
+Handled by the fade-through definition itself (item 5) — if price closes beyond one boundary and later
+closes beyond the opposite boundary within the horizon, that is a confirmed fade-through with no
+special-case logic required. No separate whipsaw classification exists in this frozen contract.
+
+### 9. Authorized timeframes
+M15, H1, H4 — all three registered for E014 in `EDGE_DISCOVERY_REGISTRY_v1.md` and all present in the
+clean dataset. All three were run; the compression-driven effect (Control C vs. Control D) replicated
+significantly on all three (p=4.2e-30, 2.6e-11, 0.0053 respectively).
+
+### 10. Dataset and date window
+`OANDA_XAUUSD_{M15,H1,H4,D1}.csv`, loaded exclusively via `_common.load()` with
+`data_split_id=pre_holdout_2025-10-23T09-15-00Z_v1`, `cutoff=2025-10-23T09:15:00+00:00` (exclusive
+upper bound). Effective date range: 2022-12-16 to 2025-10-23 (~2.85 years, pre-holdout-cutoff only).
+
+### 11. Control definitions (frozen, all four predeclared before any result was inspected)
+- **Primary (V0, not V1)**: real inside bars, strict containment.
+- **Control B — generic single-bar breakout**: a random sample (seed=42, size-matched) of ordinary
+  bars, no compression or containment condition.
+- **Control C — generic compression (= the V1's own event population)**: as defined in items 1-3.
+- **Control D — ordinary mean-reversion baseline**: fully synthetic, ATR-sized (half-width = 0.5×ATR14
+  at a random point) random-matched ranges at random points, seed=42 — the same convention as
+  E010/E012/E015's own random-matched controls.
+
+### 12. Replication requirement
+A future re-test of this candidate (Validation stage or otherwise) must reproduce a significant
+Control-C-vs-Control-D advantage (the decisive test in this Discovery pass) on **at least the same
+three timeframes** (M15, H1, H4) to be considered a genuine replication — a result on only one or two
+timeframes would not meet the bar this Discovery pass itself was held to.
+
+### 13. Known limitations
+- The compression ratio (item 2) uses the bar's own, same-bar ATR14, not a prior-bar-shifted
+  reference — meaning a compressed bar's own small range mildly, mechanically reduces its own ATR
+  denominator, a self-referential construction (not a look-ahead into future bars, but a same-bar
+  normalization wrinkle). This is disclosed, not corrected here, per the CEO's explicit
+  do-not-rerun instruction — a future Validation pass should consider testing a prior-shifted ATR
+  reference as a robustness variant, not a silent substitution.
+- The 33.33rd-percentile threshold (item 3) is a whole-sample, in-dataset statistic, not an
+  externally fixed, dataset-independent number — it will differ if computed on a different or extended
+  data window. This is disclosed as a portability caveat for any future re-test.
+- No out-of-sample/time-split test was performed in this Discovery pass (see the 9-question answers in
+  the main log above) — this remains an open gap prior to any Validation-stage work.
+- The attempt-1-vs-attempt-2 decay is recorded here explicitly as a **mechanical selection artifact**,
+  confirmed by an identical collapse in the fully synthetic Control D. It is not part of this V1, must
+  not be promoted into market knowledge, strategy logic, or an execution filter, and any future session
+  encountering this same pattern on a different edge should treat it as a known artifact class, not a
+  fresh discovery.
+
+### 14. Explicit prohibition on retrospective threshold optimization
+The 33.33rd-percentile compression threshold (item 3) is frozen as stated. No future step may search
+across alternative percentiles, ATR windows, or horizon lengths to find a more favorable fade rate for
+this candidate. Any such search would constitute a new, separately-versioned candidate re-entering
+Discovery from scratch (per `EDGE_RESEARCH_PROTOCOL.md`'s own Stage 3 rule), not a refinement of this
+frozen contract.
+
+**This contract is now frozen. E014-V1 is a Discovery Candidate only — no Validation, Walk Forward, or
+Final Verdict has been attempted. No scalping validation (§9) is authorized by this contract.**

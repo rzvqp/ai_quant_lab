@@ -292,8 +292,12 @@ workaround was substituted, per instruction. E015's own structural result is unc
   Real, replicated (M15/H1/H4) false-breakout-fade effect found (~71-76%, well above a random/synthetic
   baseline), but driven by generic range compression relative to volatility, not the strict "inside
   bar" containment condition (a compression-only control matches or exceeds real inside bars on every
-  timeframe). **V1 PROPOSED**: compression-driven false-breakout fade. Full detail:
-  `edge_research/E014_inside_bar_false_breakout.md`.
+  timeframe). **V1 ACCEPTED AS DISCOVERY CANDIDATE (frozen 2026-07-21)**: E014-V1 — Compression-Driven
+  False-Breakout Fade. Not a validated edge, not an executable strategy, not a proven mechanism —
+  Discovery Candidate status only; no Validation/Walk Forward/Final Verdict attempted. Frozen contract
+  (exact event/metric/threshold/control definitions, replication requirement, known limitations,
+  prohibition on retrospective threshold optimization): `edge_research/E014_inside_bar_false_breakout.md`
+  §"E014-V1 — Frozen Discovery Candidate Contract".
 - **Version**: V0
 
 ### E015 — Order Block Re-Mitigation
