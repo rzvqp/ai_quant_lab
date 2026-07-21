@@ -104,12 +104,14 @@ Implementation is now complete and validated per that authorization.
 ## Next Flow B step
 
 **Strategy Health Integration (roadmap step 1/6) is ACCEPTED COMPLETE** (CEO verdict, commits `dc79cb5`/
-`eb6f9eb`). **Portfolio Architect (roadmap step 2/6) is at the DESIGN-ONLY stage** — CEO authorized design
-work only (reconstruct current architecture, answer 12 mandatory design questions, produce a 14-item
-report; no code, no implementation). Deliverable: `PORTFOLIO_ARCHITECT_DESIGN.md` — recommends a minimal
-PASSTHROUGH-only scaffold as the eventual first implementation step, but implementation itself has **not
-begun and awaits its own separate CEO authorization**. Several policy choices (arbitration mechanism,
-correlation source, thresholds) are left as open decisions in that document's §14, not yet resolved.
+`eb6f9eb`). **Portfolio Architect (roadmap step 2/6) design was ACCEPTED** (`PORTFOLIO_ARCHITECT_DESIGN.md`,
+commit `1ea29c9`), and **Phase 1 (PASSTHROUGH scaffold) is now IMPLEMENTED and fully validated** (commit
+`<see git log -1>` — see `PROJECT_STATE_v2.md` §8.25 for the full record). New package
+`ai_trader/portfolio_architect/` (stateless `PortfolioArchitect.evaluate()`, PASSTHROUGH-only), wired
+into `harness.py` via a new `portfolio_architect_config` parameter (default `None`, no-op). 722 tests
+pass; zero diff in every frozen module and Flow A artifact. Awaiting CEO verdict on Phase 1.
+**None of the 7 open policy decisions from the design doc's §14 are resolved — Phase 2 (an actual
+arbitration policy) has NOT been authorized and has not begun.**
 
 ## Resume instructions
 
@@ -117,9 +119,11 @@ correlation source, thresholds) are left as open decisions in that document's §
 2. Read, in this order:
    - **This document** — current state, summarized above.
    - **`RECONSTRUCTION_PROMPT.md`** — if this is a genuinely new conversation, start there.
-   - **`PORTFOLIO_ARCHITECT_DESIGN.md`** — the current, immediate frontier (roadmap step 2/6,
-     DESIGN-ONLY, awaiting CEO review of its open decisions before any implementation). Read this FIRST
-     if continuing the current roadmap step.
+   - **`ai_trader/portfolio_architect/`** (`types.py`/`architect.py`) — the current, immediate frontier
+     (roadmap step 2/6, Phase 1 PASSTHROUGH scaffold IMPLEMENTED, awaiting CEO verdict; §8.25). Read
+     this FIRST if continuing the current roadmap step.
+   - **`PORTFOLIO_ARCHITECT_DESIGN.md`** — the ACCEPTED governing design (§14's 7 open policy decisions
+     remain unresolved — none may be implemented without their own separate CEO authorization).
    - **`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`** (FINAL, §§1–15) — roadmap step 1/6, ACCEPTED
      COMPLETE. Background for how Strategy Health's eligibility output feeds into Portfolio Architect.
    - **`PHASE_7_CHECKPOINT_15_REPORT.md`** → **`PHASE_7_CHECKPOINT_14_REPORT.md`** — Decision

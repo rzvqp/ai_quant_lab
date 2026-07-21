@@ -19,6 +19,8 @@ from ai_trader.execution_engine.types import BrokerCapabilities, MarketStatus, O
 from ai_trader.market_scanner.config import ScannerConfig
 from ai_trader.market_scanner.scanner import AdapterConfig, MarketScanner
 from ai_trader.market_scanner.types import DataQualityLevel, Mode, SymbolMeta
+from ai_trader.portfolio_architect.architect import PortfolioArchitect
+from ai_trader.portfolio_architect.types import ArchitectDiagnostics, PortfolioArchitectConfig
 from ai_trader.risk_manager.config import RiskConfig
 from ai_trader.risk_manager.engine import RiskManager
 from ai_trader.risk_manager.types import Decision, RiskContext, SymbolRiskSnapshot
@@ -68,6 +70,7 @@ class SimulationHarness:
         risk_config: RiskConfig | None = None, enable_time_stops: bool = False,
         enable_trailing_stops: bool = False, strategy_id_filter: frozenset[str] | None = None,
         health_eligible_ids: frozenset[str] | None = None,
+        portfolio_architect_config: PortfolioArchitectConfig | None = None,
     ) -> None:
         """``manager_config``/``use_strategy_runtime``/``risk_config`` default to Phase 6.7's own
         original, verified-fail-safe behavior (a bare ``ManagerConfig()``/``RiskConfig()`` with no
@@ -105,7 +108,35 @@ class SimulationHarness:
         have both already run unfiltered -- see the per-bar loop below. Like
         ``strategy_id_filter``, this is a plain mutable attribute a caller may reassign between
         ``step()`` calls to implement a periodic re-evaluation cadence (mirroring the one proven
-        precedent for this pattern, ``phase69_rolling_backtest.py``)."""
+        precedent for this pattern, ``phase69_rolling_backtest.py``). ``portfolio_architect_config``
+        (default ``None``: Portfolio Architect is not invoked at all, stronger than a
+        ``PASSTHROUGH``-mode call -- no function call is made when disabled, matching
+        ``health_eligible_ids``'s own ``is None`` short-circuit) wires in
+        ``ai_trader.portfolio_architect.architect.PortfolioArchitect`` (roadmap Flow B step 2/6, Phase 1:
+        PASSTHROUGH scaffold only -- CEO authorization, ``PORTFOLIO_ARCHITECT_DESIGN.md``). Placed in
+        the per-bar loop strictly AFTER the ``health_eligible_ids`` filter and strictly BEFORE
+        ``risk_manager.evaluate()`` -- the mandatory placement the CEO's own authorization specifies. In
+        PASSTHROUGH mode it is a proven no-op: the sequence handed to Risk Manager is byte-identical to
+        what it would have received with Portfolio Architect disabled.
+
+        **Shadow Evidence tap reordering, disclosed**: the CEO's own mandatory placement additionally
+        requires Portfolio Architect to run "after Shadow Evidence has observed the full score batch"
+        (i.e. Shadow's own tap must execute before the ``health_eligible_ids`` filter, before Portfolio
+        Architect, and before ``risk_manager.evaluate()``). Prior to this change the Shadow Evidence tap
+        ran strictly AFTER ``risk_manager.evaluate()`` (Phase 6.10 Checkpoint 1B's own original
+        placement). This change moves the tap call earlier in the per-bar sequence, to immediately after
+        ``score_batch``/``risk_context`` are computed. This reordering is provably behavior-preserving:
+        ``shadow_engine.observe(as_of, score_batch, risk_context)`` is a pure function of three
+        already-fully-materialized, immutable values that nothing between the old and new call sites
+        mutates (``score_batch``/``risk_context`` are frozen dataclasses; ``risk_manager.evaluate()``
+        returns a new ``RiskDecisionBatch`` without touching its own inputs) -- so WHAT Shadow observes,
+        and its own resulting state, is identical regardless of exactly when within the bar the call
+        happens. Only the wall-clock/textual call order changes, which no test observes (every existing
+        test asserts post-conditions on ``shadow_engine``'s own accumulated state, never the literal
+        order of calls within one bar). Proven directly by ``test_shadow_disabled_parity.py``'s own
+        28-test suite (including the 43-production-strategy byte-identical run) passing unmodified after
+        this reordering, and by a dedicated new regression test in
+        ``test_portfolio_architect_passthrough.py``."""
         self.context = context
         self._symbol_meta = symbol_meta
         self._data_dir = data_dir
@@ -116,6 +147,14 @@ class SimulationHarness:
         self._enable_trailing_stops = enable_trailing_stops
         self._strategy_id_filter = strategy_id_filter
         self._health_eligible_ids = health_eligible_ids
+        self._portfolio_architect_config = portfolio_architect_config
+        #: Stateless (no configure() step) -- constructed once regardless of whether it is ever
+        #: invoked; cheap, and avoids a per-bar allocation.
+        self._portfolio_architect = PortfolioArchitect()
+        #: Diagnostics-only, last-bar snapshot -- never read by this class to make any decision (design
+        #: doc §5/§10: "diagnostics must not influence the harness"). Exposed purely for test/audit
+        #: visibility. ``None`` until Portfolio Architect has been invoked at least once.
+        self.last_portfolio_architect_diagnostics: ArchitectDiagnostics | None = None
         self._trailing_entry_atr: dict[str, float] = {}  # keyed by symbol (one position per symbol)
         self.state = RunState.UNINITIALIZED
         self.fail_reason: str | None = None
@@ -376,31 +415,21 @@ class SimulationHarness:
                 tick_size = self._symbol_meta[symbol].tick_size if symbol in self._symbol_meta else 0.01
                 risk_context = _build_risk_context(ctx, as_of, tick_size, self.context.cost_model.spread_ticks)
                 portfolio_state = self.portfolio_simulator.to_portfolio_state(as_of)
-                # Strategy Health integration: `health_eligible_ids` filters ONLY the opportunity list
-                # handed to the Risk Manager below -- score_batch itself (and the shadow_engine tap
-                # two lines down) stays the full, unfiltered set Signal/Scoring Engine already
-                # computed for every configured strategy this bar. See __init__'s own docstring for
-                # why this must be a separate gate from `strategy_id_filter`.
-                risk_opportunities = (
-                    score_batch.scores if self._health_eligible_ids is None
-                    else tuple(s for s in score_batch.scores if s.strategy_id in self._health_eligible_ids)
-                )
-                decision_batch = self._risk_manager.evaluate(risk_opportunities, risk_context, portfolio_state)
-                # Phase 6.10 Implementation Checkpoint 1B: a read-only tap on the already-computed
-                # score_batch/risk_context, strictly AFTER the real decision above. shadow_engine is
-                # None unless context.shadow_config.active_strategy_ids() is non-empty (Checkpoint 1A's
-                # own disabled-by-default guarantee, unchanged); observe() never reads/writes
-                # portfolio_state, decision_batch, or any other real object -- only score_batch/
-                # risk_context, both already-produced, immutable values the real decision above already
-                # consumed. observe() already isolates a per-strategy failure internally (Design §10.1)
-                # -- this outer try/except is defense-in-depth (found during this checkpoint's own
-                # adversarial review) against any exception OUTSIDE that per-strategy boundary (e.g. a
-                # bug iterating score_batch.scores itself), so a shadow failure can NEVER fail the real
-                # run via step()'s own outer exception handler -- "competitive execution continues" is
-                # a hard guarantee, not contingent on shadow_engine's own internal code being bug-free.
-                # NOTE (Strategy Health integration): deliberately fed the FULL, unfiltered
-                # `score_batch` here, never `risk_opportunities` -- Shadow Evidence must remain active
-                # for every configured strategy regardless of its current real-trade eligibility.
+                # Phase 6.10 Implementation Checkpoint 1B, reordered for Portfolio Architect (roadmap
+                # Flow B step 2/6, CEO's own mandatory placement -- see __init__'s own docstring): a
+                # read-only tap on the already-computed score_batch/risk_context, now placed BEFORE the
+                # health_eligible_ids filter, Portfolio Architect, and the real Risk Manager decision
+                # below (previously strictly after the decision -- moving it earlier is provably
+                # behavior-preserving, see __init__'s own docstring for the full argument).
+                # shadow_engine is None unless context.shadow_config.active_strategy_ids() is non-empty
+                # (Checkpoint 1A's own disabled-by-default guarantee, unchanged); observe() never
+                # reads/writes portfolio_state, decision_batch, or any other real object -- only
+                # score_batch/risk_context, both already-produced, immutable values. observe() already
+                # isolates a per-strategy failure internally (Design §10.1) -- this outer try/except is
+                # defense-in-depth against any exception OUTSIDE that per-strategy boundary (e.g. a bug
+                # iterating score_batch.scores itself), so a shadow failure can NEVER fail the real run
+                # via step()'s own outer exception handler -- "competitive execution continues" is a
+                # hard guarantee, not contingent on shadow_engine's own internal code being bug-free.
                 if self.shadow_engine is not None:
                     try:
                         self.shadow_engine.observe(as_of, score_batch, risk_context)
@@ -409,6 +438,29 @@ class SimulationHarness:
                         # anticipate inside observe() itself.
                         self.shadow_engine.failures.append((as_of, "__engine__", repr(exc)))
                         logger.warning("Shadow Evidence: observe() raised outside its own per-strategy boundary: %r", exc)
+                # Strategy Health integration: `health_eligible_ids` filters ONLY the opportunity list
+                # handed downstream -- score_batch itself (and the shadow_engine tap above) already saw
+                # the full, unfiltered set Signal/Scoring Engine computed for every configured strategy
+                # this bar. See __init__'s own docstring for why this must be a separate gate from
+                # `strategy_id_filter`.
+                risk_opportunities = (
+                    score_batch.scores if self._health_eligible_ids is None
+                    else tuple(s for s in score_batch.scores if s.strategy_id in self._health_eligible_ids)
+                )
+                # Portfolio Architect (roadmap Flow B step 2/6, Phase 1: PASSTHROUGH scaffold only) --
+                # a new, additive, optional prioritization layer between Strategy Health's own
+                # real-eligibility filter and the Risk Manager's own decision. Disabled by default
+                # (`self._portfolio_architect_config is None`): no call is made at all, and
+                # `architected_opportunities` is then the exact same object as `risk_opportunities`.
+                if self._portfolio_architect_config is None:
+                    architected_opportunities = risk_opportunities
+                else:
+                    architect_result = self._portfolio_architect.evaluate(
+                        risk_opportunities, portfolio_state, as_of, self._portfolio_architect_config,
+                    )
+                    architected_opportunities = architect_result.opportunities
+                    self.last_portfolio_architect_diagnostics = architect_result.diagnostics
+                decision_batch = self._risk_manager.evaluate(architected_opportunities, risk_context, portfolio_state)
                 for decision in decision_batch.decisions:
                     if decision.decision is Decision.ALLOW:
                         status = self._execution_engine.execute(decision, portfolio_state)

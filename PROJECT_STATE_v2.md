@@ -1149,6 +1149,89 @@ trade present belongs to a strategy that was actually eligible).
 (environment-blocked). Awaiting CEO verdict on whether this may be declared COMPLETE. Portfolio
 Architect (roadmap step 2) has NOT been authorized and has not begun.**
 
+**Update (2026-07-21): CEO verdict ACCEPTED — STRATEGY HEALTH INTEGRATION COMPLETE** (commits `dc79cb5`/
+`eb6f9eb`). Portfolio Architect design work subsequently authorized and delivered
+(`PORTFOLIO_ARCHITECT_DESIGN.md`, commit `1ea29c9`) — see §8.25 for the Phase 1 implementation that
+followed.
+
+### 8.25 Portfolio Architect — Phase 1 IMPLEMENTED (PASSTHROUGH scaffold, roadmap Flow B step 2/6, 2026-07-21)
+
+**CEO authorization, verbatim scope**: PHASE 1 AUTHORIZED — PASSTHROUGH SCAFFOLD ONLY. Introduce and
+validate the Portfolio Architect integration seam while preserving byte-identical existing behavior; do
+not implement an active arbitration policy; do not resolve the 7 open policy decisions from
+`PORTFOLIO_ARCHITECT_DESIGN.md` §14. Mandatory placement: after Signal Engine, after Scoring Engine,
+after Shadow Evidence has observed the full score batch, after Strategy Health real-eligibility
+filtering, before Risk Manager evaluation.
+
+**Files created**: `ai_trader/portfolio_architect/{__init__.py,types.py,architect.py}` — a new,
+stateless `PortfolioArchitect` class with one public method, `evaluate(opportunities, portfolio_state,
+as_of, config) -> PortfolioArchitectResult`. `ArchitectMode.PASSTHROUGH` is the only supported mode;
+any other mode raises rather than silently falling back. In PASSTHROUGH mode the output
+`opportunities` tuple is always exactly the input — same objects, same order, same `rank` values — plus
+an `ArchitectDiagnostics` record (policy_version/mode/as_of/input_count/output_count) that is
+diagnostics-only and never read by the harness to make any decision.
+`ai_trader/portfolio_architect/tests/test_architect.py` — 8 unit tests. All pass.
+`ai_trader/simulation/tests/test_portfolio_architect_passthrough.py` — 8 harness-level tests over real
+strategy runtimes/real data. All pass.
+
+**File modified**: `ai_trader/simulation/harness.py` — additive `portfolio_architect_config:
+PortfolioArchitectConfig | None = None` constructor parameter (default `None`: no call made at all,
+stronger than a PASSTHROUGH-mode call), inserted between the existing `health_eligible_ids` filter and
+`risk_manager.evaluate()`. 78 insertions / 26 deletions total.
+
+**Discovered discrepancy, disclosed and resolved**: the CEO's own mandatory placement requires Portfolio
+Architect to run "after Shadow Evidence has observed the full score batch." Prior to this change, the
+Shadow Evidence tap (`shadow_engine.observe()`) ran strictly AFTER `risk_manager.evaluate()` (Phase 6.10
+Checkpoint 1B's own original placement) — the opposite of what the mandatory order requires. Resolved by
+moving the Shadow Evidence tap earlier in the per-bar loop, to immediately after `score_batch`/
+`risk_context` are computed, before the `health_eligible_ids` filter and before Portfolio Architect. This
+reordering is provably behavior-preserving: `observe()` is a pure function of three already-materialized,
+immutable values nothing between the old and new call sites mutates. Proven directly: the full
+`test_shadow_disabled_parity.py` suite (28 tests, including the 43-production-strategy byte-identical
+run) and `test_health_eligible_ids.py` (8 tests) both pass unmodified after the reorder, and a new
+dedicated test (`test_shadow_evidence_is_unaffected_by_architect_enabled_or_disabled`) directly proves
+Shadow's own accumulated evidence is identical regardless of the reordering.
+
+**Proofs, explicit** (per CEO's documentation requirements):
+- **Shadow Evidence remains independent**: still fed the full, unfiltered `score_batch` (never
+  `risk_opportunities` or `architected_opportunities`); `test_shadow_evidence_is_unaffected_by_
+  architect_enabled_or_disabled` and the reused `test_empty_health_eligible_ids_still_produces_zero_
+  real_trades_with_architect_enabled` (the Phase 6.9 lockout-cannot-recur proof, re-run with Portfolio
+  Architect enabled) both pass.
+- **Strategy Health remains authoritative for eligibility**: Portfolio Architect only ever receives the
+  already-`health_eligible_ids`-filtered set as its own input; `test_strategy_excluded_by_health_
+  remains_excluded_with_architect_enabled` proves a Strategy-Health-excluded strategy stays excluded
+  with Portfolio Architect enabled.
+- **Risk Manager remains authoritative for risk acceptance**: `test_risk_manager_may_still_reject_any_
+  architect_returned_opportunity` proves the existing `LIMIT_MAX_PER_SYMBOL` shared-slot denial/
+  attribution behavior is byte-identical with Portfolio Architect enabled.
+
+**Test results**: 722 tests passed across every affected suite —
+`ai_trader/portfolio_architect/tests/` (8), `ai_trader/strategy_health/` (72), `ai_trader/risk_manager/`
++ `ai_trader/scoring_engine/` + `ai_trader/signal_engine/` (589 combined, unit-level, confirming zero
+regression in every frozen module this touch is adjacent to), `test_portfolio_architect_passthrough.py`
+(8), the small harness-touching suite (`test_harness_integration.py`/
+`test_overlay_survives_demotion.py`/`test_conformance_vs_research_engine.py`/
+`test_risk_event_strategy_attribution.py`, 9), `test_health_eligible_ids.py` (8, re-run after the
+reorder), `test_shadow_disabled_parity.py` (28, re-run after the reorder, including the 43-strategy
+parity baseline).
+
+**Zero-diff proofs**: `git status`/`git diff --stat` confirmed empty for all five frozen Strategy Health
+modules, `shadow_gate.py`, `ai_trader/risk_manager/`, `ai_trader/signal_engine/`,
+`ai_trader/scoring_engine/`, `ai_trader/execution_engine/`, and every Flow A artifact
+(`NEXT_SESSION_FLOW_A.md`, `edge_research/`, the 3 `EDGE_*` docs). The `ai_quant_lab-alpha-discovery`
+worktree was never accessed.
+
+**Known limitations**: mypy still blocked by the same machine-level Application Control policy noted
+above (unrelated to this code). The Shadow Evidence tap reordering, while provably behavior-preserving,
+is a new KIND of touch to `harness.py` (a reorder of existing code, not purely additive like every prior
+touch) — disclosed prominently rather than treated as routine. None of the 7 open policy decisions from
+`PORTFOLIO_ARCHITECT_DESIGN.md` §14 are resolved by this phase; Phase 2 (an actual arbitration policy)
+requires its own separate CEO authorization.
+
+**Status: Portfolio Architect Phase 1 (PASSTHROUGH scaffold) IMPLEMENTED and fully validated except
+mypy. Awaiting CEO verdict. Phase 2 (active policy) has NOT been authorized and has not begun.**
+
 ## 9. Modules implemented (`ai_trader/`)
 
 | Module | Status | Notes |
@@ -1159,9 +1242,10 @@ Architect (roadmap step 2) has NOT been authorized and has not begun.**
 | `scoring_engine/` | FROZEN (READY) | scores/ranks signals; `Recommendation` enum + conflict resolution |
 | `risk_manager/` | FROZEN (READY) | sizing, guards, cooldowns, portfolio limits (incl. the single-shared-symbol-slot `LIMIT_MAX_PER_SYMBOL` constraint) |
 | `execution_engine/` | FROZEN (READY) | order construction/execution |
-| `simulation/` | NOT frozen, extensible | `SimulationHarness`/`ExecutionSimulator`/`PortfolioSimulator`/`PerformanceAnalyzer`; `time_stop.py`/`trailing_stop.py` generic overlays; THREE disclosed touches to date: the Phase 6.9 overlay-isolation fix, the Phase 6.9A `RiskEventRecord.strategy_id` field, the Phase 6.10 Checkpoint 1A/1B `shadow_config` field + Checkpoint 1B's tap call site in `harness.py` |
+| `simulation/` | NOT frozen, extensible | `SimulationHarness`/`ExecutionSimulator`/`PortfolioSimulator`/`PerformanceAnalyzer`; `time_stop.py`/`trailing_stop.py` generic overlays; disclosed touches to date: the Phase 6.9 overlay-isolation fix, the Phase 6.9A `RiskEventRecord.strategy_id` field, the Phase 6.10 Checkpoint 1A/1B `shadow_config` field + Checkpoint 1B's tap call site, the Strategy Health `health_eligible_ids` gate (§8.24), and the Portfolio Architect `portfolio_architect_config` gate + Shadow-tap reorder (§8.25) in `harness.py` |
 | `strategy_runtime/` | NOT frozen | `families/` — all 43 real evaluators; `registry.py`; `context_access.py`; `migration.py` |
-| `strategy_health/` | NOT frozen, scoring UNCHANGED since its own build | `types.py`/`metrics.py`/`scoring.py`/`classifier.py`/`evaluator.py` (frozen scoring, never touched by any phase after its own build) + `rolling_gate.py` (Phase 6.9 addition, thin wrapper) |
+| `strategy_health/` | NOT frozen, scoring UNCHANGED since its own build | `types.py`/`metrics.py`/`scoring.py`/`classifier.py`/`evaluator.py` (frozen scoring, never touched by any phase after its own build) + `rolling_gate.py` (Phase 6.9 addition, thin wrapper) + `shadow_gate.py` (§8.24, Strategy Health Integration Eligibility Policy layer, ACCEPTED COMPLETE) |
+| `portfolio_architect/` | NEW (§8.25, Phase 1 PASSTHROUGH scaffold only) | `types.py`/`architect.py::PortfolioArchitect` — stateless, one public `evaluate()` method; PASSTHROUGH is the only supported mode; no allocation/correlation/sizing/exclusion/ranking policy implemented yet |
 | `shadow_evidence/` | COMPLETE for its own scoped lifecycle (Phase 6.10, Checkpoints 1A–4, CLOSED) | `config.py::ShadowConfig`/`all_registered_strategies()`, `types.py` (data contracts incl. `ShadowStrategySummary`), `engine.py::ShadowEvidenceEngine` (full virtual position lifecycle since 1C), `aggregation.py` (Checkpoint 2 statistics), `research.py`/`comparison.py`/`portfolio_research.py` (Checkpoint 4) — generic over any configured edge/strategy set; Strategy Health integration/capital allocation remain UNSELECTED/UNDESIGNED, out of scope |
 | `market_intelligence/` | NEW (Phase 7 Checkpoint 5, DONE) | `engine.py::build_market_intelligence()` — pure, read-only "what is the market doing" snapshot (Trend/Structure/Momentum/Volatility/Liquidity/Expansion/Session/Agreement/Confidence); not wired into `harness.py` |
 | `edge_intelligence/` | NEW (Phase 7 Checkpoint 6, DONE) | `engine.py::evaluate_edges()` — pure, read-only "which edges currently exist" per-strategy PRESENT/POSSIBLE/ABSENT verdict, built on Market Intelligence + each strategy's own declared Contract; not wired into `harness.py` |
