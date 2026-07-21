@@ -17,6 +17,8 @@
 
 The battery answers **"Is it worth investigating?"** — never **"Is it true?"** A 🟢 does not assert the candidate is real; it asserts the submission is clear, honestly evidenced, disciplined, and worth the laboratory's resources.
 
+> **🟡 NEEDS BETTER EVIDENCE is not a rejection.** It simply indicates that the current submission does not yet justify additional laboratory resources. The observation may be genuinely interesting; the invitation to resubmit with stronger evidence stands.
+
 ---
 
 ## Reaching the verdict from the five critiques

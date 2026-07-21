@@ -16,7 +16,7 @@ Red Team reasons over the evidence contained in the package. It does **not** gen
 ## E3 — Provenance
 Every artifact a critique relies on must trace to an entry (with hash) in the Submission Manifest. Evidence that cannot be pinned to a hashed artifact in the package is **inadmissible**.
 
-## E4 — Falsifiability requirement
+## E4 — Checkability requirement
 A candidate with no observable evidence behind it, or one stated so it could never be checked, cannot receive **🟢 CONTINUE** on the submission alone — at best **🟡 NEEDS BETTER EVIDENCE.**
 
 ## E5 — Pre-registration

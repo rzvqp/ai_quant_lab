@@ -37,4 +37,10 @@
   event:       VERDICT              # governance event: battery ratified
   detail:      CEO authorized + ratified CRITIQUE_BATTERY v1.0 — five critiques (C1 Observation Quality, C2 Evidence Quality, C3 Alternative Explanation, C4 Claim Discipline, C5 Worth Investigating) and three verdicts (🟢 CONTINUE INVESTIGATION / 🟡 NEEDS BETTER EVIDENCE / 🔴 NOT RECOMMENDED). Quality-control framing, good-faith, lightweight. Integrated into CHARTER §8/§9/§11, review template, verdict rules. Red Team now FULLY OPERATIONAL. Battery to be revisited after several real reviews. Final authorized infrastructure task. Awaiting first Discovery Candidate + CEO review.
   entry_hash:  E2
+
+[3] 2026-07-21
+  prev_hash:   E2
+  event:       CEO_DELIVERY          # official acceptance
+  detail:      CEO ACCEPTED Red Team v1.0 as COMPLETE. Wording refinements applied: governing stance now "Every Discovery Candidate is treated as an unverified scientific observation until sufficient evidence justifies further investigation" (replaced presume-false language repo-wide); clarified 🟡 NEEDS BETTER EVIDENCE is NOT a rejection — it means the current submission does not yet justify additional laboratory resources. No further infrastructure work authorized. Red Team enters OPERATIONAL STANDBY, awaiting first Discovery Candidate via official Alpha→Red Team interface.
+  entry_hash:  E3
 ```

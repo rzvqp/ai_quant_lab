@@ -5,7 +5,7 @@
 
 > This document is frozen as the official charter of Red Team. Any later change requires a new explicit CEO decision and a version note (see [VERSIONING](#12-versioning)).
 
-> **Governing presumption:** a Discovery Candidate carries the burden of showing it is worth further resources; Red Team does not assume the candidate's claim is real. **But Alpha is assumed to act in good faith, and candidates are evaluated fairly, not aggressively.** The objective is **quality control, not candidate destruction**, and the battery must not become an obstacle that rejects nearly every candidate.
+> **Governing stance:** *Every Discovery Candidate is treated as an unverified scientific observation until sufficient evidence justifies further investigation.* **Alpha is assumed to act in good faith, and candidates are evaluated fairly, not aggressively.** The objective is **quality control, not candidate destruction**, and the battery must not become an obstacle that rejects nearly every candidate.
 
 > **Operational state (CEO decision, 2026-07-21):** repository **ACTIVE** · governance **ACTIVE** · workflow **ACTIVE** · Critique Battery **v1.0 RATIFIED · ACTIVE**. Red Team is **fully operational** and may review Discovery Candidates submitted through the official Alpha → Red Team interface. Battery to be revisited/formalized after several real reviews, based on observed patterns.
 
@@ -187,7 +187,7 @@ Exactly one verdict per review. Verdicts are about the **submitted DC**, never a
 | Verdict | Meaning |
 |---|---|
 | 🟢 **CONTINUE INVESTIGATION** | The Discovery Candidate deserves further investigation. Advances (CEO decides next step). |
-| 🟡 **NEEDS BETTER EVIDENCE** | Interesting observation; current evidence is insufficient. May be resubmitted later. |
+| 🟡 **NEEDS BETTER EVIDENCE** | **Not a rejection** — the current submission does not yet justify additional laboratory resources. Interesting observation; may be resubmitted later with stronger evidence. |
 | 🔴 **NOT RECOMMENDED** | The current submission does not justify further laboratory resources. |
 
 The battery answers **"Is it worth investigating?"** — never **"Is it true?"** A 🟢 does not assert the candidate is real. **UNREVIEWABLE** is an *administrative intake status*, not one of the three verdicts: a package that fails intake (not frozen / incomplete / no freeze-hash) is returned unreviewed and never receives a verdict.
@@ -271,7 +271,7 @@ The bar is **"worth investigating," not "proven."** The battery must not reject 
 
 ## 17. RULES FOR COMPLETE INDEPENDENCE FROM ALPHA
 
-Full text in [INDEPENDENCE_RULES](INDEPENDENCE_RULES.md). Summary: personnel separation with recusal; one-way artifact-mediated communication; repository separation with read-only intake; presumption independence (does not assume the candidate's claim is real, while assuming Alpha's good faith); incentive independence (rewarded only for correct, defensible verdicts — never for a direction of outcome); frozen-target rule; no-remedy rule; refusal right; and a signed independence attestation on every review.
+Full text in [INDEPENDENCE_RULES](INDEPENDENCE_RULES.md). Summary: personnel separation with recusal; one-way artifact-mediated communication; repository separation with read-only intake; stance independence (each candidate treated as an unverified observation until evidence justifies further investigation, while assuming Alpha's good faith); incentive independence (rewarded only for correct, defensible verdicts — never for a direction of outcome); frozen-target rule; no-remedy rule; refusal right; and a signed independence attestation on every review.
 
 ---
 

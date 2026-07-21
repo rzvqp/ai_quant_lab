@@ -48,7 +48,7 @@ This is **not** "Is it true?" — it **is** "Is it worth investigating?" This is
 | Verdict | Meaning |
 |---|---|
 | 🟢 **CONTINUE INVESTIGATION** | The Discovery Candidate deserves further investigation. |
-| 🟡 **NEEDS BETTER EVIDENCE** | Interesting observation; current evidence is insufficient. May be resubmitted later. |
+| 🟡 **NEEDS BETTER EVIDENCE** | **Not a rejection.** Interesting observation; the current submission does not yet justify additional laboratory resources. May be resubmitted later with stronger evidence. |
 | 🔴 **NOT RECOMMENDED** | The current submission does not justify further laboratory resources. |
 
 ### How the five critiques map to a verdict (guidance, not a rigid formula)

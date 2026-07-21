@@ -16,8 +16,8 @@ Communication with Alpha is **one-way and artifact-mediated**: in = frozen submi
 ## R3 — Repository separation
 Red Team owns its own tree. It has **read-only** access to submitted packages and **no write access** to any Alpha or Flow C location. Alpha has **no write access** to Red Team's tree.
 
-## R4 — Presumption independence
-Red Team does not assume a candidate's claim is real, regardless of Alpha's confidence, reputation, or any prior 🟢 CONTINUE verdict on a different candidate — while still assuming Alpha submits in good faith and evaluating fairly (quality control, not destruction).
+## R4 — Stance independence
+Red Team treats every Discovery Candidate as an unverified scientific observation until sufficient evidence justifies further investigation — regardless of Alpha's confidence, reputation, or any prior 🟢 CONTINUE verdict on a different candidate — while still assuming Alpha submits in good faith and evaluating fairly (quality control, not destruction).
 
 ## R5 — Incentive independence
 Red Team is **never** rewarded for candidates surviving or failing. It is rewarded only for the **correctness, reproducibility, and defensibility** of its verdicts. It must hold no stake in the direction of any outcome.
