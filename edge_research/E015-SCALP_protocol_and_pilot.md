@@ -357,3 +357,22 @@ pilot is **not** retried under this verdict (that step is gated on verdict A or 
 3. If a plan upgrade or alternative feed resolves the underlying limitation, Phase 0 can be
    re-attempted directly against the already-frozen 5-event pilot sample with **no changes needed**
    to this remediation's own code — the fix is orthogonal to the data-availability question.
+
+### Higher-timeframe handoff test (CEO-directed, 2026-07-22) — WORKFLOW FAILS
+
+Tested whether starting Bar Replay on a higher timeframe (where deep history clearly exists on
+disk) and then switching down to M1 could route around the M1-specific restriction. Protocol and
+pilot sample untouched; no new edge; E013 not resumed.
+
+- **4H, requesting the oldest frozen pilot date (2023-03-22)**: `replay.start()` failed immediately
+  with `DATA_UNAVAILABLE` — same native toast: *"Data point unavailable — The selected date is not
+  available for playback."* Could not proceed to the timeframe-switch step at all.
+- **Boundary check, 4H and D1, progressively more recent dates (2025-06-01, 07-01, 07-14, 07-19 —
+  the last only ~2 days before this test's own real-world "now")**: **every single attempt failed
+  identically**, on both timeframes, including the date only 2 days back.
+
+**Result: workflow FAILS.** The restriction is not M1-specific — Bar Replay seeking to any past
+point fails identically on M1, 4H, and D1, regardless of how recent the date is, on this
+TradingView connection. This further supports (does not merely repeat) the Phase 0A conclusion: a
+plan/subscription-level restriction on Bar Replay itself, not a timeframe- or code-specific defect.
+The proposed HTF-then-switch-to-M1 route does not exist as a viable workaround on this account.
