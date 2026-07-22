@@ -44,6 +44,7 @@ from ai_trader.context_memory.enums import (
     ContextTrendDirection,
     ContextVolatilityRegime,
     HorizonUnit,
+    OutcomeKind,
     OutcomeStatus,
     SourceType,
 )
@@ -222,4 +223,5 @@ def decode_outcome(payload: dict[str, Any]) -> Outcome:
         resolution_as_of=payload["resolution_as_of"],
         cost_model_ref=payload["cost_model_ref"],
         source_type=SourceType(payload["source_type"]),
+        outcome_kind=OutcomeKind(payload["outcome_kind"]),
     )

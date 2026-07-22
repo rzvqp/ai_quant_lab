@@ -7,7 +7,7 @@ import dataclasses
 import pytest
 
 from ai_trader.context_memory.contracts import ObservationId
-from ai_trader.context_memory.enums import OutcomeStatus, SourceType
+from ai_trader.context_memory.enums import OutcomeKind, OutcomeStatus, SourceType
 from ai_trader.context_memory.identities import compute_edge_evidence_id
 from ai_trader.context_memory.tests._fixtures import AS_OF, make_pending_outcome
 from ai_trader.context_memory.validation import ContextMemoryValidationError
@@ -145,6 +145,47 @@ def test_id_differs_on_status() -> None:
 
 def test_id_fixed_expected_value() -> None:
     real_observation_id = ObservationId("d0e6e3a9ac874f9e5cfc760dcb4fb3e60dfac8f5eb9b5113ebff9f2ca312f370")
-    out = make_pending_outcome(real_observation_id, strategy_id="S1", source_type=SourceType.PRICE_ONLY)
+    out = make_pending_outcome(
+        real_observation_id, strategy_id="S1",
+        source_type=SourceType.SHADOW_EVIDENCE_ADAPTER, outcome_kind=OutcomeKind.STRATEGY,
+    )
     result = compute_edge_evidence_id(out)
-    assert result.value == "f5e8193b3a5f28b36b79d2022219c152134cb35355ab2b025e0b0a8ef0b29a00"
+    assert result.value == "d165fd9e17a2eef51eef798f55187cf41fb948b79a4071fcdd830edf0c33ca7d"
+
+
+# ------------------------------------------------------------------ outcome_kind / source_type pairing
+
+
+def test_valid_strategy_shadow_pair_constructs() -> None:
+    out = make_pending_outcome(
+        OBS_ID, source_type=SourceType.SHADOW_EVIDENCE_ADAPTER, outcome_kind=OutcomeKind.STRATEGY,
+    )
+    assert out.outcome_kind is OutcomeKind.STRATEGY
+    assert out.source_type is SourceType.SHADOW_EVIDENCE_ADAPTER
+
+
+def test_valid_portfolio_real_ledger_pair_constructs() -> None:
+    out = make_pending_outcome(
+        OBS_ID, source_type=SourceType.REAL_PORTFOLIO_LEDGER, outcome_kind=OutcomeKind.PORTFOLIO,
+    )
+    assert out.outcome_kind is OutcomeKind.PORTFOLIO
+    assert out.source_type is SourceType.REAL_PORTFOLIO_LEDGER
+
+
+def test_portfolio_kind_with_shadow_adapter_source_is_rejected() -> None:
+    with pytest.raises(ContextMemoryValidationError):
+        make_pending_outcome(
+            OBS_ID, source_type=SourceType.SHADOW_EVIDENCE_ADAPTER, outcome_kind=OutcomeKind.PORTFOLIO,
+        )
+
+
+def test_strategy_kind_with_real_ledger_source_is_rejected() -> None:
+    with pytest.raises(ContextMemoryValidationError):
+        make_pending_outcome(
+            OBS_ID, source_type=SourceType.REAL_PORTFOLIO_LEDGER, outcome_kind=OutcomeKind.STRATEGY,
+        )
+
+
+def test_rejects_wrong_outcome_kind_type() -> None:
+    with pytest.raises(ContextMemoryValidationError):
+        make_pending_outcome(OBS_ID, outcome_kind="STRATEGY")  # a raw string

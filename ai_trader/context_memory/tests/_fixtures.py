@@ -21,6 +21,7 @@ from ai_trader.context_memory.enums import (
     ContextTrendDirection,
     ContextVolatilityRegime,
     HorizonUnit,
+    OutcomeKind,
     OutcomeStatus,
     SourceType,
 )
@@ -85,7 +86,8 @@ def make_pending_outcome(observation_id: ObservationId, **overrides: object) -> 
         "normalized_result": None,
         "resolution_as_of": None,
         "cost_model_ref": "GROSS_NO_COSTS",
-        "source_type": SourceType.PRICE_ONLY,
+        "source_type": SourceType.SHADOW_EVIDENCE_ADAPTER,
+        "outcome_kind": OutcomeKind.STRATEGY,
     }
     kwargs.update(overrides)
     return Outcome(**kwargs)  # type: ignore[arg-type]

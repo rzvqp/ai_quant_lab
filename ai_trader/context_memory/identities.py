@@ -137,6 +137,7 @@ def canonical_outcome(outcome: Outcome) -> dict[str, Any]:
         "resolution_as_of": outcome.resolution_as_of,
         "cost_model_ref": outcome.cost_model_ref,
         "source_type": outcome.source_type.value,
+        "outcome_kind": outcome.outcome_kind.value,
     }
 
 

@@ -15,6 +15,7 @@ from ai_trader.context_memory.enums import (
     ContextTrendDirection,
     ContextVolatilityRegime,
     HorizonUnit,
+    OutcomeKind,
     OutcomeStatus,
     SourceType,
 )
@@ -115,7 +116,8 @@ def build_populated_index(tmp_path, strategy_id: str = "S1", n_episodes: int = 3
                 observation_id=obs_id, strategy_id=strategy_id, horizon=20, horizon_unit=HorizonUnit.BARS,
                 outcome_definition_version=SchemaVersion("outcome_definition", "od-v1"), status=OutcomeStatus.RESOLVED,
                 observation_as_of=snap.as_of, normalized_result=result, resolution_as_of=snap.as_of + 10,
-                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.PRICE_ONLY,
+                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+                outcome_kind=OutcomeKind.STRATEGY,
             )
         )
     return HistoricalIndex(repo)

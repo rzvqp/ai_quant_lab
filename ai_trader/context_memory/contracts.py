@@ -35,6 +35,7 @@ from ai_trader.context_memory.enums import (
     ContextTrendDirection,
     ContextVolatilityRegime,
     HorizonUnit,
+    OutcomeKind,
     OutcomeStatus,
     SourceType,
 )
@@ -327,6 +328,13 @@ class Outcome:
     - ``INVALID``/``UNAVAILABLE`` => ``normalized_result`` is always ``None`` (an invalid/unavailable
       outcome never carries a number); ``resolution_as_of`` MAY be set (recording when resolution was
       attempted and failed) or ``None``.
+    - **(``outcome_kind``, ``source_type``) compatibility** (Learning/Research Feedback Normative Model,
+      ADR ``ADR_OUTCOME_IDENTITY_VS_SOURCE.md``, Option B): exactly the pairs
+      ``(STRATEGY, SHADOW_EVIDENCE_ADAPTER)`` and ``(PORTFOLIO, REAL_PORTFOLIO_LEDGER)`` are valid today.
+      ``SourceType.PRICE_ONLY`` -- a Checkpoint 9 placeholder for a price-only calculation method never
+      actually implemented -- currently has no valid ``outcome_kind`` pairing; it remains a defined enum
+      member (still a legitimate future ``SourceType``) but cannot back a real ``Outcome`` until it is
+      given its own explicit pairing by a future, separate decision.
 
     This checkpoint does NOT solve how a later-resolved Outcome relates to an earlier-written ``PENDING``
     row for "the same" observation/strategy/horizon slot (append-only immutability means resolving a
@@ -345,6 +353,7 @@ class Outcome:
     resolution_as_of: int | None
     cost_model_ref: str
     source_type: SourceType
+    outcome_kind: OutcomeKind
 
     def __post_init__(self) -> None:
         if not isinstance(self.observation_id, ObservationId):
@@ -368,6 +377,8 @@ class Outcome:
         require_non_empty_str(self.cost_model_ref, "Outcome.cost_model_ref")
         if not isinstance(self.source_type, SourceType):
             raise ContextMemoryValidationError(f"Outcome.source_type must be a SourceType, got {self.source_type!r}")
+        if not isinstance(self.outcome_kind, OutcomeKind):
+            raise ContextMemoryValidationError(f"Outcome.outcome_kind must be an OutcomeKind, got {self.outcome_kind!r}")
 
         if self.status is OutcomeStatus.PENDING:
             if self.normalized_result is not None or self.resolution_as_of is not None:
@@ -397,6 +408,17 @@ class Outcome:
                     f"Outcome.resolution_as_of ({self.resolution_as_of!r}) must not precede "
                     f"observation_as_of ({self.observation_as_of!r})"
                 )
+
+        valid_kind_source_pairs = {
+            (OutcomeKind.STRATEGY, SourceType.SHADOW_EVIDENCE_ADAPTER),
+            (OutcomeKind.PORTFOLIO, SourceType.REAL_PORTFOLIO_LEDGER),
+        }
+        if (self.outcome_kind, self.source_type) not in valid_kind_source_pairs:
+            raise ContextMemoryValidationError(
+                f"Outcome: invalid (outcome_kind, source_type) pair ({self.outcome_kind!r}, "
+                f"{self.source_type!r}) -- only {sorted(valid_kind_source_pairs, key=lambda p: p[0].value)} "
+                "are currently valid"
+            )
 
 
 # ---------------------------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from ai_trader.context_memory.contracts import Observation, Outcome, SchemaVersion
-from ai_trader.context_memory.enums import HorizonUnit, OutcomeStatus, SourceType
+from ai_trader.context_memory.enums import HorizonUnit, OutcomeKind, OutcomeStatus, SourceType
 from ai_trader.context_memory.evidence import (
     EVIDENCE_POLICY_VERSION,
     EvidencePolicy,
@@ -53,7 +53,8 @@ def _build(
                 observation_id=obs_id, strategy_id=edge, horizon=20, horizon_unit=HorizonUnit.BARS,
                 outcome_definition_version=OUTCOME_VERSION, status=status,
                 observation_as_of=AS_OF + i * spacing, normalized_result=result, resolution_as_of=resolution,
-                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.PRICE_ONLY,
+                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+                outcome_kind=OutcomeKind.STRATEGY,
             )
         )
     return HistoricalIndex(repo), obs_ids
@@ -262,7 +263,8 @@ def test_incompatible_outcome_definition_version_is_excluded_and_disclosed(tmp_p
                 observation_id=obs_id, strategy_id="S1", horizon=20, horizon_unit=HorizonUnit.BARS,
                 outcome_definition_version=version, status=OutcomeStatus.RESOLVED,
                 observation_as_of=AS_OF + i * 1000, normalized_result=1.0, resolution_as_of=AS_OF + i * 1000 + 10,
-                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.PRICE_ONLY,
+                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+                outcome_kind=OutcomeKind.STRATEGY,
             )
         )
     idx = HistoricalIndex(repo)
@@ -288,7 +290,8 @@ def test_aggregate_all_present_edges_is_sorted_and_independent(tmp_path: Path) -
                 observation_id=obs_id, strategy_id=sid, horizon=20, horizon_unit=HorizonUnit.BARS,
                 outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
                 observation_as_of=AS_OF, normalized_result=1.0, resolution_as_of=AS_OF + 10,
-                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.PRICE_ONLY,
+                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+                outcome_kind=OutcomeKind.STRATEGY,
             )
         )
     idx = HistoricalIndex(repo)
