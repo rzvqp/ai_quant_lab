@@ -312,3 +312,10 @@ point is that I don't skip the boring parts.
 2023 ~17/mo -> 2024 ~12/mo -> 2025 ~7/mo, on a SCALE-FREE definition (range < 0.5x rolling20 avg),
 so not a volatility artifact. Sweeps flat ~230/mo throughout. If DC-0002 needs compressions as its
 setup, its population is shrinking ~2.5x. Worth a candidate. Not judged here.
+
+### #016 — 2024-07-16 ~14:30 UTC, M15, manual.
+Range 2438-2442, volum ~2000 constant. Push la maximul zonei 2444.1 pe volum crescut (3296), apoi
+lumanare de displacement JOS: range 11.4 (vs ~2), volum 8448 = 4x media. Minim 2429.4.
+Nu s-a extins: revenire la 2438.2, volum scade 8448->6134->5678->4741.
+Varf de volum exact pe lumanarea de ruptura, apoi epuizare. Cf. m1/m2 (ruptura pe volum maxim care
+esueaza) - a treia oara cand vad volumul maxim pe lumanarea care NU continua. Nu judec. Confidence: low.
