@@ -23,3 +23,4 @@ whichever division currently owns the candidate.
 | DC-0004 | New-York-Session Prior-Day-High Sweep-Reject Is Followed By Reversion | systematic observation + descriptive analysis (OBS-0001→0013) | 2026-07-22 | v1 | FROZEN | `DC-0004_ny_session_conditioned_sweep_reject/` |
 | DC-0005 | The Third Test Of A Level Behaves Differently From The First Two | discretionary-observation, replay manual stepping | 2026-07-22 | v1 | FROZEN | `DC-0005_third_test_of_a_level/` |
 | DC-0006 | Candles With Extreme Relative Volume Frequently Fail To Extend | discretionary-observation, replay manual stepping | 2026-07-22 | v1 | FROZEN | `DC-0006_extreme_volume_candle_fails_to_extend/` |
+| DC-0007 | A Cluster Of Near-Equal Lows Is Taken And Reclaimed Within A Single Candle | discretionary-observation, replay manual stepping | 2026-07-22 | v1 | FROZEN | `DC-0007_equal_lows_swept_and_reclaimed_same_candle/` |
