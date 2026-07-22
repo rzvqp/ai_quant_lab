@@ -37,6 +37,19 @@ falsification burden.** This is why I refuse to promote.
 (break geometry uninformative) and with #005/#006 (sub-H1 structure is noise-scale). Working read:
 micro-C is **not** a mechanism, it is noise — but the *consistency of the failure* is worth more cases.
 
+## LATERAL-H4 cases (the "no prediction" test)
+| # | Date/time (UTC) | H4 regime | Compression / event | Resolution |
+|---|---|---|---|---|
+| L1 | 2024-03-27 01:15 → 08:45 | **LATERAL** (2150–2223) | micro-C coil (m2) under ~2180, then **three** marginal rejections at 2180.25 / 2180.43 | 3rd rejection produced real displacement DOWN (−7, to 2173.49) on the largest volume of the sequence (1810), at the **London open** — but the move **did not extend**; price rotated straight back to 2177.7 and settled 2175–2177 |
+
+**Reading (recorded, not judged):** in a lateral H4 the sequence produced *rotation*, not expansion.
+Under DC-0002 a lateral H4 supplies no directional bias, so no expansion is predicted — L1 is
+consistent with that in the weakest possible sense (absence of a prediction being met by absence of a
+move). It is **not** evidence for the candidate. What it does add is a distinct micro-observation
+worth more cases: **repeated** rejections at one level (3×), timed to a session open, produced
+displacement where single rejections (m1, m2) produced only failure — but the displacement died
+inside the range.
+
 ---
 ## Falsification status
 - The mechanism is **untested where it matters**: I have exactly **one** bearish-regime HTF-C case (C1).
