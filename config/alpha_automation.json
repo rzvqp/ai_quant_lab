@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "_comment_paths": "All *_path/*_file/*_directory values are resolved relative to project_path unless already absolute. Every resolved path is validated to stay inside allowed_working_directory (except mcp_config_path, which is an intentional cross-repo reference to the TradingView MCP server this session is running from).",
+
+  "project_path": "C:\\Users\\MEDION GAMING\\ai_quant_lab-alpha-automation",
+  "allowed_working_directory": "C:\\Users\\MEDION GAMING\\ai_quant_lab-alpha-automation",
+
+  "_comment_claude": "Confirmed via `claude.exe --help` on 2026-07-22 against the installed build (2.1.217, bundled with Claude Desktop; NOT on PATH on this machine). If you install the standalone `claude` CLI and put it on PATH, change claude_command to \"claude\".",
+  "claude_command": "C:\\Users\\MEDION GAMING\\AppData\\Local\\Packages\\Claude_pzs8sxrjxfjjc\\LocalCache\\Roaming\\Claude\\claude-code\\2.1.217\\claude.exe",
+
+  "_comment_mcp": "Absolute path to the TradingView MCP server config Alpha needs for chart/replay/Pine access (Phase 2.5 TVRE). This deliberately points at the sibling tradingview-mcp repo; that repo is NOT modified by this system.",
+  "mcp_config_path": "C:\\Users\\MEDION GAMING\\tradingview-mcp\\.mcp.json",
+
+  "prompt_file": "prompts\\ALPHA_AUTOMATION_CONTINUE.md",
+  "state_file": "research_log\\ALPHA_AUTONOMOUS_STATE.md",
+  "log_file": "research_log\\alpha_automation.log",
+  "stop_file": "research_log\\ALPHA_AUTOMATION.stop",
+  "lock_file": "research_log\\ALPHA_AUTOMATION.lock",
+  "pid_file": "research_log\\ALPHA_AUTOMATION.pid",
+  "session_id_file": "research_log\\ALPHA_AUTOMATION.session_id",
+  "output_directory": "research_log\\cycle_output",
+  "checkpoint_backup_directory": "research_log\\checkpoint_backups",
+
+  "_comment_session_mode": "'new' (default, safest): every cycle is an independent `claude -p` invocation with no session flags; the on-disk checkpoint is the sole source of truth. 'resume_id': after cycle 1, the returned session_id is captured and reused via --resume for later cycles (still unambiguous, still checkpoint-driven). 'continue' uses `-c` (continues the MOST RECENT conversation in this directory) and is NOT recommended if you ever open Claude Code manually in this same project, because it can silently resume the wrong session -- only use it if you are certain no manual sessions will run here.",
+  "session_mode": "new",
+
+  "output_format": "json",
+  "permission_mode": "acceptEdits",
+  "dangerously_skip_permissions": false,
+
+  "model": null,
+  "effort": null,
+  "_comment_max_turns": "NOT supported by the installed CLI (2.1.217) -- `claude --help` has no --max-turns/--max-turn-count flag. Key kept for forward compatibility; the script ignores it and logs a one-time notice if non-null.",
+  "max_turns": null,
+  "max_budget_usd": null,
+
+  "max_cycles": 5,
+  "delay_seconds": 30,
+  "retry_delay_seconds": 60,
+  "max_consecutive_failures": 3,
+  "max_consecutive_missing_marker": 2,
+  "max_consecutive_no_progress": 1,
+  "max_runtime_minutes": 240,
+
+  "log_max_size_mb": 20,
+
+  "dry_run": true,
+  "backup_state_before_cycle": true,
+  "require_continue_marker": true,
+  "stop_on_missing_state": true,
+  "stop_on_missing_prompt": true
+}

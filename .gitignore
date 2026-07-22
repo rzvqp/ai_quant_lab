@@ -2,3 +2,15 @@ venv/
 __pycache__/
 *.pyc
 .coverage
+
+# Alpha Automation -- operational/ephemeral artifacts, not research content.
+# (research_log/ALPHA_AUTONOMOUS_STATE.md itself, FIELD_JOURNAL.md, RESEARCH_MEMORY.md,
+# KNOWLEDGE_LIBRARY.md, and OBS-*.md ARE tracked -- only the orchestrator's own bookkeeping is not.)
+research_log/alpha_automation.log
+research_log/alpha_automation.log.*
+research_log/cycle_output/
+research_log/checkpoint_backups/
+research_log/ALPHA_AUTOMATION.lock
+research_log/ALPHA_AUTOMATION.pid
+research_log/ALPHA_AUTOMATION.stop
+research_log/ALPHA_AUTOMATION.session_id
