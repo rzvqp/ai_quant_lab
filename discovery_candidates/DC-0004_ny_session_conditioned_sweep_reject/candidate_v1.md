@@ -14,8 +14,8 @@
 - **holdout_cutoff**: 2025-10-23T09:15:00+00:00
 - **source_artifacts**: `research_log/OBS-0001`, `OBS-0003`, `OBS-0008`, `OBS-0012`, `OBS-0013` + scripts `obs0003_session_reject.py`, `obs0008_ny_reject_null.py`, `obs0012_reject_allcells_null.py`, `obs0013_ny_stability.py`. Data 2023-01-02 → 2025-10-23, 16,623 H1 bars.
 - **related_ids**: K01 (raw sweeps without confirmation are non-positive; conditioned sweeps are where content may live); E017; OBS-0004 (sweep depth uninformative)
-- **content_hash**: sha256:c42c8d7c646a86c2f242e25267df02a86fb2c01f88236e1a1fbacc4dd86141bb
-- **content_hash_method**: sha256 over this file's UTF-8 bytes, LF line endings, single trailing newline, with both `content_hash` occurrences replaced by the literal `PENDING`
+- **content_hash**: sha256:4560ba15e08226a9614097e1bd500db5a53d5095aa11ed02296876c64d665038
+- **content_hash_method**: sha256 over this file's UTF-8 bytes, LF line endings, single trailing newline, with both `content_hash` occurrences replaced by the literal `sha256:4560ba15e08226a9614097e1bd500db5a53d5095aa11ed02296876c64d665038`
 
 ## 1. Observation
 
@@ -71,7 +71,23 @@ Opposing evidence recorded deliberately:
 The decisive test is out-of-sample confirmation on the reserved holdout (post 2025-10-23), which is a
 CEO-gated resource and has deliberately not been spent.
 
+## 6. Library Concept Scan
+
+Concepts from the Living Knowledge Library identifiable in this event. **Listed, not judged.**
+
+| Library concept | How it appears in this event |
+|---|---|
+| **K01** raw sweeps non-positive; *confirmed/conditioned* variants carry the result | This is exactly a conditioned sweep — the condition being the session. K01 marks this as the open region. |
+| **Volatility primitive — hour-of-day profile** (4.3×, peak 13–14h UTC = NY) | The conditioning variable *is* the peak-participation window of that profile. |
+| **K04** calendar / day-of-week effects failed to replicate OOS | Session-of-day is a calendar-like conditioning variable; the cautionary precedent is present. |
+| **K05** long-beta confound | Notable: this event is a *reversion/short-side* signal — K05 records that only S1 high/pdh was short among OOS-positive candidates. |
+| **OBS-0001** generic prior-day sweep aftermath null | The direct parent result; this candidate is the session-split residue of that null. |
+| **OBS-0004** sweep depth uninformative | No depth-based refinement is available to this candidate. |
+| **E017** equal highs / lows (liquidity at repeated levels) | Prior-day high is a widely-watched reference level of the same family. |
+| **Structure primitive** (CANDIDATE-DEFERRED; residue = level-memory, ORQ-009) | The candidate presumes prior-day highs carry level memory — the exact open residue of the Structure primitive. |
+| **E-program theme** — several edges closed "NOT SUPPORTED as an Asia-specific mechanism" | A prior session-specific mechanism claim in this market did not survive; the precedent is present. |
+
 ## Handoff Statement
 
 Submitted to Red Team as a descriptive observation only. **Not** validated, **not** an edge, **not** a
-strategy, no profitability claim. Content hash: sha256:c42c8d7c646a86c2f242e25267df02a86fb2c01f88236e1a1fbacc4dd86141bb.
+strategy, no profitability claim. Content hash: sha256:4560ba15e08226a9614097e1bd500db5a53d5095aa11ed02296876c64d665038.

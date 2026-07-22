@@ -19,7 +19,8 @@
     "K05",
     "DC-0003"
   ],
-  "content_hash": "sha256:8dcf79e3f4b77e7f78d934b9c8d51b4a3bc960052b34466f19c25147f3afcdad",
+  "content_hash": "sha256:9970263b17fdbcb886955bda7bb51b2ebc60a53de824b71b62868f6315c73bab",
   "content_hash_method": "sha256 over candidate_v1.md UTF-8 bytes, LF endings, single trailing newline, content_hash occurrences replaced by literal PENDING",
-  "produced_by": "alpha_autonomous_research"
+  "produced_by": "alpha_autonomous_research",
+  "addendum": "2026-07-22: added Section 6 Library Concept Scan; hash recomputed"
 }

@@ -14,8 +14,8 @@
 - **holdout_cutoff**: 2025-10-23T09:15:00+00:00
 - **source_artifacts**: replay windows 2023-09-01→10-10; 2024-01-01→02; 2024-02→03; 2024-03-12→03-27. Screenshots `fj_run1_a/b/c`, `p1_h4_2024-03-19`, `p1_h1_2024-03-19`, `sprint_h4_bias_0320`. Field journal #003, #010, #013, #014. Ledger `research_log/LINE-A_COMPRESSION_CASES.md`.
 - **related_ids**: LINE-A; K03 (trend-efficiency gating); K05 (long-beta confound); DC-0003 (scale inversion)
-- **content_hash**: sha256:8dcf79e3f4b77e7f78d934b9c8d51b4a3bc960052b34466f19c25147f3afcdad
-- **content_hash_method**: sha256 over this file's UTF-8 bytes, LF line endings, single trailing newline, with both `content_hash` occurrences replaced by the literal `PENDING`
+- **content_hash**: sha256:9970263b17fdbcb886955bda7bb51b2ebc60a53de824b71b62868f6315c73bab
+- **content_hash_method**: sha256 over this file's UTF-8 bytes, LF line endings, single trailing newline, with both `content_hash` occurrences replaced by the literal `sha256:9970263b17fdbcb886955bda7bb51b2ebc60a53de824b71b62868f6315c73bab`
 
 ## 1. Observation
 
@@ -78,7 +78,26 @@ The falsification test that matters is a **direction/beta-matched null**, and be
 Lateral H4 makes no directional prediction under this candidate; if lateral compressions still resolve
 upward systematically, that is long beta and this candidate should die.
 
+## 6. Library Concept Scan
+
+Concepts from the Living Knowledge Library identifiable in this event. **Listed, not judged** —
+presence of a concept is neither support nor refutation. Evaluation belongs to Red Team / Statistician.
+
+| Library concept | How it appears in this event |
+|---|---|
+| **K03** trend-continuation gated by high trend-efficiency | The compression phase *is* a low-trend-efficiency state; the resolution *is* continuation. Same conditioning variable reached from observation. |
+| **K05** long-beta confound (11/13 OOS-positive are long in the 2023–25 bull) | 3 of 4 cases resolved UP inside that bull trend. |
+| **K02** breakout / expansion-chasing variants generally negative | The resolution is precisely an expansion; K02 concerns *chasing* it. |
+| **Volatility primitive — clustering** (acf1 +0.53) | Compression is a persistent low-range state; the transition is a change of volatility regime, not just of price. |
+| **Volatility primitive — daily range persistence** (+0.26, OBS-0016) | The compression persists across days before resolving. |
+| **Volatility primitive — hour-of-day profile** (4.3×, NY-open peak) | C4's resolution developed across the London/NY hours. |
+| **Trend primitive** (lab status: CANDIDATE) | "H4 bias" is a trend read; the candidate depends on it being determinable. |
+| **Structure primitive** (lab status: CANDIDATE-DEFERRED) | Consolidation boundaries are structural levels (2145 / 2195). |
+| **LINE-B** — failed excursion bounds a consolidation | C4's ceiling (2195) was itself a prior failed excursion high. |
+| **Recurring behaviour** — compression→expansion (journal #003, #010, #014) | This candidate is the formalisation of that recurrence. |
+| **E-program theme** — repeated ~52% coin-flip reversal rates at structure | Prior structure-conditioned tests in this market returned near-null. |
+
 ## Handoff Statement
 
 Submitted to Red Team as a descriptive observation only. This is **not** validated, **not** an edge,
-**not** a strategy, and carries no profitability claim. Content hash: sha256:8dcf79e3f4b77e7f78d934b9c8d51b4a3bc960052b34466f19c25147f3afcdad.
+**not** a strategy, and carries no profitability claim. Content hash: sha256:9970263b17fdbcb886955bda7bb51b2ebc60a53de824b71b62868f6315c73bab.

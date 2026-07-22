@@ -6,6 +6,23 @@ Sources: lab registries (`KNOWLEDGE_REGISTRY.md`, `EDGE_DISCOVERY_REGISTRY_v1.md
 `discovery_candidates/`) + my own `research_log/`. Lab-side entries are quoted, not paraphrased.
 
 ---
+## 0. STANDING PROCEDURE — Library Concept Scan (CEO directive, 2026-07-22)
+**Before registering any Discovery Candidate**, scan this entire library and record, as Section 6 of
+the candidate, every concept identifiable in the event: K-claims, primitives (Volatility / Trend /
+Structure), E-program themes, existing DCs, prior negative results, and recurring behaviours.
+
+Rules:
+- **List, do not judge.** Presence of a concept is neither support nor refutation.
+- Do **not** attempt to validate or reject the candidate. Evaluation belongs to Red Team and the
+  Statistician.
+- Include concepts that appear to *cut against* the candidate as readily as those that fit — the aim
+  is a complete conceptual description of the event, not a case for or against it.
+- Include *cautionary precedents* (e.g. a prior mechanism in the same family that failed OOS).
+
+Applied retroactively to DC-0002/0003/0004 on 2026-07-22 via addendum (hashes recomputed, handoff log
+appended — never edited).
+
+---
 ## 1. FROZEN DISCOVERY CANDIDATES (official)
 | ID | Title | Status | My evidence |
 |---|---|---|---|

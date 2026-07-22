@@ -14,8 +14,8 @@
 - **holdout_cutoff**: 2025-10-23T09:15:00+00:00
 - **source_artifacts**: manual M15 stepping 2024-03-20 02:15–07:30 UTC and 2024-03-26 23:00–2024-03-27 03:00 UTC; field journal #013, #014; ledger `research_log/LINE-A_COMPRESSION_CASES.md`; OBS-0017 statistical null.
 - **related_ids**: DC-0002; OBS-0017; OBS-0004; field journal #005/#006 (sub-H1 structure is noise-scale)
-- **content_hash**: sha256:d88cf4bc746d2669a7d8f806f9a2a085375ad6a12e798a9f5a4259e3cbab8720
-- **content_hash_method**: sha256 over this file's UTF-8 bytes, LF line endings, single trailing newline, with both `content_hash` occurrences replaced by the literal `PENDING`
+- **content_hash**: sha256:e56076c5c4fce6a296f77e996fe050f03ae6b27fc3b929819e8824033195ac7d
+- **content_hash_method**: sha256 over this file's UTF-8 bytes, LF line endings, single trailing newline, with both `content_hash` occurrences replaced by the literal `sha256:e56076c5c4fce6a296f77e996fe050f03ae6b27fc3b929819e8824033195ac7d`
 
 ## 1. Observation
 
@@ -73,7 +73,23 @@ Opposing evidence recorded deliberately:
 The operational question for whoever tests this is where the boundary between the two classes lies —
 plausibly where the coil range crosses some multiple of prevailing ATR, rather than at a fixed timeframe.
 
+## 6. Library Concept Scan
+
+Concepts from the Living Knowledge Library identifiable in this event. **Listed, not judged.**
+
+| Library concept | How it appears in this event |
+|---|---|
+| **OBS-0017** break geometry uninformative (n=384, CI spans 0) | Directly implicated: this candidate proposes that null arose from pooling the two scale classes. |
+| **OBS-0004** sweep depth uninformative | Same family — a geometric property of the break carrying no information at pooled scale. |
+| **K01** raw sweeps without confirmation are non-positive | micro-C marginal breaks are functionally unconfirmed sweeps; their failure is consistent with K01. |
+| **K02** breakout / expansion-chasing generally negative | micro-C is breakout-chasing at the smallest scale. |
+| **Volatility primitive — hour-of-day profile** (4.3× peak/trough) | Both micro-C cases sit in the *trough* of that profile (thin Asian tape) — so scale and liquidity are entangled here. |
+| **Volatility primitive — clustering** | The "noise amplitude" the coil boundary sits inside is the local volatility state. |
+| **Field journal #005/#006** — sub-H1 structure labels contradict the prevailing drift in thin tape | Independent prior observation that micro-scale structure is noise-scale. |
+| **DC-0002** | The HTF-C half of this candidate is DC-0002's subject; the two are complementary halves of one scale question. |
+| **E-program theme** — ~52% reversal rates on both M15 and H1 | Prior pooled-scale tests returning coin-flip outcomes. |
+
 ## Handoff Statement
 
 Submitted to Red Team as a descriptive observation only. **Not** validated, **not** an edge, **not** a
-strategy, no profitability claim. Content hash: sha256:d88cf4bc746d2669a7d8f806f9a2a085375ad6a12e798a9f5a4259e3cbab8720.
+strategy, no profitability claim. Content hash: sha256:e56076c5c4fce6a296f77e996fe050f03ae6b27fc3b929819e8824033195ac7d.

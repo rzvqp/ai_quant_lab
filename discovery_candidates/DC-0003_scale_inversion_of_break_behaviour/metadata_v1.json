@@ -19,7 +19,8 @@
     "OBS-0017",
     "OBS-0004"
   ],
-  "content_hash": "sha256:d88cf4bc746d2669a7d8f806f9a2a085375ad6a12e798a9f5a4259e3cbab8720",
+  "content_hash": "sha256:e56076c5c4fce6a296f77e996fe050f03ae6b27fc3b929819e8824033195ac7d",
   "content_hash_method": "sha256 over candidate_v1.md UTF-8 bytes, LF endings, single trailing newline, content_hash occurrences replaced by literal PENDING",
-  "produced_by": "alpha_autonomous_research"
+  "produced_by": "alpha_autonomous_research",
+  "addendum": "2026-07-22: added Section 6 Library Concept Scan; hash recomputed"
 }
