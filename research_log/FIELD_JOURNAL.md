@@ -227,6 +227,29 @@ in the NY lead slightly rather than lowering it.
 Lesson I want to keep: I spent multiple sessions unable to define "compression" while the definition
 sat in the lab's own registry. **Consult the library earlier — after observing, but before agonising.**
 
+### #013 — 2024-03-20 ~02:15→05:45 UTC · M15 · Asia · regime: post-expansion consolidation (2145–2195)
+**Pre-registered before the outcome** (this is the point of the entry): price coiled under a micro
+ceiling at 2159.7–2159.8 — ranges contracting 1.51→1.33→1.06→0.62, volume declining 656→467→358→343,
+pinned in a ~1.3pt band, probing the ceiling four times without going through. I wrote down that
+compression should resolve into expansion but that I did not know the direction.
+
+**Resolution:** it broke UP to **2160.295** (~0.5 above the ceiling) on the **highest volume of the
+whole sequence (813)** — and failed instantly. 2159.45 → 2159.10 → 2158.69 → **2156.95**. Marginal
+break, expanding volume, ~3.3pt reversal.
+
+**What I want to catch myself doing:** my eyes want to say "marginal breaks fail — there it is again,
+and on high volume too." That is exactly the conclusion **OBS-0017 already refuted** (384 swing-high
+exceedances; overshoot magnitude uninformative, CI spans 0). One vivid pre-registered instance is
+not evidence against 384. If I had not run that test first, I would be building a candidate on this
+candle right now.
+Secondary note: the break came on the *largest* volume of the sequence and still failed — a small
+counterexample to "volume confirms breaks." n=1, noted, not believed.
+
+**Status:** no new candidate. Filed as a calibration instance. The value here is negative — it tells
+me my visual instinct on failed breaks is confidently wrong at this scale, which is worth more than
+another "interesting" note.
+→ cf. OBS-0017, LINE-A. Confidence in "marginal break fails": still **very low** (unchanged by this).
+
 ### #009 — method note
 Pausing is not instantaneous. Between seeing something and issuing pause, autoplay advanced ~6 days
 (Jan 2 → ~Jan 8). So I cannot freeze on the exact candle that caught my eye — I can only stop
