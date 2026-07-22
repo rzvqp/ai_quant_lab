@@ -307,3 +307,8 @@ sessions begin. Keep watching rather than jumping ahead to find something intere
 point is that I don't skip the boring parts.
 
 ---
+
+### #015 — census: compressions are vanishing.
+2023 ~17/mo -> 2024 ~12/mo -> 2025 ~7/mo, on a SCALE-FREE definition (range < 0.5x rolling20 avg),
+so not a volatility artifact. Sweeps flat ~230/mo throughout. If DC-0002 needs compressions as its
+setup, its population is shrinking ~2.5x. Worth a candidate. Not judged here.
