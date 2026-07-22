@@ -365,3 +365,7 @@ Atentie: cutoff 2025-10-23, mai am ~2.5 luni de replay.
 - [QC-02] 2025-08-08 20:00-22:30 UTC: nivelul 3400.7-3401.0 respins de 5 ori consecutiv (inclusiv
   testele 3, 4, 5), fara ruptura. CONTRA-INSTANTA directa la DC-0005 ("al treilea test rupe").
   De adaugat in fisa DC-0005 la evidenta contrara, la finalul sesiunii.
+- [QC-03] 2025-08-08..11: nivelul 3401 respins de 6 ori (nu doar 3). Dupa a 6-a respingere piata a
+  plecat in DIRECTIA OPUSA (3401 -> 3386.3) cu volum exploziv 829->9544. Deci nu "al treilea test
+  rupe nivelul", ci "dupa N respingeri piata pleaca invers". Reformuleaza DC-0005? De decis la
+  documentare, nu acum.
