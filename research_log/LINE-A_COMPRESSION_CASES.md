@@ -72,3 +72,10 @@ Current position: 2024-03-27 ~03:00 UTC. H4 regime: **LATERAL** (2150–2223 aft
 
 Primul caz HTF-C care se rezolva IMPOTRIVA biasului H4. Bilant DC-0002: 4 respecta / 1 nu.
 Exact cazul cerut (H4 bearish). Inregistrat, nu judecat - evaluarea e a Red Team.
+
+**Completare C5 (26 iul):** ruptura in sus la 2418.5 NU a tinut. Pretul a coborat pana la 2353.2
+(-65pt de la varf), apoi revenire la 2390, acum 2382. Deci rezolvarea impotriva biasului H4 a fost
+ea insasi respinsa, iar directia H4 (jos) s-a impus ulterior.
+Nuanta care apare: C5 e contra-exemplu la *directia rezolvarii imediate*, dar nu la *directia
+dominanta*. Poate conteaza distinctia intre "prima rezolvare" si "rezolvarea care tine".
+Inregistrat ca atare. Nu decid eu.
