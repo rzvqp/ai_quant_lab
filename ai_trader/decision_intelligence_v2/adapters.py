@@ -73,12 +73,27 @@ def build_context_snapshot(mi_snapshot: MarketIntelligenceSnapshot) -> ContextSn
     )
 
 
-def build_present_edge_reference(strategy_id: str, contract: Contract) -> PresentEdgeReference:
-    """One `PresentEdgeReference` for a strategy Edge Intelligence classified PRESENT. `contract_version`
-    is sourced from the strategy's own already-declared `Contract.interface_version` -- never invented."""
+def build_present_edge_reference(strategy_id: str, contract: Contract, edge_state: EdgeState) -> PresentEdgeReference:
+    """One `PresentEdgeReference` for a strategy Edge Intelligence classified PRESENT or POSSIBLE.
+    `contract_version` is sourced from the strategy's own already-declared `Contract.interface_version`
+    -- never invented.
+
+    **Fidelity correction (Learning/Research Feedback Phase E, CEO decision)**: `edge_state` was
+    previously hardcoded to `EdgeState.PRESENT` regardless of the caller's own real reading -- silently
+    mislabeling a POSSIBLE edge as PRESENT for any caller that needed one (Context Memory's own
+    `ContextEdgeStatus` already carries both members precisely so this distinction can be recorded
+    honestly). This is a correction of an existing fidelity gap, not a new capability: the function's own
+    purpose ("translate a real reading, invent nothing") is unchanged, only the previously-hardcoded value
+    is now the caller-supplied real one. PRESENT behavior is unchanged (still produces
+    `ContextEdgeStatus.PRESENT` when `edge_state is EdgeState.PRESENT`)."""
+    if edge_state is EdgeState.ABSENT:
+        raise ValueError(
+            "build_present_edge_reference: edge_state must be PRESENT or POSSIBLE, never ABSENT -- "
+            "an absent edge has no PresentEdgeReference to build"
+        )
     return PresentEdgeReference(
         strategy_id=strategy_id,
         contract_version=SchemaVersion("strategy_contract", contract.interface_version),
         edge_intelligence_schema_version=EDGE_INTELLIGENCE_SCHEMA_VERSION,
-        declared_status=ContextEdgeStatus(EdgeState.PRESENT.value),
+        declared_status=ContextEdgeStatus(edge_state.value),
     )

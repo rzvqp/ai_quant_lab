@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from ai_trader.context_memory.enums import (
     ContextDataQualityState,
     ContextEdgeStatus,
@@ -13,6 +15,7 @@ from ai_trader.context_memory.enums import (
 from ai_trader.decision_intelligence_v2.adapters import build_context_snapshot, build_present_edge_reference
 from ai_trader.decision_intelligence_v2.tests._fixtures import AS_OF, make_mi_snapshot
 from ai_trader.edge_intelligence.tests._fixtures import make_contract as make_edge_contract
+from ai_trader.edge_intelligence.types import EdgeState
 from ai_trader.market_intelligence.types import ContextConfidence, MomentumState, StructureState, TrendDirection, VolatilityRegime
 
 
@@ -61,7 +64,22 @@ def test_build_context_snapshot_per_timeframe_trend_and_momentum_independent() -
 
 def test_build_present_edge_reference() -> None:
     contract = make_edge_contract(id="S1")
-    ref = build_present_edge_reference("S1", contract)
+    ref = build_present_edge_reference("S1", contract, EdgeState.PRESENT)
     assert ref.strategy_id == "S1"
     assert ref.declared_status is ContextEdgeStatus.PRESENT
     assert ref.contract_version.namespace == "strategy_contract"
+
+
+def test_build_present_edge_reference_preserves_possible_state() -> None:
+    # Fidelity correction (Learning/Research Feedback Phase E, CEO decision): the real edge_state must
+    # be preserved, never silently upgraded to PRESENT.
+    contract = make_edge_contract(id="S1")
+    ref = build_present_edge_reference("S1", contract, EdgeState.POSSIBLE)
+    assert ref.declared_status is ContextEdgeStatus.POSSIBLE
+    assert ref.strategy_id == "S1"
+
+
+def test_build_present_edge_reference_rejects_absent_state() -> None:
+    contract = make_edge_contract(id="S1")
+    with pytest.raises(ValueError):
+        build_present_edge_reference("S1", contract, EdgeState.ABSENT)
