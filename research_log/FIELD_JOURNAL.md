@@ -101,6 +101,28 @@ the noise scale — i.e. H4-ish, not M5. Worth watching whether this contradicti
 real volume returns after the holidays.
 Confidence: low, but this feels like a real constraint rather than a curiosity.
 
+### #007b — 2026-07-22 · HOLDOUT CONTAMINATION EVENT (disclosure, not market observation)
+While attempting to build the requested dual-view (H4 context + H1 replay), I exposed myself to
+post-holdout data **twice**. Recording it in full because concealing it would corrupt the lab.
+
+1. **Split layout (2h):** replay applies only to the ACTIVE pane. The H4 context pane rendered
+   **live 2026 data** — I saw gold ~4,113 with June/July 2026 dates and the recent H4 swing shape.
+2. **Layout collapse (2h → s):** the surviving chart was the pane that had NEVER been in replay.
+   It showed **live H1 June–July 2026, gold ~4,115, approx range 3,940–4,380** — and I had just
+   started autoplay on it before I checked the image.
+
+**Critical lesson:** `replay_status` reported "replay started, current_date = Jan 2024" while the
+chart was actually displaying live 2026 data. **The status API cannot be trusted after a layout
+change — only the rendered chart can.** From now on I verify replay visually before observing.
+
+What I now know that I should not: roughly where gold trades in mid-2026 and the coarse shape of
+its recent H1/H4 structure. I already knew the live price from earlier sessions (quote 4077 in
+OBS-0001), so this is an extension of existing exposure rather than a fresh category of leak.
+Impact on work done so far: none mechanically — every analysis used the fail-closed loader
+(cutoff 2025-10-23) and every replay observation was pre-cutoff. The risk is to *me*: I must not
+let 2026 knowledge shape which pre-cutoff phenomena I find interesting. Flagging it so future-me
+treats any 2025-onward "intuition" with suspicion.
+
 ### #007 — note to self
 I am watching an unusually uninformative stretch of tape (holiday). That is fine — I don't get to
 choose. But I should expect the market's "language" to change materially when Jan 2nd/3rd real
