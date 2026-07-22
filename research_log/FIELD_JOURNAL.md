@@ -319,3 +319,15 @@ lumanare de displacement JOS: range 11.4 (vs ~2), volum 8448 = 4x media. Minim 2
 Nu s-a extins: revenire la 2438.2, volum scade 8448->6134->5678->4741.
 Varf de volum exact pe lumanarea de ruptura, apoi epuizare. Cf. m1/m2 (ruptura pe volum maxim care
 esueaza) - a treia oara cand vad volumul maxim pe lumanarea care NU continua. Nu judec. Confidence: low.
+
+### #017 — 2024-07-16, sesiune completa manuala (~40 lumanari, 11:24->01:00 UTC).
+Secventa in aceeasi fereastra:
+1. range 2438-2442, volum ~2000 constant
+2. displacement JOS, range 11.4, volum 8448 (4x) -> respins integral in 6 lumanari
+3. reluare SUS, 6 lumanari verzi, volum NORMAL 3600-6200 -> a tinut, pana la 2465
+4. epuizare: volum scade 3873->1859 dar pretul urca in continuare (targat)
+5. compresie la maxim (4 lumanari in 2 puncte, volum ~1450)
+6. ruptura de maxim la 2469.8 pe volum 850 = cel mai MIC din bloc
+Deci: volum maxim = lumanarea care a esuat; volum minim = ruptura care a tinut. De 4 ori in aceeasi
+zi relatia volum-continuare e inversa fata de intuitia standard. Nu judec, nu testez. Adaug la
+observatii recurente pentru cazuri viitoare. Confidence: low.
