@@ -331,3 +331,10 @@ Secventa in aceeasi fereastra:
 Deci: volum maxim = lumanarea care a esuat; volum minim = ruptura care a tinut. De 4 ori in aceeasi
 zi relatia volum-continuare e inversa fata de intuitia standard. Nu judec, nu testez. Adaug la
 observatii recurente pentru cazuri viitoare. Confidence: low.
+
+### #018 — 2024-07-17 07:00 UTC. CONTRA-EXEMPLU la #017.
+Asia: maxim fals 2470.1 pe volum 974, se stinge. Apoi alunecare cu volum CRESCATOR (284->1762).
+Londra: ruptura reala peste 2470.1, maxim 2473.4, apoi 2476.1 pe volum 5251 (3x).
+Aici volumul mare a venit ODATA cu continuarea, nu impotriva ei - invers fata de cele 4 cazuri din
+#017. Deci relatia volum-continuare nu e stabila nici macar de la o zi la alta. Bine ca l-am gasit
+repede. Nu promovez nimic. Confidence: relatia volum-continuare scade la very low.
