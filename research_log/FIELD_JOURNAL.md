@@ -373,3 +373,11 @@ Atentie: cutoff 2025-10-23, mai am ~2.5 luni de replay.
   monoton 829->17530), pretul s-a asezat intr-o consolidare 3374-3380.3 pe 14 lumanari.
   Range per lumanare scade 5.9->4.5->3.8->2.5->2.3->2.2. Volum scade 6597->2180.
   Plafonul 3380.3 atins de 4 ori fara depasire. Fara rezolvare pana la ora scrierii.
+- [QC-05] 2025-08-01 03:40 UTC, investigatie multi-TF a unei singure rupturi.
+  M15: lumanare range 6.8pt, volum 3862 - arata ca o ruptura clara a benzii asiatice.
+  M5: nu e o miscare, ci 5 trepte mici cu volum crescand 794->1239->1464.
+  M1: TOATA miscarea e o singura lumanare 3284.11->3282.65 cu volum 459 (2.6x fata de 163-219
+  baseline). Restul minutelor = rotatie in 2.5pt.
+  => marimea aparenta pe M15 supraestimeaza masiv activitatea concentrata care a produs-o.
+  In plus: minimele M1 3281.93 / 3281.745 / 3281.785 = cluster de 3 minime aproape egale in 5 minute,
+  aceeasi geometrie ca pe M15 (11 aug), dar la scara minutului.
