@@ -362,3 +362,6 @@ Atentie: cutoff 2025-10-23, mai am ~2.5 luni de replay.
   (low 3376.6 dupa un -19pt brusc, apoi high 3404.0 peste plafonul 3400.7 testat de 2x) si inchide
   3397.3 = aproape neschimbat. Double-sided liquidity sweep intr-o singura lumanare. Nou pentru mine.
   Leaga: DC-0005 (era al 3-lea test al 3400.7), DC-0006 (volum maxim, fara continuare).
+- [QC-02] 2025-08-08 20:00-22:30 UTC: nivelul 3400.7-3401.0 respins de 5 ori consecutiv (inclusiv
+  testele 3, 4, 5), fara ruptura. CONTRA-INSTANTA directa la DC-0005 ("al treilea test rupe").
+  De adaugat in fisa DC-0005 la evidenta contrara, la finalul sesiunii.
