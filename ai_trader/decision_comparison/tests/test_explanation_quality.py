@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ai_trader.context_memory import ContextMemoryRepository, HistoricalIndex, RetrievalQuery, RetrievalStatus, aggregate_evidence, retrieve
+from ai_trader.context_memory import (
+    ContextMemoryRepository,
+    HistoricalIndex,
+    OutcomeKind,
+    RetrievalQuery,
+    RetrievalStatus,
+    aggregate_evidence,
+    retrieve,
+)
 from ai_trader.decision_comparison.explanation_quality import score_explanation_quality
 from ai_trader.decision_intelligence.types import DecisionReport
 from ai_trader.decision_intelligence_v2.explanation import explain_candidate
@@ -53,7 +61,7 @@ def test_populated_context_evidence_discloses_all_categories(tmp_path: Path) -> 
     idx = build_populated_index(tmp_path, strategy_id="S1", n_episodes=30, result=1.0)
     query = RetrievalQuery(context_snapshot=make_cm_snapshot(as_of=AS_OF), as_of_cutoff=AS_OF, edge_scope=("S1",), max_candidates=30)
     retrieval = retrieve(idx, query)
-    evidence = aggregate_evidence(idx, retrieval, "S1")
+    evidence = aggregate_evidence(idx, retrieval, "S1", OutcomeKind.STRATEGY)
     explanation = explain_candidate(retrieval, evidence)
 
     v1 = DecisionReport(symbol="XAUUSD", as_of=AS_OF, candidates=(_v1_candidate("S1"),), recommended_strategy_id="S1", comparison_notes=())

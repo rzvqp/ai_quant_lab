@@ -7,6 +7,12 @@ target, size, or a final recommendation; it never ranks edges against each other
 Decision Intelligence eligibility, ranking, or NO TRADE behavior (none of those types are even imported
 here, verified by `test_import_independence.py`).
 
+**Kind-scoped, never blended (Learning/Research Feedback Normative Model, Phase C).** `aggregate_evidence`/
+`aggregate_all_present_edges` require an explicit `outcome_kind: OutcomeKind` argument, no default, and
+filter every internal `Outcome` lookup by it in addition to `strategy_id`. A Strategy-kind and a
+Portfolio-kind `Outcome` recorded for the same `(observation, strategy_id)` can therefore never be pooled
+into the same statistic -- proven directly by `test_dual_kind_outcomes_are_never_blended_into_one_report`.
+
 **Episode-level counting (no overlapping-sample inflation).** An episode's own outcome evidence is drawn
 EXCLUSIVELY from the outcome attached to its FIRST member observation (`episode.observation_ids[0]`) --
 the same "episode's own resolution point is the first bar of the run" convention Checkpoint 8 design
@@ -52,7 +58,7 @@ import statistics
 from dataclasses import dataclass, field
 
 from ai_trader.context_memory.contracts import ContextSnapshotId, Outcome, ObservationId, SchemaVersion
-from ai_trader.context_memory.enums import OutcomeStatus
+from ai_trader.context_memory.enums import OutcomeKind, OutcomeStatus
 from ai_trader.context_memory.episodes import Episode, EpisodeId, compute_episode_id
 from ai_trader.context_memory.index import HistoricalIndex
 from ai_trader.context_memory.retrieval import RetrievalResult, RetrievalStatus
@@ -173,12 +179,22 @@ def _sign(value: float) -> int:
 
 
 def aggregate_evidence(
-    index: HistoricalIndex, retrieval: RetrievalResult, strategy_id: str, policy: EvidencePolicy | None = None,
+    index: HistoricalIndex, retrieval: RetrievalResult, strategy_id: str, outcome_kind: OutcomeKind,
+    policy: EvidencePolicy | None = None,
 ) -> ContextualEvidenceReport:
     """Build one `ContextualEvidenceReport` for `strategy_id` from an already-computed Checkpoint 12
     `RetrievalResult`. Never re-runs retrieval, never queries live market data, never imports Decision
-    Intelligence."""
+    Intelligence.
+
+    `outcome_kind` is REQUIRED, no default (Learning/Research Feedback Normative Model): every Outcome
+    lookup below filters by it in addition to `strategy_id`, so a Strategy-kind and Portfolio-kind Outcome
+    recorded for the same `(observation, strategy_id)` can never be blended into the same statistic --
+    the caller must always state which kind of evidence it wants."""
     require_non_empty_str(strategy_id, "aggregate_evidence strategy_id")
+    if not isinstance(outcome_kind, OutcomeKind):
+        raise ContextMemoryValidationError(
+            f"aggregate_evidence outcome_kind must be an OutcomeKind, got {outcome_kind!r}"
+        )
     resolved_policy = policy if policy is not None else EvidencePolicy()
 
     if retrieval.status in (RetrievalStatus.INCOMPATIBLE, RetrievalStatus.UNSUPPORTED_VERSION, RetrievalStatus.DEGRADED_DATA):
@@ -206,12 +222,15 @@ def aggregate_evidence(
     for ep in edge_episodes:
         for obs_id in ep.observation_ids:
             raw_outcome_count += len(
-                [o for o in index.outcomes_for_observation(obs_id, visible_as_of=retrieval.as_of_cutoff) if o.strategy_id == strategy_id]
+                [
+                    o for o in index.outcomes_for_observation(obs_id, visible_as_of=retrieval.as_of_cutoff)
+                    if o.strategy_id == strategy_id and o.outcome_kind is outcome_kind
+                ]
             )
         representative_id = ep.observation_ids[0]
         candidates = [
             o for o in index.outcomes_for_observation(representative_id, visible_as_of=retrieval.as_of_cutoff)
-            if o.strategy_id == strategy_id
+            if o.strategy_id == strategy_id and o.outcome_kind is outcome_kind
         ]
         if candidates:
             per_episode_outcome[compute_episode_id(ep).value] = sorted(
@@ -352,10 +371,11 @@ def _classify(
 
 
 def aggregate_all_present_edges(
-    index: HistoricalIndex, retrieval: RetrievalResult, policy: EvidencePolicy | None = None,
+    index: HistoricalIndex, retrieval: RetrievalResult, outcome_kind: OutcomeKind,
+    policy: EvidencePolicy | None = None,
 ) -> tuple[ContextualEvidenceReport, ...]:
     """Deterministic, sorted-by-`strategy_id` collection of one report per distinct PRESENT edge across
     every retrieved episode -- never a ranked comparison between edges (Checkpoint 13 §F: "do not rank
-    edges")."""
+    edges"). `outcome_kind` is REQUIRED, forwarded unchanged to every `aggregate_evidence` call."""
     strategy_ids = sorted({ref.strategy_id for m in retrieval.matches for ref in m.episode.present_edges})
-    return tuple(aggregate_evidence(index, retrieval, sid, policy) for sid in strategy_ids)
+    return tuple(aggregate_evidence(index, retrieval, sid, outcome_kind, policy) for sid in strategy_ids)

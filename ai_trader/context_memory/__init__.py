@@ -45,6 +45,7 @@ from ai_trader.context_memory.enums import (
     ContextTrendDirection,
     ContextVolatilityRegime,
     HorizonUnit,
+    OutcomeKind,
     OutcomeStatus,
     SourceType,
 )
@@ -113,6 +114,7 @@ __all__ = [
     "ContextDataQualityState",
     "ContextEdgeStatus",
     "OutcomeStatus",
+    "OutcomeKind",
     "SourceType",
     "HorizonUnit",
     "compute_context_snapshot_id",

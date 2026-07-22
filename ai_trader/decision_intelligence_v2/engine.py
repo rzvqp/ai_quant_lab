@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ai_trader.context_memory import EvidencePolicy, HistoricalIndex, RetrievalQuery, aggregate_evidence, retrieve
+from ai_trader.context_memory import EvidencePolicy, HistoricalIndex, OutcomeKind, RetrievalQuery, aggregate_evidence, retrieve
 from ai_trader.decision_intelligence.engine import make_decision
 from ai_trader.decision_intelligence.types import ResearchStats
 from ai_trader.decision_intelligence_v2.adapters import build_context_snapshot
@@ -52,7 +52,9 @@ def make_decision_v2(
                 edge_scope=(candidate.strategy_id,),
             )
             retrieval = retrieve(context_memory_index, query)
-            evidence = aggregate_evidence(context_memory_index, retrieval, candidate.strategy_id, evidence_policy)
+            evidence = aggregate_evidence(
+                context_memory_index, retrieval, candidate.strategy_id, OutcomeKind.STRATEGY, evidence_policy,
+            )
             explanation = explain_candidate(retrieval, evidence)
             candidates_v2.append(
                 DecisionCandidateV2(

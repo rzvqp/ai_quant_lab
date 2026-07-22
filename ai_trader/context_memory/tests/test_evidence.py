@@ -96,14 +96,14 @@ def test_incompatible_retrieval_yields_incompatible_evidence(tmp_path: Path) -> 
     idx, _ = _build(tmp_path, 1)
     bad_version = SchemaVersion("context_memory_retrieval", "cmr-v999")
     result = _retrieve(idx, AS_OF + 1000, retrieval_policy_version=bad_version)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.INCOMPATIBLE
 
 
 def test_no_eligible_history_yields_unavailable(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 0)
     result = _retrieve(idx, AS_OF + 1000)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.UNAVAILABLE
     assert report.episode_count == 0
 
@@ -111,14 +111,14 @@ def test_no_eligible_history_yields_unavailable(tmp_path: Path) -> None:
 def test_edge_not_present_in_retrieved_episodes_yields_unavailable(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 3, edge="S7")
     result = _retrieve(idx, AS_OF + 100_000_000)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.UNAVAILABLE
 
 
 def test_only_pending_outcomes_yields_unavailable(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 3, status=OutcomeStatus.PENDING)
     result = _retrieve(idx, AS_OF + 100_000_000)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.UNAVAILABLE
     assert report.unresolved_outcome_count == 3
     assert report.resolved_outcome_count == 0
@@ -128,7 +128,7 @@ def test_aggregate_evidence_rejects_empty_strategy_id(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 1)
     result = _retrieve(idx, AS_OF + 1000)
     with pytest.raises(ContextMemoryValidationError):
-        aggregate_evidence(idx, result, "")
+        aggregate_evidence(idx, result, "", OutcomeKind.STRATEGY)
 
 
 def test_edge_present_with_zero_outcomes_recorded_at_all_yields_unavailable(tmp_path: Path) -> None:
@@ -136,7 +136,7 @@ def test_edge_present_with_zero_outcomes_recorded_at_all_yields_unavailable(tmp_
     repo.append_observation(Observation(context_snapshot=make_snapshot(as_of=AS_OF), present_edges=(make_edge_reference("S1"),)))
     idx = HistoricalIndex(repo)
     result = _retrieve(idx, AS_OF + 1000)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.UNAVAILABLE
     assert report.raw_outcome_count == 0
 
@@ -161,7 +161,7 @@ def test_sufficient_status_at_or_above_research_layer_threshold(tmp_path: Path) 
     # 25 episodes, all with a strongly positive, low-dispersion result -> CI well clear of zero.
     idx, _ = _build(tmp_path, 30, results=[1.0] * 30, spacing=1000)
     result = _retrieve(idx, AS_OF + 40_000, edge_scope=("S1",), max_candidates=30)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.SUFFICIENT
     assert report.resolved_outcome_count >= 25
     assert report.confidence_interval_95 is not None
@@ -171,7 +171,7 @@ def test_sufficient_status_at_or_above_research_layer_threshold(tmp_path: Path) 
 def test_limited_status_below_threshold(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 5, results=[1.0] * 5, spacing=1000)
     result = _retrieve(idx, AS_OF + 10_000, max_candidates=5)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.LIMITED
     assert report.resolved_outcome_count == 5
 
@@ -181,7 +181,7 @@ def test_contradictory_status_when_ci_straddles_zero(tmp_path: Path) -> None:
     results = [1.0 if i % 2 == 0 else -1.0 for i in range(10)]
     idx, _ = _build(tmp_path, 10, results=results, spacing=1000)
     result = _retrieve(idx, AS_OF + 20_000, max_candidates=10)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.evidence_status is EvidenceStatus.CONTRADICTORY
     assert report.confidence_interval_95 is not None
     assert report.confidence_interval_95[0] <= 0.0 <= report.confidence_interval_95[1]
@@ -191,14 +191,14 @@ def test_stale_status_when_policy_threshold_configured_and_exceeded(tmp_path: Pa
     idx, _ = _build(tmp_path, 1, results=[1.0])
     result = _retrieve(idx, AS_OF + 10_000_000)
     policy = EvidencePolicy(staleness_threshold_seconds=100)
-    report = aggregate_evidence(idx, result, "S1", policy)
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY, policy)
     assert report.evidence_status is EvidenceStatus.STALE
 
 
 def test_no_staleness_check_when_threshold_not_configured(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 1, results=[1.0])
     result = _retrieve(idx, AS_OF + 10_000_000)
-    report = aggregate_evidence(idx, result, "S1")  # default policy, staleness disabled
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)  # default policy, staleness disabled
     assert report.evidence_status is not EvidenceStatus.STALE
     assert report.evidence_freshness_newest_age is not None
 
@@ -209,7 +209,7 @@ def test_no_staleness_check_when_threshold_not_configured(tmp_path: Path) -> Non
 def test_episode_aware_count_never_exceeds_episode_count(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 8, results=[0.5] * 8, spacing=1000)
     result = _retrieve(idx, AS_OF + 20_000, max_candidates=8)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.resolved_outcome_count <= report.episode_count
     assert report.raw_outcome_count >= report.resolved_outcome_count
 
@@ -221,7 +221,7 @@ def test_win_rate_and_sign_counts(tmp_path: Path) -> None:
     results = [1.0, 1.0, 1.0, -1.0, 0.0]
     idx, _ = _build(tmp_path, 5, results=results, spacing=1000)
     result = _retrieve(idx, AS_OF + 10_000, max_candidates=5)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.positive_sign_count == 3
     assert report.negative_sign_count == 1
     assert report.zero_sign_count == 1
@@ -232,7 +232,7 @@ def test_median_resistant_to_single_outlier(tmp_path: Path) -> None:
     results = [1.0, 1.1, 0.9, 1.0, 100.0]
     idx, _ = _build(tmp_path, 5, results=results, spacing=1000)
     result = _retrieve(idx, AS_OF + 10_000, max_candidates=5)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.median_normalized_result is not None
     assert report.mean_normalized_result is not None
     assert report.median_normalized_result < report.mean_normalized_result
@@ -241,7 +241,7 @@ def test_median_resistant_to_single_outlier(tmp_path: Path) -> None:
 def test_limitations_always_disclose_normal_approximation_caveat(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 3, results=[1.0, 1.0, 1.0], spacing=1000)
     result = _retrieve(idx, AS_OF + 5_000, max_candidates=3)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert any("NORMAL-APPROXIMATION" in lim for lim in report.limitations)
 
 
@@ -269,7 +269,7 @@ def test_incompatible_outcome_definition_version_is_excluded_and_disclosed(tmp_p
         )
     idx = HistoricalIndex(repo)
     result = _retrieve(idx, AS_OF + 5_000, max_candidates=3)
-    report = aggregate_evidence(idx, result, "S1")
+    report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert report.resolved_outcome_count == 2
     assert report.excluded_incompatible_outcome_count == 1
     assert any("outcome_definition_version" in lim for lim in report.limitations)
@@ -296,7 +296,7 @@ def test_aggregate_all_present_edges_is_sorted_and_independent(tmp_path: Path) -
         )
     idx = HistoricalIndex(repo)
     result = _retrieve(idx, AS_OF + 1000)
-    reports = aggregate_all_present_edges(idx, result)
+    reports = aggregate_all_present_edges(idx, result, OutcomeKind.STRATEGY)
     assert [r.target_strategy_id for r in reports] == ["S2", "S9"]  # deterministic sort, never a ranking
 
 
@@ -306,6 +306,115 @@ def test_aggregate_all_present_edges_is_sorted_and_independent(tmp_path: Path) -
 def test_aggregation_is_deterministic(tmp_path: Path) -> None:
     idx, _ = _build(tmp_path, 6, results=[0.2, 0.4, -0.1, 0.3, 0.5, -0.2], spacing=1000)
     result = _retrieve(idx, AS_OF + 10_000, max_candidates=6)
-    r1 = aggregate_evidence(idx, result, "S1")
-    r2 = aggregate_evidence(idx, result, "S1")
+    r1 = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
+    r2 = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
     assert r1 == r2
+
+
+# ------------------------------------------------------------------ outcome_kind requirement (Phase C)
+
+
+def test_omitting_outcome_kind_raises_type_error(tmp_path: Path) -> None:
+    idx, _ = _build(tmp_path, 1)
+    result = _retrieve(idx, AS_OF + 1000)
+    with pytest.raises(TypeError):
+        aggregate_evidence(idx, result, "S1")  # type: ignore[call-arg]
+
+
+def test_wrong_type_outcome_kind_raises(tmp_path: Path) -> None:
+    idx, _ = _build(tmp_path, 1)
+    result = _retrieve(idx, AS_OF + 1000)
+    with pytest.raises(ContextMemoryValidationError):
+        aggregate_evidence(idx, result, "S1", "STRATEGY")  # type: ignore[arg-type]
+
+
+def test_omitting_outcome_kind_on_aggregate_all_present_edges_raises_type_error(tmp_path: Path) -> None:
+    idx, _ = _build(tmp_path, 1)
+    result = _retrieve(idx, AS_OF + 1000)
+    with pytest.raises(TypeError):
+        aggregate_all_present_edges(idx, result)  # type: ignore[call-arg]
+
+
+def _build_dual_kind_single_episode(tmp_path: Path, *, strategy_result: float, portfolio_result: float) -> HistoricalIndex:
+    """One observation/episode carrying BOTH a (STRATEGY, SHADOW_EVIDENCE_ADAPTER) and a
+    (PORTFOLIO, REAL_PORTFOLIO_LEDGER) Outcome for the same strategy_id -- the minimal fixture needed to
+    prove `aggregate_evidence` cannot blend the two kinds into one statistic."""
+    repo = ContextMemoryRepository(tmp_path / "repo")
+    ref = make_edge_reference("S1")
+    obs_id = repo.append_observation(Observation(context_snapshot=make_snapshot(as_of=AS_OF), present_edges=(ref,)))
+    repo.append_outcome(
+        Outcome(
+            observation_id=obs_id, strategy_id="S1", horizon=20, horizon_unit=HorizonUnit.BARS,
+            outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
+            observation_as_of=AS_OF, normalized_result=strategy_result, resolution_as_of=AS_OF + 10,
+            cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+            outcome_kind=OutcomeKind.STRATEGY,
+        )
+    )
+    repo.append_outcome(
+        Outcome(
+            observation_id=obs_id, strategy_id="S1", horizon=20, horizon_unit=HorizonUnit.BARS,
+            outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
+            observation_as_of=AS_OF, normalized_result=portfolio_result, resolution_as_of=AS_OF + 10,
+            cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.REAL_PORTFOLIO_LEDGER,
+            outcome_kind=OutcomeKind.PORTFOLIO,
+        )
+    )
+    return HistoricalIndex(repo)
+
+
+def test_dual_kind_outcomes_are_never_blended_into_one_report(tmp_path: Path) -> None:
+    # Load-bearing test for Phase C: both kinds are engineered to differ (1.0 vs -1.0) so any blending
+    # (mean, count, or otherwise) would be immediately visible in either report's own numbers.
+    idx = _build_dual_kind_single_episode(tmp_path, strategy_result=1.0, portfolio_result=-1.0)
+    result = _retrieve(idx, AS_OF + 1000)
+
+    strategy_report = aggregate_evidence(idx, result, "S1", OutcomeKind.STRATEGY)
+    portfolio_report = aggregate_evidence(idx, result, "S1", OutcomeKind.PORTFOLIO)
+
+    assert strategy_report.resolved_outcome_count == 1
+    assert strategy_report.mean_normalized_result == 1.0
+    assert portfolio_report.resolved_outcome_count == 1
+    assert portfolio_report.mean_normalized_result == -1.0
+    assert strategy_report.mean_normalized_result != portfolio_report.mean_normalized_result
+
+
+def test_strategy_kind_statistics_are_independent_of_portfolio_kind_row_count(tmp_path: Path) -> None:
+    # Invariant (DoD Phase C §6): adding/removing PORTFOLIO-kind rows for the same episode must not
+    # change the STRATEGY-kind aggregation's own numbers at all.
+    idx_without_portfolio, _ = _build(tmp_path / "a", 3, results=[1.0, 1.0, 1.0], spacing=1000)
+    result_without = _retrieve(idx_without_portfolio, AS_OF + 5_000, max_candidates=3)
+    report_without = aggregate_evidence(idx_without_portfolio, result_without, "S1", OutcomeKind.STRATEGY)
+
+    repo_with = ContextMemoryRepository(tmp_path / "b")
+    ref = make_edge_reference("S1")
+    for i in range(3):
+        snap = make_snapshot(as_of=AS_OF + i * 1000, session_state=f"SESSION_{i}")
+        obs_id = repo_with.append_observation(Observation(context_snapshot=snap, present_edges=(ref,)))
+        repo_with.append_outcome(
+            Outcome(
+                observation_id=obs_id, strategy_id="S1", horizon=20, horizon_unit=HorizonUnit.BARS,
+                outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
+                observation_as_of=AS_OF + i * 1000, normalized_result=1.0, resolution_as_of=AS_OF + i * 1000 + 10,
+                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+                outcome_kind=OutcomeKind.STRATEGY,
+            )
+        )
+        # An extra PORTFOLIO-kind row for the SAME observation/strategy_id -- must have zero effect on
+        # the STRATEGY-kind aggregation computed below.
+        repo_with.append_outcome(
+            Outcome(
+                observation_id=obs_id, strategy_id="S1", horizon=20, horizon_unit=HorizonUnit.BARS,
+                outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
+                observation_as_of=AS_OF + i * 1000, normalized_result=-99.0, resolution_as_of=AS_OF + i * 1000 + 10,
+                cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.REAL_PORTFOLIO_LEDGER,
+                outcome_kind=OutcomeKind.PORTFOLIO,
+            )
+        )
+    idx_with_portfolio = HistoricalIndex(repo_with)
+    result_with = _retrieve(idx_with_portfolio, AS_OF + 5_000, max_candidates=3)
+    report_with = aggregate_evidence(idx_with_portfolio, result_with, "S1", OutcomeKind.STRATEGY)
+
+    assert report_with.resolved_outcome_count == report_without.resolved_outcome_count
+    assert report_with.mean_normalized_result == report_without.mean_normalized_result
+    assert report_with.confidence_interval_95 == report_without.confidence_interval_95
