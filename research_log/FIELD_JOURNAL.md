@@ -338,3 +338,9 @@ Londra: ruptura reala peste 2470.1, maxim 2473.4, apoi 2476.1 pe volum 5251 (3x)
 Aici volumul mare a venit ODATA cu continuarea, nu impotriva ei - invers fata de cele 4 cazuri din
 #017. Deci relatia volum-continuare nu e stabila nici macar de la o zi la alta. Bine ca l-am gasit
 repede. Nu promovez nimic. Confidence: relatia volum-continuare scade la very low.
+
+### #019 — 2024-07-19..24. CONTRA-EXEMPLU DC-0002.
+19 iul: -66pt (-2.7%) 2470->2396, volum crescator pe coborare. H4 devine descendent.
+22-23 iul: compresie 3 zile, 2384-2414, volum plat.
+24 iul: rezolvare IN SUS la 2418.5, impotriva biasului H4 descendent.
+Primul contra-exemplu real. DC-0002 acum 4/5. Nu il retrag, nu il apar - il notez.

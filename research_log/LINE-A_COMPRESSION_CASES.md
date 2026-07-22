@@ -66,3 +66,9 @@ Advance chronologically and log every HTF-C encountered, prioritising:
 3. any HTF-C that resolves *against* the H4 bias (would be the most valuable single observation).
 
 Current position: 2024-03-27 ~03:00 UTC. H4 regime: **LATERAL** (2150–2223 after the March expansion).
+
+## CONTRA-EXEMPLU la DC-0002 (2024-07-19..24)
+| C5 | 2024-07-22..24 | **BEARISH** (dupa -66pt / -2.7% pe 19 iul, de la 2470 la 2396) | compresie 3 zile, range 25-30pt, lateral 2384-2414, volum plat ~2450 | **UP** la 2418.5, peste plafonul de 3 zile | ❌ **NU** respecta biasul H4 |
+
+Primul caz HTF-C care se rezolva IMPOTRIVA biasului H4. Bilant DC-0002: 4 respecta / 1 nu.
+Exact cazul cerut (H4 bearish). Inregistrat, nu judecat - evaluarea e a Red Team.
