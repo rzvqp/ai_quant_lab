@@ -250,6 +250,49 @@ me my visual instinct on failed breaks is confidently wrong at this scale, which
 another "interesting" note.
 → cf. OBS-0017, LINE-A. Confidence in "marginal break fails": still **very low** (unchanged by this).
 
+### #014 — 2024-03-20 → 03-27 · sprint traverse · H4 bias bullish-corrective · **the compression resolved**
+This is the entry I have been waiting for, because I called the setup **before** the outcome and then
+the outcome was violent.
+
+**What I had written down in advance (#013 and the sprint open):** H4 bullish but corrective, lower
+highs 2195→2180→2170→2160, consolidation 2145–2195, volatility contracting, and on M15 an
+effort-without-result signature into London (volume 573→801 while range stayed ~1pt, price pinned).
+Low efficiency. I explicitly said I did not know the direction.
+
+**Outcome:** it broke **up**, hard. Through the 2195 range high and on to **2222.9** — a new high,
++67 from the 2155 coil. Range per 100 bars went 15.3 → 56.5; average volume 1028 → 2209. Then a
+second failed excursion at the round 2200 on Mar 26 (spike, rejected back to ~2178).
+
+**The refinement this forces — and it is sharper than anything I've had:** across every compression
+I've now watched, the resolution went **in the direction of the prevailing H4 bias**, not in the
+direction the micro-structure suggested:
+- #003 Oct 2023 — H4 declining → resolved DOWN
+- LINE-A W1 Jan–Feb 2024 — H4 bullish → resolved UP (+10%)
+- Feb→Mar 2024 — H4 bullish → resolved UP (vertical)
+- **Mar 2024 (this one, called in advance)** — H4 bullish → resolved UP
+So compression may be a **timing/energy** condition, while the **higher timeframe supplies the
+direction.** That is testable and much less vague than "churn → signals fail."
+
+**Now I attack it, and the library does most of the damage:**
+- **K03**: this is close to "trend continuation gated by high trend-efficiency" — already tested,
+  already weak (+.02R OOS, threshold-selected, "does NOT demonstrate a validated efficiency effect").
+  My compression = their low-efficiency state; my "resolves with H4 bias" = their continuation.
+- **K05 is the killer**: 2023–2025 is a gold bull trend, and 3 of my 4 resolutions were UP. "Resolves
+  in the direction of the H4 bias" in a bull market is operationally "goes up" — i.e. long beta,
+  exactly the 11-of-13-long confound the lab has flagged as UNRESOLVED. My sample is too
+  bull-contaminated to distinguish timing-alpha from beta.
+- The single non-long resolution (#003, Oct 2023 down) is therefore worth more than the other three
+  combined. I need down-trend compressions, and I have exactly one.
+
+**Status: NOT a Discovery Candidate.** It is the strongest thing I have, but it cannot be promoted
+until it is tested against a **direction/beta-matched null** — which is precisely the test K05 says
+is missing lab-wide. Promoting it now would be manufacturing a candidate out of gold's bull market.
+**Next research step (chart, not Python):** hunt compressions specifically in *down* or *flat* H4
+regimes. If compression resolves down when H4 is bearish, the mechanism survives; if compressions
+only ever resolve up, I have found long beta and nothing else.
+→ LINE-A (now reframed), cf. K03, K05, #003, #013. Confidence: low-medium in the *shape*, very low
+that it is anything beyond K03+beta.
+
 ### #009 — method note
 Pausing is not instantaneous. Between seeing something and issuing pause, autoplay advanced ~6 days
 (Jan 2 → ~Jan 8). So I cannot freeze on the exact candle that caught my eye — I can only stop
