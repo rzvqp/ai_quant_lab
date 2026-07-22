@@ -36,10 +36,18 @@ from ai_trader.learning_feedback.capture import (
     CorrelationRunMismatchError,
     DuplicateDecisionCaptureError,
     PendingCapture,
+    PendingPosition,
+    PositionCorrelationMap,
     capture_decision_observation,
     capture_operational_metadata,
+    capture_portfolio_interim,
     capture_portfolio_resolution,
+    capture_portfolio_terminal,
+    capture_strategy_interim,
     capture_strategy_resolution,
+    capture_strategy_terminal,
+    promote_opening_fill,
+    register_flip_position,
     register_pending_correlation,
 )
 from ai_trader.risk_manager.types import (
@@ -547,3 +555,398 @@ def test_no_module_in_learning_feedback_imports_harness() -> None:
             continue  # this test's own source literally contains the string under test, by necessity
         source = py_file.read_text(encoding="utf-8")
         assert "ai_trader.simulation.harness" not in source, f"{py_file} references harness.py"
+
+
+# =====================================================================================================
+# Position-scoped correlation (Architectural Decision Package, Decisions 1-3)
+# =====================================================================================================
+
+POSITION_KEY_A = "run-2026-07-22-A:XAUUSD:1700000000:LONG"
+POSITION_KEY_B = "run-2026-07-22-A:XAUUSD:1700000900:SHORT"
+
+
+def _pending_position(observation_id: ObservationId, **overrides: object) -> PendingPosition:
+    kwargs: dict[str, object] = {
+        "run_id": RUN_ID, "position_key": POSITION_KEY_A, "strategy_id": "S1", "symbol": "XAUUSD",
+        "outcome_kind": OutcomeKind.PORTFOLIO, "observation_id": observation_id,
+        "cost_model_ref": COST_MODEL_REF, "decision_as_of": AS_OF,
+    }
+    kwargs.update(overrides)
+    return PendingPosition(**kwargs)  # type: ignore[arg-type]
+
+
+# ------------------------------------------------------------------ PositionCorrelationMap basics
+
+
+def test_position_map_register_and_get_happy_path() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    entry = _pending_position(ObservationId("x" * 64))
+    pm.register(entry)
+    assert pm.is_pending(POSITION_KEY_A)
+    assert pm.get(POSITION_KEY_A) == entry
+
+
+def test_position_map_get_does_not_retire() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    pm.get(POSITION_KEY_A)
+    pm.get(POSITION_KEY_A)
+    assert pm.is_pending(POSITION_KEY_A)  # still pending after repeated peeks
+    assert not pm.is_resolved(POSITION_KEY_A)
+
+
+def test_position_map_retire_pops_and_marks_resolved() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    retired = pm.retire(RUN_ID, POSITION_KEY_A)
+    assert retired is not None
+    assert not pm.is_pending(POSITION_KEY_A)
+    assert pm.is_resolved(POSITION_KEY_A)
+    assert pm.retire(RUN_ID, POSITION_KEY_A) is None  # duplicate retire is a miss, never raises
+
+
+def test_position_map_unknown_key_returns_none() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    assert pm.get("never-registered") is None
+    assert pm.retire(RUN_ID, "never-registered") is None
+
+
+def test_position_map_duplicate_registration_raises() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    with pytest.raises(DuplicateDecisionCaptureError):
+        pm.register(_pending_position(ObservationId("y" * 64)))
+
+
+def test_position_map_run_mismatch_raises() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    with pytest.raises(CorrelationRunMismatchError):
+        pm.register(_pending_position(ObservationId("x" * 64), run_id="a-different-run"))
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    with pytest.raises(CorrelationRunMismatchError):
+        pm.retire("a-different-run", POSITION_KEY_A)
+
+
+def test_position_map_drain_pending_retires_everything() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    pm.register(_pending_position(ObservationId("y" * 64), position_key=POSITION_KEY_B))
+    drained = pm.drain_pending()
+    assert {e.position_key for e in drained} == {POSITION_KEY_A, POSITION_KEY_B}
+    assert pm.pending_count() == 0
+    assert pm.is_resolved(POSITION_KEY_A)
+    assert pm.is_resolved(POSITION_KEY_B)
+
+
+def test_position_map_drain_pending_is_idempotent() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    first = pm.drain_pending()
+    second = pm.drain_pending()
+    assert len(first) == 1
+    assert second == ()
+
+
+# ------------------------------------------------------------------ promote_opening_fill
+
+
+def test_promote_opening_fill_happy_path(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    assert register_pending_correlation(cm, _pending(obs_id, outcome_kind=OutcomeKind.PORTFOLIO))
+
+    ok = promote_opening_fill(
+        cm, pm, RUN_ID, "CID-S1|XAUUSD|1700000000", POSITION_KEY_A, OutcomeKind.PORTFOLIO,
+    )
+    assert ok is True
+    assert pm.is_pending(POSITION_KEY_A)
+    assert not cm.is_pending("CID-S1|XAUUSD|1700000000")  # decision-time candidate consumed
+    entry = pm.get(POSITION_KEY_A)
+    assert entry is not None
+    assert entry.observation_id == obs_id
+    assert entry.strategy_id == "S1"
+
+
+def test_promote_opening_fill_unknown_client_order_id_returns_false() -> None:
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    ok = promote_opening_fill(cm, pm, RUN_ID, "NEVER-REGISTERED", POSITION_KEY_A, OutcomeKind.PORTFOLIO)
+    assert ok is False
+    assert pm.pending_count() == 0
+
+
+def test_promote_opening_fill_kind_mismatch_returns_false(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    assert register_pending_correlation(cm, _pending(obs_id, outcome_kind=OutcomeKind.STRATEGY))
+
+    ok = promote_opening_fill(
+        cm, pm, RUN_ID, "CID-S1|XAUUSD|1700000000", POSITION_KEY_A, OutcomeKind.PORTFOLIO,
+    )
+    assert ok is False
+    assert pm.pending_count() == 0
+
+
+# ------------------------------------------------------------------ register_flip_position
+
+
+def test_register_flip_position_derives_from_old_entry() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64), strategy_id="S1"))
+
+    ok = register_flip_position(pm, RUN_ID, POSITION_KEY_A, POSITION_KEY_B, "S2")
+    assert ok is True
+    new_entry = pm.get(POSITION_KEY_B)
+    assert new_entry is not None
+    assert new_entry.strategy_id == "S2"  # flipping fill's own strategy, not the old owner's
+    assert new_entry.observation_id == ObservationId("x" * 64)  # same decision's Observation, carried over
+    # old entry is untouched (still pending) -- register_flip_position never retires it itself
+    assert pm.is_pending(POSITION_KEY_A)
+
+
+def test_register_flip_position_unknown_old_key_returns_false() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    ok = register_flip_position(pm, RUN_ID, "never-registered", POSITION_KEY_B, "S2")
+    assert ok is False
+    assert pm.pending_count() == 0
+
+
+# ------------------------------------------------------------------ capture_portfolio_terminal / capture_portfolio_interim
+
+
+def test_capture_portfolio_terminal_happy_path(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id))
+
+    outcome_id = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _trade(pnl_r=1.2), AS_OF)
+    assert outcome_id is not None
+    outcome = repo.get_outcome(outcome_id)
+    assert outcome is not None
+    assert outcome.status is OutcomeStatus.RESOLVED
+    assert outcome.normalized_result == 1.2
+    assert not pm.is_pending(POSITION_KEY_A)
+    assert pm.is_resolved(POSITION_KEY_A)
+
+
+def test_capture_portfolio_terminal_duplicate_returns_none(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id))
+
+    first = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _trade(), AS_OF)
+    second = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _trade(), AS_OF)
+    assert first is not None
+    assert second is None
+    assert repo.count_outcomes() == 1
+
+
+def test_capture_portfolio_terminal_kind_mismatch_returns_none(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id, outcome_kind=OutcomeKind.STRATEGY))
+
+    result = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _trade(), AS_OF)
+    assert result is None
+    assert repo.count_outcomes() == 0
+
+
+def test_capture_portfolio_interim_happy_path_does_not_retire(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id))
+
+    realization_id = capture_portfolio_interim(repo, pm, RUN_ID, POSITION_KEY_A, _trade(pnl_r=0.3), AS_OF)
+    assert realization_id is not None
+    realization = repo.get_interim_realization(realization_id)
+    assert realization is not None
+    assert realization.normalized_result == 0.3
+    assert realization.position_key == POSITION_KEY_A
+    assert pm.is_pending(POSITION_KEY_A)  # still open -- interim never retires
+
+
+def test_capture_portfolio_interim_multiple_partials_same_position_key(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id))
+
+    first = capture_portfolio_interim(
+        repo, pm, RUN_ID, POSITION_KEY_A, _trade(client_order_id="CO-1", qty=3.0, pnl_r=0.3), AS_OF,
+    )
+    second = capture_portfolio_interim(
+        repo, pm, RUN_ID, POSITION_KEY_A, _trade(client_order_id="CO-2", qty=4.0, pnl_r=0.5), AS_OF,
+    )
+    assert first is not None
+    assert second is not None
+    assert first != second  # two distinct, economically different realizations, NEITHER discarded
+    assert repo.count_interim_realizations() == 2
+    assert pm.is_pending(POSITION_KEY_A)  # position still open after both partials
+
+
+def test_capture_portfolio_interim_miss_returns_none(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    result = capture_portfolio_interim(repo, pm, RUN_ID, "never-registered", _trade(), AS_OF)
+    assert result is None
+    assert repo.count_interim_realizations() == 0
+
+
+def test_capture_portfolio_interim_kind_mismatch_returns_none(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id, outcome_kind=OutcomeKind.STRATEGY))
+    result = capture_portfolio_interim(repo, pm, RUN_ID, POSITION_KEY_A, _trade(), AS_OF)
+    assert result is None
+
+
+# ------------------------------------------------------------------ capture_strategy_terminal / capture_strategy_interim
+
+
+def test_capture_strategy_terminal_happy_path(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id, outcome_kind=OutcomeKind.STRATEGY))
+
+    outcome_id = capture_strategy_terminal(
+        repo, pm, RUN_ID, POSITION_KEY_A, _position(), _trade(pnl_r=1.5), AS_OF,
+    )
+    assert outcome_id is not None
+    outcome = repo.get_outcome(outcome_id)
+    assert outcome is not None
+    assert outcome.outcome_kind is OutcomeKind.STRATEGY
+    assert not pm.is_pending(POSITION_KEY_A)
+
+
+def test_capture_strategy_interim_happy_path_does_not_retire(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id, outcome_kind=OutcomeKind.STRATEGY))
+
+    realization_id = capture_strategy_interim(repo, pm, RUN_ID, POSITION_KEY_A, _trade(pnl_r=0.2), AS_OF)
+    assert realization_id is not None
+    assert pm.is_pending(POSITION_KEY_A)
+
+
+def test_capture_strategy_terminal_kind_mismatch_returns_none(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id, outcome_kind=OutcomeKind.PORTFOLIO))
+    result = capture_strategy_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _position(), _trade(), AS_OF)
+    assert result is None
+
+
+# ------------------------------------------------------------------ end-to-end: decision -> promote -> interim -> terminal
+
+
+def test_end_to_end_decision_to_multi_partial_terminal_close(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    assert register_pending_correlation(cm, _pending(obs_id, outcome_kind=OutcomeKind.PORTFOLIO))
+
+    assert promote_opening_fill(
+        cm, pm, RUN_ID, "CID-S1|XAUUSD|1700000000", POSITION_KEY_A, OutcomeKind.PORTFOLIO,
+    )
+
+    # two partial exits -- both captured, neither discarded, position stays open. Distinct pnl_r/
+    # exit_as_of so the two InterimRealizations are genuinely different records, not an idempotent
+    # duplicate of each other (they ARE different economic events, per Lifecycle Specification Finding C).
+    r1 = capture_portfolio_interim(
+        repo, pm, RUN_ID, POSITION_KEY_A, _trade(client_order_id="CO-1", qty=3.0, pnl_r=0.4, exit_as_of=AS_OF + 300), AS_OF,
+    )
+    r2 = capture_portfolio_interim(
+        repo, pm, RUN_ID, POSITION_KEY_A, _trade(client_order_id="CO-2", qty=4.0, pnl_r=0.9, exit_as_of=AS_OF + 800), AS_OF,
+    )
+    assert r1 is not None and r2 is not None
+    assert repo.count_interim_realizations() == 2
+    assert repo.count_outcomes() == 0
+
+    # final close -- brings the position to zero, produces the ONE terminal Outcome, retires the key
+    final = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _trade(client_order_id="CO-3", qty=3.0), AS_OF)
+    assert final is not None
+    assert repo.count_outcomes() == 1
+    assert not pm.is_pending(POSITION_KEY_A)
+
+
+def test_end_to_end_flip_closes_old_and_opens_new(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    assert register_pending_correlation(cm, _pending(obs_id, outcome_kind=OutcomeKind.PORTFOLIO, strategy_id="S1"))
+    assert promote_opening_fill(
+        cm, pm, RUN_ID, "CID-S1|XAUUSD|1700000000", POSITION_KEY_A, OutcomeKind.PORTFOLIO,
+    )
+
+    # the flip's own single fill: register the new side FIRST (per capture.py's own documented ordering),
+    # using the flipping fill's own strategy (which may differ from the old owner's, per Decision 2)
+    assert register_flip_position(pm, RUN_ID, POSITION_KEY_A, POSITION_KEY_B, "S2")
+    # ... then resolve the old side terminally, via the ONE TradeRecord the flip's closing side produced
+    old_outcome_id = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _trade(strategy_id="S1"), AS_OF)
+    assert old_outcome_id is not None
+    assert not pm.is_pending(POSITION_KEY_A)
+
+    # the new position is now tracked, attributed to S2, using the SAME Observation as the old decision
+    assert pm.is_pending(POSITION_KEY_B)
+    new_entry = pm.get(POSITION_KEY_B)
+    assert new_entry is not None
+    assert new_entry.strategy_id == "S2"
+    assert new_entry.observation_id == obs_id
+
+    # it later closes independently, on its own eventual terminal fill -- observation_as_of stays AS_OF
+    # (the SAME Observation carried over from the original decision, per Decision 2), only the trade's
+    # own exit_as_of moves forward in time.
+    new_outcome_id = capture_portfolio_terminal(
+        repo, pm, RUN_ID, POSITION_KEY_B,
+        _trade(strategy_id="S2", client_order_id="CO-LATER", exit_as_of=AS_OF + 5000), AS_OF,
+    )
+    assert new_outcome_id is not None
+    assert new_outcome_id != old_outcome_id
+    assert repo.count_outcomes() == 2
+
+
+def test_hold_and_mark_end_of_run_never_fabricates_an_outcome(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    assert register_pending_correlation(cm, _pending(obs_id, outcome_kind=OutcomeKind.PORTFOLIO))
+    assert promote_opening_fill(
+        cm, pm, RUN_ID, "CID-S1|XAUUSD|1700000000", POSITION_KEY_A, OutcomeKind.PORTFOLIO,
+    )
+
+    # end of run: position never closed (HOLD_AND_MARK) -- drain, never fabricate an Outcome
+    drained = pm.drain_pending()
+    assert len(drained) == 1
+    assert drained[0].position_key == POSITION_KEY_A
+    assert repo.count_outcomes() == 0
+    assert repo.count_interim_realizations() == 0
+    assert pm.pending_count() == 0

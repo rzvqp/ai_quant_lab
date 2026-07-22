@@ -517,3 +517,110 @@ class OperationalMetadata:
             raise ContextMemoryValidationError("OperationalMetadata: a DENY must carry a denied_reason_code")
         if self.risk_decision is ContextRiskDecision.ALLOW and self.denied_reason_code is not None:
             raise ContextMemoryValidationError("OperationalMetadata: an ALLOW must not carry a denied_reason_code")
+
+
+# ---------------------------------------------------------------------------------------------------
+# Interim Realization (Learning/Research Feedback Phase F, Architectural Decision Package Decision 3,
+# Option C) -- a separate, optional, immutable, DIAGNOSTIC-ONLY companion type, following the EXACT same
+# precedent as OperationalMetadata directly above: never a learning target, structurally excluded from
+# evidence.py/retrieval.py aggregation, never fed into any statistic.
+#
+# WHY this cannot be an Outcome (see LEARNING_FEEDBACK_ARCHITECTURAL_DECISION_PACKAGE.md, Decision 3):
+# Outcome's own existing, CEO-ratified meaning is "the position's final word" -- RESOLVED/UNAVAILABLE with
+# no further Outcome ever following it for the same position. A position closed via multiple partial exits
+# produces multiple economically DISTINCT realizations (Lifecycle Specification Finding C) that are each
+# real, but NONE of the non-final ones may be mistaken for "the position is now closed, permanently. "
+# InterimRealization exists specifically for every partial realization that does NOT bring its own
+# position to zero size; the partial (or single) realization that DOES bring it to zero instead produces
+# a normal Outcome, never this type -- the two types are mutually exclusive per closing fill, never both.
+# ---------------------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class InterimRealizationId:
+    value: str
+
+    def __post_init__(self) -> None:
+        require_non_empty_str(self.value, "InterimRealizationId.value")
+
+
+@dataclass(frozen=True)
+class InterimRealization:
+    """One partial, NON-terminal economic realization against a still-open economic position lifecycle.
+    ``position_key`` is the stable, run-scoped position identity (Learning/Research Feedback Phase F
+    Decision 1) this realization belongs to -- deliberately NOT ``client_order_id`` (an order identity,
+    proven insufficient as a position identity by the Lifecycle Specification) and NOT persisted anywhere
+    else in Context Memory's own schema; it exists here purely so a human or a future, separately-
+    authorized aggregation phase can group every interim realization (and the eventual terminal Outcome)
+    belonging to the same economic lifecycle, mirroring Shadow Evidence's own already-proven
+    ``ShadowTradeLegRecord.position_id`` FK precedent.
+
+    Same RESOLVED-vs-UNAVAILABLE branching as ``Outcome`` (``normalized_result`` set XOR
+    ``unavailable_reason`` set -- never both, never neither): a partial realization can be just as
+    unmeasurable (no valid risk denominator) as a terminal one, for the identical reason (Learning/
+    Research Feedback Phase D's own ``NO_VALID_RISK_DENOMINATOR`` decision applies identically here).
+    """
+
+    observation_id: ObservationId
+    strategy_id: str
+    position_key: str
+    outcome_kind: OutcomeKind
+    source_type: SourceType
+    horizon: int
+    horizon_unit: HorizonUnit
+    observation_as_of: int
+    realization_as_of: int
+    normalized_result: float | None
+    cost_model_ref: str
+    unavailable_reason: OutcomeUnavailableReason | None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.observation_id, ObservationId):
+            raise ContextMemoryValidationError(
+                f"InterimRealization.observation_id must be an ObservationId, got {self.observation_id!r}"
+            )
+        require_non_empty_str(self.strategy_id, "InterimRealization.strategy_id")
+        require_non_empty_str(self.position_key, "InterimRealization.position_key")
+        if not isinstance(self.outcome_kind, OutcomeKind):
+            raise ContextMemoryValidationError(
+                f"InterimRealization.outcome_kind must be an OutcomeKind, got {self.outcome_kind!r}"
+            )
+        if not isinstance(self.source_type, SourceType):
+            raise ContextMemoryValidationError(
+                f"InterimRealization.source_type must be a SourceType, got {self.source_type!r}"
+            )
+        valid_kind_source_pairs = {
+            (OutcomeKind.STRATEGY, SourceType.SHADOW_EVIDENCE_ADAPTER),
+            (OutcomeKind.PORTFOLIO, SourceType.REAL_PORTFOLIO_LEDGER),
+        }
+        if (self.outcome_kind, self.source_type) not in valid_kind_source_pairs:
+            raise ContextMemoryValidationError(
+                f"InterimRealization: invalid (outcome_kind, source_type) pair ({self.outcome_kind!r}, "
+                f"{self.source_type!r}) -- only {sorted(valid_kind_source_pairs, key=lambda p: p[0].value)} "
+                "are currently valid"
+            )
+        require_positive_int(self.horizon, "InterimRealization.horizon")
+        if not isinstance(self.horizon_unit, HorizonUnit):
+            raise ContextMemoryValidationError(
+                f"InterimRealization.horizon_unit must be a HorizonUnit, got {self.horizon_unit!r}"
+            )
+        require_positive_int(self.observation_as_of, "InterimRealization.observation_as_of")
+        require_positive_int(self.realization_as_of, "InterimRealization.realization_as_of")
+        if self.realization_as_of < self.observation_as_of:
+            raise ContextMemoryValidationError(
+                f"InterimRealization.realization_as_of ({self.realization_as_of!r}) must not precede "
+                f"observation_as_of ({self.observation_as_of!r})"
+            )
+        require_finite_float_or_none(self.normalized_result, "InterimRealization.normalized_result")
+        require_non_empty_str(self.cost_model_ref, "InterimRealization.cost_model_ref")
+        if self.unavailable_reason is not None and not isinstance(self.unavailable_reason, OutcomeUnavailableReason):
+            raise ContextMemoryValidationError(
+                f"InterimRealization.unavailable_reason must be an OutcomeUnavailableReason or None, "
+                f"got {self.unavailable_reason!r}"
+            )
+        if (self.normalized_result is None) == (self.unavailable_reason is None):
+            raise ContextMemoryValidationError(
+                "InterimRealization requires exactly one of normalized_result/unavailable_reason to be "
+                f"set, got normalized_result={self.normalized_result!r}, "
+                f"unavailable_reason={self.unavailable_reason!r}"
+            )

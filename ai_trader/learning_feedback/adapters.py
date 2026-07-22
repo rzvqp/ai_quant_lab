@@ -17,6 +17,7 @@ is a disclosed refinement of the plan's own sketch, not a contradiction of it.
 from __future__ import annotations
 
 from ai_trader.context_memory.contracts import (
+    InterimRealization,
     ObservationId,
     OperationalMetadata,
     Outcome,
@@ -255,6 +256,70 @@ def build_portfolio_outcome(
 # ---------------------------------------------------------------------------------------------------
 # OperationalMetadata construction
 # ---------------------------------------------------------------------------------------------------
+
+
+def _interim_or_none(
+    *, observation_id: ObservationId, strategy_id: str, position_key: str, horizon: int,
+    realization_as_of: int, observation_as_of: int, pnl_r: float | None, cost_model_ref: str,
+    source_type: SourceType, outcome_kind: OutcomeKind,
+) -> InterimRealization:
+    """Shared construction logic for both Strategy and Portfolio InterimRealizations (Architectural
+    Decision Package Decision 3): ``pnl_r is not None`` -> a measured realization; ``pnl_r is None`` ->
+    UNAVAILABLE with ``NO_VALID_RISK_DENOMINATOR``, the identical branching :func:`_resolved_or_
+    unavailable_outcome` uses for a terminal ``Outcome`` -- a partial realization can be exactly as
+    unmeasurable as a terminal one, for the same reason."""
+    if pnl_r is not None:
+        return InterimRealization(
+            observation_id=observation_id, strategy_id=strategy_id, position_key=position_key,
+            outcome_kind=outcome_kind, source_type=source_type, horizon=horizon,
+            horizon_unit=HorizonUnit.BARS, observation_as_of=observation_as_of,
+            realization_as_of=realization_as_of, normalized_result=pnl_r, cost_model_ref=cost_model_ref,
+            unavailable_reason=None,
+        )
+    return InterimRealization(
+        observation_id=observation_id, strategy_id=strategy_id, position_key=position_key,
+        outcome_kind=outcome_kind, source_type=source_type, horizon=horizon, horizon_unit=HorizonUnit.BARS,
+        observation_as_of=observation_as_of, realization_as_of=realization_as_of, normalized_result=None,
+        cost_model_ref=cost_model_ref, unavailable_reason=OutcomeUnavailableReason.NO_VALID_RISK_DENOMINATOR,
+    )
+
+
+def build_portfolio_interim_realization(
+    trade: TradeRecord, position_key: str, observation_id: ObservationId, observation_as_of: int,
+    cost_model_ref: str,
+) -> InterimRealization | None:
+    """A non-terminal, diagnostic-only realization for one real-portfolio partial exit (Architectural
+    Decision Package Decision 3, Option C) -- produced for every closing/reducing ``TradeRecord`` that
+    does NOT bring its own position to zero size (the one that does produces a normal ``Outcome`` via
+    :func:`build_portfolio_outcome` instead, never both). Returns ``None`` (never raises) only for the
+    same defensively-required-positive-horizon case as :func:`build_portfolio_outcome`."""
+    if trade.holding_bars <= 0:
+        return None
+    return _interim_or_none(
+        observation_id=observation_id, strategy_id=trade.strategy_id, position_key=position_key,
+        horizon=trade.holding_bars, realization_as_of=trade.exit_as_of, observation_as_of=observation_as_of,
+        pnl_r=trade.pnl_r, cost_model_ref=cost_model_ref, source_type=SourceType.REAL_PORTFOLIO_LEDGER,
+        outcome_kind=OutcomeKind.PORTFOLIO,
+    )
+
+
+def build_strategy_interim_realization(
+    trade: TradeRecord, position_key: str, observation_id: ObservationId, observation_as_of: int,
+    cost_model_ref: str,
+) -> InterimRealization | None:
+    """A non-terminal, diagnostic-only realization for one Shadow partial exit leg (Architectural
+    Decision Package Decision 3, Option C) -- the Shadow-side mirror of :func:`build_portfolio_interim_
+    realization`. Takes only the closing ``TradeRecord`` leg (``ShadowTradeLegRecord.leg``), never the
+    full ``ShadowPositionRecord`` -- unlike the terminal :func:`build_strategy_outcome`, an interim
+    realization needs no aggregate position-level state, only this one leg's own economics."""
+    if trade.holding_bars <= 0:
+        return None
+    return _interim_or_none(
+        observation_id=observation_id, strategy_id=trade.strategy_id, position_key=position_key,
+        horizon=trade.holding_bars, realization_as_of=trade.exit_as_of, observation_as_of=observation_as_of,
+        pnl_r=trade.pnl_r, cost_model_ref=cost_model_ref, source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+        outcome_kind=OutcomeKind.STRATEGY,
+    )
 
 
 def build_operational_metadata(

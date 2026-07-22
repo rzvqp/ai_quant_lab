@@ -4,6 +4,15 @@ Scanner, Strategy Manager, Signal Engine, Scoring Engine, Risk Manager, Executio
 plus the three simulation-only components (Execution Simulator, Portfolio Simulator, Performance
 Analyzer) -- ``SIMULATION_SEQUENCE.md`` §2's exact per-bar loop, one call per line, no logic
 duplicated from any composed module.
+
+Additionally composes Learning/Research Feedback (Flow B roadmap step 3/6, real-portfolio side --
+``LEARNING_FEEDBACK_ARCHITECTURAL_DECISION_PACKAGE.md``, CEO-authorized): opt-in, off by default
+(``learning_feedback_repository_path is None``), and strictly read-only/additive with respect to the six
+composed modules above and the three simulation-only components -- it captures Market Intelligence/Edge
+Intelligence/Context Memory diagnostics into a separate repository, never feeds back into eligibility,
+ranking, scoring, sizing, or execution, and every call site is wrapped in the same failure-isolation
+pattern already established for the Shadow Evidence tap (a diagnostic-only capture bug can never fail the
+real, competitive run).
 """
 
 from __future__ import annotations
@@ -13,9 +22,27 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from ai_trader.context_memory.enums import OutcomeKind
+from ai_trader.context_memory.repository import ContextMemoryRepository
 from ai_trader.execution_engine.config import ExecConfig
 from ai_trader.execution_engine.engine import ExecutionEngine
 from ai_trader.execution_engine.types import BrokerCapabilities, MarketStatus, OrderType, TimeInForce
+from ai_trader.learning_feedback.adapters import canonical_cost_model_ref
+from ai_trader.learning_feedback.capture import (
+    CorrelationMap,
+    PendingCapture,
+    PositionCorrelationMap,
+    capture_decision_observation,
+    capture_operational_metadata,
+    capture_portfolio_interim,
+    capture_portfolio_terminal,
+    promote_opening_fill,
+    register_flip_position,
+    register_pending_correlation,
+)
+from ai_trader.learning_feedback.market_snapshot import build_market_snapshot
+from ai_trader.learning_feedback.observation_builder import build_decision_observation
+from ai_trader.learning_feedback.position_registry import RealPositionRegistry
 from ai_trader.market_scanner.config import ScannerConfig
 from ai_trader.market_scanner.scanner import AdapterConfig, MarketScanner
 from ai_trader.market_scanner.types import DataQualityLevel, Mode, SymbolMeta
@@ -36,7 +63,7 @@ from ai_trader.simulation.config import SimulationContext
 from ai_trader.simulation.data_source import ReplayDataSource
 from ai_trader.simulation.exceptions import DataLoadError
 from ai_trader.simulation.execution_simulator import ExecutionSimulator
-from ai_trader.simulation.portfolio_simulator import PortfolioSimulator
+from ai_trader.simulation.portfolio_simulator import PortfolioSimulator, TradeRecord
 from ai_trader.simulation.time_stop import build_time_stop_decision, positions_due_for_time_stop
 from ai_trader.simulation.trailing_stop import build_trailing_stop_decision, positions_due_for_trailing_stop
 from ai_trader.simulation.types import TERMINAL_RUN_STATES, CloseAtEndPolicy, RunState, SimFillEvent, SimPhase
@@ -71,6 +98,8 @@ class SimulationHarness:
         enable_trailing_stops: bool = False, strategy_id_filter: frozenset[str] | None = None,
         health_eligible_ids: frozenset[str] | None = None,
         portfolio_architect_config: PortfolioArchitectConfig | None = None,
+        learning_feedback_repository_path: Path | None = None,
+        learning_feedback_library_path: Path | None = None,
     ) -> None:
         """``manager_config``/``use_strategy_runtime``/``risk_config`` default to Phase 6.7's own
         original, verified-fail-safe behavior (a bare ``ManagerConfig()``/``RiskConfig()`` with no
@@ -136,7 +165,35 @@ class SimulationHarness:
         order of calls within one bar). Proven directly by ``test_shadow_disabled_parity.py``'s own
         28-test suite (including the 43-production-strategy byte-identical run) passing unmodified after
         this reordering, and by a dedicated new regression test in
-        ``test_portfolio_architect_passthrough.py``."""
+        ``test_portfolio_architect_passthrough.py``.
+
+        ``learning_feedback_repository_path`` (default ``None``: Learning/Research Feedback is
+        completely inert this run, unchanged from every prior phase's own unwired state -- Flow B
+        roadmap step 3/6, Architectural Decision Package, CEO-authorized implementation). When set, a
+        :class:`~ai_trader.context_memory.repository.ContextMemoryRepository` is opened at this path and
+        every REAL-portfolio decision/fill this run produces is captured into it, per the Architectural
+        Decision Package's own recommended design: Decision 4 (Option C) builds a real, non-degraded
+        Observation from Market Intelligence/Edge Intelligence once per symbol per bar; Decision 1
+        (Option D) tracks real position identity via a read-only, bar-level diff of
+        ``portfolio_simulator.account.positions`` (never re-deriving its own open/scale/reduce/flip
+        bookkeeping); Decision 2 handles a flip as one atomic close-old/open-new event; Decision 3
+        produces exactly one terminal ``Outcome`` per position lifecycle plus a separate,
+        diagnostic-only ``InterimRealization`` for every partial exit that does not zero the position,
+        never both, never neither. **Shadow Evidence (``OutcomeKind.STRATEGY``) is NOT wired by this
+        parameter** -- ``ShadowEvidenceEngine.observe()`` returns nothing and exposes no per-strategy
+        decision-time state, so this harness has no way to capture a Shadow strategy's own Observation/
+        OperationalMetadata at decision time without either modifying ``shadow_evidence/engine.py``
+        (crossing its own ownership boundary) or duplicating its internal Risk Manager logic here -- a
+        genuine architectural blocker reported to, not silently resolved by, this implementation.
+        ``learning_feedback_library_path`` (default ``None``: the real Strategy Library's own default
+        path) is passed straight through to Market Intelligence/Edge Intelligence's own contract loading,
+        exactly mirroring ``context.strategy_library_path``'s own existing role for the Strategy Manager
+        above -- a SEPARATE parameter because Edge Intelligence's own contract loader
+        (``ai_trader.edge_intelligence.contracts.load_strategy_contracts``) takes its own path argument,
+        independent of ``StrategyManager``'s own library loading. Every Learning Feedback call in this
+        module is wrapped in the SAME failure-isolation pattern already established for the Shadow
+        Evidence tap above -- a diagnostic-only capture failure can never fail the real, competitive
+        run."""
         self.context = context
         self._symbol_meta = symbol_meta
         self._data_dir = data_dir
@@ -178,6 +235,23 @@ class SimulationHarness:
         #: is non-empty. ``None`` (the default) means Shadow Mode is fully inert this run -- unchanged
         #: from Checkpoint 1A's own guarantee.
         self.shadow_engine: ShadowEvidenceEngine | None = None
+
+        #: Learning/Research Feedback (Flow B roadmap step 3/6, Architectural Decision Package) --
+        #: real-portfolio side only (see this constructor's own docstring for the Shadow-side gap).
+        #: `None` (the default) means Learning Feedback is fully inert this run, unchanged from every
+        #: prior phase's own unwired state.
+        self._lf_library_path = learning_feedback_library_path
+        self._lf_repo: ContextMemoryRepository | None = None
+        self._lf_correlation: CorrelationMap | None = None
+        self._lf_positions: PositionCorrelationMap | None = None
+        self._lf_registry: RealPositionRegistry | None = None
+        self._lf_cost_model_ref: str | None = None
+        if learning_feedback_repository_path is not None:
+            self._lf_repo = ContextMemoryRepository(learning_feedback_repository_path)
+            self._lf_correlation = CorrelationMap(context.run_id)
+            self._lf_positions = PositionCorrelationMap(context.run_id)
+            self._lf_registry = RealPositionRegistry(context.run_id)
+            self._lf_cost_model_ref = canonical_cost_model_ref(context.cost_model)
 
     # ------------------------------------------------------------------ read-only clock introspection
 
@@ -345,6 +419,11 @@ class SimulationHarness:
         if self.portfolio_simulator is None or self._data_source is None:
             return
         if self.context.close_at_end_policy is not CloseAtEndPolicy.CLOSE_AT_LAST:
+            if self._lf_positions is not None:
+                # HOLD_AND_MARK (Architectural Decision Package Decision 3): every real position still
+                # open at run end has its own economic fate genuinely unresolved for this run -- drain
+                # the pending correlation state, never fabricate a terminal Outcome for it.
+                self._lf_positions.drain_pending()
             return
         last_as_of = self.as_of
         if last_as_of is None:
@@ -362,7 +441,13 @@ class SimulationHarness:
                     qty=pos.size, price=price, spread_cost=0.0, slippage_cost=0.0, commission=0.0,
                     as_of=last_as_of, reduce_only=True,
                 ))
-            self.portfolio_simulator.apply(tuple(fills), self.bar_index)
+            lf_prev_trade_count = (
+                len(self.portfolio_simulator.account.trade_ledger) if self._lf_repo is not None else 0
+            )
+            fill_tuple = tuple(fills)
+            self.portfolio_simulator.apply(fill_tuple, self.bar_index)
+            if self._lf_repo is not None:
+                self._lf_process_fills_for_bar(last_as_of, fill_tuple, lf_prev_trade_count)
 
         # Checkpoint 1C: a shadow account can hold an open position at window-end even when the real
         # portfolio does not (or vice versa) -- its own finalization runs independently, per the SAME
@@ -374,6 +459,89 @@ class SimulationHarness:
                 # must never affect the real, already-applied competitive close-at-end result above.
                 self.shadow_engine.failures.append((last_as_of, "__engine__", repr(exc)))
                 logger.warning("Shadow Evidence: finalize_at_end() raised: %r", exc)
+
+    # ------------------------------------------------------------------ Learning/Research Feedback
+    # (Flow B roadmap step 3/6, real-portfolio side -- Architectural Decision Package, CEO-authorized)
+
+    def _lf_capture_terminal(self, position_key: str, trade: TradeRecord) -> None:
+        assert self._lf_repo is not None and self._lf_positions is not None
+        entry = self._lf_positions.get(position_key)
+        if entry is None:
+            return
+        capture_portfolio_terminal(
+            self._lf_repo, self._lf_positions, self.context.run_id, position_key, trade, entry.decision_as_of,
+        )
+
+    def _lf_capture_interim(self, position_key: str, trade: TradeRecord) -> None:
+        assert self._lf_repo is not None and self._lf_positions is not None
+        entry = self._lf_positions.get(position_key)
+        if entry is None:
+            return
+        capture_portfolio_interim(
+            self._lf_repo, self._lf_positions, self.context.run_id, position_key, trade, entry.decision_as_of,
+        )
+
+    def _lf_process_fills_for_bar(
+        self, as_of: int, fills: tuple[SimFillEvent, ...], prev_trade_count: int,
+    ) -> None:
+        """Learning/Research Feedback resolution-time capture (Architectural Decision Package Decisions
+        1-3) -- called after ``portfolio_simulator.apply(fills, ...)`` has fully processed every fill for
+        this bar. Diffs ``portfolio_simulator.account.positions`` against the registry's own
+        last-observed state (Decision 1, Option D: bar-granularity, never re-deriving Portfolio
+        Simulator's own open/scale/reduce/flip bookkeeping), then attributes every NEW ``TradeRecord``
+        produced this bar to the correct ``position_key`` -- exactly one terminal Outcome per closed
+        lifecycle, an InterimRealization for every partial that does not zero the position (Decision 3),
+        and a flip's own compound close-old/open-new handling (Decision 2). Wrapped in its own try/
+        except: a Learning Feedback bug here must never affect the real, already-applied competitive
+        result (mirrors the Shadow Evidence tap's own failure-isolation convention throughout this
+        module)."""
+        assert self._lf_repo is not None and self._lf_correlation is not None
+        assert self._lf_positions is not None and self._lf_registry is not None
+        assert self.portfolio_simulator is not None
+        try:
+            diff = self._lf_registry.observe(self.portfolio_simulator.account.positions)
+
+            for birth in diff.births:
+                # The opening fill for a newly-born position: exactly one non-reduce-only fill for this
+                # symbol this bar, in the overwhelmingly common case (Architectural Decision Package
+                # Decision 1's own disclosed bar-granularity limitation covers the rare exception).
+                opening_fill = next((f for f in fills if f.symbol == birth.symbol and not f.reduce_only), None)
+                if opening_fill is not None:
+                    promote_opening_fill(
+                        self._lf_correlation, self._lf_positions, self.context.run_id,
+                        opening_fill.client_order_id, birth.position_key, OutcomeKind.PORTFOLIO,
+                    )
+
+            for old, new in diff.flips:
+                register_flip_position(
+                    self._lf_positions, self.context.run_id, old.position_key, new.position_key,
+                    new.strategy_id,
+                )
+
+            death_key_by_symbol = {d.symbol: d.position_key for d in diff.deaths}
+            new_trades = self.portfolio_simulator.account.trade_ledger[prev_trade_count:]
+            trades_by_symbol: dict[str, list[TradeRecord]] = {}
+            for trade in new_trades:
+                trades_by_symbol.setdefault(trade.symbol, []).append(trade)
+
+            for symbol, trades in trades_by_symbol.items():
+                if symbol in death_key_by_symbol:
+                    position_key = death_key_by_symbol[symbol]
+                    # Bar-granularity best-effort ordering (Decision 1's own disclosed limitation): the
+                    # LAST trade in ledger order for a dying symbol this bar is treated as the one that
+                    # zeroed it; any earlier ones this same bar are interim. Exact for the common case
+                    # (one closing event per symbol per bar); an accepted approximation otherwise.
+                    for interim_trade in trades[:-1]:
+                        self._lf_capture_interim(position_key, interim_trade)
+                    self._lf_capture_terminal(position_key, trades[-1])
+                else:
+                    current_key_info = self._lf_registry.current_key(symbol)
+                    if current_key_info is None:
+                        continue  # a trade for a symbol this registry never saw open -- nothing to attribute
+                    for trade in trades:
+                        self._lf_capture_interim(current_key_info.position_key, trade)
+        except Exception as exc:  # noqa: BLE001 -- failure isolation, see docstring.
+            logger.warning("Learning Feedback: resolution-time capture raised for as_of=%s: %r", as_of, exc)
 
     def _run_one_bar(self, as_of: int) -> None:
         assert self._data_source and self._scanner and self._strategy_manager
@@ -415,6 +583,25 @@ class SimulationHarness:
                 tick_size = self._symbol_meta[symbol].tick_size if symbol in self._symbol_meta else 0.01
                 risk_context = _build_risk_context(ctx, as_of, tick_size, self.context.cost_model.spread_ticks)
                 portfolio_state = self.portfolio_simulator.to_portfolio_state(as_of)
+                # Learning/Research Feedback (Flow B roadmap step 3/6, Architectural Decision Package
+                # Decision 4, Option C): build the real, non-degraded Observation for THIS symbol/bar,
+                # once, before the Risk Manager decision below -- every ALLOW/DENY this bar attaches to
+                # the SAME Observation. `None` (the default, or on any build failure) means no capture
+                # happens for this symbol this bar -- never fails the real run (mirrors the Shadow
+                # Evidence tap's own failure-isolation convention immediately below).
+                lf_observation_id = None
+                if self._lf_repo is not None:
+                    try:
+                        lf_bundle = build_market_snapshot(ctx, self._lf_library_path)
+                        lf_observation = build_decision_observation(lf_bundle, self._lf_library_path)
+                    except Exception as exc:  # noqa: BLE001 -- failure isolation: a Learning Feedback
+                        # snapshot/observation-build bug must never affect competitive execution.
+                        logger.warning(
+                            "Learning Feedback: market snapshot/observation build raised for symbol=%s: %r",
+                            symbol, exc,
+                        )
+                    else:
+                        lf_observation_id = capture_decision_observation(self._lf_repo, lf_observation)
                 # Phase 6.10 Implementation Checkpoint 1B, reordered for Portfolio Architect (roadmap
                 # Flow B step 2/6, CEO's own mandatory placement -- see __init__'s own docstring): a
                 # read-only tap on the already-computed score_batch/risk_context, now placed BEFORE the
@@ -467,6 +654,30 @@ class SimulationHarness:
                         self.orders_submitted += 1
                         if decision.constraints is not None and decision.constraints.stop is not None:
                             self.portfolio_simulator.register_stop_hint(status.client_order_id, decision.constraints.stop)
+                        # Learning/Research Feedback: OperationalMetadata + decision-time correlation
+                        # registration. Both `capture_operational_metadata`/`register_pending_correlation`
+                        # are already internally exception-safe (Phase E's own defense-in-depth
+                        # convention) -- never raise, so no extra try/except is needed at this call site.
+                        if self._lf_repo is not None and lf_observation_id is not None:
+                            assert self._lf_correlation is not None and self._lf_cost_model_ref is not None
+                            capture_operational_metadata(self._lf_repo, decision, None, lf_observation_id)
+                            # Alias computation mirrors builder.py's own bracket-trigger condition
+                            # exactly (Lifecycle Specification I2): each of `-TP`/`-SL` is independently
+                            # conditional on `constraints.target`/`constraints.stop`, never assumed
+                            # together -- 1, 2, or 3 total aliases, never hardcoded to 3.
+                            client_order_ids = [status.client_order_id]
+                            if decision.constraints is not None:
+                                if decision.constraints.target is not None:
+                                    client_order_ids.append(f"{status.client_order_id}-TP")
+                                if decision.constraints.stop is not None:
+                                    client_order_ids.append(f"{status.client_order_id}-SL")
+                            register_pending_correlation(self._lf_correlation, PendingCapture(
+                                run_id=self.context.run_id, client_order_ids=tuple(client_order_ids),
+                                strategy_id=decision.strategy_id, symbol=decision.symbol,
+                                decision_id=decision.decision_id, decision_as_of=decision.as_of,
+                                outcome_kind=OutcomeKind.PORTFOLIO, observation_id=lf_observation_id,
+                                cost_model_ref=self._lf_cost_model_ref,
+                            ))
                     else:
                         # A real gap a review caught: only liquidation events ever reached
                         # report.risk_events. Every DENY reason, and the batch's own engine_state when
@@ -481,6 +692,12 @@ class SimulationHarness:
                                 )
                         else:
                             self.portfolio_simulator.record_risk_event("DENY", as_of, strategy_id=decision.strategy_id)
+                        # Learning/Research Feedback: a DENY never reaches execute(), so no
+                        # client_order_id/PendingCapture is ever registered for one (structurally
+                        # impossible to resolve later, which is correct) -- only OperationalMetadata
+                        # records the denial itself.
+                        if self._lf_repo is not None and lf_observation_id is not None:
+                            capture_operational_metadata(self._lf_repo, decision, None, lf_observation_id)
                 if decision_batch.engine_state.value != "READY":
                     # No single strategy caused a batch-level, non-READY engine state -- strategy_id
                     # stays None (the default), unchanged from before this field existed.
@@ -561,10 +778,13 @@ class SimulationHarness:
 
         fills = self.execution_simulator.advance_bar(as_of, bars)
         assert self._clock is not None
+        lf_prev_trade_count = len(self.portfolio_simulator.account.trade_ledger) if self._lf_repo is not None else 0
         self.portfolio_simulator.apply(fills, self._clock.bar_index)
         self.fills_total += len(fills)
         self._execution_engine.reconcile()  # keep EE's own ledger/report in sync (EXECUTION_API.md)
         self.portfolio_simulator.mark_to_market(as_of, bars, phase_running=phase_running)
+        if self._lf_repo is not None:
+            self._lf_process_fills_for_bar(as_of, fills, lf_prev_trade_count)
 
         # Checkpoint 1C: the identical fill/mark-to-market sequence, once per shadow account, AFTER the
         # real one above has fully completed (Design §4's "Virtual close" row) -- resolves pending

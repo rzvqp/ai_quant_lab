@@ -28,12 +28,18 @@ exactly one `run_id` at construction and rejects any operation for a different o
 alias retires ALL of them together, so a cancelled OCO sibling can never later be mistaken for a fresh,
 unrelated order.
 
-**Disclosed, accepted limitation**: partial fills of one order share the SAME `client_order_id` and can
-produce MULTIPLE `TradeRecord`s. Only the FIRST resolution attempt for a given `client_order_id` succeeds
--- every subsequent one (a later partial against the same id) is treated as a duplicate resolution and
-dropped, per the CEO's own explicit "duplicate terminal resolution" fail-closed requirement. This means a
-multi-partial close is captured as ONE Outcome (from the first partial only), not one per partial -- a
-known, disclosed scope limit of this phase, not a silent gap.
+**Superseded by the position-scoped layer below (Architectural Decision Package, Decisions 1-3)**: the
+"disclosed, accepted limitation" this docstring originally described here -- multiple partial fills
+sharing one `client_order_id`, with only the first resolution succeeding -- was reviewed by the CEO and
+found to conflict with confirmed production semantics (partial exits are economically DISTINCT events,
+never duplicates of one fact). `client_order_id`-keyed `CorrelationMap`/`PendingCapture` below is NOT
+removed -- the Lifecycle Specification proved it remains the correct, reliable bridge from one decision to
+that SAME decision's own opening fill (Lifecycle Specification I5) -- but it is no longer used as the
+correlation key for anything AFTER the opening fill. `PositionCorrelationMap`/`PendingPosition` (this
+module, appended below) own everything from the opening fill onward: interim realizations for every
+partial that does not zero the position, exactly one terminal `Outcome` for the fill that does, and
+correct compound handling of a flip (one decision that simultaneously closes one economic position and
+opens another). See `LEARNING_FEEDBACK_ARCHITECTURAL_DECISION_PACKAGE.md` for the full reasoning.
 """
 
 from __future__ import annotations
@@ -43,6 +49,7 @@ from dataclasses import dataclass
 
 from ai_trader.context_memory.contracts import (
     EdgeEvidenceId,
+    InterimRealizationId,
     Observation,
     ObservationId,
     OperationalMetadataId,
@@ -51,7 +58,9 @@ from ai_trader.context_memory.enums import OutcomeKind
 from ai_trader.context_memory.repository import ContextMemoryRepository
 from ai_trader.learning_feedback.adapters import (
     build_operational_metadata,
+    build_portfolio_interim_realization,
     build_portfolio_outcome,
+    build_strategy_interim_realization,
     build_strategy_outcome,
 )
 from ai_trader.risk_manager.types import RiskDecision
@@ -272,4 +281,320 @@ def capture_portfolio_resolution(
         return repository.append_outcome(outcome)
     except Exception:
         _LOGGER.exception("learning_feedback: failed to capture Portfolio resolution")
+        return None
+
+
+# ---------------------------------------------------------------------------------------------------
+# Position-scoped correlation (Architectural Decision Package, Decisions 1-3)
+#
+# `client_order_id`/`CorrelationMap` above remain exactly as built in Phase E -- proven (Lifecycle
+# Specification I5) to reliably bridge one decision to that SAME decision's own opening fill, never to a
+# later, independent closing order. `PositionCorrelationMap` below owns everything from the opening fill
+# onward, keyed by the run-scoped, position-identity `position_key` string
+# (`ai_trader.learning_feedback.position_registry.make_position_key`) -- proven the only identifier that
+# survives every closing mechanism (Lifecycle Specification §6/§7): ordinary exit, time-stop, trailing-
+# stop, bracket, liquidation, and (per Decision 2) a flip's own compound close-old/open-new event.
+# ---------------------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PendingPosition:
+    """Everything needed to resolve the position identified by `position_key`, once its owning fill(s)
+    are observed -- the position-scoped analogue of `PendingCapture`, minted either by promoting a
+    decision-time `PendingCapture` at the moment its opening fill is observed (`promote_opening_fill`), or
+    by deriving one directly from the OLD position's own entry at flip time (`register_flip_position`,
+    Decision 2 -- a flip's new position has no decision of its own)."""
+
+    run_id: str
+    position_key: str
+    strategy_id: str
+    symbol: str
+    outcome_kind: OutcomeKind
+    observation_id: ObservationId
+    cost_model_ref: str
+    decision_as_of: int
+
+
+class PositionCorrelationMap:
+    """Run-scoped, in-memory-only, position-keyed correlation state -- never persisted, mirroring
+    `CorrelationMap`'s own conventions exactly (bound to one `run_id`, fail-closed on mismatch/duplicate).
+    Unlike `CorrelationMap`, `get`/peek does NOT retire an entry -- an interim realization must be able to
+    read a still-open position's own pending entry repeatedly, across many partial exits, without ever
+    treating that read as "the" resolution (Decision 3: only the fill that brings a position to zero size
+    retires its entry, via `retire`)."""
+
+    def __init__(self, run_id: str) -> None:
+        self._run_id = run_id
+        self._pending: dict[str, PendingPosition] = {}
+        self._resolved_position_keys: set[str] = set()
+
+    @property
+    def run_id(self) -> str:
+        return self._run_id
+
+    def register(self, entry: PendingPosition) -> None:
+        """Raises `CorrelationRunMismatchError`/`DuplicateDecisionCaptureError` -- callers in this module
+        always catch these at the public function boundary; a direct caller (e.g. a test) sees them
+        raised."""
+        if entry.run_id != self._run_id:
+            raise CorrelationRunMismatchError(
+                f"PositionCorrelationMap bound to run_id={self._run_id!r} cannot register an entry for "
+                f"run_id={entry.run_id!r}"
+            )
+        if entry.position_key in self._pending or entry.position_key in self._resolved_position_keys:
+            raise DuplicateDecisionCaptureError(
+                f"position_key={entry.position_key!r} is already pending or already resolved for "
+                f"run_id={self._run_id!r}"
+            )
+        self._pending[entry.position_key] = entry
+
+    def get(self, position_key: str) -> PendingPosition | None:
+        """A non-retiring peek -- safe to call once per interim realization against a still-open
+        position, any number of times."""
+        return self._pending.get(position_key)
+
+    def retire(self, run_id: str, position_key: str) -> PendingPosition | None:
+        """Pop and permanently retire `position_key` -- called exactly once, for the fill that brings a
+        position to zero size (a plain close, or the closing half of a flip). Returns `None` for BOTH an
+        unknown key and an already-retired one, exactly like `CorrelationMap.pop_for_resolution`."""
+        if run_id != self._run_id:
+            raise CorrelationRunMismatchError(
+                f"PositionCorrelationMap bound to run_id={self._run_id!r} cannot retire an entry for "
+                f"run_id={run_id!r}"
+            )
+        entry = self._pending.pop(position_key, None)
+        if entry is None:
+            return None
+        self._resolved_position_keys.add(position_key)
+        return entry
+
+    def is_pending(self, position_key: str) -> bool:
+        return position_key in self._pending
+
+    def is_resolved(self, position_key: str) -> bool:
+        return position_key in self._resolved_position_keys
+
+    def pending_count(self) -> int:
+        return len(self._pending)
+
+    def drain_pending(self) -> tuple[PendingPosition, ...]:
+        """Every entry still open, retired with NO Outcome ever produced for it -- end-of-run disposition
+        for a `HOLD_AND_MARK` position (Decision 3): the position's fate in this run is genuinely
+        unresolved, never fabricated. Idempotent: calling this twice returns an empty tuple the second
+        time, since every entry is retired (not merely read) the first time."""
+        drained = tuple(self._pending.values())
+        for entry in drained:
+            self._resolved_position_keys.add(entry.position_key)
+        self._pending.clear()
+        return drained
+
+
+def promote_opening_fill(
+    correlation: CorrelationMap, position_map: PositionCorrelationMap, run_id: str, client_order_id: str,
+    position_key: str, expected_outcome_kind: OutcomeKind,
+) -> bool:
+    """Bridge a decision-time `PendingCapture` (registered under `client_order_id`, Phase E's own
+    mechanism) into the position-scoped `PositionCorrelationMap`, at the moment the registry (Decision 1)
+    observes this exact fill's own opening bar. Never raises: returns `False` (drop+log) if the
+    `client_order_id` candidate is unknown/already consumed, or if its own `outcome_kind` does not match
+    `expected_outcome_kind` (defense-in-depth kind isolation, mirroring the existing resolution
+    functions)."""
+    try:
+        candidate = correlation.pop_for_resolution(run_id, client_order_id)
+        if candidate is None:
+            _LOGGER.info(
+                "learning_feedback: no pending decision-time correlation for run_id=%s client_order_id=%s "
+                "-- cannot promote to position_key=%s", run_id, client_order_id, position_key,
+            )
+            return False
+        if candidate.outcome_kind is not expected_outcome_kind:
+            _LOGGER.warning(
+                "learning_feedback: pending entry for client_order_id=%s is kind=%s, not %s -- dropped "
+                "(kind isolation)", client_order_id, candidate.outcome_kind, expected_outcome_kind,
+            )
+            return False
+        position_map.register(PendingPosition(
+            run_id=run_id, position_key=position_key, strategy_id=candidate.strategy_id,
+            symbol=candidate.symbol, outcome_kind=candidate.outcome_kind,
+            observation_id=candidate.observation_id, cost_model_ref=candidate.cost_model_ref,
+            decision_as_of=candidate.decision_as_of,
+        ))
+        return True
+    except Exception:
+        _LOGGER.exception(
+            "learning_feedback: failed to promote opening fill client_order_id=%s to position_key=%s",
+            client_order_id, position_key,
+        )
+        return False
+
+
+def register_flip_position(
+    position_map: PositionCorrelationMap, run_id: str, old_position_key: str, new_position_key: str,
+    new_strategy_id: str,
+) -> bool:
+    """Derive a fresh `PendingPosition` for the newly-opened side of a flip directly from the OLD
+    position's own still-pending entry (Decision 2: a flip's new position is caused by the SAME decision
+    that closes the old one -- there is no independent decision to bridge from). MUST be called BEFORE
+    the old entry is retired via `capture_portfolio_terminal`/`capture_strategy_terminal` (both peek via
+    `get`-then-`retire`, never destructively before this runs). Never raises."""
+    try:
+        old_entry = position_map.get(old_position_key)
+        if old_entry is None:
+            _LOGGER.warning(
+                "learning_feedback: no pending entry for old_position_key=%s -- cannot derive flip "
+                "registration for new_position_key=%s", old_position_key, new_position_key,
+            )
+            return False
+        position_map.register(PendingPosition(
+            run_id=run_id, position_key=new_position_key, strategy_id=new_strategy_id,
+            symbol=old_entry.symbol, outcome_kind=old_entry.outcome_kind,
+            observation_id=old_entry.observation_id, cost_model_ref=old_entry.cost_model_ref,
+            decision_as_of=old_entry.decision_as_of,
+        ))
+        return True
+    except Exception:
+        _LOGGER.exception(
+            "learning_feedback: failed to register flip position new_position_key=%s from "
+            "old_position_key=%s", new_position_key, old_position_key,
+        )
+        return False
+
+
+def capture_portfolio_terminal(
+    repository: ContextMemoryRepository, position_map: PositionCorrelationMap, run_id: str,
+    position_key: str, trade: TradeRecord, observation_as_of: int,
+) -> EdgeEvidenceId | None:
+    """Resolve the real-portfolio position identified by `position_key` into a terminal Portfolio Outcome
+    -- called exactly once, for the fill that brings that position to zero size (Decision 3). Retires
+    `position_key` via `PositionCorrelationMap.retire`; every subsequent call for the same key is treated
+    as an unknown/duplicate key and dropped, identically to `capture_portfolio_resolution`."""
+    try:
+        entry = position_map.retire(run_id, position_key)
+        if entry is None:
+            _LOGGER.info(
+                "learning_feedback: no pending position correlation for run_id=%s position_key=%s -- "
+                "dropped", run_id, position_key,
+            )
+            return None
+        if entry.outcome_kind is not OutcomeKind.PORTFOLIO:
+            _LOGGER.warning(
+                "learning_feedback: pending position entry for position_key=%s is kind=%s, not "
+                "PORTFOLIO -- dropped (kind isolation)", position_key, entry.outcome_kind,
+            )
+            return None
+        outcome = build_portfolio_outcome(trade, entry.observation_id, observation_as_of, entry.cost_model_ref)
+        if outcome is None:
+            return None
+        return repository.append_outcome(outcome)
+    except Exception:
+        _LOGGER.exception("learning_feedback: failed to capture Portfolio terminal resolution")
+        return None
+
+
+def capture_portfolio_interim(
+    repository: ContextMemoryRepository, position_map: PositionCorrelationMap, run_id: str,
+    position_key: str, trade: TradeRecord, observation_as_of: int,
+) -> InterimRealizationId | None:
+    """Capture one non-terminal, diagnostic-only realization for a real-portfolio partial exit that does
+    NOT bring `position_key` to zero size (Decision 3) -- PEEKS the pending entry via `PositionCorrelation
+    Map.get`, never retires it. May be called any number of times for the same still-open `position_key`.
+    """
+    try:
+        if run_id != position_map.run_id:
+            _LOGGER.warning(
+                "learning_feedback: run_id=%s does not match PositionCorrelationMap's own run_id=%s -- "
+                "dropped", run_id, position_map.run_id,
+            )
+            return None
+        entry = position_map.get(position_key)
+        if entry is None:
+            _LOGGER.info(
+                "learning_feedback: no pending position correlation for run_id=%s position_key=%s -- "
+                "dropped", run_id, position_key,
+            )
+            return None
+        if entry.outcome_kind is not OutcomeKind.PORTFOLIO:
+            _LOGGER.warning(
+                "learning_feedback: pending position entry for position_key=%s is kind=%s, not "
+                "PORTFOLIO -- dropped (kind isolation)", position_key, entry.outcome_kind,
+            )
+            return None
+        realization = build_portfolio_interim_realization(
+            trade, position_key, entry.observation_id, observation_as_of, entry.cost_model_ref,
+        )
+        if realization is None:
+            return None
+        return repository.append_interim_realization(realization)
+    except Exception:
+        _LOGGER.exception("learning_feedback: failed to capture Portfolio interim realization")
+        return None
+
+
+def capture_strategy_terminal(
+    repository: ContextMemoryRepository, position_map: PositionCorrelationMap, run_id: str,
+    position_key: str, position: ShadowPositionRecord, closing_leg: TradeRecord, observation_as_of: int,
+) -> EdgeEvidenceId | None:
+    """Resolve the Shadow position identified by `position_key` into a terminal Strategy Outcome -- the
+    Shadow-side mirror of `capture_portfolio_terminal`. Shadow already tracks its own stable
+    `position_id` (Lifecycle Specification §3B, already correct) -- `position_key` here is expected to be
+    that SAME string, passed straight through by the caller, not re-derived by this module."""
+    try:
+        entry = position_map.retire(run_id, position_key)
+        if entry is None:
+            _LOGGER.info(
+                "learning_feedback: no pending position correlation for run_id=%s position_key=%s -- "
+                "dropped", run_id, position_key,
+            )
+            return None
+        if entry.outcome_kind is not OutcomeKind.STRATEGY:
+            _LOGGER.warning(
+                "learning_feedback: pending position entry for position_key=%s is kind=%s, not STRATEGY "
+                "-- dropped (kind isolation)", position_key, entry.outcome_kind,
+            )
+            return None
+        outcome = build_strategy_outcome(
+            position, closing_leg, entry.observation_id, observation_as_of, entry.cost_model_ref,
+        )
+        if outcome is None:
+            return None
+        return repository.append_outcome(outcome)
+    except Exception:
+        _LOGGER.exception("learning_feedback: failed to capture Strategy terminal resolution")
+        return None
+
+
+def capture_strategy_interim(
+    repository: ContextMemoryRepository, position_map: PositionCorrelationMap, run_id: str,
+    position_key: str, closing_leg: TradeRecord, observation_as_of: int,
+) -> InterimRealizationId | None:
+    """Capture one non-terminal, diagnostic-only realization for a Shadow partial exit leg that does NOT
+    bring `position_key` to zero size -- the Shadow-side mirror of `capture_portfolio_interim`."""
+    try:
+        if run_id != position_map.run_id:
+            _LOGGER.warning(
+                "learning_feedback: run_id=%s does not match PositionCorrelationMap's own run_id=%s -- "
+                "dropped", run_id, position_map.run_id,
+            )
+            return None
+        entry = position_map.get(position_key)
+        if entry is None:
+            _LOGGER.info(
+                "learning_feedback: no pending position correlation for run_id=%s position_key=%s -- "
+                "dropped", run_id, position_key,
+            )
+            return None
+        if entry.outcome_kind is not OutcomeKind.STRATEGY:
+            _LOGGER.warning(
+                "learning_feedback: pending position entry for position_key=%s is kind=%s, not STRATEGY "
+                "-- dropped (kind isolation)", position_key, entry.outcome_kind,
+            )
+            return None
+        realization = build_strategy_interim_realization(
+            closing_leg, position_key, entry.observation_id, observation_as_of, entry.cost_model_ref,
+        )
+        if realization is None:
+            return None
+        return repository.append_interim_realization(realization)
+    except Exception:
+        _LOGGER.exception("learning_feedback: failed to capture Strategy interim realization")
         return None

@@ -53,6 +53,8 @@ from ai_trader.context_memory.contracts import (
     ContextSnapshot,
     ContextSnapshotId,
     EdgeEvidenceId,
+    InterimRealization,
+    InterimRealizationId,
     Observation,
     ObservationId,
     OperationalMetadata,
@@ -155,6 +157,27 @@ def canonical_operational_metadata(metadata: OperationalMetadata) -> dict[str, A
     }
 
 
+def canonical_interim_realization(realization: InterimRealization) -> dict[str, Any]:
+    return {
+        "record_type": "context_memory.interim_realization",
+        "context_memory_schema_version": canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
+        "observation_id": realization.observation_id.value,
+        "strategy_id": realization.strategy_id,
+        "position_key": realization.position_key,
+        "outcome_kind": realization.outcome_kind.value,
+        "source_type": realization.source_type.value,
+        "horizon": realization.horizon,
+        "horizon_unit": realization.horizon_unit.value,
+        "observation_as_of": realization.observation_as_of,
+        "realization_as_of": realization.realization_as_of,
+        "normalized_result": canonical_float(realization.normalized_result),
+        "cost_model_ref": realization.cost_model_ref,
+        "unavailable_reason": (
+            realization.unavailable_reason.value if realization.unavailable_reason is not None else None
+        ),
+    }
+
+
 def hash_canonical(payload: dict[str, Any]) -> str:
     canonical_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
@@ -178,3 +201,7 @@ def compute_edge_evidence_id(outcome: Outcome) -> EdgeEvidenceId:
 
 def compute_operational_metadata_id(metadata: OperationalMetadata) -> OperationalMetadataId:
     return OperationalMetadataId(hash_canonical(canonical_operational_metadata(metadata)))
+
+
+def compute_interim_realization_id(realization: InterimRealization) -> InterimRealizationId:
+    return InterimRealizationId(hash_canonical(canonical_interim_realization(realization)))

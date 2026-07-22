@@ -22,7 +22,9 @@ from ai_trader.learning_feedback.adapters import (
     REJECTION_STAGE_BY_DENIAL_CODE,
     UnmappedDenialCodeError,
     build_operational_metadata,
+    build_portfolio_interim_realization,
     build_portfolio_outcome,
+    build_strategy_interim_realization,
     build_strategy_outcome,
     canonical_cost_model_ref,
     rejection_stage_for,
@@ -284,3 +286,60 @@ def test_canonical_cost_model_ref_is_sensitive_to_every_field(field_name: str, n
     base = CostModel(spread_model="fixed_ticks", spread_ticks=1.0, commission_model="per_lot", commission_per_lot=0.0, cost_model_version="1.0.0")
     changed = dataclasses.replace(base, **{field_name: new_value})  # type: ignore[arg-type]
     assert canonical_cost_model_ref(base) != canonical_cost_model_ref(changed)
+
+
+# ------------------------------------------------------------------ build_portfolio_interim_realization /
+# build_strategy_interim_realization -- Architectural Decision Package Decision 3 (Option C)
+
+POSITION_KEY = "run-A:XAUUSD:1700000000:LONG"
+
+
+def test_build_portfolio_interim_realization_happy_path() -> None:
+    r = build_portfolio_interim_realization(_trade(pnl_r=0.4), POSITION_KEY, OBS_ID, AS_OF, "ref-1")
+    assert r is not None
+    assert r.normalized_result == 0.4
+    assert r.unavailable_reason is None
+    assert r.outcome_kind is OutcomeKind.PORTFOLIO
+    assert r.source_type is SourceType.REAL_PORTFOLIO_LEDGER
+    assert r.position_key == POSITION_KEY
+    assert r.strategy_id == "S1"
+    assert r.horizon == 4
+    assert r.realization_as_of == AS_OF + 400
+
+
+def test_build_portfolio_interim_realization_unavailable_when_pnl_r_none() -> None:
+    r = build_portfolio_interim_realization(_trade(pnl_r=None), POSITION_KEY, OBS_ID, AS_OF, "ref-1")
+    assert r is not None
+    assert r.normalized_result is None
+    assert r.unavailable_reason is OutcomeUnavailableReason.NO_VALID_RISK_DENOMINATOR
+
+
+def test_build_portfolio_interim_realization_none_when_holding_bars_non_positive() -> None:
+    assert build_portfolio_interim_realization(_trade(holding_bars=0), POSITION_KEY, OBS_ID, AS_OF, "ref-1") is None
+
+
+def test_build_strategy_interim_realization_happy_path() -> None:
+    r = build_strategy_interim_realization(_trade(pnl_r=0.9), POSITION_KEY, OBS_ID, AS_OF, "ref-1")
+    assert r is not None
+    assert r.normalized_result == 0.9
+    assert r.outcome_kind is OutcomeKind.STRATEGY
+    assert r.source_type is SourceType.SHADOW_EVIDENCE_ADAPTER
+    assert r.position_key == POSITION_KEY
+
+
+def test_build_strategy_interim_realization_unavailable_when_pnl_r_none() -> None:
+    r = build_strategy_interim_realization(_trade(pnl_r=None), POSITION_KEY, OBS_ID, AS_OF, "ref-1")
+    assert r is not None
+    assert r.unavailable_reason is OutcomeUnavailableReason.NO_VALID_RISK_DENOMINATOR
+
+
+def test_build_strategy_interim_realization_none_when_holding_bars_non_positive() -> None:
+    assert build_strategy_interim_realization(_trade(holding_bars=0), POSITION_KEY, OBS_ID, AS_OF, "ref-1") is None
+
+
+def test_interim_realizations_never_share_a_kind_source_pair_with_each_other() -> None:
+    portfolio_r = build_portfolio_interim_realization(_trade(), POSITION_KEY, OBS_ID, AS_OF, "ref-1")
+    strategy_r = build_strategy_interim_realization(_trade(), POSITION_KEY, OBS_ID, AS_OF, "ref-1")
+    assert portfolio_r is not None and strategy_r is not None
+    assert (portfolio_r.outcome_kind, portfolio_r.source_type) == (OutcomeKind.PORTFOLIO, SourceType.REAL_PORTFOLIO_LEDGER)
+    assert (strategy_r.outcome_kind, strategy_r.source_type) == (OutcomeKind.STRATEGY, SourceType.SHADOW_EVIDENCE_ADAPTER)
