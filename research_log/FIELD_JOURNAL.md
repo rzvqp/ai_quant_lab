@@ -154,6 +154,45 @@ reclaims 2,145 quickly in the coming weeks, this reading is wrong.
 → LINE-A (constrains it), cf. OBS-0017.
 Confidence: low. Interesting, not yet a phenomenon.
 
+### #008-RESOLUTION — observed 2024-03-19 (original entry written at replay ~2024-01-08)
+Original #008 asked: does the Dec-4-2023 spike high (~2,145 on H4) keep capping the market, and I
+wrote "if price reclaims 2,145 quickly, this reading is wrong."
+**Outcome: price reclaimed it.** Not quickly — the cap held for roughly three months (Dec → late
+Feb, range ~1,975–2,090) — but in early March 2024 the market broke out decisively, ran vertically
+to ~2,195, and is now consolidating *above* the old ceiling.
+So: the "failed excursion becomes a durable ceiling" reading was **right about duration, wrong about
+permanence**. A big rejected spike capped the market for ~3 months and then was taken cleanly.
+Refinement this forces: a failed excursion doesn't mark a top — it marks the *upper boundary of a
+consolidation* that persists until the market is ready to expand. That's a weaker and more honest
+claim than the one I started with. Confidence: low→medium that the "cap for weeks/months then
+resolve" shape is real; very low that it has any directional predictive content.
+→ LINE-A.
+
+### #010 — 2024-03-19 · H4+H1 context read · regime: post-expansion consolidation
+H4: 3-month range 1,975–2,090 → decisive early-March breakout → vertical run to ~2,195 → now
+consolidating 2,145–2,195 just under the high. H1: higher lows from the Feb-14 low (~1,990), a slow
+grinding recovery through late Feb, then **the character changes around Mar 1** — small overlapping
+candles are replaced by large one-directional impulses.
+**Why I'm writing this down:** that compression→expansion transition is now the **third** time I've
+seen the same signature. #003 (Oct 2023: chop → clean committed decline), LINE-A W1 (Jan–Feb 2024
+churn zone 2,000–2,060 → +10% breakout), and now Feb→Mar 2024 (grind → vertical expansion).
+Three sightings is not a phenomenon, but it is the first thing in this journal that keeps recurring
+without me going looking for it.
+What I still cannot answer: how often does compression NOT resolve into expansion? I have never
+counted the compressions that just kept compressing, or that resolved feebly. Until I have that,
+this is survivorship-flavoured pattern matching. That counting is the obvious next job, and it is a
+question the chart alone probably cannot answer — but I am not invoking Python yet, because I do not
+yet have a precise definition of "compression" that I would be willing to defend.
+Alternatives: (a) all markets alternate range/trend, so this is trivially true and content-free;
+(b) I'm defining compression post-hoc by the expansion that followed it — the fatal version.
+Confidence: low. But it is the most-repeated observation I have.
+
+### #011 — manual M15 stepping, 2024-03-19 21:00→22:00 UTC
+Stepped four M15 candles through the late-NY/Asia handover. Ranges 0.34–1.15, volumes 77–400,
+price drifting 2158.8 → 2157.1. Nothing happened. Recording the *nothing* deliberately: this is
+what most of the tape is, and if I only ever write entries when something happens I will end up with
+a journal that misrepresents how rare interesting behaviour actually is.
+
 ### #009 — method note
 Pausing is not instantaneous. Between seeing something and issuing pause, autoplay advanced ~6 days
 (Jan 2 → ~Jan 8). So I cannot freeze on the exact candle that caught my eye — I can only stop
