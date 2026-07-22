@@ -123,6 +123,44 @@ Impact on work done so far: none mechanically — every analysis used the fail-c
 let 2026 knowledge shape which pre-cutoff phenomena I find interesting. Flagging it so future-me
 treats any 2025-onward "intuition" with suspicion.
 
+### #008 — replay ~2024-01-02→01-08 · H1 driving, H4 consulted · Asia/London · regime: post-spike range
+**Cause of pause:** on H1 I could see the whole Nov–Dec 2023 story in one frame and one thing stood
+out — a violent spike up on **Dec 4** that was rejected almost immediately, and then the market
+spent the following ~3.5 weeks grinding back up to *just under* that high (2,088 on Dec 28) without
+taking it. The failed spike became the ceiling.
+
+**Visible before outcome:** at the moment of pausing, price ~2,073 (Jan 2), sitting mid-range,
+having failed once at 2,088.
+
+**H4 context (consulted, same replay cursor):** the H4 tells a bigger story than H1 did. The Dec 4
+spike actually wicked to **~2,145** — far higher than the ~2,090 I read off H1. Larger narrative:
+Oct-2023 V-bottom at ~1,820 → strong impulsive rally through Nov → **Dec 4 blow-off to 2,145 →
+instant full rejection** → range 1,975–2,090 beneath it for a month. So the Dec 4 candle wasn't
+"a spike in a range," it was the *terminal* event of a two-month rally.
+
+**Interpretation:** a huge, decisive excursion failed completely and then capped the market for
+weeks. Note this cuts *against* the intuition I started LINE-A with (marginal overshoot = reversal
+tell, decisive break = continuation). Here the overshoot was enormous — the most decisive possible
+— and it still failed and became resistance. That is consistent with the OBS-0017 statistical null
+(overshoot magnitude uninformative), which I like: chart and statistic agreeing for once.
+
+**Alternatives:** (a) blow-off tops are a distinct animal from ordinary swing-high breaks and I'm
+mixing two populations; (b) Dec 4 2023 was a known macro/news spike — event-driven, not structural;
+(c) one instance.
+
+**What later candles must show to support/contradict:** if this is general, large failed excursions
+should cap price for an extended period more often than ordinary failed breaks do. If price
+reclaims 2,145 quickly in the coming weeks, this reading is wrong.
+→ LINE-A (constrains it), cf. OBS-0017.
+Confidence: low. Interesting, not yet a phenomenon.
+
+### #009 — method note
+Pausing is not instantaneous. Between seeing something and issuing pause, autoplay advanced ~6 days
+(Jan 2 → ~Jan 8). So I cannot freeze on the exact candle that caught my eye — I can only stop
+*near* it. Chronological continuity is preserved (no jumping), but "resume from the exact same
+candle" is not literally achievable at 3x with my latency. Recording so nobody assumes precision I
+don't have. If a specific candle ever matters, I should drop the speed rather than pretend.
+
 ### #007 — note to self
 I am watching an unusually uninformative stretch of tape (holiday). That is fine — I don't get to
 choose. But I should expect the market's "language" to change materially when Jan 2nd/3rd real
