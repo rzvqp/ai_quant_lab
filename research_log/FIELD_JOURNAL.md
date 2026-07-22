@@ -344,3 +344,15 @@ repede. Nu promovez nimic. Confidence: relatia volum-continuare scade la very lo
 22-23 iul: compresie 3 zile, 2384-2414, volum plat.
 24 iul: rezolvare IN SUS la 2418.5, impotriva biasului H4 descendent.
 Primul contra-exemplu real. DC-0002 acum 4/5. Nu il retrag, nu il apar - il notez.
+
+### #020 — 2025-08-08. DC-0006 apare din nou, in alt regim de volum.
+Volume 2025 = 16k-23k vs ~2.5k in 2024 (8x). Totusi acelasi tipar:
+3401.8 maxim -> respingere -17pt intr-o lumanare pe volum 23730 (maxim) -> revenire 4 lumanari
+verzi pe volum descrescator 14k->10.9k->11.4k->13k, pana la 3393.3.
+Al treilea regim distinct in care volumul maxim marcheaza lumanarea care intoarce. Adaug ca instanta
+la DC-0006. Nu retestez, nu concluzionez.
+
+### #021 — nota de metoda (autoplay nesupravegheat)
+Cat am scris DC-0005/0006, autoplay a rulat si a parcurs un AN (aug 2024 -> aug 2025) neobservat.
+Pierdut. De aici manual, si nu mai las autoplay pornit cat scriu.
+Atentie: cutoff 2025-10-23, mai am ~2.5 luni de replay.
