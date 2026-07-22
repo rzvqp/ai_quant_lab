@@ -21,3 +21,5 @@ whichever division currently owns the candidate.
 | DC-0002 | Higher-Timeframe Compression Resolves Into Expansion In The Direction Of The Prevailing H4 Bias | discretionary-observation, Alpha autonomous replay sprint | 2026-07-22 | v1 | FROZEN | `DC-0002_htf_compression_resolves_with_h4_bias/` |
 | DC-0003 | Scale Inversion — Micro-Scale Coils And Higher-Timeframe Compressions Resolve In Opposite Ways | discretionary-observation, manual candle-by-candle replay | 2026-07-22 | v1 | FROZEN | `DC-0003_scale_inversion_of_break_behaviour/` |
 | DC-0004 | New-York-Session Prior-Day-High Sweep-Reject Is Followed By Reversion | systematic observation + descriptive analysis (OBS-0001→0013) | 2026-07-22 | v1 | FROZEN | `DC-0004_ny_session_conditioned_sweep_reject/` |
+| DC-0005 | The Third Test Of A Level Behaves Differently From The First Two | discretionary-observation, replay manual stepping | 2026-07-22 | v1 | FROZEN | `DC-0005_third_test_of_a_level/` |
+| DC-0006 | Candles With Extreme Relative Volume Frequently Fail To Extend | discretionary-observation, replay manual stepping | 2026-07-22 | v1 | FROZEN | `DC-0006_extreme_volume_candle_fails_to_extend/` |

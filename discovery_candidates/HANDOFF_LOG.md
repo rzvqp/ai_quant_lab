@@ -13,3 +13,5 @@ trail proving what Alpha handed to Red Team, and when.
 | 2026-07-22 | DC-0002 | v1 | ADDENDUM (Library Concept Scan added; hash recomputed) | sha256:9970263b17fdbcb886955bda7bb51b2ebc60a53de824b71b62868f6315c73bab | see index |
 | 2026-07-22 | DC-0003 | v1 | ADDENDUM (Library Concept Scan added; hash recomputed) | sha256:e56076c5c4fce6a296f77e996fe050f03ae6b27fc3b929819e8824033195ac7d | see index |
 | 2026-07-22 | DC-0004 | v1 | ADDENDUM (Library Concept Scan added; hash recomputed) | sha256:4560ba15e08226a9614097e1bd500db5a53d5095aa11ed02296876c64d665038 | see index |
+| 2026-07-22 | DC-0005 | v1 | FROZEN / SUBMITTED | sha256:7c8750551b31c2e8da4833a40f9a31a12c58a5000c3fed782838f4a23dc01714 | The Third Test Of A Level Behaves Differently From The First Two |
+| 2026-07-22 | DC-0006 | v1 | FROZEN / SUBMITTED | sha256:ef1e217fd3ff1aeb0fd8fa96f6e110f5cc4bcdbffb7a2c49474190f2af6585a4 | Candles With Extreme Relative Volume Frequently Fail To Extend |
