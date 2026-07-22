@@ -369,3 +369,7 @@ Atentie: cutoff 2025-10-23, mai am ~2.5 luni de replay.
   plecat in DIRECTIA OPUSA (3401 -> 3386.3) cu volum exploziv 829->9544. Deci nu "al treilea test
   rupe nivelul", ci "dupa N respingeri piata pleaca invers". Reformuleaza DC-0005? De decis la
   documentare, nu acum.
+- [QC-04] 2025-08-11 09:20-14:00 UTC M15: dupa coborarea 3401->3367.6 (-33pt, volum crescator
+  monoton 829->17530), pretul s-a asezat intr-o consolidare 3374-3380.3 pe 14 lumanari.
+  Range per lumanare scade 5.9->4.5->3.8->2.5->2.3->2.2. Volum scade 6597->2180.
+  Plafonul 3380.3 atins de 4 ori fara depasire. Fara rezolvare pana la ora scrierii.
