@@ -193,6 +193,40 @@ price drifting 2158.8 → 2157.1. Nothing happened. Recording the *nothing* deli
 what most of the tape is, and if I only ever write entries when something happens I will end up with
 a journal that misrepresents how rare interesting behaviour actually is.
 
+### #012 — 2026-07-22 · library build · NOT a market observation
+Built the living library from the lab's own registries rather than my memory. It immediately did
+the job it exists to do: it stopped me from claiming something as new.
+
+**K03**: "trend continuation became weakly positive OOS only when gated by high trend-efficiency
+(S39, +OOS .02) … does NOT demonstrate a validated efficiency effect." Low confidence, tiny effect,
+threshold-selected.
+That is, quite possibly, **my LINE-A wearing different clothes.** My "churn vs commitment" and their
+"trend efficiency" look like the same conditioning variable reached from two directions — I got
+there by watching charts, they got there by backtesting S39. Two feelings about this at once:
+1. Deflating. If LINE-A ≡ K03, the lab has already tested it and got ~.02R with a selected
+   threshold. Not a discovery. I'd be re-finding a weak known result and feeling clever.
+2. Useful. In #010 I wrote that I couldn't defend a definition of "compression." **Trend efficiency
+   is that definition** — standard, computable, defensible. The thing blocking me was already
+   solved on the shelf.
+The honest next question is no longer "is churn real?" but **"does structural context add anything
+beyond a plain efficiency number?"** If it doesn't, LINE-A dies into K03 and that's a fine outcome.
+
+**K05** is the other one that landed: "11 of ~13 OOS-positive candidates are long-only in a
+2023-2025 gold bull trend; timing-alpha vs long-gold-beta UNRESOLVED." I have independently
+rediscovered this confound three separate times without knowing it was already logged (OBS-0001
+trend contamination, OBS-0005 PDC, OBS-0017 swing-low bounce = buy-the-dip). My sightings don't
+resolve K05 but they corroborate it from a different angle.
+
+**K01** ("raw sweeps without confirmation → non-positive; S21 all 48 variants negative") agrees with
+my OBS-0001 null. And it reframes my one surviving lead: OBS-0008 (NY-session sweep-reject) is a
+*conditioned* sweep — which is precisely where K01 says content might live. That raises my interest
+in the NY lead slightly rather than lowering it.
+
+**K04** kills any further weekday work (OBS-0009). Already known to fail OOS. Noted and closed.
+
+Lesson I want to keep: I spent multiple sessions unable to define "compression" while the definition
+sat in the lab's own registry. **Consult the library earlier — after observing, but before agonising.**
+
 ### #009 — method note
 Pausing is not instantaneous. Between seeing something and issuing pause, autoplay advanced ~6 days
 (Jan 2 → ~Jan 8). So I cannot freeze on the exact candle that caught my eye — I can only stop
