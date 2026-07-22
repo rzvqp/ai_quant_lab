@@ -1,11 +1,13 @@
 """Append-only, immutable persistence for Context Memory source records -- Phase 7 Checkpoint 10.
 
 **Storage model**: one JSON Lines (``.jsonl``) file per PERSISTED record type, all living under one
-repository root directory: ``context_snapshots.jsonl``, ``observations.jsonl``, ``outcomes.jsonl``. Each
-line is one JSON object -- ``{"record_id": "<hex>", "sequence": <int>, "payload": {<canonical dict,
-exactly as produced by identities.py/codec.py>}}`` -- append-only, human-inspectable, standard-library
-only (``json`` + ``pathlib`` + ``hashlib`` via ``identities``/``codec``, no third-party dependency, no
-database).
+repository root directory: ``context_snapshots.jsonl``, ``observations.jsonl``, ``outcomes.jsonl``,
+``operational_metadata.jsonl`` (the last added for the Learning/Research Feedback Normative Model,
+Addendum §A2 -- encoded/decoded locally in this module rather than via ``codec.py``, since it is a
+diagnostic-only record with no cross-package decode consumer today). Each line is one JSON object --
+``{"record_id": "<hex>", "sequence": <int>, "payload": {<canonical dict, exactly as produced by
+identities.py/codec.py>}}`` -- append-only, human-inspectable, standard-library only (``json`` +
+``pathlib`` + ``hashlib`` via ``identities``/``codec``, no third-party dependency, no database).
 
 **Why only 3 files, not 4** -- :class:`~ai_trader.context_memory.contracts.PresentEdgeReference` is
 deliberately NOT given its own independent persisted stream. Checkpoint 10's own mission statement
@@ -65,17 +67,23 @@ from typing import Any, Callable, Generic, TypeVar
 from ai_trader.context_memory import codec
 from ai_trader.context_memory.codec import UnsupportedSchemaVersionError
 from ai_trader.context_memory.contracts import (
+    CONTEXT_MEMORY_SCHEMA_VERSION,
     ContextSnapshot,
     ContextSnapshotId,
     EdgeEvidenceId,
     Observation,
     ObservationId,
+    OperationalMetadata,
+    OperationalMetadataId,
     Outcome,
 )
+from ai_trader.context_memory.enums import ContextRiskDecision
 from ai_trader.context_memory.identities import (
+    canonical_operational_metadata,
     compute_context_snapshot_id,
     compute_edge_evidence_id,
     compute_observation_id,
+    compute_operational_metadata_id,
 )
 from ai_trader.context_memory.validation import ContextMemoryValidationError
 
@@ -120,6 +128,46 @@ class RepositoryIntegrityReport:
     @property
     def ok(self) -> bool:
         return not self.corrupt_lines
+
+
+def _encode_operational_metadata(metadata: OperationalMetadata) -> dict[str, Any]:
+    return canonical_operational_metadata(metadata)
+
+
+def _decode_operational_metadata(payload: dict[str, Any]) -> OperationalMetadata:
+    # Kept local to this module rather than added to codec.py: OperationalMetadata (Learning/Research
+    # Feedback Normative Model, Addendum §A2) is a diagnostic-only, repository-internal record with no
+    # cross-package decode consumer today, unlike ContextSnapshot/Observation/Outcome. The Learning/
+    # Research Feedback Implementation Plan's own file list explicitly does not touch codec.py.
+    actual = payload.get("record_type")
+    if actual != "context_memory.operational_metadata":
+        raise ContextMemoryValidationError(
+            f"expected record_type='context_memory.operational_metadata', got {actual!r}"
+        )
+    raw_schema = payload.get("context_memory_schema_version")
+    if (
+        not isinstance(raw_schema, dict)
+        or raw_schema.get("namespace") != CONTEXT_MEMORY_SCHEMA_VERSION.namespace
+    ):
+        raise UnsupportedSchemaVersionError(f"missing or malformed context_memory_schema_version: {raw_schema!r}")
+    if raw_schema.get("version") != CONTEXT_MEMORY_SCHEMA_VERSION.version:
+        raise UnsupportedSchemaVersionError(
+            f"unsupported context_memory_schema_version {raw_schema!r} -- this build understands "
+            f"{CONTEXT_MEMORY_SCHEMA_VERSION.version!r} only"
+        )
+    try:
+        return OperationalMetadata(
+            observation_id=ObservationId(payload["observation_id"]),
+            strategy_id=payload["strategy_id"],
+            risk_decision=ContextRiskDecision(payload["risk_decision"]),
+            denied_reason_code=payload["denied_reason_code"],
+            rejection_stage=payload["rejection_stage"],
+            strategy_health_policy_state=payload["strategy_health_policy_state"],
+        )
+    except ContextMemoryValidationError:
+        raise
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ContextMemoryValidationError(f"malformed operational_metadata payload: {exc}") from exc
 
 
 class _JsonlStream(Generic[_T, _IdT]):
@@ -287,6 +335,10 @@ class ContextMemoryRepository:
             root_path / "outcomes.jsonl",
             codec.encode_outcome, codec.decode_outcome, compute_edge_evidence_id,
         )
+        self._operational_metadata = _JsonlStream(
+            root_path / "operational_metadata.jsonl",
+            _encode_operational_metadata, _decode_operational_metadata, compute_operational_metadata_id,
+        )
 
     # ------------------------------------------------------------------ append (single)
 
@@ -305,6 +357,11 @@ class ContextMemoryRepository:
         self._outcomes.append(outcome, record_id.value)
         return record_id
 
+    def append_operational_metadata(self, metadata: OperationalMetadata) -> OperationalMetadataId:
+        record_id = compute_operational_metadata_id(metadata)
+        self._operational_metadata.append(metadata, record_id.value)
+        return record_id
+
     # ------------------------------------------------------------------ append (batch)
     # IMPLEMENTATION CHOICE (Checkpoint 10 §D): batch append preserves the caller-supplied order exactly
     # (sequence numbers are assigned in that order) -- there is no meaningful "canonical" ordering to
@@ -321,6 +378,11 @@ class ContextMemoryRepository:
     def append_outcomes(self, outcomes: Sequence[Outcome]) -> tuple[EdgeEvidenceId, ...]:
         return tuple(self.append_outcome(o) for o in outcomes)
 
+    def append_operational_metadatas(
+        self, items: Sequence[OperationalMetadata]
+    ) -> tuple[OperationalMetadataId, ...]:
+        return tuple(self.append_operational_metadata(m) for m in items)
+
     # ------------------------------------------------------------------ read by identity
 
     def get_context_snapshot(self, record_id: ContextSnapshotId) -> ContextSnapshot | None:
@@ -331,6 +393,9 @@ class ContextMemoryRepository:
 
     def get_outcome(self, record_id: EdgeEvidenceId) -> Outcome | None:
         return self._outcomes.get(record_id.value)
+
+    def get_operational_metadata(self, record_id: OperationalMetadataId) -> OperationalMetadata | None:
+        return self._operational_metadata.get(record_id.value)
 
     # ------------------------------------------------------------------ deterministic iteration
     # "filter by record type" (Checkpoint 10 §D) is satisfied structurally: each stream already IS one
@@ -346,6 +411,9 @@ class ContextMemoryRepository:
     def iter_outcomes(self) -> Iterator[Outcome]:
         return self._outcomes.iter_in_order()
 
+    def iter_operational_metadata(self) -> Iterator[OperationalMetadata]:
+        return self._operational_metadata.iter_in_order()
+
     # ------------------------------------------------------------------ counts
 
     def count_context_snapshots(self) -> int:
@@ -356,6 +424,9 @@ class ContextMemoryRepository:
 
     def count_outcomes(self) -> int:
         return self._outcomes.count()
+
+    def count_operational_metadata(self) -> int:
+        return self._operational_metadata.count()
 
     # ------------------------------------------------------------------ integrity / rebuild
 
@@ -380,6 +451,7 @@ class ContextMemoryRepository:
         self._snapshots._rebuild()
         self._observations._rebuild()
         self._outcomes._rebuild()
+        self._operational_metadata._rebuild()
 
     @property
     def root_path(self) -> Path:

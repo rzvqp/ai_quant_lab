@@ -30,6 +30,7 @@ from ai_trader.context_memory.enums import (
     ContextExpansionState,
     ContextLiquidityState,
     ContextMomentumState,
+    ContextRiskDecision,
     ContextStructureState,
     ContextTrendDirection,
     ContextVolatilityRegime,
@@ -396,3 +397,64 @@ class Outcome:
                     f"Outcome.resolution_as_of ({self.resolution_as_of!r}) must not precede "
                     f"observation_as_of ({self.observation_as_of!r})"
                 )
+
+
+# ---------------------------------------------------------------------------------------------------
+# Operational Metadata (Learning/Research Feedback Normative Model, Addendum §A2) -- a separate,
+# optional, immutable, DIAGNOSTIC-ONLY companion type. Never a learning target: structurally excluded
+# from retrieval.py/evidence.py, never aggregated as evidence, never fed into any statistic. Records the
+# Risk Manager's ALLOW/DENY decision and Strategy Health's PolicyState for one (observation, strategy)
+# pair -- the operational "what happened to this candidate procedurally" record, distinct from the
+# Outcome contract's own "what happened to this strategy/portfolio economically" record above.
+# ---------------------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class OperationalMetadataId:
+    value: str
+
+    def __post_init__(self) -> None:
+        require_non_empty_str(self.value, "OperationalMetadataId.value")
+
+
+@dataclass(frozen=True)
+class OperationalMetadata:
+    """One row per ``(observation_id, strategy_id)`` -- the Risk Manager's own ALLOW/DENY decision (and,
+    for a DENY, its reason code and rejection stage) plus Strategy Health's own ``PolicyState`` at that
+    same moment. Write-once, read-only-by-humans, immutable; never a learning target.
+
+    **Invariant enforced in ``__post_init__``**: a ``DENY`` must always carry a ``denied_reason_code``;
+    an ``ALLOW`` must never carry one -- the two fields' own presence/absence is the direct, structural
+    expression of the decision itself, never left to drift independently of it.
+    """
+
+    observation_id: ObservationId
+    strategy_id: str
+    risk_decision: ContextRiskDecision
+    denied_reason_code: str | None
+    rejection_stage: str | None
+    strategy_health_policy_state: str | None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.observation_id, ObservationId):
+            raise ContextMemoryValidationError(
+                f"OperationalMetadata.observation_id must be an ObservationId, got {self.observation_id!r}"
+            )
+        require_non_empty_str(self.strategy_id, "OperationalMetadata.strategy_id")
+        if not isinstance(self.risk_decision, ContextRiskDecision):
+            raise ContextMemoryValidationError(
+                f"OperationalMetadata.risk_decision must be a ContextRiskDecision, got {self.risk_decision!r}"
+            )
+        if self.denied_reason_code is not None:
+            require_non_empty_str(self.denied_reason_code, "OperationalMetadata.denied_reason_code")
+        if self.rejection_stage is not None:
+            require_non_empty_str(self.rejection_stage, "OperationalMetadata.rejection_stage")
+        if self.strategy_health_policy_state is not None:
+            require_non_empty_str(
+                self.strategy_health_policy_state, "OperationalMetadata.strategy_health_policy_state"
+            )
+
+        if self.risk_decision is ContextRiskDecision.DENY and self.denied_reason_code is None:
+            raise ContextMemoryValidationError("OperationalMetadata: a DENY must carry a denied_reason_code")
+        if self.risk_decision is ContextRiskDecision.ALLOW and self.denied_reason_code is not None:
+            raise ContextMemoryValidationError("OperationalMetadata: an ALLOW must not carry a denied_reason_code")

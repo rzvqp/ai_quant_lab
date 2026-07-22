@@ -63,7 +63,9 @@ def test_outcome_status_values() -> None:
 
 
 def test_source_type_values() -> None:
-    assert {m.value for m in SourceType} == {"PRICE_ONLY", "SHADOW_EVIDENCE_ADAPTER"}
+    assert {m.value for m in SourceType} == {
+        "PRICE_ONLY", "SHADOW_EVIDENCE_ADAPTER", "REAL_PORTFOLIO_LEDGER",
+    }
 
 
 def test_horizon_unit_values() -> None:

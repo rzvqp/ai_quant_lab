@@ -129,10 +129,36 @@ class OutcomeStatus(str, Enum):
 class SourceType(str, Enum):
     """Where an Outcome's own normalized result came from (Checkpoint 8 §4.3's two deliberately-separate
     horizon families). Outcome CALCULATION is explicitly out of scope for Checkpoint 9 -- this
-    vocabulary exists so the *contract* can label provenance once a future checkpoint computes one."""
+    vocabulary exists so the *contract* can label provenance once a future checkpoint computes one.
+
+    ``REAL_PORTFOLIO_LEDGER`` added per the Learning/Research Feedback Normative Model (ADR
+    ``ADR_OUTCOME_IDENTITY_VS_SOURCE.md``, Option B, CEO-approved): an open, growing "where from" axis,
+    orthogonal to :class:`OutcomeKind`'s closed "what" axis below."""
 
     PRICE_ONLY = "PRICE_ONLY"
     SHADOW_EVIDENCE_ADAPTER = "SHADOW_EVIDENCE_ADAPTER"
+    REAL_PORTFOLIO_LEDGER = "REAL_PORTFOLIO_LEDGER"
+
+
+class OutcomeKind(str, Enum):
+    """What an Outcome represents (the Learning/Research Feedback Normative Model's "what" axis,
+    orthogonal to :class:`SourceType`'s own "where from" axis -- ADR ``ADR_OUTCOME_IDENTITY_VS_SOURCE.md``,
+    Option B, CEO-approved). Small, closed, stable: expected to remain exactly these two members for the
+    foreseeable future. Phase A of the implementation adds this type only; wiring it onto :class:`~ai_trader.
+    context_memory.contracts.Outcome` itself is a separate, later phase."""
+
+    STRATEGY = "STRATEGY"
+    PORTFOLIO = "PORTFOLIO"
+
+
+class ContextRiskDecision(str, Enum):
+    """Local mirror of ``ai_trader.risk_manager.types.Decision``, per this module's own established
+    "zero import dependency on upstream vocab" convention (see module docstring). Backs
+    :class:`~ai_trader.context_memory.contracts.OperationalMetadata`, a diagnostic-only companion type --
+    never a learning target, never fed into :mod:`~ai_trader.context_memory.evidence`."""
+
+    ALLOW = "ALLOW"
+    DENY = "DENY"
 
 
 class HorizonUnit(str, Enum):

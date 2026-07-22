@@ -55,6 +55,8 @@ from ai_trader.context_memory.contracts import (
     EdgeEvidenceId,
     Observation,
     ObservationId,
+    OperationalMetadata,
+    OperationalMetadataId,
     Outcome,
     PresentEdgeReference,
     PresentEdgeReferenceId,
@@ -138,6 +140,19 @@ def canonical_outcome(outcome: Outcome) -> dict[str, Any]:
     }
 
 
+def canonical_operational_metadata(metadata: OperationalMetadata) -> dict[str, Any]:
+    return {
+        "record_type": "context_memory.operational_metadata",
+        "context_memory_schema_version": canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
+        "observation_id": metadata.observation_id.value,
+        "strategy_id": metadata.strategy_id,
+        "risk_decision": metadata.risk_decision.value,
+        "denied_reason_code": metadata.denied_reason_code,
+        "rejection_stage": metadata.rejection_stage,
+        "strategy_health_policy_state": metadata.strategy_health_policy_state,
+    }
+
+
 def hash_canonical(payload: dict[str, Any]) -> str:
     canonical_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
@@ -157,3 +172,7 @@ def compute_observation_id(observation: Observation) -> ObservationId:
 
 def compute_edge_evidence_id(outcome: Outcome) -> EdgeEvidenceId:
     return EdgeEvidenceId(hash_canonical(canonical_outcome(outcome)))
+
+
+def compute_operational_metadata_id(metadata: OperationalMetadata) -> OperationalMetadataId:
+    return OperationalMetadataId(hash_canonical(canonical_operational_metadata(metadata)))
