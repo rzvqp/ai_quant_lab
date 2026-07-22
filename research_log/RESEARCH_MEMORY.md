@@ -3,6 +3,13 @@
 Continuous batch target: **25 Observation Records** (batch = OBS-0002…). Instrument XAUUSD, mode
 replay_pre_cutoff / sanctioned loader (holdout cutoff 2025-10-23). Descriptive only; no strategy/P&L.
 
+**METHODOLOGY (CEO 2026-07-22): observation-first.** TradingView Replay = PRIMARY (eyes); Python =
+VALIDATION only (statistician). Every question must ORIGINATE from replay observation, then Python
+validates. OBS-0001..0016 were produced Python-first (pre-correction); OBS-0017+ are observation-first.
+Operational learnings: (a) **replay_stop before re-seeking** a new date (stale-state seek defect, the
+fail-closed guard catches it, retry-after-stop works); (b) `capture_screenshot` renders a **low-res
+horizontal strip** — compensate with SMC/ICT label/box/line structural data for fine detail.
+
 ## Completed Observation Records (16; batch 15/25)
 | ID | Question | Verdict |
 |----|----------|---------|
@@ -22,6 +29,7 @@ replay_pre_cutoff / sanctioned loader (holdout cutoff 2025-10-23). Descriptive o
 | 0014 | reproduce DC-0001 (velocity outlier) | **CONTRADICTION** — no continuation (n.s.), reconcile spec |
 | 0015 | weekend gap fill | NEGATIVE (true but trivial; ~0 ATR gaps) |
 | 0016 | equity leverage effect on gold | NEGATIVE (gold vol symmetric; +0.26 daily range persistence) |
+| 0017 | **[observation-first]** marginal overshoot of H4 swing high = reversal tell? | NEGATIVE (overshoot uninformative; swing-low bounce = trend confound) |
 
 ## Discovery Candidates
 **None frozen.** Leading candidate-grade lead: **NY-session prior-day-high sweep-reject → ~6h reversion**
@@ -44,6 +52,6 @@ daily persistence, weekday gradient; and gold vol is SYMMETRIC in return sign, u
 0001,0002,0004,0005,0008,0010,0012,0013,0015 as specified. Extensions require a new control/condition/OOS.
 
 ## Next active investigation
-**OBS-0017** onward (batch 16→25): candidate perspectives — reconcile DC-0001 exact spec (0014 follow-up);
-E017 equal-highs/lows liquidity; ATR-conditioned range mean-reversion; intraday range-completion by
-time-of-day; cross-TF (H4 trend × H1 reaction). Continue autonomously; full batch report at OBS-0026 (25).
+Observation-first from here. **OBS-0018** onward (batch 17→25): each begins in replay, question emerges
+from the chart, Python validates. NRQ-6 (swing-low bounce regime control) can be folded into an
+observation session. Full batch report at OBS-0026 (25).
