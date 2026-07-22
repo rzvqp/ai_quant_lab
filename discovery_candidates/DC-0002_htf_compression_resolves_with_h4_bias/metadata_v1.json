@@ -1,0 +1,25 @@
+{
+  "candidate_id": "DC-0002",
+  "title": "Higher-Timeframe Compression Resolves Into Expansion In The Direction Of The Prevailing H4 Bias",
+  "origin_mode": "discretionary-observation, TradingView Replay, Alpha autonomous sprint",
+  "date_first_observed": "2026-07-22",
+  "date_frozen": "2026-07-22",
+  "version": "v1",
+  "instrument": "XAUUSD (OANDA)",
+  "timeframes_examined": [
+    "H4",
+    "H1",
+    "M15"
+  ],
+  "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+  "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+  "related_ids": [
+    "LINE-A",
+    "K03",
+    "K05",
+    "DC-0003"
+  ],
+  "content_hash": "sha256:8dcf79e3f4b77e7f78d934b9c8d51b4a3bc960052b34466f19c25147f3afcdad",
+  "content_hash_method": "sha256 over candidate_v1.md UTF-8 bytes, LF endings, single trailing newline, content_hash occurrences replaced by literal PENDING",
+  "produced_by": "alpha_autonomous_research"
+}

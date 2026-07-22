@@ -18,3 +18,6 @@ whichever division currently owns the candidate.
 | ID | Title | Origin | Date Frozen | Current Version | Lifecycle Status | Folder |
 |---|---|---|---|---|---|---|
 | DC-0001 | Isolated Single-Bar Velocity Outlier Followed by Gradual Multi-Bar Continuation | discretionary-observation, Discovery Cycle #3 | 2026-07-21 | v1 | FROZEN | `DC-0001_isolated_velocity_outlier_then_gradual_continuation/` |
+| DC-0002 | Higher-Timeframe Compression Resolves Into Expansion In The Direction Of The Prevailing H4 Bias | discretionary-observation, Alpha autonomous replay sprint | 2026-07-22 | v1 | FROZEN | `DC-0002_htf_compression_resolves_with_h4_bias/` |
+| DC-0003 | Scale Inversion — Micro-Scale Coils And Higher-Timeframe Compressions Resolve In Opposite Ways | discretionary-observation, manual candle-by-candle replay | 2026-07-22 | v1 | FROZEN | `DC-0003_scale_inversion_of_break_behaviour/` |
+| DC-0004 | New-York-Session Prior-Day-High Sweep-Reject Is Followed By Reversion | systematic observation + descriptive analysis (OBS-0001→0013) | 2026-07-22 | v1 | FROZEN | `DC-0004_ny_session_conditioned_sweep_reject/` |

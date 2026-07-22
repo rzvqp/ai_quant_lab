@@ -1,0 +1,23 @@
+{
+  "candidate_id": "DC-0004",
+  "title": "New-York-Session Prior-Day-High Sweep-Reject Is Followed By Reversion",
+  "origin_mode": "systematic observation + descriptive analysis (OBS-0001 -> 0013)",
+  "date_first_observed": "2026-07-22",
+  "date_frozen": "2026-07-22",
+  "version": "v1",
+  "instrument": "XAUUSD (OANDA)",
+  "timeframes_examined": [
+    "H1",
+    "D1"
+  ],
+  "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+  "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+  "related_ids": [
+    "K01",
+    "E017",
+    "OBS-0004"
+  ],
+  "content_hash": "sha256:c42c8d7c646a86c2f242e25267df02a86fb2c01f88236e1a1fbacc4dd86141bb",
+  "content_hash_method": "sha256 over candidate_v1.md UTF-8 bytes, LF endings, single trailing newline, content_hash occurrences replaced by literal PENDING",
+  "produced_by": "alpha_autonomous_research"
+}
