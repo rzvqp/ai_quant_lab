@@ -356,3 +356,9 @@ la DC-0006. Nu retestez, nu concluzionez.
 Cat am scris DC-0005/0006, autoplay a rulat si a parcurs un AN (aug 2024 -> aug 2025) neobservat.
 Pierdut. De aici manual, si nu mai las autoplay pornit cat scriu.
 Atentie: cutoff 2025-10-23, mai am ~2.5 luni de replay.
+
+## QUICK CAPTURE (fise complete la finalul sesiunii)
+- [QC-01] 2025-08-08 ~19:00 UTC M15: lumanare unica range 27.4 vol 36149 (4x) care matura AMBELE capete
+  (low 3376.6 dupa un -19pt brusc, apoi high 3404.0 peste plafonul 3400.7 testat de 2x) si inchide
+  3397.3 = aproape neschimbat. Double-sided liquidity sweep intr-o singura lumanare. Nou pentru mine.
+  Leaga: DC-0005 (era al 3-lea test al 3400.7), DC-0006 (volum maxim, fara continuare).
