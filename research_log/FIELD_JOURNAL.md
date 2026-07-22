@@ -74,3 +74,37 @@ That second one is the real test. If failed counter-trend shifts happen constant
 almost never mark transitions, this dies. I expect that's the likely outcome.
 
 ---
+
+## Session 2 — 2026-07-22. M5, autoplay ~300ms, started 2024-01-01. Replay left RUNNING.
+Watching the tape from the New Year open forward. No date jumping.
+
+### #005 — 2024-01-01→02 · M5 · Asia/London · regime: holiday-thin
+Watching the New Year tape. Candles are tiny, drift is slow (2065 → 2070 → 2073). And the SMC
+structure labels are firing **continuously** — HH, LH, BOS, EQL, HL, MSS — on swings that are
+clearly just noise at this scale.
+This bothers me, in a useful way. I have been using *label density* as my churn proxy for LINE-A.
+Here the density is obviously being driven by the volatility scale, not by anything the market is
+"doing." Thin tape ⇒ tiny swings ⇒ the pivot algorithm prints constantly.
+→ LINE-A, alternative (c) — the vendor-artifact worry. This is direct visual evidence FOR that
+alternative, i.e. against my own idea. Good.
+Confidence that label-density is a market property: dropping from low → **very low**.
+
+### #006 — 2024-01-02 · M5 · London · same thin regime
+Now I'm watching **"LH" labels print repeatedly during a persistent upward drift.** Bearish
+structure tags appearing all the way up. The labels are contradicting the direction of the actual
+move in front of me.
+What I take from it: at M5 in thin conditions, "structure" is not describing the market — it's
+describing the noise. The timeframe at which structure is read is not a detail, it's the whole
+thing.
+Boundary condition for LINE-A: churn/label-density may only carry meaning where swing size exceeds
+the noise scale — i.e. H4-ish, not M5. Worth watching whether this contradiction disappears once
+real volume returns after the holidays.
+Confidence: low, but this feels like a real constraint rather than a curiosity.
+
+### #007 — note to self
+I am watching an unusually uninformative stretch of tape (holiday). That is fine — I don't get to
+choose. But I should expect the market's "language" to change materially when Jan 2nd/3rd real
+sessions begin. Keep watching rather than jumping ahead to find something interesting. The whole
+point is that I don't skip the boring parts.
+
+---
