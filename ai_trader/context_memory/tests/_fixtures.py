@@ -88,6 +88,7 @@ def make_pending_outcome(observation_id: ObservationId, **overrides: object) -> 
         "cost_model_ref": "GROSS_NO_COSTS",
         "source_type": SourceType.SHADOW_EVIDENCE_ADAPTER,
         "outcome_kind": OutcomeKind.STRATEGY,
+        "unavailable_reason": None,
     }
     kwargs.update(overrides)
     return Outcome(**kwargs)  # type: ignore[arg-type]

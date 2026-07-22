@@ -47,6 +47,7 @@ from ai_trader.context_memory.enums import (
     HorizonUnit,
     OutcomeKind,
     OutcomeStatus,
+    OutcomeUnavailableReason,
     SourceType,
 )
 from ai_trader.context_memory.episodes import (
@@ -115,6 +116,7 @@ __all__ = [
     "ContextEdgeStatus",
     "OutcomeStatus",
     "OutcomeKind",
+    "OutcomeUnavailableReason",
     "SourceType",
     "HorizonUnit",
     "compute_context_snapshot_id",

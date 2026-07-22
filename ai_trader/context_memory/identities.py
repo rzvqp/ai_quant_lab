@@ -138,6 +138,7 @@ def canonical_outcome(outcome: Outcome) -> dict[str, Any]:
         "cost_model_ref": outcome.cost_model_ref,
         "source_type": outcome.source_type.value,
         "outcome_kind": outcome.outcome_kind.value,
+        "unavailable_reason": outcome.unavailable_reason.value if outcome.unavailable_reason is not None else None,
     }
 
 

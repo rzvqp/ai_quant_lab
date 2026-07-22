@@ -117,7 +117,7 @@ def build_populated_index(tmp_path, strategy_id: str = "S1", n_episodes: int = 3
                 outcome_definition_version=SchemaVersion("outcome_definition", "od-v1"), status=OutcomeStatus.RESOLVED,
                 observation_as_of=snap.as_of, normalized_result=result, resolution_as_of=snap.as_of + 10,
                 cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-                outcome_kind=OutcomeKind.STRATEGY,
+                outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
             )
         )
     return HistoricalIndex(repo)

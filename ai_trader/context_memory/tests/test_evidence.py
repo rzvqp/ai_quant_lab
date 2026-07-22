@@ -54,7 +54,7 @@ def _build(
                 outcome_definition_version=OUTCOME_VERSION, status=status,
                 observation_as_of=AS_OF + i * spacing, normalized_result=result, resolution_as_of=resolution,
                 cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-                outcome_kind=OutcomeKind.STRATEGY,
+                outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
             )
         )
     return HistoricalIndex(repo), obs_ids
@@ -264,7 +264,7 @@ def test_incompatible_outcome_definition_version_is_excluded_and_disclosed(tmp_p
                 outcome_definition_version=version, status=OutcomeStatus.RESOLVED,
                 observation_as_of=AS_OF + i * 1000, normalized_result=1.0, resolution_as_of=AS_OF + i * 1000 + 10,
                 cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-                outcome_kind=OutcomeKind.STRATEGY,
+                outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
             )
         )
     idx = HistoricalIndex(repo)
@@ -291,7 +291,7 @@ def test_aggregate_all_present_edges_is_sorted_and_independent(tmp_path: Path) -
                 outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
                 observation_as_of=AS_OF, normalized_result=1.0, resolution_as_of=AS_OF + 10,
                 cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-                outcome_kind=OutcomeKind.STRATEGY,
+                outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
             )
         )
     idx = HistoricalIndex(repo)
@@ -348,7 +348,7 @@ def _build_dual_kind_single_episode(tmp_path: Path, *, strategy_result: float, p
             outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
             observation_as_of=AS_OF, normalized_result=strategy_result, resolution_as_of=AS_OF + 10,
             cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-            outcome_kind=OutcomeKind.STRATEGY,
+            outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
         )
     )
     repo.append_outcome(
@@ -357,7 +357,7 @@ def _build_dual_kind_single_episode(tmp_path: Path, *, strategy_result: float, p
             outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
             observation_as_of=AS_OF, normalized_result=portfolio_result, resolution_as_of=AS_OF + 10,
             cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.REAL_PORTFOLIO_LEDGER,
-            outcome_kind=OutcomeKind.PORTFOLIO,
+            outcome_kind=OutcomeKind.PORTFOLIO, unavailable_reason=None,
         )
     )
     return HistoricalIndex(repo)
@@ -397,7 +397,7 @@ def test_strategy_kind_statistics_are_independent_of_portfolio_kind_row_count(tm
                 outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
                 observation_as_of=AS_OF + i * 1000, normalized_result=1.0, resolution_as_of=AS_OF + i * 1000 + 10,
                 cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-                outcome_kind=OutcomeKind.STRATEGY,
+                outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
             )
         )
         # An extra PORTFOLIO-kind row for the SAME observation/strategy_id -- must have zero effect on
@@ -408,7 +408,7 @@ def test_strategy_kind_statistics_are_independent_of_portfolio_kind_row_count(tm
                 outcome_definition_version=OUTCOME_VERSION, status=OutcomeStatus.RESOLVED,
                 observation_as_of=AS_OF + i * 1000, normalized_result=-99.0, resolution_as_of=AS_OF + i * 1000 + 10,
                 cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.REAL_PORTFOLIO_LEDGER,
-                outcome_kind=OutcomeKind.PORTFOLIO,
+                outcome_kind=OutcomeKind.PORTFOLIO, unavailable_reason=None,
             )
         )
     idx_with_portfolio = HistoricalIndex(repo_with)

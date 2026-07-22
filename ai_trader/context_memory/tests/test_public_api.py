@@ -14,7 +14,7 @@ _EXPECTED_PUBLIC_NAMES = {
     "Outcome", "EdgeEvidenceId",
     "ContextTrendDirection", "ContextStructureState", "ContextMomentumState", "ContextVolatilityRegime",
     "ContextLiquidityState", "ContextExpansionState", "ContextAgreementLevel", "ContextDataQualityState",
-    "ContextEdgeStatus", "OutcomeStatus", "OutcomeKind", "SourceType", "HorizonUnit",
+    "ContextEdgeStatus", "OutcomeStatus", "OutcomeKind", "OutcomeUnavailableReason", "SourceType", "HorizonUnit",
     "compute_context_snapshot_id", "compute_present_edge_reference_id", "compute_observation_id",
     "compute_edge_evidence_id",
     "ContextMemoryValidationError", "as_of_from_datetime",

@@ -37,6 +37,7 @@ from ai_trader.context_memory.enums import (
     HorizonUnit,
     OutcomeKind,
     OutcomeStatus,
+    OutcomeUnavailableReason,
     SourceType,
 )
 from ai_trader.context_memory.validation import (
@@ -328,6 +329,11 @@ class Outcome:
     - ``INVALID``/``UNAVAILABLE`` => ``normalized_result`` is always ``None`` (an invalid/unavailable
       outcome never carries a number); ``resolution_as_of`` MAY be set (recording when resolution was
       attempted and failed) or ``None``.
+    - **``unavailable_reason``** (CEO decision, Learning/Research Feedback Phase D contract amendment):
+      required (not ``None``) exactly when ``status is UNAVAILABLE``; forbidden (must be ``None``) for
+      every other status, including ``INVALID`` -- the schema gap this field closes concerns
+      ``UNAVAILABLE`` only; ``INVALID``'s own pre-existing semantics (a resolution attempt that failed
+      for a reason unrelated to missing evidence) are unchanged and deliberately do not gain this field.
     - **(``outcome_kind``, ``source_type``) compatibility** (Learning/Research Feedback Normative Model,
       ADR ``ADR_OUTCOME_IDENTITY_VS_SOURCE.md``, Option B): exactly the pairs
       ``(STRATEGY, SHADOW_EVIDENCE_ADAPTER)`` and ``(PORTFOLIO, REAL_PORTFOLIO_LEDGER)`` are valid today.
@@ -354,6 +360,7 @@ class Outcome:
     cost_model_ref: str
     source_type: SourceType
     outcome_kind: OutcomeKind
+    unavailable_reason: OutcomeUnavailableReason | None
 
     def __post_init__(self) -> None:
         if not isinstance(self.observation_id, ObservationId):
@@ -379,12 +386,21 @@ class Outcome:
             raise ContextMemoryValidationError(f"Outcome.source_type must be a SourceType, got {self.source_type!r}")
         if not isinstance(self.outcome_kind, OutcomeKind):
             raise ContextMemoryValidationError(f"Outcome.outcome_kind must be an OutcomeKind, got {self.outcome_kind!r}")
+        if self.unavailable_reason is not None and not isinstance(self.unavailable_reason, OutcomeUnavailableReason):
+            raise ContextMemoryValidationError(
+                f"Outcome.unavailable_reason must be an OutcomeUnavailableReason or None, "
+                f"got {self.unavailable_reason!r}"
+            )
 
         if self.status is OutcomeStatus.PENDING:
             if self.normalized_result is not None or self.resolution_as_of is not None:
                 raise ContextMemoryValidationError(
                     "a PENDING Outcome must have normalized_result=None and resolution_as_of=None, "
                     f"got normalized_result={self.normalized_result!r}, resolution_as_of={self.resolution_as_of!r}"
+                )
+            if self.unavailable_reason is not None:
+                raise ContextMemoryValidationError(
+                    f"a PENDING Outcome must have unavailable_reason=None, got {self.unavailable_reason!r}"
                 )
         elif self.status is OutcomeStatus.RESOLVED:
             if self.normalized_result is None or self.resolution_as_of is None:
@@ -397,16 +413,37 @@ class Outcome:
                     f"Outcome.resolution_as_of ({self.resolution_as_of!r}) must not precede "
                     f"observation_as_of ({self.observation_as_of!r})"
                 )
-        else:  # INVALID or UNAVAILABLE
+            if self.unavailable_reason is not None:
+                raise ContextMemoryValidationError(
+                    f"a RESOLVED Outcome must have unavailable_reason=None, got {self.unavailable_reason!r}"
+                )
+        elif self.status is OutcomeStatus.UNAVAILABLE:
             if self.normalized_result is not None:
                 raise ContextMemoryValidationError(
-                    f"a {self.status.value} Outcome must have normalized_result=None, "
-                    f"got {self.normalized_result!r}"
+                    f"an UNAVAILABLE Outcome must have normalized_result=None, got {self.normalized_result!r}"
                 )
             if self.resolution_as_of is not None and self.resolution_as_of < self.observation_as_of:
                 raise ContextMemoryValidationError(
                     f"Outcome.resolution_as_of ({self.resolution_as_of!r}) must not precede "
                     f"observation_as_of ({self.observation_as_of!r})"
+                )
+            if self.unavailable_reason is None:
+                raise ContextMemoryValidationError(
+                    "an UNAVAILABLE Outcome requires unavailable_reason to be set, got None"
+                )
+        else:  # INVALID
+            if self.normalized_result is not None:
+                raise ContextMemoryValidationError(
+                    f"an INVALID Outcome must have normalized_result=None, got {self.normalized_result!r}"
+                )
+            if self.resolution_as_of is not None and self.resolution_as_of < self.observation_as_of:
+                raise ContextMemoryValidationError(
+                    f"Outcome.resolution_as_of ({self.resolution_as_of!r}) must not precede "
+                    f"observation_as_of ({self.observation_as_of!r})"
+                )
+            if self.unavailable_reason is not None:
+                raise ContextMemoryValidationError(
+                    f"an INVALID Outcome must have unavailable_reason=None, got {self.unavailable_reason!r}"
                 )
 
         valid_kind_source_pairs = {

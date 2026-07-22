@@ -134,7 +134,7 @@ def test_future_outcome_resolution_excluded_when_not_yet_visible(tmp_path: Path)
         outcome_definition_version=SchemaVersion("outcome_definition", "od-v1"), status=OutcomeStatus.RESOLVED,
         observation_as_of=AS_OF, normalized_result=0.3, resolution_as_of=AS_OF + 5000,
         cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-        outcome_kind=OutcomeKind.STRATEGY,
+        outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
     )
     repo.append_outcome(outcome)
     idx = HistoricalIndex(repo)
@@ -151,7 +151,7 @@ def test_pending_outcome_always_visible_regardless_of_cutoff(tmp_path: Path) -> 
         outcome_definition_version=SchemaVersion("outcome_definition", "od-v1"), status=OutcomeStatus.PENDING,
         observation_as_of=AS_OF, normalized_result=None, resolution_as_of=None,
         cost_model_ref="GROSS_NO_COSTS", source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
-        outcome_kind=OutcomeKind.STRATEGY,
+        outcome_kind=OutcomeKind.STRATEGY, unavailable_reason=None,
     )
     repo.append_outcome(outcome)
     idx = HistoricalIndex(repo)

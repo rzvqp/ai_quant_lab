@@ -52,6 +52,22 @@ def test_outcome_round_trips() -> None:
     assert compute_edge_evidence_id(decoded) == compute_edge_evidence_id(out)
 
 
+def test_unavailable_outcome_with_reason_round_trips() -> None:
+    # Load-bearing: proves unavailable_reason survives encode/decode when actually set (not just the
+    # PENDING default of None already covered by test_outcome_round_trips above).
+    from ai_trader.context_memory.contracts import ObservationId
+    from ai_trader.context_memory.enums import OutcomeStatus, OutcomeUnavailableReason
+
+    out = make_pending_outcome(
+        ObservationId("y" * 64), status=OutcomeStatus.UNAVAILABLE,
+        unavailable_reason=OutcomeUnavailableReason.NO_VALID_RISK_DENOMINATOR,
+    )
+    decoded = codec.decode_outcome(codec.encode_outcome(out))
+    assert decoded == out
+    assert decoded.unavailable_reason is OutcomeUnavailableReason.NO_VALID_RISK_DENOMINATOR
+    assert compute_edge_evidence_id(decoded) == compute_edge_evidence_id(out)
+
+
 def test_decode_rejects_wrong_record_type() -> None:
     payload = codec.encode_context_snapshot(make_snapshot())
     payload = dict(payload)

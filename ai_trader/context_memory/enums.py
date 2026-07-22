@@ -126,6 +126,16 @@ class OutcomeStatus(str, Enum):
     UNAVAILABLE = "UNAVAILABLE"
 
 
+class OutcomeUnavailableReason(str, Enum):
+    """Closed, typed vocabulary for WHY an ``Outcome`` is ``UNAVAILABLE`` -- CEO decision, Learning/
+    Research Feedback Phase D contract amendment. Required exactly when ``status is UNAVAILABLE``,
+    forbidden otherwise (``contracts.py::Outcome.__post_init__``). Deliberately NOT free text: every
+    member is a specific, closed reason this codebase can currently produce -- a new reason requires its
+    own explicit, separate decision to add a member here, never an inferred or free-form string."""
+
+    NO_VALID_RISK_DENOMINATOR = "NO_VALID_RISK_DENOMINATOR"
+
+
 class SourceType(str, Enum):
     """Where an Outcome's own normalized result came from (Checkpoint 8 §4.3's two deliberately-separate
     horizon families). Outcome CALCULATION is explicitly out of scope for Checkpoint 9 -- this

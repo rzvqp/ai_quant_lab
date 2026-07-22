@@ -46,6 +46,7 @@ from ai_trader.context_memory.enums import (
     HorizonUnit,
     OutcomeKind,
     OutcomeStatus,
+    OutcomeUnavailableReason,
     SourceType,
 )
 from ai_trader.context_memory.identities import (
@@ -224,4 +225,8 @@ def decode_outcome(payload: dict[str, Any]) -> Outcome:
         cost_model_ref=payload["cost_model_ref"],
         source_type=SourceType(payload["source_type"]),
         outcome_kind=OutcomeKind(payload["outcome_kind"]),
+        unavailable_reason=(
+            OutcomeUnavailableReason(payload["unavailable_reason"])
+            if payload["unavailable_reason"] is not None else None
+        ),
     )
