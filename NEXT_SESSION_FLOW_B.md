@@ -220,8 +220,10 @@ is REJECTED FOR IMPLEMENTATION on proportionality grounds (not invalidated). **N
 runtime policy exists beyond PASSTHROUGH. Flow B roadmap step 2/6 has no currently-authorized next
 action. Roadmap step 3/6 (Learning / Research Feedback) is now CLOSED for its own Sprint 1+2 scope — see
 the "Learning / Research Feedback situation" section above and `PROJECT_STATE_v2.md` §8.27. Roadmap step
-4/6 (Risk Integration) has NOT been authorized. A DESIGN-ONLY Recognition Engine kickoff document is
-separately authorized (not a numbered roadmap step; no code, no repository change).**
+4/6 (Risk Integration) has NOT been authorized. Recognition Engine (not a numbered roadmap step) has its
+design ACCEPTED and a Phase 0 Repository Diagnostic delivered — verdict **COLLECT MORE DATA FIRST** (zero
+`Outcome`/`PositionOutcome` records exist anywhere in the repository; see §8.28 of `PROJECT_STATE_v2.md`
+and `RECOGNITION_ENGINE_PHASE0_DIAGNOSTIC_REPORT.md`). **Implementation remains NOT authorized.**
 
 ## Resume instructions
 
@@ -278,8 +280,13 @@ separately authorized (not a numbered roadmap step; no code, no repository chang
   `context_memory/evidence.py`/`index.py`/`codec.py`, outside the Architectural Decision Package's own
   declared scope. `PositionOutcome` must stay Level-1 (accounting) only, never extended to Level-2
   research metrics. Roadmap step 4/6 (Risk Integration) must not begin without its own authorization.
-- **Recognition Engine is authorized for a DESIGN-ONLY document only** — no code, no repository change.
-  Producing the kickoff document does not itself authorize implementation.
+- **Recognition Engine implementation remains NOT authorized.** Design ACCEPTED
+  (`RECOGNITION_ENGINE_DESIGN.md`); Phase 0 Repository Diagnostic delivered
+  (`RECOGNITION_ENGINE_PHASE0_DIAGNOSTIC_REPORT.md`, verdict COLLECT MORE DATA FIRST — zero `Outcome`/
+  `PositionOutcome` records exist anywhere; the capture pipeline has never been turned on in any
+  production/research run). No `recognition_engine/` package exists. Wiring
+  `learning_feedback_repository_path` into a real run (the identified precondition for more data) is
+  itself NOT authorized by the diagnostic and needs its own separate CEO decision.
 - **Portfolio Architect (roadmap step 2) must not begin without its own separate, explicit CEO
   authorization** — Strategy Health Integration being implemented and validated is not itself that
   authorization.

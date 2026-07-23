@@ -1,5 +1,28 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-23 — Recognition Engine design ACCEPTED; Phase 0 Repository Diagnostics delivered — COLLECT MORE DATA FIRST
+- CEO accepted Sprint 2's closure (825/825 regression, zero regressions, clean implementation/docs
+  separation) and separately accepted `RECOGNITION_ENGINE_DESIGN.md` as the architecture document for a
+  new component, Recognition Engine (not a numbered Flow B roadmap step). Implementation was explicitly
+  NOT authorized; the CEO instead authorized a diagnostic-only Phase 0.
+- **Phase 0: Repository Diagnostics** (`RECOGNITION_ENGINE_PHASE0_DIAGNOSTIC_REPORT.md`) — pure
+  read-only investigation, no production code touched, no contract changed, no Recognition Engine code
+  written. Found: **zero** `Outcome`/`PositionOutcome` records exist anywhere in the repository. Not a
+  data-collection lag — the capture pipeline (`SimulationHarness`'s `learning_feedback_repository_path`
+  parameter, defaults to `None`) has never been supplied a real path by any production or research call
+  site, confirmed by a full-repository grep finding zero callers outside `harness.py` itself and
+  `tests/` (which use `tmp_path`, discarded at process exit). Every historical simulation run in this
+  repository's history necessarily ran with Learning Feedback capture inert.
+- **Recommendation: COLLECT MORE DATA FIRST**, not a verdict against the design. Concrete precondition
+  identified (not authorized or proposed for immediate action by the diagnostic): wire
+  `learning_feedback_repository_path` into a real run, most plausibly Shadow-Evidence-enabled given
+  `STRATEGY`-kind evidence density vs. `PORTFOLIO`-kind sparsity (Phase 6.9A: ~0.48% real ALLOW rate).
+- **Updated `PROJECT_STATE_v2.md`**: added §8.28 (Recognition Engine design acceptance + Phase 0
+  diagnostic + verdict). **Updated `NEXT_SESSION_FLOW_B.md`**: current-state summary, roadmap-status
+  line, and warnings section all updated to record the diagnostic verdict and that implementation remains
+  unauthorized.
+- **Recognition Engine implementation remains NOT authorized. No `recognition_engine/` package exists.**
+
 ## Session 2026-07-23 — Learning/Research Feedback Sprint 2 CLOSED (roadmap Flow B step 3/6) + Recognition Engine design kickoff authorized
 - CEO authorized Sprint 2 (design-only review, then implementation) addressing exactly 3 blockers found
   by the Phase F technical audit: (1) no Shadow Evidence capture path; (2) no terminal `Outcome`

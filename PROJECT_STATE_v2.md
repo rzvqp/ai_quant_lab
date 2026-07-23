@@ -1426,10 +1426,44 @@ immediately after. Both listed in `CHANGELOG.md`.
 
 **Roadmap status**: Flow B roadmap step 3/6 (Learning / Research Feedback) is now **IMPLEMENTED AND
 CLOSED** for Sprint 1+2's own scope (real-portfolio + Shadow capture, PositionOutcome aggregation,
-CorrelationMap lifecycle). Step 4/6 (Risk Integration) has NOT been authorized and has not begun. The
-CEO's next authorized action is a DESIGN-ONLY kickoff document for a new, separate component —
-**Recognition Engine** — not itself a numbered roadmap step yet; no code, no repository change
-authorized for that work.
+CorrelationMap lifecycle). Step 4/6 (Risk Integration) has NOT been authorized and has not begun.
+
+### 8.28 Recognition Engine — DESIGN ACCEPTED; Phase 0 Repository Diagnostics — COLLECT MORE DATA FIRST
+(2026-07-23)
+
+**Not a numbered Flow B roadmap step** — a new, separate component, opened alongside the roadmap per its
+own explicit CEO authorization sequence.
+
+`RECOGNITION_ENGINE_DESIGN.md` (scope, responsibilities, architecture placement, inputs/outputs, pipeline,
+component modules, inter-module contracts, interaction with Decision Intelligence/Learning Feedback/other
+subsystems, extensibility) was delivered design-only (no code, no repository change) and **ACCEPTED by the
+CEO as the architecture document**. Its own §11 maturity verdict flagged two gaps before implementation:
+(1) unknown real `Outcome`/`PositionOutcome` population in the Context Memory repository; (2) unset
+classification thresholds. **Implementation was explicitly NOT authorized.**
+
+**Phase 0: Repository Diagnostics** (CEO-authorized, diagnostic only — no production code, no contract
+change, no Recognition Engine code): `RECOGNITION_ENGINE_PHASE0_DIAGNOSTIC_REPORT.md`. Finding: **zero**
+`Outcome`/`PositionOutcome` records exist anywhere in the repository — not sparse, genuinely zero,
+confirmed by (a) no Context Memory JSONL data file existing anywhere outside `tests/` (which use
+`tmp_path`, discarded at test-process exit), and (b) no production code path ever supplying a real
+`learning_feedback_repository_path` to `SimulationHarness` — the parameter defaults to `None` (harness
+docstring: "Learning/Research Feedback is completely inert this run") and `grep` across the entire
+repository (excluding `harness.py` itself and `tests/`) finds zero callers that ever pass one, including
+`ai_trader/simulation/api.py`'s own production entry point and every root-level pipeline/backtest script.
+Root cause: not a collection-time lag — the capture pipeline has never been turned on in any production or
+research run.
+
+**Recommendation delivered: COLLECT MORE DATA FIRST**, not a verdict against the design itself. Concrete
+precondition identified (not authorized or proposed for immediate action by the diagnostic itself, per its
+own scope boundary): wire `learning_feedback_repository_path` into at least one real run — most plausibly
+a Shadow-Evidence-enabled backtest over a meaningful historical window, since `STRATEGY`-kind (Shadow-
+sourced) Outcomes are structurally far denser than `PORTFOLIO`-kind (real-competitive) ones (Phase 6.9A:
+only ~0.48% of opportunities ever reach a real ALLOW) — and let it accumulate before re-attempting this
+diagnostic.
+
+**Standing status**: Recognition Engine implementation remains NOT authorized. No `recognition_engine/`
+package exists. The next action requires its own explicit CEO decision on whether/how to wire and run a
+data-collection pass — not implied or pre-authorized by this diagnostic.
 
 ## 9. Modules implemented (`ai_trader/`)
 
