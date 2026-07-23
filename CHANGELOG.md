@@ -1,5 +1,49 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-23 — Learning/Research Feedback Sprint 2 CLOSED (roadmap Flow B step 3/6) + Recognition Engine design kickoff authorized
+- CEO authorized Sprint 2 (design-only review, then implementation) addressing exactly 3 blockers found
+  by the Phase F technical audit: (1) no Shadow Evidence capture path; (2) no terminal `Outcome`
+  aggregation for multi-partial-exit positions; (3) no `CorrelationMap` lifecycle cleanup. Blocker 2
+  required a CEO-directed two-level (Level-1 accounting / Level-2 research) re-analysis after the
+  original "no aggregation" recommendation was rejected for letting `Outcome` imply completeness it
+  didn't have.
+- A power outage interrupted the implementation session mid-Sprint; state was reconstructed from git
+  (`git status`/`git log`/module-import checks — all confirmed intact, nothing corrupted) before
+  resuming, per explicit CEO instruction not to assume any partial/interrupted state valid.
+- **Implemented**: Blocker 1 (`ShadowObservationResult`, `harness.py` Shadow-capture wiring, still zero
+  `shadow_evidence`→`learning_feedback` import) and Blocker 3 (`CorrelationMap.discard()`/
+  `drain_pending()`, synchronous-rejection skip) fully DONE. Blocker 2's additive half
+  (`context_memory.PositionOutcome`/`PositionOutcomeId`, a 5th repository JSONL stream,
+  `PositionCorrelationMap.accumulate()`, `build_*_position_outcome()` adapters) fully DONE, preserving
+  every existing `capture_*` function's prior return-type contract. Blocker 2's rename half was
+  deliberately WITHHELD and reported, not silently resolved: implementing it as scoped would touch
+  `context_memory/evidence.py`/`index.py`/`codec.py`, which the approved Architectural Decision Package
+  itself declared unaffected.
+- **Validated, from a from-scratch regression** (the prior in-session attempt died with the power
+  outage, producing 0 bytes — not trusted or resumed): `pytest ai_trader/context_memory
+  ai_trader/decision_intelligence_v2 ai_trader/decision_comparison ai_trader/learning_feedback
+  ai_trader/market_intelligence ai_trader/edge_intelligence ai_trader/shadow_evidence ai_trader/
+  simulation -q` → 825 passed, 0 failed. mypy clean on all 14 Sprint-2-touched files; a pre-existing,
+  unrelated mypy-error set in 5 `simulation/tests/` files confirmed present at the pre-Sprint-2 commit
+  too (not a regression). Zero-diff re-confirmed against every frozen module and every Flow A artifact.
+- **CEO verdict: Sprint 2 officially CLOSED.** Blockers 1 and 3 accepted complete; Blocker 2 accepted
+  complete for its additive `PositionOutcome` part; the rename half remains explicitly open, awaiting a
+  future separate CEO decision.
+- **Updated `PROJECT_STATE_v2.md`**: added §8.27 (full Phases A–F + Sprint 2 record, closure verdict,
+  what's implemented/accepted/open); updated the roadmap-status line (was "step 3/6 has NOT been
+  authorized"); added a `learning_feedback/` row and extended the `simulation/`/`context_memory/` rows in
+  §9; added a Learning/Research Feedback standing-constraints bullet to §10; added a Flow-B reading-order
+  entry (§12) for the Learning Feedback design-doc chain; updated the closing "do not begin" warning to
+  name the `Outcome` rename and the Recognition Engine design-only authorization.
+- **Updated `NEXT_SESSION_FLOW_B.md`**: rewrote "Current state," added a "Learning / Research Feedback
+  situation" section mirroring the existing Strategy Health section's structure, updated "Next Flow B
+  step" roadmap status, extended "Resume instructions" reading order, added two new "Warnings relevant to
+  implementation" bullets (the `Outcome` rename gate; the Recognition Engine design-only scope).
+- **Recognition Engine kickoff**: per the same CEO message, a DESIGN-ONLY document was requested for a
+  new component (scope, responsibilities, place in the AI Trader architecture, inputs/outputs, pipeline,
+  component modules, inter-module contracts, interaction with Decision Engine/Learning Feedback/other
+  subsystems, extensibility). Explicitly no code, no repository change beyond the document itself.
+
 ## Session 2026-07-20 — OFFICIAL PROJECT SAVE (documentation and repository-freeze only, no code) — after Checkpoints 14–15
 - CEO-directed, after a pre-flight verification pass confirmed the Checkpoints 10–13 official save was
   fully consistent (all commit hashes correct, all docs synchronized, Decision Intelligence v1 still

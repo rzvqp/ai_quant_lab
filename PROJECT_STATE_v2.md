@@ -1278,8 +1278,158 @@ independently-justified policy that materially reduces the marginal complexity o
 **Status: Portfolio Architect roadmap step 2/6 CLOSED. `ArchitectMode.PASSTHROUGH` remains the only
 authorized and implemented runtime mode — no `ROUND_ROBIN`/`FAIRNESS`/`TIE_BREAK`/or any other mode
 exists or is authorized. Scoring Engine's tie-break and Risk Manager's own sequencing/denial-reason
-attribution remain untouched. No Portfolio Architect runtime policy exists beyond PASSTHROUGH. Flow B
-roadmap step 3/6 (Learning / Research Feedback) has NOT been authorized and has not begun.**
+attribution remain untouched. No Portfolio Architect runtime policy exists beyond PASSTHROUGH.**
+
+### 8.27 Learning / Research Feedback — roadmap Flow B step 3/6 — Sprint 1 (Phases A–F) + Sprint 2 —
+CLOSED (2026-07-23)
+
+**Objective (unchanged since its own opening design)**: give the AI Trader a durable, queryable memory
+of its own real (and eventually Shadow) trading outcomes, expressed as Context Memory `Outcome`/
+`OperationalMetadata` records, so a future Recognition/Prediction layer can learn from what actually
+happened — never itself a decision-maker, never wired into any BUY/SELL path.
+
+**Phases A–D (types + pure adapters, unwired)** — commits `07f1172` (Phase A: new independent Context
+Memory types), `b40fe2f` (Phase B: `Outcome.outcome_kind`), `3dec675` (Phase C: `evidence.py`
+kind-awareness — cross-kind statistical isolation, the one disclosed touch to a Checkpoint 13 frozen
+module, CEO-approved as part of the original design), `ef5f511` (Phase D: `learning_feedback/adapters.py`
+— pure, deterministic, isolated converters from Shadow/real-portfolio/Risk Manager records into Context
+Memory's own contracts; still fully unreachable from any production code at this point).
+
+**Phase E (decision/resolution capture orchestration)** — commit `c598676`. Added `learning_feedback/
+capture.py`: decision-time/resolution-time orchestration and the run-scoped `client_order_id`
+`CorrelationMap`, consuming Phase D's adapters. Still UNWIRED from `harness.py` at this point.
+
+**Phase F design review (three escalating rounds, each CEO-rejected until proven)** —
+`LEARNING_FEEDBACK_PHASE_F_INTEGRATION_DESIGN.md` → `LEARNING_FEEDBACK_LIFECYCLE_SPECIFICATION.md` →
+`LEARNING_FEEDBACK_ARCHITECTURAL_DECISION_PACKAGE.md`. The CEO rejected the first two rounds' own
+position-key recommendation for asserting rather than proving correctness ("Do not assume that a
+position-key is automatically correct. Prove it."); the third round's own identifier birth/death
+analysis proved, not assumed: `symbol`-only key for real-portfolio positions
+(`RealPositionRegistry.make_position_key`) vs. Shadow's own pre-existing, decision-time-deterministic
+`position_id` for Shadow positions. **Architectural Decision Package ACCEPTED.**
+
+**Phase F implementation — real-portfolio side only** (commit `4e0da51`): wired `capture_portfolio_
+interim`/`capture_portfolio_terminal`/`register_pending_correlation`/`promote_opening_fill`/
+`register_flip_position` into `harness.py` for the real competitive portfolio. **Shadow Evidence
+connection deliberately NOT implemented at this stage** — reported as a genuine architectural blocker,
+not silently deferred.
+
+**Phase F technical audit (5 CEO-required questions, answered honestly)** — verdict: **functionality NOT
+ready for production use.** Three blockers identified: (1) Shadow Evidence produced no capture path at
+all; (2) no terminal `Outcome` aggregation existed for multi-partial-exit positions — each partial fill
+captured its own `InterimRealization` with no canonical whole-position summary; (3) `CorrelationMap` had
+no lifecycle cleanup — synchronously-rejected/never-filled candidates and end-of-run pending entries
+could accumulate or leak across a run.
+
+**CEO verdict on the audit**: NOT complete. Authorized a DESIGN-ONLY Sprint 2 addressing exactly these
+3 blockers, no more.
+
+**Sprint 2 design** — `LEARNING_FEEDBACK_NEXT_SPRINT_DESIGN.md`. Blocker 2 required a second CEO-directed
+revision: the CEO rejected the original "no aggregation, read-time join" recommendation specifically
+because an object named `Outcome` must never be interpretable as a position's complete result — a real
+risk for future Recognition/Prediction Engine consumers. The revised section separates **Level 1**
+(canonical accounting result: summed PnL, total qty, weighted-avg exit price, total costs, open-to-
+terminal-close time, explicit `InterimRealization` links) from **Level 2** (research metrics,
+reconstructable, never confused with Level 1), and presents 3 options: (a) redefine `Outcome` in place to
+be complete; (b) rename `Outcome` so it no longer implies completeness; (c) a new, separate
+`PositionOutcome` aggregate type. Recommendation: **(c) persisted, paired with (b) rename.**
+
+**CEO decision**: Blockers 1, 2, and 3 all **APPROVED** — "implementarea exact conform documentului
+aprobat," with explicit rules: no frozen-module changes unless the approved document explicitly requires
+it; no extra functionality; no unapproved refactoring; adapter compatibility preserved; test+mypy after
+every stage; full regression + an audit identical to the Phase F one at the end; stop and await approval
+before any further phase.
+
+**Sprint 2 implementation (uncommitted mid-Sprint; a power outage interrupted the session; state
+reconstructed and confirmed intact/uncorrupted before resuming — working tree, `git log`, and a fresh
+module-import check all verified consistent)**:
+
+- **Blocker 1 — DONE.** `ai_trader/shadow_evidence/types.py` gained `ShadowObservationResult`;
+  `engine.py`'s `observe()`/`_observe_one()` now return it. `shadow_evidence` still does NOT import
+  `learning_feedback` at all (verified) — `harness.py` alone orchestrates Shadow capture via new helpers
+  (`_lf_capture_shadow_terminal`, `_lf_capture_shadow_interim`, `_lf_process_shadow_trade_legs`) and the
+  new `register_shadow_position()` function, symmetric to how the real side already worked since Phase F.
+- **Blocker 3 — DONE.** `CorrelationMap.discard()`/`drain_pending()` added and called from
+  `harness.py::_finalize_at_end`; a synchronous-rejection skip added before `register_pending_
+  correlation` so a candidate that never reaches a pending state is never registered in the first place.
+  No candidate may persist beyond one run's own lifetime.
+- **Blocker 2 — ADDITIVE PART DONE, RENAME PART EXPLICITLY WITHHELD.** `context_memory/contracts.py`
+  gained `PositionOutcome`/`PositionOutcomeId` (pure Level-1 arithmetic — `total_qty_closed`,
+  `weighted_avg_exit_price`, `total_gross_pnl`, `total_net_pnl`, `total_costs`, `opened_as_of`,
+  `terminal_as_of`, plus explicit `terminal_outcome_id`/`constituent_interim_realization_ids` links —
+  deliberately never computing Level 2 metrics); `identities.py`/`repository.py` extended with a 5th
+  `_JsonlStream` (`position_outcomes.jsonl`) and full append/get/iter/count/rebuild support;
+  `learning_feedback/adapters.py` gained `build_portfolio_position_outcome`/
+  `build_strategy_position_outcome`; `capture.py`'s `PendingPosition` gained `accumulated_partials`/
+  `interim_realization_ids` (both defaulting to `()`) and a new `PositionCorrelationMap.accumulate()`
+  method; all four `capture_*_terminal`/`capture_*_interim` functions now accumulate ledger state and
+  (terminal only) also build+append a `PositionOutcome`, while their exact prior return-type contracts
+  are UNCHANGED (a pure, backward-compatible addition). **The rename half of Blocker 2 (renaming
+  `Outcome` itself so it stops implying completeness) was deliberately NOT implemented**: mid-
+  implementation, `Outcome` was found to be used deeply by `context_memory/evidence.py`/`index.py`/
+  `codec.py` — Checkpoint 10–13 modules the approved design document itself explicitly claimed would be
+  "not affected." Rather than silently expanding scope into modules outside the document's own stated
+  boundary, this was flagged as a genuine discrepancy rather than resolved unilaterally in either
+  direction. **This remains open** — see "Remaining open item" below.
+
+**Validation, this closure (2026-07-23, post-power-outage restart, from scratch per explicit CEO
+instruction — the prior in-session regression attempt died with the outage, produced 0 bytes of output,
+and was NOT trusted or resumed)**:
+```
+pytest ai_trader/context_memory ai_trader/decision_intelligence_v2 ai_trader/decision_comparison
+       ai_trader/learning_feedback ai_trader/market_intelligence ai_trader/edge_intelligence
+       ai_trader/shadow_evidence ai_trader/simulation -q          -> 825 passed, 0 failed
+mypy (all 14 Sprint-2-touched source+test files, explicit path list)  -> Success: no issues found
+```
+mypy run package-wide (not path-scoped) surfaces 37–43 pre-existing errors in 5 `ai_trader/simulation/
+tests/` files (`test_performance_analyzer.py`, `test_shadow_disabled_parity.py`,
+`test_portfolio_architect_passthrough.py`, `test_conformance_vs_research_engine.py`,
+`test_adversarial_fixes.py`) — confirmed, by running mypy against those same 5 files at the pre-Sprint-2
+commit `4e0da51`, to be pre-existing and unrelated to any Sprint 2 change, not a regression introduced by
+this Sprint. Zero-diff re-confirmed against every frozen module (`evidence.py`, `retrieval.py`,
+`index.py`, `codec.py`, `portfolio_simulator.py`, `execution_simulator.py`, `execution_engine/`,
+`risk_manager/`, `decision_intelligence_v2/`, `market_intelligence/`, `edge_intelligence/`) and against
+every Flow A artifact.
+
+**CEO verdict (2026-07-23): Sprint 2 officially CLOSED.** Blockers 1 and 3 ACCEPTED complete; Blocker 2
+ACCEPTED complete for its additive `PositionOutcome` part; Blocker 2's rename part remains explicitly
+open (not rejected, not silently abandoned — awaiting a future, separate CEO decision on how to resolve
+the `evidence.py`/`index.py`/`codec.py` scope conflict, since the approved document's own boundary claim
+did not hold).
+
+**What was implemented (cumulative, Phases A–F + Sprint 2)**: `learning_feedback/` (adapters, capture,
+correlation maps, position-outcome accumulation), `context_memory/`'s `Outcome`/`PositionOutcome`
+contracts + repository storage, `shadow_evidence/`'s `ShadowObservationResult`, and `harness.py`'s full
+real-portfolio + Shadow capture wiring (both interim and terminal, both position-key schemes).
+
+**What was accepted**: everything above, per the CEO verdicts recorded at each stage (Architectural
+Decision Package; Phase F implementation; Sprint 2 design; Sprint 2 implementation; this closure).
+
+**What remains open, and why**: the `Outcome` rename (Blocker 2's other half) — because doing it as
+originally scoped would require editing 3 files (`evidence.py`, `index.py`, `codec.py`) the approved
+design document itself declared out of scope; a genuine documentation-vs-reality conflict discovered only
+during implementation, not resolved unilaterally. Reopening this requires its own explicit CEO decision:
+either authorize touching those 3 files, or choose a different resolution (e.g. accept `Outcome` staying
+named as-is now that `PositionOutcome` exists as the unambiguous canonical type, making the rename
+lower-priority).
+
+**Standing constraints, unchanged**: `learning_feedback/` must never import `harness` (tested,
+self-referential-scan false positive from earlier in the Sprint already fixed); `shadow_evidence/` must
+never import `learning_feedback`; every capture function's pre-existing return-type contract must stay
+unchanged for any existing caller; Context Memory must never output BUY/SELL/entry/stop/target/size/a
+recommendation (unchanged since Checkpoint 8) — `PositionOutcome` is pure accounting arithmetic, not an
+exception to this rule.
+
+**Commits**: implementation `7573358` ("Learning/Research Feedback Sprint 2: Shadow Evidence capture,
+PositionOutcome aggregation, CorrelationMap lifecycle cleanup"); documentation (this update) committed
+immediately after. Both listed in `CHANGELOG.md`.
+
+**Roadmap status**: Flow B roadmap step 3/6 (Learning / Research Feedback) is now **IMPLEMENTED AND
+CLOSED** for Sprint 1+2's own scope (real-portfolio + Shadow capture, PositionOutcome aggregation,
+CorrelationMap lifecycle). Step 4/6 (Risk Integration) has NOT been authorized and has not begun. The
+CEO's next authorized action is a DESIGN-ONLY kickoff document for a new, separate component —
+**Recognition Engine** — not itself a numbered roadmap step yet; no code, no repository change
+authorized for that work.
 
 ## 9. Modules implemented (`ai_trader/`)
 
@@ -1291,7 +1441,8 @@ roadmap step 3/6 (Learning / Research Feedback) has NOT been authorized and has 
 | `scoring_engine/` | FROZEN (READY) | scores/ranks signals; `Recommendation` enum + conflict resolution |
 | `risk_manager/` | FROZEN (READY) | sizing, guards, cooldowns, portfolio limits (incl. the single-shared-symbol-slot `LIMIT_MAX_PER_SYMBOL` constraint) |
 | `execution_engine/` | FROZEN (READY) | order construction/execution |
-| `simulation/` | NOT frozen, extensible | `SimulationHarness`/`ExecutionSimulator`/`PortfolioSimulator`/`PerformanceAnalyzer`; `time_stop.py`/`trailing_stop.py` generic overlays; disclosed touches to date: the Phase 6.9 overlay-isolation fix, the Phase 6.9A `RiskEventRecord.strategy_id` field, the Phase 6.10 Checkpoint 1A/1B `shadow_config` field + Checkpoint 1B's tap call site, the Strategy Health `health_eligible_ids` gate (§8.24), and the Portfolio Architect `portfolio_architect_config` gate + Shadow-tap reorder (§8.25) in `harness.py` |
+| `simulation/` | NOT frozen, extensible | `SimulationHarness`/`ExecutionSimulator`/`PortfolioSimulator`/`PerformanceAnalyzer`; `time_stop.py`/`trailing_stop.py` generic overlays; disclosed touches to date: the Phase 6.9 overlay-isolation fix, the Phase 6.9A `RiskEventRecord.strategy_id` field, the Phase 6.10 Checkpoint 1A/1B `shadow_config` field + Checkpoint 1B's tap call site, the Strategy Health `health_eligible_ids` gate (§8.24), the Portfolio Architect `portfolio_architect_config` gate + Shadow-tap reorder (§8.25), and the Learning/Research Feedback Phase F + Sprint 2 real-portfolio + Shadow capture wiring (§8.27) in `harness.py` |
+| `learning_feedback/` | NEW (Phases A–F + Sprint 2, §8.27, CLOSED for its own scope) | `adapters.py` (pure Outcome/PositionOutcome/OperationalMetadata converters), `capture.py` (`CorrelationMap`/`PositionCorrelationMap`, decision/resolution/position-outcome orchestration), `config.py`; consumes `context_memory`'s contracts, never imports `harness`; wired into `harness.py` for both the real portfolio and Shadow Evidence |
 | `strategy_runtime/` | NOT frozen | `families/` — all 43 real evaluators; `registry.py`; `context_access.py`; `migration.py` |
 | `strategy_health/` | NOT frozen, scoring UNCHANGED since its own build | `types.py`/`metrics.py`/`scoring.py`/`classifier.py`/`evaluator.py` (frozen scoring, never touched by any phase after its own build) + `rolling_gate.py` (Phase 6.9 addition, thin wrapper) + `shadow_gate.py` (§8.24, Strategy Health Integration Eligibility Policy layer, ACCEPTED COMPLETE) |
 | `portfolio_architect/` | NEW (§8.25, Phase 1 PASSTHROUGH scaffold only) | `types.py`/`architect.py::PortfolioArchitect` — stateless, one public `evaluate()` method; PASSTHROUGH is the only supported mode; no allocation/correlation/sizing/exclusion/ranking policy implemented yet |
@@ -1299,7 +1450,7 @@ roadmap step 3/6 (Learning / Research Feedback) has NOT been authorized and has 
 | `market_intelligence/` | NEW (Phase 7 Checkpoint 5, DONE) | `engine.py::build_market_intelligence()` — pure, read-only "what is the market doing" snapshot (Trend/Structure/Momentum/Volatility/Liquidity/Expansion/Session/Agreement/Confidence); not wired into `harness.py` |
 | `edge_intelligence/` | NEW (Phase 7 Checkpoint 6, DONE) | `engine.py::evaluate_edges()` — pure, read-only "which edges currently exist" per-strategy PRESENT/POSSIBLE/ABSENT verdict, built on Market Intelligence + each strategy's own declared Contract; not wired into `harness.py` |
 | `decision_intelligence/` | NEW (Phase 7 Checkpoint 7, DONE) | `engine.py::make_decision()` — "which edge deserves execution": 4 disclosed eligibility gates (contract status/maturity/confidence/optional expectancy) + deterministic ranking → one recommended strategy_id or NO TRADE; independent of Signal/Scoring/Risk/Execution/Shadow/MT5 (verified by grep); not wired into `harness.py` |
-| `context_memory/` | NEW (Phase 7 Checkpoints 9–13, DONE) | 11 source files: `contracts.py`/`enums.py`/`validation.py`/`identities.py` (Checkpoint 9 — immutable contracts + deterministic SHA-256 identities), `codec.py`/`repository.py` (Checkpoint 10 — append-only JSONL storage), `episodes.py`/`index.py` (Checkpoint 11 — deterministic episode collapsing + rebuildable historical index), `retrieval.py` (Checkpoint 12 — fixed-priority hierarchical relaxation ladder, no k-NN/weighted-distance), `evidence.py` (Checkpoint 13 — per-edge `ContextualEvidenceReport`, sufficiency threshold reused from `code/alpha_lab.py`'s own `MINTR=25`); produces evidence reports only, NEVER BUY/SELL/entry/stop/target/size/execution/an edge ranking; fully independent of Decision Intelligence/Signal/Scoring/Risk/Execution/Shadow Evidence/MT5 (verified by grep + a static AST import-independence scan at every checkpoint's close); not wired into `harness.py` or `decision_intelligence/` |
+| `context_memory/` | NEW (Phase 7 Checkpoints 9–13, DONE) | 11 source files: `contracts.py`/`enums.py`/`validation.py`/`identities.py` (Checkpoint 9 — immutable contracts + deterministic SHA-256 identities), `codec.py`/`repository.py` (Checkpoint 10 — append-only JSONL storage), `episodes.py`/`index.py` (Checkpoint 11 — deterministic episode collapsing + rebuildable historical index), `retrieval.py` (Checkpoint 12 — fixed-priority hierarchical relaxation ladder, no k-NN/weighted-distance), `evidence.py` (Checkpoint 13 — per-edge `ContextualEvidenceReport`, sufficiency threshold reused from `code/alpha_lab.py`'s own `MINTR=25`); plus `PositionOutcome`/`PositionOutcomeId` (§8.27, Learning/Research Feedback Sprint 2 Blocker 2 — the canonical, Level-1-only, whole-position accounting aggregate; a 5th JSONL stream); produces evidence/outcome records only, NEVER BUY/SELL/entry/stop/target/size/execution/an edge ranking; fully independent of Decision Intelligence/Signal/Scoring/Risk/Execution/Shadow Evidence/MT5 (verified by grep + a static AST import-independence scan at every checkpoint's close); not wired into `harness.py` or `decision_intelligence/` — `learning_feedback/`'s own capture functions are the only callers that append `Outcome`/`PositionOutcome`/`OperationalMetadata` records |
 | `decision_intelligence_v2/` | NEW (Phase 7 Checkpoint 14, DONE) | `engine.py::make_decision_v2()` — wraps v1's own `make_decision()` UNCHANGED and attaches, per candidate, an explainable Context Memory evidence report; `types.py::DecisionReportV2` structurally enforces its own recommendation equals v1's; `adapters.py` bridges live Market Intelligence snapshots into Context Memory's own local types; `explanation.py` narrates why context was found/what evidence exists/limitations/why status; never changes eligibility/ranking/scoring/Risk/Sizing/Execution, never generates BUY/SELL (verified by static scan); not wired into `harness.py` |
 | `decision_comparison/` | NEW (Phase 7 Checkpoint 15, DONE) | Read-only v1-vs-v2 falsification framework — `recommendation.py`/`trade_outcome_proof.py`/`explanation_quality.py`/`calibration.py`/`falsification.py`; never modifies v1/v2/Context Memory; current verdict `V1_REMAINS_ACTIVE` (§8.15) — recommendation-stream metrics provably identical by construction, confirmed over real data; explanation-quality/confidence-calibration are the only genuinely differing dimensions, the latter awaiting real historical Context Memory data; not wired into `harness.py` |
 
@@ -1356,6 +1507,17 @@ roadmap step 3/6 (Learning / Research Feedback) has NOT been authorized and has 
   begin without its own, separate, explicit CEO approval** — Checkpoint 15 being complete is not itself
   that approval; the CEO's own Checkpoints 14–15 batch authorization ends with an explicit stop
   instruction and names no next topic.
+- **Learning/Research Feedback (standing since Phase A, CLOSED through Sprint 2, §8.27)**: `Outcome`'s
+  own rename (Blocker 2's withheld half) must not be performed unilaterally — it requires touching
+  `context_memory/evidence.py`/`index.py`/`codec.py`, which the Architectural Decision Package's own
+  scope explicitly excluded; any future attempt needs its own separate CEO authorization covering those
+  3 files by name. `PositionOutcome` must remain Level-1 (pure accounting) only — never extended to
+  compute Level-2 research metrics; that boundary was the entire point of the CEO's own two-level
+  Blocker-2 ruling. `shadow_evidence/` must never import `learning_feedback`, and `learning_feedback/`
+  must never import `harness` — both verified by grep/AST scan at every stage and must be re-verified
+  before any future change to either package. Every `capture_*` function's pre-existing return-type
+  contract (established at Phase E/F) must remain unchanged for any existing caller. Roadmap step 4/6
+  (Risk Integration) has NOT been authorized and has not begun.
 
 ## 11. Diagnostic artifacts preserved (cumulative, all committed, all referenced by name in their own reports)
 
@@ -1404,6 +1566,12 @@ disjoint reading lists below.
 
 **If continuing Flow B (AI Trader Development):**
 
+3B. `LEARNING_FEEDBACK_NEXT_SPRINT_DESIGN.md` → `LEARNING_FEEDBACK_ARCHITECTURAL_DECISION_PACKAGE.md` →
+   `LEARNING_FEEDBACK_LIFECYCLE_SPECIFICATION.md` → `LEARNING_FEEDBACK_PHASE_F_INTEGRATION_DESIGN.md` →
+   `LEARNING_RESEARCH_FEEDBACK_DESIGN.md` — the current official frontier: Learning/Research Feedback
+   (roadmap step 3/6), CLOSED through Sprint 2 (§8.27) with one explicitly open item (the `Outcome`
+   rename). Read this FIRST if continuing Learning/Research Feedback or starting the Recognition Engine
+   design kickoff.
 4B. `PHASE_7_CHECKPOINT_15_REPORT.md` → `PHASE_7_CHECKPOINT_14_REPORT.md` — the current official
    architectural frontier: Decision Intelligence v2 (a separate, additive system whose recommendation is
    construction-time-guaranteed identical to v1's, wrapping v1 with an explainable Context Memory
@@ -1444,7 +1612,8 @@ applies per edge, and a Final Verdict never itself authorizes implementation (§
 
 **Flow B: do not begin** any Phase 7 Checkpoint 16 (Context Memory influencing a decision, real Context
 Memory historical population, Decision Intelligence v2 promotion — none proposed, none authorized), Wave
-C, Learning Engine, Broker Adapter, MT5, live/paper trading, multi-position trading, capital allocation
-across edges, or WATCHLIST activation without its own dedicated CEO approval — this document does not
-grant it. **Strategy Health integration/promotion policy is the next named step in Flow B's own roadmap
-(§1.1)** but still requires its own explicit CEO authorization to begin, same as every prior checkpoint.
+C, Broker Adapter, MT5, live/paper trading, multi-position trading, capital allocation across edges, the
+`Outcome` rename (§8.27's own open item), or roadmap step 4/6 (Risk Integration) without its own
+dedicated CEO approval — this document does not grant any of them. **Recognition Engine is currently
+authorized for a DESIGN-ONLY kickoff document only** — no code, no repository change, no implementation;
+producing that document does not itself authorize building it.

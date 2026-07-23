@@ -24,27 +24,54 @@ breach or by this remediation entry; `ai_trader/`, `code/`, `results/`, and `kno
 
 ## Current state
 
-**Status: ACTIVE — roadmap step 1 of 6 (Strategy Health) IMPLEMENTED and validated, awaiting CEO
-verdict before advancing to step 2.** Roadmap order, per explicit CEO instruction: **Strategy Health
-(integration/promotion policy) → Portfolio Architect → Learning / Research Feedback → Risk Integration →
-Execution Integration → MT5 Live.** `§8.18`'s own standing rule continues to govern exactly which step
-may begin next: no further Phase 7 checkpoint, and no roadmap step, begins without its own explicit CEO
-authorization. The CEO authorized implementation (verdict: mandatory five-state architecture NEW →
-ACTIVE/WATCHLIST → PROBATION/DISABLED, Shadow Evidence active in every state, no absorbing lockout);
-implementation is complete and fully validated (see `PROJECT_STATE_v2.md` §8.24 for the full record).
-**Portfolio Architect (roadmap step 2) has NOT been authorized and has not begun.**
+**Status: ACTIVE — roadmap steps 1/6 (Strategy Health), 2/6 (Portfolio Architect), and 3/6 (Learning /
+Research Feedback) are all CLOSED for their own scope. Step 4/6 (Risk Integration) has NOT been
+authorized.** Roadmap order, per explicit CEO instruction: **Strategy Health (integration/promotion
+policy) → Portfolio Architect → Learning / Research Feedback → Risk Integration → Execution Integration →
+MT5 Live.** `§8.18`'s own standing rule continues to govern exactly which step may begin next: no further
+Phase 7 checkpoint, and no roadmap step, begins without its own explicit CEO authorization. In parallel,
+the CEO has authorized a DESIGN-ONLY kickoff document for a new, separate component — **Recognition
+Engine** — not itself a numbered roadmap step; no code, no repository change authorized for that work.
 
 ## Last Flow B commit
 
 ```
-dc79cb5  feat: implement Strategy Health Integration eligibility policy
+4e0da51  Learning/Research Feedback Phase F: real-portfolio wiring per Architectural Decision Package
 ```
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
 --porcelain` — do not assume it is still the current HEAD in any future session (Flow A and other work
 may have landed commits since; as of this document's own creation, `eed1634` — a Flow A commit — landed
 between `a53a3bc` and `b2a79fd`, i.e. Flow A and Flow B commits currently interleave on the same
-branch).
+branch). Sprint 2 of Learning/Research Feedback (§8.27 of `PROJECT_STATE_v2.md`) is closed as of
+2026-07-23, implementation commit `7573358` — supersedes the `4e0da51` reference above; re-verify live.
+
+## Learning / Research Feedback situation (roadmap step 3/6) — CLOSED for Sprint 1+2 scope
+
+Built in phases: A–D (types + pure adapters, unwired, commits `07f1172`/`b40fe2f`/`3dec675`/`ef5f511`) →
+E (capture orchestration, commit `c598676`) → F design review (3 escalating rounds; the CEO rejected the
+first two for asserting rather than proving position-key correctness) → F implementation (real-portfolio
+side only, commit `4e0da51`; Shadow Evidence deliberately NOT wired at that stage, reported as a genuine
+blocker) → F technical audit (verdict: not production-ready, 3 blockers) → Sprint 2 design (Blocker 2
+required a two-level Level-1/Level-2 re-analysis after CEO rejection of the original recommendation) →
+Sprint 2 implementation → **this closure.**
+
+**Sprint 2 result**: Blocker 1 (Shadow Evidence connection) DONE. Blocker 3 (CorrelationMap lifecycle
+cleanup) DONE. Blocker 2 (terminal aggregation) DONE for its additive `PositionOutcome` part; the rename
+half is explicitly OPEN — implementing it as originally scoped would touch `context_memory/evidence.py`/
+`index.py`/`codec.py`, which the approved design document itself declared out of scope. Full detail:
+`PROJECT_STATE_v2.md` §8.27.
+
+**Full regression, this closure** (restarted from scratch after a mid-Sprint power outage killed the
+prior attempt — never assumed valid from partial results, per explicit CEO instruction): 825 passed, 0
+failed. mypy clean on all 14 Sprint-2-touched files; pre-existing, unrelated mypy noise in 5
+`simulation/tests/` files confirmed present at the pre-Sprint-2 commit too.
+
+**Open item carried forward**: the `Outcome` rename — requires a future, separate CEO decision on whether
+to authorize touching `evidence.py`/`index.py`/`codec.py`, or to accept `PositionOutcome` as the
+sufficient resolution and leave `Outcome` named as-is.
+
+**Roadmap step 4/6 (Risk Integration) has NOT been authorized and has not begun.**
 
 ## Strategy Health situation
 
@@ -191,7 +218,10 @@ materially reduces the marginal complexity of adding fairness state.
 CONCENTRATION_REORDER` was REJECTED (evidence-sparsity), and the tie-break candidate from Policy Research
 is REJECTED FOR IMPLEMENTATION on proportionality grounds (not invalidated). **No Portfolio Architect
 runtime policy exists beyond PASSTHROUGH. Flow B roadmap step 2/6 has no currently-authorized next
-action; the next roadmap step (step 3/6, Learning / Research Feedback) has NOT been authorized.**
+action. Roadmap step 3/6 (Learning / Research Feedback) is now CLOSED for its own Sprint 1+2 scope — see
+the "Learning / Research Feedback situation" section above and `PROJECT_STATE_v2.md` §8.27. Roadmap step
+4/6 (Risk Integration) has NOT been authorized. A DESIGN-ONLY Recognition Engine kickoff document is
+separately authorized (not a numbered roadmap step; no code, no repository change).**
 
 ## Resume instructions
 
@@ -199,9 +229,13 @@ action; the next roadmap step (step 3/6, Learning / Research Feedback) has NOT b
 2. Read, in this order:
    - **This document** — current state, summarized above.
    - **`RECONSTRUCTION_PROMPT.md`** — if this is a genuinely new conversation, start there.
-   - **`ai_trader/portfolio_architect/`** (`types.py`/`architect.py`) — the current, immediate frontier
-     (roadmap step 2/6, Phase 1 PASSTHROUGH scaffold IMPLEMENTED, awaiting CEO verdict; §8.25). Read
-     this FIRST if continuing the current roadmap step.
+   - **`LEARNING_FEEDBACK_NEXT_SPRINT_DESIGN.md`** → **`LEARNING_FEEDBACK_ARCHITECTURAL_DECISION_
+     PACKAGE.md`** → **`ai_trader/learning_feedback/`** (`capture.py`/`adapters.py`) — the current,
+     immediate frontier (roadmap step 3/6, CLOSED for Sprint 1+2 scope, one open item — the `Outcome`
+     rename; §8.27). Read this FIRST if continuing Learning/Research Feedback or starting the
+     Recognition Engine design kickoff.
+   - **`ai_trader/portfolio_architect/`** (`types.py`/`architect.py`) — roadmap step 2/6, CLOSED
+     (§8.25/§8.26).
    - **`PORTFOLIO_ARCHITECT_DESIGN.md`** — the ACCEPTED governing design (§14's 7 open policy decisions
      remain unresolved — none may be implemented without their own separate CEO authorization).
    - **`STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`** (FINAL, §§1–15) — roadmap step 1/6, ACCEPTED
@@ -239,6 +273,13 @@ action; the next roadmap step (step 3/6, Learning / Research Feedback) has NOT b
 
 ## Warnings relevant to implementation
 
+- **The `Outcome` rename (Learning/Research Feedback Sprint 2 Blocker 2's withheld half) must not be
+  performed without its own separate, explicit CEO authorization** — it requires touching
+  `context_memory/evidence.py`/`index.py`/`codec.py`, outside the Architectural Decision Package's own
+  declared scope. `PositionOutcome` must stay Level-1 (accounting) only, never extended to Level-2
+  research metrics. Roadmap step 4/6 (Risk Integration) must not begin without its own authorization.
+- **Recognition Engine is authorized for a DESIGN-ONLY document only** — no code, no repository change.
+  Producing the kickoff document does not itself authorize implementation.
 - **Portfolio Architect (roadmap step 2) must not begin without its own separate, explicit CEO
   authorization** — Strategy Health Integration being implemented and validated is not itself that
   authorization.
