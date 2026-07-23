@@ -43,4 +43,35 @@
   event:       CEO_DELIVERY          # official acceptance
   detail:      CEO ACCEPTED Red Team v1.0 as COMPLETE. Wording refinements applied: governing stance now "Every Discovery Candidate is treated as an unverified scientific observation until sufficient evidence justifies further investigation" (replaced presume-false language repo-wide); clarified 🟡 NEEDS BETTER EVIDENCE is NOT a rejection — it means the current submission does not yet justify additional laboratory resources. No further infrastructure work authorized. Red Team enters OPERATIONAL STANDBY, awaiting first Discovery Candidate via official Alpha→Red Team interface.
   entry_hash:  E3
+
+[4] 2026-07-23
+  prev_hash:   E3
+  event:       INTAKE + VERDICT     # first operational review batch
+  dc_id:       DC-0001..DC-0018 (13 reviewed; 5 held)
+  battery_ver: CRITIQUE_BATTERY v1.0
+  reviewer:    Red Team
+  detail:      First operational review batch. State reconstructed EXCLUSIVELY from official Alpha
+               artifacts in worktree `ai_quant_lab-alpha-automation` (branch alpha-automation-v1) —
+               DISCOVERY_CANDIDATE_INDEX.md, OBSERVATION_REGISTRY.md, SESSION_STATE.md, HANDOFF_LOG.md,
+               metadata_v1.json. Alpha conversation NOT used. Confirmed: 18 DCs (all FROZEN, all v1,
+               all hashed); 16 addendum files across 8 DCs; Observation Registry 7 entries (1 promoted
+               → DC-0014). No prior Red Team review existed (baseline zero) — all 18 new.
+               Per CEO scope (2026-07-23): reviewed the 13 with a FROZEN/SUBMITTED line in HANDOFF_LOG
+               (DC-0001..0007, 0013..0018). Verdicts: 🟢×6 (DC-0002/0003/0004/0013/0016/0017),
+               🟡×7 (DC-0001/0005/0006/0007/0014/0015/0018), 🔴×0. DC-0017 continued as NARROWED.
+               ESCALATIONS TO CEO:
+                 (1) Handoff gap — DC-0008..0012 are FROZEN in the index with content_hashes but have
+                     NO FROZEN/SUBMITTED line in HANDOFF_LOG (which claims to be the sole handoff audit
+                     trail); the 16 addenda are also unlogged. SESSION_STATE claims "handoff la zi" and
+                     "no open admin debts" — contradicted by the log. DC-0008..0012 HELD, not reviewed.
+                 (2) Immutability-process breach — DC-0002/0003/0004 had "6. Library Concept Scan"
+                     added INSIDE the frozen candidate_v1.md with hash recomputed (logged as ADDENDUM),
+                     contradicting each file's own Handoff Statement ("never as an edit to this file";
+                     corrections go in a separate dated addendum). Benign/disclosed; verdicts unaffected.
+                 (3) Portfolio fragmentation (observation, not a verdict) — DC-0013/0014/0015/0016/0017/
+                     0018 are largely single-instance slices of ONE construction (DC-0008 sustained
+                     multi-minute expansion) distinguished by post-hoc descriptors (session, duration,
+                     ending shape). Their parent, DC-0008, is itself in the HELD/unlogged group. Worth a
+                     CEO decision on whether the family should be consolidated before deeper resourcing.
+  entry_hash:  E4
 ```
