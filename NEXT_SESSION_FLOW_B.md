@@ -228,7 +228,11 @@ direct response, **Learning Feedback — Phase 1: Capture Activation — Stage 1
 READY FOR FULL CAPTURE** (see §8.29 of `PROJECT_STATE_v2.md`,
 `LEARNING_FEEDBACK_PHASE1_STAGE1_CANARY_REPORT.md`) — a real 30-day canary run produced 31
 `PositionOutcome` (25 `STRATEGY`, 6 `PORTFOLIO`), zero corruption/duplicates/orphans, zero regressions.
-**Stage 2 (the full 12-month run) has NOT been authorized.**
+**Stage 2 is now COMPLETE** (see §8.30 of `PROJECT_STATE_v2.md`,
+`LEARNING_FEEDBACK_PHASE1_STAGE2_FULL_CAPTURE_REPORT.md`) — the full 12-month run produced 688 real
+`PositionOutcome` (575 `STRATEGY`, 113 `PORTFOLIO`) across 28/43 strategies, 100% complete, zero
+duplicates/orphans/serialization errors, zero `ai_trader/` diff. No decision/execution logic was
+implemented against this data, per the CEO's own explicit scope. Awaiting CEO direction on next steps.
 
 ## Resume instructions
 

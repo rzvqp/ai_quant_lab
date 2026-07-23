@@ -1,5 +1,28 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-24 — Learning Feedback Phase 1: Capture Activation — Stage 2 (full 12-month run) COMPLETE
+- CEO authorized Stage 2 directly after Stage 1's ACCEPTED canary, with two explicit conditions: reuse
+  the same `run_id` throughout (Stage 1's own discovered rule) and implement no decision/execution logic
+  — capture and integrity validation only.
+- **Implemented**: one new script, `learning_feedback_stage2_full_capture_run.py`, importing Stage 1's
+  own `new_harness()`/`validate_repository()` verbatim — zero duplicated logic, zero new algorithm. Same
+  full window `phase69a_funnel_run.py` already established; a durable repository path
+  (`learning_feedback_data/full_capture/`); one fixed `run_id` throughout.
+- **Result**: 23,839 bars, 23,639 `Observation` (exactly matching Phase 6.9A's own independently-measured
+  `total_bars_evaluated` for this identical window — an unplanned cross-validation). **688 total
+  `PositionOutcome` — 575 `STRATEGY`, 113 `PORTFOLIO` — across 28/43 registered strategies**, the first
+  substantial real Learning Feedback dataset this repository has ever produced. 100% of `Outcome` records
+  RESOLVED; 26 `InterimRealization`; zero serialization errors; zero duplicates; zero orphaned
+  cross-references at every checked link; zero diff against the entire `ai_trader/` tree and Flow A.
+  Runtime ~67.5 minutes; repository ~765 MB, matching Stage 1's own sizing estimate closely.
+- **No pytest regression re-run** — `ai_trader/` diff is empty, so Stage 1's own 825-test regression
+  already structurally covers every exercised code path; disclosed explicitly rather than silently
+  skipped.
+- **Updated `PROJECT_STATE_v2.md`** (new §8.30) and `NEXT_SESSION_FLOW_B.md`.
+- **Verdict: STAGE 2 COMPLETE.** Directly answers Recognition Engine's own Phase 0 "zero records" gap
+  with a real, integrity-verified population — re-opening that question is a separate, not-yet-made CEO
+  decision. No decision/execution/classification logic implemented against this data.
+
 ## Session 2026-07-24 — Learning Feedback Phase 1: Capture Activation — Stage 1 canary DONE — READY FOR FULL CAPTURE
 - Directly answers Phase 0's own COLLECT MORE DATA FIRST finding: CEO authorized
   `LEARNING_FEEDBACK_PHASE1_CAPTURE_ACTIVATION_DESIGN.md` (verdict READY FOR IMPLEMENTATION ACCEPTED),

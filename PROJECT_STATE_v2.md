@@ -1509,7 +1509,47 @@ per bar) — linearly extrapolated, a full 12-month run is estimated at roughly 
 `LEARNING_FEEDBACK_PHASE1_STAGE1_CANARY_REPORT.md`. Raw results:
 `learning_feedback_capture_activation_canary_report.json`. Generated repository data itself is
 `.gitignore`d (regenerable, not source) — only the script, the two reports, and the raw JSON are
-committed. **Stage 2 (the full 12-month run) has NOT been authorized and has not begun.**
+committed.
+
+### 8.30 Learning Feedback — Phase 1: Capture Activation — Stage 2 — Full 12-Month Capture — COMPLETE
+(2026-07-24)
+
+CEO authorized the full 12-month run directly after Stage 1's ACCEPTED canary, with two explicit
+conditions: reuse the same `run_id` throughout (per Stage 1's own discovered rule) and implement no
+decision/execution logic — capture and integrity validation only.
+
+**Implementation**: one new script, `learning_feedback_stage2_full_capture_run.py`, importing Stage 1's
+own `new_harness()`/`validate_repository()` verbatim (zero duplicated logic) — the only two changes were
+the full window (same literal timestamps `phase69a_funnel_run.py` already established,
+`1_729_674_000`→`1_761_210_000`) and a durable, non-canary repository path
+(`learning_feedback_data/full_capture/`). One single, fixed `run_id="LF-STAGE2-FULL-CAPTURE"` used
+throughout; the run completed in one uninterrupted pass (no recovery needed, but the documented procedure
+— re-invoke unchanged, same `run_id` — remained available).
+
+**Result**: 23,839 bars processed, **23,639 `Observation` records — matching Phase 6.9A's own
+independently-measured `total_bars_evaluated=23,639` for this identical window exactly**, an unplanned
+cross-validation. **688 total `PositionOutcome` — 575 `STRATEGY`-kind, 113 `PORTFOLIO`-kind** — across
+28/43 registered strategies (S46, S39, S40, S10 most active). All 688 underlying `Outcome` RESOLVED (100%
+complete); 26 `InterimRealization` (confirms multi-leg exits occur at meaningful scale — unresolved at
+Stage 1's own 30-day scale). Zero serialization errors, zero duplicates, zero orphaned cross-references at
+every checked link (5 FK categories). Zero diff against the ENTIRE `ai_trader/` tree (not just the frozen
+subset) and Flow A. Runtime: 4,052.0s (~67.5 min). Repository size: ~765 MB (`operational_metadata.jsonl`
+62%), matching Stage 1's own "800 MB–1 GB" estimate closely. `PORTFOLIO` count (113) is the same order of
+magnitude as Phase 6.9A's own separately-measured 142 for this window — a sanity cross-check, not an
+exact-match requirement, and not reconciled further (outside this Stage's own narrow scope).
+
+**No pytest regression re-run** — `git diff --stat -- ai_trader/` is empty (no source file touched), so
+Stage 1's own 825-test regression already structurally covers every code path Stage 2 exercised; flagged
+explicitly in the technical report rather than silently skipped, so the CEO can require a fresh run if
+still wanted.
+
+**Verdict: STAGE 2 COMPLETE — DATA COLLECTION AND INTEGRITY VALIDATION SUCCESSFUL.** Full technical
+report: `LEARNING_FEEDBACK_PHASE1_STAGE2_FULL_CAPTURE_REPORT.md`. Raw results:
+`learning_feedback_stage2_full_capture_report.json`. Repository data itself `.gitignore`d (regenerable,
+~765 MB, not committed). **Per the CEO's own explicit scope, no decision/execution/classification logic
+was implemented or exercised against this data — this directly answers Recognition Engine's own Phase 0
+"zero records" gap (§8.28) with a real, integrity-verified population, but re-opening Recognition Engine's
+own evidence-sufficiency question against it requires its own separate CEO decision, not implied here.**
 
 ## 9. Modules implemented (`ai_trader/`)
 

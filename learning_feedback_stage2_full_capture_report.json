@@ -1,0 +1,152 @@
+{
+  "stage2_run": {
+    "run_id": "LF-STAGE2-FULL-CAPTURE",
+    "elapsed_seconds": 4052.002698659897,
+    "bars_processed": 23839,
+    "state": "COMPLETED",
+    "repo_path": "C:\\Users\\MEDION GAMING\\ai_quant_lab-research-main\\learning_feedback_data\\full_capture",
+    "window": {
+      "start": 1729674000,
+      "end": 1761210000
+    }
+  },
+  "stage2_validation": {
+    "repository_path": "C:\\Users\\MEDION GAMING\\ai_quant_lab-research-main\\learning_feedback_data\\full_capture",
+    "total_position_outcomes": 688,
+    "position_outcomes_by_kind": {
+      "STRATEGY": 575,
+      "PORTFOLIO": 113
+    },
+    "position_outcomes_by_strategy": {
+      "S1": {
+        "STRATEGY": 41,
+        "PORTFOLIO": 10
+      },
+      "S10": {
+        "STRATEGY": 67,
+        "PORTFOLIO": 1
+      },
+      "S13": {
+        "STRATEGY": 27,
+        "PORTFOLIO": 1
+      },
+      "S14": {
+        "STRATEGY": 4,
+        "PORTFOLIO": 1
+      },
+      "S16": {
+        "STRATEGY": 9,
+        "PORTFOLIO": 1
+      },
+      "S18": {
+        "STRATEGY": 4,
+        "PORTFOLIO": 1
+      },
+      "S2": {
+        "STRATEGY": 11
+      },
+      "S21": {
+        "STRATEGY": 3,
+        "PORTFOLIO": 1
+      },
+      "S22": {
+        "STRATEGY": 16,
+        "PORTFOLIO": 1
+      },
+      "S24": {
+        "STRATEGY": 7
+      },
+      "S25": {
+        "STRATEGY": 34,
+        "PORTFOLIO": 4
+      },
+      "S26": {
+        "STRATEGY": 14,
+        "PORTFOLIO": 3
+      },
+      "S28": {
+        "PORTFOLIO": 1,
+        "STRATEGY": 12
+      },
+      "S29": {
+        "STRATEGY": 1
+      },
+      "S30": {
+        "STRATEGY": 15,
+        "PORTFOLIO": 2
+      },
+      "S39": {
+        "PORTFOLIO": 30,
+        "STRATEGY": 64
+      },
+      "S4": {
+        "STRATEGY": 6,
+        "PORTFOLIO": 1
+      },
+      "S40": {
+        "STRATEGY": 65,
+        "PORTFOLIO": 2
+      },
+      "S41": {
+        "STRATEGY": 5
+      },
+      "S42": {
+        "PORTFOLIO": 1,
+        "STRATEGY": 19
+      },
+      "S43": {
+        "STRATEGY": 9,
+        "PORTFOLIO": 1
+      },
+      "S44": {
+        "STRATEGY": 33,
+        "PORTFOLIO": 6
+      },
+      "S45": {
+        "STRATEGY": 6
+      },
+      "S46": {
+        "STRATEGY": 66,
+        "PORTFOLIO": 38
+      },
+      "S48": {
+        "PORTFOLIO": 4,
+        "STRATEGY": 26
+      },
+      "S5": {
+        "STRATEGY": 5,
+        "PORTFOLIO": 2
+      },
+      "S6": {
+        "STRATEGY": 4
+      },
+      "S8": {
+        "STRATEGY": 2,
+        "PORTFOLIO": 1
+      }
+    },
+    "total_outcomes": 688,
+    "outcomes_by_status": {
+      "RESOLVED": 688
+    },
+    "complete_outcomes_resolved": 688,
+    "incomplete_outcomes_non_resolved": 0,
+    "total_interim_realizations": 26,
+    "total_observations": 23639,
+    "duplicate_outcome_ids": 0,
+    "duplicate_position_outcome_ids": 0,
+    "orphan_position_outcome_terminal_refs": 0,
+    "orphan_position_outcome_interim_refs": 0,
+    "orphan_outcome_observation_refs": 0,
+    "orphan_position_outcome_observation_refs": 0,
+    "orphan_interim_observation_refs": 0,
+    "file_sizes_bytes": {
+      "interim_realizations.jsonl": 19907,
+      "observations.jsonl": 302922764,
+      "operational_metadata.jsonl": 497716198,
+      "outcomes.jsonl": 551203,
+      "position_outcomes.jsonl": 687841
+    },
+    "total_repository_size_bytes": 801897913
+  }
+}
