@@ -22,4 +22,14 @@ Source of record: `ai_quant_lab-alpha-automation` worktree (branch `alpha-automa
 | DC-0017 | NFP-scale 12:30 UTC impulse then hold (n=3 w/ 2 add.) | `dbd07f90a927b2a9` | 2026-07-23 | ACCEPTED | REVIEW-DC-0017-v1 | 🟢 CONTINUE INVESTIGATION | reviewed |
 | DC-0018 | Extreme-volume fresh-high failure → sustained decline | `40ce847f27f85220` | 2026-07-23 | ACCEPTED | REVIEW-DC-0018-v1 | 🟡 NEEDS BETTER EVIDENCE | reviewed |
 
-**Held (not this batch):** DC-0008, DC-0009, DC-0010, DC-0011, DC-0012 — index=FROZEN, metadata carries a content_hash, but no `FROZEN / SUBMITTED` line exists in `HANDOFF_LOG.md`. Not admitted until Alpha's handoff record is reconciled (escalated to CEO).
+**Batch 2 — admitted after handoff reconciliation (Alpha commit `005f837`, CEO-authorized 2026-07-23).** Intake re-verified: all 5 carry a `FROZEN / SUBMITTED` line, metadata content_hash == handoff hash for all 5, all 12 group addenda logged, admin gate CLOSED. (DC-0001 hash-reproducibility item remains open but is separate and does not affect scientific review.)
+
+| DC id | Title (short) | Freeze hash (sha256, 16) | Received | Intake result | Review id | Verdict | Status |
+|---|---|---|---|---|---|---|---|
+| DC-0008 | Sustained multi-minute vs single-minute construction (n≈6 w/ 4 add.) | `ce52a96e39fcd44d` | 2026-07-23 | ACCEPTED | REVIEW-DC-0008-v1 | 🟢 CONTINUE INVESTIGATION | reviewed |
+| DC-0009 | Resistance band survives 7→9 touches; full lifecycle (4 add.) | `ac7ffdec7dcd1547` | 2026-07-23 | ACCEPTED | REVIEW-DC-0009-v1 | 🟡 NEEDS BETTER EVIDENCE | reviewed |
+| DC-0010 | Quiet hour breaks with sustained expansion (1 add.) | `5855f9606e7070f8` | 2026-07-23 | ACCEPTED | REVIEW-DC-0010-v1 | 🟡 NEEDS BETTER EVIDENCE | reviewed |
+| DC-0011 | Single-minute sweep reclaim→new highs (2 add.) | `dc0607e02329bfa6` | 2026-07-23 | ACCEPTED | REVIEW-DC-0011-v1 | 🟡 NEEDS BETTER EVIDENCE | reviewed |
+| DC-0012 | Absorption: high volume, no displacement (1 add.) | `4a4791c183230291` | 2026-07-23 | ACCEPTED | REVIEW-DC-0012-v1 | 🟡 NEEDS BETTER EVIDENCE | reviewed |
+
+**Portfolio intake now complete: all 18 Discovery Candidates reviewed** (batch 1: 13; batch 2: 5). No candidates held.

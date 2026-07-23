@@ -18,7 +18,15 @@
 | REVIEW-DC-0017-v1 | DC-0017 | `dbd07f90a927b2a9` | v1.0 | 🟢 CONTINUE INVESTIGATION | continue as NARROWED — resolution-diversity question, not "hold" (own Addendum B contradicts headline) | 2026-07-23 | — |
 | REVIEW-DC-0018-v1 | DC-0018 | `40ce847f27f85220` | v1.0 | 🟡 NEEDS BETTER EVIDENCE | 4-part compound at n=1; sweep-vs-rejection unresolved | 2026-07-23 | — |
 
-**Batch tally (2026-07-23):** 🟢 6 · 🟡 7 · 🔴 0. (🟡 is not a rejection.) 5 further candidates (DC-0008…0012) held at intake pending handoff reconciliation.
+| REVIEW-DC-0008-v1 | DC-0008 | `ce52a96e39fcd44d` | v1.0 | 🟢 CONTINUE INVESTIGATION | foundational construction distinction; ~6 instances; news sub-hypothesis self-walked-back | 2026-07-23 | — |
+| REVIEW-DC-0009-v1 | DC-0009 | `ac7ffdec7dcd1547` | v1.0 | 🟡 NEEDS BETTER EVIDENCE | rich single-band lifecycle; Addendum D self-contradicts level-as-support | 2026-07-23 | — |
+| REVIEW-DC-0010-v1 | DC-0010 | `5855f9606e7070f8` | v1.0 | 🟡 NEEDS BETTER EVIDENCE | hour-specific framing undercut by own addendum + registry counter-instances | 2026-07-23 | — |
+| REVIEW-DC-0011-v1 | DC-0011 | `dc0607e02329bfa6` | v1.0 | 🟡 NEEDS BETTER EVIDENCE | outcome recurs 3× but confounded with anomalous-day selection | 2026-07-23 | — |
+| REVIEW-DC-0012-v1 | DC-0012 | `4a4791c183230291` | v1.0 | 🟡 NEEDS BETTER EVIDENCE | excellent scannable definition, n=1 (strong 🟡) | 2026-07-23 | — |
+
+**Batch 1 tally (2026-07-23):** 🟢 6 · 🟡 7 · 🔴 0 (DC-0001..0007, 0013..0018).
+**Batch 2 tally (2026-07-23):** 🟢 1 · 🟡 4 · 🔴 0 (DC-0008..0012, after handoff reconciliation).
+**Portfolio total (18 reviewed):** 🟢 7 · 🟡 11 · 🔴 0. (🟡 is not a rejection.)
 
 ---
 **Verdict legend:** 🟢 CONTINUE INVESTIGATION · 🟡 NEEDS BETTER EVIDENCE · 🔴 NOT RECOMMENDED — defined in [methodology/VERDICT_RULES.md](methodology/VERDICT_RULES.md). (UNREVIEWABLE is an intake status, not a verdict.)

@@ -94,4 +94,29 @@
                STATE: standby. On confirming Alpha's handoff reconciliation, re-verify intake for
                DC-0008..0012 and review them under CRITIQUE_BATTERY v1.0.
   entry_hash:  E5
+
+[6] 2026-07-23
+  prev_hash:   E5
+  event:       INTAKE + VERDICT     # second operational review batch
+  dc_id:       DC-0008..DC-0012 (5 reviewed)
+  battery_ver: CRITIQUE_BATTERY v1.0
+  reviewer:    Red Team
+  detail:      Alpha reconciled HANDOFF_LOG (commit 005f837): all 18 DCs now carry FROZEN/SUBMITTED
+               lines and all 16 addenda are logged. CEO authorized batch 2 (DC-0008..0012).
+               INTAKE RE-VERIFICATION (all pass): FROZEN/SUBMITTED line present for each of the 5;
+               metadata content_hash == handoff hash for all 5 (ce52a96/ac7ffde/5855f96/dc0607e/
+               4a4791c); all 12 group addenda logged (8=4, 9=4, 10=1, 11=2, 12=1); admin gate CLOSED.
+               DC-0001 hash-reproducibility item noted OPEN but separate — does not affect science.
+               VERDICTS: 🟢×1 DC-0008 (foundational, measurable construction distinction, ~6 instances,
+               news sub-hypothesis self-walked-back by Addendum D); 🟡×4 DC-0009/0010/0011/0012.
+               Notable good-faith self-falsification in the addenda: DC-0008-D (NFP→day-of-week),
+               DC-0009-D (broken resistance NOT durably support), DC-0010-A (whole-session, not
+               hour-specific). 🔴×0.
+               OBSERVATION (not a new escalation): the "00:00-01:00 UTC hour is becoming unusual"
+               sub-thread shared by DC-0010/DC-0012 is weakened by Alpha's own later OBSERVATION_REGISTRY
+               entries (2025-08-11/12/13 ran ordinary; "no consistent characterization"). Reviewers
+               noted this per-candidate; no structural action taken (portfolio structure unchanged).
+               PORTFOLIO STATUS: all 18 DCs reviewed. Total 🟢 7 / 🟡 11 / 🔴 0. No candidates held.
+               No DC or Alpha artifact modified; no families consolidated; portfolio structure untouched.
+  entry_hash:  E6
 ```
