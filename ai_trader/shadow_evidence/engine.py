@@ -42,6 +42,7 @@ from ai_trader.risk_manager.types import Decision, RiskContext
 from ai_trader.scoring_engine.types import OpportunityScore, Recommendation, ScoreBatch
 from ai_trader.shadow_evidence import aggregation
 from ai_trader.shadow_evidence.types import (
+    ShadowObservationResult,
     ShadowOpportunityRecord,
     ShadowPositionRecord,
     ShadowRejectionRecord,
@@ -218,24 +219,40 @@ class ShadowEvidenceEngine:
 
     # ------------------------------------------------------------------ per-bar, per-symbol tap (risk + virtual entry)
 
-    def observe(self, as_of: int, score_batch: ScoreBatch, risk_context: RiskContext) -> None:
+    def observe(
+        self, as_of: int, score_batch: ScoreBatch, risk_context: RiskContext,
+    ) -> tuple[ShadowObservationResult, ...]:
         """Called once per bar, per symbol, from ``SimulationHarness._run_one_bar`` -- strictly AFTER
         the real Risk Manager has already evaluated the real, shared ``score_batch`` (Design §10,
         invariant 1: the real decision is never read, touched, or influenced by this call). Never
         raises: a failure evaluating one shadow strategy this bar degrades that ONE strategy only
         (Design §10.1) and is recorded in ``self.failures`` -- every other shadow strategy, and the
-        real competitive path, are entirely unaffected."""
+        real competitive path, are entirely unaffected.
+
+        **Sprint 2, Blocker 1** (``LEARNING_FEEDBACK_NEXT_SPRINT_DESIGN.md``, Option A, CEO-ratified):
+        returns one :class:`~ai_trader.shadow_evidence.types.ShadowObservationResult` per genuine Risk
+        Manager decision made this call (both ALLOW and DENY) -- purely additive to this method's own
+        prior behavior (every existing side effect on ``self.opportunities``/``self.rejections``/
+        ``self._accounts``/pending-entry bookkeeping is byte-for-byte unchanged). This package still
+        imports nothing from ``ai_trader.learning_feedback`` -- the caller alone decides what, if
+        anything, to do with the returned tuple."""
+        results: list[ShadowObservationResult] = []
         for score in score_batch.scores:
             strategy_id = score.strategy_id
             if strategy_id not in self._shadow_strategy_ids or strategy_id in self._degraded_strategy_ids:
                 continue
             try:
-                self._observe_one(as_of, score, risk_context)
+                result = self._observe_one(as_of, score, risk_context)
+                if result is not None:
+                    results.append(result)
             except Exception as exc:  # noqa: BLE001 -- failure isolation (Design §10.1): a shadow
                 # strategy's own failure must never propagate into or alter competitive execution.
                 self._degrade(strategy_id, as_of, exc)
+        return tuple(results)
 
-    def _observe_one(self, as_of: int, score: OpportunityScore, risk_context: RiskContext) -> None:
+    def _observe_one(
+        self, as_of: int, score: OpportunityScore, risk_context: RiskContext,
+    ) -> ShadowObservationResult | None:
         strategy_id = score.strategy_id
         account = self._account_for(strategy_id, as_of)
         # Design §17.1 finding H1 correction: the shadow risk evaluation now reflects THIS strategy's
@@ -263,7 +280,9 @@ class ShadowEvidenceEngine:
                 as_of=as_of, direction=score.direction, denied_reason_code=denied_reason or "UNSPECIFIED",
                 denied_detail=decision.denied_reasons[0].detail if decision.denied_reasons else None,
             ))
-            return
+            return ShadowObservationResult(
+                strategy_id=strategy_id, symbol=score.symbol, decision=decision, position_id=None,
+            )
 
         if score.symbol in account.pending_entries:
             # Genuine bug found at Checkpoint 3's own 43-strategy validation scale (not visible at
@@ -294,7 +313,12 @@ class ShadowEvidenceEngine:
                 denied_reason_code="SHADOW_ENTRY_ALREADY_PENDING",
                 denied_detail=f"a prior entry for {score.symbol} is still pending resolution",
             ))
-            return
+            # Sprint 2 Blocker 1: no ShadowObservationResult here -- this is a shadow-internal
+            # bookkeeping veto, not a genuine Risk Manager decision boundary (the underlying decision
+            # DID say ALLOW; see ShadowObservationResult's own docstring). Already fully recorded above
+            # via ShadowOpportunityRecord/ShadowRejectionRecord; deliberately out of scope for Learning
+            # Feedback capture.
+            return None
 
         # ALLOW: submit the virtual entry through THIS strategy's own dedicated, fully separate
         # ExecutionEngine (Design §4/§10 invariant 4) -- never the real one, never another strategy's.
@@ -312,6 +336,9 @@ class ShadowEvidenceEngine:
             opportunity_id=opportunity_id, position_id=position_id, client_order_id=status.client_order_id,
             symbol=score.symbol, as_of=as_of, direction=score.direction, signal_state=score.state,
             score_recommendation=score.recommendation,
+        )
+        return ShadowObservationResult(
+            strategy_id=strategy_id, symbol=score.symbol, decision=decision, position_id=position_id,
         )
 
     # ------------------------------------------------------------------ per-bar overlays (time-stop / trailing-stop)

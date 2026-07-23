@@ -624,3 +624,109 @@ class InterimRealization:
                 f"set, got normalized_result={self.normalized_result!r}, "
                 f"unavailable_reason={self.unavailable_reason!r}"
             )
+
+
+# ---------------------------------------------------------------------------------------------------
+# Position Outcome (Learning/Research Feedback Sprint 2, Blocker 2 -- CEO-ratified, additive) -- the ONE
+# canonical, unambiguous, Level-1 accounting result for a complete economic position lifecycle. Pure
+# arithmetic aggregate over every constituent partial fill; NEVER a research metric (no risk-normalized
+# ratio, no interpretation of any kind) -- Recognition Engine/Prediction Engine/any future statistical
+# consumer should read THIS type for "how did the position do," not any single per-fill record alone,
+# which by construction reflects only its own closing fill's own economics, never the position's full
+# lifecycle (see the existing per-fill Outcome type's own docstring for the explicit, documented scope
+# boundary between the two).
+# ---------------------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PositionOutcomeId:
+    value: str
+
+    def __post_init__(self) -> None:
+        require_non_empty_str(self.value, "PositionOutcomeId.value")
+
+
+@dataclass(frozen=True)
+class PositionOutcome:
+    """The complete, aggregated Level-1 economic result for one position lifecycle, identified by
+    `position_key` (Architectural Decision Package Decision 1) -- produced EXACTLY ONCE, at the moment
+    the position reaches zero size (the same trigger the existing per-fill Outcome type already fires
+    on). Computed by summing every constituent partial (every `InterimRealization` plus the final
+    closing fill) -- pure arithmetic, never risk-normalized, never dependent on which research question
+    is being asked (Level 2 metrics are a separate, future concern, reconstructable FROM this type's own
+    fields, never computed here).
+
+    `constituent_interim_realization_ids` is the explicit, auditable link to every non-terminal partial
+    that contributed to this aggregate; `terminal_outcome_id` links to the final, terminal-fill-only
+    Outcome record produced for the SAME position lifecycle. A correct consumer reads PositionOutcome
+    for "how did the position do" and never additionally sums `InterimRealization`s on top of it (they
+    are already incorporated) -- double-counting risk, documented here and on `InterimRealization`'s own
+    docstring."""
+
+    observation_id: ObservationId
+    strategy_id: str
+    position_key: str
+    outcome_kind: OutcomeKind
+    source_type: SourceType
+    opened_as_of: int
+    terminal_as_of: int
+    total_qty_closed: float
+    weighted_avg_exit_price: float | None
+    total_gross_pnl: float
+    total_net_pnl: float
+    total_costs: float
+    cost_model_ref: str
+    terminal_outcome_id: EdgeEvidenceId
+    constituent_interim_realization_ids: tuple[InterimRealizationId, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.observation_id, ObservationId):
+            raise ContextMemoryValidationError(
+                f"PositionOutcome.observation_id must be an ObservationId, got {self.observation_id!r}"
+            )
+        require_non_empty_str(self.strategy_id, "PositionOutcome.strategy_id")
+        require_non_empty_str(self.position_key, "PositionOutcome.position_key")
+        if not isinstance(self.outcome_kind, OutcomeKind):
+            raise ContextMemoryValidationError(
+                f"PositionOutcome.outcome_kind must be an OutcomeKind, got {self.outcome_kind!r}"
+            )
+        if not isinstance(self.source_type, SourceType):
+            raise ContextMemoryValidationError(
+                f"PositionOutcome.source_type must be a SourceType, got {self.source_type!r}"
+            )
+        valid_kind_source_pairs = {
+            (OutcomeKind.STRATEGY, SourceType.SHADOW_EVIDENCE_ADAPTER),
+            (OutcomeKind.PORTFOLIO, SourceType.REAL_PORTFOLIO_LEDGER),
+        }
+        if (self.outcome_kind, self.source_type) not in valid_kind_source_pairs:
+            raise ContextMemoryValidationError(
+                f"PositionOutcome: invalid (outcome_kind, source_type) pair ({self.outcome_kind!r}, "
+                f"{self.source_type!r}) -- only {sorted(valid_kind_source_pairs, key=lambda p: p[0].value)} "
+                "are currently valid"
+            )
+        require_positive_int(self.opened_as_of, "PositionOutcome.opened_as_of")
+        require_positive_int(self.terminal_as_of, "PositionOutcome.terminal_as_of")
+        if self.terminal_as_of < self.opened_as_of:
+            raise ContextMemoryValidationError(
+                f"PositionOutcome.terminal_as_of ({self.terminal_as_of!r}) must not precede "
+                f"opened_as_of ({self.opened_as_of!r})"
+            )
+        if self.total_qty_closed <= 0:
+            raise ContextMemoryValidationError(
+                f"PositionOutcome.total_qty_closed must be > 0, got {self.total_qty_closed!r}"
+            )
+        require_finite_float_or_none(self.weighted_avg_exit_price, "PositionOutcome.weighted_avg_exit_price")
+        require_finite_float_or_none(self.total_gross_pnl, "PositionOutcome.total_gross_pnl")
+        require_finite_float_or_none(self.total_net_pnl, "PositionOutcome.total_net_pnl")
+        require_finite_float_or_none(self.total_costs, "PositionOutcome.total_costs")
+        require_non_empty_str(self.cost_model_ref, "PositionOutcome.cost_model_ref")
+        if not isinstance(self.terminal_outcome_id, EdgeEvidenceId):
+            raise ContextMemoryValidationError(
+                f"PositionOutcome.terminal_outcome_id must be an EdgeEvidenceId, got {self.terminal_outcome_id!r}"
+            )
+        for ref in self.constituent_interim_realization_ids:
+            if not isinstance(ref, InterimRealizationId):
+                raise ContextMemoryValidationError(
+                    "PositionOutcome.constituent_interim_realization_ids entries must be "
+                    f"InterimRealizationId, got {ref!r}"
+                )

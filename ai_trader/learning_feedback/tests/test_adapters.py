@@ -17,6 +17,7 @@ from ai_trader.context_memory.enums import (
     OutcomeUnavailableReason,
     SourceType,
 )
+from ai_trader.context_memory.contracts import EdgeEvidenceId, InterimRealizationId
 from ai_trader.learning_feedback.adapters import (
     ALL_DENIAL_CODES,
     REJECTION_STAGE_BY_DENIAL_CODE,
@@ -24,8 +25,10 @@ from ai_trader.learning_feedback.adapters import (
     build_operational_metadata,
     build_portfolio_interim_realization,
     build_portfolio_outcome,
+    build_portfolio_position_outcome,
     build_strategy_interim_realization,
     build_strategy_outcome,
+    build_strategy_position_outcome,
     canonical_cost_model_ref,
     rejection_stage_for,
 )
@@ -343,3 +346,64 @@ def test_interim_realizations_never_share_a_kind_source_pair_with_each_other() -
     assert portfolio_r is not None and strategy_r is not None
     assert (portfolio_r.outcome_kind, portfolio_r.source_type) == (OutcomeKind.PORTFOLIO, SourceType.REAL_PORTFOLIO_LEDGER)
     assert (strategy_r.outcome_kind, strategy_r.source_type) == (OutcomeKind.STRATEGY, SourceType.SHADOW_EVIDENCE_ADAPTER)
+
+
+# ------------------------------------------------------------------ build_portfolio_position_outcome /
+# build_strategy_position_outcome -- Learning/Research Feedback Sprint 2, Blocker 2 (CEO-ratified)
+
+TERMINAL_ID = EdgeEvidenceId("t" * 64)
+
+
+def test_build_portfolio_position_outcome_single_partial_matches_naive_close() -> None:
+    # Continuity proof (Sprint 2 Blocker 2's own required guarantee): a position closed by exactly ONE
+    # fill must produce a PositionOutcome whose aggregate numbers are IDENTICAL to that one fill's own
+    # raw economics -- the degenerate, single-partial case must never differ from what a naive last-
+    # partial view would already show.
+    trade = _trade(qty=2.0, exit_price=2010.0, gross_pnl=20.0, net_pnl=19.0, fees=1.0)
+    po = build_portfolio_position_outcome((trade,), POSITION_KEY, OBS_ID, "ref-1", TERMINAL_ID, ())
+    assert po is not None
+    assert po.total_qty_closed == 2.0
+    assert po.weighted_avg_exit_price == 2010.0
+    assert po.total_gross_pnl == 20.0
+    assert po.total_net_pnl == 19.0
+    assert po.total_costs == 1.0
+    assert po.opened_as_of == trade.entry_as_of
+    assert po.terminal_as_of == trade.exit_as_of
+    assert po.terminal_outcome_id == TERMINAL_ID
+    assert po.constituent_interim_realization_ids == ()
+
+
+def test_build_portfolio_position_outcome_multi_partial_aggregates_correctly() -> None:
+    partial_1 = _trade(qty=3.0, exit_price=2005.0, gross_pnl=15.0, net_pnl=14.0, fees=1.0, exit_as_of=AS_OF + 300)
+    partial_2 = _trade(qty=4.0, exit_price=2010.0, gross_pnl=40.0, net_pnl=38.0, fees=2.0, exit_as_of=AS_OF + 800)
+    po = build_portfolio_position_outcome(
+        (partial_1, partial_2), POSITION_KEY, OBS_ID, "ref-1",
+        TERMINAL_ID, (InterimRealizationId("i" * 64),),
+    )
+    assert po is not None
+    assert po.total_qty_closed == 7.0
+    assert po.weighted_avg_exit_price == pytest.approx((3.0 * 2005.0 + 4.0 * 2010.0) / 7.0)
+    assert po.total_gross_pnl == 55.0
+    assert po.total_net_pnl == 52.0
+    assert po.total_costs == 3.0
+    assert po.terminal_as_of == partial_2.exit_as_of  # the LAST partial's own exit_as_of
+    assert len(po.constituent_interim_realization_ids) == 1
+
+
+def test_build_portfolio_position_outcome_none_when_no_partials() -> None:
+    assert build_portfolio_position_outcome((), POSITION_KEY, OBS_ID, "ref-1", TERMINAL_ID, ()) is None
+
+
+def test_build_strategy_position_outcome_uses_strategy_kind() -> None:
+    po = build_strategy_position_outcome((_trade(),), POSITION_KEY, OBS_ID, "ref-1", TERMINAL_ID, ())
+    assert po is not None
+    assert po.outcome_kind is OutcomeKind.STRATEGY
+    assert po.source_type is SourceType.SHADOW_EVIDENCE_ADAPTER
+
+
+def test_position_outcomes_never_share_a_kind_source_pair_with_each_other() -> None:
+    portfolio_po = build_portfolio_position_outcome((_trade(),), POSITION_KEY, OBS_ID, "ref-1", TERMINAL_ID, ())
+    strategy_po = build_strategy_position_outcome((_trade(),), POSITION_KEY, OBS_ID, "ref-1", TERMINAL_ID, ())
+    assert portfolio_po is not None and strategy_po is not None
+    assert (portfolio_po.outcome_kind, portfolio_po.source_type) == (OutcomeKind.PORTFOLIO, SourceType.REAL_PORTFOLIO_LEDGER)
+    assert (strategy_po.outcome_kind, strategy_po.source_type) == (OutcomeKind.STRATEGY, SourceType.SHADOW_EVIDENCE_ADAPTER)

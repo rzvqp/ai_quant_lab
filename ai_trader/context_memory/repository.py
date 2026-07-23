@@ -78,6 +78,8 @@ from ai_trader.context_memory.contracts import (
     OperationalMetadata,
     OperationalMetadataId,
     Outcome,
+    PositionOutcome,
+    PositionOutcomeId,
 )
 from ai_trader.context_memory.enums import (
     ContextRiskDecision,
@@ -89,11 +91,13 @@ from ai_trader.context_memory.enums import (
 from ai_trader.context_memory.identities import (
     canonical_interim_realization,
     canonical_operational_metadata,
+    canonical_position_outcome,
     compute_context_snapshot_id,
     compute_edge_evidence_id,
     compute_interim_realization_id,
     compute_observation_id,
     compute_operational_metadata_id,
+    compute_position_outcome_id,
 )
 from ai_trader.context_memory.validation import ContextMemoryValidationError
 
@@ -227,6 +231,59 @@ def _decode_interim_realization(payload: dict[str, Any]) -> InterimRealization:
         raise
     except (KeyError, TypeError, ValueError) as exc:
         raise ContextMemoryValidationError(f"malformed interim_realization payload: {exc}") from exc
+
+
+def _encode_position_outcome(position_outcome: PositionOutcome) -> dict[str, Any]:
+    return canonical_position_outcome(position_outcome)
+
+
+def _decode_position_outcome(payload: dict[str, Any]) -> PositionOutcome:
+    # Kept local to this module, same rationale as _decode_interim_realization above: PositionOutcome
+    # (Learning/Research Feedback Sprint 2, Blocker 2) is a repository-internal record with no
+    # cross-package decode consumer today.
+    actual = payload.get("record_type")
+    if actual != "context_memory.position_outcome":
+        raise ContextMemoryValidationError(
+            f"expected record_type='context_memory.position_outcome', got {actual!r}"
+        )
+    raw_schema = payload.get("context_memory_schema_version")
+    if (
+        not isinstance(raw_schema, dict)
+        or raw_schema.get("namespace") != CONTEXT_MEMORY_SCHEMA_VERSION.namespace
+    ):
+        raise UnsupportedSchemaVersionError(f"missing or malformed context_memory_schema_version: {raw_schema!r}")
+    if raw_schema.get("version") != CONTEXT_MEMORY_SCHEMA_VERSION.version:
+        raise UnsupportedSchemaVersionError(
+            f"unsupported context_memory_schema_version {raw_schema!r} -- this build understands "
+            f"{CONTEXT_MEMORY_SCHEMA_VERSION.version!r} only"
+        )
+    try:
+        weighted_avg_exit_price = payload["weighted_avg_exit_price"]
+        return PositionOutcome(
+            observation_id=ObservationId(payload["observation_id"]),
+            strategy_id=payload["strategy_id"],
+            position_key=payload["position_key"],
+            outcome_kind=OutcomeKind(payload["outcome_kind"]),
+            source_type=SourceType(payload["source_type"]),
+            opened_as_of=payload["opened_as_of"],
+            terminal_as_of=payload["terminal_as_of"],
+            total_qty_closed=float.fromhex(payload["total_qty_closed"]),
+            weighted_avg_exit_price=(
+                float.fromhex(weighted_avg_exit_price) if weighted_avg_exit_price is not None else None
+            ),
+            total_gross_pnl=float.fromhex(payload["total_gross_pnl"]),
+            total_net_pnl=float.fromhex(payload["total_net_pnl"]),
+            total_costs=float.fromhex(payload["total_costs"]),
+            cost_model_ref=payload["cost_model_ref"],
+            terminal_outcome_id=EdgeEvidenceId(payload["terminal_outcome_id"]),
+            constituent_interim_realization_ids=tuple(
+                InterimRealizationId(v) for v in payload["constituent_interim_realization_ids"]
+            ),
+        )
+    except ContextMemoryValidationError:
+        raise
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ContextMemoryValidationError(f"malformed position_outcome payload: {exc}") from exc
 
 
 class _JsonlStream(Generic[_T, _IdT]):
@@ -402,6 +459,10 @@ class ContextMemoryRepository:
             root_path / "interim_realizations.jsonl",
             _encode_interim_realization, _decode_interim_realization, compute_interim_realization_id,
         )
+        self._position_outcomes = _JsonlStream(
+            root_path / "position_outcomes.jsonl",
+            _encode_position_outcome, _decode_position_outcome, compute_position_outcome_id,
+        )
 
     # ------------------------------------------------------------------ append (single)
 
@@ -428,6 +489,11 @@ class ContextMemoryRepository:
     def append_interim_realization(self, realization: InterimRealization) -> InterimRealizationId:
         record_id = compute_interim_realization_id(realization)
         self._interim_realizations.append(realization, record_id.value)
+        return record_id
+
+    def append_position_outcome(self, position_outcome: PositionOutcome) -> PositionOutcomeId:
+        record_id = compute_position_outcome_id(position_outcome)
+        self._position_outcomes.append(position_outcome, record_id.value)
         return record_id
 
     # ------------------------------------------------------------------ append (batch)
@@ -468,6 +534,9 @@ class ContextMemoryRepository:
     def get_interim_realization(self, record_id: InterimRealizationId) -> InterimRealization | None:
         return self._interim_realizations.get(record_id.value)
 
+    def get_position_outcome(self, record_id: PositionOutcomeId) -> PositionOutcome | None:
+        return self._position_outcomes.get(record_id.value)
+
     # ------------------------------------------------------------------ deterministic iteration
     # "filter by record type" (Checkpoint 10 §D) is satisfied structurally: each stream already IS one
     # record type, so iterating a specific stream's own method already is the filter -- no generic
@@ -488,6 +557,9 @@ class ContextMemoryRepository:
     def iter_interim_realizations(self) -> Iterator[InterimRealization]:
         return self._interim_realizations.iter_in_order()
 
+    def iter_position_outcomes(self) -> Iterator[PositionOutcome]:
+        return self._position_outcomes.iter_in_order()
+
     # ------------------------------------------------------------------ counts
 
     def count_context_snapshots(self) -> int:
@@ -504,6 +576,9 @@ class ContextMemoryRepository:
 
     def count_interim_realizations(self) -> int:
         return self._interim_realizations.count()
+
+    def count_position_outcomes(self) -> int:
+        return self._position_outcomes.count()
 
     # ------------------------------------------------------------------ integrity / rebuild
 
@@ -530,6 +605,7 @@ class ContextMemoryRepository:
         self._outcomes._rebuild()
         self._operational_metadata._rebuild()
         self._interim_realizations._rebuild()
+        self._position_outcomes._rebuild()
 
     @property
     def root_path(self) -> Path:

@@ -23,10 +23,37 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ai_trader.risk_manager.types import RiskDecision
 from ai_trader.scoring_engine.types import Recommendation
 from ai_trader.signal_engine.types import Direction, SignalState
 from ai_trader.simulation.portfolio_simulator import TradeRecord
 from ai_trader.strategy_health.types import WindowMetrics
+
+
+@dataclass(frozen=True, slots=True)
+class ShadowObservationResult:
+    """One row per shadow strategy evaluated this bar via ``ShadowEvidenceEngine.observe()`` -- Learning/
+    Research Feedback Sprint 2, Blocker 1 (CEO-ratified, ``LEARNING_FEEDBACK_NEXT_SPRINT_DESIGN.md``
+    Option A). Exposes exactly what this engine's own internal, per-strategy Risk Manager decided this
+    bar, so a caller (``SimulationHarness``) can capture Learning Feedback data without this package ever
+    depending on ``ai_trader.learning_feedback`` itself -- mirrors how ``RiskManager.evaluate()`` already
+    returns ``RiskDecisionBatch.decisions`` for the real competitive path, which only the harness
+    processes.
+
+    ``decision`` is the REAL, underlying ``RiskDecision`` this strategy's own dedicated Risk Manager
+    produced -- never a shadow-internal override. ``position_id`` is set, deterministically, whenever
+    ``decision.decision is Decision.ALLOW`` AND the virtual entry order was actually submitted this call
+    (mirrors ``ShadowEvidenceEngine``'s own ``position_id`` formula exactly, `engine.py`'s own
+    `_observe_one`) -- ``None`` for a genuine DENY. A shadow-internal-only veto (an ALLOW the underlying
+    Risk Manager granted, but this engine's own bookkeeping could not act on this bar --
+    ``SHADOW_ENTRY_ALREADY_PENDING``) produces no ``ShadowObservationResult`` at all: it is not a Risk
+    Manager decision boundary, already separately recorded via ``ShadowOpportunityRecord``/
+    ``ShadowRejectionRecord``, and deliberately out of scope for Learning Feedback capture."""
+
+    strategy_id: str
+    symbol: str
+    decision: RiskDecision
+    position_id: str | None
 
 
 @dataclass(frozen=True, slots=True)

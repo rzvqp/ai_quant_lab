@@ -26,6 +26,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ai_trader.market_scanner.types import SymbolMeta
+from ai_trader.shadow_evidence.config import ShadowConfig
 from ai_trader.simulation.config import DateRange, SimulationContext
 from ai_trader.simulation.harness import SimulationHarness
 from ai_trader.simulation.types import RunState
@@ -75,6 +76,10 @@ def test_learning_feedback_enabled_runs_to_completion_and_captures_observations(
     assert harness._lf_repo.count_outcomes() == 0
     assert harness._lf_repo.count_operational_metadata() == 0
     assert harness._lf_repo.count_interim_realizations() == 0
+    # Sprint 2 Blocker 3: CorrelationMap.drain_pending() runs unconditionally at end-of-run --
+    # guarantees no candidate persists past the end of a single run.
+    assert harness._lf_correlation is not None
+    assert harness._lf_correlation.pending_count() == 0
 
 
 def test_learning_feedback_is_a_pure_non_interfering_tap() -> None:
@@ -99,3 +104,32 @@ def test_learning_feedback_is_a_pure_non_interfering_tap() -> None:
     assert harness_a.bars_processed == harness_b.bars_processed
     assert harness_a.orders_submitted == harness_b.orders_submitted
     assert harness_a.fills_total == harness_b.fills_total
+
+
+def test_learning_feedback_with_shadow_evidence_enabled_runs_to_completion(tmp_path: Path) -> None:
+    """Sprint 2 Blocker 1 (Shadow Evidence connection): proves `ShadowEvidenceEngine.observe()`'s new
+    return value is consumed correctly inside the real per-bar hot loop, with Shadow Mode genuinely
+    active, without crashing -- the direct, no-harness unit tests in `test_engine.py`
+    (`ShadowObservationResult`) and `test_capture.py` (`capture_strategy_terminal`/
+    `capture_strategy_interim`/`register_shadow_position`) already cover the underlying logic in
+    isolation; this proves the wiring between them inside `harness.py` doesn't crash or interfere with
+    the real competitive path. Same disclosed limitation as every other harness-level LF test: the
+    shadow-tracked strategy has no executable signal logic in this environment either, so zero Shadow
+    trades actually occur -- this test proves the PIPE is connected and safe, not that data flows
+    through it end-to-end (already covered directly, no harness, in test_capture.py)."""
+    context = _small_context(
+        run_id="LF-SHADOW-1", shadow_config=ShadowConfig(enabled=True, shadow_strategies=("S10",)),
+    )
+    repo_path = tmp_path / "context_memory_repo"
+    harness = SimulationHarness(
+        context, SYMBOL_META, DATA_DIR, learning_feedback_repository_path=repo_path,
+    )
+    harness.configure()
+    harness.load()
+    assert harness.shadow_engine is not None
+    harness.run_to_completion()
+    assert harness.state is RunState.COMPLETED, harness.fail_reason
+    assert harness._lf_repo is not None
+    assert harness._lf_repo.count_observations() > 0
+    assert harness._lf_positions is not None
+    assert harness._lf_positions.pending_count() == 0  # nothing leaked for either real or shadow side

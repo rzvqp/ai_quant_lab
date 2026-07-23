@@ -605,3 +605,80 @@ def test_summaries_is_read_only_and_never_affects_further_engine_behavior() -> N
 
     assert engine.positions[0].status == "OPEN"  # untouched by either summaries() call
     assert len(engine._accounts) == 1  # no new account spuriously created by summaries()
+
+
+# ------------------------------------------------------------------------------- ShadowObservationResult
+# (Sprint 2, Blocker 1 -- Learning/Research Feedback connection, CEO-ratified Option A)
+
+
+def test_observe_returns_a_result_for_an_allow_decision() -> None:
+    engine = _engine(frozenset({"S10"}))
+    results = engine.observe(AS_OF, _batch(_score(strategy_id="S10")), _risk_context())
+    assert len(results) == 1
+    result = results[0]
+    assert result.strategy_id == "S10"
+    assert result.symbol == "XAUUSD"
+    assert result.decision.decision.value == "ALLOW"
+    assert result.position_id is not None
+    assert result.position_id == f"T:S10:XAUUSD:{AS_OF}:{result.decision.decision_id}"
+
+
+def test_observe_returns_a_result_for_a_deny_decision_with_no_position_id() -> None:
+    engine = _engine(frozenset({"S10"}), RiskConfig())  # bare RiskConfig -> deterministic DENY
+    results = engine.observe(AS_OF, _batch(_score(strategy_id="S10")), _risk_context())
+    assert len(results) == 1
+    result = results[0]
+    assert result.decision.decision.value == "DENY"
+    assert result.position_id is None
+
+
+def test_observe_returns_no_result_for_non_configured_or_degraded_strategies() -> None:
+    engine = _engine(frozenset({"S10"}))
+    results = engine.observe(AS_OF, _batch(_score(strategy_id="S39")), _risk_context())
+    assert results == ()
+
+
+def test_observe_returns_one_result_per_strategy_in_the_batch() -> None:
+    engine = _engine(frozenset({"S10", "S21"}), RiskConfig())
+    batch = _batch(_score(strategy_id="S10"), _score(strategy_id="S21"))
+    results = engine.observe(AS_OF, batch, _risk_context())
+    assert {r.strategy_id for r in results} == {"S10", "S21"}
+
+
+def test_observe_returns_no_result_for_shadow_entry_already_pending_veto() -> None:
+    # A LIMIT-priced bracket order stays WORKING (never triggers a MARKET-style immediate fill), so a
+    # second ALLOW for the same symbol on a later bar hits the SHADOW_ENTRY_ALREADY_PENDING veto -- a
+    # shadow-internal bookkeeping decision, not a genuine Risk Manager decision boundary, and must
+    # produce NO ShadowObservationResult (already fully recorded via ShadowOpportunityRecord/
+    # ShadowRejectionRecord, per the existing, unchanged test coverage of that path).
+    engine = _engine(frozenset({"S10"}))
+    first = engine.observe(AS_OF, _batch(_score(strategy_id="S10", entry=2000.0)), _risk_context())
+    assert len(first) == 1
+    assert first[0].position_id is not None
+    later_as_of = AS_OF + BAR_SECONDS
+    second = engine.observe(
+        later_as_of, _batch(_score(strategy_id="S10", entry=2000.0)), _risk_context(later_as_of),
+    )
+    assert second == ()
+    assert engine.opportunities[-1].shadow_denied_reason == "SHADOW_ENTRY_ALREADY_PENDING"
+
+
+def test_observe_failure_isolation_still_returns_results_for_healthy_strategies() -> None:
+    # A strategy that raises inside _observe_one is degraded and contributes no result, but every
+    # OTHER strategy in the same batch still gets its own ShadowObservationResult -- mirrors the
+    # existing failure-isolation guarantee, extended to the new return value.
+    engine = _engine(frozenset({"S10", "S21"}))
+    original = ShadowEvidenceEngine._observe_one
+
+    def _boom_for_s10(self: ShadowEvidenceEngine, as_of: int, score: OpportunityScore, risk_context: RiskContext):
+        if score.strategy_id == "S10":
+            raise RuntimeError("forced failure")
+        return original(self, as_of, score, risk_context)
+
+    ShadowEvidenceEngine._observe_one = _boom_for_s10  # type: ignore[method-assign]
+    try:
+        results = engine.observe(AS_OF, _batch(_score(strategy_id="S10"), _score(strategy_id="S21")), _risk_context())
+    finally:
+        ShadowEvidenceEngine._observe_one = original  # type: ignore[method-assign]
+    assert {r.strategy_id for r in results} == {"S21"}
+    assert "S10" in engine.degraded_strategy_ids

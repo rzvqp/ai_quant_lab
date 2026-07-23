@@ -950,3 +950,197 @@ def test_hold_and_mark_end_of_run_never_fabricates_an_outcome(tmp_path: Path) ->
     assert repo.count_outcomes() == 0
     assert repo.count_interim_realizations() == 0
     assert pm.pending_count() == 0
+
+
+# =====================================================================================================
+# CorrelationMap.discard / drain_pending -- Sprint 2 Blocker 3 (full lifecycle/cleanup)
+# =====================================================================================================
+
+
+def test_correlation_map_discard_retires_without_producing_an_outcome() -> None:
+    cm = CorrelationMap(RUN_ID)
+    obs_id = ObservationId("x" * 64)
+    entry = _pending(obs_id)
+    cm.register_decision(entry)
+    discarded = cm.discard(RUN_ID, "CID-S1|XAUUSD|1700000000")
+    assert discarded == entry
+    assert not cm.is_pending("CID-S1|XAUUSD|1700000000")
+    assert cm.is_resolved("CID-S1|XAUUSD|1700000000")
+
+
+def test_correlation_map_discard_unknown_key_returns_none() -> None:
+    cm = CorrelationMap(RUN_ID)
+    assert cm.discard(RUN_ID, "never-registered") is None
+
+
+def test_correlation_map_discard_retires_every_bracket_alias() -> None:
+    cm = CorrelationMap(RUN_ID)
+    obs_id = ObservationId("x" * 64)
+    entry = _pending(
+        obs_id,
+        client_order_ids=("CID-S1|XAUUSD|1700000000", "CID-S1|XAUUSD|1700000000-TP", "CID-S1|XAUUSD|1700000000-SL"),
+    )
+    cm.register_decision(entry)
+    cm.discard(RUN_ID, "CID-S1|XAUUSD|1700000000-TP")
+    assert not cm.is_pending("CID-S1|XAUUSD|1700000000")
+    assert not cm.is_pending("CID-S1|XAUUSD|1700000000-SL")
+    assert cm.is_resolved("CID-S1|XAUUSD|1700000000")
+    assert cm.is_resolved("CID-S1|XAUUSD|1700000000-SL")
+
+
+def test_correlation_map_drain_pending_empties_and_retires_everything() -> None:
+    cm = CorrelationMap(RUN_ID)
+    obs_id = ObservationId("x" * 64)
+    cm.register_decision(_pending(obs_id, client_order_ids=("CO-A",)))
+    cm.register_decision(_pending(obs_id, client_order_ids=("CO-B",)))
+    drained = cm.drain_pending()
+    assert len(drained) == 2
+    assert cm.pending_count() == 0
+    assert cm.is_resolved("CO-A")
+    assert cm.is_resolved("CO-B")
+
+
+def test_correlation_map_drain_pending_is_idempotent() -> None:
+    cm = CorrelationMap(RUN_ID)
+    obs_id = ObservationId("x" * 64)
+    cm.register_decision(_pending(obs_id, client_order_ids=("CO-A",)))
+    first = cm.drain_pending()
+    second = cm.drain_pending()
+    assert len(first) == 1
+    assert second == ()
+
+
+def test_correlation_map_drain_pending_counts_bracket_entry_once() -> None:
+    cm = CorrelationMap(RUN_ID)
+    obs_id = ObservationId("x" * 64)
+    cm.register_decision(_pending(obs_id, client_order_ids=("CO-A", "CO-A-TP", "CO-A-SL")))
+    drained = cm.drain_pending()
+    assert len(drained) == 1  # one PendingCapture, not one per alias
+    assert cm.pending_count() == 0
+
+
+# =====================================================================================================
+# PositionOutcome accumulation -- Sprint 2 Blocker 2 (CEO-ratified, additive)
+# =====================================================================================================
+
+
+def test_position_map_accumulate_appends_partial_without_retiring() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    updated = pm.accumulate(RUN_ID, POSITION_KEY_A, _trade(client_order_id="CO-1"))
+    assert updated is not None
+    assert len(updated.accumulated_partials) == 1
+    assert pm.is_pending(POSITION_KEY_A)  # still open -- accumulate never retires
+
+
+def test_position_map_accumulate_records_interim_realization_id() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    from ai_trader.context_memory.contracts import InterimRealizationId
+
+    updated = pm.accumulate(
+        RUN_ID, POSITION_KEY_A, _trade(client_order_id="CO-1"),
+        interim_realization_id=InterimRealizationId("i" * 64),
+    )
+    assert updated is not None
+    assert updated.interim_realization_ids == (InterimRealizationId("i" * 64),)
+
+
+def test_position_map_accumulate_unknown_key_returns_none() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    assert pm.accumulate(RUN_ID, "never-registered", _trade()) is None
+
+
+def test_position_map_accumulate_run_mismatch_raises() -> None:
+    pm = PositionCorrelationMap(RUN_ID)
+    pm.register(_pending_position(ObservationId("x" * 64)))
+    with pytest.raises(CorrelationRunMismatchError):
+        pm.accumulate("a-different-run", POSITION_KEY_A, _trade())
+
+
+def test_end_to_end_multi_partial_position_produces_one_position_outcome(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    assert register_pending_correlation(cm, _pending(obs_id, outcome_kind=OutcomeKind.PORTFOLIO))
+    assert promote_opening_fill(
+        cm, pm, RUN_ID, "CID-S1|XAUUSD|1700000000", POSITION_KEY_A, OutcomeKind.PORTFOLIO,
+    )
+
+    r1 = capture_portfolio_interim(
+        repo, pm, RUN_ID, POSITION_KEY_A,
+        _trade(client_order_id="CO-1", qty=3.0, pnl_r=0.4, exit_as_of=AS_OF + 300, gross_pnl=15.0, net_pnl=14.0, fees=1.0),
+        AS_OF,
+    )
+    r2 = capture_portfolio_interim(
+        repo, pm, RUN_ID, POSITION_KEY_A,
+        _trade(client_order_id="CO-2", qty=4.0, pnl_r=0.9, exit_as_of=AS_OF + 800, gross_pnl=40.0, net_pnl=38.0, fees=2.0),
+        AS_OF,
+    )
+    assert r1 is not None and r2 is not None
+
+    terminal_trade = _trade(
+        client_order_id="CO-3", qty=3.0, pnl_r=0.6, exit_as_of=AS_OF + 1200, gross_pnl=25.0, net_pnl=23.0, fees=2.0,
+    )
+    outcome_id = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, terminal_trade, AS_OF)
+    assert outcome_id is not None
+
+    # exactly ONE terminal Outcome (unchanged return contract) and exactly ONE PositionOutcome
+    assert repo.count_outcomes() == 1
+    assert repo.count_position_outcomes() == 1
+    assert repo.count_interim_realizations() == 2
+
+    position_outcomes = list(repo.iter_position_outcomes())
+    assert len(position_outcomes) == 1
+    po = position_outcomes[0]
+    assert po.position_key == POSITION_KEY_A
+    assert po.total_qty_closed == 10.0  # 3 + 4 + 3
+    assert po.total_net_pnl == pytest.approx(14.0 + 38.0 + 23.0)
+    assert po.total_gross_pnl == pytest.approx(15.0 + 40.0 + 25.0)
+    assert po.total_costs == pytest.approx(1.0 + 2.0 + 2.0)
+    assert po.terminal_outcome_id == outcome_id
+    assert len(po.constituent_interim_realization_ids) == 2  # both partials, not the terminal one
+    assert po.terminal_as_of == terminal_trade.exit_as_of
+    assert not pm.is_pending(POSITION_KEY_A)
+
+
+def test_single_partial_position_outcome_matches_naive_terminal_close(tmp_path: Path) -> None:
+    # Continuity proof: a position closed by exactly ONE fill (no interim partials at all) must produce
+    # a PositionOutcome whose aggregate is identical to that single fill's own raw economics.
+    repo = _repo(tmp_path)
+    cm = CorrelationMap(RUN_ID)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    assert register_pending_correlation(cm, _pending(obs_id, outcome_kind=OutcomeKind.PORTFOLIO))
+    assert promote_opening_fill(
+        cm, pm, RUN_ID, "CID-S1|XAUUSD|1700000000", POSITION_KEY_A, OutcomeKind.PORTFOLIO,
+    )
+
+    trade = _trade(pnl_r=1.2, qty=5.0, gross_pnl=50.0, net_pnl=47.0, fees=3.0)
+    outcome_id = capture_portfolio_terminal(repo, pm, RUN_ID, POSITION_KEY_A, trade, AS_OF)
+    assert outcome_id is not None
+
+    po = list(repo.iter_position_outcomes())[0]
+    assert po.total_qty_closed == trade.qty
+    assert po.total_gross_pnl == trade.gross_pnl
+    assert po.total_net_pnl == trade.net_pnl
+    assert po.total_costs == trade.fees
+    assert po.constituent_interim_realization_ids == ()
+
+
+def test_strategy_side_also_produces_position_outcome(tmp_path: Path) -> None:
+    repo = _repo(tmp_path)
+    pm = PositionCorrelationMap(RUN_ID)
+    obs_id = capture_decision_observation(repo, _observation())
+    assert obs_id is not None
+    pm.register(_pending_position(obs_id, outcome_kind=OutcomeKind.STRATEGY))
+
+    trade = _trade(pnl_r=0.8)
+    outcome_id = capture_strategy_terminal(repo, pm, RUN_ID, POSITION_KEY_A, _position(), trade, AS_OF)
+    assert outcome_id is not None
+    assert repo.count_position_outcomes() == 1
+    po = list(repo.iter_position_outcomes())[0]
+    assert po.outcome_kind is OutcomeKind.STRATEGY

@@ -18,8 +18,10 @@ from ai_trader.learning_feedback.adapters import (
     build_operational_metadata,
     build_portfolio_interim_realization,
     build_portfolio_outcome,
+    build_portfolio_position_outcome,
     build_strategy_interim_realization,
     build_strategy_outcome,
+    build_strategy_position_outcome,
     canonical_cost_model_ref,
     rejection_stage_for,
 )
@@ -42,6 +44,7 @@ from ai_trader.learning_feedback.capture import (
     promote_opening_fill,
     register_flip_position,
     register_pending_correlation,
+    register_shadow_position,
 )
 from ai_trader.learning_feedback.config import LEARNING_FEEDBACK_CONFIG_VERSION, LearningFeedbackConfig
 from ai_trader.learning_feedback.market_snapshot import MarketSnapshotBundle, build_market_snapshot
@@ -61,6 +64,8 @@ __all__ = [
     "build_portfolio_outcome",
     "build_strategy_interim_realization",
     "build_portfolio_interim_realization",
+    "build_portfolio_position_outcome",
+    "build_strategy_position_outcome",
     "build_operational_metadata",
     "canonical_cost_model_ref",
     "rejection_stage_for",
@@ -81,6 +86,7 @@ __all__ = [
     "PendingPosition",
     "promote_opening_fill",
     "register_flip_position",
+    "register_shadow_position",
     "capture_portfolio_terminal",
     "capture_portfolio_interim",
     "capture_strategy_terminal",

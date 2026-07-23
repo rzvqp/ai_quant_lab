@@ -60,6 +60,8 @@ from ai_trader.context_memory.contracts import (
     OperationalMetadata,
     OperationalMetadataId,
     Outcome,
+    PositionOutcome,
+    PositionOutcomeId,
     PresentEdgeReference,
     PresentEdgeReferenceId,
     SchemaVersion,
@@ -178,6 +180,31 @@ def canonical_interim_realization(realization: InterimRealization) -> dict[str, 
     }
 
 
+def canonical_position_outcome(position_outcome: PositionOutcome) -> dict[str, Any]:
+    return {
+        "record_type": "context_memory.position_outcome",
+        "context_memory_schema_version": canonical_schema_version(CONTEXT_MEMORY_SCHEMA_VERSION),
+        "observation_id": position_outcome.observation_id.value,
+        "strategy_id": position_outcome.strategy_id,
+        "position_key": position_outcome.position_key,
+        "outcome_kind": position_outcome.outcome_kind.value,
+        "source_type": position_outcome.source_type.value,
+        "opened_as_of": position_outcome.opened_as_of,
+        "terminal_as_of": position_outcome.terminal_as_of,
+        "total_qty_closed": canonical_float(position_outcome.total_qty_closed),
+        "weighted_avg_exit_price": canonical_float(position_outcome.weighted_avg_exit_price),
+        "total_gross_pnl": canonical_float(position_outcome.total_gross_pnl),
+        "total_net_pnl": canonical_float(position_outcome.total_net_pnl),
+        "total_costs": canonical_float(position_outcome.total_costs),
+        "cost_model_ref": position_outcome.cost_model_ref,
+        "terminal_outcome_id": position_outcome.terminal_outcome_id.value,
+        # already caller-supplied in accumulation order (oldest first) -- not re-sorted here, since
+        # accumulation order IS the canonical, meaningful order (chronological), unlike Observation's
+        # own present_edges (which has no inherent order and is re-sorted for that reason).
+        "constituent_interim_realization_ids": [ref.value for ref in position_outcome.constituent_interim_realization_ids],
+    }
+
+
 def hash_canonical(payload: dict[str, Any]) -> str:
     canonical_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
@@ -205,3 +232,7 @@ def compute_operational_metadata_id(metadata: OperationalMetadata) -> Operationa
 
 def compute_interim_realization_id(realization: InterimRealization) -> InterimRealizationId:
     return InterimRealizationId(hash_canonical(canonical_interim_realization(realization)))
+
+
+def compute_position_outcome_id(position_outcome: PositionOutcome) -> PositionOutcomeId:
+    return PositionOutcomeId(hash_canonical(canonical_position_outcome(position_outcome)))

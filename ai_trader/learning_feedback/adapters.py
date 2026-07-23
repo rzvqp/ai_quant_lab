@@ -17,10 +17,13 @@ is a disclosed refinement of the plan's own sketch, not a contradiction of it.
 from __future__ import annotations
 
 from ai_trader.context_memory.contracts import (
+    EdgeEvidenceId,
     InterimRealization,
+    InterimRealizationId,
     ObservationId,
     OperationalMetadata,
     Outcome,
+    PositionOutcome,
     SchemaVersion,
 )
 from ai_trader.context_memory.enums import (
@@ -341,4 +344,77 @@ def build_operational_metadata(
         observation_id=observation_id, strategy_id=decision.strategy_id,
         risk_decision=ContextRiskDecision.DENY, denied_reason_code=primary_code,
         rejection_stage=rejection_stage_for(primary_code), strategy_health_policy_state=policy_state,
+    )
+
+
+# ---------------------------------------------------------------------------------------------------
+# PositionOutcome construction (Learning/Research Feedback Sprint 2, Blocker 2 -- CEO-ratified,
+# additive). Pure arithmetic aggregate over the COMPLETE ledger of partials belonging to one
+# position_key -- never a research metric, never risk-normalized. The caller (learning_feedback/
+# capture.py) is responsible for accumulating `partials` (every TradeRecord/leg contributing to this
+# position, oldest first, terminal one last) across the position's whole lifetime; this module never
+# retains state of its own.
+# ---------------------------------------------------------------------------------------------------
+
+
+def _position_outcome_from_partials(
+    *, partials: tuple[TradeRecord, ...], observation_id: ObservationId, position_key: str,
+    cost_model_ref: str, source_type: SourceType, outcome_kind: OutcomeKind,
+    terminal_outcome_id: EdgeEvidenceId, constituent_interim_realization_ids: tuple[InterimRealizationId, ...],
+) -> PositionOutcome | None:
+    """Returns `None` (never raises) only if `partials` is empty or the total closed quantity is not
+    positive -- both structurally unreachable in practice (a terminal capture always includes at least
+    the terminal trade itself), but never assumed."""
+    if not partials:
+        return None
+    total_qty = sum(p.qty for p in partials)
+    if total_qty <= 0:
+        return None
+    weighted_avg_exit_price = sum(p.qty * p.exit_price for p in partials) / total_qty
+    total_gross_pnl = sum(p.gross_pnl for p in partials)
+    total_net_pnl = sum(p.net_pnl for p in partials)
+    total_costs = sum(p.fees for p in partials)
+    # entry_as_of/strategy_id are identical across every partial for one position lifecycle by
+    # construction (all close/reduce the SAME originally-opened position) -- any partial's own value
+    # would do; the first/last are used here purely for readability, not because they differ.
+    opened_as_of = partials[0].entry_as_of
+    terminal_as_of = partials[-1].exit_as_of
+    strategy_id = partials[-1].strategy_id
+    return PositionOutcome(
+        observation_id=observation_id, strategy_id=strategy_id, position_key=position_key,
+        outcome_kind=outcome_kind, source_type=source_type, opened_as_of=opened_as_of,
+        terminal_as_of=terminal_as_of, total_qty_closed=total_qty,
+        weighted_avg_exit_price=weighted_avg_exit_price, total_gross_pnl=total_gross_pnl,
+        total_net_pnl=total_net_pnl, total_costs=total_costs, cost_model_ref=cost_model_ref,
+        terminal_outcome_id=terminal_outcome_id,
+        constituent_interim_realization_ids=constituent_interim_realization_ids,
+    )
+
+
+def build_portfolio_position_outcome(
+    partials: tuple[TradeRecord, ...], position_key: str, observation_id: ObservationId,
+    cost_model_ref: str, terminal_outcome_id: EdgeEvidenceId,
+    constituent_interim_realization_ids: tuple[InterimRealizationId, ...],
+) -> PositionOutcome | None:
+    """The real-portfolio-side `PositionOutcome` builder -- the ONE canonical, complete result for a
+    real position lifecycle, aggregated across every partial exit (Sprint 2 Blocker 2)."""
+    return _position_outcome_from_partials(
+        partials=partials, observation_id=observation_id, position_key=position_key,
+        cost_model_ref=cost_model_ref, source_type=SourceType.REAL_PORTFOLIO_LEDGER,
+        outcome_kind=OutcomeKind.PORTFOLIO, terminal_outcome_id=terminal_outcome_id,
+        constituent_interim_realization_ids=constituent_interim_realization_ids,
+    )
+
+
+def build_strategy_position_outcome(
+    partials: tuple[TradeRecord, ...], position_key: str, observation_id: ObservationId,
+    cost_model_ref: str, terminal_outcome_id: EdgeEvidenceId,
+    constituent_interim_realization_ids: tuple[InterimRealizationId, ...],
+) -> PositionOutcome | None:
+    """The Shadow-side mirror of `build_portfolio_position_outcome` (Sprint 2 Blocker 2)."""
+    return _position_outcome_from_partials(
+        partials=partials, observation_id=observation_id, position_key=position_key,
+        cost_model_ref=cost_model_ref, source_type=SourceType.SHADOW_EVIDENCE_ADAPTER,
+        outcome_kind=OutcomeKind.STRATEGY, terminal_outcome_id=terminal_outcome_id,
+        constituent_interim_realization_ids=constituent_interim_realization_ids,
     )

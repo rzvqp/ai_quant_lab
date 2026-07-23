@@ -26,19 +26,23 @@ from ai_trader.context_memory.enums import OutcomeKind
 from ai_trader.context_memory.repository import ContextMemoryRepository
 from ai_trader.execution_engine.config import ExecConfig
 from ai_trader.execution_engine.engine import ExecutionEngine
-from ai_trader.execution_engine.types import BrokerCapabilities, MarketStatus, OrderType, TimeInForce
+from ai_trader.execution_engine.types import BrokerCapabilities, MarketStatus, OrderState, OrderType, TimeInForce
 from ai_trader.learning_feedback.adapters import canonical_cost_model_ref
 from ai_trader.learning_feedback.capture import (
     CorrelationMap,
     PendingCapture,
+    PendingPosition,
     PositionCorrelationMap,
     capture_decision_observation,
     capture_operational_metadata,
     capture_portfolio_interim,
     capture_portfolio_terminal,
+    capture_strategy_interim,
+    capture_strategy_terminal,
     promote_opening_fill,
     register_flip_position,
     register_pending_correlation,
+    register_shadow_position,
 )
 from ai_trader.learning_feedback.market_snapshot import build_market_snapshot
 from ai_trader.learning_feedback.observation_builder import build_decision_observation
@@ -54,6 +58,7 @@ from ai_trader.risk_manager.types import Decision, RiskContext, SymbolRiskSnapsh
 from ai_trader.scoring_engine.config import ScoringConfig
 from ai_trader.scoring_engine.engine import ScoringEngine
 from ai_trader.shadow_evidence.engine import ShadowEvidenceEngine
+from ai_trader.shadow_evidence.types import ShadowPositionRecord
 from ai_trader.signal_engine.config import EngineConfig as SignalEngineConfig
 from ai_trader.signal_engine.engine import SignalEngine
 from ai_trader.signal_engine.pipeline import StrategyHandleLike
@@ -424,6 +429,11 @@ class SimulationHarness:
                 # open at run end has its own economic fate genuinely unresolved for this run -- drain
                 # the pending correlation state, never fabricate a terminal Outcome for it.
                 self._lf_positions.drain_pending()
+            if self._lf_correlation is not None:
+                # Sprint 2 Blocker 3: bound any decision-time candidate that was registered but never
+                # promoted to a position_key (cancelled or expired, never surfaced mid-run) to at most
+                # one run's own lifetime -- guarantees pending_count() == 0 at the end of every run.
+                self._lf_correlation.drain_pending()
             return
         last_as_of = self.as_of
         if last_as_of is None:
@@ -453,12 +463,21 @@ class SimulationHarness:
         # portfolio does not (or vice versa) -- its own finalization runs independently, per the SAME
         # close_at_end_policy (checked again, internally, by ShadowEvidenceEngine.finalize_at_end).
         if self.shadow_engine is not None:
+            lf_prev_leg_count = len(self.shadow_engine.trade_legs) if self._lf_repo is not None else 0
             try:
                 self.shadow_engine.finalize_at_end(last_as_of, self.bar_index, bars)
             except Exception as exc:  # noqa: BLE001 -- failure isolation: a shadow finalization bug
                 # must never affect the real, already-applied competitive close-at-end result above.
                 self.shadow_engine.failures.append((last_as_of, "__engine__", repr(exc)))
                 logger.warning("Shadow Evidence: finalize_at_end() raised: %r", exc)
+            if self._lf_repo is not None:
+                self._lf_process_shadow_trade_legs(lf_prev_leg_count)
+
+        # Sprint 2 Blocker 3: under CLOSE_AT_LAST too, any candidate that was registered but never
+        # reached a fill this run (cancelled/expired, never surfaced mid-run) must not persist past the
+        # end of the run -- same guarantee as the HOLD_AND_MARK branch above.
+        if self._lf_correlation is not None:
+            self._lf_correlation.drain_pending()
 
     # ------------------------------------------------------------------ Learning/Research Feedback
     # (Flow B roadmap step 3/6, real-portfolio side -- Architectural Decision Package, CEO-authorized)
@@ -480,6 +499,53 @@ class SimulationHarness:
         capture_portfolio_interim(
             self._lf_repo, self._lf_positions, self.context.run_id, position_key, trade, entry.decision_as_of,
         )
+
+    def _lf_capture_shadow_terminal(
+        self, position_key: str, position: ShadowPositionRecord, closing_leg: TradeRecord,
+    ) -> None:
+        assert self._lf_repo is not None and self._lf_positions is not None
+        entry = self._lf_positions.get(position_key)
+        if entry is None:
+            return
+        capture_strategy_terminal(
+            self._lf_repo, self._lf_positions, self.context.run_id, position_key, position, closing_leg,
+            entry.decision_as_of,
+        )
+
+    def _lf_capture_shadow_interim(self, position_key: str, closing_leg: TradeRecord) -> None:
+        assert self._lf_repo is not None and self._lf_positions is not None
+        entry = self._lf_positions.get(position_key)
+        if entry is None:
+            return
+        capture_strategy_interim(
+            self._lf_repo, self._lf_positions, self.context.run_id, position_key, closing_leg,
+            entry.decision_as_of,
+        )
+
+    def _lf_process_shadow_trade_legs(self, prev_leg_count: int) -> None:
+        """Learning/Research Feedback resolution-time capture for Shadow Evidence (Sprint 2 Blocker 1)
+        -- called after `shadow_engine.settle_bar()`/`finalize_at_end()` has recorded every new closing/
+        partial-exit leg for this bar. Shadow already tracks its own stable `position_id` (Lifecycle
+        Specification §3B) -- no registry/diff needed here, unlike the real-portfolio side: this simply
+        looks up each new leg's own `ShadowPositionRecord` (by `position_id`) to decide terminal (status
+        == 'CLOSED') vs interim. Wrapped in its own try/except, mirroring every other Learning Feedback
+        call site in this module."""
+        assert self._lf_repo is not None and self._lf_positions is not None and self.shadow_engine is not None
+        try:
+            new_legs = self.shadow_engine.trade_legs[prev_leg_count:]
+            if not new_legs:
+                return
+            positions_by_id = {p.position_id: p for p in self.shadow_engine.positions}
+            for leg_record in new_legs:
+                position = positions_by_id.get(leg_record.position_id)
+                if position is None:
+                    continue  # defensive only -- shadow_evidence guarantees this invariant internally
+                if position.status == "CLOSED":
+                    self._lf_capture_shadow_terminal(leg_record.position_id, position, leg_record.leg)
+                else:
+                    self._lf_capture_shadow_interim(leg_record.position_id, leg_record.leg)
+        except Exception as exc:  # noqa: BLE001 -- failure isolation, see module docstring.
+            logger.warning("Learning Feedback: shadow resolution-time capture raised: %r", exc)
 
     def _lf_process_fills_for_bar(
         self, as_of: int, fills: tuple[SimFillEvent, ...], prev_trade_count: int,
@@ -619,12 +685,41 @@ class SimulationHarness:
                 # hard guarantee, not contingent on shadow_engine's own internal code being bug-free.
                 if self.shadow_engine is not None:
                     try:
-                        self.shadow_engine.observe(as_of, score_batch, risk_context)
+                        shadow_results = self.shadow_engine.observe(as_of, score_batch, risk_context)
                     except Exception as exc:  # noqa: BLE001 -- failure isolation: shadow must never
                         # affect competitive execution, even via an exception this outer guard didn't
                         # anticipate inside observe() itself.
                         self.shadow_engine.failures.append((as_of, "__engine__", repr(exc)))
                         logger.warning("Shadow Evidence: observe() raised outside its own per-strategy boundary: %r", exc)
+                        shadow_results = ()
+                    # Learning/Research Feedback Sprint 2, Blocker 1: `observe()`'s own return value
+                    # (Learning/Research Feedback Sprint 2 Blocker 1) is processed ONLY here, in the
+                    # harness -- shadow_evidence itself never imports/calls learning_feedback. Reuses
+                    # the SAME `lf_observation_id` already captured above for this (symbol, as_of) --
+                    # Observation is shared per symbol per bar, never per strategy (Architectural
+                    # Decision Package Decision 4). `capture_operational_metadata`/`register`/`get` are
+                    # all already exception-safe; a defensive symbol match guards against a genuinely
+                    # unexpected cross-symbol result (never observed, but never assumed either).
+                    if self._lf_repo is not None and lf_observation_id is not None:
+                        assert self._lf_positions is not None and self._lf_cost_model_ref is not None
+                        for shadow_result in shadow_results:
+                            if shadow_result.symbol != symbol:
+                                logger.warning(
+                                    "Learning Feedback: ShadowObservationResult.symbol=%s does not "
+                                    "match the current bar's own symbol=%s -- dropped",
+                                    shadow_result.symbol, symbol,
+                                )
+                                continue
+                            capture_operational_metadata(
+                                self._lf_repo, shadow_result.decision, None, lf_observation_id,
+                            )
+                            if shadow_result.position_id is not None:
+                                register_shadow_position(self._lf_positions, PendingPosition(
+                                    run_id=self.context.run_id, position_key=shadow_result.position_id,
+                                    strategy_id=shadow_result.strategy_id, symbol=shadow_result.symbol,
+                                    outcome_kind=OutcomeKind.STRATEGY, observation_id=lf_observation_id,
+                                    cost_model_ref=self._lf_cost_model_ref, decision_as_of=as_of,
+                                ))
                 # Strategy Health integration: `health_eligible_ids` filters ONLY the opportunity list
                 # handed downstream -- score_batch itself (and the shadow_engine tap above) already saw
                 # the full, unfiltered set Signal/Scoring Engine computed for every configured strategy
@@ -661,23 +756,32 @@ class SimulationHarness:
                         if self._lf_repo is not None and lf_observation_id is not None:
                             assert self._lf_correlation is not None and self._lf_cost_model_ref is not None
                             capture_operational_metadata(self._lf_repo, decision, None, lf_observation_id)
-                            # Alias computation mirrors builder.py's own bracket-trigger condition
-                            # exactly (Lifecycle Specification I2): each of `-TP`/`-SL` is independently
-                            # conditional on `constraints.target`/`constraints.stop`, never assumed
-                            # together -- 1, 2, or 3 total aliases, never hardcoded to 3.
-                            client_order_ids = [status.client_order_id]
-                            if decision.constraints is not None:
-                                if decision.constraints.target is not None:
-                                    client_order_ids.append(f"{status.client_order_id}-TP")
-                                if decision.constraints.stop is not None:
-                                    client_order_ids.append(f"{status.client_order_id}-SL")
-                            register_pending_correlation(self._lf_correlation, PendingCapture(
-                                run_id=self.context.run_id, client_order_ids=tuple(client_order_ids),
-                                strategy_id=decision.strategy_id, symbol=decision.symbol,
-                                decision_id=decision.decision_id, decision_as_of=decision.as_of,
-                                outcome_kind=OutcomeKind.PORTFOLIO, observation_id=lf_observation_id,
-                                cost_model_ref=self._lf_cost_model_ref,
-                            ))
+                            # Sprint 2 Blocker 3: a synchronously-rejected/failed order (already known,
+                            # for free, right here) will never reach a fill -- never register a
+                            # correlation candidate for it at all, rather than registering then relying
+                            # on a later cleanup pass to discard it. This is the ONLY terminal-non-fill
+                            # disposition observable synchronously; cancellation/expiry are not surfaced
+                            # to this call site and are instead bounded by CorrelationMap.drain_pending()
+                            # at end-of-run (see _finalize_at_end) -- a deliberately deferred, smaller-
+                            # scope correction (Sprint 2 Blocker 3, Option A/C).
+                            if status.state not in (OrderState.REJECTED, OrderState.FAILED):
+                                # Alias computation mirrors builder.py's own bracket-trigger condition
+                                # exactly (Lifecycle Specification I2): each of `-TP`/`-SL` is
+                                # independently conditional on `constraints.target`/`constraints.stop`,
+                                # never assumed together -- 1, 2, or 3 total aliases, never hardcoded to 3.
+                                client_order_ids = [status.client_order_id]
+                                if decision.constraints is not None:
+                                    if decision.constraints.target is not None:
+                                        client_order_ids.append(f"{status.client_order_id}-TP")
+                                    if decision.constraints.stop is not None:
+                                        client_order_ids.append(f"{status.client_order_id}-SL")
+                                register_pending_correlation(self._lf_correlation, PendingCapture(
+                                    run_id=self.context.run_id, client_order_ids=tuple(client_order_ids),
+                                    strategy_id=decision.strategy_id, symbol=decision.symbol,
+                                    decision_id=decision.decision_id, decision_as_of=decision.as_of,
+                                    outcome_kind=OutcomeKind.PORTFOLIO, observation_id=lf_observation_id,
+                                    cost_model_ref=self._lf_cost_model_ref,
+                                ))
                     else:
                         # A real gap a review caught: only liquidation events ever reached
                         # report.risk_events. Every DENY reason, and the batch's own engine_state when
@@ -792,12 +896,15 @@ class SimulationHarness:
         # (not gated on phase_running), exactly mirroring the real sequence's own placement outside the
         # `if phase_running:` block above.
         if self.shadow_engine is not None:
+            lf_prev_leg_count = len(self.shadow_engine.trade_legs) if self._lf_repo is not None else 0
             try:
                 self.shadow_engine.settle_bar(as_of, self._clock.bar_index, bars, phase_running)
             except Exception as exc:  # noqa: BLE001 -- failure isolation: a shadow settlement bug must
                 # never affect competitive execution.
                 self.shadow_engine.failures.append((as_of, "__engine__", repr(exc)))
                 logger.warning("Shadow Evidence: settle_bar() raised: %r", exc)
+            if self._lf_repo is not None:
+                self._lf_process_shadow_trade_legs(lf_prev_leg_count)
 
 
 def _build_risk_context(context: dict[str, Any], as_of: int, tick_size: float, spread_ticks: float) -> RiskContext:

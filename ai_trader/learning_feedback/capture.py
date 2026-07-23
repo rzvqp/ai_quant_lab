@@ -45,7 +45,7 @@ opens another). See `LEARNING_FEEDBACK_ARCHITECTURAL_DECISION_PACKAGE.md` for th
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from ai_trader.context_memory.contracts import (
     EdgeEvidenceId,
@@ -53,6 +53,7 @@ from ai_trader.context_memory.contracts import (
     Observation,
     ObservationId,
     OperationalMetadataId,
+    PositionOutcomeId,
 )
 from ai_trader.context_memory.enums import OutcomeKind
 from ai_trader.context_memory.repository import ContextMemoryRepository
@@ -60,8 +61,10 @@ from ai_trader.learning_feedback.adapters import (
     build_operational_metadata,
     build_portfolio_interim_realization,
     build_portfolio_outcome,
+    build_portfolio_position_outcome,
     build_strategy_interim_realization,
     build_strategy_outcome,
+    build_strategy_position_outcome,
 )
 from ai_trader.risk_manager.types import RiskDecision
 from ai_trader.shadow_evidence.types import ShadowPositionRecord
@@ -165,6 +168,26 @@ class CorrelationMap:
     def pending_count(self) -> int:
         """Distinct pending entries (not distinct alias keys -- a 3-alias bracket entry counts once)."""
         return len({id(v) for v in self._pending.values()})
+
+    def discard(self, run_id: str, client_order_id: str) -> PendingCapture | None:
+        """Retire an entry with NO resolution ever produced for it -- Sprint 2 Blocker 3: an order that
+        was allowed but never reached a fill (cancelled, expired, or a rejection not caught synchronously
+        at ``execute()`` time) must not persist forever. Same run-mismatch/unknown-key semantics as
+        :meth:`pop_for_resolution`; retires every alias of a multi-id (bracket) entry together. Never
+        produces an Outcome -- purely bookkeeping cleanup."""
+        return self.pop_for_resolution(run_id, client_order_id)
+
+    def drain_pending(self) -> tuple[PendingCapture, ...]:
+        """Every entry still pending, retired with no resolution ever produced -- end-of-run sweep
+        (Sprint 2 Blocker 3), mirroring :meth:`PositionCorrelationMap.drain_pending` exactly. Guarantees
+        `pending_count() == 0` after this call. Idempotent: a second call returns an empty tuple, since
+        every entry is retired (not merely read) the first time."""
+        drained = tuple({id(v): v for v in self._pending.values()}.values())
+        for entry in drained:
+            for coid in entry.client_order_ids:
+                self._pending.pop(coid, None)
+                self._resolved_client_order_ids.add(coid)
+        return drained
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -303,7 +326,14 @@ class PendingPosition:
     are observed -- the position-scoped analogue of `PendingCapture`, minted either by promoting a
     decision-time `PendingCapture` at the moment its opening fill is observed (`promote_opening_fill`), or
     by deriving one directly from the OLD position's own entry at flip time (`register_flip_position`,
-    Decision 2 -- a flip's new position has no decision of its own)."""
+    Decision 2 -- a flip's new position has no decision of its own).
+
+    `accumulated_partials`/`interim_realization_ids` (Learning/Research Feedback Sprint 2, Blocker 2,
+    CEO-ratified): the COMPLETE, in-order ledger of every partial (`TradeRecord`/leg) and every already-
+    produced `InterimRealizationId` contributed by this position's own lifecycle so far -- accumulated
+    via `PositionCorrelationMap.accumulate`, consumed once, at terminal capture time, to build the ONE
+    canonical `PositionOutcome` for this position (never a research metric -- pure Level-1 arithmetic
+    over this exact ledger)."""
 
     run_id: str
     position_key: str
@@ -313,6 +343,8 @@ class PendingPosition:
     observation_id: ObservationId
     cost_model_ref: str
     decision_as_of: int
+    accumulated_partials: tuple[TradeRecord, ...] = ()
+    interim_realization_ids: tuple[InterimRealizationId, ...] = ()
 
 
 class PositionCorrelationMap:
@@ -352,6 +384,36 @@ class PositionCorrelationMap:
         """A non-retiring peek -- safe to call once per interim realization against a still-open
         position, any number of times."""
         return self._pending.get(position_key)
+
+    def accumulate(
+        self, run_id: str, position_key: str, trade: TradeRecord,
+        interim_realization_id: InterimRealizationId | None = None,
+    ) -> PendingPosition | None:
+        """Append `trade` (and, if produced, its own `interim_realization_id`) to the still-pending
+        entry's own ledger -- Sprint 2 Blocker 2: every interim/terminal capture call accumulates its own
+        partial here FIRST, so a `PositionOutcome` can later be built from the COMPLETE ledger, not just
+        the terminal partial alone. Does NOT retire the entry (mirrors `get`'s own non-destructive
+        semantics) -- `retire` is still the only way an entry stops being pending. Returns the entry
+        AFTER accumulation, or `None` for an unknown/already-resolved `position_key` (same miss
+        semantics as `get`)."""
+        if run_id != self._run_id:
+            raise CorrelationRunMismatchError(
+                f"PositionCorrelationMap bound to run_id={self._run_id!r} cannot accumulate onto an "
+                f"entry for run_id={run_id!r}"
+            )
+        entry = self._pending.get(position_key)
+        if entry is None:
+            return None
+        new_interim_ids = (
+            entry.interim_realization_ids + (interim_realization_id,)
+            if interim_realization_id is not None else entry.interim_realization_ids
+        )
+        updated = replace(
+            entry, accumulated_partials=entry.accumulated_partials + (trade,),
+            interim_realization_ids=new_interim_ids,
+        )
+        self._pending[position_key] = updated
+        return updated
 
     def retire(self, run_id: str, position_key: str) -> PendingPosition | None:
         """Pop and permanently retire `position_key` -- called exactly once, for the fill that brings a
@@ -428,6 +490,25 @@ def promote_opening_fill(
         return False
 
 
+def register_shadow_position(position_map: PositionCorrelationMap, entry: PendingPosition) -> bool:
+    """Register a `PendingPosition` for a Shadow strategy DIRECTLY, at decision time -- Sprint 2 Blocker
+    1 (`LEARNING_FEEDBACK_NEXT_SPRINT_DESIGN.md`, Option A). Unlike the real-portfolio side (which must
+    bridge a `client_order_id` candidate to a `position_key` once the opening fill is observed, via
+    `promote_opening_fill`), Shadow's own `position_id` is already deterministically known at decision
+    time (`ShadowEvidenceEngine`'s own `position_id` formula, minted before the virtual entry order is
+    even known to have filled) -- no two-stage promotion is needed. Never raises; returns `False` (log)
+    on any registration failure (e.g. a duplicate `position_key`, which should not happen by
+    construction since Shadow's own `position_id` formula is unique per decision)."""
+    try:
+        position_map.register(entry)
+        return True
+    except Exception:
+        _LOGGER.exception(
+            "learning_feedback: failed to register shadow position position_key=%s", entry.position_key,
+        )
+        return False
+
+
 def register_flip_position(
     position_map: PositionCorrelationMap, run_id: str, old_position_key: str, new_position_key: str,
     new_strategy_id: str,
@@ -467,14 +548,23 @@ def capture_portfolio_terminal(
     """Resolve the real-portfolio position identified by `position_key` into a terminal Portfolio Outcome
     -- called exactly once, for the fill that brings that position to zero size (Decision 3). Retires
     `position_key` via `PositionCorrelationMap.retire`; every subsequent call for the same key is treated
-    as an unknown/duplicate key and dropped, identically to `capture_portfolio_resolution`."""
+    as an unknown/duplicate key and dropped, identically to `capture_portfolio_resolution`.
+
+    **Sprint 2, Blocker 2** (CEO-ratified, additive): also builds and appends the ONE canonical
+    `PositionOutcome` for this position's own complete lifecycle, aggregated from every accumulated
+    partial (`PositionCorrelationMap.accumulate`). Return type is UNCHANGED (still the terminal Outcome's
+    own `EdgeEvidenceId`) -- `PositionOutcome`'s own id is not returned, only persisted, preserving full
+    backward compatibility with every existing caller/test of this function."""
     try:
-        entry = position_map.retire(run_id, position_key)
-        if entry is None:
+        accumulated = position_map.accumulate(run_id, position_key, trade)
+        if accumulated is None:
             _LOGGER.info(
                 "learning_feedback: no pending position correlation for run_id=%s position_key=%s -- "
                 "dropped", run_id, position_key,
             )
+            return None
+        entry = position_map.retire(run_id, position_key)
+        if entry is None:  # pragma: no cover -- defensive only; accumulate() just confirmed it exists.
             return None
         if entry.outcome_kind is not OutcomeKind.PORTFOLIO:
             _LOGGER.warning(
@@ -485,7 +575,14 @@ def capture_portfolio_terminal(
         outcome = build_portfolio_outcome(trade, entry.observation_id, observation_as_of, entry.cost_model_ref)
         if outcome is None:
             return None
-        return repository.append_outcome(outcome)
+        outcome_id = repository.append_outcome(outcome)
+        position_outcome = build_portfolio_position_outcome(
+            entry.accumulated_partials, position_key, entry.observation_id, entry.cost_model_ref,
+            outcome_id, entry.interim_realization_ids,
+        )
+        if position_outcome is not None:
+            repository.append_position_outcome(position_outcome)
+        return outcome_id
     except Exception:
         _LOGGER.exception("learning_feedback: failed to capture Portfolio terminal resolution")
         return None
@@ -498,7 +595,10 @@ def capture_portfolio_interim(
     """Capture one non-terminal, diagnostic-only realization for a real-portfolio partial exit that does
     NOT bring `position_key` to zero size (Decision 3) -- PEEKS the pending entry via `PositionCorrelation
     Map.get`, never retires it. May be called any number of times for the same still-open `position_key`.
-    """
+
+    **Sprint 2, Blocker 2**: also accumulates `trade` (and, if produced, this realization's own id) onto
+    the pending entry's own ledger, so the eventual terminal `PositionOutcome` can aggregate across every
+    partial, not just the terminal one."""
     try:
         if run_id != position_map.run_id:
             _LOGGER.warning(
@@ -523,8 +623,11 @@ def capture_portfolio_interim(
             trade, position_key, entry.observation_id, observation_as_of, entry.cost_model_ref,
         )
         if realization is None:
+            position_map.accumulate(run_id, position_key, trade)
             return None
-        return repository.append_interim_realization(realization)
+        realization_id = repository.append_interim_realization(realization)
+        position_map.accumulate(run_id, position_key, trade, interim_realization_id=realization_id)
+        return realization_id
     except Exception:
         _LOGGER.exception("learning_feedback: failed to capture Portfolio interim realization")
         return None
@@ -537,14 +640,20 @@ def capture_strategy_terminal(
     """Resolve the Shadow position identified by `position_key` into a terminal Strategy Outcome -- the
     Shadow-side mirror of `capture_portfolio_terminal`. Shadow already tracks its own stable
     `position_id` (Lifecycle Specification §3B, already correct) -- `position_key` here is expected to be
-    that SAME string, passed straight through by the caller, not re-derived by this module."""
+    that SAME string, passed straight through by the caller, not re-derived by this module.
+
+    **Sprint 2, Blocker 2**: mirrors `capture_portfolio_terminal`'s own `PositionOutcome` aggregation,
+    for `OutcomeKind.STRATEGY`. Return type unchanged."""
     try:
-        entry = position_map.retire(run_id, position_key)
-        if entry is None:
+        accumulated = position_map.accumulate(run_id, position_key, closing_leg)
+        if accumulated is None:
             _LOGGER.info(
                 "learning_feedback: no pending position correlation for run_id=%s position_key=%s -- "
                 "dropped", run_id, position_key,
             )
+            return None
+        entry = position_map.retire(run_id, position_key)
+        if entry is None:  # pragma: no cover -- defensive only; accumulate() just confirmed it exists.
             return None
         if entry.outcome_kind is not OutcomeKind.STRATEGY:
             _LOGGER.warning(
@@ -557,7 +666,14 @@ def capture_strategy_terminal(
         )
         if outcome is None:
             return None
-        return repository.append_outcome(outcome)
+        outcome_id = repository.append_outcome(outcome)
+        position_outcome = build_strategy_position_outcome(
+            entry.accumulated_partials, position_key, entry.observation_id, entry.cost_model_ref,
+            outcome_id, entry.interim_realization_ids,
+        )
+        if position_outcome is not None:
+            repository.append_position_outcome(position_outcome)
+        return outcome_id
     except Exception:
         _LOGGER.exception("learning_feedback: failed to capture Strategy terminal resolution")
         return None
@@ -568,7 +684,8 @@ def capture_strategy_interim(
     position_key: str, closing_leg: TradeRecord, observation_as_of: int,
 ) -> InterimRealizationId | None:
     """Capture one non-terminal, diagnostic-only realization for a Shadow partial exit leg that does NOT
-    bring `position_key` to zero size -- the Shadow-side mirror of `capture_portfolio_interim`."""
+    bring `position_key` to zero size -- the Shadow-side mirror of `capture_portfolio_interim`, including
+    the same Sprint 2 Blocker 2 accumulation."""
     try:
         if run_id != position_map.run_id:
             _LOGGER.warning(
@@ -593,8 +710,11 @@ def capture_strategy_interim(
             closing_leg, position_key, entry.observation_id, observation_as_of, entry.cost_model_ref,
         )
         if realization is None:
+            position_map.accumulate(run_id, position_key, closing_leg)
             return None
-        return repository.append_interim_realization(realization)
+        realization_id = repository.append_interim_realization(realization)
+        position_map.accumulate(run_id, position_key, closing_leg, interim_realization_id=realization_id)
+        return realization_id
     except Exception:
         _LOGGER.exception("learning_feedback: failed to capture Strategy interim realization")
         return None
