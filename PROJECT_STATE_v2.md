@@ -1462,8 +1462,54 @@ only ~0.48% of opportunities ever reach a real ALLOW) — and let it accumulate 
 diagnostic.
 
 **Standing status**: Recognition Engine implementation remains NOT authorized. No `recognition_engine/`
-package exists. The next action requires its own explicit CEO decision on whether/how to wire and run a
-data-collection pass — not implied or pre-authorized by this diagnostic.
+package exists.
+
+### 8.29 Learning Feedback — Phase 1: Capture Activation — Stage 1 Canary — READY FOR FULL CAPTURE
+(2026-07-24)
+
+Directly answers §8.28's own "next action" — the CEO authorized `LEARNING_FEEDBACK_PHASE1_CAPTURE_
+ACTIVATION_DESIGN.md` (READY FOR IMPLEMENTATION verdict ACCEPTED), then Stage 1 only (canary
+implementation + a short, representative run; the full 12-month run explicitly NOT authorized yet).
+
+**Implementation**: one new script, `learning_feedback_capture_activation_run.py` — **zero existing
+`ai_trader/` file touched**. Supplies real values for the two parameters that had always defaulted to
+inert (`SimulationHarness`'s `learning_feedback_repository_path`, `SimulationContext`'s `shadow_config`),
+reusing every other configuration verbatim from existing precedent scripts (Wave D's own baseline
+config, `all_registered_strategies()`, the same CEO-approved 12-month window origin
+`phase69a_funnel_run.py` already established).
+
+**Canary run** (30-day slice, 2024-10-23→2024-11-22, 2,221 bars, all 43 strategies eligible for both
+real-competitive and Shadow capture): **31 `PositionOutcome` total — 25 `STRATEGY`-kind, 6
+`PORTFOLIO`-kind** — both kinds non-zero, confirming real eligible decisions occurred, not merely Shadow
+activity. 11/43 strategies produced output (S10 highest at 7), consistent with Phase 6.9A's own
+already-measured sparse/skewed trade-frequency base rate. All 31 underlying `Outcome` records RESOLVED
+(100% complete); 0 serialization errors; 0 duplicate ids; 0 orphaned cross-references across every FK
+checked (`PositionOutcome`→`Outcome`, `PositionOutcome`→`InterimRealization`,
+every record→`Observation`). Runtime: baseline 346.6s.
+
+**Interruption/resume experiment** (canary criteria 8-9): an uncontrolled abort (900 bars stepped
+manually, then abandoned — no `stop()`/finalize) followed by a same-`run_id` full re-run reproduces the
+clean-run state EXACTLY (2,021/31/31/1 — zero duplication, zero corruption, fully parseable throughout).
+**One important, disclosed operational finding**: `position_key`/Shadow's own `position_id` are
+deterministic only WITHIN the same `run_id` (pre-existing design,
+`learning_feedback/position_registry.py:36-41` / `shadow_evidence/engine.py:334`) — a negative-control
+experiment using a DIFFERENT `run_id` for the resume confirmed this precisely (37 = 31 + 6, the aborted
+run's own 6 records never superseded) — not a defect, but a standing constraint for any future recovery
+procedure: **reuse the exact same `run_id`, never start a fresh one.**
+
+**Validation**: zero diff against every frozen module and Flow A artifact; full regression
+(`pytest` across the same 8 packages as every prior Sprint) — **825 passed, 0 failed**, run AFTER the
+canary to confirm zero regressions.
+
+**Sizing flag for Stage 2 planning (disclosed, not a blocker)**: canary repository totals ~65.2 MB for 30
+days (`operational_metadata.jsonl` dominates at 62%, one row per `(observation, strategy)` pair up to 43x
+per bar) — linearly extrapolated, a full 12-month run is estimated at roughly 800 MB-1 GB.
+
+**Verdict: READY FOR FULL CAPTURE.** Full technical report:
+`LEARNING_FEEDBACK_PHASE1_STAGE1_CANARY_REPORT.md`. Raw results:
+`learning_feedback_capture_activation_canary_report.json`. Generated repository data itself is
+`.gitignore`d (regenerable, not source) — only the script, the two reports, and the raw JSON are
+committed. **Stage 2 (the full 12-month run) has NOT been authorized and has not begun.**
 
 ## 9. Modules implemented (`ai_trader/`)
 

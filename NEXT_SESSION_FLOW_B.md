@@ -223,7 +223,12 @@ the "Learning / Research Feedback situation" section above and `PROJECT_STATE_v2
 4/6 (Risk Integration) has NOT been authorized. Recognition Engine (not a numbered roadmap step) has its
 design ACCEPTED and a Phase 0 Repository Diagnostic delivered — verdict **COLLECT MORE DATA FIRST** (zero
 `Outcome`/`PositionOutcome` records exist anywhere in the repository; see §8.28 of `PROJECT_STATE_v2.md`
-and `RECOGNITION_ENGINE_PHASE0_DIAGNOSTIC_REPORT.md`). **Implementation remains NOT authorized.**
+and `RECOGNITION_ENGINE_PHASE0_DIAGNOSTIC_REPORT.md`). **Implementation remains NOT authorized.** In
+direct response, **Learning Feedback — Phase 1: Capture Activation — Stage 1 canary is DONE, verdict
+READY FOR FULL CAPTURE** (see §8.29 of `PROJECT_STATE_v2.md`,
+`LEARNING_FEEDBACK_PHASE1_STAGE1_CANARY_REPORT.md`) — a real 30-day canary run produced 31
+`PositionOutcome` (25 `STRATEGY`, 6 `PORTFOLIO`), zero corruption/duplicates/orphans, zero regressions.
+**Stage 2 (the full 12-month run) has NOT been authorized.**
 
 ## Resume instructions
 

@@ -1,5 +1,33 @@
 # CHANGELOG — AI Quant Research Lab
 
+## Session 2026-07-24 — Learning Feedback Phase 1: Capture Activation — Stage 1 canary DONE — READY FOR FULL CAPTURE
+- Directly answers Phase 0's own COLLECT MORE DATA FIRST finding: CEO authorized
+  `LEARNING_FEEDBACK_PHASE1_CAPTURE_ACTIVATION_DESIGN.md` (verdict READY FOR IMPLEMENTATION ACCEPTED),
+  then explicitly Stage 1 only (canary implementation + a short run; the full 12-month Stage 2 run NOT
+  authorized).
+- **Implemented**: one new script, `learning_feedback_capture_activation_run.py` — zero existing
+  `ai_trader/` file touched. Supplies real values for `SimulationHarness.learning_feedback_repository_path`
+  and `SimulationContext.shadow_config`, the two parameters that had always defaulted to inert; every
+  other configuration reused verbatim from existing precedent scripts.
+- **Canary run** (30-day slice of the CEO-approved 12-month window, all 43 strategies eligible for both
+  paths): 31 `PositionOutcome` total (25 `STRATEGY`, 6 `PORTFOLIO`) — the first real Learning Feedback
+  data this repository has ever produced. All 31 underlying `Outcome`s RESOLVED (100% complete); 0
+  serialization errors; 0 duplicates; 0 orphaned cross-references across every FK checked.
+- **Interruption/resume experiment**: an uncontrolled abort (900 bars, then abandoned, no clean
+  shutdown) followed by a same-`run_id` full re-run reproduces the clean-run state exactly — zero
+  duplication, zero corruption. Disclosed finding: `position_key`/Shadow `position_id` are deterministic
+  only WITHIN the same `run_id` (pre-existing design) — a negative-control experiment with a different
+  `run_id` confirmed this precisely (37 = 31 + 6, fully explained) — any future recovery procedure must
+  reuse the exact same `run_id`.
+- **Validation**: zero diff against every frozen module and Flow A artifact; full regression (825
+  passed, 0 failed) run after the canary, confirming zero regressions.
+- **Sizing flag for Stage 2 planning**: canary repository ~65.2 MB for 30 days; full 12-month run
+  estimated at roughly 800 MB-1 GB (`operational_metadata.jsonl` dominates).
+- **Updated `PROJECT_STATE_v2.md`** (new §8.29) and `NEXT_SESSION_FLOW_B.md` to record the canary
+  result and verdict.
+- **Verdict: READY FOR FULL CAPTURE. Stage 2 (the full 12-month run) has NOT been authorized and has not
+  begun.**
+
 ## Session 2026-07-23 — Recognition Engine design ACCEPTED; Phase 0 Repository Diagnostics delivered — COLLECT MORE DATA FIRST
 - CEO accepted Sprint 2's closure (825/825 regression, zero regressions, clean implementation/docs
   separation) and separately accepted `RECOGNITION_ENGINE_DESIGN.md` as the architecture document for a

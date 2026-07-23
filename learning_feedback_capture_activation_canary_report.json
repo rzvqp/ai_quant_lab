@@ -1,0 +1,138 @@
+{
+  "canary_window": {
+    "start": 1729674000,
+    "end": 1732266000,
+    "days": 30
+  },
+  "baseline_run": {
+    "run_id": "LF-CANARY-BASELINE",
+    "elapsed_seconds": 346.5826737880707,
+    "bars_processed": 2221,
+    "state": "COMPLETED",
+    "repo_path": "C:\\Users\\MEDION GAMING\\ai_quant_lab-research-main\\learning_feedback_data\\canary"
+  },
+  "baseline_validation": {
+    "repository_path": "C:\\Users\\MEDION GAMING\\ai_quant_lab-research-main\\learning_feedback_data\\canary",
+    "total_position_outcomes": 31,
+    "position_outcomes_by_kind": {
+      "STRATEGY": 25,
+      "PORTFOLIO": 6
+    },
+    "position_outcomes_by_strategy": {
+      "S10": {
+        "STRATEGY": 7
+      },
+      "S13": {
+        "STRATEGY": 1
+      },
+      "S2": {
+        "STRATEGY": 1
+      },
+      "S25": {
+        "STRATEGY": 1
+      },
+      "S26": {
+        "STRATEGY": 1
+      },
+      "S39": {
+        "PORTFOLIO": 3,
+        "STRATEGY": 3
+      },
+      "S4": {
+        "STRATEGY": 1
+      },
+      "S40": {
+        "STRATEGY": 3
+      },
+      "S42": {
+        "PORTFOLIO": 1,
+        "STRATEGY": 1
+      },
+      "S44": {
+        "STRATEGY": 1
+      },
+      "S46": {
+        "STRATEGY": 5,
+        "PORTFOLIO": 2
+      }
+    },
+    "total_outcomes": 31,
+    "outcomes_by_status": {
+      "RESOLVED": 31
+    },
+    "complete_outcomes_resolved": 31,
+    "incomplete_outcomes_non_resolved": 0,
+    "total_interim_realizations": 1,
+    "total_observations": 2021,
+    "duplicate_outcome_ids": 0,
+    "duplicate_position_outcome_ids": 0,
+    "orphan_position_outcome_terminal_refs": 0,
+    "orphan_position_outcome_interim_refs": 0,
+    "orphan_outcome_observation_refs": 0,
+    "orphan_position_outcome_observation_refs": 0,
+    "orphan_interim_observation_refs": 0,
+    "file_sizes_bytes": {
+      "interim_realizations.jsonl": 762,
+      "observations.jsonl": 25900769,
+      "operational_metadata.jsonl": 42421785,
+      "outcomes.jsonl": 24811,
+      "position_outcomes.jsonl": 30807
+    },
+    "total_repository_size_bytes": 68378934
+  },
+  "interruption_experiment": {
+    "primary_same_run_id_experiment": {
+      "description": "The genuine resume-after-interruption test: abort mid-run (no clean stop/finalize), then re-run the SAME full window under the IDENTICAL run_id. This is the only recovery procedure this architecture supports, and the one canary criteria 8/9 are actually asking about.",
+      "bars_before_abort": 900,
+      "partial_state_parseable": true,
+      "partial_parse_error": null,
+      "partial_counts": {
+        "context_snapshots": 0,
+        "observations": 700,
+        "outcomes": 6,
+        "operational_metadata": 30537,
+        "interim_realizations": 0,
+        "position_outcomes": 6
+      },
+      "final_state_parseable": true,
+      "final_parse_error": null,
+      "final_counts": {
+        "context_snapshots": 0,
+        "observations": 2021,
+        "outcomes": 31,
+        "operational_metadata": 88288,
+        "interim_realizations": 1,
+        "position_outcomes": 31
+      },
+      "repo_path": "C:\\Users\\MEDION GAMING\\ai_quant_lab-research-main\\learning_feedback_data\\canary_interrupt_test",
+      "final_counts_match_clean_baseline": true
+    },
+    "secondary_different_run_id_cross_check": {
+      "description": "An earlier version of this experiment used a DIFFERENT run_id for the abort phase vs the completing re-run, simulating (incorrectly) what a human might assume resuming means. position_key (real-portfolio) and Shadow position_id are BOTH deterministic only within the SAME run_id, by explicit design (learning_feedback/position_registry.py:36-41, shadow_evidence/engine.py:334 docstrings: reproducible across identical replays of the SAME run_id/config). Using two different run_ids therefore does NOT deduplicate -- not a defect, a disclosed scoping fact: 37 = 31 (full clean re-run) + 6 (the aborted partial run's own 6 position_outcomes, captured under a different run_id, never superseded). Any real future recovery procedure MUST reuse the exact same run_id, never start a fresh one.",
+      "bars_before_abort": 900,
+      "partial_state_parseable": true,
+      "partial_parse_error": null,
+      "partial_counts": {
+        "context_snapshots": 0,
+        "observations": 700,
+        "outcomes": 6,
+        "operational_metadata": 30537,
+        "interim_realizations": 0,
+        "position_outcomes": 6
+      },
+      "final_state_parseable": true,
+      "final_parse_error": null,
+      "final_counts": {
+        "context_snapshots": 0,
+        "observations": 2021,
+        "outcomes": 31,
+        "operational_metadata": 88288,
+        "interim_realizations": 1,
+        "position_outcomes": 37
+      },
+      "repo_path": "C:\\Users\\MEDION GAMING\\ai_quant_lab-research-main\\learning_feedback_data\\canary_interrupt_test",
+      "explained_discrepancy": "37 - 31 = 6, exactly matches the partial run own position_outcomes count"
+    }
+  },
+  "interruption_resume_matches_clean_baseline": false
+}

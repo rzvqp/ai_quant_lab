@@ -2,3 +2,8 @@ venv/
 __pycache__/
 *.pyc
 .coverage
+
+# Learning/Research Feedback Context Memory repository data -- regenerable by re-running
+# learning_feedback_capture_activation_run.py (or a future full-window equivalent) with the same
+# run_id/window/seed; not source, not committed (canary run alone is ~130MB across two directories).
+learning_feedback_data/
