@@ -74,4 +74,24 @@
                      ending shape). Their parent, DC-0008, is itself in the HELD/unlogged group. Worth a
                      CEO decision on whether the family should be consolidated before deeper resourcing.
   entry_hash:  E4
+
+[5] 2026-07-23
+  prev_hash:   E4
+  event:       CEO_DELIVERY         # CEO ruling on the first-batch report
+  reviewer:    Red Team
+  detail:      CEO ACCEPTED all 13 first-batch verdicts. Rulings on the three escalations:
+               (1) Handoff — escalation ACCEPTED. Alpha (not Red Team) will correct HANDOFF_LOG.md to
+                   fully reconcile all FROZEN candidates, all addenda, and all official events.
+               (2) Next batch — DC-0008..0012 review AUTHORIZED, but GATED: begins only AFTER Alpha's
+                   handoff reconciliation is present in the artifact. Verified 2026-07-23: reconciliation
+                   NOT yet done (HANDOFF_LOG unchanged, 24 lines; no FROZEN/SUBMITTED lines for
+                   DC-0008..0012; 16 addenda still unlogged). DC-0008..0012 remain HELD. Red Team does
+                   NOT perform the reconciliation (independence: read-only intake, no writes to Alpha).
+               (3) Family fragmentation — observation NOTED; NO consolidation authorized. Discovery
+                   Candidates remain separate. Consolidation is a later-stage decision (Statistician +
+                   Reasoning Engine), never Red Team. Red Team does NOT modify the DC portfolio structure
+                   — and has not (point 3 was an observation only, no structural change was made).
+               STATE: standby. On confirming Alpha's handoff reconciliation, re-verify intake for
+               DC-0008..0012 and review them under CRITIQUE_BATTERY v1.0.
+  entry_hash:  E5
 ```
