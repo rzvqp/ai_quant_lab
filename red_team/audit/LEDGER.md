@@ -119,4 +119,38 @@
                PORTFOLIO STATUS: all 18 DCs reviewed. Total 🟢 7 / 🟡 11 / 🔴 0. No candidates held.
                No DC or Alpha artifact modified; no families consolidated; portfolio structure untouched.
   entry_hash:  E6
+
+[7] 2026-07-24
+  prev_hash:   E6
+  event:       INTAKE + VERDICT     # Stage 0 duplicate screening, first Alpha #2 candidate
+  dc_id:       AP2-DC-0001 (Alpha Parallel Instance #2)
+  reviewer:    Red Team
+  detail:      CEO established Stage 0 DUPLICATE SCREENING for all Alpha #2 candidates. Alpha #2 has
+               produced exactly one candidate to date: AP2-DC-0001. Intake verified — FROZEN, document
+               hash 8192503d… == corrected HANDOFF_LOG_ALPHA2 line, no addenda. Noted (benign, disclosed):
+               a post-freeze HASH CORRECTION event moved the hash from 7dab65cd… (rename cascade +
+               canonicalisation rule; substantive text unchanged) — same class as the DC-0002/0003/0004
+               immutability note. Alpha #2 files no metadata_v1.json.
+               SCREENING RESULT: **VARIANT OF DC-0018.** Core mechanism (failed upside expansion →
+               larger sustained decline past the origin) is DC-0018's; Alpha #2 adds a distinct condition
+               (first-Friday/NFP slot), sequence (multi-candle failure with partial recovery vs DC-0018's
+               intracandle round trip) and result property (second leg ~40% larger, overshoot below origin).
+               Secondary: RELATED BUT DISTINCT FROM DC-0017 — a direct counter-instance that independently
+               corroborates DC-0017's Phase-1 REJECT; RELATED BUT DISTINCT FROM DC-0006. Not a SUPERSET
+               (it narrows by adding a condition, it does not generalise). Not comparable to DC-0008 —
+               AP2 is M15-only, so the sustained/concentrated axis cannot be evaluated.
+               INDEPENDENT REPLICATION: YES — different observer, in-replay date (2024-08-02 vs 2025-09-09),
+               price regime (~2455 vs ~3675), session context. Core moves n=1 → n=2 independent instances.
+               No contradiction vs the original; it extends DC-0018's scope (failure need not be intracandle).
+               DISPOSITION (Red Team determination per CEO delegation): ADDENDUM to DC-0018, NOT a separate
+               research line — a separate candidate would reproduce Phase-1 finding F1/F2 (fragmentation by
+               post-hoc descriptor) inside the Alpha #2 namespace. Execution referred to CEO: attaching
+               evidence would require writing into Alpha #1's folder, which is forbidden.
+               BLOCKING EVIDENTIAL ISSUE (A1): AP2 metadata records the feed label alternating between
+               OANDA:XAUUSD and FUSIONMARKETS:XAUUSD across the session. Price identity was verified, but
+               every load-bearing claim is a *volume ratio to baseline*, and broker tick volume is not
+               comparable across brokers. All elevation claims are unsafe until confirmed single-feed.
+               Decision document: red_team/duplicate_screening/RT-DS-0001_AP2-DC-0001.md
+               Nothing modified, nothing promoted, no re-classification. Awaiting CEO approval.
+  entry_hash:  E7
 ```
