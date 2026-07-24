@@ -153,4 +153,46 @@
                Decision document: red_team/duplicate_screening/RT-DS-0001_AP2-DC-0001.md
                Nothing modified, nothing promoted, no re-classification. Awaiting CEO approval.
   entry_hash:  E7
+
+[8] 2026-07-24
+  prev_hash:   E7
+  event:       CEO_DELIVERY          # governance update ratified + constitution amended
+  reviewer:    Red Team
+  detail:      CEO ACCEPTED RT-DS-0001; "VARIANT OF DC-0018" stands as the official Duplicate
+               Screening verdict. Duplicate Screening becomes an official, permanent stage.
+               RED TEAM PIPELINE now mandatory for every candidate:
+                 Phase 0 Duplicate Screening -> Phase 1 Adversarial Review ->
+                 Phase 2 Contradiction Search -> Phase 3 Methodology Audit.
+                 No adversarial analysis begins before Duplicate Screening completes.
+               FOUR METHODOLOGY CLARIFICATIONS ratified and written into the constitution:
+                 (1) RED TEAM DOES NOT PROMOTE. No promotion, demotion, final acceptance or final
+                     rejection. Role is exclusively: vulnerabilities, contradictions, duplicates,
+                     methodology problems. Final evaluation = Statistician and/or CEO.
+                 (2) COUNTER-INSTANCES. A single observation is never a definitive refutation.
+                     Standard wording: "evidence compatible with limitation or non-generalisation
+                     of the hypothesis." Refutation only after a sufficient body of evidence — and
+                     that conclusion is not Red Team's to issue.
+                 (3) DUPLICATE SCREENING classes fixed: GENUINELY NEW / EXACT DUPLICATE / VARIANT /
+                     SUPERSET / RELATED BUT DISTINCT. Mechanism-only comparison; never title,
+                     wording, timeframe, instrument or example.
+                 (4) INDEPENDENT REPLICATION never auto-creates a research line; mark
+                     INDEPENDENT REPLICATION OF [DC-ID], attach evidence to the original or
+                     recommend an Addendum after mechanistic analysis. Replications are valuable
+                     scientific evidence and must be preserved.
+               DOCUMENTS AMENDED: CHARTER.md (governance-update block; §4 non-responsibilities +
+               exhaustive role statement; §5 repo map; §8 four-phase pipeline; §9.1 verdicts-are-
+               findings; §9.2 single-observation rule; §16 Statistician/CEO own final evaluation and
+               execution-referral rule). NEW: methodology/DUPLICATE_SCREENING.md v1.0.
+               EVIDENCE_RULES.md +E10. VERDICT_RULES.md binding-constraint header.
+               PRESERVED UNMODIFIED per CEO instruction: RED_TEAM_PHASE1_REPORT.md and
+               RT-DS-0001_AP2-DC-0001.md. New rules apply to future analyses only; DUPLICATE_SCREENING
+               §Precedent records that RT-DS-0001 predates rules (1) and (2) and is not the template
+               on those two points.
+               OPEN QUESTION REFERRED TO CEO: Phase 1's A/B/C scheme (READY FOR STATISTICAL
+               VALIDATION / NEEDS MORE EVIDENCE / REJECT) and the battery's 🔴 NOT RECOMMENDED both
+               read as promotion/rejection recommendations, which rule (1) now forbids. The issued
+               report is untouched; Red Team requests a CEO ruling on how future Phase-1 output
+               should be expressed. Pending that ruling, future reports will state findings only.
+               STATE: normal operating standby, awaiting the next Discovery Candidate.
+  entry_hash:  E8
 ```

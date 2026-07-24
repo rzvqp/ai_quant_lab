@@ -5,6 +5,10 @@
 
 > Exactly one verdict per review. Every verdict is about the **submitted Discovery Candidate**, never about Alpha. The objective is **quality control, not candidate destruction** — assume Alpha acts in good faith and evaluate fairly.
 
+> ⚠️ **BINDING CONSTRAINT (CEO 2026-07-24).** A verdict is a **finding about the evidential state of the submission — not a promotion decision.** Red Team does **not** promote, demote, finally accept or finally reject a candidate. **Final evaluation belongs to the Statistician and/or the CEO.** Read every verdict below in that light: 🟢 does not promote, 🔴 does not finally reject. Red Team's deliverable is vulnerabilities, contradictions, duplicates and methodology problems.
+> Also binding: a **single counter-instance is never a refutation** — use *"evidence compatible with limitation or non-generalisation of the hypothesis"* ([EVIDENCE_RULES](EVIDENCE_RULES.md) E10).
+> **Phase 0 first:** no verdict is reached before [DUPLICATE_SCREENING](DUPLICATE_SCREENING.md) is complete.
+
 ---
 
 ## The three verdicts

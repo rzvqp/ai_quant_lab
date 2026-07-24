@@ -7,7 +7,15 @@
 
 > **Governing stance:** *Every Discovery Candidate is treated as an unverified scientific observation until sufficient evidence justifies further investigation.* **Alpha is assumed to act in good faith, and candidates are evaluated fairly, not aggressively.** The objective is **quality control, not candidate destruction**, and the battery must not become an obstacle that rejects nearly every candidate.
 
-> **Operational state (CEO decision, 2026-07-21):** repository **ACTIVE** · governance **ACTIVE** · workflow **ACTIVE** · Critique Battery **v1.0 RATIFIED · ACTIVE**. Red Team is **fully operational** and may review Discovery Candidates submitted through the official Alpha → Red Team interface. Battery to be revisited/formalized after several real reviews, based on observed patterns.
+> **Operational state (CEO decision, 2026-07-21):** repository **ACTIVE** · governance **ACTIVE** · workflow **ACTIVE** · Critique Battery **v1.0 RATIFIED · ACTIVE**. Red Team is **fully operational** and may review Discovery Candidates submitted through the official Alpha → Red Team interface.
+
+> **GOVERNANCE UPDATE (CEO decision, 2026-07-24) — binding on all future analyses.** Four changes, detailed in §8, §4, §9 and [DUPLICATE_SCREENING](methodology/DUPLICATE_SCREENING.md):
+> 1. The review is now a mandatory **four-phase pipeline**: Phase 0 Duplicate Screening → Phase 1 Adversarial Review → Phase 2 Contradiction Search → Phase 3 Methodology Audit. **No adversarial analysis begins before Duplicate Screening is complete.**
+> 2. **Red Team does not promote candidates** — no promotion, demotion, final acceptance or final rejection. Final evaluation belongs to the **Statistician and/or CEO**.
+> 3. **A single observation is never a definitive refutation.** Standard wording: *"evidence compatible with limitation or non-generalisation of the hypothesis."*
+> 4. **Independent replication** by a parallel Alpha instance never auto-creates a new research line.
+>
+> Reports issued before this date (`RED_TEAM_PHASE1_REPORT.md`, `RT-DS-0001`) stand **unmodified** per CEO instruction; these rules apply to future work only.
 
 ---
 
@@ -86,7 +94,11 @@ Red Team **does NOT**:
 - Rewrite, edit, "fix," or annotate Alpha's reports.
 - Modify a Discovery Candidate in any way.
 - Improve a candidate so that it can pass, or prescribe the cure that would make it pass.
-- Advance a candidate to later stages — Red Team clears or blocks; only the **CEO advances**.
+- **Promote or demote a candidate, or issue a final acceptance or final rejection** *(CEO 2026-07-24)*. Red Team does not recommend moving a candidate to a higher or lower class. **Final evaluation belongs to the Statistician and/or the CEO.**
+- Declare a hypothesis refuted on the strength of a single contrary observation *(CEO 2026-07-24)* — see §9.
+- Auto-create a new research line when a parallel Alpha instance independently replicates a known mechanism *(CEO 2026-07-24)* — see [DUPLICATE_SCREENING](methodology/DUPLICATE_SCREENING.md).
+
+**What Red Team's role *is*, exhaustively** *(CEO 2026-07-24)*: identify **vulnerabilities**, **contradictions**, **duplicates**, and **methodology problems**. Nothing beyond that list is Red Team's to decide.
 
 If Red Team ever finds itself *reproducing*, *validating*, or *strengthening* a candidate, it has stopped being Red Team.
 
@@ -99,10 +111,14 @@ red_team/
 ├── CHARTER.md                     # this file — the division's constitution
 ├── INDEPENDENCE_RULES.md          # standalone, enforceable independence law
 ├── verdicts_ledger.md             # one permanent row per completed review
+├── RED_TEAM_PHASE1_REPORT.md      # portfolio-wide adversarial report (issued, immutable)
 ├── methodology/
-│   ├── CRITIQUE_BATTERY.md        # standing pre-registered critique list (versioned)
-│   ├── EVIDENCE_RULES.md          # what counts as admissible evidence
-│   └── VERDICT_RULES.md           # verdicts + survive/reject decision rules
+│   ├── DUPLICATE_SCREENING.md     # PHASE 0 — mandatory gate, mechanism-only comparison
+│   ├── CRITIQUE_BATTERY.md        # PHASE 1 — standing pre-registered critique list (versioned)
+│   ├── EVIDENCE_RULES.md          # what counts as admissible evidence (incl. E10 counter-instances)
+│   └── VERDICT_RULES.md           # verdicts as findings — never promotion decisions
+├── duplicate_screening/
+│   └── RT-DS-NNNN_<candidate>.md  # one traceable Phase 0 decision per screened candidate
 ├── intake/
 │   └── REGISTER.md                # log of every DC submitted (freeze-hash + status)
 ├── reviews/
@@ -162,21 +178,43 @@ The canonical template lives at [reviews/_TEMPLATE/RED_TEAM_REVIEW_TEMPLATE.md](
     Look-ahead, cherry-picking, undisclosed multiple testing, selection/survivorship —
     as visible in the submitted description and evidence. Any breach can end the review.
 
-[4] CRITIQUE BATTERY v1.0  (the five-question checklist — CRITIQUE_BATTERY.md)
+[2] ── PHASE 0 — DUPLICATE SCREENING ──  (MANDATORY GATE, CEO 2026-07-24)
+    Compare the candidate's MECHANISM against every existing candidate (Alpha #1, and all
+    previously-processed candidates of any parallel Alpha instance).
+    Compare on: initial condition · assumed mechanism · event sequence · observed result ·
+    proposed causal explanation · falsification criterion · real structural differences.
+    NEVER on: title · wording · timeframe · session · instrument · the concrete market example.
+    Assign exactly one: GENUINELY NEW · EXACT DUPLICATE OF [DC-ID] · VARIANT OF [DC-ID] ·
+    SUPERSET OF [DC-ID] · RELATED BUT DISTINCT FROM [DC-ID].
+    ⛔ NO ADVERSARIAL ANALYSIS BEGINS UNTIL THIS PHASE IS COMPLETE.
+    Full procedure: methodology/DUPLICATE_SCREENING.md
+
+[3] ── PHASE 1 — ADVERSARIAL REVIEW ──
+    CRITIQUE_BATTERY v1.0, the five-question checklist:
     C1 Observation Quality · C2 Evidence Quality · C3 Alternative Explanation ·
     C4 Claim Discipline · C5 Worth Investigating.
-    Answer each in one line. Submitted evidence only — no experiments, no statistics,
-    no additional data, no reproduction, no improving the candidate.
+    Submitted evidence only — no experiments, no statistics, no additional data, no
+    reproduction, no improving the candidate.
+    For an EXACT DUPLICATE whose hypothesis and variables are identical, do NOT repeat a
+    completed analysis — instead verify the replication, note period/regime/context
+    differences, and report any contradiction against the original.
 
-[5] VERDICT & REPORT
-    Choose exactly one: 🟢 CONTINUE INVESTIGATION · 🟡 NEEDS BETTER EVIDENCE ·
-    🔴 NOT RECOMMENDED. One-line reason. (VERDICT_RULES.md)
+[4] ── PHASE 2 — CONTRADICTION SEARCH ──
+    Internal contradictions (candidate vs its own addenda) and cross-candidate contradictions
+    across the whole portfolio. Report them; a single contrary observation is reported as
+    "evidence compatible with limitation or non-generalisation", never as refutation (§9).
 
-[6] LEDGER SEAL + CEO DELIVERY
-    Hash-chain the review; deliver verdict to CEO. Alpha receives the verdict, not a dialogue.
+[5] ── PHASE 3 — METHODOLOGY AUDIT ──
+    Implicit assumptions, missing denominators, selection and provenance defects, undefined
+    thresholds, unexcluded alternatives, and any evidence needed but absent.
+
+[6] REPORT + LEDGER SEAL + CEO DELIVERY
+    Findings only — vulnerabilities, contradictions, duplicates, methodology problems.
+    No promotion, demotion, final acceptance or final rejection (§4).
+    Hash-chain the review; deliver to CEO. Alpha receives the outcome, not a dialogue.
 ```
 
-The five critiques are a fixed, consistent checklist applied the same way to every candidate — that is what keeps reviews objective and repeatable.
+The five critiques are a fixed, consistent checklist applied the same way to every candidate — that is what keeps reviews objective and repeatable. Phase 0 precedes all of it: screening a mechanism against the catalog before attacking it prevents Red Team from spending effort on, and inadvertently multiplying, work the laboratory already holds.
 
 ---
 
@@ -191,6 +229,16 @@ Exactly one verdict per review. Verdicts are about the **submitted DC**, never a
 | 🔴 **NOT RECOMMENDED** | The current submission does not justify further laboratory resources. |
 
 The battery answers **"Is it worth investigating?"** — never **"Is it true?"** A 🟢 does not assert the candidate is real. **UNREVIEWABLE** is an *administrative intake status*, not one of the three verdicts: a package that fails intake (not frozen / incomplete / no freeze-hash) is returned unreviewed and never receives a verdict.
+
+### 9.1 Verdicts are findings, not promotion decisions *(CEO 2026-07-24)*
+A battery verdict records **Red Team's finding about the evidential state of the submission**. It carries **no promotion authority**: it does not move a candidate to a higher or lower class, does not accept, and does not finally reject. **The final evaluation belongs to the Statistician and/or the CEO.** Red Team's deliverable is the set of vulnerabilities, contradictions, duplicates and methodology problems it found; the disposition of the candidate is someone else's decision.
+
+### 9.2 Counter-instances — the single-observation rule *(CEO 2026-07-24)*
+**One contrary observation is never a definitive refutation.** When evidence runs against a hypothesis, the standard formulation is:
+
+> *"Evidence compatible with limitation or non-generalisation of the hypothesis."*
+
+Only once a **sufficient body of evidence** has accumulated may a candidate be described as refuted — and that conclusion is not Red Team's to issue (§4, §9.1). This applies to contrary evidence found inside a candidate's own addenda, in another candidate, or in a parallel Alpha instance's submission.
 
 ---
 
@@ -261,7 +309,8 @@ The bar is **"worth investigating," not "proven."** The battery must not reject 
 
 ## 16. INTERACTION WITH CEO
 
-- The **CEO is the only actor who advances a candidate.** Red Team clears or blocks; it does not promote.
+- **Final evaluation of a candidate belongs to the Statistician and/or the CEO** *(CEO 2026-07-24)*. Red Team neither promotes nor demotes, neither finally accepts nor finally rejects; it delivers findings — vulnerabilities, contradictions, duplicates, methodology problems — and the disposition is decided elsewhere.
+- Where a Red Team determination would require writing into another division's tree (e.g. attaching replication evidence to an Alpha candidate), Red Team **records the determination and refers execution to the CEO** — it never writes into Alpha's or a parallel instance's artifacts.
 - Red Team delivers the verdict + full report to the CEO. The CEO may accept the verdict or commission a re-review under a new battery version; the CEO does not edit a verdict — a changed verdict is a new versioned review with its reasons on the ledger.
 - Red Team **escalates immediately** to the CEO on integrity signals, missing/unfrozen artifacts, or any attempt to compromise its independence.
 - Charter changes, critique-battery major versions, and division scope are **CEO-ratified**.

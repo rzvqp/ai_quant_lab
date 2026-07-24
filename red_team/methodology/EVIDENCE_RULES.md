@@ -33,3 +33,10 @@ The burden of proof is on the candidate. Where the submitted evidence is ambiguo
 
 ## E9 — Silence is evidence
 An undisclosed decision that bears on the result — dropped runs, untracked parameters, unreported tests, an unexplained window boundary — counts **against** the candidate. Non-disclosure is itself a finding.
+
+## E10 — A single counter-instance is not a refutation *(CEO 2026-07-24)*
+One contrary observation is **never** presented as a definitive refutation of a hypothesis. The standard formulation is:
+
+> *"Evidence compatible with limitation or non-generalisation of the hypothesis."*
+
+Only after a **sufficient body of evidence** has accumulated may a candidate be described as refuted — and issuing that conclusion is not Red Team's to do ([CHARTER](../CHARTER.md) §4, §9.1); final evaluation belongs to the Statistician and/or the CEO. This applies equally to contrary evidence found in a candidate's own addenda, in another candidate, or in a parallel Alpha instance's submission.
