@@ -195,4 +195,38 @@
                should be expressed. Pending that ruling, future reports will state findings only.
                STATE: normal operating standby, awaiting the next Discovery Candidate.
   entry_hash:  E8
+
+[9] 2026-07-24
+  prev_hash:   E8
+  event:       CEO_DELIVERY          # open question from [8] RESOLVED
+  reviewer:    Red Team
+  detail:      CEO ruled on the conflict raised in [8]. OFFICIAL CLARIFICATION: a Red Team verdict is
+               a RISK VERDICT, not a laboratory decision. The two are formally separated.
+               AUTHORITY MODEL now written into the constitution:
+                 RED TEAM      -> risk and vulnerability only.
+                 STATISTICIAN  -> testable / insufficiently supported / statistically robust /
+                                  statistically rejected.
+                 CEO           -> sole authority for Knowledge-Base promotion, archiving, closure,
+                                  and any change of official status.
+               Red Team verdicts never mean laboratory acceptance, laboratory rejection, KB promotion,
+               or final classification.
+               PERMITTED TAXONOMY: LOW / MODERATE / HIGH / CRITICAL RISK, or any equivalent risk
+               taxonomy. READY FOR STATISTICAL VALIDATION remains permitted with exactly one meaning —
+               "from Red Team's perspective no major vulnerabilities remain that obstruct statistical
+               evaluation" — and explicitly NOT accepted / validated / promoted.
+               NOT RECOMMENDED restated: no longer means "rejected"; means only that Red Team finds
+               vulnerabilities sufficient not to recommend continuation IN THE CURRENT FORM. CEO may
+               still choose revision, Addendum, Statistician, or archiving.
+               "REJECT" RETIRED from Red Team's vocabulary.
+               READING RULE FOR THE ISSUED PHASE 1 REPORT (preserved unmodified): its A/B/C labels are
+               risk verdicts. A = LOW RISK (no blocking vulnerability), B = MODERATE/HIGH RISK,
+               C = CRITICAL RISK. The word "REJECT" there is superseded terminology and never denoted
+               laboratory rejection; DC-0006/0010/0015/0017 remain fully open to CEO decision.
+               DOCUMENTS: NEW methodology/RISK_VERDICTS.md v1.0 (authority model, taxonomy, mapping,
+               Phase-1 reading rule). AMENDED CHARTER (governance block item 2; §5 repo map; §9 verdict
+               table + risk readings + REJECT retirement; §9.1 authority table), VERDICT_RULES.md
+               (binding-constraint header), CRITIQUE_BATTERY.md (🔴 restated).
+               PRESERVED UNMODIFIED: RED_TEAM_PHASE1_REPORT.md, RT-DS-0001_AP2-DC-0001.md.
+               STATE: open question from [8] CLOSED. Normal operating standby.
+  entry_hash:  E9
 ```

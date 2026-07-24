@@ -11,7 +11,7 @@
 
 > **GOVERNANCE UPDATE (CEO decision, 2026-07-24) — binding on all future analyses.** Four changes, detailed in §8, §4, §9 and [DUPLICATE_SCREENING](methodology/DUPLICATE_SCREENING.md):
 > 1. The review is now a mandatory **four-phase pipeline**: Phase 0 Duplicate Screening → Phase 1 Adversarial Review → Phase 2 Contradiction Search → Phase 3 Methodology Audit. **No adversarial analysis begins before Duplicate Screening is complete.**
-> 2. **Red Team does not promote candidates** — no promotion, demotion, final acceptance or final rejection. Final evaluation belongs to the **Statistician and/or CEO**.
+> 2. **Red Team issues RISK VERDICTS, never laboratory decisions** — no promotion, demotion, final acceptance or final rejection. Red Team decides *risk and vulnerability*; the **Statistician** decides testable / insufficiently supported / statistically robust / statistically rejected; the **CEO** alone decides Knowledge-Base promotion, archiving, closure and official status. See [RISK_VERDICTS](methodology/RISK_VERDICTS.md) *(CEO clarification, 2026-07-24)*.
 > 3. **A single observation is never a definitive refutation.** Standard wording: *"evidence compatible with limitation or non-generalisation of the hypothesis."*
 > 4. **Independent replication** by a parallel Alpha instance never auto-creates a new research line.
 >
@@ -116,7 +116,8 @@ red_team/
 │   ├── DUPLICATE_SCREENING.md     # PHASE 0 — mandatory gate, mechanism-only comparison
 │   ├── CRITIQUE_BATTERY.md        # PHASE 1 — standing pre-registered critique list (versioned)
 │   ├── EVIDENCE_RULES.md          # what counts as admissible evidence (incl. E10 counter-instances)
-│   └── VERDICT_RULES.md           # verdicts as findings — never promotion decisions
+│   ├── RISK_VERDICTS.md           # risk taxonomy + authority model (RT / Statistician / CEO)
+│   └── VERDICT_RULES.md           # verdicts as risk assessments — never laboratory decisions
 ├── duplicate_screening/
 │   └── RT-DS-NNNN_<candidate>.md  # one traceable Phase 0 decision per screened candidate
 ├── intake/
@@ -220,18 +221,30 @@ The five critiques are a fixed, consistent checklist applied the same way to eve
 
 ## 9. POSSIBLE VERDICTS
 
+> ⚠️ **A Red Team verdict is a RISK VERDICT — never a laboratory decision** *(CEO 2026-07-24)*. Full model in [RISK_VERDICTS](methodology/RISK_VERDICTS.md). **Red Team decides risk and vulnerability. The Statistician decides testable / insufficiently supported / statistically robust / statistically rejected. The CEO is the only authority for promotion into the Knowledge Base, archiving, closure, or any change of official status.**
+
+Red Team may issue **LOW RISK · MODERATE RISK · HIGH RISK · CRITICAL RISK** (or an equivalent risk taxonomy), and may use **READY FOR STATISTICAL VALIDATION** with one permitted meaning only: *"from Red Team's perspective there are no remaining major vulnerabilities obstructing statistical evaluation"* — not accepted, not validated, not promoted.
+
 Exactly one verdict per review. Verdicts are about the **submitted DC**, never about Alpha. Full rules in [VERDICT_RULES](methodology/VERDICT_RULES.md).
 
-| Verdict | Meaning |
-|---|---|
-| 🟢 **CONTINUE INVESTIGATION** | The Discovery Candidate deserves further investigation. Advances (CEO decides next step). |
-| 🟡 **NEEDS BETTER EVIDENCE** | **Not a rejection** — the current submission does not yet justify additional laboratory resources. Interesting observation; may be resubmitted later with stronger evidence. |
-| 🔴 **NOT RECOMMENDED** | The current submission does not justify further laboratory resources. |
+| Battery verdict | Meaning | Risk reading |
+|---|---|---|
+| 🟢 **CONTINUE INVESTIGATION** | No vulnerability Red Team found obstructs continuation. | LOW / MODERATE RISK |
+| 🟡 **NEEDS BETTER EVIDENCE** | **Not a rejection** — the vulnerability is in the evidence base; the observation itself is not impugned. May be resubmitted with stronger evidence. | MODERATE / HIGH RISK |
+| 🔴 **NOT RECOMMENDED** | **Does not mean "rejected."** Means only: *Red Team identifies vulnerabilities sufficient that it does not recommend continuation in the current form.* The CEO may still decide revision, Addendum, Statistician, or archiving. | HIGH / CRITICAL RISK |
+
+**"REJECT" is retired from Red Team's vocabulary** *(CEO 2026-07-24)*. The `C — REJECT` label in the already-issued `RED_TEAM_PHASE1_REPORT.md` is superseded terminology meaning **CRITICAL RISK**; it never denoted laboratory rejection — see [RISK_VERDICTS](methodology/RISK_VERDICTS.md) §6.
 
 The battery answers **"Is it worth investigating?"** — never **"Is it true?"** A 🟢 does not assert the candidate is real. **UNREVIEWABLE** is an *administrative intake status*, not one of the three verdicts: a package that fails intake (not frozen / incomplete / no freeze-hash) is returned unreviewed and never receives a verdict.
 
-### 9.1 Verdicts are findings, not promotion decisions *(CEO 2026-07-24)*
-A battery verdict records **Red Team's finding about the evidential state of the submission**. It carries **no promotion authority**: it does not move a candidate to a higher or lower class, does not accept, and does not finally reject. **The final evaluation belongs to the Statistician and/or the CEO.** Red Team's deliverable is the set of vulnerabilities, contradictions, duplicates and methodology problems it found; the disposition of the candidate is someone else's decision.
+### 9.1 Verdicts are risk assessments, not promotion decisions *(CEO 2026-07-24)*
+A battery verdict records **Red Team's assessment of the candidate's vulnerabilities**. It carries **no promotion authority**: it does not move a candidate to a higher or lower class, does not accept, does not finally reject, and does not close anything. Red Team's deliverable is, exhaustively: **vulnerabilities · contradictions · duplicates · methodology problems.**
+
+| Division | Decides exclusively |
+|---|---|
+| **Red Team** | risk and vulnerability |
+| **Statistician** | testable · insufficiently supported · statistically robust · statistically rejected |
+| **CEO** | promotion into the Knowledge Base · archiving · closure · any change of official status |
 
 ### 9.2 Counter-instances — the single-observation rule *(CEO 2026-07-24)*
 **One contrary observation is never a definitive refutation.** When evidence runs against a hypothesis, the standard formulation is:

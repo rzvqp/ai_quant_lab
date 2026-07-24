@@ -49,7 +49,7 @@ This is **not** "Is it true?" — it **is** "Is it worth investigating?" This is
 |---|---|
 | 🟢 **CONTINUE INVESTIGATION** | The Discovery Candidate deserves further investigation. |
 | 🟡 **NEEDS BETTER EVIDENCE** | **Not a rejection.** Interesting observation; the current submission does not yet justify additional laboratory resources. May be resubmitted later with stronger evidence. |
-| 🔴 **NOT RECOMMENDED** | The current submission does not justify further laboratory resources. |
+| 🔴 **NOT RECOMMENDED** | **Does NOT mean "rejected"** *(CEO 2026-07-24)*. Means only: *Red Team identifies vulnerabilities sufficient that it does not recommend continuation **in the current form***. The CEO may still decide revision, Addendum, referral to the Statistician, or archiving. Risk reading: HIGH / CRITICAL RISK. |
 
 ### How the five critiques map to a verdict (guidance, not a rigid formula)
 - 🟢 **CONTINUE** — C1 clear, C2 the submitted evidence supports the candidate, C4 stays descriptive, and C5 = yes. An open C3 alternative is fine; it is simply noted.
