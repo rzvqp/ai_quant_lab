@@ -79,7 +79,7 @@ class RealMT5Gateway:
             kwargs["password"] = password
         if server is not None:
             kwargs["server"] = server
-        return bool(self._mt5.initialize(**kwargs))  # type: ignore[arg-type]
+        return bool(self._mt5.initialize(**kwargs))
 
     def shutdown(self) -> None:
         self._mt5.shutdown()
@@ -91,7 +91,7 @@ class RealMT5Gateway:
         return self._mt5.account_info()
 
     def symbols_get(self) -> tuple[Any, ...] | None:
-        return self._mt5.symbols_get()
+        return self._mt5.symbols_get()  # type: ignore[no-any-return]
 
     def symbol_info(self, symbol: str) -> Any | None:
         return self._mt5.symbol_info(symbol)
@@ -115,10 +115,10 @@ class RealMT5Gateway:
         return self._mt5.copy_ticks_range(symbol, date_from, date_to, flags)
 
     def positions_get(self, symbol: str | None = None) -> tuple[Any, ...] | None:
-        return self._mt5.positions_get(symbol=symbol) if symbol is not None else self._mt5.positions_get()
+        return self._mt5.positions_get(symbol=symbol) if symbol is not None else self._mt5.positions_get()  # type: ignore[no-any-return]
 
     def orders_get(self, symbol: str | None = None) -> tuple[Any, ...] | None:
-        return self._mt5.orders_get(symbol=symbol) if symbol is not None else self._mt5.orders_get()
+        return self._mt5.orders_get(symbol=symbol) if symbol is not None else self._mt5.orders_get()  # type: ignore[no-any-return]
 
     def last_error(self) -> tuple[int, str]:
-        return self._mt5.last_error()
+        return self._mt5.last_error()  # type: ignore[no-any-return]
