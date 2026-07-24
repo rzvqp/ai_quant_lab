@@ -1,2 +1,9 @@
 jsonschema>=4.20,<5
 fastjsonschema>=2.19,<3
+
+# MT5 read-only Broker Adapter (BROKER_ADAPTER_DESIGN.md, CEO-authorized 2026-07-24). Pinned exact
+# version -- MetaTrader5 does not follow a documented semver policy this project can safely assume a
+# range against; confirmed working this session via mt5_connectivity_probe.py and the full adapters
+# test suite. Windows-only (wraps the local MT5 terminal's own IPC); only imported by
+# ai_trader/execution_engine/adapters/mt5_gateway.py, the single production consumer.
+MetaTrader5==5.0.5735
