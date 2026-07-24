@@ -1,0 +1,363 @@
+{
+  "integrity": {
+    "total_position_outcomes": 688,
+    "total_outcomes": 688,
+    "total_interim_realizations": 26,
+    "total_observations": 23639,
+    "all_position_outcomes_constructed_without_error": true,
+    "outcomes_resolved": 688,
+    "outcomes_non_resolved": 0,
+    "outcomes_non_resolved_breakdown": {},
+    "broken_links": {
+      "position_outcome_terminal_outcome_id_unresolved": 0,
+      "position_outcome_interim_realization_id_unresolved": 0,
+      "outcome_observation_id_unresolved": 0,
+      "position_outcome_observation_id_unresolved": 0,
+      "interim_realization_observation_id_unresolved": 0
+    },
+    "line_count_cross_check": {
+      "outcomes.jsonl": {
+        "iterated_count": 688,
+        "physical_line_count": 688,
+        "match": true
+      },
+      "position_outcomes.jsonl": {
+        "iterated_count": 688,
+        "physical_line_count": 688,
+        "match": true
+      },
+      "interim_realizations.jsonl": {
+        "iterated_count": 26,
+        "physical_line_count": 26,
+        "match": true
+      },
+      "observations.jsonl": {
+        "iterated_count": 23639,
+        "physical_line_count": 23639,
+        "match": true
+      }
+    }
+  },
+  "consistency": {
+    "duplicate_outcome_ids": 0,
+    "duplicate_position_outcome_ids": 0,
+    "duplicate_position_keys_across_position_outcomes": 0,
+    "run_id_prefixes_in_position_outcomes": {
+      "LF-STAGE2-FULL-CAPTURE": 688
+    },
+    "run_id_prefixes_in_interim_realizations": {
+      "LF-STAGE2-FULL-CAPTURE": 26
+    },
+    "run_id_fully_consistent": true,
+    "net_pnl_arithmetic_mismatches": 0,
+    "net_pnl_arithmetic_mismatch_examples": [],
+    "position_outcome_vs_terminal_outcome_sign_mismatches": 4,
+    "sign_mismatch_examples": [
+      {
+        "position_key": "LF-STAGE2-FULL-CAPTURE:XAUUSD:1731333600:SHORT",
+        "total_net_pnl": 4.624799999999896,
+        "terminal_outcome_normalized_result": -1.0809812659899394
+      },
+      {
+        "position_key": "LF-STAGE2-FULL-CAPTURE:XAUUSD:1734013800:SHORT",
+        "total_net_pnl": 3.6472999999999995,
+        "terminal_outcome_normalized_result": -1.0504632913637375
+      },
+      {
+        "position_key": "LF-STAGE2-FULL-CAPTURE:XAUUSD:1745361000:LONG",
+        "total_net_pnl": -0.6312000000000807,
+        "terminal_outcome_normalized_result": 0.5065727699530029
+      },
+      {
+        "position_key": "LF-STAGE2-FULL-CAPTURE:XAUUSD:1746686700:SHORT",
+        "total_net_pnl": 4.867000000000005,
+        "terminal_outcome_normalized_result": -1.0001258653241116
+      }
+    ]
+  },
+  "distributions": {
+    "position_outcome_by_kind": {
+      "STRATEGY": 575,
+      "PORTFOLIO": 113
+    },
+    "position_outcome_by_strategy": {
+      "S1": {
+        "STRATEGY": 41,
+        "PORTFOLIO": 10
+      },
+      "S10": {
+        "STRATEGY": 67,
+        "PORTFOLIO": 1
+      },
+      "S13": {
+        "STRATEGY": 27,
+        "PORTFOLIO": 1
+      },
+      "S14": {
+        "STRATEGY": 4,
+        "PORTFOLIO": 1
+      },
+      "S16": {
+        "STRATEGY": 9,
+        "PORTFOLIO": 1
+      },
+      "S18": {
+        "STRATEGY": 4,
+        "PORTFOLIO": 1
+      },
+      "S2": {
+        "STRATEGY": 11
+      },
+      "S21": {
+        "STRATEGY": 3,
+        "PORTFOLIO": 1
+      },
+      "S22": {
+        "STRATEGY": 16,
+        "PORTFOLIO": 1
+      },
+      "S24": {
+        "STRATEGY": 7
+      },
+      "S25": {
+        "STRATEGY": 34,
+        "PORTFOLIO": 4
+      },
+      "S26": {
+        "STRATEGY": 14,
+        "PORTFOLIO": 3
+      },
+      "S28": {
+        "PORTFOLIO": 1,
+        "STRATEGY": 12
+      },
+      "S29": {
+        "STRATEGY": 1
+      },
+      "S30": {
+        "STRATEGY": 15,
+        "PORTFOLIO": 2
+      },
+      "S39": {
+        "PORTFOLIO": 30,
+        "STRATEGY": 64
+      },
+      "S4": {
+        "STRATEGY": 6,
+        "PORTFOLIO": 1
+      },
+      "S40": {
+        "STRATEGY": 65,
+        "PORTFOLIO": 2
+      },
+      "S41": {
+        "STRATEGY": 5
+      },
+      "S42": {
+        "PORTFOLIO": 1,
+        "STRATEGY": 19
+      },
+      "S43": {
+        "STRATEGY": 9,
+        "PORTFOLIO": 1
+      },
+      "S44": {
+        "STRATEGY": 33,
+        "PORTFOLIO": 6
+      },
+      "S45": {
+        "STRATEGY": 6
+      },
+      "S46": {
+        "STRATEGY": 66,
+        "PORTFOLIO": 38
+      },
+      "S48": {
+        "PORTFOLIO": 4,
+        "STRATEGY": 26
+      },
+      "S5": {
+        "STRATEGY": 5,
+        "PORTFOLIO": 2
+      },
+      "S6": {
+        "STRATEGY": 4
+      },
+      "S8": {
+        "STRATEGY": 2,
+        "PORTFOLIO": 1
+      }
+    },
+    "position_outcome_total_qty_closed": {
+      "count": 688,
+      "mean": 0.12215116279069768,
+      "median": 0.12,
+      "min": 0.02,
+      "max": 0.3,
+      "stdev": 0.03076454884920073
+    },
+    "position_outcome_total_gross_pnl": {
+      "count": 688,
+      "mean": 0.04094578488369533,
+      "median": -2.0513500000000273,
+      "min": -9.934400000000023,
+      "max": 29.656200000000098,
+      "stdev": 4.747156856030119
+    },
+    "position_outcome_total_net_pnl": {
+      "count": 688,
+      "mean": 0.04094578488369533,
+      "median": -2.0513500000000273,
+      "min": -9.934400000000023,
+      "max": 29.656200000000098,
+      "stdev": 4.747156856030119
+    },
+    "position_outcome_total_costs": {
+      "count": 688,
+      "mean": 0.0,
+      "median": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "stdev": 0.0
+    },
+    "position_outcome_holding_time_seconds": {
+      "count": 688,
+      "mean": 158003.63372093023,
+      "median": 25200.0,
+      "min": 900,
+      "max": 6543900,
+      "stdev": 446298.77649985
+    },
+    "position_outcome_weighted_avg_exit_price_null_count": 0,
+    "position_outcome_result_sign": {
+      "positive": 241,
+      "negative": 447
+    },
+    "outcome_by_kind": {
+      "STRATEGY": 575,
+      "PORTFOLIO": 113
+    },
+    "outcome_normalized_result_sign": {
+      "positive": 239,
+      "negative": 449
+    },
+    "outcome_normalized_result_shape": {
+      "count": 688,
+      "mean": 0.022077983071747347,
+      "median": -1.0001154334526277,
+      "min": -1.3903805720149318,
+      "max": 9.93012136814987,
+      "stdev": 1.3982802109420494
+    },
+    "interim_realization_by_kind": {
+      "PORTFOLIO": 26
+    },
+    "interim_realization_by_strategy": {
+      "S39": 3,
+      "S46": 10,
+      "S5": 2,
+      "S1": 3,
+      "S43": 1,
+      "S26": 1,
+      "S44": 1,
+      "S4": 1,
+      "S40": 1,
+      "S21": 1,
+      "S8": 1,
+      "S30": 1
+    },
+    "interim_realization_normalized_result_present_count": 26,
+    "interim_realization_unavailable_count": 0,
+    "position_outcome_by_session": {
+      "STRATEGY": {
+        "ny": 246,
+        "london": 107,
+        "asia": 158,
+        "late": 64
+      },
+      "PORTFOLIO": {
+        "ny": 52,
+        "london": 20,
+        "asia": 30,
+        "late": 11
+      }
+    },
+    "position_outcome_by_volatility_regime": {
+      "STRATEGY": {
+        "HIGH": 263,
+        "NORMAL": 286,
+        "LOW": 26
+      },
+      "PORTFOLIO": {
+        "HIGH": 47,
+        "NORMAL": 62,
+        "LOW": 4
+      }
+    },
+    "position_outcome_by_trend_m15": {
+      "STRATEGY": {
+        "DOWN": 299,
+        "FLAT": 64,
+        "UP": 212
+      },
+      "PORTFOLIO": {
+        "FLAT": 19,
+        "DOWN": 50,
+        "UP": 44
+      }
+    },
+    "position_outcome_by_multi_timeframe_agreement": {
+      "STRATEGY": {
+        "STRONG": 511,
+        "UNKNOWN": 64
+      },
+      "PORTFOLIO": {
+        "UNKNOWN": 19,
+        "STRONG": 94
+      }
+    },
+    "position_outcome_observation_join_failures": 0,
+    "position_outcome_direction_portfolio_kind_only": {
+      "SHORT": 44,
+      "LONG": 69
+    },
+    "position_outcome_direction_unparseable_count": 0,
+    "direction_available_for_strategy_kind": false,
+    "close_reason_available": false
+  },
+  "coverage": {
+    "total_registered_strategies": 43,
+    "strategies_with_at_least_one_position_outcome": 28,
+    "strategies_ever_present_per_edge_intelligence": 36,
+    "strategies_never_present_at_all": [
+      "S11",
+      "S15",
+      "S20",
+      "S27",
+      "S38",
+      "S7",
+      "S9"
+    ],
+    "strategies_present_but_zero_position_outcome": [
+      "S12",
+      "S17",
+      "S19",
+      "S23",
+      "S3",
+      "S31",
+      "S50",
+      "S51"
+    ]
+  },
+  "anomalies": {
+    "timestamps_outside_configured_window": {
+      "position_outcomes": 0,
+      "outcomes": 0,
+      "examples": []
+    },
+    "position_outcomes_with_more_than_5_interim_realizations": [],
+    "non_positive_total_qty_closed": [],
+    "non_resolved_outcomes_detail": [],
+    "interim_realizations_with_no_terminal_position_outcome": []
+  }
+}
