@@ -1,0 +1,4 @@
+{"stage": "CHECK_1_CONNECTED", "wall_clock": 1784963134.348138, "accepted": true, "reason": null}
+{"stage": "CHECK_2_ACCOUNT_IS_DEMO", "wall_clock": 1784963134.3486748, "account_is_demo": true, "trade_mode": "AccountTradeMode.DEMO"}
+{"stage": "CHECK_3_ALGO_TRADING_ENABLED", "wall_clock": 1784963134.3486965, "algo_trading_status": "TRADING_DISABLED_AT_TERMINAL"}
+{"stage": "ABORT_FAIL_CLOSED", "wall_clock": 1784963134.348708, "reason": "AlgoTrading not enabled at terminal: TRADING_DISABLED_AT_TERMINAL -- never auto-activated"}
