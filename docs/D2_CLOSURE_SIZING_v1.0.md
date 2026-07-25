@@ -49,4 +49,11 @@ Raționament:
 
 ---
 
-**Nimic executat. Nicio re-rulare pornită. Holdout SEALED. Dimensionare livrată pentru decizia CEO.**
+## ÎNTREBARE PENTRU STATISTICIAN (nu observație a Research Lab) — potrivirea lui R pe regimul structural
+*Consemnată la cererea CEO 2026-07-25; transmisă separat de CEO. NU e o concluzie a acestei divizii.*
+
+Semnalul de risc de la Q3 (varianță R explozivă la stopuri mici → putere scăzută) ridică o îndoială mai adâncă decât „avem destule date": **varianța explozivă e o proprietate a STATISTICII `R = pnl/risc` când numitorul → 0, NU a rezoluției de măsurare.** Date mai fine (M5/M1) ar localiza mai precis nivelurile structurale, deci ar măsura mai bine numitorul — dar **nu îl fac mai mare**. Deci întrebarea reală nu e „avem destule date pentru calibrarea structurală", ci **„este R statistica potrivită de rezultat pentru ipoteze cu stop structural?"** Dacă nu, calibrarea structurală nu are ce calibra, iar problema urcă un nivel — la **definirea variabilei de rezultat**, care e domeniul Statisticianului, nu al Research Lab. Întrebare deschisă, pentru Statistician.
+
+---
+
+**Nimic executat (la momentul dimensionării). Holdout SEALED. Dimensionare livrată pentru decizia CEO.** *(Update: CEO a autorizat WP-1..WP-4 la 2026-07-25 — execuția e urmărită în `docs/D2_CLOSURE_EXECUTION_v1.0.md`. WP-5′ rămâne NEAUTORIZAT.)*

@@ -1,0 +1,216 @@
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+C:\Users\MEDION GAMING\aql_stat_clone\code\run_full_campaign.py:21: RuntimeWarning: Mean of empty slice
+  lo,hi=np.percentile(R,[5,95]); trim5=R[(R>=lo)&(R<=hi)].mean()
+C:\Users\MEDION GAMING\ai_quant_lab\venv\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+ENGINE v2 (stop-floor). research=50491 val=16830 holdout(SEALED)=16831
+
+--- BACKTEST PARITY AUDIT (fast vs reference engine) ---
+  parity: PASS
+
+--- SMOKE + LOOKAHEAD + LEDGER per family ---
+  S1: grammar=1152 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S2: grammar=144 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S3: grammar=96 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S4: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S5: grammar=96 signal_hyps=60 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S6: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S7: grammar=24 signal_hyps=24 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S8: grammar=48 signal_hyps=48 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S9: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S10: grammar=48 signal_hyps=48 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S11: grammar=24 signal_hyps=24 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S12: grammar=48 signal_hyps=48 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S13: grammar=24 signal_hyps=24 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S14: grammar=16 signal_hyps=16 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S15: grammar=24 signal_hyps=24 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S16: grammar=40 signal_hyps=40 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S17: grammar=24 signal_hyps=24 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S18: grammar=24 signal_hyps=24 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S19: grammar=12 signal_hyps=12 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+  S20: grammar=32 signal_hyps=32 selective(<10%bars)=True lookahead_safe=True ledger_ok=True -> OK
+compute 74s | total hyps=1972
+
+================= CENTRAL TABLE (ENGINE v2; statistical fields PENDING) =================
+S   econ                        gen valid profit  %prof bestExp bestPF  RW
+S1  liquidity-sweep mean-reve  1152  1000    293    29%   0.391  24.63  94
+S2  failed-breakout fade        144   144     20    14%   0.075   1.11   6
+S3  breakout-retest momentum     96    96     24    25%   0.135   1.23   3
+S4  volatility-regime expansi    32    32      0     0%  -0.143   0.81   0
+S5  opening-range momentum       96    96     20    21%   0.166   1.48  12
+S6  session-transition moment    32    32      7    22%   0.764   1.60   3
+S7  trend-pullback continuati    24    24      0     0%  -0.099   0.87   0
+S8  extension mean-reversion     48    48     12    25%   0.354   1.30   2
+S9  MTF-trend momentum           32    32     12    38%   0.068   1.15   6
+S10 displacement continuation    48    48      0     0%  -0.044   0.94   0
+S11 structure-break reversal     24    24      0     0%  -0.052   0.88   0
+S12 range rotation               48    48      2     4%   0.059   1.07   0
+S13 imbalance fill               24    24      5    21%   0.041   1.08   0
+S14 momentum exhaustion          16     8      6    75%   0.579   2.42   2
+S15 trend acceleration           24    24      0     0%  -0.050   0.92   0
+S16 previous-day levels          40    40      2     5%   0.032   1.04   0
+S17 weekly levels                24    24      8    33%   0.817   1.77   5
+S18 time-of-day                  24    24      5    21%   0.177   1.31   0
+S19 session gap                  12     0      4   400%   0.915   3.69   0
+S20 hybrid sweep+MTF             32    32      6    19%   0.099   1.24   5
+
+TOTALS: generated=1972 valid(n>=25)=1800 HIST_PROFITABLE=426 RESEARCH_WORTHY=138
+families WITH >=1 historically profitable: ['S1', 'S2', 'S3', 'S5', 'S6', 'S8', 'S9', 'S12', 'S13', 'S14', 'S16', 'S17', 'S18', 'S19', 'S20']
+families WITH 0 profitable: ['S4', 'S7', 'S10', 'S11', 'S15']
+families WITH >=1 RESEARCH WORTHY: ['S1', 'S2', 'S3', 'S5', 'S6', 'S8', 'S9', 'S14', 'S17', 'S20']
+
+--- TOP 20 historically profitable (by expectancy) ---
+  S19[16bf144423a0] long n=16 exp=0.915 pf=3.52 dd=1.2 win=0.69 posM=6/7 t1=0.09 RW=False
+  S17[596b48794dd2] long n=201 exp=0.817 pf=1.77 dd=28.4 win=0.22 posM=15/25 t1=0.13 RW=False
+  S6[7a86a38610f8] long n=215 exp=0.764 pf=1.60 dd=74.5 win=0.11 posM=9/27 t1=0.15 RW=False
+  S19[8b2cc5c36d15] long n=16 exp=0.720 pf=2.60 dd=4.3 win=0.56 posM=5/7 t1=0.24 RW=False
+  S19[30fdccb5c0b8] long n=16 exp=0.607 pf=3.69 dd=2.5 win=0.75 posM=6/7 t1=0.18 RW=False
+  S14[c7564958f7ac] short n=11 exp=0.579 pf=2.42 dd=2.2 win=0.55 posM=5/9 t1=0.18 RW=False
+  S14[46ee85750c1b] short n=11 exp=0.455 pf=1.80 dd=3.8 win=0.45 posM=3/9 t1=0.47 RW=False
+  S14[35eda8bdb094] short n=111 exp=0.408 pf=1.47 dd=22.6 win=0.25 posM=9/25 t1=0.28 RW=True
+  S1[26f16b898162] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[8c21070056c3] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[3c81c4b5b332] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[77fd1ecdb74f] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[878f1fd146d3] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[c94dc8fa14ca] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[128fa150a86b] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[043a74fdfd3e] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[507650e72cfa] long n=3 exp=0.390 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.47 RW=False
+  S1[c9ae377adce0] long n=3 exp=0.390 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.47 RW=False
+  S1[a49597b88759] long n=3 exp=0.390 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.47 RW=False
+  S1[ac29469d617f] long n=3 exp=0.390 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.47 RW=False
+
+--- TOP 20 by monthly stability (pos_months share, n>=40) ---
+  S1[7bff1db1efc9] short n=55 exp=0.007 pf=1.18 dd=1.8 win=0.64 posM=18/23 t1=0.17 RW=True
+  S1[a709ed825464] long n=1221 exp=0.128 pf=1.20 dd=50.6 win=0.43 posM=20/27 t1=0.00 RW=False
+  S3[99fb1e6ae73f] short n=670 exp=0.062 pf=1.12 dd=23.6 win=0.60 posM=20/27 t1=0.00 RW=True
+  S3[e06421b7d2eb] short n=666 exp=0.130 pf=1.22 dd=21.4 win=0.58 posM=20/27 t1=0.01 RW=True
+  S18[2341cf9911de] long n=534 exp=0.177 pf=1.31 dd=26.2 win=0.46 posM=20/27 t1=0.02 RW=False
+  S1[7ffc3eec8f35] short n=47 exp=0.021 pf=1.68 dd=1.1 win=0.62 posM=17/23 t1=0.18 RW=True
+  S1[32d135d0c9f3] long n=386 exp=0.062 pf=1.11 dd=14.6 win=0.47 posM=19/26 t1=0.01 RW=True
+  S1[f34e8d2827c3] long n=386 exp=0.062 pf=1.11 dd=14.6 win=0.47 posM=19/26 t1=0.01 RW=True
+  S17[1a970484b4c4] long n=171 exp=0.287 pf=1.43 dd=15.8 win=0.37 posM=18/25 t1=0.07 RW=True
+  S3[7aafa506c507] long n=1404 exp=0.024 pf=1.04 dd=72.5 win=0.60 posM=19/27 t1=0.00 RW=False
+  S1[f3d6a3112b5c] long n=1334 exp=0.129 pf=1.19 dd=72.2 win=0.40 posM=19/27 t1=0.03 RW=False
+  S3[80b4d5deb350] short n=623 exp=0.076 pf=1.14 dd=27.8 win=0.61 posM=19/27 t1=0.01 RW=False
+  S3[4fb5dffe9fdd] short n=621 exp=0.135 pf=1.23 dd=22.1 win=0.58 posM=19/27 t1=0.01 RW=True
+  S5[7472f3d412f2] long n=287 exp=0.166 pf=1.48 dd=7.3 win=0.53 posM=19/27 t1=0.02 RW=True
+  S5[da46c94b8735] long n=287 exp=0.166 pf=1.48 dd=7.3 win=0.53 posM=19/27 t1=0.02 RW=True
+  S1[02cfb13da7ab] long n=1766 exp=0.068 pf=1.09 dd=91.4 win=0.38 posM=18/27 t1=0.02 RW=False
+  S1[a5c959456aff] long n=1766 exp=0.068 pf=1.09 dd=91.4 win=0.38 posM=18/27 t1=0.02 RW=False
+  S13[145ca0309052] long n=1324 exp=0.041 pf=1.08 dd=87.8 win=0.45 posM=18/27 t1=0.00 RW=False
+  S18[00d840de0b48] long n=534 exp=0.107 pf=1.17 dd=31.6 win=0.43 posM=18/27 t1=0.01 RW=False
+  S5[c7ee43c7e825] long n=295 exp=0.135 pf=1.40 dd=7.3 win=0.54 posM=18/27 t1=0.01 RW=True
+
+--- TOP 20 by profit/maxDD ---
+  S1[878f1fd146d3] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[128fa150a86b] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[043a74fdfd3e] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[c94dc8fa14ca] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[cb3fe5cb14aa] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[d37a852b2ccc] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[5e206c6db272] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[ea494c438024] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[febd551eceaf] long n=5 exp=0.268 pf=99.00 dd=0.0 win=1.00 posM=5/5 t1=0.43 RW=False
+  S1[f36c6a752993] long n=5 exp=0.268 pf=99.00 dd=0.0 win=1.00 posM=5/5 t1=0.43 RW=False
+  S19[16bf144423a0] long n=16 exp=0.915 pf=3.52 dd=1.2 win=0.69 posM=6/7 t1=0.09 RW=False
+  S1[3fce5940c7eb] long n=5 exp=0.236 pf=99.00 dd=0.0 win=1.00 posM=5/5 t1=0.39 RW=False
+  S1[6e59ca8da7d1] long n=5 exp=0.236 pf=99.00 dd=0.0 win=1.00 posM=5/5 t1=0.39 RW=False
+  S1[77fd1ecdb74f] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[8c21070056c3] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[26f16b898162] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[3c81c4b5b332] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[ac29469d617f] long n=3 exp=0.390 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.47 RW=False
+  S1[a49597b88759] long n=3 exp=0.390 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.47 RW=False
+  S1[21855cc94094] long n=3 exp=0.390 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.47 RW=False
+
+--- FRAGILE / outlier-dependent (exp>0 but top1>=50% or without-top1<=0) ---
+  S14[46ee85750c1b] short n=11 exp=0.455 pf=1.80 dd=3.8 win=0.45 posM=3/9 t1=0.47 RW=False
+  S1[8c21070056c3] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[77fd1ecdb74f] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[3c81c4b5b332] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[26f16b898162] long n=3 exp=0.391 pf=99.00 dd=0.0 win=1.00 posM=3/3 t1=0.72 RW=False
+  S1[878f1fd146d3] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[043a74fdfd3e] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[128fa150a86b] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[c94dc8fa14ca] long n=5 exp=0.391 pf=22.87 dd=0.0 win=0.80 posM=4/5 t1=0.53 RW=False
+  S1[cb3fe5cb14aa] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[5e206c6db272] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[d37a852b2ccc] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[ea494c438024] long n=5 exp=0.377 pf=24.63 dd=0.0 win=0.80 posM=4/5 t1=0.55 RW=False
+  S1[1f1593b4c600] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[fc089e769456] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[3b8a75dc74fa] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[7550bc2c30f5] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[4a6d7c434475] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[1a6dc132306b] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[87fb09366a76] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[f5022f2a0b87] long n=2 exp=0.309 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.83 RW=False
+  S1[8e919fd46517] long n=172 exp=0.176 pf=1.31 dd=14.5 win=0.40 posM=12/26 t1=0.24 RW=True
+  S1[fb104f1c91fd] short n=6 exp=0.176 pf=1.51 dd=1.5 win=0.50 posM=3/6 t1=0.67 RW=False
+  S1[5338c7aafcd4] short n=6 exp=0.176 pf=1.51 dd=1.5 win=0.50 posM=3/6 t1=0.67 RW=False
+  S1[055f33390dce] long n=2 exp=0.167 pf=99.00 dd=0.0 win=1.00 posM=2/2 t1=0.63 RW=False
+
+--- technically-invalid (no trades): 0 variants ---
+
+STRICT VALIDATION: PENDING (p-value engine under remediation). No significance verdicts. Holdout SEALED.
