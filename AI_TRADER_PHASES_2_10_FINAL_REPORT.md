@@ -161,21 +161,73 @@ itself) — no engine anywhere in Phases 2–10 constructs or defaults to a real
   strategy-health signal exists in this pipeline; an explicit, disclosed placeholder, never fabricated.
 - Recognition Engine's authorized pattern catalog (Phase 7) covers `OutcomeKind.STRATEGY` only, one
   entry per `ContextDimension` — extending it is a catalog-only change, no engine code changes needed.
-- The real MT5 DEMO send path (`order_check`→`order_send`→`ACKNOWLEDGED`) is proven correct only by the
-  fully-faked unit suite; the market was closed (Saturday) at the time of this report, so the gated
-  real-terminal send test correctly stopped at `PENDING_MARKET_OPEN` before ever transmitting — it has
-  not yet been exercised end-to-end against the live terminal. Re-running it once the market reopens
-  (Monday) is the natural next verification step, at the CEO's own discretion.
+- The real MT5 DEMO send path (`order_check`→`order_send`→`ACKNOWLEDGED`) was proven correct only by the
+  fully-faked unit suite as of the original XAUUSD write-up above (market closed, Saturday). It has since
+  been exercised end-to-end against the live terminal using BTCUSD — see §11 below. The `cancel_order`
+  gap, the tick-recency market-open heuristic, and the other bullets in this section remain unchanged.
 
-## 11. Exact repository state
+## 11. BTCUSD operational test — send path validated end-to-end (2026-07-25)
 
-Branch `ai-trader-implementation`, working tree clean, 9 new commits (`1d68521` through `dbfadd3`) on
-top of the pre-existing `7434fb0` (Phase 1, Broker Adapter, already approved). Every previously-approved
-package outside the two Phase-10-authorized fixes carries zero diff at every single phase boundary,
-confirmed by `git diff --stat` before every commit this session.
+Separately CEO-authorized (2026-07-25, after this report was first written): since XAUUSD's market
+remained closed through the weekend, the CEO authorized using BTCUSD — a symbol available for trading on
+weekends — to validate the Phase 10 execution infrastructure itself. **This was explicitly an
+infrastructure test, not a strategy or performance test**: no strategy, Confidence Engine, Strategy
+Evaluator, Order Manager, Risk Manager, or Execution Orchestrator logic was modified for it. The test ran
+from a standalone root-level script, `btcusd_phase10_operational_test.py` (mirrors the existing
+`mt5_connectivity_probe.py` precedent — not part of the `ai_trader` package), which exercises the
+unmodified Phase 1–10 pipeline exactly as any real caller would.
 
-**No LIVE trading was activated. No terminal or account setting was changed. No AlgoTrading activation
-was attempted or would be possible without a human manually flipping the terminal's own toggle. No order
-was sent to a REAL or CONTEST account (structurally impossible throughout every layer). No order was
-sent to any account today — the DEMO send path is built, tested, and gated, awaiting the market's own
-reopening for its first live-terminal exercise.**
+**Outcome: full path validated.**
+```
+AI Trader -> Execution Orchestrator -> Order Manager -> Broker Adapter
+  -> MT5 order_check -> MT5 order_send -> execution confirmed
+  -> controlled close -> final verification: 0 open positions, 0 open orders
+```
+One DEMO order, minimum volume (0.01 lots BTCUSD), filled at 63984.0 (ticket `491745557`, retcode
+`10009`), position closed immediately after confirmation (close price 63967.0), final state verified
+flat (zero open positions, zero open orders). No LIVE or CONTEST account was touched (structurally
+impossible, §9). No automatic retry. No safety-check bypass.
+
+**Real bug found and fixed during this test** (`ai_trader/mt5_demo_execution/request_builder.py`,
+`_comment_for`): the MT5 comment field was truncated to 31 characters based on MT5's own documented
+limit; the actual terminal/broker tested (`FusionMarkets-Demo`, build 5836) rejected `order_check`/
+`order_send` for any comment of 29+ characters. This was diagnosed with two READ-ONLY `order_check`
+sweeps (zero orders placed) before any code changed, then fixed by lowering the constant to
+`_COMMENT_MAX_LENGTH = 27`. **CEO-mandated disclosure, consecrated in the module's own docstring and in
+`BTCUSD_PHASE10_OPERATIONAL_TEST_REPORT.md`**:
+- 27 characters is a CONSERVATIVE value confirmed for the one specific terminal/broker actually tested
+  (`FusionMarkets-Demo`, build 5836) — not derived from any broader survey.
+- It must never be presented or relied upon as a universal MT5 protocol limit — MT5's own documentation
+  states a larger figure, which this broker does not honor, itself proof that enforcement varies.
+- Any change of broker, terminal, account, or terminal build must be re-verified via a read-only
+  `order_check()` call (never `order_send()`) before trusting this or any other hardcoded MT5-payload
+  constant in `request_builder.py` again.
+
+Full attempt-by-attempt history (five attempts: two stopped fail-closed as designed — AlgoTrading
+disabled at the terminal, then a schema-pattern rejection in the test script's own `strategy_id`; one
+script-only `NOT_CONNECTED` setup bug; the comment-length bug above; then full success) is in
+`BTCUSD_PHASE10_OPERATIONAL_TEST_REPORT.md`, committed alongside the three execution journals
+(`btcusd_phase10_operational_test_journal.jsonl`, `btcusd_phase10_dry_run_journal.jsonl`,
+`btcusd_phase10_demo_order_journal.jsonl`). Zero diff to any `ai_trader/` file except the one
+`request_builder.py` fix above; verified by `git diff --stat` before commit.
+
+CEO decision (2026-07-25): "Testul operațional Phase 10 pe BTCUSD DEMO este ACCEPTED și CLOSED." Phase
+10 remains closed; this test validated its already-built send path, it did not open new scope.
+
+## 12. Exact repository state
+
+Branch `ai-trader-implementation`, working tree clean. 11 commits on top of the pre-existing `7434fb0`
+(Phase 1, Broker Adapter, already approved): the original 9 Phase 2–10 commits (`1d68521` through
+`dbfadd3`), the final-report commit (`6717c1d`), and two BTCUSD operational-test commits (`7eebe77`
+fail-closed dry run at AlgoTrading-disabled, `a3ef1c7` full success) plus this documentation update.
+Every previously-approved package outside the Phase-10-authorized fixes and the one disclosed
+`request_builder.py` comment-length fix carries zero diff, confirmed by `git diff --stat` before every
+commit this session.
+
+**No LIVE trading was activated. No terminal or account setting was changed by this project's own code
+(AlgoTrading was enabled manually, by the CEO, in the terminal UI, between BTCUSD test attempts). No
+order was sent to a REAL or CONTEST account (structurally impossible throughout every layer). Exactly one
+DEMO order was sent (BTCUSD, 0.01 lots, §11), confirmed, and closed; the account was verified flat
+(0 open positions, 0 open orders) immediately after. The XAUUSD real-terminal send path itself remains
+validated only by proxy, through BTCUSD's identical code path — re-running the gated XAUUSD integration
+test once that market reopens remains the natural next verification step, at the CEO's own discretion.**

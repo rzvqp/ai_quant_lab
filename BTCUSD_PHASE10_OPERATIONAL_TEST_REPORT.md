@@ -44,8 +44,19 @@ authorized the minimal fix.
 
 **Fix applied** (`ai_trader/mt5_demo_execution/request_builder.py`, one named constant):
 `_COMMENT_MAX_LENGTH = 27` (one character of margin below the empirically-confirmed-working 28),
-replacing the hardcoded `31`. Disclosed in the module's own docstring as a broker-observed, not a
-documented-MT5-API, value. Zero other change. `pytest ai_trader/mt5_demo_execution ai_trader/
+replacing the hardcoded `31`. Zero other change.
+
+**CEO-mandated disclosure (2026-07-25), consecrated in the module's own docstring and here**:
+- The 27-character limit is a **conservative value confirmed for compatibility with the specific
+  terminal/broker tested** (`FusionMarkets-Demo`, build 5836) — nothing more.
+- It **must never be presented or relied upon as a universal MT5 protocol limit**. MT5's own documented
+  comment-field size differs from what this broker actually enforces, which is itself evidence other
+  brokers/terminals/builds may enforce a different value again, shorter or longer.
+- **Any change of broker, terminal, account, or terminal build must be re-verified via a read-only
+  `order_check()` call before any `order_send()`** — never assume `27` (or any other hardcoded value in
+  this module) still holds; re-run the same empirical sweep technique that discovered it.
+
+`pytest ai_trader/mt5_demo_execution ai_trader/
 execution_orchestrator ai_trader/order_manager ai_trader/execution_engine -q` → 358 passed, 2 skipped,
 0 failed (the pre-existing test suite's own comment-length assertion uses an 8-character string, so it
 was unaffected by the fix). `mypy --strict ai_trader/mt5_demo_execution` → clean.

@@ -12,10 +12,20 @@ the same `OrderRequest`, never invented per-call.
 to 31, based on MT5's own documented comment field size. The real terminal used in this project's own
 operational testing (`FusionMarkets-Demo`, build 5836) rejects `order_check()`/`order_send()` with
 `last_error() == (-2, 'Invalid "comment" argument')` for any comment of 29+ characters -- confirmed
-empirically via a read-only `order_check()` sweep (28 chars: accepted; 29-31 chars: rejected). No
-documented, general-purpose MT5 comment-length constant exists that is safe across every broker/build,
-so 27 is used here (one character of margin below the empirically-confirmed-working 28) -- a disclosed,
-broker-observed value, not a documented MT5 API guarantee."""
+empirically via a read-only `order_check()` sweep (28 chars: accepted; 29-31 chars: rejected). 27 is
+used here (one character of margin below the empirically-confirmed-working 28).
+
+**This 27-character limit is a CONSERVATIVE value confirmed for the ONE specific terminal/broker this
+project has actually tested against (`FusionMarkets-Demo`, build 5836) -- it is NOT a universal MT5
+protocol limit, and must never be presented or relied upon as one.** MT5's own documented comment field
+size differs from this broker's actual, observed enforcement, which is itself evidence that other
+brokers/terminals/builds may enforce yet another value, shorter or longer. **Any change of broker,
+terminal, account, or terminal build MUST be re-verified via a read-only `order_check()` call (never
+`order_send()`) before relying on this or any other hardcoded length here** -- the same empirical
+sweep technique used to discover this value (`MT5_DEMO_EXECUTION_PHASE10_DESIGN.md`'s own "`order_check`
+before `order_send`" safety gate already enforces this at the single-order level; a broker/terminal
+CHANGE additionally warrants re-running the length sweep itself, not just trusting `27` to still be
+correct)."""
 
 from __future__ import annotations
 
@@ -24,6 +34,9 @@ from ai_trader.execution_engine.types import OrderRequest
 _TIME_GTC = 0  # mt5.ORDER_TIME_GTC
 _FILLING_IOC = 1  # mt5.ORDER_FILLING_IOC
 _MAGIC_MODULUS = 1_000_000
+#: CONSERVATIVE value for the ONE broker/terminal tested (FusionMarkets-Demo, build 5836) -- NOT a
+#: universal MT5 protocol limit. Re-verify via order_check() (never order_send()) on any broker/
+#: terminal/build change; see this module's own docstring for the full disclosure.
 _COMMENT_MAX_LENGTH = 27
 
 
