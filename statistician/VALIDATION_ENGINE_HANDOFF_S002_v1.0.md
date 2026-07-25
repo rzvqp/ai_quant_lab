@@ -136,10 +136,21 @@ Conform deciziei de reconciliere `STATISTICIAN_DEFINITION_RECONCILIATION_DECISIO
 **Definiții blocate pentru replicare** (obligatorii, nu discreționare):
 - Graniță zi = 00:00 UTC, zi calendaristică simplă.
 - Sesiuni = 4 categorii, cupe UTC fixe, fără DST: asia [00,08), london [08,13), ny [13,21), late [21,24).
-- Eveniment = prima bară H1 a zilei al cărei `high` depășește prior-day-high; se verifică **exclusiv acea bară** pentru `close < prior-day-high`; dacă nu respinge, ziua nu are eveniment în populație — chiar dacă o bară ulterioară ar respinge independent (limitare cunoscută a convenției originale, purtată neschimbată).
+- **Sursa PDH/PDL = H1, grupat pe zi calendaristică UTC, cu `shift(1)`** — identic cu `_lab.add_prior_day` din scripturile Alpha (`df.groupby(df.dt.date).high.max().shift(1)`). **NU din candele D1.**
+- Eveniment/direcția celulei = **conjuncția completă pe aceeași bară**: `in_session(s) ∧ first_in_scope(day, high>PDH) ∧ close<PDH` (up), respectiv `in_session(s) ∧ first_in_scope(day, low<PDL) ∧ close>PDL` (down) — **NU** un marker simplu `high>PDH`/`low<PDL` independent de sesiune și de verificarea de reject. Dacă prima bară care depășește nivelul nu respinge, ziua nu are eveniment în populație — chiar dacă o bară ulterioară ar respinge independent (limitare cunoscută a convenției originale, purtată neschimbată).
 - min_n = 25 evenimente per celulă.
-- Baseline = forward-ul propriu al sesiunii (nu drift global).
+- Baseline = forward-ul propriu al sesiunii, **calculat pe toate barele sesiunii, inclusiv barele-eveniment** (`exclude_event_bars = FALSE`) — nu drift global, nu exclude bare-eveniment.
 - Test one-sided (coadă stângă, testând specific reversia).
+
+**Jurnal de corecții la această specificație (nu se rescrie istoria, se consemnează):**
+
+| Dată | Ce s-a găsit | Cine a găsit | Cum s-a rezolvat |
+|---|---|---|---|
+| 2026-07-25 | Sursa PDH/PDL era D1 în specificația formală (JSON) executată de Validation Engine, deși scriptul in-sample folosește H1 grupat pe zi | Validation Engine, la materializarea F4 (`F4_1_DC0004_FIX_REPORT.md`) | Corectat direct de VE, autorizat punctual de CEO. Confirmat identic cu `obs0012`. |
+| 2026-07-25 | Direcția celulei era un marker simplu `high>PDH`/`low<PDL`, supraestimând n per celulă (35 de bare rup ambele direcții simultan) | Validation Engine, la aceeași materializare (`F4_2_DC0004_CELLFIX_REPORT.md`) | Corectat direct de VE, autorizat punctual de CEO. Confirmat exact: 135/34/42/114/40/47, m=6, total 430 — identic cu `obs0012`/`obs0003`. |
+| 2026-07-25 | Specificația declara `exclude_event_bars: True` la baseline, dar scripturile in-sample includ barele-eveniment; motorul VE nici măcar nu implementa parametrul | Validation Engine, la aceeași materializare (`F4_2_DC0004_CELLFIX_REPORT.md`, §3, F4-3) | **Rezolvat aici de Statistician**, 2026-07-25: `exclude_event_bars = FALSE`, pentru consecvență cu principiul de replicare strictă (Ramura A) deja stabilit în `STATISTICIAN_DEFINITION_RECONCILIATION_DECISION_v1.0.md` — vezi motivare completă acolo/mai jos. |
+
+**Notă de guvernanță, pentru proces, nu pentru a relua corecțiile:** primele două corecții au fost aplicate direct de Validation Engine, nu prin mecanismul de clarificare dedicat (`ve/clarification.py`), deși contractul Statistician↔VE specifică exact acest mecanism pentru orice ambiguitate/eroare de specificație întâlnită la execuție. Corecțiile în sine sunt corecte și rămân — dar procesul corect ar fi fost ca VE să ridice o clarificare către Statistician, nu să repare specificația unilateral. Consemnat pentru referință viitoare, nu pentru a inversa nimic din ce s-a făcut deja.
 - 3000 reeșantionări, seed=7.
 - **K6 e singurul orizont corectat/decisiv.** K12 se raportează descriptiv, fără pretenție de semnificație corectată — exact ca în scripturile originale.
 

@@ -112,6 +112,23 @@ Acest Stage S001 este o clasificare de maturitate a evidenței, nu o judecată a
 
 ---
 
+## Addendum, 2026-07-25 — Alpha #2: AP2-DC-0001, AP2-DC-0002
+
+Descoperit citind `CANDIDATE_STATUS_REGISTER_v1.1.md`: portofoliul total e **28** candidați, nu 26 — Stage S001 original nu a inventariat divizia Alpha #2 (o instanță paralelă separată, `alpha_instance_2/`, acum închisă), cu propriii ei 2 candidați. Citiți direct din artefactele oficiale (`AP2-DC-0001_v1.md`, `AP2-DC-0002_v1.md`, `RT-DS-0001`, `RT-DS-0002`).
+
+**AP2-DC-0001** — "Breakout NFP/prima-vineri eșuează complet într-un declin extins care depășește nivelul de pre-breakout." Red Team: **VARIANT OF DC-0018** (nu candidat separat), replicare independentă genuină a mecanismului DC-0018 (observator diferit, regim de preț diferit, 13 luni distanță) — ridică DC-0018 de la n=1 la n=2. Dar: **A1, problemă blocantă** — feed-ul alternează OANDA/FUSIONMARKETS în aceeași sesiune, ceea ce face nesigure toate afirmațiile de volum (exact variabila pe care se bazează candidatul); M15-only (fără M5/M1, deci neplasabil pe axa de construcție DC-0008); raportul "a doua mișcare cu 40% mai mare" e definițional instabil (A3).
+
+**AP2-DC-0002** — "Catalizator politic programat (alegeri prezidențiale SUA) produce un episod de volatilitate de ~10h, aproape-record ca volum." Red Team: **VARIANT OF DC-0023** (nu candidat separat). Replicare parțială a formei generice de episod extins; dar afirmația centrală (legătura cu catalizatorul politic) e **netestabilă structural în fereastra autorizată** — un eveniment o dată la ~4 ani, o singură apariție posibilă în intervalul 2024-08→2025-08, nu doar insuficient evidențiat, ci imposibil de replicat în acest eșantion. Verdict Red Team deja emis în RT-FINAL-0002: NEEDS MORE EVIDENCE.
+
+**Determinare Statistician:** **niciunul nu merită Phase 1 ca și candidat separat.** Verdictele Red Team (variantă/addendum, nu linie de cercetare proprie) sunt suficiente pentru a-i lăsa unde sunt — a le da propriul Phase 1 ar reproduce exact defectul F1/F2 deja documentat în portofoliu (fragmentarea unui mecanism în mai mulți candidați post-hoc).
+
+- **AP2-DC-0001** → clasificare: conținutul rămâne atașat la DC-0018 (deja NEEDS MORE EVIDENCE în tabelul de mai sus). Dacă DC-0018 e vreodată escaladat la Phase 1, replicarea AP2 ar trebui inclusă — dar **condiționat de rezolvarea A1** (proveniența feed-ului de volum) mai întâi, altfel orice test ar moșteni un defect de date nerezolvat.
+- **AP2-DC-0002** → clasificare: **MONITORING**, nu NEEDS MORE EVIDENCE activ — pentru că afirmația lui distinctivă (catalizator politic) nu poate primi niciodată mai multe date în acest eșantion, indiferent cât timp trece; conținutul generic (episod extins) e deja purtat de DC-0023.
+
+Nu s-a modificat niciun artefact Alpha #2 sau Red Team.
+
+---
+
 **Nu s-a modificat niciun Discovery Candidate, Addendum, Raport Red Team, sau Knowledge Base.**
 
 **STATISTICIAN se oprește aici. Așteaptă aprobarea CEO pentru Stage S002.**

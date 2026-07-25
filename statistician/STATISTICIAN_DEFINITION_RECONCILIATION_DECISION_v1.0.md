@@ -61,6 +61,12 @@ Pentru ca specificația să poată fi blocată:
 - **S4 (min_n):** 25, nu 15.
 - **S5 (lateralitate):** one-sided (coada stângă, testând specific reversia), 3000 reeșantionări, seed=7 — exact ca în scripturi.
 
+## Addendum, 2026-07-25 — S3 extins: `exclude_event_bars`
+
+Materializarea Validation Engine (`F4_2_DC0004_CELLFIX_REPORT.md`, F4-3) a descoperit un al treilea detaliu al lui S3 nedecis explicit aici: specificația formală declara `exclude_event_bars: True` la calculul baseline-ului (ar exclude barele-eveniment din media forward), în timp ce `obs0008`/`obs0012` calculează baseline-ul pe **toate** barele sesiunii, inclusiv cele-eveniment.
+
+**Rezolvare, prin același principiu de replicare strictă (Ramura A) deja stabilit mai sus:** `exclude_event_bars = FALSE`. Motivarea e identică celei pentru graniță/sesiuni/eveniment/familie/orizont/lateralitate — valoarea evidențială a acestui test depinde de replicarea EXACTĂ a procedurii care a produs p=0,021/0,029; a exclude barele-eveniment din baseline ar calcula o statistică diferită de cea raportată, chiar dacă motivată de o intuiție metodologică rezonabilă (contaminarea baseline-ului cu propriul efect). Această intuiție rămâne validă ca întrebare de cercetare **viitoare**, separată — nu se aplică retroactiv la validarea curentă a DC-0004, exact ca la DST/3-sesiuni/K6+K12 combinate.
+
 ---
 
 ## Recomandare separată, orientată spre viitor (nu se aplică la DC-0004)
