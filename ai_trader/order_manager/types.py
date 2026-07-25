@@ -61,8 +61,16 @@ class ApprovedTradeIntent:
 @dataclass(frozen=True, slots=True)
 class OrderExecutionResult:
     """Order Manager's own outcome wrapper -- distinct from `execution_engine.types.ExecutionResult`
-    because it must carry `dry_run` (this phase: always `True`, asserted not merely defaulted) and a
-    link back into the audit journal, neither of which the reused type has any concept of."""
+    because it must carry `dry_run` and a link back into the audit journal, neither of which the reused
+    type has any concept of.
+
+    `dry_run` reflects which adapter actually ran the order, not a phase-hardcoded constant (Phase 10
+    fix, CEO-authorized 2026-07-25): `order_manager.dry_run_adapter.DryRunBrokerAdapter` always yields
+    `dry_run=True` (unchanged -- every Phase 3 caller/test continues to see exactly that); a real
+    (even demo) adapter yields `dry_run=False`. `process_approved_intent` itself never chooses which
+    adapter runs -- the caller supplies it (`BrokerAdapter`, the general protocol) -- so this type
+    cannot silently mislabel a real send as a dry run or vice versa; the caller's own adapter choice is
+    the single source of truth, carried straight through."""
 
     order_request_id: str
     client_order_id: str
@@ -72,12 +80,6 @@ class OrderExecutionResult:
     avg_price: float | None = None
     reasons: tuple[str, ...] = ()
     audit_event_ids: tuple[str, ...] = ()
-
-    def __post_init__(self) -> None:
-        if not self.dry_run:
-            raise ValueError(
-                "OrderExecutionResult.dry_run must be True this phase -- Phase 3 never sends a real order"
-            )
 
 
 @dataclass(frozen=True, slots=True)

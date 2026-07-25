@@ -1,12 +1,19 @@
 """`process_approved_intent` -- Order Manager's single public entry point. Orchestrates: build (own,
 narrow builder) -> validate + duplicate-guard + submit + track (REUSED, unmodified
 `execution_engine.pipeline.submit_built_order`) -> journal every stage -> wrap into
-`OrderExecutionResult`. Never raises; never sends a real order (Phase 3 scope, `DryRunBrokerAdapter`
-only). Fail-closed: any build failure journals the failure and returns a REJECTED result.
+`OrderExecutionResult`. Never raises. Fail-closed: any build failure journals the failure and returns a
+REJECTED result.
+
+Accepts any `BrokerAdapter` (the general protocol, Phase 10 fix, CEO-authorized 2026-07-25) -- this
+module never chooses which adapter runs, the caller does. `OrderExecutionResult.dry_run` reflects that
+choice (`isinstance(adapter, DryRunBrokerAdapter)`), never a hardcoded constant: a `DryRunBrokerAdapter`
+still always yields `dry_run=True` (unchanged from Phase 3 -- every existing caller/test sees the exact
+same result), a real (even demo) adapter yields `dry_run=False`.
 """
 
 from __future__ import annotations
 
+from ai_trader.execution_engine.broker_adapter import BrokerAdapter
 from ai_trader.execution_engine.ledger import OrderLedger
 from ai_trader.execution_engine.pipeline import submit_built_order
 from ai_trader.execution_engine.types import BrokerCapabilities, OrderState
@@ -20,10 +27,10 @@ from ai_trader.risk_manager_live.types import InstrumentSpecification
 
 
 def _rejected_result(
-    client_order_id: str, reason: str, audit_event_ids: tuple[str, ...],
+    client_order_id: str, reason: str, audit_event_ids: tuple[str, ...], dry_run: bool,
 ) -> OrderExecutionResult:
     return OrderExecutionResult(
-        order_request_id="", client_order_id=client_order_id, state=OrderState.REJECTED, dry_run=True,
+        order_request_id="", client_order_id=client_order_id, state=OrderState.REJECTED, dry_run=dry_run,
         reasons=(reason,), audit_event_ids=audit_event_ids,
     )
 
@@ -31,9 +38,10 @@ def _rejected_result(
 def process_approved_intent(
     intent: ApprovedTradeIntent, instrument: InstrumentSpecification, portfolio: PortfolioState,
     caps: BrokerCapabilities, ledger: OrderLedger, journal: OrderManagerAuditJournal,
-    adapter: DryRunBrokerAdapter, config: OrderManagerConfig | None = None,
+    adapter: BrokerAdapter, config: OrderManagerConfig | None = None,
 ) -> OrderExecutionResult:
     resolved_config = config if config is not None else OrderManagerConfig()
+    dry_run = isinstance(adapter, DryRunBrokerAdapter)
     event_ids: list[str] = []
 
     def _journal(stage: str, client_order_id: str, detail: dict[str, object]) -> None:
@@ -53,7 +61,7 @@ def process_approved_intent(
         reason = build_outcome.reason or rc.BUILD_FAILED
         placeholder_client_order_id = f"{resolved_config.client_order_id_prefix}-LIVE-{intent.proposal_id}"
         _journal("ORDER_BUILD_FAILED", placeholder_client_order_id, {"reason": reason})
-        return _rejected_result(placeholder_client_order_id, reason, tuple(event_ids))
+        return _rejected_result(placeholder_client_order_id, reason, tuple(event_ids), dry_run)
 
     order = build_outcome.order
     _journal("ORDER_BUILT", order.client_order_id, {
@@ -70,7 +78,9 @@ def process_approved_intent(
     record, fill, duplicate = submit_built_order(order, portfolio, caps, ledger, adapter)
     if record is None:
         _journal("ORDER_SUBMIT_INTERNAL_ERROR", order.client_order_id, {})
-        return _rejected_result(order.client_order_id, "INTERNAL_ERROR: unexpected exception during submit", tuple(event_ids))
+        return _rejected_result(
+            order.client_order_id, "INTERNAL_ERROR: unexpected exception during submit", tuple(event_ids), dry_run,
+        )
 
     stage = "ORDER_SUBMIT_DUPLICATE" if duplicate else f"ORDER_STATE_{record.state.value}"
     _journal(stage, order.client_order_id, {
@@ -81,6 +91,6 @@ def process_approved_intent(
 
     return OrderExecutionResult(
         order_request_id=order.order_request_id, client_order_id=order.client_order_id,
-        state=record.state, dry_run=True, filled_qty=record.filled_qty, avg_price=record.avg_price,
+        state=record.state, dry_run=dry_run, filled_qty=record.filled_qty, avg_price=record.avg_price,
         reasons=record.reasons, audit_event_ids=tuple(event_ids),
     )

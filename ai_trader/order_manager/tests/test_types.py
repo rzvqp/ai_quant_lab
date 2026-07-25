@@ -49,15 +49,17 @@ def test_intent_valid_construction_succeeds() -> None:
     assert intent.volume == 0.2
 
 
-def test_execution_result_requires_dry_run_true() -> None:
-    with pytest.raises(ValueError):
-        OrderExecutionResult(
-            order_request_id="R1", client_order_id="C1", state=OrderState.ACKNOWLEDGED, dry_run=False,
-        )
-
-
 def test_execution_result_dry_run_true_succeeds() -> None:
     result = OrderExecutionResult(
         order_request_id="R1", client_order_id="C1", state=OrderState.ACKNOWLEDGED, dry_run=True,
     )
     assert result.dry_run is True
+
+
+def test_execution_result_dry_run_false_succeeds() -> None:
+    """Phase 10 fix (CEO-authorized 2026-07-25): `dry_run` reflects which adapter actually ran, no
+    longer a hardcoded-True invariant -- a real (even demo) adapter yields `dry_run=False`."""
+    result = OrderExecutionResult(
+        order_request_id="R1", client_order_id="C1", state=OrderState.ACKNOWLEDGED, dry_run=False,
+    )
+    assert result.dry_run is False

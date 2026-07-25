@@ -11,9 +11,9 @@ from pathlib import Path
 from ai_trader.confidence_engine.types import ConfidenceAssessment, ConfidenceEngineConfig
 from ai_trader.context_engine.types import MarketContextSnapshot
 from ai_trader.context_memory import ContextMemoryRepository
+from ai_trader.execution_engine.broker_adapter import BrokerAdapter
 from ai_trader.execution_engine.ledger import OrderLedger
 from ai_trader.execution_engine.types import BrokerCapabilities
-from ai_trader.order_manager.dry_run_adapter import DryRunBrokerAdapter
 from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.order_manager.types import OrderExecutionResult, OrderManagerConfig
 from ai_trader.portfolio_manager_live.types import PortfolioDailyState, PortfolioDecision, PortfolioManagerConfig
@@ -96,7 +96,11 @@ class OrchestratorDependencies:
     broker_caps: BrokerCapabilities
     ledger: OrderLedger
     order_journal: OrderManagerAuditJournal
-    adapter: DryRunBrokerAdapter
+    #: Widened from `DryRunBrokerAdapter` to the general `BrokerAdapter` protocol (Phase 10 fix,
+    #: CEO-authorized 2026-07-25, same minimal/additive pattern as `order_manager.process_approved_intent`'s
+    #: own widening) -- the orchestrator never chooses which adapter runs, the caller does; a
+    #: `DryRunBrokerAdapter` still behaves identically, unchanged.
+    adapter: BrokerAdapter
     repository: ContextMemoryRepository | None = None
     telegram_credentials: TelegramCredentials | None = None
     strategy_library_path: Path | None = None
