@@ -29,7 +29,22 @@ derived, not assumed.
    contract — now denies with `CIRCUIT_DATA_UNAVAILABLE`. See
    `AI_TRADER_PHASE2A_STEP3_PNL_SOURCE_REPORT.md`. Virtual/shadow implementation deliberately not
    built (same interface, later authorization, per CEO instruction).
-4. **#5** — live MT5 account/instrument/equity bridge.
+4. **#5 — DONE.** New package `ai_trader/mt5_account_bridge/`: `MT5AccountBridge` projects
+   `account_info()`/`symbol_info()` (already part of the frozen Phase 1 `MT5Gateway` Protocol, no gateway
+   extension needed) into `AccountState`/`InstrumentSpecification`. Fail-closed on any missing/incomplete
+   field, never caches (every call re-reads the gateway fresh). Not wired into `orchestrate()` or any
+   other caller — this step built the bridge itself only. See
+   `AI_TRADER_PHASE2A_STEP4_ACCOUNT_BRIDGE_REPORT.md`.
+   **NEW — equity high-water-mark survives a process restart** (CEO-added, 2026-07-26, disclosed as
+   Step 3's own limitation): `MT5PortfolioStateSource` only ratchets its high-water mark from whichever
+   equity value it first observes after construction — a process restart during a months-long shadow run
+   resets that reference. The circuit breaker would then compute drawdown against a false, lower peak,
+   and could fail to trip when it should. Same class of problem as Step 1's persistent suspension state,
+   on a different variable. Must exist **before Phase 3**. **Not authorized to build now.**
+   **NEW — consecutive-loss detection beyond the weekly window** (CEO-added, 2026-07-26, disclosed as
+   Step 3's own limitation): bounded to the same 7-day window fetched for weekly P&L; a losing streak
+   older than 7 days would not be seen in full. Must exist **before Phase 3**. **Not authorized to build
+   now.**
 5. **#6** — live signal source (Piesa 1 bar feed, Piesa 2 candidate producer, Piesa 3 journal).
 6. **NEW — long-running process robustness** (crash/restart/resume-from-correct-state/stopped-signal for
    a multi-week unattended shadow process). Not itemized in any of the four audits; added by CEO decision
