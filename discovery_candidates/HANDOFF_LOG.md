@@ -53,3 +53,42 @@ dedicated investigation; DC-0001's hash/content/Handoff Statement must not be mo
 | 2026-07-23 | DC-0016 | v1 | ADDENDUM A / SUBMITTED (backfilled 2026-07-23) | sha256:9f76941ca0755e69a25ca81b0ccc25cc7c4d3e9b259c87708d20a2c83d00eec8 | `addendum_2026-07-23_a.md` |
 | 2026-07-23 | DC-0017 | v1 | ADDENDUM A / SUBMITTED (backfilled 2026-07-23) | sha256:783962cb1b12047bbfe54535f8ff5e55bf3b312e836a66a7b53f0fae21e3eb1b | `addendum_2026-07-23_a.md` |
 | 2026-07-23 | DC-0017 | v1 | ADDENDUM B / SUBMITTED (backfilled 2026-07-23) | sha256:3118f8126f70a05d776e4cf1a397f5a7d740bd949dfcfbeeb135bb2853b54a3a | `addendum_2026-07-23_b.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM B / SUBMITTED | sha256:58e8d86a67629a64400b5c042e5f168a62380f0c994d9c020946c2944949ea38 | `addendum_2026-07-24_b.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM C / SUBMITTED | sha256:67aee77367c425d3bf2dcfdce7aa63ad770b0e2938688a99dddb866a5cebaf82 | `addendum_2026-07-24_c.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM D / SUBMITTED | sha256:195bb307667b5784c848ebb51a68c6382c384df5af3cadd15314a2ad8f695cf3 | `addendum_2026-07-24_d.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM E / SUBMITTED | sha256:861b821a0158fcccc50427638eb12f998d90475858e563e9f33f9687d8435ee1 | `addendum_2026-07-24_e.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM F / SUBMITTED | sha256:5877794fb23741a2993c7b977b20a8a79ffd65069a3a5e46e82561a0dea85326 | `addendum_2026-07-24_f.md` |
+| 2026-07-24 | DC-0017 | v1 | ADDENDUM C / SUBMITTED | sha256:5581069f1d03ac5cf4e6c519cf572fa9b6ec45aaae4c6131268a188f1e437562 | `addendum_2026-07-24_c.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM G / SUBMITTED | sha256:9f5fb9ade9c470a7ece593711b3762e3aa0cdd5362958ac718905dcd0e98516f | `addendum_2026-07-24_g.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM H / SUBMITTED | sha256:071dfe174f328153421b7bd6556b341e8e6976fcecf545cc991e0e934b25668d | `addendum_2026-07-24_h.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM I / SUBMITTED | sha256:2adcacb212037cac9bcc0a20fe6d293ceb7df02a8c01d80d85d3e7f34f533fb9 | `addendum_2026-07-24_i.md` |
+| 2026-07-24 | DC-0017 | v1 | ADDENDUM D / SUBMITTED | sha256:d7b3f00d12e5e96f7d3b2e48523c2b91c4c3c8d13204ab1062c8efd7d246dcef | `addendum_2026-07-24_d.md` |
+| 2026-07-24 | DC-0019 | v1 | FROZEN / SUBMITTED | sha256:4130deed316f517237f3473b5bbb1730df0c2c5e560e0ec25083a705814391d8 | A Weekend Gap Nearly Double the Prior Record Fails to Retrace, Extending Into a Sustained Sunday-Reopen Decline Before a Partial Recovery |
+| 2026-07-24 | DC-0019 | v1 | ADDENDUM A / SUBMITTED | sha256:34c39002f7d25ff03c8e5c6d384714282438341a7e70426caf05f8cdc8783afb | `addendum_2026-07-24_a.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM J / SUBMITTED | sha256:4dc2ba87e4850e89ef8a084d9ee9c3591518a43e9a3171e0c1328faf6e373b4a | `addendum_2026-07-24_j.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM K / SUBMITTED | sha256:ea0f3bf15693dc9ef4943ea4f598246ec85d8e0ee7d45bee4eaabd071be3443c | `addendum_2026-07-24_k.md` |
+| 2026-07-24 | DC-0020 | v1 | FROZEN / SUBMITTED | sha256:211c6dad5b369dd4377055adc1971b657f2cb5dce0e0587150e9956c18537ec0 | An 18:00 UTC Low Sweep Followed By a Failed Fresh-High Reclaim Sets a New All-Time Volume Record and Extends Into a Multi-Leg, Bidirectional Decline |
+| 2026-07-24 | DC-0021 | v1 | FROZEN / SUBMITTED | sha256:2988116288277a049c65127c0e97c780801e6566fb384beb7adf5f7f2c15a9f8 | A Sustained NY-Morning Decline Transitions Directly Into a Multi-Candle Absorption Phase at Persistently Elevated Volume, With No Volume Decay Between Phases |
+| 2026-07-24 | DC-0021 | v1 | ADDENDUM A / SUBMITTED | sha256:3c4ebd17a2c6faa81a400010d4ba32dd746e150fac8894b55449b92ebcd313fa | `addendum_2026-07-24_a.md` |
+| 2026-07-24 | DC-0022 | v1 | FROZEN / SUBMITTED | sha256:eedbe3c0840aefad24b60bfa0b13ca5023e8c8eda9887b1680ef495e30c5a318 | An NY-Afternoon Sustained Directional Expansion Sets New Duration and Magnitude Records for the Family, Nearly Doubling the Prior Longest Run Before Reversing |
+| 2026-07-24 | DC-0023 | v1 | FROZEN / SUBMITTED | sha256:5113f459c27ae3ce39110515e923db31a7db2fc8f146116fa7283ed1993e288e | An 8-Hour Multi-Leg, Choppy Episode at Persistently Extreme Volume, Containing a Single Candle Among the Largest-Volume Candles in the Replay |
+| 2026-07-24 | DC-0024 | v1 | FROZEN / SUBMITTED | sha256:813c1d0edb21b54885374fa4e5b34f8309817ddee01f1bf1e84924b863757dad | A London-Morning Sustained Decline Sets a New All-Time Magnitude Record (125.7 Points), Then Partially Recovers |
+| 2026-07-24 | DC-0010 | v1 | ADDENDUM B / SUBMITTED | sha256:132b611557121681d780513d5ae7916a69207937c57f2b4134bd1e5863861476 | `addendum_2026-07-24_b.md` |
+| 2026-07-24 | DC-0011 | v1 | ADDENDUM C / SUBMITTED | sha256:da9173d62056cd8d5bd3858168b4c3e3ed565dfc56907bbb8b4eeda20c2f7e35 | `addendum_2026-07-24_c.md` |
+| 2026-07-24 | DC-0023 | v1 | ADDENDUM A / SUBMITTED | sha256:d9fa5d35aabd31754a99b624d19759e546db03ec14cfb0044e0298f17b93dbee | `addendum_2026-07-24_a.md` |
+| 2026-07-24 | DC-0013 | v1 | ADDENDUM L / SUBMITTED | sha256:bc10a30f15cf33f0324bd526d15d213cd6f420232998261506c980598a8fff80 | `addendum_2026-07-24_l.md` |
+| 2026-07-24 | DC-0019 | v1 | ADDENDUM B / SUBMITTED | sha256:2f3c1517a2a50751e4499af7d4fa5cae4121d7e180f6718774c99ee6f8cfe93f | `addendum_2026-07-24_b.md` |
+| 2026-07-25 | DC-0025 | v1 | FROZEN / SUBMITTED | sha256:b0929b2063ac55b659418067b8d6b5f3dba0c576a8b8dd68e767bb8d60be4539 | A Two-Candle Escalating-Volume Waterfall Decline Sets a New All-Time Volume Record, Then Retraces ~75% Before Consolidating |
+| 2026-07-25 | DC-0019 | v1 | ADDENDUM C / SUBMITTED | sha256:fc5cd113d280ed8d5e63d73e1fa719c74126a951135dacf8f512febb226aac7f | `addendum_2026-07-25_c.md` |
+| 2026-07-25 | DC-0025 | v1 | ADDENDUM A / SUBMITTED | sha256:8c9965f62fe7be1eb98223a62430b7d166030e0fcfa64830ffcb1b78b3b1df74 | `addendum_2026-07-25_a.md` |
+| 2026-07-25 | DC-0013 | v1 | ADDENDUM M / SUBMITTED | sha256:3094b1fee5cdf01d5c2f90ec9d00b77261a3ae3a3568ece0e97f950eaa53e1e3 | `addendum_2026-07-25_m.md` |
+| 2026-07-25 | DC-0024 | v1 | ADDENDUM A / SUBMITTED | sha256:4d81a14aa1651c975c2cb307b63cc30c0d1f8e43246bdcd98d97420a5d78db50 | `addendum_2026-07-25_a.md` |
+| 2026-07-25 | DC-0025 | v1 | ADDENDUM B / SUBMITTED | sha256:f05af824ff747d2d66bbab3d7119dc23813aa396e4aa11ff63a3e33baf38b1ef | `addendum_2026-07-25_b.md` |
+| 2026-07-25 | DC-0026 | v1 | FROZEN / SUBMITTED | sha256:c4155ef5caf0a154543e77cd0929fca90a3db64d6170caccaf7dacae84fa97e6 | A Thin-Liquidity Daily-Rollover Reopen Produces a ~100-Point Parabolic Spike That Fully Reverses Within Minutes |
+| 2026-07-25 | DC-0023 | v1 | ADDENDUM B / SUBMITTED | sha256:acf342afe8c01241d05504ec093a2008a140f0a3d3113291f06195f378da325c | `addendum_2026-07-25_b.md` |
+| 2026-07-25 | DC-0024 | v1 | ADDENDUM B / SUBMITTED | sha256:8e301ec1a62aab14ade7cce7395a3af44685ee628a3d236c17f96dfe3d2f3352 | `addendum_2026-07-25_b.md` |
+| 2026-07-25 | DC-0023 | v1 | ADDENDUM C / SUBMITTED | sha256:089bf2048868c4b43e676353ca2352318d358ac02eff9bea30a34f60519f12bd | `addendum_2026-07-25_c.md` |
+| 2026-07-25 | DC-0024 | v1 | ADDENDUM C / SUBMITTED | sha256:a5c986f63355a0553046c80255ebb269f7dee7473f2b2e7480b01d748a114250 | `addendum_2026-07-25_c.md` |
+| 2026-07-25 | DC-0019 | v1 | ADDENDUM D / SUBMITTED | sha256:f568038cc9cc9d89fd420459355dba41932ad740e7fa2cdd71fa186ab8532e14 | `addendum_2026-07-25_d.md` |
+| 2026-07-25 | DC-0024 | v1 | ADDENDUM D / SUBMITTED | sha256:7e1e5903eb306161fe1f444cd18a885449c8311a9e6b370ed8e90aecdb8ad80e | `addendum_2026-07-25_d.md` |
+| 2026-07-25 | DC-0019 | v1 | ADDENDUM E / SUBMITTED | sha256:99ca3398550b3a5df729a57eb70a98d62b2182ffb8d8b164653ce7dd3b644bf0 | `addendum_2026-07-25_e.md` |

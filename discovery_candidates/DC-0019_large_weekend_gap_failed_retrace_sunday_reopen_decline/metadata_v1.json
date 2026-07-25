@@ -1,0 +1,23 @@
+{
+  "candidate_id": "DC-0019",
+  "title": "A Weekend Gap Nearly Double the Prior Record Fails to Retrace, Extending Into a Sustained Sunday-Reopen Decline Before a Partial Recovery",
+  "origin_mode": "discretionary-observation, Alpha autonomous replay sprint (v2 pre-investigation filter applied)",
+  "date_first_observed": "2026-07-24",
+  "date_frozen": "2026-07-24",
+  "version": "v1",
+  "instrument": "XAUUSD (OANDA)",
+  "timeframes_examined": [
+    "M15",
+    "M5"
+  ],
+  "data_split_id": "post_holdout_reopened_2025-10-23T09-15-00Z_v1",
+  "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+  "related_ids": [
+    "DC-0013",
+    "DC-0016",
+    "OBS-0015"
+  ],
+  "content_hash": "sha256:4130deed316f517237f3473b5bbb1730df0c2c5e560e0ec25083a705814391d8",
+  "content_hash_method": "sha256 over candidate_v1.md UTF-8 bytes, LF endings, single trailing newline, content_hash occurrences replaced by literal PENDING",
+  "produced_by": "alpha_autonomous_research"
+}

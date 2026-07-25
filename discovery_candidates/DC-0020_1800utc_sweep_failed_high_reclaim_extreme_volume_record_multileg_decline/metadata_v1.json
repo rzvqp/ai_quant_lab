@@ -1,0 +1,25 @@
+{
+  "candidate_id": "DC-0020",
+  "title": "An 18:00 UTC Low Sweep Followed By a Failed Fresh-High Reclaim Sets a New All-Time Volume Record and Extends Into a Multi-Leg, Bidirectional Decline",
+  "origin_mode": "discretionary-observation, Alpha autonomous replay sprint (v2 pre-investigation filter applied)",
+  "date_first_observed": "2026-07-24",
+  "date_frozen": "2026-07-24",
+  "version": "v1",
+  "instrument": "XAUUSD (OANDA)",
+  "timeframes_examined": [
+    "M15",
+    "M5",
+    "M1"
+  ],
+  "data_split_id": "post_holdout_reopened_2025-10-23T09-15-00Z_v1",
+  "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+  "related_ids": [
+    "DC-0018",
+    "DC-0006",
+    "DC-0011",
+    "DC-0013"
+  ],
+  "content_hash": "sha256:211c6dad5b369dd4377055adc1971b657f2cb5dce0e0587150e9956c18537ec0",
+  "content_hash_method": "sha256 over candidate_v1.md UTF-8 bytes, LF endings, single trailing newline, content_hash occurrences replaced by literal PENDING",
+  "produced_by": "alpha_autonomous_research"
+}

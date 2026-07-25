@@ -44,7 +44,7 @@
 
   "log_max_size_mb": 20,
 
-  "dry_run": true,
+  "dry_run": false,
   "backup_state_before_cycle": true,
   "require_continue_marker": true,
   "stop_on_missing_state": true,

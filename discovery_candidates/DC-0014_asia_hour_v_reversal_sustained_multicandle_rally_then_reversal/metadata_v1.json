@@ -1,0 +1,25 @@
+{
+  "candidate_id": "DC-0014",
+  "title": "A V-Shaped Reversal at the 00:00-01:00 UTC Hour Builds Into a Sustained Four-Candle Rally, Then Reverses",
+  "origin_mode": "discretionary-observation, Alpha autonomous replay sprint (v2 pre-investigation filter applied)",
+  "date_first_observed": "2026-07-23",
+  "date_frozen": "2026-07-23",
+  "version": "v1",
+  "instrument": "XAUUSD (OANDA)",
+  "timeframes_examined": [
+    "M15",
+    "M5",
+    "M1"
+  ],
+  "data_split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+  "holdout_cutoff": "2025-10-23T09:15:00+00:00",
+  "related_ids": [
+    "DC-0013",
+    "DC-0008",
+    "DC-0010",
+    "DC-0012"
+  ],
+  "content_hash": "sha256:3cdc39b74e1db801b2ead9ff0c2b63d93a92347d58ab49570bcc7f2fb7b056df",
+  "content_hash_method": "sha256 over candidate_v1.md UTF-8 bytes, LF endings, single trailing newline, content_hash occurrences replaced by literal PENDING",
+  "produced_by": "alpha_autonomous_research"
+}
