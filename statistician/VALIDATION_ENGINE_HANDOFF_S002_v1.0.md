@@ -41,7 +41,7 @@ Trei straturi, secvențiale:
 5. Regresie cu interacțiune: outcome ~ R × regim_volatilitate, erori HAC/clusterizate pe zi.
 6. Comparație complementară pe perechi potrivite (matching) susținut-vs-concentrat, regim de volatilitate similar — verificare de robustețe față de regresie.
 7. Sensibilitate (multiverse): R calculat din bază M1 vs. M5; definiții alternative ale "M15 mare" (percentilă/z-score pe ferestre mobile diferite).
-8. Corecție family-wise prin **permutare (max-T)**, nu Bonferroni simplu — rezultatul acestui test servește și DC-0013 (dependent direct) și informează statutul DC-0006/0015/0017.
+8. Corecție family-wise prin **permutare (max-T)**, nu Bonferroni simplu — rezultatul acestui test servește direct familia de 12 candidați identificată în `RT-AUDIT-0002_ALPHA1.md` §8 (DC-0013, 0014, 0015, 0016, 0017, 0018, 0019, 0020, 0021, 0022, 0023, 0024), nu doar DC-0013.
 9. Analiză de putere pe un interval **conservator** de mărimi de efect (nu valoarea brută observată din cele ~6 instanțe cunoscute — risc de "winner's curse"/regresie spre medie).
 
 ### 5. Datele necesare
@@ -70,7 +70,9 @@ Risc de confound mecanic/tautologic — R ar putea fi doar o transformare monoto
 Autocorelație serială (lumânările mari se aglomerează în regimuri de volatilitate — motivul bootstrap-ului în blocuri, nu i.i.d.). Testări multiple nedeclarate dacă rezultatul e reutilizat pentru DC-0013 fără corecție comună. Data snooping la alegerea pragului dacă e privit înainte de derivare (interzis explicit la Strat 2).
 
 ### 11. Observații importante pentru execuție
-Testul cu cea mai mare pârghie de portofoliu — rezultatul deblochează automat DC-0013 și informează DC-0006/0015/0017. Recomand execuția înaintea celorlalte doi, pentru reutilizarea pipeline-ului de scanare a populației.
+Testul cu cea mai mare pârghie de portofoliu. **Actualizare 2026-07-25:** `RT-AUDIT-0002_ALPHA1.md` §8 ("Duplicate Assessment") confirmă independent — DC-0013, 0014, 0015, 0016, 0017, 0018, 0019, 0020, 0021, 0022, 0023, 0024 declară toate aceeași construcție de bază ("sustained, distributed multi-minute participation"): **12 candidați, un singur mecanism**. Dacă bimodalitatea de la Strat 1 cade, toți cei 12 cad cu ea — nu doar DC-0013 și cei 3 din MONITORING notați inițial la Stage S001 (portofoliul s-a extins de la 18 la 26 candidați între timp). Recomand execuția înaintea celorlalte doi, pentru reutilizarea pipeline-ului de scanare a populației.
+
+**STATUS: DC-0008 intră în Phase 2 — specificația de mai sus (§§1-10) e completă și pregătită pentru execuție de Validation Engine, fără modificări. Aceasta este confirmarea de închidere a designului, nu execuția propriu-zisă.**
 
 ---
 

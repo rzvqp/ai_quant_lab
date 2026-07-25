@@ -56,7 +56,8 @@ Dacă se confirmă (vezi §c) că datasetul se întinde dincolo de ultima bară 
 Cele două fapte lipsă au fost furnizate de CEO și **verificate direct de mine în artefacte**, nu acceptate ca atare:
 
 1. **Cursorul de replay al lui Alpha:** `research_log/SESSION_STATE.md` linia 15 — *"Replay OANDA:XAUUSD M15: pozitie finala **2026-05-15 20:59:59 UTC** (current_date 1778878799)"* — confirmat literal, epoch 1778878799 convertește exact la 2026-05-15 20:59:59 UTC. Textul "Reia de la..." e la **linia 3821** (nu 3800 — corecție minoră de citare, conținutul identic): *"Reia de la 2026-05-15 20:59:59 UTC pe M15, stepping manual (current_date confirmat 1778878799...)"*. Confirmat: Alpha a parcurs **106 zile** dincolo de ultima observație documentată în DC-0026 (~2026-01-29) fără să înghețe niciun candidat nou.
-2. **Întinderea dataset-ului:** `data/market/OANDA_XAUUSD_M15.csv` — 84.152 linii totale (84.151 bare de date + 1 antet — diferență de o unitate față de cifra citată, neglijabilă). Prima bară: epoch 1671187500 = **2022-12-16 10:45:00 UTC**. Ultima bară: epoch 1783922400 = **2026-07-13 06:00:00 UTC** — confirmat exact.
+2. **Întinderea dataset-ului:** `data/market/OANDA_XAUUSD_M15.csv` — **84.152 bare de date** (corecție față de versiunea anterioară a acestui document, care spunea 84.151 — eroare proprie, de tip off-by-one: `wc -l` a raportat 84.152 linii totale, dar fișierul nu are newline final, deci `wc -l` subnumără cu 1; verificat cu `awk` — imun la acest artefact — care dă 84.153 linii totale, deci 84.152 bare de date după scăderea antetului. Recunoscut și documentat anterior ca defectul **D10** în `PROJECT_AUDIT.md`, 2026-07-13, "proven benign". Verificare încrucișată proprie, din epoch, nu doar aritmetică acceptată: 67.321 bare pre-cutoff + 16.831 bare post-cutoff = 84.152, exact.) Prima bară: epoch 1671187500 = **2022-12-16 10:45:00 UTC**. Ultima bară: epoch 1783922400 = **2026-07-13 06:00:00 UTC** — confirmat exact.
+   **Impact asupra concluziei:** niciunul. Eroarea de 1 bară afectează doar cifra totală citată în acest document, nu datele de graniță (2026-05-15 → 2026-07-13), nu numărul de zile ale cozii (~59), nu rata de evenimente proiectată (~2.4-2.6) și nu pragul de putere (~15-20). Determinarea de la (b) rămâne neschimbată.
 
 **Concluzie (c): DA, există o coadă necontaminată.** Fereastra **2026-05-15T20:59:59Z → 2026-07-13T06:00:00Z**, aproximativ **59 zile calendaristice (~42 zile de tranzacționare)**, nu a fost parcursă de Alpha și nu a produs niciun candidat — e singura porțiune a dataset-ului rezervat inițial care rămâne, tehnic, neobservată.
 
@@ -99,6 +100,14 @@ Cu (c) rezolvat, decizia nu mai e condiționată:
 
 ---
 
+## STATUS: ÎNCHIS — DC-0004 = TESTABLE BUT INSUFFICIENT EVIDENCE
+
+Verdictul de mai sus (Ramura 2, plafon TESTABLE BUT INSUFFICIENT EVIDENCE) e o interpretare pe baza analizei de putere deja făcute — nu necesită execuție de date pentru a fi emis, și îl închid formal aici, azi, 2026-07-25.
+
+**Precizare de mandat, din nou:** "extensia de robustețe in-sample" descrisă în Ramura 2 (re-rularea matched-null pe fereastra observată) rămâne o **execuție**, nu o interpretare — conform Contractului Statistician↔Validation Engine, această rulare trebuie efectuată de Validation Engine, nu de mine. Specificația de mai sus (metodologie, definiții blocate, date necesare) e deja completă și executabilă de VE fără interpretări suplimentare. O declar **pregătită pentru handoff**, ca amendament la Pachetul 3 al `VALIDATION_ENGINE_HANDOFF_S002_v1.0.md`. Verdictul de închidere (TESTABLE BUT INSUFFICIENT EVIDENCE) nu așteaptă acel rezultat — e deja determinat de insuficiența de putere singură; rezultatul extensiei, când va fi executat, se adaugă ca notă descriptivă suplimentară, fără să poată schimba plafonul de verdict (nu poate deveni STATISTICALLY ROBUST fără o fereastră genuin nouă și suficient de lungă).
+
+---
+
 **Acest document amendează Pachetul 3 din `VALIDATION_ENGINE_HANDOFF_S002_v1.0.md`. Pachetele 1 și 2 (DC-0008, DC-0003) nu sunt afectate.**
 
-**Statistician a finalizat determinarea. DC-0004 intră în Ramura 2, plafonat la TESTABLE BUT INSUFFICIENT EVIDENCE, până la apariția unei ferestre de date genuin noi și suficient de lungi.**
+**Statistician a finalizat determinarea. DC-0004 e ÎNCHIS la TESTABLE BUT INSUFFICIENT EVIDENCE, până la apariția unei ferestre de date genuin noi și suficient de lungi.**
