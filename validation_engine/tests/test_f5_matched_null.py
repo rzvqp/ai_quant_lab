@@ -122,8 +122,9 @@ def test_bundles_are_clearly_marked(tmp_path):
 
 # ───────────────────── invarianții F2 rămân ───────────────────────────────────
 
-def test_method_remains_unvalidated():
+def test_method_is_validated_after_ceo_promotion():
+    """CEO 2026-07-25: matched_null@v1 promovat la VALIDATED (registru v1.5)."""
     from ve.spec import registry_validator
     reg = registry_validator.load_registry()
-    assert reg["test_methods"]["matched_null@v1"]["calibration_status"] == "UNVALIDATED"
-    assert reg["status"] == "PUBLISHED_NOT_EXECUTABLE"
+    assert reg["test_methods"]["matched_null@v1"]["calibration_status"] == "VALIDATED"
+    assert reg["status"] == "PARTIALLY_EXECUTABLE"

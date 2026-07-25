@@ -11,13 +11,14 @@ IDS = [f"{m[0]}_{m[1][:40].replace(' ', '_')}" for m in MUTATIONS]
 def test_baseline_halts_only_on_calibration_gate(baseline):
     """Specificația de referință este completă și corectă din punct de vedere al
     formei și al vocabularului. Singurul motiv de oprire rămas este poarta de
-    calibrare: la v1.0 nicio metodă nu este VALIDATED."""
+    calibrare: după promovarea CEO 2026-07-25 doar matched_null@v1 e VALIDATED,
+    deci metoda de corecție bonferroni@v1 (încă UNVALIDATED) ține poarta închisă."""
     result = validate_spec_object(baseline, spec_sha256="0" * 64)
 
     assert result.halted
     assert result.stage_reached == 2
     assert set(result.codes) == {"E3"}
-    assert len(result.errors) == 2  # metoda de test + metoda de corecție
+    assert len(result.errors) == 1  # doar metoda de corecție bonferroni@v1 (matched_null@v1 e VALIDATED)
     for err in result.errors:
         assert "calibrare" in err.reason or "statusul" in err.reason
         assert "/method" in err.field_path

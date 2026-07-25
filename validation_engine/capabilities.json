@@ -1,20 +1,20 @@
 {
-  "registry_id": "VE-CAPREG-v1.4",
-  "registry_version": "1.4",
-  "status": "PUBLISHED_NOT_EXECUTABLE",
-  "published_at": "2026-07-24",
+  "registry_id": "VE-CAPREG-v1.5",
+  "registry_version": "1.5",
+  "status": "PARTIALLY_EXECUTABLE",
+  "published_at": "2026-07-25",
   "contract_version": "STAT-VE-CONTRACT-v1.0",
   "architecture_version": "VE-ARCH-v1.0",
-  "human_readable": "CAPABILITY_REGISTRY_v1.4.md",
+  "human_readable": "CAPABILITY_REGISTRY_v1.5.md",
   "revision": {
-    "supersedes": "1.3",
-    "authority": "CEO decision 2026-07-25: implement G8 via variant V1 (declarative member eligibility on a pre-outcome whitelist).",
-    "scope": "Strictly the resolution of gap G8. bonferroni@v1 and benjamini_hochberg@v1 gain a required member_eligibility {field, op, value}. field is restricted to a published whitelist of PRE-OUTCOME fields; any reference to a result quantity (p-value/statistic/effect) is rejected fail-closed at validation. No method added/removed/promoted; no calibration status changed.",
+    "supersedes": "1.4",
+    "authority": "CEO promotion decision 2026-07-25 (registry v1.5): matched_null@v1 -> VALIDATED after F6/F6.1/F6.2/F6.3 calibration at real-data conditions plus the conditional-phi measurement on the real NY-up event population.",
+    "scope": "Promote exactly one method (matched_null@v1) to VALIDATED and move the registry status to PARTIALLY_EXECUTABLE (1 of 15). No method added or removed; no other calibration status changed. Four mandatory validity caveats are attached to matched_null@v1 as first-class fields. Gap G6 (M1/M5 sub-bar source for the DC-0008 R exposure) remains OPEN and unaffected by this promotion.",
     "changes": [
-      "G8: added top-level whitelist member_eligibility_fields = [n, denominator, event_count]. These are the ONLY fields a member-eligibility rule may reference. Result quantities (p_hat, observed, effect, statistic) are deliberately absent, so R3 (outcome-independence) is enforced by vocabulary, not discipline.",
-      "G8: bonferroni@v1 and benjamini_hochberg@v1 now require member_eligibility {field, op, value}. The realized family = enumerated candidate members whose eligibility rule holds at execution; m and the corrected threshold follow. The validator checks only the rule's structure and whitelist membership, never computes the family (that needs data, F5+).",
-      "G8: empty-eligible-family halts execution explicitly (runtime E6 PRECONDITION); documented in rule empty_eligible_family_halts.",
-      "G8: 'no filtering' is declared explicitly (e.g. {field: n, op: >=, value: 1}), never by omission — consistent with the none@v1 pattern."
+      "matched_null@v1.calibration_status: UNVALIDATED -> VALIDATED.",
+      "status: PUBLISHED_NOT_EXECUTABLE -> PARTIALLY_EXECUTABLE (1/15 methods validated).",
+      "matched_null@v1 gains a 'validation' object carrying the four CEO-mandated caveat fields: validity_domain (K6 only), ny_up_cell (small-n), reversion_vulnerability (phi<=-0.10), configuration (session-only stratification, ATR-scaled, no vol stratification).",
+      "The remaining 14 methods stay UNVALIDATED and cannot be referenced by an official specification (rule unvalidated_not_executable)."
     ]
   },
   "rules": {
@@ -492,7 +492,16 @@
   },
   "test_methods": {
     "matched_null@v1": {
-      "calibration_status": "UNVALIDATED",
+      "calibration_status": "VALIDATED",
+      "validation": {
+        "promoted_at": "2026-07-25",
+        "authority": "CEO promotion decision 2026-07-25 (registry v1.5)",
+        "evidence": "F6 (uniformity/FPR/power/reproducibility) + F6.1 (session vol + heavy tails) + F6.2 (real drift) + F6.3 (AR1 reversion / multi-threshold FPR / arbitrary-level placebo), all at real-data conditions; plus the conditional-phi measurement on the real NY-up event population.",
+        "validity_domain": "forward K6 ONLY. The reversion breaking point was measured on the K6 curve. K12 is NOT covered: conditional phi at K12 = -0.058 (~3x the global -0.018) and the K12 breaking point was never measured. Any use at K12 or any other horizon requires separate validation.",
+        "ny_up_cell": "NY-up cell n approx 37-42, at the calibration boundary. KS p=0.003 on the distribution body (conservative direction). Tails nominal at 0.01 / 0.05 / 0.10.",
+        "reversion_vulnerability": "Confirmed vulnerability to mean-reversion at phi <= -0.10 (5.5x the real global -0.018). Conditional phi measured on the real event population: -0.018 at K6, with CI [-0.228, +0.212] which does NOT exclude the -0.10 threshold. The point estimate confirms the margin; precision cannot confirm it at n=42. This imprecision is a DC-0004-specific risk (reversion pattern), not a method risk.",
+        "configuration": "unstratified; stratified on SESSION; ATR-scaled. Volatility stratification does NOT exist and is NOT validated."
+      },
       "acceptance_suites": [
         "S1",
         "S3",

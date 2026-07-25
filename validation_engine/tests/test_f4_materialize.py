@@ -167,10 +167,13 @@ def test_f4_leaves_registry_unexecutable(env):
     from ve.spec import registry_validator
     _mat(env)
     reg = registry_validator.load_registry()
-    assert reg["status"] == "PUBLISHED_NOT_EXECUTABLE"
+    # Statusul e stabilit de CEO (PARTIALLY_EXECUTABLE din 2026-07-25); F4 nu îl modifică.
+    assert reg["status"] == "PARTIALLY_EXECUTABLE"
+    # F4 nu modifică niciun status de calibrare: matched_null@v1 rămâne VALIDATED (CEO), restul UNVALIDATED.
     for s in ("test_methods", "correction_methods"):
-        for m in reg[s].values():
-            assert m["calibration_status"] == "UNVALIDATED"
+        for mid, m in reg[s].items():
+            expected = "VALIDATED" if mid == "matched_null@v1" else "UNVALIDATED"
+            assert m["calibration_status"] == expected, mid
 
 
 def test_external_writes_zero(env):

@@ -1,12 +1,12 @@
 # REGISTRU CONSOLIDAT — DIVIZII ȘI CANDIDAȚI
 ### Singura sursă de adevăr pentru structura laboratorului și stadiul fiecărui candidat
 
-**Document ID:** CEO-REGISTER-v1.1
-**Data:** 2026-07-25 · **Autor:** Arhitect Șef, sub delegare CEO
-**Înlocuiește:** v1.0 (aceeași zi)
+**Document ID:** CEO-REGISTER-v1.5
+**Data:** 2026-07-25 · **Autor:** CEO (aplicat de Validation Engine sub directivă CEO explicită 2026-07-25)
+**Înlocuiește:** v1.1 (aceeași zi)
 **Statut:** operațional
 
-**Modificări față de v1.0:** adăugată §0 Harta diviziilor (8, nu 6); adăugat Flow C și Research Lab; adăugată §E cu constatările Flow C verificate independent.
+**Modificări față de v1.1:** `matched_null@v1` PROMOVAT la `VALIDATED` (decizie CEO 2026-07-25); mașinăria de validare trece de la `PUBLISHED_NOT_EXECUTABLE` la `PARTIALLY_EXECUTABLE` (1/15); §C decizia 6 devine RATIFICATĂ; §B rescris cu cele 4 caveat-uri obligatorii + raționamentul deciziei de promovare (inclusiv măsurătoarea φ condițional și acceptarea analizei KS).
 
 ---
 
@@ -34,7 +34,7 @@ Doar CEO modifică acest document.
 | 3 | **Alpha 2** | `ai_quant_lab` / `statistician-foundation` | **ÎNCHIS** | `d453b27` — șablon testabilitate | ✅ |
 | 4 | **Red Team** | `ai_quant_lab` / `statistician-foundation` | STANDBY | `de919c2` — RT-FINAL-0002 | ✅ |
 | 5 | **Statistician** | `ai_quant_lab` / `statistician-foundation` | ACTIV | `4c458a7` — verdict holdout DC-0004 | ✅ |
-| 6 | **Validation Engine** | `ai_quant_lab` / `statistician-foundation` | ACTIV | `8c81917` — F6 PASS | ✅ |
+| 6 | **Validation Engine** | `ai_quant_lab` / `statistician-foundation` | ACTIV | registru v1.5 — `matched_null@v1` **VALIDATED** | ✅ |
 | 7 | **Flow C** | `ai_quant_lab` / **`flow-c-foundation`** | ACTIV | `083c69e` — RI-REPORT-0003 | ❌ **NEPUBLICAT** |
 | 8 | **Research Lab** | `ai_quant_lab` / `statistician-foundation` | **REACTIVAT 07-25** | dormant din 2026-07-13 | ✅ |
 
@@ -129,14 +129,29 @@ Singurul candidat care a traversat trei divizii.
 
 | Element | Stare |
 |---|---|
-| Metode `VALIDATED` | **0 / 15** |
-| Registru de capabilități | `PUBLISHED_NOT_EXECUTABLE` |
-| `matched_null@v1` | F6 verdict **PASS** — promovare **amânată** până după F6.1 |
-| Faza curentă | F6.1 în execuție |
+| Metode `VALIDATED` | **1 / 15** |
+| Registru de capabilități | `PARTIALLY_EXECUTABLE` (`VE-CAPREG-v1.5`) |
+| `matched_null@v1` | **VALIDATED** (CEO 2026-07-25) — domeniu K6, cu 4 caveat-uri obligatorii (mai jos) |
+| Celelalte 14 metode | `UNVALIDATED` — nereferabile de o specificație oficială |
 | Holdout la nivel VE | Neatins |
-| Teste | 405 |
+| Teste | 419 |
 
-Motivul amânării: bateria F6 folosește `rng.normal(0.0, SIGMA_1BAR, n_bars)` — randamente iid, sigma constantă. Fără cozi grele (cauza D1/D3) și fără volatilitate diferențiată pe sesiune, deci ipoteza nulă principală a laboratorului nu poate fi testată.
+Traseul de promovare: F6 (uniformitate/FPR/putere/reproducibilitate) → F6.1 (vol pe sesiune + cozi grele) → F6.2 (drift real, fără eșec clar) → F6.3 (reversie AR1 / FPR multi-prag / placebo nivel arbitrar), toate la condițiile reale ale datelor → măsurătoarea finală φ AR(1) condițional pe populația reală de evenimente NY-up.
+
+### §B.1 — Cele 4 caveat-uri obligatorii ale `matched_null@v1` (câmpuri, nu note de subsol)
+
+1. **Domeniu de validare — forward K6.** Punctul de rupere la reversie a fost măsurat pe curba K6. **K12 NU ESTE ACOPERIT** — φ condițional acolo = −0.058 (~3× globalul), iar pragul de rupere la K12 nu a fost măsurat deloc. Orice utilizare la K12 sau alt orizont cere validare separată.
+2. **Celula NY-up:** n ≈ 37–42, la granița calibrării. KS p=0.003 pe corpul distribuției, conservator. Cozile nominale la 0.01 / 0.05 / 0.10.
+3. **Vulnerabilitate confirmată la reversie** φ ≤ −0.10, adică 5.5× cea reală. φ condițional măsurat pe populația reală de evenimente: **−0.018 la K6, cu CI [−0.228, +0.212]** care **NU exclude** pragul. Estimarea punctuală confirmă marja; precizia nu o poate confirma la n=42.
+4. **Configurație:** unstratified, stratificat pe **SESIUNE**, ATR-scaled. Stratificarea pe volatilitate **NU există și NU e validată.**
+
+### §B.2 — Raționamentul deciziei de promovare (CEO, 2026-07-25)
+
+Regula inițială („φ condițional clar peste −0.10") era prost formulată și corectată explicit de CEO: la n=42 niciun orizont nu poate oferi un CI care să excludă pragul — o certitudine pe care datele nu o pot produce.
+
+**Imprecizia lui φ este un risc SPECIFIC DC-0004, nu al metodei.** DC-0004 e singurul dintre cele trei pachete care e un tipar de reversie; DC-0008 e un test de bimodalitate pe rapoarte de concentrare, DC-0003 e alt mecanism — reversia nu îi atinge. În plus, DC-0004 este deja plafonat la `TESTABLE BUT INSUFFICIENT EVIDENCE` (holdout consumat, pică Bonferroni — §A): un p eventual fabricat de reversie nu poate produce un fals pozitiv pe care cineva să acționeze.
+
+**Analiza KS (p=0.003) acceptată:** cozile sunt calibrate direct (FPR nominal la 0.01/0.05/0.10); non-uniformitatea vine din corp (medie 0.542, conservator). Deplasarea corpului spre conservator nu poate coborî rata de respingere din coadă, doar s-o ridice, iar FPR-ul măsurat o arată nominală — direcția erorii e cea sigură. Caveat documentat (câmp 2), nu blocant.
 
 ---
 
@@ -170,7 +185,7 @@ RI-REPORT-0002 și 0003 verificate direct în `results/FAMILY_RESULTS.parquet` (
 | 3 | RT-AUDIT-0002 (Alpha #1) | ✅ ACCEPTAT |
 | 4 | Cei 7 REJECTED → arhivați, nu șterși | ✅ RATIFICAT |
 | 5 | DC-0003 și DC-0008 → Statistician Phase 2 | ✅ AUTORIZAT |
-| 6 | Promovare `matched_null@v1` | ⏸ AMÂNATĂ până după F6.1 |
+| 6 | Promovare `matched_null@v1` → `VALIDATED` | ✅ RATIFICAT (CEO 2026-07-25, registru v1.5, cu 4 caveat-uri — §B.1) |
 | 7 | RT-DS-0001 → consemnat aici, nu scris în arborele Alpha | ✅ RATIFICAT |
 | 8 | `flow_c/` | ✅ REZOLVAT — e divizia 7, nu reziduu |
 

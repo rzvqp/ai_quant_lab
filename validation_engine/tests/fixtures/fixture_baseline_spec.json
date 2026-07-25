@@ -2,7 +2,7 @@
   "spec_id": "STAT-SPEC-FIXTURE-F2",
   "spec_version": "1.0",
   "contract_version": "STAT-VE-CONTRACT-v1.0",
-  "capability_registry_version": "1.4",
+  "capability_registry_version": "1.5",
   "candidate": {
     "id": "DC-FIXTURE",
     "freeze_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
