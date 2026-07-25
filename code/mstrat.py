@@ -51,7 +51,8 @@ def simulate(d,setups,cfg=CFG):
         if not np.isfinite(risk) or np.isnan(atr[si]) or atr[si]<=0: continue
         # ENGINE v2 pre-registered stop-floor: executable_stop = max(strategy_stop, min_executable_risk)
         min_exec=max(2*cfg['spread_ticks']*TICK, 5*TICK, 0.10*atr[si])
-        if risk<min_exec: risk=min_exec; stop=entry-dirn*risk    # widen tiny stop to executable floor
+        widened=False
+        if risk<min_exec: risk=min_exec; stop=entry-dirn*risk; widened=True    # widen tiny stop to executable floor
         if risk<=0: continue
         ek=s['exit_kind']; ep=s.get('exit_param'); trail=(ek=='trailing')
         to=int(ep) if ek=='time' else 48
@@ -70,6 +71,12 @@ def simulate(d,setups,cfg=CFG):
                 if hi[j]>=stop: ex=stop;xi=j;break
                 if tgt is not None and np.isfinite(tgt) and lo[j]<=tgt: ex=tgt;xi=j;break
         if ex is None: xi=min(ei+to,n-1); ex=cl[xi]
+        # WP-1 INVALID-EXECUTION (D2, docs/MIN_STOP_FLOOR_PREREG): a FLOORED (widened) trade that resolves on
+        # its own entry bar = gap-through-floored-stop-at-entry / same-bar ambiguous fill -> excluded, not
+        # counted (still advances overlap cursor). Scoped to widened trades so the ATR regime (0 widened) is
+        # provably unchanged. Toggle cfg['mark_invalid'] (default True) reproduces the pre-D2 baseline when False.
+        if cfg.get('mark_invalid', True) and widened and xi==ei:
+            last=xi; continue
         Rs.append((dirn*(ex-entry)-2*cost)/risk); sis.append(si); eis.append(ei); last=xi
     return pd.DataFrame({'R':Rs,'si':sis,'ei':eis})
 
@@ -84,7 +91,8 @@ def simulate_ref(d,setups,cfg=CFG):
         dirn=s['dir']; entry=o[ei]; stop=s['stop']; risk=abs(entry-stop)
         if not np.isfinite(risk): continue
         min_exec=max(2*cfg['spread_ticks']*TICK, 5*TICK, 0.10*atr[s['si']]) if not np.isnan(atr[s['si']]) else 5*TICK
-        if risk<min_exec: risk=min_exec; stop=entry-dirn*risk
+        widened=False
+        if risk<min_exec: risk=min_exec; stop=entry-dirn*risk; widened=True
         if risk<=0: continue
         ek=s['exit_kind']; ep=s.get('exit_param'); to=int(ep) if ek=='time' else 48
         tgt=entry+dirn*ep*risk if ek=='rr' else (ep if ek in('opp_liq','opp_struct') else None)
@@ -95,6 +103,9 @@ def simulate_ref(d,setups,cfg=CFG):
             if hitS: ex=stop;xi=j;break
             if hitT: ex=tgt;xi=j;break
         if ex is None: xi=min(ei+to,n-1); ex=cl[xi]
+        # WP-1 INVALID-EXECUTION (identical rule to simulate, for parity)
+        if cfg.get('mark_invalid', True) and widened and xi==ei:
+            last=xi; continue
         out.append((dirn*(ex-entry)-2*cost)/risk); last=xi
     return np.array(out)
 
