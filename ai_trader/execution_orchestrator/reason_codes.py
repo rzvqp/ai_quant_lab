@@ -22,3 +22,10 @@ ORDER_MANAGER_FAILED = "ORDER_MANAGER_FAILED"
 #: in emergency stop. Distinct from `EMERGENCY_STOP_ACTIVE`, which remains the OLD, single-call,
 #: non-persistent override for callers that don't supply circuit tracking at all.
 TRADING_SUSPENDED = "TRADING_SUSPENDED"
+
+#: Step 2 of #2's authorization (2026-07-25): emitted when the injected `PortfolioStateSource` cannot
+#: supply a complete `PortfolioState` (any exception raised while computing it -- e.g.
+#: `PortfolioDataUnavailableError` from a real MT5-backed source when account/position/deal data is
+#: missing or incomplete). Fail-closed: absence of data is a reason NOT to trade, never treated as "no
+#: losses" by falling through to a default.
+CIRCUIT_DATA_UNAVAILABLE = "CIRCUIT_DATA_UNAVAILABLE"

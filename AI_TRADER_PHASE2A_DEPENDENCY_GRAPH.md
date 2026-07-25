@@ -11,8 +11,24 @@ derived, not assumed.
 1. **#1 Persistent suspension state — DONE.** `a27802d`, pushed to `trader/ai-trader-implementation`,
    confirmed on remote (`git ls-remote --heads trader` → `a27802d71e4cbb4e06a6eafca6fa383bdbb1662e`).
    See `AI_TRADER_PHASE2A_STEP1_PERSISTENT_SUSPENSION_REPORT.md`.
-2. **#10, #11** — direction/stop validation, `PortfolioDailyState` reset. Not started, awaiting approval.
-3. **#2** — automatic P&L computation from position history.
+2. **#10, #11 — DONE.** `5d8e57a`, pushed and confirmed on remote. See
+   `AI_TRADER_PHASE2A_STEP2_DIRECTION_STOP_AND_DAILY_RESET_REPORT.md`.
+   **Observation, not a task (CEO note, 2026-07-25, confirmed as a standing precedent — the correct
+   reading of the "no test that fails" rule is as a definition of work surface, not just a change
+   -verification gate: if a defect can't be demonstrated, it isn't touched):** `TradeProposal`'s and
+   `CandidateSignal`'s new invariant (entry != stop, correctly sided for direction) is enforced only in
+   `__post_init__`, which a frozen dataclass's own `object.__setattr__` can bypass after construction —
+   confirmed directly, since two of Step 2's own tests use exactly this bypass deliberately, to reach the
+   risk gate's own independent check. The invariant is therefore NOT tamper-proof against a caller that
+   deliberately or accidentally mutates a constructed instance. Not itemized in any of the four audits;
+   not authorized as a fix; recorded here as a known, disclosed limitation only.
+3. **#2 — DONE.** New package `ai_trader/mt5_pnl_source/`: the ONE real implementation of
+   `PortfolioStateSource`, fail-closed on missing/incomplete MT5 data (never defaults, never estimates).
+   Also closed an adjacent gap the real implementation exposed: `orchestrate()` didn't wrap the circuit
+   check in a try/except, so a raising source would have crashed past its own "never propagates"
+   contract — now denies with `CIRCUIT_DATA_UNAVAILABLE`. See
+   `AI_TRADER_PHASE2A_STEP3_PNL_SOURCE_REPORT.md`. Virtual/shadow implementation deliberately not
+   built (same interface, later authorization, per CEO instruction).
 4. **#5** — live MT5 account/instrument/equity bridge.
 5. **#6** — live signal source (Piesa 1 bar feed, Piesa 2 candidate producer, Piesa 3 journal).
 6. **NEW — long-running process robustness** (crash/restart/resume-from-correct-state/stopped-signal for

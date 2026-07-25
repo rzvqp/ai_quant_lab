@@ -98,10 +98,28 @@ def orchestrate(
     # -identical behavior, so every existing caller is unaffected.
     circuit_state_after: TradingCircuitState | None = None
     if circuit_state is not None and pnl_source is not None:
-        circuit_state_after = evaluate_circuit_state(
-            circuit_state, pnl_source, deps.risk_config, candidate.as_of,
-            emergency_stop_requested=emergency_stop,
-        )
+        # Step 2 of #2 (2026-07-25): the injected `pnl_source` can now be a REAL, I/O-backed
+        # implementation that raises when account/position/deal data is missing or incomplete
+        # (`PortfolioDataUnavailableError`, `mt5_pnl_source`) -- fail-closed: absence of data is a
+        # reason NOT to trade, never silently treated as "no losses" by letting the exception escape
+        # this function's own documented "never propagates" contract.
+        try:
+            circuit_state_after = evaluate_circuit_state(
+                circuit_state, pnl_source, deps.risk_config, candidate.as_of,
+                emergency_stop_requested=emergency_stop,
+            )
+        except Exception as exc:  # noqa: BLE001 -- fail-closed, matching every other stage in this function.
+            trace.append(CalculationTraceStep(
+                "CIRCUIT_STATE_CHECKED", False, detail=f"{type(exc).__name__}: {exc}",
+            ))
+            result = _denied(
+                candidate, correlation_id, mode, trace, [rc.CIRCUIT_DATA_UNAVAILABLE],
+                circuit_state_after=circuit_state, daily_state_after=daily_state_after,
+            )
+            _notify(
+                deps, "ORCHESTRATION_DENIED", "circuit data unavailable", correlation_id, candidate.as_of,
+            )
+            return result
         trace.append(CalculationTraceStep(
             "CIRCUIT_STATE_CHECKED", circuit_state_after.state is EngineState.READY,
             detail=circuit_state_after.state.value,
