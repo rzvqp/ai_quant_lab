@@ -27,7 +27,9 @@ Filtrez la ce este **relevant pentru un test pe celule de eveniment**.
 | **Vol diferențiată pe sesiune** + cozi grele | ✅ F6.1 |
 | **Drift real** (up/down/regime-shift), calibrat pe M15 | ✅ F6.2 |
 
-**Contribuție proprie, absentă la ei:** §9 Limitarea 1 din raportul lor spune că *nulul STRATIFICAT session×vol NU a fost validat separat — amânat*. `matched_null@v1` **este** versiunea stratificată (pooling per-sesiune), iar F6.1 a validat exact configurația pe care ei au amânat-o. Design-ul meu folosește **excess = forward − baseline per-sesiune**, care este analogul structural al fix-ului lor (bootstrap pe raportul risk/ATR, nu absolut) — motivul pentru care F6.2 nu a eșuat catastrofal sub drift.
+**Contribuție proprie, absentă la ei:** design-ul meu folosește **excess = forward − baseline per-sesiune**, analogul structural al fix-ului lor (bootstrap pe raportul risk/ATR, nu absolut) — motivul pentru care F6.2 nu a eșuat sub drift.
+
+> **CORECȚIE (2026-07-25), cerută de CEO — verificat în cod:** afirmasem că `matched_null@v1` este configurația **stratificată session×vol** pe care Flow C a amânat-o (§9 lim. 1). **Retrag jumătatea de volatilitate.** Verificat în `reproduce_obs0012.py` (pool per celulă = `sess == s`, doar sesiune) și `materialize.py` (baseline `strata=[session]`, doar sesiune): stratificarea este **exclusiv pe SESIUNE**, nu pe volatilitate. F6.1 a arătat **robustețe** la vol diferențiată pe sesiune (pool-ul de sesiune absoarbe vol-ul), dar aceasta NU e stratificare pe vol. Configurația lor amânată era session×**vol** (două dimensiuni); a mea e doar session. Complementaritatea revendicată se retrage.
 
 ---
 
