@@ -17,7 +17,7 @@ from ai_trader.risk_manager import guards, limits
 from ai_trader.risk_manager import filters as risk_filters
 from ai_trader.risk_manager import sizing as risk_sizing
 from ai_trader.risk_manager.config import RiskConfig
-from ai_trader.risk_manager.types import DeniedReason, PortfolioState, RiskContext
+from ai_trader.risk_manager.types import DeniedReason, EngineState, PortfolioState, RiskContext
 from ai_trader.risk_manager_live import reason_codes as rc
 from ai_trader.risk_manager_live.types import (
     AccountState,
@@ -42,11 +42,12 @@ _SIGNAL_STATE_BY_DIRECTION = {Direction.LONG: SignalState.BUY, Direction.SHORT: 
 
 def _deny(
     reason_codes: list[str], trace: list[CalculationTraceStep], warnings: list[str] | None = None,
+    escalate_to: EngineState | None = None,
 ) -> LiveRiskDecision:
     return LiveRiskDecision(
         approved=False, reason_codes=tuple(reason_codes), requested_risk=None, approved_risk=None,
         calculated_volume=None, monetary_risk=None, stop_distance=None, margin_estimate=None,
-        warnings=tuple(warnings or ()), calculation_trace=tuple(trace),
+        warnings=tuple(warnings or ()), calculation_trace=tuple(trace), escalate_to=escalate_to,
     )
 
 
@@ -120,10 +121,16 @@ def evaluate_trade_proposal(
         return _deny([rc.RISK_NOT_CALCULABLE], trace)
 
     # 2. Loss/drawdown guards (existing, frozen, unmodified) -- run in full, never short-circuited here.
+    # Risk Audit #1 fix: `result.escalate_to` is now captured, not discarded -- the caller (the future
+    # persistent circuit breaker, `risk_manager_live.circuit_breaker`) needs it to remember a breach
+    # across calls, which this function itself never does (still pure, still no state of its own).
+    escalate_to: EngineState | None = None
     for name, result in guards.run_loss_drawdown_guards(portfolio, resolved_config):
         trace.append(_trace_from_result(name, result.passed, result.reason))
         if not result.passed and result.reason is not None:
             reason_codes.append(result.reason.code)
+            if result.escalate_to is not None and escalate_to is None:
+                escalate_to = result.escalate_to
 
     # 3. Cooldowns (existing, frozen, unmodified).
     for name, result in guards.run_cooldowns(proposal.symbol, proposal.strategy_id, portfolio, resolved_config):
@@ -150,7 +157,7 @@ def evaluate_trade_proposal(
             reason_codes.append(filter_result.reason.code)
 
     if reason_codes:
-        return _deny(reason_codes, trace, warnings)
+        return _deny(reason_codes, trace, warnings, escalate_to=escalate_to)
 
     # 6. Sizing (existing, frozen, unmodified) -- via a genuine, disclosed adapter (see docstring above).
     opportunity = _build_sizing_adapter(proposal, resolved_config)

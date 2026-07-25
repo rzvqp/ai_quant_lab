@@ -7,13 +7,17 @@ sufficiency) additively. Never imports the MT5 terminal API (verified by a dedic
 
 from __future__ import annotations
 
+from ai_trader.risk_manager_live.circuit_breaker import evaluate_circuit_state
 from ai_trader.risk_manager_live.engine import evaluate_trade_proposal
 from ai_trader.risk_manager_live.types import (
     AccountState,
     CalculationTraceStep,
     InstrumentSpecification,
     LiveRiskDecision,
+    PortfolioStateSource,
+    READY_CIRCUIT_STATE,
     TradeProposal,
+    TradingCircuitState,
 )
 
 __all__ = [
@@ -23,4 +27,8 @@ __all__ = [
     "InstrumentSpecification",
     "LiveRiskDecision",
     "CalculationTraceStep",
+    "evaluate_circuit_state",
+    "TradingCircuitState",
+    "READY_CIRCUIT_STATE",
+    "PortfolioStateSource",
 ]

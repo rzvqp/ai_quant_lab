@@ -16,3 +16,9 @@ RISK_DENIED = "RISK_DENIED"
 PORTFOLIO_EVALUATION_FAILED = "PORTFOLIO_EVALUATION_FAILED"
 PORTFOLIO_DENIED = "PORTFOLIO_DENIED"
 ORDER_MANAGER_FAILED = "ORDER_MANAGER_FAILED"
+
+#: Risk Audit #1 fix (2026-07-25): emitted when a caller-supplied, persisted `TradingCircuitState` is
+#: not READY -- the account is suspended (a loss/drawdown guard escalated and has not yet recovered) or
+#: in emergency stop. Distinct from `EMERGENCY_STOP_ACTIVE`, which remains the OLD, single-call,
+#: non-persistent override for callers that don't supply circuit tracking at all.
+TRADING_SUSPENDED = "TRADING_SUSPENDED"

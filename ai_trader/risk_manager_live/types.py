@@ -8,7 +8,9 @@ incompatible, scoring-engine-coupled field set.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Protocol
 
+from ai_trader.risk_manager.types import EngineState, PortfolioState
 from ai_trader.scoring_engine.types import Quality
 from ai_trader.signal_engine.types import Direction
 
@@ -136,6 +138,12 @@ class LiveRiskDecision:
     margin_estimate: float | None
     warnings: tuple[str, ...]
     calculation_trace: tuple[CalculationTraceStep, ...]
+    #: Risk Audit #1 fix (2026-07-25): the worst `EngineState` any loss/drawdown guard signaled via its
+    #: own `GuardResult.escalate_to` during this evaluation -- previously computed by `guards.py` and
+    #: silently discarded by the caller loop (`risk_manager_live/engine.py`), never persisted anywhere.
+    #: `None` means no guard escalated. Disclosing this is additive -- every existing caller that never
+    #: reads this field observes byte-identical behavior.
+    escalate_to: EngineState | None = None
 
     def __post_init__(self) -> None:
         if self.approved and not self.calculation_trace:
@@ -148,3 +156,42 @@ class LiveRiskDecision:
                 "LiveRiskDecision: a denied decision must carry at least one reason code -- a refusal "
                 "with no disclosed reason is exactly what this system must never produce"
             )
+
+
+@dataclass(frozen=True, slots=True)
+class TradingCircuitState:
+    """Persistent, caller-owned circuit-breaker state (Risk Audit #1 fix). Unifies the three previously
+    -disconnected mechanisms that finding named: `guards.py`'s `EngineState.SUSPENDED` escalation
+    (previously discarded, see `LiveRiskDecision.escalate_to`), the daily/weekly loss + drawdown fields
+    that trigger it, and `execution_orchestrator`'s own `emergency_stop` override -- all three now flow
+    through this one object. Reuses `risk_manager.types.EngineState` verbatim rather than inventing a
+    parallel vocabulary. Pure data: this package holds no state of its own; the caller persists this
+    across calls, the same discipline already established for `PortfolioDailyState`
+    (`portfolio_manager_live/types.py`)."""
+
+    state: EngineState
+    reason_code: str | None
+    since: int | None
+
+    def __post_init__(self) -> None:
+        if self.state is not EngineState.READY and self.reason_code is None:
+            raise ValueError(
+                "TradingCircuitState: a non-READY state must carry a reason_code -- a suspension with "
+                "no disclosed reason is exactly what this system must never produce"
+            )
+        if self.state is not EngineState.READY and self.since is None:
+            raise ValueError("TradingCircuitState: a non-READY state must carry a since timestamp")
+
+
+#: The starting state a caller with no prior persisted circuit state should use -- never fabricated as
+#: "probably fine," an explicit, named constant.
+READY_CIRCUIT_STATE = TradingCircuitState(state=EngineState.READY, reason_code=None, since=None)
+
+
+class PortfolioStateSource(Protocol):
+    """Injected dependency supplying the `PortfolioState` the circuit breaker evaluates against -- real
+    (computed from live position/deal history, not yet built) or virtual/shadow (computed from a shadow
+    journal, not yet built), same interface, never two parallel implementations (CEO instruction,
+    2026-07-25: "sursa de P&L ca dependență injectată... aceeași interfață")."""
+
+    def current_portfolio_state(self) -> PortfolioState: ...

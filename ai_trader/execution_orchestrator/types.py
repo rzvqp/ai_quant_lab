@@ -21,7 +21,7 @@ from ai_trader.recognition_engine.policy import SufficiencyPolicy
 from ai_trader.recognition_engine_live.types import RecognitionResult
 from ai_trader.risk_manager.config import RiskConfig
 from ai_trader.risk_manager.types import PortfolioState, RiskContext
-from ai_trader.risk_manager_live.types import AccountState, InstrumentSpecification, LiveRiskDecision
+from ai_trader.risk_manager_live.types import AccountState, InstrumentSpecification, LiveRiskDecision, TradingCircuitState
 from ai_trader.signal_engine.types import Direction
 from ai_trader.telegram_notifier.types import TelegramCredentials
 
@@ -133,6 +133,11 @@ class OrchestrationResult:
     order_result: OrderExecutionResult | None
     reason_codes: tuple[str, ...]
     calculation_trace: tuple[CalculationTraceStep, ...] = field(default_factory=tuple)
+    #: Risk Audit #1 fix (2026-07-25): the `TradingCircuitState` this run resolved to, when the caller
+    #: supplied circuit tracking (`orchestrate(circuit_state=..., pnl_source=...)`). `None` when the
+    #: caller didn't opt in -- existing callers see byte-identical behavior. The caller persists this
+    #: for its next call, the same discipline already established for `PortfolioDailyState`.
+    circuit_state_after: TradingCircuitState | None = None
 
     def __post_init__(self) -> None:
         if not self.correlation_id:
