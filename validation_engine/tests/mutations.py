@@ -409,11 +409,15 @@ def _(s):
         "params": {"variable_ref": "fwd6", "predicate_ref": "inexistent"}}
 
 
-@mutation("M72", "G5: predicate_ref către un predicat declarat (valid)", "E3", 2)
+@mutation("M72", "G5: predicate_ref către un predicat declarat (valid) → doar poarta de calibrare", "E3", 2)
 def _(s):
     s["tests"][0]["params"]["statistic"] = {
         "id": "s_prop", "statistic": "proportion@v1",
         "params": {"variable_ref": "fwd6", "predicate_ref": "p_atr_above"}}
+    # baseline-ul propriu e acum integral validat (CEO 2026-07-25); poarta de calibrare
+    # se menține printr-o metodă încă UNVALIDATED, ca la M61.
+    _add_indicator(s, {"id": "ev_ok72", "predicate": "compare@v1",
+                       "params": {"left": "atr14", "op": ">", "right": 2.0}})
 
 
 @mutation("M73", "G5: dip_test.variable_ref inexistent (fost string, acum rezolvat)", "E2", 2)
@@ -457,6 +461,8 @@ def _(s):
         "id": "p_first_ok", "predicate": "first_in_scope@v1",
         "params": {"scope": "day", "predicate": {"id": "pf_inner_ok",
                    "predicate": "compare@v1", "params": {"left": "atr14", "op": ">", "right": 1.0}}}})
+    _add_indicator(s, {"id": "ev_ok77", "predicate": "compare@v1",
+                       "params": {"left": "atr14", "op": ">", "right": 2.0}})
 
 
 @mutation("M78", "G7: id de predicat duplicat în interiorul first_in_scope", "E2", 2)
@@ -508,8 +514,12 @@ def _(s):
 @mutation("M86", "G8: eligibilitate validă pe denominator (se oprește doar pe calibrare)", "E3", 2)
 def _(s):
     s["multiple_testing"]["params"]["member_eligibility"] = {"field": "denominator", "op": ">=", "value": 100}
+    _add_indicator(s, {"id": "ev_ok86", "predicate": "compare@v1",
+                       "params": {"left": "atr14", "op": ">", "right": 2.0}})
 
 
 @mutation("M87", "G8: eligibilitate validă pe event_count (se oprește doar pe calibrare)", "E3", 2)
 def _(s):
     s["multiple_testing"]["params"]["member_eligibility"] = {"field": "event_count", "op": ">=", "value": 25}
+    _add_indicator(s, {"id": "ev_ok87", "predicate": "compare@v1",
+                       "params": {"left": "atr14", "op": ">", "right": 2.0}})

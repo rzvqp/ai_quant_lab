@@ -63,8 +63,9 @@ def test_registry_domain_grammar_covers_every_descriptor():
     assert ok, f"descriptori neacoperiți: {bad}"
 
 
-def test_only_the_ceo_promoted_method_is_executable():
-    """CEO 2026-07-25: matched_null@v1 -> VALIDATED, exact o metodă. Restul rămân locked."""
+def test_only_the_ceo_promoted_methods_are_executable():
+    """CEO 2026-07-25: matched_null@v1 (S1/S3/S4) + bonferroni@v1 (S7) -> VALIDATED.
+    Exact două metode; restul rămân locked."""
     reg = registry_validator.load_registry()
     validated = []
     for section in ("test_methods", "correction_methods"):
@@ -73,7 +74,7 @@ def test_only_the_ceo_promoted_method_is_executable():
                 validated.append(mid)
             else:
                 assert meta["calibration_status"] == "UNVALIDATED", mid
-    assert validated == ["matched_null@v1"]
+    assert set(validated) == {"matched_null@v1", "bonferroni@v1"}
     assert reg["status"] == "PARTIALLY_EXECUTABLE"
 
 
@@ -101,11 +102,11 @@ def test_day_scope_boundary_is_documented_as_utc():
 
 # ─────────────────────── registrul v1.4 (golul G8) ────────────────────────────
 
-def test_registry_is_v1_5_with_a_declared_revision():
+def test_registry_is_v1_6_with_a_declared_revision():
     reg = registry_validator.load_registry()
-    assert reg["registry_version"] == "1.5"
-    assert reg["revision"]["supersedes"] == "1.4"
-    assert "matched_null@v1" in " ".join(reg["revision"]["changes"])
+    assert reg["registry_version"] == "1.6"
+    assert reg["revision"]["supersedes"] == "1.5"
+    assert "bonferroni@v1" in " ".join(reg["revision"]["changes"])
 
 
 def test_g8_whitelist_contains_only_pre_outcome_fields():

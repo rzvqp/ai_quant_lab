@@ -1,12 +1,14 @@
 # REGISTRU CONSOLIDAT — DIVIZII ȘI CANDIDAȚI
 ### Singura sursă de adevăr pentru structura laboratorului și stadiul fiecărui candidat
 
-**Document ID:** CEO-REGISTER-v1.5
+**Document ID:** CEO-REGISTER-v1.6
 **Data:** 2026-07-25 · **Autor:** CEO (aplicat de Validation Engine sub directivă CEO explicită 2026-07-25)
-**Înlocuiește:** v1.1 (aceeași zi)
+**Înlocuiește:** v1.5 (aceeași zi)
 **Statut:** operațional
 
-**Modificări față de v1.1:** `matched_null@v1` PROMOVAT la `VALIDATED` (decizie CEO 2026-07-25); mașinăria de validare trece de la `PUBLISHED_NOT_EXECUTABLE` la `PARTIALLY_EXECUTABLE` (1/15); §C decizia 6 devine RATIFICATĂ; §B rescris cu cele 4 caveat-uri obligatorii + raționamentul deciziei de promovare (inclusiv măsurătoarea φ condițional și acceptarea analizei KS).
+**Modificări față de v1.5:** `bonferroni@v1` PROMOVAT la `VALIDATED` prin suita **deterministă S7** (decizie CEO 2026-07-25); metode validate `1/15` → `2/15` (status rămâne `PARTIALLY_EXECUTABLE`); §B.3 nou (S7 + de ce nu F6); §C decizia 9 nouă. Registrul distinge tipurile de metode prin `acceptance_suites` — bonferroni poartă exclusiv S7, disjunctă de suitele stocastice.
+
+**Istoric v1.5 (păstrat):** `matched_null@v1` PROMOVAT la `VALIDATED`; mașinăria trece de la `PUBLISHED_NOT_EXECUTABLE` la `PARTIALLY_EXECUTABLE`; §C decizia 6 RATIFICATĂ; §B cu cele 4 caveat-uri + raționamentul (φ condițional + KS).
 
 ---
 
@@ -34,7 +36,7 @@ Doar CEO modifică acest document.
 | 3 | **Alpha 2** | `ai_quant_lab` / `statistician-foundation` | **ÎNCHIS** | `d453b27` — șablon testabilitate | ✅ |
 | 4 | **Red Team** | `ai_quant_lab` / `statistician-foundation` | STANDBY | `de919c2` — RT-FINAL-0002 | ✅ |
 | 5 | **Statistician** | `ai_quant_lab` / `statistician-foundation` | ACTIV | `4c458a7` — verdict holdout DC-0004 | ✅ |
-| 6 | **Validation Engine** | `ai_quant_lab` / `statistician-foundation` | ACTIV | registru v1.5 — `matched_null@v1` **VALIDATED** | ✅ |
+| 6 | **Validation Engine** | `ai_quant_lab` / `statistician-foundation` | ACTIV | registru v1.6 — `matched_null@v1` + `bonferroni@v1` **VALIDATED** (2/15) | ✅ |
 | 7 | **Flow C** | `ai_quant_lab` / **`flow-c-foundation`** | ACTIV | `083c69e` — RI-REPORT-0003 | ❌ **NEPUBLICAT** |
 | 8 | **Research Lab** | `ai_quant_lab` / `statistician-foundation` | **REACTIVAT 07-25** | dormant din 2026-07-13 | ✅ |
 
@@ -129,12 +131,13 @@ Singurul candidat care a traversat trei divizii.
 
 | Element | Stare |
 |---|---|
-| Metode `VALIDATED` | **1 / 15** |
-| Registru de capabilități | `PARTIALLY_EXECUTABLE` (`VE-CAPREG-v1.5`) |
-| `matched_null@v1` | **VALIDATED** (CEO 2026-07-25) — domeniu K6, cu 4 caveat-uri obligatorii (mai jos) |
-| Celelalte 14 metode | `UNVALIDATED` — nereferabile de o specificație oficială |
+| Metode `VALIDATED` | **2 / 15** |
+| Registru de capabilități | `PARTIALLY_EXECUTABLE` (`VE-CAPREG-v1.6`) |
+| `matched_null@v1` | **VALIDATED** (CEO 2026-07-25) — suite S1/S3/S4, domeniu K6, 4 caveat-uri (§B.1) |
+| `bonferroni@v1` | **VALIDATED** (CEO 2026-07-25) — suite **S7 deterministă** (§B.3) |
+| Celelalte 13 metode | `UNVALIDATED` — nereferabile de o specificație oficială |
 | Holdout la nivel VE | Neatins |
-| Teste | 419 |
+| Teste | 436 |
 
 Traseul de promovare: F6 (uniformitate/FPR/putere/reproducibilitate) → F6.1 (vol pe sesiune + cozi grele) → F6.2 (drift real, fără eșec clar) → F6.3 (reversie AR1 / FPR multi-prag / placebo nivel arbitrar), toate la condițiile reale ale datelor → măsurătoarea finală φ AR(1) condițional pe populația reală de evenimente NY-up.
 
@@ -152,6 +155,14 @@ Regula inițială („φ condițional clar peste −0.10") era prost formulată 
 **Imprecizia lui φ este un risc SPECIFIC DC-0004, nu al metodei.** DC-0004 e singurul dintre cele trei pachete care e un tipar de reversie; DC-0008 e un test de bimodalitate pe rapoarte de concentrare, DC-0003 e alt mecanism — reversia nu îi atinge. În plus, DC-0004 este deja plafonat la `TESTABLE BUT INSUFFICIENT EVIDENCE` (holdout consumat, pică Bonferroni — §A): un p eventual fabricat de reversie nu poate produce un fals pozitiv pe care cineva să acționeze.
 
 **Analiza KS (p=0.003) acceptată:** cozile sunt calibrate direct (FPR nominal la 0.01/0.05/0.10); non-uniformitatea vine din corp (medie 0.542, conservator). Deplasarea corpului spre conservator nu poate coborî rata de respingere din coadă, doar s-o ridice, iar FPR-ul măsurat o arată nominală — direcția erorii e cea sigură. Caveat documentat (câmp 2), nu blocant.
+
+### §B.3 — `bonferroni@v1` VALIDATED prin S7 (determinist), NU prin F6
+
+Registrul **distinge tipurile de metode prin `acceptance_suites`**. `bonferroni@v1` poartă **exclusiv S7**, disjunctă de suitele stocastice `S1/S3/S4` ale metodelor cu reeșantionare. Bonferroni e `p × m`: garanția FWER ≤ α e **inegalitatea Boole (o teoremă)**, nu o proprietate empirică — nu are distribuție null, putere, FPR sau seed de calibrat. Deci NU i se aplică bateria F6.
+
+**Cele șase verificări deterministe** (`tests/test_s7_bonferroni.py`, implementare `ve/methods/bonferroni.py`): (1) aritmetică pe fixturi cu răspuns cunoscut (`α/m`, `min(1,p×m)`); (2) contabilitatea familiei realizate; (3) oprire E6 la familie eligibilă vidă; (4) independență de rezultat R3 la execuție; (5) „fără filtrare" declarat explicit; (6) determinism/idempotență. **Toate trec.** Taxonomia se închide: corecția family-wise stocastică (max-T, DC-0008 §4.8) e `permutation_test@v1` (S1/S3/S4), nu bonferroni.
+
+**Milestone lateral:** specificația de referință a bateriei de mutații (`matched_null@v1` + `bonferroni@v1`, ambele acum VALIDATED) **trece integral validarea** — prima specificație cu vocabular de metode complet executabil. (Validare ≠ execuție; nu atinge date.)
 
 ---
 
@@ -186,6 +197,7 @@ RI-REPORT-0002 și 0003 verificate direct în `results/FAMILY_RESULTS.parquet` (
 | 4 | Cei 7 REJECTED → arhivați, nu șterși | ✅ RATIFICAT |
 | 5 | DC-0003 și DC-0008 → Statistician Phase 2 | ✅ AUTORIZAT |
 | 6 | Promovare `matched_null@v1` → `VALIDATED` | ✅ RATIFICAT (CEO 2026-07-25, registru v1.5, cu 4 caveat-uri — §B.1) |
+| 9 | Promovare `bonferroni@v1` → `VALIDATED` prin S7 (determinist) | ✅ RATIFICAT (CEO 2026-07-25, registru v1.6, 2/15 — §B.3) |
 | 7 | RT-DS-0001 → consemnat aici, nu scris în arborele Alpha | ✅ RATIFICAT |
 | 8 | `flow_c/` | ✅ REZOLVAT — e divizia 7, nu reziduu |
 

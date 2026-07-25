@@ -8,20 +8,17 @@ from ve.spec.validate import validate_spec_object
 IDS = [f"{m[0]}_{m[1][:40].replace(' ', '_')}" for m in MUTATIONS]
 
 
-def test_baseline_halts_only_on_calibration_gate(baseline):
-    """Specificația de referință este completă și corectă din punct de vedere al
-    formei și al vocabularului. Singurul motiv de oprire rămas este poarta de
-    calibrare: după promovarea CEO 2026-07-25 doar matched_null@v1 e VALIDATED,
-    deci metoda de corecție bonferroni@v1 (încă UNVALIDATED) ține poarta închisă."""
+def test_baseline_passes_validation_now_that_both_methods_are_validated(baseline):
+    """MILESTONE: după ce CEO a promovat AMBELE metode ale baseline-ului
+    (matched_null@v1 + bonferroni@v1 → VALIDATED, registru v1.5/v1.6), specificația
+    de referință TRECE validarea — prima cu vocabular de metode integral executabil.
+    Poarta de calibrare nu se mai declanșează pentru că nu mai există metodă
+    nevalidată referită. Validarea ≠ execuție (nu atinge date; execuția e F5+)."""
     result = validate_spec_object(baseline, spec_sha256="0" * 64)
 
-    assert result.halted
+    assert not result.halted
     assert result.stage_reached == 2
-    assert set(result.codes) == {"E3"}
-    assert len(result.errors) == 1  # doar metoda de corecție bonferroni@v1 (matched_null@v1 e VALIDATED)
-    for err in result.errors:
-        assert "calibrare" in err.reason or "statusul" in err.reason
-        assert "/method" in err.field_path
+    assert result.codes == []
     assert result.data_accesses == []
 
 

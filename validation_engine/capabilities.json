@@ -1,20 +1,21 @@
 {
-  "registry_id": "VE-CAPREG-v1.5",
-  "registry_version": "1.5",
+  "registry_id": "VE-CAPREG-v1.6",
+  "registry_version": "1.6",
   "status": "PARTIALLY_EXECUTABLE",
   "published_at": "2026-07-25",
   "contract_version": "STAT-VE-CONTRACT-v1.0",
   "architecture_version": "VE-ARCH-v1.0",
-  "human_readable": "CAPABILITY_REGISTRY_v1.5.md",
+  "human_readable": "CAPABILITY_REGISTRY_v1.6.md",
   "revision": {
-    "supersedes": "1.4",
-    "authority": "CEO promotion decision 2026-07-25 (registry v1.5): matched_null@v1 -> VALIDATED after F6/F6.1/F6.2/F6.3 calibration at real-data conditions plus the conditional-phi measurement on the real NY-up event population.",
-    "scope": "Promote exactly one method (matched_null@v1) to VALIDATED and move the registry status to PARTIALLY_EXECUTABLE (1 of 15). No method added or removed; no other calibration status changed. Four mandatory validity caveats are attached to matched_null@v1 as first-class fields. Gap G6 (M1/M5 sub-bar source for the DC-0008 R exposure) remains OPEN and unaffected by this promotion.",
+    "supersedes": "1.5",
+    "authority": "CEO promotion decision 2026-07-25 (registry v1.6): bonferroni@v1 -> VALIDATED via the deterministic S7 acceptance suite. No stochastic calibration: Bonferroni is p*m; its FWER<=alpha guarantee is Boole's inequality (a theorem), not an empirical property.",
+    "scope": "Promote exactly one further method (bonferroni@v1) to VALIDATED via suite S7 (deterministic). Registry status stays PARTIALLY_EXECUTABLE, now 2 of 15. The registry assigns bonferroni only S7, disjoint from the stochastic suites S1/S3/S4 - no synthetic null, power curve or FPR is applied. matched_null@v1 remains VALIDATED. No other method changed. Data gaps (G6, OBS-0017) unaffected.",
     "changes": [
-      "matched_null@v1.calibration_status: UNVALIDATED -> VALIDATED.",
-      "status: PUBLISHED_NOT_EXECUTABLE -> PARTIALLY_EXECUTABLE (1/15 methods validated).",
-      "matched_null@v1 gains a 'validation' object carrying the four CEO-mandated caveat fields: validity_domain (K6 only), ny_up_cell (small-n), reversion_vulnerability (phi<=-0.10), configuration (session-only stratification, ATR-scaled, no vol stratification).",
-      "The remaining 14 methods stay UNVALIDATED and cannot be referenced by an official specification (rule unvalidated_not_executable)."
+      "bonferroni@v1.calibration_status: UNVALIDATED -> VALIDATED (suite S7).",
+      "status stays PARTIALLY_EXECUTABLE; validated methods 1/15 -> 2/15.",
+      "Implemented bonferroni's declared output contract in ve/methods/bonferroni.py (pure function): threshold_per_test=alpha/m, p_adjusted=min(1,p*m), family_size, realized_family, dropped_members, m_realized; empty-eligible-family halts E6 PRECONDITION.",
+      "bonferroni@v1 gains a 'validation' object recording suite S7, deterministic, and the six verifications (tests/test_s7_bonferroni.py).",
+      "The remaining 13 methods stay UNVALIDATED and cannot be referenced by an official specification (rule unvalidated_not_executable)."
     ]
   },
   "rules": {
@@ -814,7 +815,15 @@
   },
   "correction_methods": {
     "bonferroni@v1": {
-      "calibration_status": "UNVALIDATED",
+      "calibration_status": "VALIDATED",
+      "validation": {
+        "promoted_at": "2026-07-25",
+        "authority": "CEO promotion decision 2026-07-25 (registry v1.6)",
+        "suite": "S7 (deterministic - no stochastic calibration)",
+        "rationale": "Bonferroni is p*m; its FWER<=alpha guarantee is Boole's inequality (a theorem), not an empirical property. No null distribution, power, FPR or seed. Input p-value calibration is the upstream test method's responsibility (its S1/S3/S4), not the correction's. The registry assigns bonferroni only S7, disjoint from S1/S3/S4.",
+        "evidence": "tests/test_s7_bonferroni.py - six verifications: (1) arithmetic on known-answer fixtures; (2) realized-family accounting; (3) empty-eligible-family halt (E6); (4) outcome-independence R3 at the execution layer; (5) 'no filtering' declared explicitly; (6) determinism/idempotence.",
+        "implementation": "ve/methods/bonferroni.py (pure function)."
+      },
       "acceptance_suites": [
         "S7"
       ],

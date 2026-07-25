@@ -2,7 +2,7 @@
   "spec_id": "STAT-SPEC-DEV-SWEEPREJECT-OPEN",
   "spec_version": "1.0",
   "contract_version": "STAT-VE-CONTRACT-v1.0",
-  "capability_registry_version": "1.5",
+  "capability_registry_version": "1.6",
   "candidate": {
     "id": "DEV-OPEN",
     "freeze_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"

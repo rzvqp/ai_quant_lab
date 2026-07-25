@@ -167,8 +167,9 @@ def test_f3_leaves_registry_unexecutable(env):
     reg = registry_validator.load_registry()
     # Statusul e stabilit de CEO (PARTIALLY_EXECUTABLE din 2026-07-25); F3 nu îl modifică.
     assert reg["status"] == "PARTIALLY_EXECUTABLE"
-    # F3 nu modifică niciun status de calibrare: matched_null@v1 rămâne VALIDATED (CEO), restul UNVALIDATED.
+    # F3 nu modifică niciun status de calibrare: metodele promovate de CEO rămân VALIDATED, restul UNVALIDATED.
+    validated = {"matched_null@v1", "bonferroni@v1"}
     for s in ("test_methods", "correction_methods"):
         for mid, m in reg[s].items():
-            expected = "VALIDATED" if mid == "matched_null@v1" else "UNVALIDATED"
+            expected = "VALIDATED" if mid in validated else "UNVALIDATED"
             assert m["calibration_status"] == expected, mid
