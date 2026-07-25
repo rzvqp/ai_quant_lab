@@ -74,7 +74,8 @@ fixed 1-year window) — the data-acquisition implications of this are addressed
 
 The ~5-6 year requirement is replaced by **the clean window actually available: ~2.85 years**, the
 pre-holdout split `pre_holdout_2025-10-23T09-15-00Z_v1` — UTC `dt < 2025-10-23T09:15:00Z`, i.e. **Set A**
-(§2B), 2022-12-16 → 2025-10-23, **67,322 M15 bars**. A Final Verdict (including an early REFUTED verdict)
+(§2B), 2022-12-16 → 2025-10-23, **67,321 M15 bars** (verified by direct count 2026-07-25). A Final Verdict
+(including an early REFUTED verdict)
 may now be issued on this window; the horizon is no longer a blocker.
 
 **Rationale (CEO, verbatim in substance):** §2 contained *no statistical justification*. It stated only
@@ -99,8 +100,12 @@ The remainder becomes a dedicated out-of-sample **confirmation** set.
 
 | Set | Definition | Size (M15) | Role |
 |---|---|---|---|
-| **Set A** | `dt < 2025-10-23T09:15:00Z` (`pre_holdout_2025-10-23T09-15-00Z_v1`) | 67,322 bars, ~2.85 yr | **Hypothesis generation + Discovery.** The only set §§1-8 Discovery may load (unchanged from §8). |
-| **Set B** | `2025-10-23T09:15:00Z ≤ dt ≤ 2026-07-13` | 16,830 bars (84,152 − 67,322) | **Out-of-sample CONFIRMATION only.** |
+| **Set A** | `dt < 2025-10-23T09:15:00Z` (`pre_holdout_2025-10-23T09-15-00Z_v1`); first→`2022-12-16`, last bar `2025-10-23T09:00:00Z` | **67,321** bars, ~2.85 yr | **Hypothesis generation + Discovery.** The only set §§1-8 Discovery may load (unchanged from §8). |
+| **Set B** | `2025-10-23T09:15:00Z ≤ dt ≤ 2026-07-13T06:00:00Z` (epochs `1761210900`–`1783922400`, both inclusive) | **16,831** bars (84,152 − 67,321) | **Out-of-sample CONFIRMATION only.** |
+
+*(Border and counts verified by direct count of `data/market/OANDA_XAUUSD_M15.csv` on 2026-07-25:
+total 84,152 = Set A 67,321 + Set B 16,831, 0 bars after. An earlier off-by-one — "67,322 / 16,830" —
+is corrected here; the canonical numbers are the ones in this table.)*
 
 **Strict rules (non-negotiable):**
 1. Generate the hypothesis on Set A; confirm it on Set B. **Never the reverse.**
@@ -125,9 +130,24 @@ The remainder becomes a dedicated out-of-sample **confirmation** set.
   through 2026-07-13 — i.e. it analyzed Set B** (verified: `e028_fibonacci_ote_results.json` carries
   `2026-07-13`). Those five edges' Set-B outcomes have **already been seen by Flow A**. Their clean
   reruns used Set A only, but §8's permanent-record rule is explicit that a contaminated observation
-  cannot be undone. **Set B is therefore NOT a clean out-of-sample set for E025/E026/E028/E029/E032**,
-  regardless of which run a later hypothesis quotes. This directly affects priority thread B.3 (E028
-  inverted-OTE) — see the governance flag raised to the CEO on 2026-07-25.
+  cannot be undone.
+
+**RULE 2B-1 — Set B is BURNED for the five TERMINAL-HOLDOUT-BREACHED edges (permanent, not a note).**
+`E025, E026, E028, E029, E032` and **every hypothesis derived from any of them** (V0, V1, inverted,
+cross-edge, or otherwise) **may NEVER use Set B, in any form, not even labelled** — the resource is
+consumed for them. Any such hypothesis is frozen and reported **in-sample-only / REGIME-LIMITED**, and
+is marked **`PRE-REGISTERED, AWAITING UNSEEN DATA`** so it is pre-committed for a future, genuinely
+unseen set (a real Set C accrues as the live feed advances past 2026-07-13). This restriction is
+**inherited**: derivation from a burned edge carries the burn with it. Enforced in code by the Set B
+loader's blacklist (`edge_research/_setb.py`), not by documentation alone — the exact failure mode that
+caused the original breach was a rule that lived only in prose.
+
+**RULE 2B-2 — the eleven enforcement-from-start edges have Set B INTACT.** `E005, E006, E008, E009,
+E010, E011, E012, E014, E015, E017, E027` were all run under the cutoff-enforcing loader from their
+first pass and never touched Set B. Set B is a **valid** out-of-sample confirmation set for their
+Set-A-derived, frozen hypotheses — including priority threads **B.1** (E010 unflipped-OB, E012
+non-inverted-FVG) and **B.2** (E015 first-mitigation). Priority thread **B.3** (E028 inverted-OTE) falls
+under RULE 2B-1: frozen, in-sample-only, awaiting unseen data — Set B is not opened for it.
 
 **Loader:** Set B has its own explicit, separately-gated entry point with its own split identifier; the
 §8 Discovery loader (`_common.load()`) is unchanged and still fails closed against loading any bar at or
