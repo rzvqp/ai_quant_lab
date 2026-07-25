@@ -249,4 +249,35 @@
                reviews/ files (covered inside RT-AUDIT-0002). Nothing modified outside red_team/.
                STATE: normal operational standby. Next entry [11], prev_hash E10.
   entry_hash:  E10
+
+[11] 2026-07-24
+  prev_hash:   E10
+  event:       VERDICT               # final falsification pass, all remaining candidates
+  reviewer:    Red Team
+  detail:      CEO tasked a final falsification pass over all remaining Alpha #1 + Alpha #2 candidates
+               with a three-way verdict (REJECTED / NEEDS MORE EVIDENCE / SURVIVED); SURVIVED routed to
+               the Statistician. Deliverable: RED_TEAM_FINAL_EVALUATION.md (RT-FINAL-0001).
+               GOVERNANCE RECONCILIATION (documented in the report, not silently overridden): the
+               2026-07-24 rules retired "REJECT" and reserved final evaluation for Statistician/CEO.
+               The three verdicts are treated as Red Team adversarial-SCREENING recommendations, not
+               laboratory dispositions — SURVIVED = permitted "READY FOR STATISTICAL VALIDATION" sense;
+               REJECTED = "recommend elimination, does not survive falsification"; final elimination
+               authority remains the CEO's (confirmed by the task routing SURVIVED to the Statistician).
+               REJECTED used only where a sufficient body of contrary evidence exists (E10 respected).
+               RESULT (25 candidates: 24 Alpha #1 + AP2-DC-0001):
+                 SURVIVED (3) -> DC-0003 (scale-separated re-run of OBS-0017 null), DC-0004 (matched-null,
+                   flag: reserved holdout compromised), DC-0008 (M1/M5 concentration-ratio distribution;
+                   gates the whole family). Recommended for Statistician hand-off.
+                 REJECTED (6) -> DC-0006 (3 corpus counter-instances + self-inversion + DC-0003 confound),
+                   DC-0010 (own Addendum A: whole session hot, not the hour; registry counter-instances),
+                   DC-0015 (sample-extremum "longest run" = unfalsifiable), DC-0017 (own Addendum B
+                   contradicts the "holds" headline), DC-0022 (record claim factually wrong vs DC-0013
+                   addenda + unfalsifiable extremum), DC-0024 (record extremum + duplicates recovery-shape
+                   family). In every case the legitimate residue survives elsewhere.
+                 NEEDS MORE EVIDENCE (16) -> DC-0001, 0002, 0005, 0007, 0009, 0011, 0012, 0013, 0014,
+                   0016, 0018, 0019, 0020, 0021, 0023, AP2-DC-0001.
+               Nothing modified outside red_team/; no observation, statistics, promotion or consolidation.
+               Red Team does not contact the Statistician — hand-off is a recommendation for CEO routing.
+               STATE: normal operational standby, awaiting CEO decision. Next entry [12], prev_hash E11.
+  entry_hash:  E11
 ```

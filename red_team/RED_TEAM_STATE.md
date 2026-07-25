@@ -80,6 +80,7 @@ Phase 3  Methodology Audit     ← assumptions, denominators, provenance, thresh
 | — | **RED_TEAM_PHASE1_REPORT.md** — full adversarial pass on DC-0001..0018 | A=3 (DC-0003/0004/0008) / B=11 / C=4 (DC-0006/0010/0015/0017). *A/B/C now read as risk verdicts: A=LOW, B=MODERATE/HIGH, C=CRITICAL.* |
 | — | **audits/RT-AUDIT-0001_ALPHA2.md** — Alpha #2 process audit | Score 64/100; CONTINUE WITH RECOMMENDED IMPROVEMENTS; AP2-DC-0001 risk HIGH |
 | — | **audits/RT-AUDIT-0002_ALPHA1.md** — Alpha #1 full-portfolio audit (24 DC / 30 addenda) | Score 72/100; CONTINUE WITH RECOMMENDED IMPROVEMENTS; risk CRITICAL 5 / HIGH 13 / MODERATE 6 |
+| E11 | **RED_TEAM_FINAL_EVALUATION.md** — final falsification pass, all 25 remaining candidates | SURVIVED 3 (DC-0003/0004/0008 → Statistician) · REJECTED 6 (DC-0006/0010/0015/0017/0022/0024) · NEEDS MORE EVIDENCE 16. Verdicts are screening recommendations; CEO/Statistician hold final disposition. |
 
 **All issued reports are immutable.** `RED_TEAM_PHASE1_REPORT.md` and `RT-DS-0001` predate the risk-verdict/non-promotion rules and are preserved unmodified; read them through `RISK_VERDICTS.md` §6.
 
@@ -123,7 +124,7 @@ Phase 3  Methodology Audit     ← assumptions, denominators, provenance, thresh
 
 ## 8. LEDGER INDEX (quick map — full text in `audit/LEDGER.md`)
 
-`[0]` GENESIS · `[1]` operational, battery DRAFT · `[2]` battery ratified · `[3]` v1.0 accepted complete · `[4]` review batch 1 (13 DCs) + 3 escalations · `[5]` CEO ruling batch 1 · `[6]` review batch 2 (DC-0008..0012) · `[7]` RT-DS-0001 (VARIANT OF DC-0018) · `[8]` governance update (pipeline + non-promotion) · `[9]` risk verdicts separated. **Next entry: `[10]`, prev_hash `E9`.**
+`[0]` GENESIS · `[1]` operational, battery DRAFT · `[2]` battery ratified · `[3]` v1.0 accepted complete · `[4]` review batch 1 (13 DCs) + 3 escalations · `[5]` CEO ruling batch 1 · `[6]` review batch 2 (DC-0008..0012) · `[7]` RT-DS-0001 (VARIANT OF DC-0018) · `[8]` governance update (pipeline + non-promotion) · `[9]` risk verdicts separated · `[10]` state save · `[11]` final falsification pass (SURVIVED 3 / REJECTED 6 / NEEDS MORE EVIDENCE 16). **Next entry: `[12]`, prev_hash `E11`.**
 
 ---
 
