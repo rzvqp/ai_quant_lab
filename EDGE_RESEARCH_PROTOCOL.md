@@ -57,6 +57,11 @@ protocol document itself — see §6).
 
 ## 2. Required study horizon
 
+> **AMENDED 2026-07-25 — the ~5-6 year requirement in this section is SUPERSEDED by CEO Decision 1
+> (§2A below). The original paragraph is preserved verbatim, not deleted, per the permanent-record
+> rule (§1/§7): decisions are marked as overwritten, never erased. §§2A/2B/2C are the governing rules
+> going forward.**
+
 Every edge must be studied across **approximately 5-6 years of history** before a Final Verdict may be
 issued. A shorter window may be used for an early Discovery pass (to cheaply check whether an edge is
 even worth the full study), but no Frozen Candidate, Validation, or Walk Forward stage may complete, and
@@ -64,6 +69,89 @@ no Final Verdict may be issued, on less than the full ~5-6 year horizon. This is
 window than any prior study in this project (all prior Strategy/Root-Cause/Atlas work used a single
 fixed 1-year window) — the data-acquisition implications of this are addressed as a prerequisite in
 `EDGE_DISCOVERY_ROADMAP.md`, not resolved here.
+
+### 2A. Governing horizon — CEO Decision 1 (2026-07-25), SUPERSEDES §2 above
+
+The ~5-6 year requirement is replaced by **the clean window actually available: ~2.85 years**, the
+pre-holdout split `pre_holdout_2025-10-23T09-15-00Z_v1` — UTC `dt < 2025-10-23T09:15:00Z`, i.e. **Set A**
+(§2B), 2022-12-16 → 2025-10-23, **67,322 M15 bars**. A Final Verdict (including an early REFUTED verdict)
+may now be issued on this window; the horizon is no longer a blocker.
+
+**Rationale (CEO, verbatim in substance):** §2 contained *no statistical justification*. It stated only
+that ~5-6 years is longer than prior studies and deferred the data-acquisition problem to the roadmap. It
+was a **policy preference, not a derived threshold** — so it is replaced by the best clean data that
+exists rather than blocking all verdicts indefinitely.
+
+**MANDATORY LABEL — not a footnote.** Every verdict issued on this window is labeled
+**`REGIME-LIMITED`**, never **`VALIDATED`**. This label is a **required field of the verdict itself**; a
+verdict written without it is invalid under this protocol. It attaches to *every* §5 taxonomy outcome —
+even `CONFIRMED-ROBUST` is written `CONFIRMED-ROBUST (REGIME-LIMITED)` when issued on Set A alone.
+
+**Reason the label is mandatory:** 2022-12 → 2025-10 is **a single market regime** — XAUUSD rose ~131%
+(1780.98 → 4122.20, verified directly in `data/market/OANDA_XAUUSD_*.csv`). An edge that works inside a
+131% secular bull is **not demonstrated outside that regime**. `REGIME-LIMITED` states exactly that limit
+on the face of the verdict; only genuinely out-of-regime confirmation (not yet available) could lift it.
+
+### 2B. Two-set discipline: Set A / Set B — CEO Decision 2 (2026-07-25)
+
+The dataset on disk runs to 2026-07-13. Flow A's Discovery has only ever loaded the pre-cutoff portion.
+The remainder becomes a dedicated out-of-sample **confirmation** set.
+
+| Set | Definition | Size (M15) | Role |
+|---|---|---|---|
+| **Set A** | `dt < 2025-10-23T09:15:00Z` (`pre_holdout_2025-10-23T09-15-00Z_v1`) | 67,322 bars, ~2.85 yr | **Hypothesis generation + Discovery.** The only set §§1-8 Discovery may load (unchanged from §8). |
+| **Set B** | `2025-10-23T09:15:00Z ≤ dt ≤ 2026-07-13` | 16,830 bars (84,152 − 67,322) | **Out-of-sample CONFIRMATION only.** |
+
+**Strict rules (non-negotiable):**
+1. Generate the hypothesis on Set A; confirm it on Set B. **Never the reverse.**
+2. **Never both sets in the same pass.**
+3. Set B is not touched until the hypothesis is **frozen in writing** (a dated, committed V-contract).
+4. **An un-frozen hypothesis can never use Set B** — touching Set B before freezing makes that
+   hypothesis permanently in-sample; there is no recovery.
+5. Every hypothesis tested on Set B must carry a **provenance + eligibility declaration** (below).
+
+**Per-hypothesis provenance & Set-B-eligibility declaration (required):**
+- **Provenance:** does the hypothesis descend from (a) an original-40 registry edge's own Set-A
+  Discovery, or (b) something else (Alpha division findings, cross-edge observation, etc.)?
+- **Set-B-eligible = YES** only if BOTH hold: the hypothesis's entire evidentiary basis is Set A, **and**
+  Set B has never been seen for this edge by any Flow A run, **and** it is not derived from a division
+  that observed Set B.
+
+**Set B contamination register (Set B is clean ONLY for hypotheses that clear BOTH sources):**
+- **C-1 (CEO-declared):** Alpha 1 discretionarily observed `2025-10-24 → 2026-05-15` inside Set B. Any
+  hypothesis derived from Alpha 1's findings is **contaminated** on Set B.
+- **C-2 (Flow A-declared, surfaced 2026-07-25):** Flow A's own first research session (2026-07-20) ran
+  **E025, E026, E028, E029, E032** through the old no-cutoff loader, which aggregated the **full file
+  through 2026-07-13 — i.e. it analyzed Set B** (verified: `e028_fibonacci_ote_results.json` carries
+  `2026-07-13`). Those five edges' Set-B outcomes have **already been seen by Flow A**. Their clean
+  reruns used Set A only, but §8's permanent-record rule is explicit that a contaminated observation
+  cannot be undone. **Set B is therefore NOT a clean out-of-sample set for E025/E026/E028/E029/E032**,
+  regardless of which run a later hypothesis quotes. This directly affects priority thread B.3 (E028
+  inverted-OTE) — see the governance flag raised to the CEO on 2026-07-25.
+
+**Loader:** Set B has its own explicit, separately-gated entry point with its own split identifier; the
+§8 Discovery loader (`_common.load()`) is unchanged and still fails closed against loading any bar at or
+after the cutoff. Set B is never reachable from a Discovery-stage call.
+
+### 2C. Family-wise error control — CEO Decision 3 (2026-07-25)
+
+**Benjamini-Hochberg (BH) over all 40 V0 hypotheses, declared BEFORE running.** With FDR α = 0.05 across
+the 40-hypothesis family, the rank-1 critical value is **0.05 × 1/40 = 0.00125**; each rank *i* is
+compared to 0.05 × *i*/40.
+
+- **Pre-committed, in writing, before results are seen:** E028's clean-run p = 0.027 **does NOT pass**.
+  Others will not either. **The bar is not lowered and no alternative threshold is proposed after seeing
+  results** (§0.2, §7).
+- This family = the **40 registered V0 hypotheses**. Any **derived / inverted** hypothesis produced by
+  Discovery (e.g. the Task-B unflipped-OB, non-inverted-FVG, E015-first-mitigation, inverted-OTE
+  candidates) is **not a V0** and belongs to its **own separately pre-registered family**, corrected
+  within itself, declared before its own runs — never folded into the 40-V0 family to borrow its
+  threshold.
+- **Calibration note (not a licence to relax):** 40 pre-registered hypotheses at 0.00125 is ~10× more
+  permissive than the S1–S51 campaign's own thresholds (1.21e-4 current round / 3.2e-5 full universe)
+  **precisely because 40 pre-registered hypotheses are not 1,972 parameter combinations.** This is the
+  one lab line where the multiple-comparison mathematics is winnable; that is a reason to hold the bar
+  exactly, not to move it.
 
 ## 3. The six mandatory stages
 

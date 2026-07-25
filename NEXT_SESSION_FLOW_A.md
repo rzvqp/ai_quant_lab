@@ -280,9 +280,18 @@ d43fd93  Flow A: register cross-edge research candidate CEC-001 (governance step
 
 Re-verify live before trusting this — `git log -1`, `git branch --show-current`, `git status
 --porcelain` — do not assume it is still the current HEAD in any future session. This work now lives on
-its own dedicated worktree/branch: `C:\Users\MEDION GAMING\ai_quant_lab-alpha-discovery`, branch
-`alpha-discovery` (separated from Flow B's own `ai_quant_lab-research-main` / `ai-trader-implementation`
-worktree, per CEO decision 2026-07-21).
+**`ai_quant_lab-alpha-automation`, branch `alpha-automation-v1`** (CEO decision 2026-07-25).
+
+> **SUPERSEDED DECISION — kept for the record, not deleted (history is marked, not rewritten).** Through
+> 2026-07-21 this work's official location was the dedicated worktree
+> `C:\Users\MEDION GAMING\ai_quant_lab-alpha-discovery`, branch `alpha-discovery` (per CEO decision
+> 2026-07-21, separated from Flow B's `ai_quant_lab-research-main` / `ai-trader-implementation` worktree).
+> That decision was **OVERWRITTEN on 2026-07-25** because: (1) `alpha-discovery` fell 37+ commits behind
+> and does not contain the consolidated register; (2) per-division worktree separation failed in
+> practice — five divisions ended up writing into the same working tree and the per-division branches
+> became decorative; (3) Red Team independently classified `alpha-discovery` "stale, do not use". Flow
+> A's edge research is mirrored identically onto `alpha-automation-v1` (the 17 `edge_research/E*` files
+> and `EDGE_DISCOVERY_REGISTRY_v1.md`) — nothing is lost.
 
 ## Edges studied
 
@@ -540,11 +549,13 @@ availability, not code. Options for the CEO to choose from:
 - **Flow A does not import `ai_trader` code** — any candidate reuse of an `ai_trader/market_intelligence/`
   concept (e.g. `structure.py`'s swing/BOS/CHoCH logic) is built from scratch, analogous in spirit only,
   never imported directly, per the two-flow separation (`PROJECT_STATE_v2.md` §1.1).
-- **Branch/worktree separation now exists (CEO decision, 2026-07-21)**: Flow A's official location is
-  `C:\Users\MEDION GAMING\ai_quant_lab-alpha-discovery`, branch `alpha-discovery` — a dedicated git
-  worktree, separate from Flow B's own `C:\Users\MEDION GAMING\ai_quant_lab-research-main`
-  (`ai-trader-implementation` branch). Do not access or modify the `ai_quant_lab-research-main` worktree
-  from a Flow A session, and do not modify `NEXT_SESSION_FLOW_B.md`,
+- **Flow A's official location is `ai_quant_lab-alpha-automation`, branch `alpha-automation-v1` (CEO
+  decision 2026-07-25).** **SUPERSEDED:** the earlier "official location `…-alpha-discovery`, branch
+  `alpha-discovery`" (CEO decision 2026-07-21) was overwritten on 2026-07-25 — `alpha-discovery` is 37+
+  commits behind, lacks the consolidated register, and is Red-Team-classified "stale, do not use"; the
+  per-division worktree model failed (five divisions writing one tree). See the fuller superseded-decision
+  note earlier in this document. The Flow B separation still holds: do not access or modify the
+  `ai_quant_lab-research-main` worktree from a Flow A session, and do not modify `NEXT_SESSION_FLOW_B.md`,
   `STRATEGY_HEALTH_INTEGRATION_POLICY_DESIGN.md`, `ai_trader/`, or any Flow B report/implementation from
   here. Still verify git state live (`git branch --show-current`, `git log -1`, `git status
   --porcelain`) before assuming any prior session's described state still holds — other sessions may
