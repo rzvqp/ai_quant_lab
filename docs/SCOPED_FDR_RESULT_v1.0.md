@@ -131,3 +131,26 @@ Cele 6 ipoteze S18 cu p_research < 0.02, sortate după p:
 - Observație factuală: cele 3 cu profil-bun sunt supraviețuitorul (**h13 short**) + două **h20 long** (00d840de0b48, 2341cf9911de); shorturile low-p rămase (h14 down, h13 down) au wo1 **negativ**. Cei doi h20-long au p mai mare (0.004, 0.013 — nu trec FDR), dar unul (2341cf9911de) are exp +0.177 și dd 26.2 (chiar peste pragul de 25R).
 
 Nu concluzionez. Cifrele merg la certificare împreună cu supraviețuitorul.
+
+### 7.5 MĂSURĂTOARE — 3 semnale × 2 ieșiri: robustețea aparține semnalului sau ieșirii? (cifre, fără concluzie)
+Cerere CEO. Măsurat pe **motorul observat determinist** (`MS.setups`+`MS.simulate`, segment research), NU matched-null; p luat din artefactul existent `scoped_fdr_research.parquet`. Script: `code/s18_exit_measure.py`.
+
+| semnal | ieșire | id | p matched-null | n_exec | meanR | wo1 | best-trade ei | best-trade R |
+|---|---|---|---|---|---|---|---|---|
+| **h13-short** | time | ce76669a3b2a | **6.8e-5** | 550 | **+0.061** | **+0.032** | 3037 | **+15.88** |
+| (supraviețuitor) | rr2 | ba3e8d0cdb51 | 3.65e-3 | 550 | −0.071 | −0.075 | 44615 | +1.97 |
+| **h14-short** | time | 42345e7a0115 | 1.25e-3 | 550 | +0.006 | −0.015 | 47360 | +11.75 |
+| | rr2 | f1704085cbda | 4.42e-4 | 550 | −0.033 | −0.036 | 34717 | +1.97 |
+| **h20-long** | time | 2341cf9911de | 1.26e-2 | 534 | +0.177 | +0.159 | 30151 | +9.65 |
+| | rr2 | 00d840de0b48 | 4.30e-3 | 534 | +0.107 | +0.103 | 41427 | +2.22 |
+
+**Suprapunerea de intrări (cele 3 măsurate):** **100% în toate** — h13/h14: 550∩550=550; h20: 534∩534=534; time-only=0, rr2-only=0. **Cele două versiuni ale unui semnal tranzacționează exact aceleași intrări**; doar ieșirea diferă (mean|Rdiff| pe intrări identice = 0.679 / 0.480 / 0.601 R).
+
+**Tranzacția care mișcă wo1 (best-trade):** ei DIFERIT în toate cele 3 perechi (time: 3037/47360/30151; rr2: 44615/34717/41427). **Dar** best-trade-ul fiecărei versiuni ESTE printre intrările celeilalte (doar nu e „best" acolo). Cauza: `time` lasă câștigătorii să curgă (best R = 15.88 / 11.75 / 9.65), `rr2` îi plafonează (~+2R). Deci „cea mai bună tranzacție" e o INTRARE diferită pentru că regula de ieșire schimbă R-ul fiecărei tranzacții pe aceleași intrări.
+
+**Contrast factual pe robustețe (fără concluzie):**
+- **h13-short (supraviețuitorul):** doar versiunea `time` e pozitivă (+0.061, wo1 +0.032); `rr2` pe ACELEAȘI 550 intrări = −0.071, wo1 −0.075. Semnul se schimbă cu ieșirea.
+- **h20-long:** AMBELE ieșiri pozitive (+0.177 și +0.107) cu wo1 pozitiv (+0.159, +0.103). Robust la ambele ieșiri, pe aceleași intrări.
+- Diferența întreagă de meanR și wo1 între cele două ieșiri stă pe **intrări 100% identice** → e atribuibilă exclusiv regulii de ieșire.
+
+Nu concluzionez. Măsurătoarea merge la certificare.
