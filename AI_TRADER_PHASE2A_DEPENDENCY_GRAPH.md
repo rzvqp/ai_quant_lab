@@ -1,9 +1,38 @@
 # AI Trader — Phase 2A: Safety Precondition Dependency Graph
 
-**Mode: DESIGN ONLY.** No code was written or modified. This orders the 10 "DOESN'T EXIST" preconditions
-from `AI_TRADER_DEMO_READINESS_AUDIT.md` by dependency, not severity, per explicit instruction. The 4
-"PARTIAL" preconditions from that audit are out of scope here (not requested). One ordering constraint is
-imposed externally (persistent suspension state first); everything else below is derived, not assumed.
+**Mode: DESIGN ONLY**, except where explicitly marked DONE below. This orders the 10 "DOESN'T EXIST"
+preconditions from `AI_TRADER_DEMO_READINESS_AUDIT.md` by dependency, not severity, per explicit
+instruction. The 4 "PARTIAL" preconditions from that audit are out of scope here (not requested). One
+ordering constraint is imposed externally (persistent suspension state first); everything else below is
+derived, not assumed.
+
+## Approved order (CEO decision, 2026-07-25) and status
+
+1. **#1 Persistent suspension state — DONE.** `a27802d`, pushed to `trader/ai-trader-implementation`,
+   confirmed on remote (`git ls-remote --heads trader` → `a27802d71e4cbb4e06a6eafca6fa383bdbb1662e`).
+   See `AI_TRADER_PHASE2A_STEP1_PERSISTENT_SUSPENSION_REPORT.md`.
+2. **#10, #11** — direction/stop validation, `PortfolioDailyState` reset. Not started, awaiting approval.
+3. **#2** — automatic P&L computation from position history.
+4. **#5** — live MT5 account/instrument/equity bridge.
+5. **#6** — live signal source (Piesa 1 bar feed, Piesa 2 candidate producer, Piesa 3 journal).
+6. **NEW — long-running process robustness** (crash/restart/resume-from-correct-state/stopped-signal for
+   a multi-week unattended shadow process). Not itemized in any of the four audits; added by CEO decision
+   after this graph's own §7 flagged it as a gap item 6 alone doesn't cover.
+7. **NEW — EMERGENCY_STOP reset operation** (this update, 2026-07-25) — see its own entry below. Must
+   exist **before Phase 3** (the long-running shadow-mode operational run), not before Phase 3 is
+   *designed*. **Not authorized to build now** — explicitly deferred, added to this graph only.
+8. **#3, #4** — cross-candidate/per-cycle budget accounting, cost-model reconciliation. Moved AFTER #6 by
+   explicit CEO decision: in shadow mode no order is ever sent (`Piesa 2` never receives the execution
+   adapter, enforced statically) — nothing spends margin, so a per-cycle budget has nothing to exceed, and
+   no commission is ever paid, so cost reconciliation changes nothing observed. Both remain real
+   preconditions for DEMO execution specifically, not for observation; deferring them costs nothing, while
+   every day of shadow observation delayed is a day of forward evidence that can never be recovered.
+9. **#7** — confirm whether a separate scheduler/loop is needed at all once #6 is built, or whether the
+   bar-close event already satisfies it (the CEO's own framing: "probabil da, verifică și raportează").
+10. **#14** — validated edge connected. Entirely outside engineering control; not planned, not estimated.
+
+The sections below are the ORIGINAL dependency analysis this order was built from — kept for the
+reasoning/evidence behind each item, not superseded by the numbered list above.
 
 ---
 
@@ -60,7 +89,7 @@ anything requires them first.
 
 | # | Precondition (Demo Readiness Audit item) | Depends on | What depends on it | Effort |
 |---|---|---|---|---|
-| 1 | **Persistent suspension state** — unify `EngineState.SUSPENDED` (`guards.py`, thrown away at `risk_manager_live/engine.py:123`), the P&L fields item 2 computes, and `emergency_stop` (`execution_orchestrator/engine.py:69`) into one mechanism | Nothing to be *coded* — the state-machine/persistence container can be built now. Depends on item 2 to be *trustworthy* rather than structurally present but fed placeholder P&L. | Items 3, 6, 7 — none of them is safe to connect to anything real before this exists (the CEO's explicit ordering rule) | **M** — touches 3 existing modules (`risk_manager/guards.py` reading, not modifying; `risk_manager_live/engine.py`; `execution_orchestrator/engine.py`), needs a new persistence concept, needs fail-before/pass-after tests per module |
+| 1 | **DONE (`a27802d`).** Persistent suspension state — unified `EngineState.SUSPENDED` (`guards.py`, previously thrown away at `risk_manager_live/engine.py:123`), the P&L fields item 2 will compute (currently the same injected `PortfolioStateSource` interface, no implementation yet), and `emergency_stop` (`execution_orchestrator/engine.py:69`) into one mechanism, `risk_manager_live/circuit_breaker.py::evaluate_circuit_state`. Verified fail-before/pass-after at three levels including a `git stash`-verified orchestrator integration test; pushed and confirmed on `trader` remote. | Nothing to be *coded* — the state-machine/persistence container can be built now. Depends on item 2 to be *trustworthy* rather than structurally present but fed placeholder P&L. | Items 3, 6, 7, and now item 16 below — none of them is safe to connect to anything real before this exists (the CEO's explicit ordering rule) | **M — DONE** |
 | 2 | **Automatic P&L computation** from `open_positions`/`recent_closed_positions` (currently raw caller-supplied fields, `risk_manager/types.py:330-336`) | Nothing to be *coded* — a pure function over position/deal history, unit-testable with fixtures. Needs item 5 (or the existing `OrderLedger`) to receive *real* data once live. | Item 1 (to be meaningful, not just present) | **S/M** — bounded, pure-function scope; size depends on how much `OpenPosition`/`ClosedPosition` already carries vs. needs extending |
 | 3 | **Cross-candidate / per-cycle budget accounting** — nothing threads an updated `PortfolioState`/`AccountState` between candidates evaluated in the same cycle | Freestanding to design (a state-threading mechanism can be built and tested with synthetic multi-candidate batches without item 6 existing yet) | Item 7 — an unattended loop evaluating multiple candidates per cycle is unsafe without this | **M** — real design decision (mutable accumulator vs. re-fetch-between-candidates), touches `execution_orchestrator`'s calling convention |
 | 4 | **Cost-model reconciliation** — research assumes `cost_round_trip = 0.4 pts` (XAUUSD), no commission observed anywhere, one single-tick spread sample (0.07 vs. 0.1 assumed), unresolved 10× tick/point mismatch | Item 5's bridge, extended to also read deal/position history's commission field — an engineering extension. **Also blocked outside code entirely**: knowing this broker's actual per-lot commission rate is not something any amount of engineering effort here produces on its own. | Nothing else in this graph | **S** for the engineering piece (extend the bridge); **blocked regardless of effort** on external broker data — flagged, not estimated as if effort were the bottleneck |
@@ -70,6 +99,8 @@ anything requires them first.
 | 10 | **Direction-vs-stop validation** — only `abs(entry - stop)` is checked anywhere (`risk_manager_live/engine.py:109`), never which side of entry the stop is on | None — self-contained | Item 6 — every real candidate a future signal source produces should pass this before being trusted; not needed for item 6's own Null-rule acceptance test | **S** — single validation rule, smallest and most independent item in this list |
 | 11 | **`PortfolioDailyState` ownership/reset** — its own docstring names a Phase-9 owner that was never built (`portfolio_manager_live/types.py:48-51`) | None — an owner + reset function, testable with a fake clock, independent of anything live existing yet | Loosely related to item 3 (both are "state tracked/reset across cycles"), no hard dependency | **S** — small, self-contained, same shape as item 10 |
 | 14 | **Live decision chain informed by a validated edge** — `AI_TRADER_KNOWLEDGE_TRANSFER_AUDIT.md`'s own verdict; `AUTHORIZED_PATTERNS` is scaffolding, not real patterns | Item 6 (needs the socket — the injected `RecognitionRule` interface — to exist before anything can plug into it) | Nothing — terminal node | **Not S/M/L** — the code change (one more `RecognitionRule` implementation, wired into an interface built to make this trivial) is likely small once unblocked; the actual constraint is Flow A / Statistician / Validation Engine's own research timeline, explicitly outside this graph's control and, per the CEO's own words, possibly months away |
+| 15 | **NEW — long-running process robustness** (CEO-added, 2026-07-25): crash/restart/resume-from-correct-state/stopped-signal for a shadow process meant to run for months. Not itemized in any of the four audits. | Item 6 (nothing to make robust until the bar-feed/candidate-producer process exists) | Phase 3 (the actual multi-week shadow run) — cannot safely start without it | **Not yet scoped** — no design work done; flagged as needing its own investigation before an S/M/L estimate is meaningful |
+| 16 | **NEW — `EMERGENCY_STOP` reset operation** (CEO-added, 2026-07-25, this update): item 1's own disclosed gap — once `EMERGENCY_STOP` is entered, it is currently permanent, with no clear/resume path. Harmless for short DEMO tests; unacceptable for a shadow process running for months, where a single virtual-P&L trip with no reset silently ends all further forward-evidence collection. **Explicit specification, given verbatim by the CEO — do not deviate without re-confirming:** the reset must be a **deliberate, explicitly-authorized action** (never automatic, never implicit on process restart), and every reset must be **journaled with its reason and timestamp**. Mirrors the frozen batch engine's own `clear_emergency()` precedent (guarded, explicit, never silent) rather than inventing a new pattern. | Item 1 (extends its `TradingCircuitState`/`EMERGENCY_STOP` concept directly) | Item 15 and Phase 3 — the long-running shadow process cannot safely run for months without this existing first | **Not yet scoped** — **NOT AUTHORIZED to build now**; this row exists to hold the requirement in the graph, not to schedule it |
 
 ---
 
@@ -87,7 +118,13 @@ anything requires them first.
 - Item 14 is the only item whose primary blocker is a research timeline, not engineering — consistent
   with the CEO's own opening framing ("Punctul 3 așteaptă un edge validat, și acela poate întârzia luni de
   zile").
+- Items 15 and 16 were not in the original 10-item Demo Readiness list — both surfaced from this graph's
+  own analysis (§ "What this graph does and doesn't claim," item 7's flagged gap) and from disclosure in
+  Step 1's own implementation report (`EMERGENCY_STOP` has no reset path). Both are held in this graph as
+  requirements, neither is authorized to build yet.
 
-**Stopping here per instruction.** No implementation order has been chosen — the table above is a
-dependency map, not a build plan. Waiting for approval of the ordering before implementing anything, one
-item at a time, with a report and commit after each.
+**Current status**: item 1 done, pushed, confirmed on remote. Items 10/11 next, awaiting approval. Items
+15/16 are documented requirements only — no design work, no code, not scheduled. Every item beyond 1
+remains a dependency map, not a build plan, until explicitly authorized one at a time, with a report and
+commit — and, per the CEO's standing instruction after Step 1, a `git`-verified fail-before/pass-after
+demonstration — after each.
