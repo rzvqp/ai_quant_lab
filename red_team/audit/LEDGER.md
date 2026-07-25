@@ -313,4 +313,30 @@
                nothing sent to the Statistician (SURVIVED list is a CEO-routing recommendation).
                STATE: HAND-OFF HALTED, awaiting CEO approval. Next entry [13], prev_hash E12.
   entry_hash:  E12
+
+[13] 2026-07-25
+  prev_hash:   E12
+  event:       CEO_DELIVERY          # ratifications — see AUTHORITY note
+  authority:   CHIEF ARCHITECT, under CEO delegation dated 2026-07-25. NOT taken directly by the CEO.
+  numbering:   The delegation referred to this as entry "[10]". The ledger is append-only and
+               hash-chained and was already at [12] (E10 state-save, E11 falsification pass, E12
+               reconciliation); per chain integrity these ratifications are recorded as [13],
+               prev_hash E12. Flagged, not silently renumbered.
+  reviewer:    Red Team
+  detail:      Hand-off UNBLOCKED. Four ratifications recorded:
+               (R1) INVENTORY = 28 RATIFIED. AP2-DC-0002 formally included as the 28th candidate.
+                    Integrity warning W8 (27-vs-28 discrepancy) CLOSED.
+               (R2) RT-AUDIT-0001 (Alpha #2) and RT-AUDIT-0002 (Alpha #1) ACCEPTED. **Both Alpha
+                    divisions are CLOSED**, so the audit recommendations have no active recipient;
+                    they are RETAINED for any future Alpha instance. No producer of candidates remains.
+               (R3) The 7 REJECTED (DC-0006, DC-0010, DC-0015, DC-0017, DC-0022, DC-0024, DC-0025)
+                    are ARCHIVED, not deleted. Their IDs remain PERMANENTLY RESERVED and are never reused.
+               (R4) RT-DS-0001 determination (AP2-DC-0001 = addendum to DC-0018) is recorded in the
+                    Red Team consolidated register ONLY; it is NOT written into Alpha's tree. Alpha #1
+                    is closed and no one holds a mandate there, so the physical attachment will not occur.
+               Recorded in the consolidated register: verdicts_ledger.md (ARCHIVE + consolidation
+               sections) and RED_TEAM_STATE.md. Nothing written outside red_team/. No candidate reviewed.
+               STATE: ratifications logged; Red Team in terminal standby (no active candidate producer).
+               Next entry [14], prev_hash E13.
+  entry_hash:  E13
 ```

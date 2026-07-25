@@ -1,6 +1,8 @@
 # RED TEAM — STATE & RESUME DOCUMENT
 ### Read this first. Single source of truth for continuing Red Team work.
-**Last updated:** 2026-07-24 · **Maintainer:** Red Team · **Status:** OPERATIONAL — normal standby
+**Last updated:** 2026-07-25 · **Maintainer:** Red Team · **Status:** TERMINAL STANDBY — no active candidate producer
+
+> **2026-07-25 (Chief Architect under CEO delegation, LEDGER [13]/E13):** Inventory = **28 RATIFIED** (AP2-DC-0002 formally included; W8 closed). Both audits ACCEPTED. **Both Alpha divisions are CLOSED — no producer of candidates remains; Red Team is in terminal standby.** The 7 REJECTED are **ARCHIVED, not deleted; IDs permanently reserved**. RT-DS-0001/0002 determinations recorded in the consolidated register only (`verdicts_ledger.md`) — never written into Alpha's tree (Alpha #1 closed, no mandate). Audit recommendations retained for any *future* Alpha instance. Final verdicts: `verdicts_ledger.md` Consolidated Register + `RED_TEAM_FINAL_EVALUATION_v2.md`.
 
 > A fresh Claude should be able to resume Red Team exactly from here by reading this file, then the documents it points to. Nothing else is required. **Do not re-derive; read the ledger and the reports.**
 

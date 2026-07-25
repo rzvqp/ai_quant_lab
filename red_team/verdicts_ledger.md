@@ -30,3 +30,29 @@
 
 ---
 **Verdict legend:** 🟢 CONTINUE INVESTIGATION · 🟡 NEEDS BETTER EVIDENCE · 🔴 NOT RECOMMENDED — defined in [methodology/VERDICT_RULES.md](methodology/VERDICT_RULES.md). (UNREVIEWABLE is an intake status, not a verdict.)
+
+---
+
+## CONSOLIDATED REGISTER — final reconciliation (ratified 2026-07-25 by Chief Architect under CEO delegation; LEDGER [13]/E13)
+
+**Ratified inventory: 28 candidates** — Alpha #1 = 26 (DC-0001…DC-0026), Alpha #2 = 2 (AP2-DC-0001, **AP2-DC-0002** formally included). Final verdicts per RT-FINAL-0002. These are Red Team **risk/screening** outcomes; final laboratory disposition is the CEO's / Statistician's.
+
+### 🟢 SURVIVED (3) — recommended for Statistician (routing is the CEO's)
+| DC | Note |
+|---|---|
+| DC-0003 | scale-separated re-run of the OBS-0017 null |
+| DC-0004 | ⚠️ **holdout consumed** — post-2025-10-23 results are NOT independent confirmatory validation (RT-FINAL-0002 §6); in-sample hypothesis only |
+| DC-0008 | M1/M5 concentration-ratio distribution; gates the family |
+
+### 🔴 REJECTED → **ARCHIVED** (7) — not deleted; IDs permanently reserved, never reused
+`DC-0006` · `DC-0010` · `DC-0015` · `DC-0017` · `DC-0022` · `DC-0024` · `DC-0025` — each with its legitimate residue surviving elsewhere (see RT-FINAL-0002 §5). Status: **ARCHIVED (ID reserved)**.
+
+### 🟡 NEEDS MORE EVIDENCE (18)
+DC-0001, 0002, 0005, 0007, 0009, 0011, 0012, 0013, 0014, 0016, 0018, 0019, 0020, 0021, 0023, 0026, AP2-DC-0001, AP2-DC-0002.
+
+### Consolidated determinations (recorded here only — NOT written into Alpha's tree)
+- **RT-DS-0001:** AP2-DC-0001 = **VARIANT OF DC-0018**; determination = attach as an addendum to DC-0018. Alpha #1 is **CLOSED**, no mandate exists there → the physical attachment will not occur; the determination lives in this register as the record of record.
+- **RT-DS-0002:** AP2-DC-0002 = **VARIANT OF DC-0023** (extended multi-hour high-volume episode + political-catalyst condition).
+- **Audits accepted:** RT-AUDIT-0001 (Alpha #2), RT-AUDIT-0002 (Alpha #1). Both Alpha divisions CLOSED → recommendations retained for any **future** Alpha instance; no active recipient.
+
+*No candidate producer remains. Red Team is in terminal standby.*
