@@ -1,9 +1,9 @@
-# STATISTICIAN ↔ VALIDATION ENGINE CONTRACT v1.0
+# STATISTICIAN ↔ VALIDATION ENGINE CONTRACT v1.1
 ### Interfața oficială dintre proiectarea și execuția validării statistice
 
-**Document ID:** STAT-VE-CONTRACT-v1.0
-**Data ratificării:** 2026-07-24 · **Autoritate:** CEO
-**Statut:** Contract oficial, permanent. Stă la baza definirii Validation Engine și guvernează orice interacțiune viitoare dintre Statistician și Validation Engine, pentru orice Discovery Candidate.
+**Document ID:** STAT-VE-CONTRACT-v1.1
+**Data ratificării:** 2026-07-24 (v1.0) · **Amendat:** 2026-07-25 (v1.1, §5) · **Autoritate:** CEO / Arhitect Șef sub delegare CEO
+**Statut:** Contract oficial, permanent. Stă la baza definirii Validation Engine și guvernează orice interacțiune viitoare dintre Statistician și Validation Engine, pentru orice Discovery Candidate — **și, din v1.1, certificarea agregată a rezultatelor de campanie statistică (ex. global-FDR peste corpul de strategii S1-S51)**, conform §5.
 
 ---
 
@@ -64,6 +64,23 @@ Pentru fiecare candidat, specificația trebuie să conțină obligatoriu:
 ## 4. Statut
 
 Acest contract este considerat matur și suficient pentru a sta la baza definirii oficiale a Validation Engine. Proiectarea Stage S002 nu începe până când CEO nu confirmă că Validation Engine este definit și operațional.
+
+---
+
+## 5. Amendament v1.1 (2026-07-25) — extindere la certificarea agregată a rezultatelor de campanie
+
+**Ratificat de Arhitectul Șef, sub delegare CEO, 2026-07-25.** Contractul acoperă acum două obiecte distincte, guvernate de același principiu, dar cu execuție diferită:
+
+| | Obiect: Discovery Candidate | Obiect: rezultat de campanie (ex. global-FDR S1-S51) |
+|---|---|---|
+| Cine execută | Validation Engine | Research Lab (sau entitatea desemnată să execute campania) |
+| Ce specifică Statistician | Test complet, per candidat individual | Design complet al procedurii de campanie (populație, prag, corecție, criterii de succes/eșec) — **înainte de execuție**, ca review independent |
+| Ce certifică Statistician **după** execuție | Verdictul statistic pe ACEL candidat (unul din cele 5 verdicte oficiale) | **Rezultatul agregat al campaniei** — dacă designul preînregistrat a fost urmat fidel, dacă procedura de corecție (FDR/BH) e sănătoasă, dacă vreun supraviețuitor rezistă la verificarea de validare independentă, și ce spune (sau nu spune) rezultatul despre universul mai larg din care campania a fost scopată |
+| Ce NU face Statistician | — | **Nu re-analizează fiecare ipoteză individuală din campanie** (ex. cele ~412 dintr-o rundă FDR) cu profunzimea unui Phase 1 de Discovery Candidate — natura combinatorie/de gramatică a ipotezelor de campanie e categoric diferită de o ipoteză descoperită discreționar |
+
+**Principiul rămâne identic:** entitatea care execută nu se auto-certifică. Research Lab proiectează parțial și execută; Statistician verifică designul independent înainte de rulare și certifică rezultatul agregat după — separarea design/execuție/certificare, nu doar design/execuție.
+
+**Precedent de aplicare:** `STATISTICIAN_INDEPENDENT_REVIEW_SCOPED_FDR_PREREG_v1.0.md` (review pre-execuție), `STATISTICIAN_POWER_ANALYSIS_SPEC_BH_THRESHOLD_v1.0.md` și `STATISTICIAN_SCOPED_FDR_INTERPRETATION_AMENDMENT_v1.0.md` (amendamente obligatorii înainte de rulare).
 
 ---
 
