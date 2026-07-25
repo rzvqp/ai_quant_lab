@@ -80,16 +80,23 @@ Knowledge-Transfer-style audit — not needed to resume AI Trader engineering it
 git status --short           # confirm working tree is clean, or see exactly what's pending
 git log --oneline -5         # confirm you're looking at the commit you think you are
 git branch --show-current    # confirm you're on ai-trader-implementation
-git remote -v                # confirm remote state (origin exists as of 2026-07-25 — see below)
+git remote -v                # confirm remote state (four named remotes as of 2026-07-25 — see below)
 ```
 
-**Remote**: `origin` = `https://github.com/rzvqp/ai_quant_lab-alpha-discovery.git` (confirmed present as
-of 2026-07-25, added after the previous official-save commit `125e171`). **No push has been made from
-this repository at any point in this project's history** — do not push without explicit CEO
-authorization; confirm the exact commit/branch to push before doing so, since the remote's own name
-(`ai_quant_lab-alpha-discovery`) does not match this local repo's directory name
-(`ai_quant_lab-research-main`), which is worth clarifying with the CEO before ever pushing rather than
-assuming they're interchangeable.
+**Remote**: as of 2026-07-25, four named remotes are configured, each pointing at its own correctly-named
+repo (superseding an earlier, single unnamed `origin` that incorrectly pointed at
+`ai_quant_lab-alpha-discovery` — CEO-corrected same day):
+
+| Remote | URL |
+|---|---|
+| `trader` | `https://github.com/rzvqp/ai_quant_lab-research-main.git` (this repo) |
+| `lab` | `https://github.com/rzvqp/ai_quant_lab.git` |
+| `alpha1` | `https://github.com/rzvqp/ai_quant_lab-alpha-automation.git` |
+| `discovery` | `https://github.com/rzvqp/ai_quant_lab-alpha-discovery.git` |
+
+**No push has been made from this repository at any point in this project's history.** When pushing is
+eventually authorized, use `trader` — the remote whose name matches this local repo — never assume `git
+push` with no explicit remote name will pick the right one now that more than one is configured.
 
 ## 6. Information that exists only in prior conversation, not fully confirmed in the repository
 
