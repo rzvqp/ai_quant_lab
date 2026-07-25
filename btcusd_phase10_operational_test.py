@@ -154,7 +154,7 @@ def main() -> None:
         # ---- Build the full AI Trader dependency set, using REAL queried values wherever available ----
         entry_price = float(tick.ask)
         candidate = CandidateSignal(
-            strategy_id="PHASE10_BTCUSD_INFRA_TEST", symbol=SYMBOL, direction=Direction.LONG,
+            strategy_id="S999", symbol=SYMBOL, direction=Direction.LONG,  # ORDER_SCHEMA.json requires ^S\d+$; S999 is a disclosed, reserved-looking infra-test id, never a real registered strategy
             entry=entry_price, stop=entry_price * 0.98, target=entry_price * 1.02, session="INFRA_TEST",
             magic_number=900010, comment="PHASE10-BTC-INFRA", as_of=now,
         )
@@ -194,10 +194,12 @@ def main() -> None:
 
         dry_run_ledger = OrderLedger()
         dry_run_journal = OrderManagerAuditJournal(Path(__file__).parent / "btcusd_phase10_dry_run_journal.jsonl")
+        dry_run_adapter = DryRunBrokerAdapter(broker_caps)
+        dry_run_adapter.connect()  # fix: the dry-run leg's own adapter must be connected before use
         dry_run_deps = OrchestratorDependencies(
             account=account, portfolio=portfolio, daily_state=daily_state, instrument=instrument,
             risk_context=risk_context, risk_config=risk_config, broker_caps=broker_caps, ledger=dry_run_ledger,
-            order_journal=dry_run_journal, adapter=DryRunBrokerAdapter(broker_caps),
+            order_journal=dry_run_journal, adapter=dry_run_adapter,
         )
         demo_ledger = OrderLedger()
         demo_journal = OrderManagerAuditJournal(Path(__file__).parent / "btcusd_phase10_demo_order_journal.jsonl")

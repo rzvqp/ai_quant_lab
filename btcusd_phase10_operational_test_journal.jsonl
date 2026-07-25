@@ -1,4 +1,23 @@
-{"stage": "CHECK_1_CONNECTED", "wall_clock": 1784963134.348138, "accepted": true, "reason": null}
-{"stage": "CHECK_2_ACCOUNT_IS_DEMO", "wall_clock": 1784963134.3486748, "account_is_demo": true, "trade_mode": "AccountTradeMode.DEMO"}
-{"stage": "CHECK_3_ALGO_TRADING_ENABLED", "wall_clock": 1784963134.3486965, "algo_trading_status": "TRADING_DISABLED_AT_TERMINAL"}
-{"stage": "ABORT_FAIL_CLOSED", "wall_clock": 1784963134.348708, "reason": "AlgoTrading not enabled at terminal: TRADING_DISABLED_AT_TERMINAL -- never auto-activated"}
+{"stage": "CHECK_1_CONNECTED", "wall_clock": 1784965741.032517, "accepted": true, "reason": null}
+{"stage": "CHECK_2_ACCOUNT_IS_DEMO", "wall_clock": 1784965741.0329483, "account_is_demo": true, "trade_mode": "AccountTradeMode.DEMO"}
+{"stage": "CHECK_3_ALGO_TRADING_ENABLED", "wall_clock": 1784965741.032972, "algo_trading_status": "ENABLED"}
+{"stage": "CHECK_4_TERMINAL_TRADE_ALLOWED", "wall_clock": 1784965741.032982, "terminal_algo_trading_allowed": true}
+{"stage": "CHECK_5_ACCOUNT_TRADE_ALLOWED", "wall_clock": 1784965741.0329883, "account_trade_allowed": true}
+{"stage": "CHECK_6_7_SYMBOL_CAPABILITIES", "wall_clock": 1784965741.0330868, "symbol": "BTCUSD", "caps": {"tick_size": 0.01, "lot_step": 0.01, "min_qty": 0.01, "max_qty": 100.0, "digits": 2, "spread": 1700, "trade_mode": 4}}
+{"stage": "CHECK_8_TICK", "wall_clock": 1784965741.0331419, "tick_present": true, "bid": 63967.0, "ask": 63984.0, "tick_time": 1784976539}
+{"stage": "CHECK_8B_MARKET_OPEN", "wall_clock": 1784965741.0331845, "market_open": true}
+{"stage": "CHECK_9_10_SPREAD", "wall_clock": 1784965741.0331974, "bid": 63967.0, "ask": 63984.0, "spread_price": 17.0, "broker_reported_spread_points": 1700}
+{"stage": "CHECK_11_MIN_VOLUME", "wall_clock": 1784965741.0332067, "min_volume": 0.01}
+{"stage": "ACCOUNT_SNAPSHOT", "wall_clock": 1784965741.0332778, "balance": 5000.0, "equity": 5000.0, "currency": "PLN", "leverage": 500, "margin_free": 5000.0, "contract_size": 1.0}
+{"stage": "PRE_EXISTING_POSITIONS_CHECK", "wall_clock": 1784965741.03334, "count": 0}
+{"stage": "SAFETY_GUARD_REPORT", "wall_clock": 1784965741.0341005, "connected": true, "account_is_demo": true, "algo_trading_enabled": true, "server_matches_expected": true, "max_volume_configured": true, "market_open": true, "all_passed": true}
+{"stage": "SENDING_THROUGH_FULL_AI_TRADER_PIPELINE", "wall_clock": 1784965741.034121, "note": "Execution Orchestrator -> Order Manager -> Broker Adapter -> MT5 order_check -> MT5 order_send"}
+{"stage": "CHECK_12_DRY_RUN_RESULT", "wall_clock": 1784965741.404438, "approved": true, "order_state": "ACKNOWLEDGED", "reason_codes": []}
+{"stage": "DEMO_RESULT", "wall_clock": 1784965741.4044726, "sent": true, "reason_codes": []}
+{"stage": "EXECUTION_CONFIRMED", "wall_clock": 1784965741.404486, "retcode": "10009 (TRADE_RETCODE_DONE) -- inferred from BrokerAck.accepted=True, per MT5OrderSendResult.ok's own definition; the adapter does not expose the raw numeric retcode on BrokerAck (unmodified, out of scope to change)", "broker_order_ticket": "491745557", "client_order_id": "OM-CID-LIVE-ORCH-S999-BTCUSD-1784965740", "state": "ACKNOWLEDGED", "filled_qty": 0.01, "avg_price": 63984.0, "dry_run": false, "execution_wall_clock": 1784965741.4044843}
+{"stage": "POST_SEND_POSITIONS", "wall_clock": 1784965742.4047034, "count": 1, "positions": [{"ticket": 491745557, "volume": 0.01, "type": 0}]}
+{"stage": "CLOSE_ORDER_CHECK", "wall_clock": 1784965742.4048386, "ticket": 491745557, "retcode": 0, "comment": "Done"}
+{"stage": "CLOSE_ORDER_SEND", "wall_clock": 1784965742.5313897, "ticket": 491745557, "retcode": 10009, "comment": "Request executed", "close_price": 63967.0, "close_volume": 0.01}
+{"stage": "FINAL_CLEANUP_VERIFICATION", "wall_clock": 1784965743.5318418, "open_positions": 0, "open_orders": 0}
+{"stage": "CLEANUP_CONFIRMED_FLAT", "wall_clock": 1784965743.5318892, "note": "no positions or orders remain open from this test"}
+{"stage": "TEST_COMPLETE", "wall_clock": 1784965743.5319035, "overall": "SUCCESS"}
