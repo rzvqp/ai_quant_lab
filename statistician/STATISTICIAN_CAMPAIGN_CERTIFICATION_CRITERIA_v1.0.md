@@ -1,10 +1,12 @@
 # STATISTICIAN — CRITERII DE CERTIFICARE A REZULTATELOR DE CAMPANIE
 ### Scrise ÎNAINTE ca rezultatul FDR să existe
 
-**Document ID:** STAT-CAMPAIGN-CERT-CRITERIA-v1.0
-**Data:** 2026-07-25 · **Autor:** Statistician
+**Document ID:** STAT-CAMPAIGN-CERT-CRITERIA-v1.1
+**Data:** 2026-07-25 (v1.0) · **Amendat:** 2026-07-25 (v1.1, §1 punctul 6) · **Autor:** Statistician
 **Autoritate:** Contract Statistician↔Validation Engine v1.1, §5 (certificarea agregată a rezultatelor de campanie).
-**Statut:** Precondiție operațională pentru §5. Comis **înainte** de orice p-value din campania FDR scopată (`ea36005`) — verificat direct: niciun fișier de rezultat (`SCOPED_FDR_RESULT*`, `scoped_fdr_research*`, `scoped_fdr_summary*`) nu există în niciun branch local sau remote la ora acestui commit. Scris acum, ca un contract, exact disciplina pe care o impun altora la pre-înregistrare — dacă aș scrie asta după ce văd rezultatul, criteriile ar fi modelate de el.
+**Statut:** Precondiție operațională pentru §5. v1.0 comisă **înainte** de orice p-value din campania FDR scopată (`ea36005`) — verificat direct: niciun fișier de rezultat (`SCOPED_FDR_RESULT*`, `scoped_fdr_research*`, `scoped_fdr_summary*`) nu există în niciun branch local sau remote la ora acelui commit. Scris atunci, ca un contract, exact disciplina pe care o impun altora la pre-înregistrare — dacă aș fi scris asta după ce am văzut rezultatul, criteriile ar fi fost modelate de el.
+
+**Notă de proces pentru v1.1:** punctul 6 din §1 a fost aplicat prima dată la certificarea supraviețuitorului S18 (`9d7d4c3`) — acolo criteriul a fost derivat și declarat explicit ÎN TIMPUL certificării, nu preexista în v1.0. Nu rescriu istoria: v1.0 nu conținea acest punct; a fost derivat din primul caz și e formalizat aici, ca regulă permanentă, pentru ca următoarea certificare să nu depindă de cine își amintește de el.
 
 ---
 
@@ -17,6 +19,9 @@
 3. **Segmentul de validare (OOS 20%) raportat separat și examinat** — nu cer ca validarea să treacă propriul ei BH (pre-înregistrarea nu cere asta, și aș introduce o poartă nedeclarată dacă aș cere-o acum). Cer însă ca rezultatul de validare să fie **raportat explicit alături de supraviețuitor, niciodată omis**, și ca o contradicție puternică (semn opus, p mare) să fie **numită direct în certificare**, nu îngropată. Un supraviețuitor cu validare puternic contrară primește certificare de tip "raportat, nu susținut de al doilea eșantion" — nu tăcere.
 4. **Verificare de fragilitate cunoscută** — supraviețuitorul nu aparține unei construcții deja semnalată ca fragilă în lab (ex. tiny-stop/D2-adiacent, chiar dacă nominal ATR-stop — vezi pilotul 2026-07-13, S6-extreme). Dacă aparține, se certifică cu acest avertisment atașat explicit, nu implicit.
 5. **Trasabilitate completă** — manifest de execuție, semințe RNG, hash-uri de date și cod, conform §8 din formatul deja cerut Validation Engine (extins acum la Research Lab prin Contract v1.1 §5).
+6. **[v1.1] Robustețe la alegeri de modelare pre-înregistrate în aceeași gramatică.** Un rezultat **nu se certifică** dacă semnul lui se inversează sub o altă configurație care era ea însăși parte a spațiului de design pre-înregistrat al ACELEIAȘI familii de ipoteze (nu o alternativă inventată ad-hoc după rezultat) — de exemplu, o regulă de ieșire alternativă deja declarată legitimă în gramatică, aplicată pe exact aceleași intrări. **Motivul:** dacă două configurații, ambele pre-înregistrate ca legitime, produc rezultate opuse pe intrări identice, rezultatul aparține configurației, nu semnalului.
+   - **Extindere, a mea, adăugată aici pentru completitudine (nu doar inversare de semn):** dacă semnul NU se inversează, dar rezultatul își pierde semnificația la ACELAȘI prag sub configurația alternativă pre-înregistrată, acest lucru nu blochează automat certificarea (spre deosebire de inversarea de semn, care e un prag clar, mecanic), dar **trebuie raportat explicit** în certificare și cântărit serios — nu ignorat doar pentru că nu s-a inversat semnul.
+   - **Precizare de sferă:** "aceeași gramatică" înseamnă o alternativă de parametru care era parte a specificației pre-înregistrate a ACELEIAȘI familii de ipoteze — nu o comparație cu o configurație dintr-o altă familie sau inventată post-hoc special pentru a ataca rezultatul.
 
 **Ce m-ar face să refuz certificarea unui rezultat pozitiv:**
 - Orice deviere de la populația/pragul/configurația înghețate, oricât de "mai bun" ar părea rezultatul rezultat din ea.
@@ -24,6 +29,7 @@
 - Lipsa artefactelor de reproductibilitate (semințe, manifest).
 - Orice dovadă de extindere a universului sau re-rulare după vederea rezultatelor.
 - Folosirea configurației stratificate (nevalidată) pentru a obține sau confirma un supraviețuitor.
+- **[v1.1]** Inversarea semnului rezultatului sub o configurație alternativă deja pre-înregistrată în aceeași familie de ipoteze, pe intrări identice.
 
 ## 2. Ce verific la un rezultat NUL
 
