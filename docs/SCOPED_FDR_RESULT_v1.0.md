@@ -62,7 +62,7 @@ S1 (1152 ipoteze) e **integral exclus** — nu are opțiune `atr`. Practic **79%
 
 Supraviețuitorul NU e o alfa nouă validată. Trei probleme concrete, raportate separat:
 
-1. **Alternativă neexclusă = primitiva Volatility (profil oră-din-zi) + asimetria direcțională.** Supraviețuitorul e o ipoteză **oră-din-zi cu bias short** (h13 UTC = deschidere NY). Clusterul S18 la p mic (h13/h14/h20, majoritatea **short**) arată o structură sistematică oră-din-zi-direcțională. Laboratorul are deja **Volatility ca primitivă promovată cu profil oră-din-zi**, iar Flow C a ridicat asimetria direcțională (RI-META-0004, „drift is a hypothesis"). Matched-null-ul randomizează timing-ul peste TOATE barele eligibile → va marca orice strategie oră-concentrată ori de câte ori anumite ore sunt sistematic direcționale — exact ce afirmă primitiva Volatility. Deci supraviețuitorul e **plauzibil o re-detecție a cunoașterii deja existente**, nu un factor independent nou. Este exact alternativa pe care rapoartele mele de Fază 1 au semnalat-o de fiecare dată.
+1. **[RETRAS 2026-07-25 — vezi §7.1]** ~~Alternativă neexclusă = primitiva Volatility (profil oră-din-zi) + asimetria direcțională.~~ Explicația inițială (supraviețuitorul = re-detecția primitivei Volatility + asimetria direcțională Flow C) **NU se susține** și e retrasă: supraviețuitorul e **short** într-o fereastră în care aurul a crescut ~131%, iar Flow C a măsurat hit-rate long 29.0% vs short 9.2% — deci driftul și asimetria direcțională lucrează **împotriva** lui, nu îl explică. Detaliu în §7.1.
 
 2. **Eșuează OOS.** Validation p = 0.078 > 0.05. Nu se confirmă out-of-sample (consistent cu tiparul „edge-urile de research pică OOS").
 
@@ -96,4 +96,38 @@ Dar, ca Statistician, ponderez cinstit **cât de concret** e motivul, și e **SL
 | Raportare indiferent de semn + numărul de excluși | ✅ 1 supraviețuitor, 1560 excluși |
 | Holdout SEALED, fără extindere/ajustare/re-rulare | ✅ |
 
-**Verdict:** 1 supraviețuitor de research-FDR în regimul validat (`ce76669a3b2a`, S18 oră-13-short), MC-3-confirmat sub prag, dar **fără confirmare OOS** și **cel mai probabil re-detecția primitivei Volatility oră-din-zi**, **ortogonal** regimului D2. 1560 din 1972 ipoteze (79%) sunt în afara domeniului validat. Decizia D2 revine CEO; condiția pre-declarată e îndeplinită, dar motivul concret e slab și nu vizează regimul structural.
+**Verdict:** 1 supraviețuitor de research-FDR în regimul validat (`ce76669a3b2a`, S18 oră-13-short), MC-3-confirmat sub prag, **fără confirmare OOS** (val_p=0.078) și **ortogonal** regimului D2. 1560 din 1972 ipoteze (79%) sunt în afara domeniului validat. **Vezi §7 (corecții la review-ul CEO 2026-07-25):** explicația „re-detecție Volatility" e RETRASĂ (supraviețuitorul e short într-o piață în urcare de 131% — driftul/asimetria lucrează împotriva lui); profilul de fragilitate al supraviețuitorului e neobișnuit de bun (nu poate fi respins prin argumentul de concentrare); și există o contradicție de criterii a laboratorului (a trecut FDR global, dar research_worthy=False fiindcă dd=33.4R > pragul 25R). D2 NU se închide pe baza acestui supraviețuitor (premisa regulii — edge curat ⇒ edge murdar — nu se aplică unui efect oră-din-zi ortogonal). Rezultatul merge la certificare (contract v1.1 §5); nu se interpretează mai departe. Holdout SEALED.
+
+---
+
+## 7. CORECȚII LA REVIEW-UL CEO (2026-07-25) + verificarea clusterului
+
+### 7.1 RETRAGERE — explicația #1 (Volatility + asimetrie direcțională) NU se susține
+Am atribuit supraviețuitorul primitivei Volatility (profil oră-din-zi) + asimetriei direcționale (Flow C RI-META-0004). **Retras.** Supraviețuitorul e **SHORT** (h13 UTC), într-o fereastră în care aurul a crescut **~131%**. Flow C a măsurat hit-rate **long 29.0% vs short 9.2%**. Deci driftul și asimetria direcțională lucrează **AMÂNDOUĂ ÎMPOTRIVA** unui short — nu îl pot explica. Profilul orar poate explica de ce există *un efect* la h13, dar **nu** de ce e short și **nu** de ce supraviețuiește unui null care **păstrează direcția** (matched-null randomizează doar timing-ul, ținând direcția short fixă). Concluzia: supraviețuitorul e un efect **h13-short specific de timing**, NE-explicat de cunoașterea existentă (Volatility e direcție-agnostică; drift/asimetrie se opun shorturilor). **Punctele §4.2 (eșec OOS) și §4.3 (ortogonal D2) rămân valabile.**
+
+### 7.2 Profil de fragilitate neobișnuit de bun (corectează argumentul de concentrare)
+Supraviețuitorul (FAMILY_RESULTS rând 1919): **t5 = 0.141** (vs mediană profitabili 0.255 — sub jumătate), **wo1 = +0.032** (supraviețuiește scoaterii celei mai bune tranzacții), **fragile = False**, 550 tranzacții / 27 luni / 14 luni pozitive / 4 ani. Concentrarea = ~14% vs 41% la nivel de corp (Flow C). **Nu îl validează**, dar înseamnă că **nu poate fi respins prin argumentul de concentrare** care se aplică restului corpului. Îmi corectez implicit ponderarea din §4: supraviețuitorul e mai greu de respins decât am sugerat.
+
+### 7.3 FINDING DE INTEGRITATE (al laboratorului, nu al analizei) — criterii oficiale în contradicție
+Supraviețuitorul a trecut **FDR-ul global** (Test B validat, p sub prag BH), dar **`research_worthy = False`** — cauza: **dd = 33.4R > pragul 25R** din Discovery Screen V1. **Două criterii oficiale ale laboratorului dau verdicte opuse pe același obiect:** unul îl declară supraviețuitor statistic, celălalt îl respinge la screening. Consemnat ca finding de integritate; **NU îl rezolv** (nu e în mandatul acestei analize).
+
+### 7.4 VERIFICAREA CLUSTERULUI S18 (cifre, fără concluzie)
+Întrebare: clusterul S18 la p mic (orele 13/14/20, majoritatea short) conține și alte ipoteze cu profil similar supraviețuitorului (t5<0.20 & wo1>0 & fragile=False)?
+
+Cele 6 ipoteze S18 cu p_research < 0.02, sortate după p:
+| id | oră | dir | exit | n | exp | dd | t5 | wo1 | fragile | p | profil-bun? |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| ce76669a3b2a | 13 | down | time | 550 | +0.061 | 33.4 | 0.141 | +0.032 | False | 1.0e-4 | **DA (supraviețuitor)** |
+| f1704085cbda | 14 | down | rr2 | 550 | −0.033 | 37.7 | 0.030 | −0.036 | False | 5.0e-4 | nu (wo1<0) |
+| 42345e7a0115 | 14 | down | time | 550 | +0.006 | 51.0 | 0.116 | −0.015 | **True** | 1.25e-3 | nu (fragile) |
+| ba3e8d0cdb51 | 13 | down | rr2 | 550 | −0.071 | 64.7 | 0.028 | −0.075 | False | 3.65e-3 | nu (wo1<0) |
+| 00d840de0b48 | 20 | up | rr2 | 534 | +0.107 | 31.6 | 0.025 | +0.103 | False | 4.30e-3 | **DA** |
+| 2341cf9911de | 20 | up | time | 534 | +0.177 | 26.2 | 0.090 | +0.159 | False | 1.26e-2 | **DA** |
+
+**Cifre (fără concluzie):**
+- S18 cu p<0.005: **5** ipoteze, din care cu profil-bun (t5<0.20 & wo1>0 & fragile=False): **2** (ce76669a3b2a, 00d840de0b48).
+- S18 cu p<0.02: **6** ipoteze, din care profil-bun: **3** (+ 2341cf9911de).
+- Deci **supraviețuitorul NU e singurul** cu profil-bun (2 alți), dar **nu tot clusterul** îl are (3 din 6).
+- Observație factuală: cele 3 cu profil-bun sunt supraviețuitorul (**h13 short**) + două **h20 long** (00d840de0b48, 2341cf9911de); shorturile low-p rămase (h14 down, h13 down) au wo1 **negativ**. Cei doi h20-long au p mai mare (0.004, 0.013 — nu trec FDR), dar unul (2341cf9911de) are exp +0.177 și dd 26.2 (chiar peste pragul de 25R).
+
+Nu concluzionez. Cifrele merg la certificare împreună cu supraviețuitorul.
