@@ -277,3 +277,31 @@ primary comparator for two of the three hypotheses was not pre-registered.** Thi
 verdicts (they fall on circularity, not on the control), but it stands on the record.
 
 **Dispositions:** E010-D1 → NOT CONFIRMED. E012-D1 → NOT CONFIRMED. E015-V1 → SUSPENDED.
+
+### E015-V1 dependence-structure MEASUREMENT (CEO task 2026-07-25) — facts only, no interpretation
+
+Reconstructed from the same STEP 3 events (`e015_setb_dependence.py`, `e015_setb_dependence_results.json`;
+visit-1/visit-2 row counts match STEP 3 exactly). **STRUCTURE only — no outcome, no p, no threshold.**
+Handed to the Statistician to estimate effective sample size. E015-V1 stays SUSPENDED. Chi-square treats
+each visit ROW as independent; the counts below quantify how far from independent they are.
+
+**M15 (primary):**
+1. **Counts per group.** Distinct OB zones = **1,315**. Total visit rows = **3,219**. visit-1 rows =
+   **1,546**, visit-2+ rows = **1,673** (visit-2 bucket 925, visit-3+ bucket 748). Distinct zones per
+   bucket: v1 1,315 / v2 759 / v3+ 334.
+2. **Visits per zone.** median **2**, max **10**, mean 2.05. Zones with exactly 1 visit = **556**; with
+   >1 = **759**. Histogram (visits→#zones): 1→556, 2→425, 3→180, 4→80, 5→40, 6→21, 7→5, 8→5, 9→2, 10→1.
+3. **Forward-window overlap.** For each visit, other visits landing in its 50-bar movement window
+   `[vidx+1, vidx+50]`: median **10**, mean 10.1, max 30; only **0.59%** of visits have zero overlap.
+   Distribution: 0→19, 1→4, 2→47, 3-5→343, 6-10→1,454, >10→1,352.
+4. **Duplication & collisions.** OB events with visits **1,546** vs distinct zones **1,315** → **231
+   duplicate OB events** (multiple displacement bars mapping to the same zone, each re-emitting the same
+   visits). Total rows 3,219 vs distinct (zone, visit-bar) pairs 2,695 → **524 exact-duplicate visit
+   rows**. Same bar: **1,446** visits share a bar across 613 bars (263 bars mix different zones, 350 are
+   same-zone-only). Same hour: **2,211** visits fall in hours holding >1 visit, across 823 hours.
+
+**H1 (secondary):** distinct zones 245, total rows 698, visit-1 299 / visit-2+ 399; visits/zone median 2
+max 8; forward-overlap median 10 mean 10.3 (0.43% zero); 54 duplicate OB events, 144 exact-duplicate
+rows; 371 same-bar visits across 156 bars (63 diff-zone), 371 same-hour across 156 hours.
+
+No conclusion drawn here on validity or effective n — that is the Statistician's call.
