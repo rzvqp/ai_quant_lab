@@ -111,7 +111,9 @@ red_team/
 ├── CHARTER.md                     # this file — the division's constitution
 ├── INDEPENDENCE_RULES.md          # standalone, enforceable independence law
 ├── verdicts_ledger.md             # one permanent row per completed review
+├── RED_TEAM_STATE.md              # READ FIRST — resume/continuity document (identity, pipeline, work log, open items)
 ├── RED_TEAM_PHASE1_REPORT.md      # portfolio-wide adversarial report (issued, immutable)
+├── audits/                        # research-process audits (RT-AUDIT-NNNN_<division>.md)
 ├── methodology/
 │   ├── DUPLICATE_SCREENING.md     # PHASE 0 — mandatory gate, mechanism-only comparison
 │   ├── CRITIQUE_BATTERY.md        # PHASE 1 — standing pre-registered critique list (versioned)
