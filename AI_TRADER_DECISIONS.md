@@ -31,9 +31,9 @@ stated verbatim, quoted.
    automatically from stop-loss distance and instrument value, never a fixed lot) and explicitly required
    a design-only deliverable first: *"Nu implementa încă această logică; prezintă-mi mai întâi designul și
    aşteaptă aprobarea mea înainte de orice modificare de cod."* The design
-   (`RISK_SIZING_5PCT_XAUUSD_DESIGN.md`) is delivered and uncommitted, pending CEO decisions on 5 open
-   items (most importantly the current 0.01-lot hard safety ceiling, which as configured today would
-   reject any correctly-sized 5%-risk order). **No code for this feature exists.**
+   (`RISK_SIZING_5PCT_XAUUSD_DESIGN.md`) is delivered and committed (`125e171`), pending CEO decisions on
+   5 open items (most importantly the current 0.01-lot hard safety ceiling, which as configured today
+   would reject any correctly-sized 5%-risk order). **No code for this feature exists.**
 
 5. **Audit sequence, as ordered by the CEO**: Knowledge Transfer Audit → Decision Logic Audit → Risk
    Audit → Demo Readiness Audit. The **Knowledge Transfer Audit is complete**

@@ -202,7 +202,7 @@ proven exactly once, manually, for a single order, under explicit CEO supervisio
   code path (§6); the gated XAUUSD integration test itself has only been exercised through the
   market-closed `PENDING_MARKET_OPEN` branch, never a live XAUUSD send.
 - 5%-equity-risk-per-trade dynamic sizing — **design-only**, not implemented, pending CEO decisions
-  (`RISK_SIZING_5PCT_XAUUSD_DESIGN.md`, uncommitted, awaiting review).
+  (`RISK_SIZING_5PCT_XAUUSD_DESIGN.md`, committed `125e171`, awaiting review).
 - Any transfer of Research Lab edges/strategies into the live decision chain — audited and found **not
   transferred** at the code level (`AI_TRADER_KNOWLEDGE_TRANSFER_AUDIT.md`, verdict **NOT READY**).
 - Portfolio-level caps' compatibility with a hypothetical 5%-per-trade risk regime — open question, not
@@ -241,7 +241,8 @@ reject any correctly-computed 5%-risk order. **No code has been written for this
 `BROKER_ADAPTER_DESIGN.md` / `BROKER_ADAPTER_LAYER_A_B_IMPLEMENTATION_REPORT.md` (Phase 1),
 `MT5_CONNECTIVITY_PROBE_REPORT.md`.
 
-**Pending, uncommitted, awaiting CEO decision**: `RISK_SIZING_5PCT_XAUUSD_DESIGN.md`.
+**Committed but awaiting CEO decision before any implementation**: `RISK_SIZING_5PCT_XAUUSD_DESIGN.md`
+(committed `125e171`).
 
 **Unrelated to AI Trader specifically (Research Lab / batch pipeline docs)** — exist in the same repo,
 out of this document's scope; see `PROJECT_STATE_v2.md`, `PROJECT_AUDIT.md`, `NEXT_SESSION.md`,

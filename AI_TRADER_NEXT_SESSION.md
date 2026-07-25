@@ -42,8 +42,8 @@ session.**
 - Any code that constructs a live `CandidateSignal` (i.e., any real signal source) — building this is
   the single biggest step toward actual live trading and has not been requested yet.
 - The 5%-equity-risk dynamic sizing implementation — design only exists
-  (`RISK_SIZING_5PCT_XAUUSD_DESIGN.md`), uncommitted, with 5 open decisions the CEO has not yet answered.
-  **Do not write any code for this until those decisions come back.**
+  (`RISK_SIZING_5PCT_XAUUSD_DESIGN.md`, committed in `125e171`), with 5 open decisions the CEO has not
+  yet answered. **Do not write any code for this until those decisions come back.**
 - Decision Logic Audit, Risk Audit, Demo Readiness Audit.
 - Alpha 1, Alpha 2, Red Team, Statistician, or Validation Engine work of any kind from this repo/session.
 - Treating BTCUSD as anything other than a one-time infrastructure-validation exercise.
@@ -64,8 +64,8 @@ Full authoritative list with CEO quotes: `AI_TRADER_DECISIONS.md`.
    secrets sweep result.
 6. `AI_TRADER_KNOWLEDGE_TRANSFER_AUDIT.md` — the full Research-Lab-to-AI-Trader transfer audit (why the
    verdict is NOT READY, in detail).
-7. If picking up the risk-sizing thread specifically: `RISK_SIZING_5PCT_XAUUSD_DESIGN.md` (uncommitted —
-   check `git status` first, it may not exist yet if this file was later committed or discarded).
+7. If picking up the risk-sizing thread specifically: `RISK_SIZING_5PCT_XAUUSD_DESIGN.md` (committed in
+   `125e171` — still just a design, no code written against it as of that commit).
 8. `AI_TRADER_PHASES_2_10_FINAL_REPORT.md` and `BTCUSD_PHASE10_OPERATIONAL_TEST_REPORT.md` for full
    narrative detail beyond the summaries in `AI_TRADER_PROJECT_STATE.md`.
 
@@ -80,12 +80,16 @@ Knowledge-Transfer-style audit — not needed to resume AI Trader engineering it
 git status --short           # confirm working tree is clean, or see exactly what's pending
 git log --oneline -5         # confirm you're looking at the commit you think you are
 git branch --show-current    # confirm you're on ai-trader-implementation
-git remote -v                # confirm remote state (none configured as of this save — see below)
+git remote -v                # confirm remote state (origin exists as of 2026-07-25 — see below)
 ```
 
-**Remote**: none configured (`git remote -v` returns empty) as of this save. If a remote has since been
-added, do not push without explicit authorization — pushing was explicitly deferred in this session even
-had a remote existed.
+**Remote**: `origin` = `https://github.com/rzvqp/ai_quant_lab-alpha-discovery.git` (confirmed present as
+of 2026-07-25, added after the previous official-save commit `125e171`). **No push has been made from
+this repository at any point in this project's history** — do not push without explicit CEO
+authorization; confirm the exact commit/branch to push before doing so, since the remote's own name
+(`ai_quant_lab-alpha-discovery`) does not match this local repo's directory name
+(`ai_quant_lab-research-main`), which is worth clarifying with the CEO before ever pushing rather than
+assuming they're interchangeable.
 
 ## 6. Information that exists only in prior conversation, not fully confirmed in the repository
 
