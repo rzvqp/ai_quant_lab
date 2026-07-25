@@ -18,7 +18,7 @@ import pytest
 
 import _setb
 from _setb import (
-    load_setb, SETB_EXPECTED_BARS, SETB_START_EPOCH, SETB_END_EPOCH, BURNED_EDGES,
+    load_setb, countable_events, SETB_EXPECTED_BARS, SETB_START_EPOCH, SETB_END_EPOCH, BURNED_EDGES,
     SetBForbiddenError, SetBBoundaryError, SetBConfigError,
 )
 
@@ -145,6 +145,37 @@ def test_warmup_prefix_marked_not_in_setb(tmp_path):
     assert (warm["time"] < SETB_START_EPOCH).all()                   # warmup is strictly pre-window
 
 
+# ----------------------------------------------------------------- condition 1: no event on warmup bar
+
+def test_warmup_event_excluded():
+    """A detector that would fire on a warmup bar must NOT enter the count (condition 1)."""
+    m = pd.DataFrame({"in_setb": [False, False, True, True, True, True, True, True]})
+    # anchor at index 1 is a warmup bar; index 3 is a genuine Set B bar.
+    kept, report = countable_events(m, [1, 3], forward_needed=2)
+    assert 1 not in kept                      # warmup event dropped
+    assert 3 in kept
+    assert report["excluded_warmup"] == 1
+
+
+# ----------------------------------------------------------------- condition 3: right-edge exclusion
+
+def test_right_edge_event_excluded():
+    """An event whose full forward window runs past the end of the frame is excluded, not truncated."""
+    m = pd.DataFrame({"in_setb": [True] * 10})
+    # forward_needed=5: index 3 fits (3+1+5=9<=10), index 6 does not (6+1+5=12>10).
+    kept, report = countable_events(m, [3, 6], forward_needed=5)
+    assert kept == [3]
+    assert report["excluded_right_edge"] == 1
+    assert report["kept"] == 1
+
+
+def test_countable_events_reports_both_exclusions():
+    m = pd.DataFrame({"in_setb": [False, True, True, True]})
+    kept, report = countable_events(m, [0, 1, 3], forward_needed=2)  # 0=warmup, 3=right-edge(3+1+2=6>4)
+    assert kept == [1]
+    assert report == dict(n_events=3, kept=1, excluded_warmup=1, excluded_right_edge=1, forward_needed=2)
+
+
 # ----------------------------------------------------------------- criterion 4: append-only journal
 
 def test_journal_records_served_and_blocked(tmp_path):
@@ -159,3 +190,22 @@ def test_journal_records_served_and_blocked(tmp_path):
     served = next(r for r in lines if r["outcome"] == "served")
     assert served["n_setb"] == SETB_EXPECTED_BARS["M15"]
     assert served["window_served"] == [SETB_START_EPOCH, SETB_END_EPOCH]
+
+
+def test_journal_records_warmup_window(tmp_path):
+    jp = str(tmp_path / "j.jsonl")
+    _, meta = load_setb("M15", warmup_bars=50, journal_path=jp, **CLEAN)
+    rec = json.loads(open(jp, encoding="utf-8").readline())
+    assert rec["n_warmup"] == 50
+    assert rec["warmup_window"] is not None
+    lo, hi = rec["warmup_window"]
+    assert lo < hi < SETB_START_EPOCH                       # warmup interval is strictly pre-window
+    assert meta["warmup_window"] == rec["warmup_window"]
+
+
+def test_journal_warmup_window_null_when_zero(tmp_path):
+    jp = str(tmp_path / "j.jsonl")
+    load_setb("M15", warmup_bars=0, journal_path=jp, **CLEAN)
+    rec = json.loads(open(jp, encoding="utf-8").readline())
+    assert rec["n_warmup"] == 0
+    assert rec["warmup_window"] is None

@@ -156,6 +156,9 @@ def load_setb(tf, *, hypothesis_id, provenance_edges, warmup_bars=0, journal_pat
             f"{tf}: post-slice in_setb count {int(sl['in_setb'].sum())} != {expected} -- fail-closed.")
 
     setb_rows = sl[sl["in_setb"]]
+    warm_rows = sl[~sl["in_setb"]]
+    warmup_window = ([int(warm_rows["time"].min()), int(warm_rows["time"].max())]
+                     if len(warm_rows) else None)
     meta = dict(
         data_split_id=SETB_SPLIT_ID,
         setb_start=pd.Timestamp(SETB_START_EPOCH, unit="s", tz="UTC").isoformat(),
@@ -165,6 +168,7 @@ def load_setb(tf, *, hypothesis_id, provenance_edges, warmup_bars=0, journal_pat
         n_setb=expected,
         n_warmup=int(n_warmup),
         warmup_bars_requested=int(warmup_bars),
+        warmup_window=warmup_window,
         timeframe=tf,
         hypothesis_id=str(hypothesis_id),
         provenance_edges=edges,
@@ -175,6 +179,34 @@ def load_setb(tf, *, hypothesis_id, provenance_edges, warmup_bars=0, journal_pat
                                 provenance_edges=edges, tf=tf,
                                 window_requested=[SETB_START_EPOCH, SETB_END_EPOCH],
                                 window_served=[int(setb_rows["time"].min()), int(setb_rows["time"].max())],
-                                n_setb=expected, n_warmup=int(n_warmup),
+                                n_setb=expected, n_warmup=int(n_warmup), warmup_window=warmup_window,
                                 loader_version=SETB_LOADER_VERSION))
     return sl, meta
+
+
+def countable_events(m, anchor_indices, forward_needed):
+    """Filter events to genuine Set B events that also have a FULL forward result window.
+
+    Enforces two CEO STEP-2 conditions in one place (so both are testable):
+      * Condition 1 -- an event anchored on a warmup bar (`in_setb == False`) is NEVER counted.
+      * Condition 3 -- an event whose full forward window runs past the end of the loaded frame
+        (`anchor_idx + 1 + forward_needed > len(m)`) is right-censored and excluded, not truncated.
+
+    Returns (kept_indices, report). `report` breaks the exclusions down into `excluded_warmup` and
+    `excluded_right_edge` so both are reported separately, never silently dropped.
+    """
+    anchors = [int(i) for i in anchor_indices]
+    in_setb = m["in_setb"].values
+    n = len(m)
+    kept, exc_warm, exc_edge = [], 0, 0
+    for idx in anchors:
+        if not bool(in_setb[idx]):
+            exc_warm += 1
+            continue
+        if idx + 1 + int(forward_needed) > n:
+            exc_edge += 1
+            continue
+        kept.append(idx)
+    report = dict(n_events=len(anchors), kept=len(kept), excluded_warmup=exc_warm,
+                  excluded_right_edge=exc_edge, forward_needed=int(forward_needed))
+    return kept, report
