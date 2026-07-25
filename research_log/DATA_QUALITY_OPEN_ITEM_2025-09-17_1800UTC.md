@@ -1,6 +1,7 @@
 # Open Item: Suspected Data-Quality Artifact, 2025-09-17 ~18:00-19:00 UTC (Replay)
 
-**Status**: OPEN (opened 2026-07-23, during live replay observation; not yet investigated)
+**Status**: CLOSED, administratively (2026-07-25, at Alpha 1's official closure). The substantive
+questions below were **not** empirically resolved -- see closure note at the end of this file.
 **Opened by**: Alpha (autonomous replay observation)
 **Type**: Data-integrity / instrument-quality concern -- NOT a Discovery Candidate and NOT an
 Observation Registry entry. This does not describe a market mechanism; it describes a suspected
@@ -64,6 +65,23 @@ range, specifically because the volume signature made it impossible to distingui
 discovery from feed artifact. Alpha resumed normal silent observation once volume and minute-level
 variability returned to patterns consistent with the rest of this replay (by approximately 19:00-
 19:15 UTC).
+
+## Closure Note (2026-07-25)
+
+Alpha 1 is officially closed per CEO directive (2026-07-25) and its TradingView replay window is
+not being reopened. The three investigation questions above (a) whether this is a known
+vendor/backfill artifact, (b) whether the same signature recurs at other scheduled macro-release
+times, and (c) whether any existing DC/Registry entry overlaps this window, all require further
+live-replay observation or external vendor confirmation that is out of scope for Alpha 1's closure
+and was not performed.
+
+This item is closed **administratively only**: the original determination stands as Alpha 1's
+final position -- the 2025-09-17 18:00-19:00 UTC window was treated as a suspected data-quality
+artifact and deliberately excluded from the DC/Observation Registry, and that exclusion is not
+revisited. The unresolved substantive question (systematic verification across other
+macro-release dates) is handed off, unresolved, for Red Team or any future reopening of Alpha to
+pursue if judged worthwhile -- it is not silently discarded, only left open pending a decision
+outside Alpha's current mandate.
 
 ## Cross-References
 

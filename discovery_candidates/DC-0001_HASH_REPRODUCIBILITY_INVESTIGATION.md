@@ -1,6 +1,9 @@
 # Open Item: DC-0001 Hash Reproducibility Investigation
 
-**Status**: OPEN (opened 2026-07-23, during HANDOFF_LOG.md reconciliation; not yet investigated)
+**Status**: INVESTIGATION COMPLETE (closed 2026-07-25, per explicit CEO directive at Alpha 1's
+official closure). **The hash itself remains unmodified** -- disposition (re-issue vs. mark
+permanently unverifiable) still awaits a CEO / Red Team decision per the Explicit Constraints
+below, which continue to apply unchanged.
 **Opened by**: Alpha (administrative reconciliation pass), per explicit CEO directive
 **Type**: Administrative / audit-integrity item -- NOT a Discovery Candidate. Do not add this file
 to `DISCOVERY_CANDIDATE_INDEX.md` or treat it as part of the DC lifecycle. It concerns the
@@ -60,7 +63,34 @@ documented before the DC-0002+ convention existed).
 - This item stays OPEN. It is not resolved by this reconciliation pass and must not be marked
   resolved without a dedicated investigation.
 
+## Investigation Findings (2026-07-25, closing this item)
+
+Determination 1 (hashing method): Independently re-verified all four normalization variants
+described above by recomputing sha256 directly against the current on-disk `candidate_v1.md`.
+All four reproduce the values already reported here (`7d6282b2...` for both PENDING-literal
+variants, `f927f0de...` for both sha256:PENDING-prefixed variants) -- none match the recorded
+`1f1b3d39...`. No fifth variant was found that reproduces it. The hashing method actually used to
+produce DC-0001's original value could not be identified from the four documented candidate
+methods; it most likely reflects an ad hoc or undocumented method used before the DC-0002+
+convention was formalized, consistent with DC-0001 being the first-ever candidate in this
+repository.
+
+Determination 2 (has the file been touched since freezing?): `git log --follow` on
+`candidate_v1.md` shows exactly **one** commit ever -- "Discovery Cycle #3: freeze and submit
+DC-0001 to Red Team" (2026-07-21 22:42:47 +0300). Filesystem birth/modify/change timestamps are
+all identical (2026-07-21 23:36:45) with no later write. **This rules out post-freeze tampering or
+accidental editing** -- the file on disk today is the same file that existed at freeze time.
+
+Determination 3 (conclusion): The recorded hash cannot be reproduced by any currently-known
+method and must be treated as **unverifiable under the current convention**, not as evidence of
+altered content. Per the Explicit Constraints above, Alpha does not have standing to decide
+whether to re-issue a new, clearly-dated hash under the DC-0002+ method -- that decision belongs
+to the CEO / Red Team and remains open. This closes Alpha's own investigation task; it does not
+close the hash-disposition decision itself.
+
 ## Cross-References
 
-- `HANDOFF_LOG.md` -- reconciliation header note (2026-07-23) points here.
+- `HANDOFF_LOG.md` -- reconciliation header note (2026-07-23) points here; 2026-07-25 closure note
+  added alongside it.
 - `research_log/SESSION_STATE.md` -- reconciliation section documents the same finding inline.
+- `red_team/RED_TEAM_STATE.md` §6 item 3 -- Red Team's independent tracking of this same item.

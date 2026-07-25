@@ -18,6 +18,32 @@ Knowledge Base. Detalii complete la finalul acestui document, sectiunea
 - Niciun DC promovat, nicio validare/invalidare facuta de Alpha (rol strict de observatie, conform
   mandatului).
 
+**Follow-up administrativ la inchidere (2026-07-25, aceeasi zi, comanda CEO separata)** — replay
+NEredeschis, niciun DC/addendum nou:
+- Investigatia de reproducibilitate a hash-ului DC-0001 **inchisa** (concluzie: hash-ul inregistrat
+  nu poate fi reprodus prin nicio metoda documentata; fisierul nu a fost atins de la freeze —
+  confirmat via `git log --follow`, un singur commit; decizia de re-emitere ramane a CEO/Red Team).
+  Detalii: `DC-0001_HASH_REPRODUCIBILITY_INVESTIGATION.md`.
+- `DATA_QUALITY_OPEN_ITEM_2025-09-17_1800UTC.md` **inchis administrativ** (intrebarile substantiale
+  raman nerezolvate empiric, predate mai departe; concluzia originala — artefact de date suspectat,
+  NU eveniment de piata — ramane finala pentru Alpha 1).
+- Contradictia DC-0001 vs OBS-0014 **reconciliata la nivel definitional** — vezi
+  `DC0001_OBS0014_RECONCILIATION_NOTE.md` (timeframe M15 vs H1, definitie outlier diferita, orizont
+  diferit; testul stiintific decisiv ramane deschis, in sarcina Red Team/Statistician, NU Alpha).
+- Red Team **F2** (DC-0022 revendica record de familie 86.75pt, gresit fata de recordul curent al
+  familiei -- DC-0024 Addendum D = **514.165pt**; DC-0013 Addendum H (180.53pt) era doar o valoare
+  intermediara, deja depasita) **corectat** printr-o nota administrativa dedicata, fara a atinge
+  textul inghetat: `DC-0022_.../CORRECTION_NOTE_2026-07-25.md` (nota revizuita 2026-07-25 dupa ce
+  o versiune anterioara cita gresit doar valoarea 180.53pt).
+- Red Team **F4** (DC-0013 citeste inca "One instance" desi are ~12 instante via 13 addenda) **corectat**
+  similar: `DC-0013_.../CORRECTION_NOTE_2026-07-25.md`.
+- `ALPHA_AUTONOMOUS_STATE.md` **rescris integral** — corecteaza `cycle_id`/"None frozen by Alpha"
+  (care omitea cele 26 DC-uri ale Alpha 1) si adauga banner de inchidere pentru a preveni
+  reluarea automata a replay-ului de catre orchestrator.
+- Inventar administrativ nou: `NONPROMOTED_OBSERVATIONS_2026-01-29_to_2026-05-15.md` — compileaza
+  cele doua intrari Observation Registry (17: 2026-01-29, 18: 2026-04-23) din acest interval,
+  fara analiza noua.
+
 ## Pozitie replay (punct de pornire pentru sesiunea urmatoare)
 - Simbol: OANDA:XAUUSD
 - Timeframe principal: **M15**

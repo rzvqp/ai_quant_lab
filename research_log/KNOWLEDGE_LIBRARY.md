@@ -26,7 +26,7 @@ appended — never edited).
 ## 1. FROZEN DISCOVERY CANDIDATES (official)
 | ID | Title | Status | My evidence |
 |---|---|---|---|
-| **DC-0001** | Isolated Single-Bar Velocity Outlier Followed by Gradual Multi-Bar Continuation | **FROZEN** (2026-07-21), awaiting Red Team | ⚠️ **CONTRADICTED** by OBS-0014: under an independent H1 operationalization (|body|/ATR>1.5, isolated) continuation was *absent* (mild reversal, n.s., n=485). Not a refutation — operationalization may differ from DC-0001's. **Must reconcile against its `candidate_v1.md` spec.** |
+| **DC-0001** | Isolated Single-Bar Velocity Outlier Followed by Gradual Multi-Bar Continuation | **FROZEN** (2026-07-21), Alpha 1 officially closed 2026-07-25 | ⚠️ Flagged against OBS-0014 (independent H1 operationalization, |body|/ATR>1.5, isolated: continuation *absent*, mild reversal, n.s., n=485). **Reconciled at the definitional level 2026-07-25** — see `DC0001_OBS0014_RECONCILIATION_NOTE.md`: distinct timeframe (M15 vs H1), distinct outlier definition, distinct forward horizon; not the same test of the same claim. The underlying scientific question (does DC-0001 survive a matched, correctly-scoped test?) remains open — reconciliation closes the comparison task, not the science. |
 
 ## 2. LAB KNOWLEDGE CLAIMS (K-registry) — highest-value prior knowledge
 - **K01** (med, exploratory): raw **liquidity sweeps WITHOUT a confirmation stage produced non-positive expectancy**; confirmed variants better. S21 raw sweep — *all 48 variants negative*.
@@ -74,7 +74,9 @@ From #008/#008-RESOLUTION: a large rejected excursion (Dec-4-2023 spike ~2,145) 
 ## 7. OPEN QUESTIONS
 1. **NRQ-1b / OBS-0008** — NY-session prior-day-high sweep-reject reversion. Uniquely distinguished among 6 cells, sign-stable both halves, matched-null p=0.021, **fails Bonferroni, n=42**. **Holdout-gated; CEO decision pending.** Note K01: this is a *conditioned* sweep, which is exactly where K01 says content might live.
 2. Does LINE-A add anything beyond K03 trend-efficiency? (decisive)
-3. Reconcile OBS-0014 vs DC-0001 operationalization.
+3. ~~Reconcile OBS-0014 vs DC-0001 operationalization.~~ Definitional reconciliation CLOSED
+   2026-07-25 (`DC0001_OBS0014_RECONCILIATION_NOTE.md`); the decisive matched test itself remains
+   open, owned by Red Team / Statistician, not Alpha.
 4. K05's unresolved timing-alpha vs long-beta split — my confound sightings feed this.
 5. How often does compression *fail* to resolve into expansion? (never counted — survivorship risk)
 

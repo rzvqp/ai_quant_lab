@@ -15,6 +15,15 @@ Alpha sets `OBSERVED` at creation and `FROZEN` at handoff -- the only two transi
 performs. `UNDER_REVIEW`, `REJECTED`, `SURVIVED_RED_TEAM`, and `SENT_TO_FLOW_C` are set later by
 whichever division currently owns the candidate.
 
+**Known correction notes (bookkeeping only, frozen text unmodified in all cases)**: DC-0001 has an
+open hash-reproducibility item (investigation closed 2026-07-25, disposition still pending
+CEO/Red Team -- see `DC-0001_HASH_REPRODUCIBILITY_INVESTIGATION.md`). DC-0022's family-magnitude-
+record claim is factually superseded, currently by DC-0024 Addendum D's 514.165pt (Red Team F2 --
+see `DC-0022_.../CORRECTION_NOTE_2026-07-25.md`). DC-0013's "One instance" Confidence line describes
+only its 2026-07-23 base freeze and no longer describes its current ~12-instance family scope
+(Red Team F4 -- see `DC-0013_.../CORRECTION_NOTE_2026-07-25.md`). None of these change any Title,
+Date Frozen, or Lifecycle Status cell below.
+
 | ID | Title | Origin | Date Frozen | Current Version | Lifecycle Status | Folder |
 |---|---|---|---|---|---|---|
 | DC-0001 | Isolated Single-Bar Velocity Outlier Followed by Gradual Multi-Bar Continuation | discretionary-observation, Discovery Cycle #3 | 2026-07-21 | v1 | FROZEN | `DC-0001_isolated_velocity_outlier_then_gradual_continuation/` |

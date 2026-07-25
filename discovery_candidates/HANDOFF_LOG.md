@@ -11,8 +11,29 @@ reconciliation report ACCEPTED 2026-07-23.
 
 **Open item**: DC-0001's recorded content hash cannot be reproduced by independent recomputation
 of the current on-disk file (three recorded locations agree with each other, but not with a fresh
-hash). Not corrected -- see `DC-0001_HASH_REPRODUCIBILITY_INVESTIGATION.md` (status: OPEN, pending
-dedicated investigation; DC-0001's hash/content/Handoff Statement must not be modified until then).
+hash). Not corrected -- see `DC-0001_HASH_REPRODUCIBILITY_INVESTIGATION.md` (status: INVESTIGATION
+COMPLETE 2026-07-25; hash disposition still awaits CEO/Red Team decision -- DC-0001's
+hash/content/Handoff Statement remain unmodified).
+
+**Alpha 1 official closure (2026-07-25)**: administrative closure per CEO directive -- see
+`research_log/SESSION_STATE.md` top banner. No new Discovery Candidates or addenda produced as
+part of closure. Three closure follow-up items also completed 2026-07-25 (no frozen text
+modified in any case):
+- DC-0001 hash investigation closed (above).
+- `research_log/DATA_QUALITY_OPEN_ITEM_2025-09-17_1800UTC.md` closed administratively (substantive
+  question unresolved, handed off).
+- DC-0001 vs OBS-0014 contradiction reconciled at the definitional level -- see
+  `research_log/DC0001_OBS0014_RECONCILIATION_NOTE.md` (scientific verdict remains open, owned by
+  Red Team / Statistician).
+- Red Team finding **F2** (DC-0022's 86.75pt "family record" claim, wrong against the family's
+  current record, DC-0024 Addendum D's 514.165pt -- DC-0013 Addendum H's 180.53pt was itself only
+  an intermediate value, since superseded) corrected via
+  `DC-0022_ny_afternoon_record_duration_magnitude_sustained_expansion/CORRECTION_NOTE_2026-07-25.md`
+  (revised 2026-07-25 to cite the correct current record after an earlier revision of this same
+  note cited only the stale 180.53pt figure).
+- Red Team finding **F4** (DC-0013 still reads "One instance" despite ~12 documented instances)
+  corrected via
+  `DC-0013_ny_session_large_sustained_expansion_no_reversal/CORRECTION_NOTE_2026-07-25.md`.
 
 | Date | Candidate ID | Version | Event | Content Hash | Title |
 |---|---|---|---|---|---|
@@ -92,3 +113,5 @@ dedicated investigation; DC-0001's hash/content/Handoff Statement must not be mo
 | 2026-07-25 | DC-0019 | v1 | ADDENDUM D / SUBMITTED | sha256:f568038cc9cc9d89fd420459355dba41932ad740e7fa2cdd71fa186ab8532e14 | `addendum_2026-07-25_d.md` |
 | 2026-07-25 | DC-0024 | v1 | ADDENDUM D / SUBMITTED | sha256:7e1e5903eb306161fe1f444cd18a885449c8311a9e6b370ed8e90aecdb8ad80e | `addendum_2026-07-25_d.md` |
 | 2026-07-25 | DC-0019 | v1 | ADDENDUM E / SUBMITTED | sha256:99ca3398550b3a5df729a57eb70a98d62b2182ffb8d8b164653ce7dd3b644bf0 | `addendum_2026-07-25_e.md` |
+| 2026-07-25 | DC-0022 | v1 (unmodified) | CORRECTION_NOTE_FILED (F2, bookkeeping only) | N/A -- administrative, not a scientific addendum | `CORRECTION_NOTE_2026-07-25.md` |
+| 2026-07-25 | DC-0013 | v1 (unmodified) | CORRECTION_NOTE_FILED (F4, bookkeeping only) | N/A -- administrative, not a scientific addendum | `CORRECTION_NOTE_2026-07-25.md` |
