@@ -107,7 +107,7 @@ Statisticianul a răspuns (`STATISTICIAN_OPERATIONAL_DEFINITIONS_v1.0.md`, 2026-
 
 | ID | Element | Fază |
 |---|---|---|
-| **S1** | Metodele statistice (12 de test + 3 de corecție), fiecare cu bateria proprie de calibrare | **PARȚIAL F5** — `matched_null@v1` implementat (`ve/methods/`) + harness de calibrare (reproduce obs0012 exact) + execuție oficială DC-0004; rămâne `UNVALIDATED` până la bateria sintetică (F6). Restul de 14 metode: F5/F6 la cerere |
+| **S1** | Metodele statistice (12 de test + 3 de corecție), fiecare cu bateria proprie de calibrare | **PARȚIAL F5/F6/F6.1** — `matched_null@v1` implementat + calibrat: F6 (uniform sub null, curbă de putere, reproducibilitate — `F6_CALIBRATION_RECORD.json`) + F6.1 (robust la vol pe sesiune + cozi grele; testul decisiv „NY vol mare fără efect de nivel → nu respinge", FPR=0.050 — `F6_1_CALIBRATION_RECORD.json`). **Verdict PASS**, dar rămâne `UNVALIDATED` — promovarea la VALIDATED e propusă, în așteptarea ratificării CEO + a documentelor referite lipsă (`CANDIDATE_STATUS_REGISTER_v1.0.md`, spec F6.1 — negăsite). Restul de 14 metode: la cerere |
 | **S2** | Population builder + denominatorul per criteriu | **`REZOLVAT` F4** 2026-07-25 (`ve/population/builder.py`) |
 | **S3** | Construcția variabilelor + garda de leakage la runtime | **`REZOLVAT` F4** (`ve/variables/`) — primitivele DC-0004; alte primitive la cerere |
 | **S4** | Stratul de date, sigilarea pe fereastră la nivel de loader, jurnalul de acces la date | **`REZOLVAT` F4** (`ve/data/`) |

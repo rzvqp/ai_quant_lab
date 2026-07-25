@@ -1,0 +1,67 @@
+{
+  "phase": "F6.1",
+  "method": "matched_null@v1",
+  "purpose": "robustness to session-differentiated volatility + heavy tails (lab's primary null)",
+  "decisive_test": "NY higher volatility, no level effect -> must not reject",
+  "null_regimes": [
+    {
+      "regime": "DECISIVE: NY vol 2.5x, no level effect",
+      "target": "up/ny",
+      "fpr": 0.05,
+      "fpr_ci95": [
+        0.023114049304474235,
+        0.10480419464586234
+      ],
+      "ks_p": 0.1856769848190557,
+      "must_not_reject_ok": true
+    },
+    {
+      "regime": "heavy tails Student-t(4), no session vol",
+      "target": "up/asia",
+      "fpr": 0.058333333333333334,
+      "fpr_ci95": [
+        0.02854064663137293,
+        0.1155272594680315
+      ],
+      "ks_p": 0.8195681381097022,
+      "must_not_reject_ok": true
+    },
+    {
+      "regime": "NY vol 2.5x + heavy tails t(4)",
+      "target": "up/ny",
+      "fpr": 0.03333333333333333,
+      "fpr_ci95": [
+        0.013037340166920576,
+        0.0825815794852803
+      ],
+      "ks_p": 0.7594335939079965,
+      "must_not_reject_ok": true
+    }
+  ],
+  "all_null_must_not_reject": true,
+  "power_under_ny_high_vol": [
+    {
+      "delta": 0.0,
+      "reject_rate": 0.05,
+      "n": 120
+    },
+    {
+      "delta": 4.0,
+      "reject_rate": 0.23333333333333334,
+      "n": 120
+    },
+    {
+      "delta": 8.0,
+      "reject_rate": 0.475,
+      "n": 120
+    },
+    {
+      "delta": 12.0,
+      "reject_rate": 0.7916666666666666,
+      "n": 120
+    }
+  ],
+  "power_preserved": true,
+  "verdict": "PASS",
+  "runtime_seconds": 81
+}

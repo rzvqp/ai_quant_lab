@@ -38,16 +38,32 @@ def _session_of(hour: int) -> str:
     return "late"
 
 
-def generate_price(rng: np.random.Generator, n_bars: int) -> pd.DataFrame:
-    """Serie H1 OHLC, random-walk additiv la scala XAUUSD, timestamp-uri orare UTC."""
-    rets = rng.normal(0.0, SIGMA_1BAR, n_bars)
+def generate_price(rng: np.random.Generator, n_bars: int,
+                   session_vol: dict | None = None, tail_df: float | None = None) -> pd.DataFrame:
+    """Serie H1 OHLC, random-walk additiv la scala XAUUSD, timestamp-uri orare UTC.
+
+    F6.1: σ poate DIFERI pe sesiune (`session_vol` = {sesiune: multiplicator}) și
+    randamentele pot avea COZI GRELE (`tail_df` = grade de libertate Student-t; None=normal).
+    Ambele cu MEDIE ZERO — niciun efect real de nivel; doar structura de volatilitate.
+    """
+    hours = np.arange(n_bars) % 24
+    sess = np.array([_session_of(int(h)) for h in hours])
+    sv = session_vol or {}
+    sigma = np.array([SIGMA_1BAR * sv.get(s, 1.0) for s in sess])
+    if tail_df is not None:
+        # Student-t standardizat la varianță unitară, apoi scalat la sigma-ul sesiunii
+        raw = rng.standard_t(tail_df, n_bars) * math.sqrt((tail_df - 2.0) / tail_df)
+    else:
+        raw = rng.normal(0.0, 1.0, n_bars)
+    rets = raw * sigma  # medie 0 în orice sesiune — fără efect de nivel
     close = BASE_PRICE + np.cumsum(rets)
     open_ = np.concatenate([[BASE_PRICE], close[:-1]])
-    up_w = np.abs(rng.normal(0.0, WICK, n_bars))
-    dn_w = np.abs(rng.normal(0.0, WICK, n_bars))
+    wick_scale = np.array([WICK * sv.get(s, 1.0) for s in sess])  # wick-uri proporționale cu vol
+    up_w = np.abs(rng.normal(0.0, 1.0, n_bars)) * wick_scale
+    dn_w = np.abs(rng.normal(0.0, 1.0, n_bars)) * wick_scale
     high = np.maximum(open_, close) + up_w
     low = np.minimum(open_, close) - dn_w
-    time = np.arange(n_bars, dtype="int64") * 3600  # ore UTC de la epoch 0
+    time = np.arange(n_bars, dtype="int64") * 3600
     return pd.DataFrame({"time": time, "open": open_, "high": high, "low": low,
                          "close": close, "volume": 100.0})
 
@@ -133,10 +149,12 @@ def pipeline_cells(df: pd.DataFrame):
     return cells
 
 
-def one_p(seed: int, n_bars: int, delta: float, B: int, target=("up", "asia")):
-    """Generează o serie, injectează edge, rulează matched_null pe celula țintă → p (sau None)."""
+def one_p(seed: int, n_bars: int, delta: float, B: int, target=("up", "asia"),
+          session_vol: dict | None = None, tail_df: float | None = None):
+    """Generează o serie (opțional cu vol pe sesiune / cozi grele), injectează edge,
+    rulează matched_null pe celula țintă → p (sau None dacă celula nu are n≥25)."""
     rng = np.random.default_rng(seed)
-    df = generate_price(rng, n_bars)
+    df = generate_price(rng, n_bars, session_vol=session_vol, tail_df=tail_df)
     if delta > 0:
         df = inject_reversion(df, delta, rng)
     cells = pipeline_cells(df)
@@ -168,12 +186,18 @@ def wilson_ci(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
 
 def run_battery(*, n_series: int = 120, n_bars: int = 10000, B: int = 2000,
                 deltas=(0.0, 1.0, 2.0, 4.0, 8.0), target=("up", "asia"),
-                alpha: float = 0.05) -> dict:
-    """Bateria completă F6: null (uniformitate + FPR) + curbă de putere + reproducibilitate."""
+                alpha: float = 0.05, session_vol: dict | None = None,
+                tail_df: float | None = None) -> dict:
+    """Bateria completă: null (uniformitate + FPR) + curbă de putere + reproducibilitate.
+
+    F6.1: `session_vol`/`tail_df` introduc volatilitate diferențiată pe sesiune și cozi
+    grele (medie zero — fără efect de nivel), pentru a testa robustețea la structura de
+    volatilitate (nulul principal al laboratorului).
+    """
     # --- NULL ---
     null_ps = []; seed = 0
     while len(null_ps) < n_series and seed < n_series * 4:
-        p = one_p(seed, n_bars, 0.0, B, target)
+        p = one_p(seed, n_bars, 0.0, B, target, session_vol=session_vol, tail_df=tail_df)
         if p is not None:
             null_ps.append(p)
         seed += 1
@@ -189,7 +213,7 @@ def run_battery(*, n_series: int = 120, n_bars: int = 10000, B: int = 2000,
     for dl in deltas:
         ps = []; s2 = 1000 + int(dl * 10000)
         while len(ps) < n_series and s2 < 1000 + int(dl * 10000) + n_series * 4:
-            p = one_p(s2, n_bars, dl, B, target)
+            p = one_p(s2, n_bars, dl, B, target, session_vol=session_vol, tail_df=tail_df)
             if p is not None:
                 ps.append(p)
             s2 += 1
@@ -200,13 +224,14 @@ def run_battery(*, n_series: int = 120, n_bars: int = 10000, B: int = 2000,
                    for i in range(len(power) - 1)) and power[-1]["reject_rate"] > power[0]["reject_rate"]
 
     # --- REPRODUCIBILITATE ---
-    r1 = one_p(777, n_bars, 2.0, B, target)
-    r2 = one_p(777, n_bars, 2.0, B, target)
+    r1 = one_p(777, n_bars, 2.0, B, target, session_vol=session_vol, tail_df=tail_df)
+    r2 = one_p(777, n_bars, 2.0, B, target, session_vol=session_vol, tail_df=tail_df)
     reproducible = (r1 == r2)
 
     verdict = "PASS" if (uniform_ok and fpr_ok and monotone and reproducible) else "FAIL"
     return {
         "method": "matched_null@v1", "target_cell": f"{target[0]}/{target[1]}",
+        "session_vol": session_vol, "tail_df": tail_df,
         "n_series": n, "n_bars": n_bars, "B": B, "alpha": alpha,
         "series_kind": "synthetic PRICE (random-walk, XAUUSD scale)",
         "same_path_fidelity": "reproduces real event counts 135/34/42/114/40/47 exactly",
@@ -217,5 +242,52 @@ def run_battery(*, n_series: int = 120, n_bars: int = 10000, B: int = 2000,
         },
         "power_curve": power, "power_monotone": monotone,
         "reproducibility": {"seed": 777, "p1": r1, "p2": r2, "identical": reproducible},
+        "verdict": verdict,
+    }
+
+
+def run_f61(*, n_series: int = 120, n_bars: int = 12000, B: int = 2000) -> dict:
+    """F6.1 — calibrare sub STRUCTURA DE VOLATILITATE realistă (nulul principal al lab).
+
+    Testul decisiv (CEO): serii în care sesiunea NY are volatilitate mai mare FĂRĂ niciun
+    efect real de nivel — metoda trebuie să NU respingă. Plus cozi grele. Plus verificarea
+    că puterea se păstrează (detectează un edge real chiar și sub vol mare).
+    """
+    regimes = [
+        {"name": "DECISIVE: NY vol 2.5x, no level effect",
+         "session_vol": {"ny": 2.5}, "tail_df": None, "target": ("up", "ny")},
+        {"name": "heavy tails Student-t(4), no session vol",
+         "session_vol": None, "tail_df": 4.0, "target": ("up", "asia")},
+        {"name": "NY vol 2.5x + heavy tails t(4)",
+         "session_vol": {"ny": 2.5}, "tail_df": 4.0, "target": ("up", "ny")},
+    ]
+    null_results = []
+    for r in regimes:
+        b = run_battery(n_series=n_series, n_bars=n_bars, B=B, deltas=(0.0,),
+                        target=r["target"], session_vol=r["session_vol"], tail_df=r["tail_df"])
+        must_not_reject = b["null"]["fpr_ok"] and b["null"]["uniform_ok"]
+        null_results.append({"regime": r["name"], "target": f"{r['target'][0]}/{r['target'][1]}",
+                             "fpr": b["null"]["fpr"], "fpr_ci95": b["null"]["fpr_ci95"],
+                             "ks_p": b["null"]["ks_p"], "must_not_reject_ok": must_not_reject})
+
+    # putere sub NY vol mare: edge real -> metoda trebuie să detecteze
+    power = []
+    for dl in (0.0, 4.0, 8.0, 12.0):
+        ps = []; s = 5000 + int(dl * 100)
+        while len(ps) < n_series and s < 5000 + int(dl * 100) + n_series * 4:
+            p = one_p(s, n_bars, dl, B, ("up", "ny"), session_vol={"ny": 2.5}); s += 1
+            if p is not None:
+                ps.append(p)
+        power.append({"delta": dl, "reject_rate": float((np.array(ps) < 0.05).mean()), "n": len(ps)})
+    power_ok = power[-1]["reject_rate"] > power[0]["reject_rate"]
+
+    all_null_ok = all(x["must_not_reject_ok"] for x in null_results)
+    verdict = "PASS" if (all_null_ok and power_ok) else "FAIL"
+    return {
+        "phase": "F6.1", "method": "matched_null@v1",
+        "purpose": "robustness to session-differentiated volatility + heavy tails (lab's primary null)",
+        "decisive_test": "NY higher volatility, no level effect -> must not reject",
+        "null_regimes": null_results, "all_null_must_not_reject": all_null_ok,
+        "power_under_ny_high_vol": power, "power_preserved": power_ok,
         "verdict": verdict,
     }
