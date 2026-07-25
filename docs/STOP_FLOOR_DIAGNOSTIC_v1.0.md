@@ -56,3 +56,6 @@ Toate trei sunt **atr-stop (1.5×ATR)** → riscul cerut (1.5×ATR) e mult peste
 | Supraviețuitor / h20-long lărgite | 0% (atr-stop) |
 
 Măsurătoarea răspunde la întrebarea decisivă (#4) în cifre: tranzacțiile care produc concentrarea nu sunt cele lărgite. **Nu concluzionez**; cifrele merg la certificare împreună cu inventarul de concentrare. D2 rămâne HIGH/DESCHIS (necuantificat ca remediere — doar măsurat aici). Holdout SEALED.
+
+## 8. NOTĂ — direcția efectului D2 (adăugată la review-ul CEO 2026-07-25)
+Podeaua **TRUNCHIAZĂ** coada, nu o creează. Dacă o strategie cere stop 0.05 și primește 0.50, o mișcare care ar fi dat 100R dă 10R. Deci D2, în măsura în care acționează, face corpul să arate **MAI PUȚIN concentrat decât e în realitate**, nu mai mult — riscul impus e mai MARE decât cel cerut, deci R e mai MIC, deci coada e comprimată. **Direcție sigură** pentru concluzia „concentrarea e reală" (subestimarea, nu supraestimarea, ar fi biasul). Consecință de guvernanță: D2 nu inflaționează niciun rezultat de concentrare/edge — deci prioritizarea lui NU e urgentă pentru integritatea rezultatelor actuale; contează doar pentru a debloca cele 1560 de ipoteze excluse din regimul validat (deblocare, nu corecție de bias). Măsurat: lărgirea atinge 0.6% din tranzacții pe familia S1, corelație ~0 cu concentrarea.
