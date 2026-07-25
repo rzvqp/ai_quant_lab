@@ -1,0 +1,742 @@
+{
+  "spec_id": "STAT-SPEC-DEV-SWEEPREJECT-OPEN",
+  "spec_version": "1.0",
+  "contract_version": "STAT-VE-CONTRACT-v1.0",
+  "capability_registry_version": "1.4",
+  "candidate": {
+    "id": "DEV-OPEN",
+    "freeze_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "issued_by": "Statistician",
+  "issued_at": "2026-07-25",
+  "mode": "validate",
+  "authorization": {
+    "required": false,
+    "ceo_token_id": null,
+    "resource_class": null
+  },
+  "data": [
+    {
+      "source_id": "OANDA_XAUUSD_H1@v1",
+      "sha256": "5ff7420ac6698e639ecd4f7afa5c526e74ca99d12ef34fb7df8149ff18868baa"
+    }
+  ],
+  "population": {
+    "source_id": "OANDA_XAUUSD_H1@v1",
+    "window": {
+      "start": "2023-01-02T23:00:00Z",
+      "end": "2025-10-23T09:15:00Z",
+      "bounds": "[)"
+    },
+    "timezone": "UTC",
+    "include": [
+      {
+        "id": "p_evt",
+        "predicate": "or@v1",
+        "params": {
+          "operands": [
+            {
+              "id": "pop_up",
+              "predicate": "and@v1",
+              "params": {
+                "operands": [
+                  {
+                    "id": "pop_uf",
+                    "predicate": "first_in_scope@v1",
+                    "params": {
+                      "scope": "day",
+                      "predicate": {
+                        "id": "pop_ub",
+                        "predicate": "compare@v1",
+                        "params": {
+                          "left": "bar_high",
+                          "op": ">",
+                          "right": "pdh"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "pop_ur",
+                    "predicate": "compare@v1",
+                    "params": {
+                      "left": "bar_close",
+                      "op": "<",
+                      "right": "pdh"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "pop_dn",
+              "predicate": "and@v1",
+              "params": {
+                "operands": [
+                  {
+                    "id": "pop_df",
+                    "predicate": "first_in_scope@v1",
+                    "params": {
+                      "scope": "day",
+                      "predicate": {
+                        "id": "pop_db",
+                        "predicate": "compare@v1",
+                        "params": {
+                          "left": "bar_low",
+                          "op": "<",
+                          "right": "pdl"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "pop_dr",
+                    "predicate": "compare@v1",
+                    "params": {
+                      "left": "bar_close",
+                      "op": ">",
+                      "right": "pdl"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "exclude": [],
+    "cooldown": {
+      "min_bars_between_events": 0
+    },
+    "min_n": 25,
+    "report_denominator": true
+  },
+  "variables": [
+    {
+      "id": "bar_high",
+      "primitive": "raw_series@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "field": "high"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "bar_low",
+      "primitive": "raw_series@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "field": "low"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "bar_close",
+      "primitive": "raw_series@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "field": "close"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "pdh",
+      "primitive": "prior_period_extreme@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "extreme": "high",
+        "periods_back": 1,
+        "availability_rule": "next_bar_open",
+        "availability_delay_seconds": 0
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": -1,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "pdl",
+      "primitive": "prior_period_extreme@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "extreme": "low",
+        "periods_back": 1,
+        "availability_rule": "next_bar_open",
+        "availability_delay_seconds": 0
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": -1,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "session",
+      "primitive": "session_label@v1",
+      "params": {
+        "boundaries": [
+          {
+            "name": "asia",
+            "start_utc": "00:00:00",
+            "end_utc": "08:00:00"
+          },
+          {
+            "name": "london",
+            "start_utc": "08:00:00",
+            "end_utc": "13:00:00"
+          },
+          {
+            "name": "ny",
+            "start_utc": "13:00:00",
+            "end_utc": "21:00:00"
+          },
+          {
+            "name": "late",
+            "start_utc": "21:00:00",
+            "end_utc": "24:00:00"
+          }
+        ]
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "stratifier"
+    },
+    {
+      "id": "fwd_k6",
+      "primitive": "forward_return@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "horizon_bars": 6,
+        "basis": "close_to_close",
+        "units": "price"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 6,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "outcome"
+    },
+    {
+      "id": "base_k6",
+      "primitive": "baseline_forward_mean@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "horizon_bars": 6,
+        "strata": [
+          "session"
+        ],
+        "estimation_window": {
+          "start": "2023-01-02T23:00:00Z",
+          "end": "2025-10-23T09:15:00Z",
+          "bounds": "[)"
+        },
+        "exclude_event_bars": false
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 6,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "outcome"
+    },
+    {
+      "id": "exc_k6",
+      "primitive": "forward_excess@v1",
+      "params": {
+        "forward_return_ref": "fwd_k6",
+        "baseline_ref": "base_k6"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 6,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "outcome"
+    }
+  ],
+  "tests": [
+    {
+      "order": 1,
+      "test_id": "T1_k6",
+      "method": "matched_null@v1",
+      "params": {
+        "statistic": {
+          "id": "s",
+          "statistic": "mean@v1",
+          "params": {
+            "variable_ref": "exc_k6"
+          }
+        },
+        "tail": "left",
+        "B": 200000,
+        "preserve": [
+          "session"
+        ],
+        "resample_unit": "event",
+        "min_n": 25
+      },
+      "cells": [
+        {
+          "id": "t1_asia_up",
+          "predicates": [
+            {
+              "id": "t1_asia_up_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "asia"
+                ]
+              }
+            },
+            {
+              "id": "t1_asia_up_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_asia_up_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_high",
+                    "op": ">",
+                    "right": "pdh"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_asia_up_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": "<",
+                "right": "pdh"
+              }
+            }
+          ]
+        },
+        {
+          "id": "t1_asia_dn",
+          "predicates": [
+            {
+              "id": "t1_asia_dn_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "asia"
+                ]
+              }
+            },
+            {
+              "id": "t1_asia_dn_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_asia_dn_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_low",
+                    "op": "<",
+                    "right": "pdl"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_asia_dn_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": ">",
+                "right": "pdl"
+              }
+            }
+          ]
+        },
+        {
+          "id": "t1_london_up",
+          "predicates": [
+            {
+              "id": "t1_london_up_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "london"
+                ]
+              }
+            },
+            {
+              "id": "t1_london_up_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_london_up_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_high",
+                    "op": ">",
+                    "right": "pdh"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_london_up_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": "<",
+                "right": "pdh"
+              }
+            }
+          ]
+        },
+        {
+          "id": "t1_london_dn",
+          "predicates": [
+            {
+              "id": "t1_london_dn_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "london"
+                ]
+              }
+            },
+            {
+              "id": "t1_london_dn_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_london_dn_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_low",
+                    "op": "<",
+                    "right": "pdl"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_london_dn_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": ">",
+                "right": "pdl"
+              }
+            }
+          ]
+        },
+        {
+          "id": "t1_ny_up",
+          "predicates": [
+            {
+              "id": "t1_ny_up_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "ny"
+                ]
+              }
+            },
+            {
+              "id": "t1_ny_up_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_ny_up_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_high",
+                    "op": ">",
+                    "right": "pdh"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_ny_up_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": "<",
+                "right": "pdh"
+              }
+            }
+          ]
+        },
+        {
+          "id": "t1_ny_dn",
+          "predicates": [
+            {
+              "id": "t1_ny_dn_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "ny"
+                ]
+              }
+            },
+            {
+              "id": "t1_ny_dn_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_ny_dn_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_low",
+                    "op": "<",
+                    "right": "pdl"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_ny_dn_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": ">",
+                "right": "pdl"
+              }
+            }
+          ]
+        },
+        {
+          "id": "t1_late_up",
+          "predicates": [
+            {
+              "id": "t1_late_up_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "late"
+                ]
+              }
+            },
+            {
+              "id": "t1_late_up_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_late_up_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_high",
+                    "op": ">",
+                    "right": "pdh"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_late_up_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": "<",
+                "right": "pdh"
+              }
+            }
+          ]
+        },
+        {
+          "id": "t1_late_dn",
+          "predicates": [
+            {
+              "id": "t1_late_dn_sess",
+              "predicate": "in_session@v1",
+              "params": {
+                "session_ref": "session",
+                "names": [
+                  "late"
+                ]
+              }
+            },
+            {
+              "id": "t1_late_dn_first",
+              "predicate": "first_in_scope@v1",
+              "params": {
+                "scope": "day",
+                "predicate": {
+                  "id": "t1_late_dn_breach",
+                  "predicate": "compare@v1",
+                  "params": {
+                    "left": "bar_low",
+                    "op": "<",
+                    "right": "pdl"
+                  }
+                }
+              }
+            },
+            {
+              "id": "t1_late_dn_rej",
+              "predicate": "compare@v1",
+              "params": {
+                "left": "bar_close",
+                "op": ">",
+                "right": "pdl"
+              }
+            }
+          ]
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    }
+  ],
+  "multiple_testing": {
+    "family_id": "DEV-eligible-n25",
+    "members": [
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_asia_up",
+        "output": "p_hat"
+      },
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_asia_dn",
+        "output": "p_hat"
+      },
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_london_up",
+        "output": "p_hat"
+      },
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_london_dn",
+        "output": "p_hat"
+      },
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_ny_up",
+        "output": "p_hat"
+      },
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_ny_dn",
+        "output": "p_hat"
+      },
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_late_up",
+        "output": "p_hat"
+      },
+      {
+        "test_id": "T1_k6",
+        "cell": "t1_late_dn",
+        "output": "p_hat"
+      }
+    ],
+    "method": "bonferroni@v1",
+    "params": {
+      "alpha": 0.05,
+      "family_members": [
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_asia_up",
+          "output": "p_hat"
+        },
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_asia_dn",
+          "output": "p_hat"
+        },
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_london_up",
+          "output": "p_hat"
+        },
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_london_dn",
+          "output": "p_hat"
+        },
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_ny_up",
+          "output": "p_hat"
+        },
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_ny_dn",
+          "output": "p_hat"
+        },
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_late_up",
+          "output": "p_hat"
+        },
+        {
+          "test_id": "T1_k6",
+          "cell": "t1_late_dn",
+          "output": "p_hat"
+        }
+      ],
+      "member_eligibility": {
+        "field": "n",
+        "op": ">=",
+        "value": 25
+      }
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "target": {
+        "test_id": "T1_k6",
+        "cell": "t1_ny_up",
+        "output": "p_adjusted"
+      },
+      "comparator": "<",
+      "threshold": 0.05
+    }
+  ],
+  "return": {
+    "raw_null_distributions": true,
+    "per_instance_rows": true,
+    "code_snapshot": true,
+    "logs": true,
+    "seeds": true
+  },
+  "on_missing_or_ambiguous": "halt_and_request_clarification"
+}

@@ -1,0 +1,205 @@
+{
+  "_TEMPLATE": "ACESTA NU ESTE O SPECIFICATIE VALIDA SI NU POATE FI EXECUTAT. Substituentii <<...>> sunt valori purtatoare de decizie: fiecare este o alegere statistica ce apartine Statisticianului. Cat timp sunt prezenti, validarea etapa 1 respinge fisierul. Copiati-l, nu il rulati. Campul _TEMPLATE insusi este respins de schema (additionalProperties:false) si trebuie sters din orice specificatie reala. Vocabular: CAPABILITY_REGISTRY_v1.4.md. Forma normativa: SPEC_SCHEMA_v1.0.json. Explicatii camp cu camp: SPEC_SCHEMA_v1.0.md. La v1.4 toate metodele sunt UNVALIDATED, deci nicio specificatie nu este inca executabila.",
+  "spec_id": "STAT-SPEC-TEMPLATE-DO-NOT-EXECUTE",
+  "spec_version": "0.0",
+  "contract_version": "STAT-VE-CONTRACT-v1.0",
+  "capability_registry_version": "1.4",
+  "candidate": {
+    "id": "<<DC-XXXX>>",
+    "freeze_hash": "<<sha256:...64 hex...>>"
+  },
+  "issued_by": "Statistician",
+  "issued_at": "<<YYYY-MM-DD>>",
+  "mode": "<<validate | rehearse | run>>",
+  "authorization": {
+    "required": false,
+    "ceo_token_id": null,
+    "resource_class": null
+  },
+  "data": [
+    {
+      "source_id": "<<OANDA_XAUUSD_H1@v1>>",
+      "sha256": "<<hash din CAPABILITY_REGISTRY sectiunea 2>>"
+    }
+  ],
+  "population": {
+    "source_id": "<<OANDA_XAUUSD_H1@v1>>",
+    "window": {
+      "start": "<<YYYY-MM-DDTHH:MM:SSZ>>",
+      "end": "<<YYYY-MM-DDTHH:MM:SSZ>>",
+      "bounds": "<<[) | [] | (] | ()>>"
+    },
+    "timezone": "UTC",
+    "include": [
+      {
+        "id": "<<p_prima_depasire>>",
+        "predicate": "first_in_scope@v1",
+        "params": {
+          "scope": "day",
+          "predicate": {
+            "id": "<<ev_breach>>",
+            "predicate": "<<compare@v1>>",
+            "params": {
+              "left": "<<serie_bruta>>",
+              "op": "<<'>'>>",
+              "right": "<<nivel>>"
+            }
+          }
+        }
+      }
+    ],
+    "exclude": [],
+    "cooldown": {
+      "min_bars_between_events": "<<0>>"
+    },
+    "min_n": "<<numar intreg >= 1>>",
+    "report_denominator": true
+  },
+  "variables": [
+    {
+      "id": "<<nume_serie_bruta>>",
+      "primitive": "raw_series@v1",
+      "params": {
+        "source_id": "<<sursa>>",
+        "field": "<<open|high|low|close|volume|sub>>"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "<<sursa>>"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "<<nume_eveniment>>",
+      "primitive": "indicator@v1",
+      "params": {
+        "predicate": {
+          "id": "<<ev_id>>",
+          "predicate": "<<compare@v1>>",
+          "params": {
+            "left": "<<serie_bruta>>",
+            "op": "<<'>'>>",
+            "right": "<<nivel_sau_numar>>"
+          }
+        }
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "<<sursa>>"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "<<nume_rezultat>>",
+      "primitive": "<<forward_return@v1>>",
+      "params": {
+        "source_id": "<<sursa>>",
+        "horizon_bars": "<<K>>",
+        "basis": "<<close_to_close>>",
+        "units": "<<price>>"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": "<<K>>",
+        "source_id": "<<sursa>>"
+      },
+      "role": "outcome"
+    },
+    {
+      "id": "<<nume_control>>",
+      "primitive": "<<hour_of_day_volatility_profile@v1>>",
+      "params": {
+        "source_id": "<<sursa>>",
+        "estimator": "<<parkinson>>",
+        "lookback_days": "<<60>>",
+        "normalization": "<<divide_by_daily_mean>>",
+        "min_observations_per_hour": "<<20>>"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": -1,
+        "source_id": "<<sursa>>"
+      },
+      "role": "control"
+    }
+  ],
+  "tests": [
+    {
+      "order": 1,
+      "test_id": "<<T1_nume>>",
+      "method": "<<metoda din registru sectiunea 7>>",
+      "params": {
+        "statistic": {
+          "id": "<<s_nume>>",
+          "statistic": "<<mean@v1>>",
+          "params": {
+            "variable_ref": "<<nume_rezultat>>"
+          }
+        },
+        "tail": "<<two_sided>>",
+        "B": "<<200000>>",
+        "preserve": [
+          "<<invariant_1>>",
+          "<<invariant_2>>"
+        ],
+        "resample_unit": "<<event>>",
+        "min_n": "<<15>>"
+      },
+      "cells": [
+        {
+          "id": "<<all>>",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    }
+  ],
+  "multiple_testing": {
+    "family_id": "<<nume_familie>>",
+    "members": [
+      {
+        "test_id": "<<T1_nume>>",
+        "cell": "<<all>>",
+        "output": "<<p_hat>>"
+      }
+    ],
+    "method": "<<bonferroni@v1 | benjamini_hochberg@v1 | none@v1>>",
+    "params": {
+      "alpha": "<<0.05>>",
+      "family_members": [
+        {
+          "test_id": "<<T1_nume>>",
+          "cell": "<<all>>",
+          "output": "<<p_hat>>"
+        }
+      ],
+      "member_eligibility": {
+        "field": "<<n | denominator | event_count>>",
+        "op": "<<'>='>>",
+        "value": "<<25 — numeric; NU p-value/statistică/efect>>"
+      }
+    }
+  },
+  "criteria": [
+    {
+      "id": "<<C1>>",
+      "target": {
+        "test_id": "<<T1_nume>>",
+        "cell": "<<all>>",
+        "output": "<<p_adjusted>>"
+      },
+      "comparator": "<<'<'>>",
+      "threshold": "<<0.05 — NUMERIC, nu sir de caractere>>"
+    }
+  ],
+  "return": {
+    "raw_null_distributions": true,
+    "per_instance_rows": true,
+    "code_snapshot": true,
+    "logs": true,
+    "seeds": true
+  },
+  "on_missing_or_ambiguous": "halt_and_request_clarification"
+}

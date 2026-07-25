@@ -1,0 +1,177 @@
+{
+  "spec_id": "STAT-SPEC-FIXTURE-F2",
+  "spec_version": "1.0",
+  "contract_version": "STAT-VE-CONTRACT-v1.0",
+  "capability_registry_version": "1.4",
+  "candidate": {
+    "id": "DC-FIXTURE",
+    "freeze_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "issued_by": "Statistician",
+  "issued_at": "2026-07-24",
+  "mode": "validate",
+  "authorization": {
+    "required": false,
+    "ceo_token_id": null,
+    "resource_class": null
+  },
+  "data": [
+    {
+      "source_id": "OANDA_XAUUSD_H1@v1",
+      "sha256": "5ff7420ac6698e639ecd4f7afa5c526e74ca99d12ef34fb7df8149ff18868baa"
+    }
+  ],
+  "population": {
+    "source_id": "OANDA_XAUUSD_H1@v1",
+    "window": {
+      "start": "2023-01-02T23:00:00Z",
+      "end": "2025-10-23T09:00:00Z",
+      "bounds": "[)"
+    },
+    "timezone": "UTC",
+    "include": [
+      {
+        "id": "p_atr_above",
+        "predicate": "compare@v1",
+        "params": {
+          "left": "atr14",
+          "op": ">",
+          "right": 1.0
+        }
+      }
+    ],
+    "exclude": [],
+    "cooldown": {
+      "min_bars_between_events": 4
+    },
+    "min_n": 15,
+    "report_denominator": true
+  },
+  "variables": [
+    {
+      "id": "atr14",
+      "primitive": "atr@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "period": 14,
+        "method": "wilder"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": -1,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "fwd6",
+      "primitive": "forward_return@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "horizon_bars": 6,
+        "basis": "close_to_close",
+        "units": "atr_multiple"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 6,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "outcome"
+    },
+    {
+      "id": "volhour",
+      "primitive": "hour_of_day_volatility_profile@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_H1@v1",
+        "estimator": "parkinson",
+        "lookback_days": 60,
+        "normalization": "divide_by_daily_mean",
+        "min_observations_per_hour": 20
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": -1,
+        "source_id": "OANDA_XAUUSD_H1@v1"
+      },
+      "role": "control"
+    }
+  ],
+  "tests": [
+    {
+      "order": 1,
+      "test_id": "T1_matched_null",
+      "method": "matched_null@v1",
+      "params": {
+        "statistic": {
+          "id": "s_mean_fwd6",
+          "statistic": "mean@v1",
+          "params": {
+            "variable_ref": "fwd6"
+          }
+        },
+        "tail": "two_sided",
+        "B": 200000,
+        "preserve": [
+          "session",
+          "direction"
+        ],
+        "resample_unit": "event",
+        "min_n": 15
+      },
+      "cells": [
+        {
+          "id": "all",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    }
+  ],
+  "multiple_testing": {
+    "family_id": "FIXTURE-F2-family",
+    "members": [
+      {
+        "test_id": "T1_matched_null",
+        "cell": "all",
+        "output": "p_hat"
+      }
+    ],
+    "method": "bonferroni@v1",
+    "params": {
+      "alpha": 0.05,
+      "family_members": [
+        {
+          "test_id": "T1_matched_null",
+          "cell": "all",
+          "output": "p_hat"
+        }
+      ],
+      "member_eligibility": {
+        "field": "n",
+        "op": ">=",
+        "value": 1
+      }
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "target": {
+        "test_id": "T1_matched_null",
+        "cell": "all",
+        "output": "p_adjusted"
+      },
+      "comparator": "<",
+      "threshold": 0.05
+    }
+  ],
+  "return": {
+    "raw_null_distributions": true,
+    "per_instance_rows": true,
+    "code_snapshot": true,
+    "logs": true,
+    "seeds": true
+  },
+  "on_missing_or_ambiguous": "halt_and_request_clarification"
+}

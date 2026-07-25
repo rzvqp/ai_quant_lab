@@ -1,0 +1,8 @@
+# Artefacte de runtime ale Validation Engine — nu se versionează.
+runs/
+run_ledger.jsonl
+RUN_LEDGER.md
+clarifications/
+__pycache__/
+*.pyc
+.pytest_cache/

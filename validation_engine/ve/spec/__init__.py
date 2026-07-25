@@ -1,0 +1,1 @@
+"""Recepția și validarea specificațiilor."""

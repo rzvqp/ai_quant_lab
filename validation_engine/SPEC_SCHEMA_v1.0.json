@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-quant-lab.local/validation_engine/SPEC_SCHEMA_v1.0.json",
+  "title": "Validation Engine Specification v1.0",
+  "description": "Stage-1 (shape) validation of a specification handed from the Statistician to the Validation Engine. Stage-2 validation of vocabulary, required parameters and domains is performed against capabilities.json, which is the single source of truth for what is executable. No 'default' keyword appears anywhere in this schema: a default would be a choice made by the engine, which contract 1.7 forbids.",
+
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spec_id", "spec_version", "contract_version", "capability_registry_version",
+    "candidate", "issued_by", "issued_at", "mode", "authorization",
+    "data", "population", "variables", "tests", "multiple_testing", "criteria",
+    "return", "on_missing_or_ambiguous"
+  ],
+
+  "properties": {
+    "spec_id":                     { "type": "string", "pattern": "^STAT-SPEC-[A-Za-z0-9._-]+$" },
+    "spec_version":                { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "contract_version":            { "const": "STAT-VE-CONTRACT-v1.0" },
+    "capability_registry_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "freeze_hash"],
+      "properties": {
+        "id":          { "type": "string" },
+        "freeze_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      },
+      "description": "Traceability labels only. No computation module reads these fields (hypothesis blindness, VE-ARCH-v1.0 section 1.2)."
+    },
+
+    "issued_by": { "const": "Statistician" },
+    "issued_at": { "type": "string", "format": "date" },
+    "mode":      { "enum": ["validate", "rehearse", "run"] },
+
+    "authorization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "ceo_token_id", "resource_class"],
+      "properties": {
+        "required":       { "type": "boolean" },
+        "ceo_token_id":   { "type": ["string", "null"] },
+        "resource_class": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if":   { "properties": { "required": { "const": true } } },
+          "then": { "properties": { "ceo_token_id": { "type": "string" }, "resource_class": { "type": "string" } } }
+        },
+        {
+          "if":   { "properties": { "required": { "const": false } } },
+          "then": { "properties": { "ceo_token_id": { "type": "null" }, "resource_class": { "type": "null" } } }
+        }
+      ],
+      "description": "Stage 2 additionally verifies that a population window overlapping a sealed window has required=true."
+    },
+
+    "data": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source_id", "sha256"],
+        "properties": {
+          "source_id": { "type": "string" },
+          "sha256":    { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      },
+      "description": "Every data source used must be declared with the hash the Statistician expects. A mismatch halts the run (E4)."
+    },
+
+    "population": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "window", "timezone", "include", "exclude", "cooldown", "min_n", "report_denominator"],
+      "properties": {
+        "source_id": { "type": "string" },
+        "window":    { "$ref": "#/$defs/window" },
+        "timezone":  { "const": "UTC" },
+        "include":   { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/predicate" } },
+        "exclude":   { "type": "array", "minItems": 0, "items": { "$ref": "#/$defs/predicate" } },
+        "cooldown": {
+          "type": "object", "additionalProperties": false,
+          "required": ["min_bars_between_events"],
+          "properties": { "min_bars_between_events": { "type": "integer", "minimum": 0 } },
+          "description": "Mandatory. Declare 0 explicitly if no deduplication is intended; the engine never decides what counts as a distinct event."
+        },
+        "min_n":              { "type": "integer", "minimum": 1, "description": "Below this the run halts (E6). The engine does not interpret a small sample; it refuses to run on one." },
+        "report_denominator": { "const": true }
+      }
+    },
+
+    "variables": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "primitive", "params", "availability", "role"],
+        "properties": {
+          "id":           { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+          "primitive":    { "type": "string" },
+          "params":       { "type": "object" },
+          "availability": { "$ref": "#/$defs/availability" },
+          "role":         { "enum": ["exposure", "outcome", "control", "stratifier", "diagnostic"] }
+        }
+      }
+    },
+
+    "tests": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["order", "test_id", "method", "params", "cells", "seed_policy"],
+        "properties": {
+          "order":       { "type": "integer", "minimum": 1 },
+          "test_id":     { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+          "method":      { "type": "string" },
+          "params":      { "type": "object" },
+          "cells":       { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/cell" } },
+          "seed_policy": { "const": "derived_from_spec_hash" }
+        }
+      },
+      "description": "Executed strictly in ascending 'order'. A non-stratified test declares exactly one cell with an empty predicate list."
+    },
+
+    "multiple_testing": {
+      "type": "object", "additionalProperties": false,
+      "required": ["family_id", "members", "method", "params"],
+      "properties": {
+        "family_id": { "type": "string" },
+        "members":   { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/test_target" } },
+        "method":    { "type": "string" },
+        "params":    { "type": "object" }
+      },
+      "description": "Family membership is enumerated explicitly. The engine never infers that a test belongs to a wider family. 'No correction' is declared through method none@v1, never by omission."
+    },
+
+    "criteria": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "target", "comparator", "threshold"],
+        "properties": {
+          "id":         { "type": "string" },
+          "target":     { "$ref": "#/$defs/test_target" },
+          "comparator": { "enum": ["<", "<=", ">", ">=", "==", "!="] },
+          "threshold":  { "type": "number" }
+        }
+      },
+      "description": "Pre-registered success/failure criteria (contract 1.5). 'threshold' is numeric by construction: a descriptive threshold cannot be expressed in this schema. Targets are structured references, not expressions, so the engine needs no expression interpreter."
+    },
+
+    "return": {
+      "type": "object", "additionalProperties": false,
+      "required": ["raw_null_distributions", "per_instance_rows", "code_snapshot", "logs", "seeds"],
+      "properties": {
+        "raw_null_distributions": { "type": "boolean" },
+        "per_instance_rows":      { "type": "boolean" },
+        "code_snapshot":          { "type": "boolean" },
+        "logs":                   { "type": "boolean" },
+        "seeds":                  { "type": "boolean" }
+      },
+      "description": "Contract 1.6. Note: 'criteria_evaluation' is deliberately absent in v1.0 and will be rejected by additionalProperties:false until open point P1 is ratified."
+    },
+
+    "on_missing_or_ambiguous": {
+      "const": "halt_and_request_clarification",
+      "description": "Contract 1.7. Single admissible value; there is no permissive mode."
+    }
+  },
+
+  "$defs": {
+    "window": {
+      "type": "object", "additionalProperties": false,
+      "required": ["start", "end", "bounds"],
+      "properties": {
+        "start":  { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+        "end":    { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+        "bounds": { "enum": ["[)", "[]", "(]", "()"] }
+      },
+      "description": "Both endpoints explicit and inclusivity explicit. An open-ended or descriptive window cannot be expressed."
+    },
+
+    "availability": {
+      "type": "object", "additionalProperties": false,
+      "required": ["anchor", "offset_bars", "source_id"],
+      "properties": {
+        "anchor":      { "enum": ["event_time"] },
+        "offset_bars": { "type": "integer" },
+        "source_id":   { "type": "string" }
+      },
+      "description": "Declares the temporal order the leakage guard enforces mechanically. Negative = strictly before the event. Roles exposure/control/stratifier require offset_bars <= 0 (checked in stage 2)."
+    },
+
+    "predicate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "predicate", "params"],
+      "properties": {
+        "id":        { "type": "string", "description": "Required so the denominator can report how many candidate bars each individual criterion rejected." },
+        "predicate": { "type": "string" },
+        "params":    { "type": "object" }
+      }
+    },
+
+    "cell": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "predicates"],
+      "properties": {
+        "id":         { "type": "string" },
+        "predicates": { "type": "array", "minItems": 0, "items": { "$ref": "#/$defs/predicate" } }
+      }
+    },
+
+    "test_target": {
+      "type": "object", "additionalProperties": false,
+      "required": ["test_id", "cell", "output"],
+      "properties": {
+        "test_id": { "type": "string" },
+        "cell":    { "type": "string" },
+        "output":  { "type": "string" }
+      }
+    }
+  }
+}

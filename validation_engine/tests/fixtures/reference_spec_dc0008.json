@@ -1,0 +1,403 @@
+{
+  "_nonnormative": "FIXTURE — NENORMATIV. GRAD DE EXPRIMARE al DC-0008. GOL G6: variabila de expunere reală R (raport de volum sub-bară M1/M5 ÷ M15) NU este exprimabilă — nu există sursă M1/M5 și nicio primitivă de agregare sub-bară. 'r_ratio_standin' de mai jos este un SUBSTITUENT structural (bar_range_ratio pe M15), NU R. Pragul de clasificare (F3), definiția 'lumânare mare' și orizontul outcome sunt substituenți nenormativi. Câmpul _nonnormative este respins de schemă și trebuie eliminat înainte de orice utilizare.",
+  "spec_id": "STAT-SPEC-REFERENCE-DC0008-SHAPE",
+  "spec_version": "1.0",
+  "contract_version": "STAT-VE-CONTRACT-v1.0",
+  "capability_registry_version": "1.4",
+  "candidate": {
+    "id": "DC-0008-SHAPE-FIXTURE",
+    "freeze_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "issued_by": "Statistician",
+  "issued_at": "2026-07-24",
+  "mode": "validate",
+  "authorization": {
+    "required": false,
+    "ceo_token_id": null,
+    "resource_class": null
+  },
+  "data": [
+    {
+      "source_id": "OANDA_XAUUSD_M15@v1",
+      "sha256": "c777cb9c6097287850b590b205ea4227b1a32ecb9255bdd611723f0364c64e86"
+    }
+  ],
+  "population": {
+    "source_id": "OANDA_XAUUSD_M15@v1",
+    "window": {
+      "start": "2023-01-05T00:00:00Z",
+      "end": "2025-10-23T09:00:00Z",
+      "bounds": "[)"
+    },
+    "timezone": "UTC",
+    "include": [
+      {
+        "id": "p_big_candle",
+        "predicate": "compare@v1",
+        "params": {
+          "left": "vol_z",
+          "op": ">",
+          "right": 2.0
+        }
+      }
+    ],
+    "exclude": [],
+    "cooldown": {
+      "min_bars_between_events": 4
+    },
+    "min_n": 150,
+    "report_denominator": true
+  },
+  "variables": [
+    {
+      "id": "vol_z",
+      "primitive": "volume_zscore@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_M15@v1",
+        "window": 96,
+        "min_periods": 20
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "OANDA_XAUUSD_M15@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "r_ratio_standin",
+      "primitive": "bar_range_ratio@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_M15@v1",
+        "numerator": "body",
+        "denominator": "range",
+        "window": 1
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "OANDA_XAUUSD_M15@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "class_concentrated",
+      "primitive": "indicator@v1",
+      "params": {
+        "predicate": {
+          "id": "ev_concentrated",
+          "predicate": "compare@v1",
+          "params": {
+            "left": "r_ratio_standin",
+            "op": "<",
+            "right": 0.5
+          }
+        }
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 0,
+        "source_id": "OANDA_XAUUSD_M15@v1"
+      },
+      "role": "exposure"
+    },
+    {
+      "id": "vol_hour",
+      "primitive": "hour_of_day_volatility_profile@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_M15@v1",
+        "estimator": "parkinson",
+        "lookback_days": 60,
+        "normalization": "divide_by_daily_mean",
+        "min_observations_per_hour": 20
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": -1,
+        "source_id": "OANDA_XAUUSD_M15@v1"
+      },
+      "role": "control"
+    },
+    {
+      "id": "aftermath_k8",
+      "primitive": "forward_return@v1",
+      "params": {
+        "source_id": "OANDA_XAUUSD_M15@v1",
+        "horizon_bars": 8,
+        "basis": "close_to_close",
+        "units": "atr_multiple"
+      },
+      "availability": {
+        "anchor": "event_time",
+        "offset_bars": 8,
+        "source_id": "OANDA_XAUUSD_M15@v1"
+      },
+      "role": "outcome"
+    }
+  ],
+  "tests": [
+    {
+      "order": 1,
+      "test_id": "T1_dip",
+      "method": "dip_test@v1",
+      "params": {
+        "variable_ref": "r_ratio_standin",
+        "B": 20000
+      },
+      "cells": [
+        {
+          "id": "cohort",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    },
+    {
+      "order": 2,
+      "test_id": "T2_gmm",
+      "method": "gaussian_mixture@v1",
+      "params": {
+        "variable_ref": "r_ratio_standin",
+        "k_components": [
+          1,
+          2
+        ],
+        "selection_criterion": "bic",
+        "n_init": 10,
+        "max_iter": 500,
+        "tol": 1e-06
+      },
+      "cells": [
+        {
+          "id": "cohort",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    },
+    {
+      "order": 3,
+      "test_id": "T3_changepoint",
+      "method": "changepoint@v1",
+      "params": {
+        "variable_ref": "r_ratio_standin",
+        "algorithm": "pelt",
+        "cost_model": "normal_mean_var",
+        "penalty": 10.0,
+        "min_segment": 20
+      },
+      "cells": [
+        {
+          "id": "cohort",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    },
+    {
+      "order": 4,
+      "test_id": "T4_threshold_measure",
+      "method": "descriptive_measurement@v1",
+      "params": {
+        "variable_ref": "r_ratio_standin",
+        "statistics": [
+          {
+            "id": "m_mean",
+            "statistic": "mean@v1",
+            "params": {
+              "variable_ref": "r_ratio_standin"
+            }
+          },
+          {
+            "id": "m_median",
+            "statistic": "median@v1",
+            "params": {
+              "variable_ref": "r_ratio_standin"
+            }
+          }
+        ],
+        "quantiles": [
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          0.9
+        ]
+      },
+      "cells": [
+        {
+          "id": "cohort",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    },
+    {
+      "order": 5,
+      "test_id": "T5_class_predicts_outcome",
+      "method": "regression_control@v1",
+      "params": {
+        "outcome_ref": "aftermath_k8",
+        "exposure_ref": "class_concentrated",
+        "controls": [
+          "vol_hour"
+        ],
+        "interaction": [
+          [
+            "class_concentrated",
+            "vol_hour"
+          ]
+        ],
+        "se_estimator": "hac_newey_west",
+        "se_params": {
+          "lags": 8
+        }
+      },
+      "cells": [
+        {
+          "id": "cohort",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    },
+    {
+      "order": 6,
+      "test_id": "T6_multiverse",
+      "method": "multiverse@v1",
+      "params": {
+        "base_test_ref": "T5_class_predicts_outcome",
+        "grid": {
+          "horizon_bars": [
+            4,
+            8,
+            16
+          ],
+          "big_candle_z": [
+            1.5,
+            2.0,
+            2.5
+          ],
+          "subperiods": [
+            {
+              "start": "2023-01-05T00:00:00Z",
+              "end": "2024-06-01T00:00:00Z",
+              "bounds": "[)"
+            },
+            {
+              "start": "2024-06-01T00:00:00Z",
+              "end": "2025-10-23T09:00:00Z",
+              "bounds": "[)"
+            }
+          ]
+        }
+      },
+      "cells": [
+        {
+          "id": "cohort",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    },
+    {
+      "order": 7,
+      "test_id": "T7_power",
+      "method": "power_simulation@v1",
+      "params": {
+        "effect_sizes": [
+          0.1,
+          0.15,
+          0.2
+        ],
+        "n_grid": [
+          50,
+          100,
+          150,
+          300
+        ],
+        "alpha": 0.00625,
+        "B": 5000,
+        "generator": {
+          "kind": "synthetic_bimodal_from_observed_variance",
+          "strata": [
+            "session_none"
+          ]
+        }
+      },
+      "cells": [
+        {
+          "id": "cohort",
+          "predicates": []
+        }
+      ],
+      "seed_policy": "derived_from_spec_hash"
+    }
+  ],
+  "multiple_testing": {
+    "family_id": "DC-0008-plus-7-dependents-NONNORMATIVE",
+    "members": [
+      {
+        "test_id": "T1_dip",
+        "cell": "cohort",
+        "output": "p_hat"
+      }
+    ],
+    "method": "bonferroni@v1",
+    "params": {
+      "alpha": 0.00625,
+      "family_members": [
+        {
+          "test_id": "T1_dip",
+          "cell": "cohort",
+          "output": "p_hat"
+        }
+      ],
+      "member_eligibility": {
+        "field": "n",
+        "op": ">=",
+        "value": 25
+      }
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1_bimodal",
+      "target": {
+        "test_id": "T1_dip",
+        "cell": "cohort",
+        "output": "p_hat"
+      },
+      "comparator": "<",
+      "threshold": 0.01
+    },
+    {
+      "id": "C2_class_predicts",
+      "target": {
+        "test_id": "T5_class_predicts_outcome",
+        "cell": "cohort",
+        "output": "p_values"
+      },
+      "comparator": "<",
+      "threshold": 0.00625
+    },
+    {
+      "id": "C3_power_floor",
+      "target": {
+        "test_id": "T1_dip",
+        "cell": "cohort",
+        "output": "n"
+      },
+      "comparator": ">=",
+      "threshold": 150
+    }
+  ],
+  "return": {
+    "raw_null_distributions": true,
+    "per_instance_rows": true,
+    "code_snapshot": true,
+    "logs": true,
+    "seeds": true
+  },
+  "on_missing_or_ambiguous": "halt_and_request_clarification"
+}
