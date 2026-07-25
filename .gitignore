@@ -1,3 +1,6 @@
 venv/
 __pycache__/
 *.pyc
+
+# Alpha instance browser profiles (Edge CDP automation profiles — large, machine-local, not research artifacts)
+alpha_instance_2/browser_profile/
