@@ -24,8 +24,9 @@ from ai_trader.execution_orchestrator.types import (
     OrchestratorConfig,
     OrchestratorDependencies,
 )
+from ai_trader.portfolio_manager_live.daily_reset import reset_if_new_day
 from ai_trader.portfolio_manager_live.engine import evaluate_portfolio_authorization
-from ai_trader.portfolio_manager_live.types import PortfolioAuthorizationRequest, PortfolioDecision
+from ai_trader.portfolio_manager_live.types import PortfolioAuthorizationRequest, PortfolioDailyState, PortfolioDecision
 from ai_trader.recognition_engine_live.engine import recognize
 from ai_trader.recognition_engine_live.types import RecognitionCandidate, RecognitionResult
 from ai_trader.risk_manager.types import EngineState
@@ -49,13 +50,14 @@ def _denied(
     recognition: RecognitionResult | None = None, confidence: ConfidenceAssessment | None = None,
     risk_decision: LiveRiskDecision | None = None, portfolio_decision: PortfolioDecision | None = None,
     circuit_state_after: TradingCircuitState | None = None,
+    daily_state_after: PortfolioDailyState | None = None,
 ) -> OrchestrationResult:
     return OrchestrationResult(
         correlation_id=correlation_id, strategy_id=candidate.strategy_id, symbol=candidate.symbol,
         as_of=candidate.as_of, mode=mode, approved=False, context=context, recognition=recognition,
         confidence=confidence, risk_decision=risk_decision, portfolio_decision=portfolio_decision,
         order_result=None, reason_codes=tuple(reason_codes), calculation_trace=tuple(trace),
-        circuit_state_after=circuit_state_after,
+        circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
     )
 
 
@@ -79,6 +81,16 @@ def orchestrate(
     correlation_id = correlation_id_for(candidate)
     trace: list[CalculationTraceStep] = []
 
+    # Demo Readiness precondition #11 fix (2026-07-25): `PortfolioDailyState`'s own docstring named a
+    # Phase-9 owner that was never built. Computed unconditionally (unlike circuit tracking, this isn't
+    # opt-in -- it's a bug fix to existing, always-active behavior) and threaded through every return
+    # path so the caller always knows what to persist forward, the same discipline as `circuit_state_after`.
+    daily_state_after = reset_if_new_day(deps.daily_state, candidate.as_of)
+    trace.append(CalculationTraceStep(
+        "DAILY_STATE_RESET_CHECKED", daily_state_after is deps.daily_state,
+        detail="same day" if daily_state_after is deps.daily_state else "new UTC day, state reset",
+    ))
+
     # Risk Audit #1 fix (2026-07-25): a caller that opts in by supplying BOTH `circuit_state` and
     # `pnl_source` gets the unified, persistent circuit breaker -- `emergency_stop` folds into it
     # (`emergency_stop_requested`) instead of being a separate, single-call-only override. A caller
@@ -98,7 +110,7 @@ def orchestrate(
             reason = circuit_state_after.reason_code or rc.TRADING_SUSPENDED
             result = _denied(
                 candidate, correlation_id, mode, trace, [rc.TRADING_SUSPENDED, reason],
-                circuit_state_after=circuit_state_after,
+                circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
             )
             _notify(
                 deps, "ORCHESTRATION_DENIED", f"circuit {circuit_state_after.state.value}: {reason}",
@@ -108,7 +120,10 @@ def orchestrate(
     else:
         trace.append(CalculationTraceStep("EMERGENCY_STOP_CHECKED", not emergency_stop))
         if emergency_stop:
-            result = _denied(candidate, correlation_id, mode, trace, [rc.EMERGENCY_STOP_ACTIVE])
+            result = _denied(
+                candidate, correlation_id, mode, trace, [rc.EMERGENCY_STOP_ACTIVE],
+                daily_state_after=daily_state_after,
+            )
             _notify(deps, "ORCHESTRATION_DENIED", "emergency stop active", correlation_id, candidate.as_of)
             return result
 
@@ -116,7 +131,7 @@ def orchestrate(
     if mode is ExecutionMode.LIVE:
         result = _denied(
             candidate, correlation_id, mode, trace, [rc.LIVE_TRADING_NOT_AUTHORIZED],
-            circuit_state_after=circuit_state_after,
+            circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
         _notify(deps, "ORCHESTRATION_DENIED", "LIVE trading is not authorized", correlation_id, candidate.as_of)
         return result
@@ -127,7 +142,7 @@ def orchestrate(
         if not demo_ok:
             return _denied(
                 candidate, correlation_id, mode, trace, [rc.NON_DEMO_ACCOUNT_REFUSED],
-                circuit_state_after=circuit_state_after,
+                circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
             )
 
     context_as_of = market_context_as_of(market_context)
@@ -138,7 +153,7 @@ def orchestrate(
     if not staleness_ok:
         return _denied(
             candidate, correlation_id, mode, trace, [rc.STALE_CANDIDATE],
-            circuit_state_after=circuit_state_after,
+            circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
 
     try:
@@ -148,7 +163,7 @@ def orchestrate(
         trace.append(CalculationTraceStep("CONTEXT_ENGINE_CALLED", False, detail=f"{type(exc).__name__}: {exc}"))
         return _denied(
             candidate, correlation_id, mode, trace, [rc.CONTEXT_BUILD_FAILED],
-            circuit_state_after=circuit_state_after,
+            circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
 
     recognition: RecognitionResult | None = None
@@ -177,14 +192,14 @@ def orchestrate(
         trace.append(CalculationTraceStep("CONFIDENCE_ENGINE_CALLED", False, detail=f"{type(exc).__name__}: {exc}"))
         return _denied(
             candidate, correlation_id, mode, trace, [rc.CONFIDENCE_ASSESSMENT_FAILED], context, recognition,
-            circuit_state_after=circuit_state_after,
+            circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
 
     trace.append(CalculationTraceStep("ELIGIBILITY_CHECKED", confidence.eligible_for_risk_evaluation))
     if not confidence.eligible_for_risk_evaluation:
         result = _denied(
             candidate, correlation_id, mode, trace, [rc.NOT_ELIGIBLE_FOR_RISK_EVALUATION, *confidence.reason_codes],
-            context, recognition, confidence, circuit_state_after=circuit_state_after,
+            context, recognition, confidence, circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
         _notify(deps, "ORCHESTRATION_DENIED", f"not eligible, grade={confidence.grade.value}", correlation_id, candidate.as_of)
         return result
@@ -203,13 +218,13 @@ def orchestrate(
         trace.append(CalculationTraceStep("RISK_MANAGER_CALLED", False, detail=f"{type(exc).__name__}: {exc}"))
         return _denied(
             candidate, correlation_id, mode, trace, [rc.RISK_EVALUATION_FAILED], context, recognition, confidence,
-            circuit_state_after=circuit_state_after,
+            circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
 
     if not risk_decision.approved:
         result = _denied(
             candidate, correlation_id, mode, trace, [rc.RISK_DENIED, *risk_decision.reason_codes],
-            context, recognition, confidence, risk_decision, circuit_state_after=circuit_state_after,
+            context, recognition, confidence, risk_decision, circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
         _notify(deps, "ORCHESTRATION_DENIED", "denied by Risk Manager", correlation_id, candidate.as_of)
         return result
@@ -225,21 +240,21 @@ def orchestrate(
     )
     try:
         portfolio_decision = evaluate_portfolio_authorization(
-            portfolio_request, deps.portfolio, deps.daily_state, deps.risk_config, resolved_config.portfolio_config,
+            portfolio_request, deps.portfolio, daily_state_after, deps.risk_config, resolved_config.portfolio_config,
         )
         trace.append(CalculationTraceStep("PORTFOLIO_MANAGER_CALLED", True, detail=str(portfolio_decision.approved)))
     except Exception as exc:  # noqa: BLE001 -- fail-closed.
         trace.append(CalculationTraceStep("PORTFOLIO_MANAGER_CALLED", False, detail=f"{type(exc).__name__}: {exc}"))
         return _denied(
             candidate, correlation_id, mode, trace, [rc.PORTFOLIO_EVALUATION_FAILED],
-            context, recognition, confidence, risk_decision, circuit_state_after=circuit_state_after,
+            context, recognition, confidence, risk_decision, circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
 
     if not portfolio_decision.approved:
         result = _denied(
             candidate, correlation_id, mode, trace, [rc.PORTFOLIO_DENIED, *portfolio_decision.reason_codes],
             context, recognition, confidence, risk_decision, portfolio_decision,
-            circuit_state_after=circuit_state_after,
+            circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
         _notify(deps, "ORCHESTRATION_DENIED", "denied by Portfolio Manager", correlation_id, candidate.as_of)
         return result
@@ -261,7 +276,7 @@ def orchestrate(
         return _denied(
             candidate, correlation_id, mode, trace, [rc.ORDER_MANAGER_FAILED],
             context, recognition, confidence, risk_decision, portfolio_decision,
-            circuit_state_after=circuit_state_after,
+            circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
         )
 
     _notify(deps, "ORCHESTRATION_APPROVED", f"order state={order_result.state.value}", correlation_id, candidate.as_of)
@@ -270,7 +285,7 @@ def orchestrate(
         as_of=candidate.as_of, mode=mode, approved=True, context=context, recognition=recognition,
         confidence=confidence, risk_decision=risk_decision, portfolio_decision=portfolio_decision,
         order_result=order_result, reason_codes=(), calculation_trace=tuple(trace),
-        circuit_state_after=circuit_state_after,
+        circuit_state_after=circuit_state_after, daily_state_after=daily_state_after,
     )
 
 

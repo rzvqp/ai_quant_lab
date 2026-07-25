@@ -25,6 +25,28 @@ def test_proposal_rejects_empty_correlation_id() -> None:
         make_proposal(correlation_id="")
 
 
+def test_proposal_rejects_long_with_stop_above_entry() -> None:
+    """Decision Logic Audit #2, defense in depth: `TradeProposal` re-validates independently of
+    `CandidateSignal` -- a future caller could construct one directly, bypassing the orchestrator."""
+    with pytest.raises(ValueError, match="stop"):
+        make_proposal(direction=Direction.LONG, entry=2000.0, stop=2010.0)
+
+
+def test_proposal_rejects_long_with_stop_equal_to_entry() -> None:
+    with pytest.raises(ValueError, match="stop"):
+        make_proposal(direction=Direction.LONG, entry=2000.0, stop=2000.0)
+
+
+def test_proposal_rejects_short_with_stop_below_entry() -> None:
+    with pytest.raises(ValueError, match="stop"):
+        make_proposal(direction=Direction.SHORT, entry=2000.0, stop=1990.0)
+
+
+def test_proposal_accepts_correctly_sided_stops() -> None:
+    make_proposal(direction=Direction.LONG, entry=2000.0, stop=1990.0)
+    make_proposal(direction=Direction.SHORT, entry=2000.0, stop=2010.0)
+
+
 def test_account_rejects_non_positive_leverage() -> None:
     with pytest.raises(ValueError, match="leverage"):
         make_account(leverage=0.0)

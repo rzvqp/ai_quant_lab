@@ -14,3 +14,11 @@ INSUFFICIENT_FREE_MARGIN = "INSUFFICIENT_FREE_MARGIN"
 #: manual-override code is new.
 CIRCUIT_EMERGENCY_STOP_REQUESTED = "CIRCUIT_EMERGENCY_STOP_REQUESTED"
 CIRCUIT_SUSPENDED = "CIRCUIT_SUSPENDED"
+
+#: Decision Logic Audit #2 fix (2026-07-25). `TradeProposal.__post_init__` already rejects this at
+#: construction (defense in depth, layer 1) -- this is the risk gate's OWN independent denial (layer 3,
+#: after `CandidateSignal.__post_init__`, layer 2) for a proposal that somehow reached this function
+#: with its stop on the wrong side of entry. Distinct from `RISK_NOT_CALCULABLE`: that code means "we
+#: cannot compute a size at all"; this one means "we could compute one, but the input is known-corrupt,
+#: and correcting it would mask an upstream failure rather than surface it."
+STOP_WRONG_SIDE_OF_ENTRY = "STOP_WRONG_SIDE_OF_ENTRY"

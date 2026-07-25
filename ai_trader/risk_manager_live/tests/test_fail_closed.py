@@ -4,7 +4,11 @@ never approve (fail-closed, CEO rule 11)."""
 from __future__ import annotations
 
 from ai_trader.risk_manager_live.engine import evaluate_trade_proposal
-from ai_trader.risk_manager_live.reason_codes import PROPOSAL_DATA_INCOMPLETE, RISK_NOT_CALCULABLE
+from ai_trader.risk_manager_live.reason_codes import (
+    PROPOSAL_DATA_INCOMPLETE,
+    RISK_NOT_CALCULABLE,
+    STOP_WRONG_SIDE_OF_ENTRY,
+)
 from ai_trader.risk_manager_live.tests._fixtures import (
     make_account,
     make_config,
@@ -26,12 +30,33 @@ def test_mismatched_symbol_is_data_incomplete() -> None:
 
 
 def test_zero_stop_distance_is_not_calculable() -> None:
-    proposal = make_proposal(entry=2000.0, stop=2000.0)
+    """Since the Decision Logic Audit #2 fix, `TradeProposal.__post_init__` itself now rejects
+    entry==stop for either direction (a zero-distance stop is never on the STRICTLY correct side) --
+    so this state can no longer arise through normal construction at all. `object.__setattr__` forces
+    it onto an otherwise-valid, already-constructed proposal purely to prove `evaluate_trade_proposal`'s
+    OWN `RISK_CALCULABLE` gate still independently denies it -- defense in depth, not a redundant test."""
+    proposal = make_proposal(entry=2000.0, stop=1990.0)
+    object.__setattr__(proposal, "stop", 2000.0)
     decision = evaluate_trade_proposal(
         proposal, make_account(), make_portfolio(), make_instrument(), make_risk_context(), make_config(),
     )
     assert decision.approved is False
     assert RISK_NOT_CALCULABLE in decision.reason_codes
+
+
+def test_stop_on_wrong_side_of_entry_is_denied_by_the_risk_gate_too() -> None:
+    """Decision Logic Audit #2, layer 3 (the risk gate's own independent check) -- construction
+    (`TradeProposal.__post_init__`) already rejects this; `object.__setattr__` forces the state onto an
+    otherwise-valid instance to prove `evaluate_trade_proposal` denies it too, not just relies on the
+    type's own constructor. Never corrected to the "right" side -- denied, with its own reason code."""
+    proposal = make_proposal(entry=2000.0, stop=1990.0)  # LONG, correctly sided at construction
+    object.__setattr__(proposal, "stop", 2010.0)  # now on the WRONG side for a LONG
+    decision = evaluate_trade_proposal(
+        proposal, make_account(), make_portfolio(), make_instrument(), make_risk_context(), make_config(),
+    )
+    assert decision.approved is False
+    assert STOP_WRONG_SIDE_OF_ENTRY in decision.reason_codes
+    assert decision.calculated_volume is None
 
 
 def test_zero_equity_is_not_calculable() -> None:
@@ -85,9 +110,12 @@ def test_missing_symbol_snapshot_fails_closed_via_data_quality_filter() -> None:
 
 
 def test_denied_decision_never_carries_a_calculated_volume() -> None:
+    # See test_zero_stop_distance_is_not_calculable: entry==stop can no longer be constructed
+    # normally since the Decision Logic Audit #2 fix, so it's forced post-construction.
+    proposal = make_proposal(entry=2000.0, stop=1990.0)
+    object.__setattr__(proposal, "stop", 2000.0)
     decision = evaluate_trade_proposal(
-        make_proposal(entry=2000.0, stop=2000.0), make_account(), make_portfolio(), make_instrument(),
-        make_risk_context(), make_config(),
+        proposal, make_account(), make_portfolio(), make_instrument(), make_risk_context(), make_config(),
     )
     assert decision.approved is False
     assert decision.calculated_volume is None

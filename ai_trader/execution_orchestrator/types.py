@@ -66,6 +66,21 @@ class CandidateSignal:
             raise ValueError("CandidateSignal.comment must be non-empty")
         if not isinstance(self.direction, Direction):
             raise TypeError(f"CandidateSignal.direction must be a Direction, got {self.direction!r}")
+        #: Decision Logic Audit #2 fix (2026-07-25): the only prior check anywhere in the pipeline was
+        #: `abs(entry - stop) > 0`, satisfied equally by a stop on the WRONG side of entry -- a LONG
+        #: with a stop above entry passed every gate and was sized as though risk-capped when it wasn't.
+        #: Rejected here, at construction, never auto-corrected: a signal with the stop on the wrong
+        #: side means something failed upstream, and silently flipping it would mask that failure.
+        if self.direction is Direction.LONG and self.stop >= self.entry:
+            raise ValueError(
+                f"CandidateSignal: LONG requires stop strictly below entry, got "
+                f"stop={self.stop!r} entry={self.entry!r}"
+            )
+        if self.direction is Direction.SHORT and self.stop <= self.entry:
+            raise ValueError(
+                f"CandidateSignal: SHORT requires stop strictly above entry, got "
+                f"stop={self.stop!r} entry={self.entry!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -138,6 +153,13 @@ class OrchestrationResult:
     #: caller didn't opt in -- existing callers see byte-identical behavior. The caller persists this
     #: for its next call, the same discipline already established for `PortfolioDailyState`.
     circuit_state_after: TradingCircuitState | None = None
+    #: Demo Readiness precondition #11 fix (2026-07-25): the `PortfolioDailyState` this run resolved to
+    #: (reset if `candidate.as_of` fell on a new UTC calendar day relative to the caller-supplied state,
+    #: unchanged otherwise) -- always computed, unlike `circuit_state_after`, since this is a bug fix to
+    #: existing always-active behavior, not an opt-in capability. The caller persists this for its next
+    #: call. `None` only for `OrchestrationResult` instances built by test/legacy code that predates
+    #: this field (never produced by `orchestrate()` itself).
+    daily_state_after: PortfolioDailyState | None = None
 
     def __post_init__(self) -> None:
         if not self.correlation_id:

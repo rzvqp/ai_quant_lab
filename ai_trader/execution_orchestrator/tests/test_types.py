@@ -17,6 +17,37 @@ def test_candidate_requires_concrete_direction_type() -> None:
         make_candidate(direction="LONG")
 
 
+def test_candidate_rejects_long_with_stop_above_entry() -> None:
+    """Decision Logic Audit #2: a LONG's stop must sit strictly below entry -- the only prior check
+    anywhere in the pipeline was `abs(entry - stop) > 0`, which a stop on the WRONG side of entry
+    satisfies just as well as a correct one. Must be rejected, never silently corrected."""
+    from ai_trader.signal_engine.types import Direction
+
+    with pytest.raises(ValueError):
+        make_candidate(direction=Direction.LONG, entry=2000.0, stop=2010.0)
+
+
+def test_candidate_rejects_long_with_stop_equal_to_entry() -> None:
+    from ai_trader.signal_engine.types import Direction
+
+    with pytest.raises(ValueError):
+        make_candidate(direction=Direction.LONG, entry=2000.0, stop=2000.0)
+
+
+def test_candidate_rejects_short_with_stop_below_entry() -> None:
+    from ai_trader.signal_engine.types import Direction
+
+    with pytest.raises(ValueError):
+        make_candidate(direction=Direction.SHORT, entry=2000.0, stop=1990.0)
+
+
+def test_candidate_accepts_correctly_sided_stops() -> None:
+    from ai_trader.signal_engine.types import Direction
+
+    make_candidate(direction=Direction.LONG, entry=2000.0, stop=1990.0)
+    make_candidate(direction=Direction.SHORT, entry=2000.0, stop=2010.0)
+
+
 def test_result_requires_nonempty_calculation_trace() -> None:
     with pytest.raises(ValueError):
         OrchestrationResult(

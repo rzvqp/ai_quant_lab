@@ -49,6 +49,20 @@ class TradeProposal:
             raise ValueError(
                 f"TradeProposal.confidence_quality must be a Quality or None, got {self.confidence_quality!r}"
             )
+        #: Decision Logic Audit #2 fix (2026-07-25), defense in depth alongside `CandidateSignal`'s own
+        #: identical check: a future caller could construct a `TradeProposal` directly, bypassing the
+        #: orchestrator entirely, so this type must not rely on an upstream check having already run.
+        #: Rejected, never auto-corrected -- see `CandidateSignal.__post_init__` for the full rationale.
+        if self.direction is Direction.LONG and self.stop >= self.entry:
+            raise ValueError(
+                f"TradeProposal: LONG requires stop strictly below entry, got "
+                f"stop={self.stop!r} entry={self.entry!r}"
+            )
+        if self.direction is Direction.SHORT and self.stop <= self.entry:
+            raise ValueError(
+                f"TradeProposal: SHORT requires stop strictly above entry, got "
+                f"stop={self.stop!r} entry={self.entry!r}"
+            )
 
 
 @dataclass(frozen=True, slots=True)

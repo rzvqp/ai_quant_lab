@@ -120,6 +120,24 @@ def evaluate_trade_proposal(
     if not calculable:
         return _deny([rc.RISK_NOT_CALCULABLE], trace)
 
+    # Decision Logic Audit #2 fix (2026-07-25): `TradeProposal.__post_init__` already rejects a
+    # wrong-sided stop at construction (layer 1), `CandidateSignal.__post_init__` does too (layer 2) --
+    # this is the risk gate's OWN independent check (layer 3), in case a proposal ever reaches this
+    # function some other way. `stop_distance = abs(entry - stop)` above is direction-agnostic and
+    # would not have caught this on its own. Denied, never corrected to the "right" side -- a stop on
+    # the wrong side means something failed upstream, and silently flipping it would mask that failure.
+    direction_ok = (
+        (proposal.direction is Direction.LONG and proposal.stop < proposal.entry)
+        or (proposal.direction is Direction.SHORT and proposal.stop > proposal.entry)
+    )
+    trace.append(CalculationTraceStep(
+        "STOP_DIRECTION_CHECKED", direction_ok,
+        detail=None if direction_ok else f"stop={proposal.stop!r} on the wrong side of entry={proposal.entry!r} "
+        f"for direction={proposal.direction.value}",
+    ))
+    if not direction_ok:
+        return _deny([rc.STOP_WRONG_SIDE_OF_ENTRY], trace)
+
     # 2. Loss/drawdown guards (existing, frozen, unmodified) -- run in full, never short-circuited here.
     # Risk Audit #1 fix: `result.escalate_to` is now captured, not discarded -- the caller (the future
     # persistent circuit breaker, `risk_manager_live.circuit_breaker`) needs it to remember a breach
