@@ -280,4 +280,37 @@
                Red Team does not contact the Statistician — hand-off is a recommendation for CEO routing.
                STATE: normal operational standby, awaiting CEO decision. Next entry [12], prev_hash E11.
   entry_hash:  E11
+
+[12] 2026-07-25
+  prev_hash:   E11
+  event:       VERDICT               # final reconciliation before Statistician hand-off
+  reviewer:    Red Team
+  detail:      CEO halted any prior hand-off; RT-FINAL-0001 declared not-yet-complete. Reconstructed the
+               inventory EXCLUSIVELY from official repos. Deliverable: RED_TEAM_FINAL_EVALUATION_v2.md
+               (RT-FINAL-0002), supersedes RT-FINAL-0001 (preserved unmodified).
+               INVENTORY DISCREPANCY (headline, flagged for CEO ratification): task stated 27 (Alpha #2 = 1);
+               repository actually holds **28** — Alpha #1 = 26 (DC-0001..DC-0026), Alpha #2 = 2. The delta
+               is AP2-DC-0002 (FROZEN/SUBMITTED 2026-07-25, hash ff55a8ba…, 1 addendum), frozen after the
+               task's inventory was composed; the Alpha #2 instance is now CLOSED by CEO instruction.
+               Reconciled to the repository per instruction not to miss candidates; did NOT unilaterally
+               expand scope — surfaced for CEO ratification.
+               NEW ANALYSIS: DC-0025 (REJECTED — volume-record headline superseded by its own Addenda A/B
+               39,353->41,995->42,808; mechanism precedented), DC-0026 (NEEDS MORE EVIDENCE — distinct
+               thin-liquidity tail-dislocation mechanism, verified M15/M5/M1, n=1; strongest of the new
+               batch), AP2-DC-0002 (RT-DS-0002 = VARIANT OF DC-0023; NEEDS MORE EVIDENCE — catalyst
+               untestable in a one-year window, n=1).
+               BACKFILLED individual review files per constitution: reviews/DC-0019..DC-0026 (8 files).
+               RECONCILED TALLY (28): SURVIVED 3 (DC-0003, DC-0004[flagged], DC-0008) · NEEDS MORE EVIDENCE
+               18 · REJECTED 7 (DC-0006, 0010, 0015, 0017, 0022, 0024, 0025). All 25 prior verdicts unchanged.
+               DC-0004 HOLDOUT WARNING (CEO-requested, explicit): the reserved post-2025-10-23 holdout —
+               DC-0004's named decisive test — has been CONSUMED at lab level by the reopened window
+               (DC-0019..0026 are post-cutoff). Any post-cutoff result CANNOT be independent confirmatory
+               validation; DC-0004 stays SURVIVED only as an in-sample hypothesis. Recorded in report §6.
+               INTEGRITY REGISTER W1–W8 (holdout, DC-0001 hash, record-bookkeeping, missing metadata on
+               DC-0025/0026, 42.7% single-anchor, Alpha #2 confidence calibration, feed provenance,
+               inventory discrepancy).
+               Nothing modified outside red_team/; no observation/statistics/promotion/consolidation;
+               nothing sent to the Statistician (SURVIVED list is a CEO-routing recommendation).
+               STATE: HAND-OFF HALTED, awaiting CEO approval. Next entry [13], prev_hash E12.
+  entry_hash:  E12
 ```
