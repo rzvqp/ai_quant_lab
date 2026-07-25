@@ -373,4 +373,47 @@
                Nothing written outside red_team/. No candidate reviewed.
                STATE: TERMINAL STANDBY. No candidate producer remains. Next entry [15], prev_hash E14.
   entry_hash:  E14
+
+[15] 2026-07-25
+  prev_hash:   E14
+  event:       CORRECTION            # corrects a factual error in [14]/W9. Append-only: [14] NOT edited.
+  authority:   Correction issued by the CHIEF ARCHITECT under CEO delegation; recorded by Red Team.
+  reviewer:    Red Team
+  detail:      Entry [14] (and W9 as first written) contained a factual error. The ledger is append-only,
+               so [14] is left intact and corrected here.
+               FALSE STATEMENT IN [14] (quoted exactly): "The 2026-07-13 battery reported FPR=0.975 under
+               drift_long and 0.925 under trend_short; F6/F6.1 did not test drift." — the FIRST HALF is false.
+               CORRECT STATEMENT (source: docs/MATCHED_NULL_VALIDATION.md §2 on flow-c-foundation, verified
+               by Red Team via `git show flow-c-foundation:docs/MATCHED_NULL_VALIDATION.md`, lines 15-19/37):
+                 The figures 0.975 / 0.925 / 0.25 are the PRE-FIX state of the first engine version —
+                 "First engine version bootstrapped absolute risk. The adversarial battery EXPOSED
+                 catastrophic false positives under trend: drift_long FPR=0.975, trend_short=0.925,
+                 regime_shift=0.25." They are NOT the battery's result; they are a defect the battery FOUND
+                 during validation and which was immediately FIXED (bootstrap risk/ATR ratio, rescaled to
+                 the ATR at the null entry). POST-FIX: drift_long 0.00, trend_short 0.00, regime_shift 0.00,
+                 across 12 adversarial scenarios, all FPR(0.05) < 0.075, ALL_SCENARIOS_CALIBRATED = True.
+                 The fix IS the drift-beta control built for long-biased strategies.
+               INDEPENDENT VERIFICATION (already published): Research Lab commit **e89ded1**
+                 (docs/TRANSFERABILITY_ADDENDUM_v1.1.md) — confirmed by Red Team to EXIST via `git cat-file`
+                 — records that diff 28c35b6..aa5bee3 is exactly the risk/ATR fix and that in the committed
+                 state ALL_SCENARIOS_CALIBRATED=true with drift_long FPR05=0.0 and trend_short FPR05=0.0.
+               PROVENANCE OF THE ERROR: introduced by the Chief Architect (a grep fragment quoted without
+               reading the next five lines) and propagated into [14] by Red Team in good faith. Red Team has
+               now verified the corrected text against the source directly — the discipline that failed on
+               [14], the same branch/document-state method used for W9's original branch-containment check.
+               WHAT REMAINS TRUE (unchanged from [14]/W9): D3 holds two contradictory states in one
+               repository; the three commits (28c35b6/aa5bee3/69747fd) were never merged to
+               statistician-foundation (Red-Team-verified, factual); divisions worked on the wrong state;
+               the Validation Engine rebuilt in F6 a matched-null calibration that already existed; F6/F6.1
+               did not test drift.
+               SEVERITY OF W9 DOES NOT DECREASE — if anything it is greater: the pre-existing version was
+               MORE complete than the F6 reconstruction (it carried the adversarial battery and the drift-beta
+               control that F6/F6.1 lack), so VE rebuilt something weaker than what already existed. Red Team
+               does NOT judge which validation is superior (outside mandate; ran neither); this is an
+               integrity finding about contradictory states, not a statistical verdict.
+               W9 in verdicts_ledger.md annotated with a correction marker pointing here. No merge; no
+               implementation read (documentation + commit/branch state only). Nothing written outside
+               red_team/. No candidate reviewed.
+               STATE: TERMINAL STANDBY. Next entry [16], prev_hash E15.
+  entry_hash:  E15
 ```
