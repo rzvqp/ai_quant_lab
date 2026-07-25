@@ -1,9 +1,10 @@
 # FLOW C — P1 COVERAGE AUDIT (față de checklist A.5)
 ### Auditul de acoperire descriptivă după secvența RI-REPORT-0001 → 0005
-**Status:** ✅ ACCEPTAT DE CEO (2026-07-21) — P1 OFICIAL ÎNCHIS
+**Status:** P1 ÎNCHIS (2026-07-21) — Coverage Confidence RETROGRADAT (2026-07-25)
 **Guvernat de (înghețat):** P1_COMPLETION_CRITERIA v1.0 (checklist A.5) · P1_COVERAGE_PLAN (secvență)
-**DECIZIE CEO:** Coverage Confidence **Medium → High**, valid DOAR pentru snapshot-ul de dovadă curent.
-Per §2.1 Lifecycle, High se revocă automat la: batch Alpha nou · familie nouă · dimensiune descriptivă nouă · regenerare de corpus — până la un nou review.
+**DECIZIE CEO (2026-07-21):** Coverage Confidence Medium → High pentru snapshot-ul de atunci.
+**DOWNGRADE (2026-07-25, CEO-accepted):** Coverage Confidence **High → ÎN RE-REVIEW.** Cauză: RI-REPORT-0006 a adăugat o dimensiune descriptivă NOUĂ (axa win-rate × dependență-de-o-tranzacție) care lipsea din matricea A.5 → trigger §2.1 Lifecycle (dimensiune descriptivă nouă). Motiv CEO: o hartă „High" căreia îi lipsește exact axa obiectivului strategic (winrate ridicat + RR mic) e o falsă siguranță; downgrade-ul e răspunsul onest. Re-review necesar înainte de a re-declara High.
+Per §2.1 Lifecycle, High se revocă automat și la: batch Alpha nou · familie nouă · regenerare de corpus.
 
 ---
 
