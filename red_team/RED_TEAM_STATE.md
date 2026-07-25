@@ -4,6 +4,8 @@
 
 > **2026-07-25 (Chief Architect under CEO delegation, LEDGER [13]/E13):** Inventory = **28 RATIFIED** (AP2-DC-0002 formally included; W8 closed). Both audits ACCEPTED. **Both Alpha divisions are CLOSED — no producer of candidates remains; Red Team is in terminal standby.** The 7 REJECTED are **ARCHIVED, not deleted; IDs permanently reserved**. RT-DS-0001/0002 determinations recorded in the consolidated register only (`verdicts_ledger.md`) — never written into Alpha's tree (Alpha #1 closed, no mandate). Audit recommendations retained for any *future* Alpha instance. Final verdicts: `verdicts_ledger.md` Consolidated Register + `RED_TEAM_FINAL_EVALUATION_v2.md`.
 
+> **BRANCH ARCHITECTURE (Chief Architect, 2026-07-25, LEDGER [14]/E14):** The lab has **one official line — `statistician-foundation`**. The per-division-branch model was abandoned: five divisions write into one shared working tree, and a branch-per-division cannot work without a checkout-per-division. `red-team-foundation` was **retracted** (deleted) — after being advanced it was a duplicate of the whole line, not a Red Team-only history. **All Red Team work lives on `statistician-foundation`, intact and published.** (Exception: `flow-c-foundation` stays separate — it has genuinely diverged, see W9.)
+
 > A fresh Claude should be able to resume Red Team exactly from here by reading this file, then the documents it points to. Nothing else is required. **Do not re-derive; read the ledger and the reports.**
 
 ---
@@ -25,14 +27,14 @@ Red Team does **NOT**: promote, demote, finally accept/reject, discover, hypothe
 
 | Thing | Path |
 |---|---|
-| Red Team repo | `ai_quant_lab/red_team/` (git branch **`red-team-foundation`**, off `master`, in repo `ai_quant_lab`) |
+| Red Team repo | `ai_quant_lab/red_team/` — committed on the lab's single official line **`statistician-foundation`** (the only branch on remote alongside `flow-c-foundation`). `red-team-foundation` was **retracted** 2026-07-25 (see branch-architecture note above); do not recreate it. |
 | **Alpha #1** official artifacts | worktree `ai_quant_lab-alpha-automation/` (branch `alpha-automation-v1`) — index `DISCOVERY_CANDIDATE_INDEX.md`, `HANDOFF_LOG.md`, `research_log/` |
 | **Alpha #2** official artifacts | `ai_quant_lab/alpha_instance_2/` — files carry the **`_ALPHA2`** suffix; local IDs are **`AP2-DC-XXXX`** (not official lab IDs) |
 | Stale/ignore | `ai_quant_lab-alpha-discovery/` (old Alpha #1 worktree, DC-0001 only) — **do NOT use** |
 
 **Isolation rules (hard):** Red Team has **read-only** access to Alpha artifacts and writes **only** under `red_team/`. Never modify any Alpha #1 / Alpha #2 / KB / Statistician artifact. When a determination would require writing into another division's tree (e.g. attaching replication evidence), **record it and refer execution to the CEO**. Both Alpha instances are **actively working** — their working trees move; always re-read live state and bind reviews to a freeze-hash.
 
-**Git habit:** commit only `red_team/` (never stage `flow_c/`, `results/`, `statistician/`, `alpha_instance_2/`, or Alpha's own uncommitted changes). Branch stays `red-team-foundation`; unpushed/unmerged unless the CEO says otherwise.
+**Git habit:** commit only `red_team/` (never stage `flow_c/`, `results/`, `statistician/`, `alpha_instance_2/`, or another division's changes). Commit onto whatever branch is checked out — the lab uses **one shared line, `statistician-foundation`**; do NOT create a Red Team branch (the per-division-branch model was abandoned, see the branch-architecture note above).
 
 ---
 

@@ -339,4 +339,38 @@
                STATE: ratifications logged; Red Team in terminal standby (no active candidate producer).
                Next entry [14], prev_hash E13.
   entry_hash:  E13
+
+[14] 2026-07-25
+  prev_hash:   E13
+  event:       ESCALATION            # W9 integrity risk + branch-architecture closure
+  authority:   Findings surfaced by the CHIEF ARCHITECT under CEO delegation; recorded by Red Team.
+  reviewer:    Red Team
+  detail:      BRANCH ARCHITECTURE CLOSED. Per Chief Architect decision, the lab has ONE official line,
+               statistician-foundation (only it + flow-c-foundation are on remote). The per-division-branch
+               model is abandoned (five divisions share one working tree; no checkout-per-division).
+               red-team-foundation was RETRACTED (deleted) — after being advanced it duplicated the whole
+               line, not a Red Team-only history. Verified be99c1f (old RT tip) is an ancestor of
+               statistician-foundation before deleting → no commit orphaned; all Red Team work lives on
+               statistician-foundation, intact and published. NOT pushed. RED_TEAM_STATE.md §1 + header +
+               git-habit corrected (previously still claimed red-team-foundation — false for several turns,
+               the source of the confusion diagnosed in [13]). Exception: flow-c-foundation stays separate
+               (genuinely diverged — see W9).
+               W9 ADDED to the integrity register (verdicts_ledger.md; W1–W8 in RT-FINAL-0002 §7). Framed as
+               an INTEGRITY RISK, not a statistical verdict:
+                 - Defect D3 (PROJECT_AUDIT.md, matched-null miscalibrated, HIGH) is marked RESOLVED
+                   2026-07-13 on flow-c-foundation via commits 28c35b6 / aa5bee3 / 69747fd, but is still
+                   OPEN on statistician-foundation because those commits were never merged.
+                 - RED TEAM VERIFICATION (branch state only; implementation NOT read): all three commits
+                   are contained in flow-c-foundation and in NONE of statistician-foundation → "never
+                   merged" confirmed.
+                 - Consequence (Chief Architect): Validation Engine rebuilt a matched-null calibration in F6
+                   that already existed, without the 2026-07-13 adversarial battery; Statistician + Research
+                   Lab worked assuming the method was unvalidated. The 2026-07-13 battery reported FPR=0.975
+                   under drift_long and 0.925 under trend_short; F6/F6.1 did not test drift.
+                 - FINDING: the same defect holds two contradictory states in one repository and divisions
+                   worked on the wrong state. Red Team does NOT judge which validation is superior (outside
+                   mandate; ran neither). No merge; no implementation read. Resolution handled separately.
+               Nothing written outside red_team/. No candidate reviewed.
+               STATE: TERMINAL STANDBY. No candidate producer remains. Next entry [15], prev_hash E14.
+  entry_hash:  E14
 ```

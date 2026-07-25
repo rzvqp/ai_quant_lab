@@ -56,3 +56,11 @@ DC-0001, 0002, 0005, 0007, 0009, 0011, 0012, 0013, 0014, 0016, 0018, 0019, 0020,
 - **Audits accepted:** RT-AUDIT-0001 (Alpha #2), RT-AUDIT-0002 (Alpha #1). Both Alpha divisions CLOSED → recommendations retained for any **future** Alpha instance; no active recipient.
 
 *No candidate producer remains. Red Team is in terminal standby.*
+
+### Integrity register — extension (W1–W8 in RT-FINAL-0002 §7)
+
+**W9 — Same defect, two contradictory states in one repository; divisions worked on the wrong one.** *(Integrity risk, not a statistical verdict. Recorded 2026-07-25; LEDGER [14]/E14.)*
+- Defect **D3** (`PROJECT_AUDIT.md`) — *matched-null miscalibrated*, severity **HIGH** — is marked **RESOLVED 2026-07-13 on `flow-c-foundation`** via commits **28c35b6, aa5bee3, 69747fd**. On **`statistician-foundation`** (the official line) D3 is **still OPEN**, because those commits were **never merged**.
+- **Red Team verification (branch state only — implementation NOT read):** all three commits exist and are contained in `flow-c-foundation`; **none** is contained in `statistician-foundation`. Confirms "never merged."
+- **Consequence (as surfaced by the Chief Architect):** the Validation Engine rebuilt from scratch, in F6, a matched-null calibration that already existed — without the adversarial battery of the 2026-07-13 version. Statistician and Research Lab proceeded assuming the method was unvalidated. The 2026-07-13 battery reported FPR = 0.975 under `drift_long` and 0.925 under `trend_short`; F6/F6.1 did not test drift at all.
+- **Red Team finding:** *the same defect holds two contradictory states in the same repository, and divisions have worked on the wrong state.* Red Team does **not** evaluate which validation is superior — outside its mandate; it ran neither. **No merge performed; no implementation read.** Resolution is a separate matter (the `flow-c-foundation` divergence, W-note in the branch-architecture record).
