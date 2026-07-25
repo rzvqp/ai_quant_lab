@@ -1,0 +1,71 @@
+{
+  "phase": "F6.2",
+  "method": "matched_null@v1",
+  "purpose": "robustness to real drift (dominant regime in XAUUSD, +131% over research window)",
+  "status": "reframed by CEO from GATE to COVERAGE (prior FPR=0.975 was a DIFFERENT engine's fixed bug, not this method)",
+  "drift_measured_from": "data/market/OANDA_XAUUSD_M15.csv (open window)",
+  "drift_h1_usd_per_bar": 0.13889,
+  "combined_with": "session_vol NY 2.5x + heavy tails Student-t(4)",
+  "cells": [
+    "up/ny",
+    "up/asia"
+  ],
+  "initial_battery_n170": {
+    "up/ny up-drift": {
+      "fpr": 0.088,
+      "ci95": [
+        0.054,
+        0.14
+      ]
+    },
+    "up/ny regime-shift": {
+      "fpr": 0.094,
+      "ci95": [
+        0.059,
+        0.147
+      ]
+    },
+    "up/ny down-drift": {
+      "fpr": 0.035,
+      "ci95": [
+        0.016,
+        0.075
+      ]
+    },
+    "up/asia all regimes": "0.024-0.041 (OK)",
+    "note": "initial signal in up/ny under up-drift/regime-shift; CI excluded 0.05 marginally"
+  },
+  "confirmation_high_n": {
+    "up/ny no-drift (control, n=400)": {
+      "fpr": 0.062,
+      "ci95": [
+        0.043,
+        0.091
+      ]
+    },
+    "up/ny down-drift (control, n=400)": {
+      "fpr": 0.062,
+      "ci95": [
+        0.043,
+        0.091
+      ]
+    },
+    "up/ny up-drift (n=600)": {
+      "fpr": 0.067,
+      "ci95": [
+        0.049,
+        0.09
+      ]
+    },
+    "up/ny regime-shift (n=600)": {
+      "fpr": 0.05,
+      "ci95": [
+        0.035,
+        0.07
+      ]
+    }
+  },
+  "verdict": "NO CLEAR DRIFT FAILURE",
+  "interpretation": "Initial n=170 signal did not replicate at n=400-600; all CIs include 0.05. A mild ~0.06 FPR lean exists in the small-n up/ny cell (n~37 events) even WITHOUT drift, so it is a small-sample cell property, not drift-specific. Consistent with design: per-session baseline (excess) removes drift-beta structurally — the analog of flow-c's risk/ATR-ratio fix.",
+  "caveat": "up/ny is a small-n cell (~37 events); calibration is slightly liberal (~0.06 vs 0.05) regardless of regime. Worth monitoring; within CI of 0.05."
+}

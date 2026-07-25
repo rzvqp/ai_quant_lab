@@ -38,24 +38,33 @@ def _session_of(hour: int) -> str:
     return "late"
 
 
+# Drift real XAUUSD, măsurat din data/market/OANDA_XAUUSD_M15.csv (fereastra deschisă):
+# 0.03472 $/bară M15 × 4 = 0.13889 $/bară H1 (aurul +131% pe fereastra de cercetare).
+DRIFT_H1 = 0.13889
+
+
 def generate_price(rng: np.random.Generator, n_bars: int,
-                   session_vol: dict | None = None, tail_df: float | None = None) -> pd.DataFrame:
+                   session_vol: dict | None = None, tail_df: float | None = None,
+                   drift: float = 0.0, regime_shift: bool = False) -> pd.DataFrame:
     """Serie H1 OHLC, random-walk additiv la scala XAUUSD, timestamp-uri orare UTC.
 
-    F6.1: σ poate DIFERI pe sesiune (`session_vol` = {sesiune: multiplicator}) și
-    randamentele pot avea COZI GRELE (`tail_df` = grade de libertate Student-t; None=normal).
-    Ambele cu MEDIE ZERO — niciun efect real de nivel; doar structura de volatilitate.
+    F6.1: σ pe sesiune (`session_vol`) + cozi grele (`tail_df`).
+    F6.2: `drift` = tendință per bară H1 (medie NENULĂ a randamentelor — dar FĂRĂ efect de
+    nivel condiționat de eveniment; doar trend global). `regime_shift=True` → driftul își
+    schimbă semnul la mijlocul seriei (+drift în prima jumătate, −drift în a doua).
     """
     hours = np.arange(n_bars) % 24
     sess = np.array([_session_of(int(h)) for h in hours])
     sv = session_vol or {}
     sigma = np.array([SIGMA_1BAR * sv.get(s, 1.0) for s in sess])
     if tail_df is not None:
-        # Student-t standardizat la varianță unitară, apoi scalat la sigma-ul sesiunii
         raw = rng.standard_t(tail_df, n_bars) * math.sqrt((tail_df - 2.0) / tail_df)
     else:
         raw = rng.normal(0.0, 1.0, n_bars)
-    rets = raw * sigma  # medie 0 în orice sesiune — fără efect de nivel
+    drift_arr = np.full(n_bars, drift, dtype=float)
+    if regime_shift:
+        drift_arr[n_bars // 2:] = -drift        # schimbare de regim la mijloc
+    rets = raw * sigma + drift_arr               # tendință globală, nu efect condiționat de eveniment
     close = BASE_PRICE + np.cumsum(rets)
     open_ = np.concatenate([[BASE_PRICE], close[:-1]])
     wick_scale = np.array([WICK * sv.get(s, 1.0) for s in sess])  # wick-uri proporționale cu vol
@@ -150,11 +159,13 @@ def pipeline_cells(df: pd.DataFrame):
 
 
 def one_p(seed: int, n_bars: int, delta: float, B: int, target=("up", "asia"),
-          session_vol: dict | None = None, tail_df: float | None = None):
-    """Generează o serie (opțional cu vol pe sesiune / cozi grele), injectează edge,
-    rulează matched_null pe celula țintă → p (sau None dacă celula nu are n≥25)."""
+          session_vol: dict | None = None, tail_df: float | None = None,
+          drift: float = 0.0, regime_shift: bool = False):
+    """Generează o serie (opțional cu vol pe sesiune / cozi grele / drift), injectează
+    edge, rulează matched_null pe celula țintă → p (sau None dacă celula nu are n≥25)."""
     rng = np.random.default_rng(seed)
-    df = generate_price(rng, n_bars, session_vol=session_vol, tail_df=tail_df)
+    df = generate_price(rng, n_bars, session_vol=session_vol, tail_df=tail_df,
+                        drift=drift, regime_shift=regime_shift)
     if delta > 0:
         df = inject_reversion(df, delta, rng)
     cells = pipeline_cells(df)
