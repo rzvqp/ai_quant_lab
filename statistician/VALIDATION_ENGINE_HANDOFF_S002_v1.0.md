@@ -47,7 +47,7 @@ Trei straturi, secvențiale:
 ### 5. Datele necesare
 - Serie completă M1 (ideal și M5) OHLCV + volum tick, XAUUSD/OANDA, întreaga fereastră pre-holdout (până la 2025-10-23T09:15:00Z).
 - Variabila de regim de volatilitate (ATR local / Parkinson log-range, profil orar) — reutilizabilă din primitivul Volatility deja promovat în lab.
-- Traiectorie de preț post-închidere M15, minimum N bare M15 ulterioare. **N trebuie pre-înregistrat explicit înainte de execuție** — recomandare N=8 (aproximativ media orizonturilor informale din familia DC-0013…0018, 4-11 candele); decizie finală la Validation Engine/CEO dacă diferă.
+- Traiectorie de preț post-închidere M15, **N=8 bare M15 ulterioare — CONFIRMAT ȘI BLOCAT de CEO, 2026-07-25.** **PRE-ÎNREGISTRAT, nemodificabil după execuție.** Motivul blocării explicite acum, nu la execuție: un orizont lăsat deschis până la vizualizarea datelor e exact mecanismul de selecție post-hoc listat ca vulnerabilitate recurentă în `STATISTICIAN_PHASE1_SUMMARY.md`. Validation Engine nu are voie să aleagă sau să ajusteze N.
 - Metadate de sesiune/calendar pentru stratificarea de robustețe.
 
 ### 6. Criteriile de acceptare și respingere

@@ -100,6 +100,29 @@ Cu (c) rezolvat, decizia nu mai e condiționată:
 
 ---
 
+## Mărimea efectului vs. costul de execuție — de ce DC-0004 NU moare de cost
+
+Cerință CEO 2026-07-25: calculul mărimii efectului K6 în puncte, raportat la `cost_round_trip = 0.4 puncte` (din `STATISTICIAN_NET_OF_COST_OUTCOME_DEFINITION_v1.0.md`).
+
+**Sursă:** la data acestui calcul, F5 (execuția metodelor/statisticilor) **nu a fost autorizat**, deci nu există o valoare a efectului materializată/certificată de Validation Engine (`F4_REPORT.md` §8: `methods_executed=0`, zero p-values). Singura valoare disponibilă e cea deja raportată direct în `candidate_v1.md` al DC-0004.
+
+| Sursă | Metodă | Efect (puncte) | cost/efect |
+|---|---|---|---|
+| **Raportat direct** (`candidate_v1.md`, K6) | Statistica reală a testului de permutare, n=42 | **3.64** | **11.0%** |
+| **Reconstrucție CEO** | z(p=0,021 one-sided)≈2,03 × σ/√n, σ≈13,2 | **~4.13** | **9.7%** |
+
+**Prefer valoarea raportată direct (3,64, cost/efect ≈ 11%)** — e statistica reală a testului de permutare deja executat, nu o reconstrucție care impune o aproximare normală peste un test conceput tocmai să evite acea presupunere. Reconstrucția CEO (~4,13, cost/efect ≈ 9,7%) diferă cu ~13% relativ, dar **concluzia calitativă e identică sub ambele**: costul reprezintă doar ~10-11% din mărimea efectului.
+
+**Concluzie explicită, pentru a nu fi atribuită greșit într-o sesiune viitoare:**
+
+> **DC-0004 nu moare de cost.** Efectul (3,64 puncte) depășește costul de execuție (0,4 puncte) de aproximativ 9 ori. Motivul pentru care DC-0004 e plafonat la TESTABLE BUT INSUFFICIENT EVIDENCE este **exclusiv** (a) eșecul la pragul Bonferroni (selecție post-hoc din ~6-12 celule) și (b) consumarea holdout-ului rezervat prin observație — **nu** insuficiența mărimii efectului față de frecarea de execuție.
+
+Aceasta confirmă independent nota deja înregistrată în `CANDIDATE_STATUS_REGISTER_v1.1.md` §A: *"DC-0004 pică Bonferroni înainte de contaminare. Holdout-ul ars a costat testul decisiv, nu rezultatul de fond."*
+
+**Notă:** niciuna din cele două cifre de mai sus nu e certificată de Validation Engine (F5 neautorizat încă). Când F5 va materializa efectiv statistica, acest calcul trebuie refăcut cu valoarea oficială, nu cu aproximările de mai sus.
+
+---
+
 ## STATUS: ÎNCHIS — DC-0004 = TESTABLE BUT INSUFFICIENT EVIDENCE
 
 Verdictul de mai sus (Ramura 2, plafon TESTABLE BUT INSUFFICIENT EVIDENCE) e o interpretare pe baza analizei de putere deja făcute — nu necesită execuție de date pentru a fi emis, și îl închid formal aici, azi, 2026-07-25.
