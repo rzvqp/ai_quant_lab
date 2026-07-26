@@ -121,7 +121,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
   day of week
 - **Measured outcome**: Directional move size and gold/silver correlation shift in a fixed post-fix
   window
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: XAGUSD (silver) OHLCV + verified daily Silver-Fix timestamp. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E004 — US Market Open First FVG
@@ -181,7 +181,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Pre-release drift direction/size, which news category, minutes before release
 - **Measured outcome**: Directional bias and magnitude of price drift in a fixed pre-release window,
   compared against a no-news control window
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: verified economic-calendar release timestamps + M1/tick resolution. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E008 — Friday Profit Taking Shift
@@ -414,7 +414,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Instruments required**: XAUUSD
 - **Observable variables**: Delta/price divergence magnitude, duration of divergence, session
 - **Measured outcome**: Reversal rate and magnitude following a divergence signal
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: bid/ask-side order-flow (volume delta) series — absent on OHLCV feeds. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E021 — Iceberg Order Absorption
@@ -428,7 +428,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Price stall duration at a level relative to volume traded, reaction after
   stall resolves
 - **Measured outcome**: Reversal rate/magnitude following a detected absorption episode
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: tick / order-book (time-and-sales) data. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E022 — VWAP Touch And Go
@@ -468,7 +468,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Rolling correlation level/shift, which instrument leads, regime (risk-on vs.
   risk-off)
 - **Measured outcome**: Gold directional move size following a detected correlation-regime shift
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: SPX (or a liquid SPX-tracking instrument) OHLCV. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ---
@@ -581,7 +581,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Instruments required**: XAUUSD
 - **Observable variables**: Tick-frequency acceleration magnitude, subsequent price-move size/direction
 - **Measured outcome**: Directional move size/duration following a detected tick-speed acceleration
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: tick / quote-frequency series. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E031 — 3 Standard Deviations VWAP
@@ -629,7 +629,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Lead/lag time, DXY move size, correlation stability by regime
 - **Measured outcome**: Gold move size/direction conditioned on a preceding DXY move, and the
   measured lag
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: DXY OHLCV. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E034 — US10Y Lead
@@ -642,7 +642,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Lead/lag time, yield move size, correlation stability by regime
 - **Measured outcome**: Gold move size/direction conditioned on a preceding US10Y move, and the
   measured lag
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: US10Y yield series. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E035 — Silver Leading Indicator
@@ -655,7 +655,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Observable variables**: Lead/lag time, gold/silver ratio level, correlation stability by regime
 - **Measured outcome**: Gold move size/direction conditioned on a preceding silver move, and the
   measured lag
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: XAGUSD OHLCV. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E036 — USDJPY Inversion
@@ -668,7 +668,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
 - **Instruments required**: XAUUSD, USDJPY
 - **Observable variables**: Risk-on/risk-off regime classification, lead/lag time, correlation stability
 - **Measured outcome**: Gold move size/direction conditioned on a preceding USDJPY move, by regime
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: USDJPY OHLCV. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ---
@@ -687,7 +687,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
   surprise vs. expectation (if calendar data includes consensus figures)
 - **Measured outcome**: Reversal rate and magnitude of the first-wave NFP reaction within a fixed
   post-release window
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: verified economic calendar (NFP release ts) + tick/M1. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E038 — CPI Initial Reaction Reversal
@@ -702,7 +702,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
   surprise vs. expectation
 - **Measured outcome**: Reversal rate and magnitude of the initial CPI reaction within a fixed
   post-release window
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: verified economic calendar (CPI release ts) + tick/M1. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E039 — FOMC Slingshot
@@ -717,7 +717,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
   press conference, whether the effect is statement-driven or press-conference-driven
 - **Measured outcome**: Reversal rate and magnitude of the "slingshot" move within a fixed
   post-statement/post-press-conference window
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: verified economic calendar (FOMC statement/press ts) + tick/M1. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ### E040 — Flash PMI Sentiment Flip
@@ -732,7 +732,7 @@ workaround was substituted, per instruction. E015's own structural result is unc
   headline vs. sub-index divergence (if calendar data includes sub-indices)
 - **Measured outcome**: Reversal rate and magnitude of the initial Flash PMI reaction within a fixed
   post-release window
-- **Status**: UNSTUDIED
+- **Status**: BLOCKED-MISSING-INSTRUMENT (2026-07-26) — was UNSTUDIED; not testable on incoming M15/M5 XAUUSD. Missing instrument/data: verified economic calendar (Flash PMI release ts) + tick/M1. Future-acquisition item, not work now. V0 unchanged.
 - **Version**: V0
 
 ---
