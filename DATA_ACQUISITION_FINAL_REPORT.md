@@ -102,6 +102,30 @@ sha256 fișier-de-date vs intrare. file_path rezolvat din manifest (M15→legacy
 `mypy --strict` curat; teste **11/11**: M15 citește (ambele hash-uri), M15_v2 respins pe status deși hash
 corespunde, M5/H1 respinse, **fișier modificat cu un byte respins pe nepotrivire de hash**.
 
+## 5d. Mandat 2.6 — segmentare + carantină la runtime (loader v5)
+
+Manifest **v2.2.0** (`4e1f550`, Statisticianul; hash-urile mele ratificate independent): M15_v2 și M5
+promovate la VALIDATED cu hărți de regim; H1 rămâne AWAITING_REGIME_MAP. Loader-ul (`edge_research/`,
+`split_manifest.segmentation_plan` + `_common.load`) livrează acum, la runtime, **exact reuniunea
+segmentelor de descoperire**, cu benzile de carantină (embargo lider/intra/final, 1000 bare/parte la
+M15_v2, 3000 la M5) și jumătățile sigilate excluse. Coordonatele vin verbatim din manifest, nu recalculate.
+
+**Contabilitate (îmbucă tot fișierul, sumă = total):**
+
+| TF | Total | Livrat (discovery) | Carantină | Sigilat |
+|----|------:|-------------------:|----------:|--------:|
+| M15_v2 | 355.696 | **130.491** | 7.215 | 217.990 |
+| M5 | 354.669 | **162.899** | 22.458 | 169.312 |
+| M15 (legacy) | 84.152 | 66.545 | 1.375 | 16.232 |
+
+- Chei distincte fără alias (`M15`→legacy, `M15_v2`→canonic prin file_path). Cheie necunoscută/ambiguă →
+  `IdentifierError` (tip distinct de eșecul de hash și de status).
+- Cele 3 zone sigilate integral M15_v2 (feliuța pre-overlap, overlap_with_M15, post_M15_tail) — excluse.
+- Verificarea dublă de hash (manifest + fișier-de-date) păstrată; fișier modificat cu un byte → respins.
+- `mypy --strict` curat; teste **17/17** — inclusiv: bară din FIECARE bandă de carantină și din fiecare
+  jumătate sigilată NU apare (dovada că segmentarea e reală), H1 aruncă, identificator ambiguu aruncă distinct.
+- Commit `alpha-automation-v1`. H1 rămâne blocat; Research Lab blocat până la harta de regim H1.
+
 ## 6. Amplitudinea barei M5 — pragul minim de stop §9 (CHECK 6)
 
 Mediană high-low (puncte): TOATE **1,400**, IQR [0,815–2,655], p90 4,995. Per sesiune: asia 1,220 ·

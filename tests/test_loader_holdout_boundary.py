@@ -1,17 +1,15 @@
-"""Manifest-gated loader verification (Mandate 2 + 2.5).
+"""Manifest-gated, runtime-segmented loader verification (Mandates 2 / 2.5 / 2.6).
 
-Confirms edge_research/_common.py::load() gates every read through the hash-verified split manifest
-AND the per-file data-file hash:
-  * M15 (VALIDATED) reads its governed file (the legacy/superseded file via the entry's file_path),
-    with BOTH the manifest content_hash and the data-file sha256 verified, inside the manifest window.
-  * M15_v2 is REJECTED on status AWAITING_DATA_FILE_HASH even though its data-file hash now matches --
-    supplying the hash is Data Acquisition's job; promotion to VALIDATED is the Statistician's.
-  * M5 and H1 are rejected on AWAITING_REGIME_MAP_AND_DATA_FILE_HASH; H4/D1 are absent -> sealed.
-  * a data file modified by a single byte is rejected on hash mismatch (manifest<->disk binding).
-  * a bad-hash manifest is rejected; an absent manifest is fail-closed; missing split config raises.
+edge_research/_common.py::load() must, for a VALIDATED timeframe, deliver EXACTLY the union of the
+manifest's per-segment discovery halves -- with every embargo band and every sealed half excluded --
+and verify BOTH the manifest content_hash and the governed data file's SHA-256. The decisive tests are
+the segmentation ones: a bar taken from EACH inter-segment quarantine band, and from each sealed half,
+must not appear -- proving the split is real, not declarative (the same bar has since the one-byte test
+proved the manifest<->disk binding is real).
 
 Run: python -m pytest tests/test_loader_holdout_boundary.py  or  python tests/test_loader_holdout_boundary.py
 """
+import csv
 import hashlib
 import os
 import shutil
@@ -26,62 +24,135 @@ from edge_research import _common as C
 from edge_research import split_manifest as SM
 
 SPLIT = C.PRE_HOLDOUT_SPLIT_ID
-PERMISSIVE_CUTOFF = "2025-10-23T09:15:00+00:00"  # deliberately looser than the manifest window
+PERMISSIVE_CUTOFF = "2026-12-31T00:00:00+00:00"  # beyond all discovery -> delivers the exact union
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_MANIFEST = SM.load_manifest()
-_M15_DISC = _MANIFEST["timeframes"]["M15"]["discovery_range"]
-DISC_START = pd.Timestamp(_M15_DISC["start_epoch"], unit="s", tz="UTC")
-DISC_END = pd.Timestamp(_M15_DISC["end_epoch"], unit="s", tz="UTC")
+MAN = SM.load_manifest()
 
+
+def _raw_epochs(tf: str) -> list[int]:
+    fp = MAN["timeframes"][tf]["file_path"]
+    out = []
+    with open(os.path.join(_ROOT, fp), newline="") as f:
+        r = csv.reader(f); next(r)
+        for ln in r:
+            if ln and ln[0].strip():
+                out.append(int(ln[0]))
+    return out
+
+
+def _delivered_epochs(tf: str) -> set[int]:
+    d, _ = C.load(tf, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+    return set(int(t) for t in d["time"])
+
+
+def _first_bar_in(raw: list[int], s: int, e: int) -> int:
+    for t in raw:
+        if s <= t < e:
+            return t
+    raise AssertionError(f"no bar found in [{s}, {e}) -- test setup error")
+
+
+# ---------- M15 (legacy) reads with both hashes verified ----------
 
 def test_m15_reads_with_both_hashes_verified() -> None:
     d, meta = C.load("M15", data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
     assert len(d) > 0
-    assert d["dt"].min() >= DISC_START and d["dt"].max() < DISC_END
-    # both hashes recorded/verified: manifest content_hash + the governed data-file sha256
-    assert meta["manifest_hash"] == _MANIFEST["content_hash"]["value"]
-    assert meta["data_file_sha256"] == _MANIFEST["timeframes"]["M15"]["data_file_sha256"]["value"]
-    # M15 is governed by the LEGACY superseded file, resolved from the entry's file_path (not by tf name)
-    assert meta["data_file_path"] == _MANIFEST["timeframes"]["M15"]["file_path"]
-    assert "SUPERSEDED" in meta["data_file_path"]
-    assert meta["holdout_cutoff"] == DISC_END.isoformat()  # embargo binds vs the looser caller cutoff
+    assert meta["manifest_hash"] == MAN["content_hash"]["value"]
+    assert meta["data_file_sha256"] == MAN["timeframes"]["M15"]["data_file_sha256"]["value"]
+    assert "SUPERSEDED" in meta["data_file_path"]  # governed by the legacy file via file_path
+    assert meta["n_bars_delivered"] + meta["n_bars_quarantine"] + meta["n_bars_sealed"] == meta["n_bars_before_cutoff"]
 
 
-def test_m15_v2_rejected_on_status_despite_matching_file_hash() -> None:
-    # the file hash DOES match now (Data Acquisition supplied it)...
-    fp = _MANIFEST["timeframes"]["M15_v2"]["file_path"]
-    exp = _MANIFEST["timeframes"]["M15_v2"]["data_file_sha256"]["value"]
-    SM.verify_data_file(_ROOT, fp, exp)  # does not raise -> hash is correct
-    # ...but status AWAITING_DATA_FILE_HASH still seals it: the Statistician has not ratified.
-    assert _MANIFEST["timeframes"]["M15_v2"]["status"] == "AWAITING_DATA_FILE_HASH"
+# ---------- runtime segmentation: the decisive tests ----------
+
+@pytest.mark.parametrize("tf", ["M15_v2", "M5"])
+def test_delivered_is_exactly_the_union_of_discovery_segments(tf: str) -> None:
+    raw = _raw_epochs(tf)
+    delivered = _delivered_epochs(tf)
+    plan = SM.segmentation_plan(MAN, tf)
+    expected = set(t for t in raw for (s, e) in plan["discovery"] if s <= t < e)
+    assert delivered == expected, f"{tf}: delivered != exact discovery union"
+    assert len(delivered) > 0
+
+
+@pytest.mark.parametrize("tf", ["M15_v2", "M5"])
+def test_a_bar_from_EACH_quarantine_band_is_not_delivered(tf: str) -> None:
+    raw = _raw_epochs(tf)
+    delivered = _delivered_epochs(tf)
+    segs = MAN["timeframes"][tf]["regime_segments"]
+    checked = 0
+    for seg in segs:
+        if "discovery_range" not in seg:
+            continue
+        sr = seg["segment_range"]; dr = seg["discovery_range"]
+        emb = seg["intra_segment_embargo"]; sealed = seg["sealed_range"]
+        bands = []
+        if sr["start_epoch"] < dr["start_epoch"]:
+            bands.append((sr["start_epoch"], dr["start_epoch"]))   # leading boundary embargo
+        bands.append((emb["start_epoch"], emb["end_epoch"]))       # intra-segment embargo
+        if sealed["end_epoch"] < sr["end_epoch"]:
+            bands.append((sealed["end_epoch"], sr["end_epoch"]))   # trailing boundary embargo
+        for s, e in bands:
+            try:
+                bar = _first_bar_in(raw, s, e)
+            except AssertionError:
+                continue  # band may be empty of bars (weekend/gap) -- fine
+            assert bar not in delivered, f"{tf}: quarantine bar {bar} was delivered"
+            checked += 1
+    assert checked >= 2, f"{tf}: expected quarantine bars from >=2 boundaries, checked {checked}"
+
+
+@pytest.mark.parametrize("tf", ["M15_v2", "M5"])
+def test_a_bar_from_each_sealed_half_is_not_delivered(tf: str) -> None:
+    raw = _raw_epochs(tf)
+    delivered = _delivered_epochs(tf)
+    for seg in MAN["timeframes"][tf]["regime_segments"]:
+        if "sealed_range" not in seg:
+            continue
+        s, e = seg["sealed_range"]["start_epoch"], seg["sealed_range"]["end_epoch"]
+        bar = _first_bar_in(raw, s, e)
+        assert bar not in delivered, f"{tf}: sealed-half bar {bar} was delivered"
+
+
+def test_m15_v2_three_fully_sealed_zones_never_appear() -> None:
+    raw = _raw_epochs("M15_v2")
+    delivered = _delivered_epochs("M15_v2")
+    e = MAN["timeframes"]["M15_v2"]
+    zones = []
+    for seg in e["regime_segments"]:
+        if "discovery_range" not in seg:  # the pre-overlap TOO_SHORT_FULLY_SEALED sliver
+            zones.append(("pre_overlap_sliver", seg["segment_range"]))
+    zones.append(("overlap_with_M15", e["overlap_with_M15"]["range"]))
+    zones.append(("post_M15_tail", e["post_M15_tail"]["range"]))
+    for name, r in zones:
+        bar = _first_bar_in(raw, r["start_epoch"], r["end_epoch"])
+        assert bar not in delivered, f"M15_v2 fully-sealed zone {name} bar {bar} was delivered"
+
+
+# ---------- H1 sealed, identifiers, one-byte binding, fail-closed ----------
+
+def test_h1_is_sealed_awaiting_regime_map() -> None:
+    assert MAN["timeframes"]["H1"]["status"] == "AWAITING_REGIME_MAP"
     with pytest.raises(C.HoldoutConfigError):
-        C.load("M15_v2", data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+        C.load("H1", data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
 
 
-@pytest.mark.parametrize("tf", ["M5", "H1"])
-def test_awaiting_regime_map_timeframes_are_sealed(tf: str) -> None:
-    assert _MANIFEST["timeframes"][tf]["status"] == "AWAITING_REGIME_MAP_AND_DATA_FILE_HASH"
-    with pytest.raises(C.HoldoutConfigError):
-        C.load(tf, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
-
-
-@pytest.mark.parametrize("tf", ["H4", "D1"])
-def test_timeframes_absent_from_manifest_are_sealed(tf: str) -> None:
-    with pytest.raises(C.HoldoutConfigError):
+@pytest.mark.parametrize("tf", ["H4", "D1", "M15x", "m15", ""])
+def test_ambiguous_or_unknown_identifier_raises_distinct_exception(tf: str) -> None:
+    # distinct type: IdentifierError, NOT the generic HoldoutConfigError used for hash/status failures
+    with pytest.raises(SM.IdentifierError):
         C.load(tf, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
 
 
 def test_one_byte_data_file_modification_is_rejected() -> None:
-    # THE binding test: copy M15's real governed file, flip one byte, and confirm verify_data_file
-    # rejects it against the manifest hash. This is what makes the manifest<->disk link real.
-    fp, exp = SM.entry_file(_MANIFEST, "M15")
+    fp, exp = SM.entry_file(MAN, "M15")
     src = os.path.join(_ROOT, fp)
     with tempfile.TemporaryDirectory() as td:
         dst = os.path.join(td, "copy.csv")
         shutil.copyfile(src, dst)
-        SM.verify_data_file(td, "copy.csv", exp)  # unmodified copy verifies
+        SM.verify_data_file(td, "copy.csv", exp)  # unmodified verifies
         b = bytearray(open(dst, "rb").read())
-        b[len(b) // 2] ^= 0x01  # flip a single bit of one byte
+        b[len(b) // 2] ^= 0x01
         open(dst, "wb").write(b)
         with pytest.raises(SM.ManifestError):
             SM.verify_data_file(td, "copy.csv", exp)
@@ -96,7 +167,7 @@ def test_fail_closed_without_config() -> None:
             C.load("M15", **kw)
 
 
-def test_bad_hash_manifest_is_rejected() -> None:
+def test_bad_hash_manifest_and_absent_manifest_fail_closed() -> None:
     real = open(SM.MANIFEST_PATH, "rb").read().decode("utf-8")
     tampered = real.replace('"margin_factor"', '"MARGIN_factor"')
     with tempfile.TemporaryDirectory() as td:
@@ -104,32 +175,20 @@ def test_bad_hash_manifest_is_rejected() -> None:
         open(p, "wb").write(tampered.encode("utf-8"))
         with pytest.raises(SM.ManifestError):
             SM.load_manifest(p)
-
-
-def test_absent_manifest_is_fail_closed() -> None:
-    with tempfile.TemporaryDirectory() as td:
         with pytest.raises(SM.ManifestError):
             SM.load_manifest(os.path.join(td, "nope.json"))
 
 
-def test_manifest_v2_1_0_hash_verifies() -> None:
-    raw = open(SM.MANIFEST_PATH, "rb").read()
-    stored = _MANIFEST["content_hash"]["value"]
-    assert hashlib.sha256(raw.replace(stored.encode(), b"")).hexdigest() == stored
-    assert _MANIFEST["version"] == "2.1.0"
-    assert _MANIFEST["timeframes"]["M15"]["status"] == "VALIDATED"
-
-
-def _print_meta() -> None:
-    _, meta = C.load("M15", data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
-    print("\n--- M15 manifest-gated load meta (v2.1.0) ---")
-    for k in ("timeframe", "manifest_version", "manifest_hash", "data_file_path", "data_file_sha256",
-              "manifest_discovery_start", "manifest_discovery_end", "requested_cutoff", "holdout_cutoff",
-              "min_date_used", "max_date_used", "n_bars_used", "loader_version"):
-        print(f"  {k}: {meta[k]}")
+def _print_breakdown() -> None:
+    for tf in ("M15_v2", "M5"):
+        _, m = C.load(tf, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+        print(f"  {tf}: total={m['n_bars_before_cutoff']} delivered={m['n_bars_delivered']} "
+              f"quarantine={m['n_bars_quarantine']} sealed={m['n_bars_sealed']} "
+              f"sum_ok={m['n_bars_delivered']+m['n_bars_quarantine']+m['n_bars_sealed']==m['n_bars_before_cutoff']}")
 
 
 if __name__ == "__main__":
     rc = pytest.main([os.path.abspath(__file__), "-q"])
-    _print_meta()
+    print("\n--- segmentation breakdown ---")
+    _print_breakdown()
     sys.exit(int(rc))

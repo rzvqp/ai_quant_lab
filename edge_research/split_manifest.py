@@ -16,8 +16,8 @@ import os
 from typing import Any, Final
 
 __all__ = [
-    "ManifestError", "MANIFEST_PATH", "load_manifest", "discovery_window",
-    "entry_file", "verify_data_file",
+    "ManifestError", "IdentifierError", "MANIFEST_PATH", "load_manifest", "discovery_window",
+    "entry_file", "verify_data_file", "segmentation_plan",
 ]
 
 _ROOT: Final[str] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +25,15 @@ MANIFEST_PATH: Final[str] = os.path.join(_ROOT, "config", "split_manifest.json")
 
 
 class ManifestError(ValueError):
-    """Raised when the split manifest cannot be located, hash-verified, or authorizes no access."""
+    """Raised when the split manifest cannot be located, hash-verified, or authorizes no access.
+    Covers manifest-hash failures, data-file-hash failures, and status (sealed) failures."""
+
+
+class IdentifierError(ManifestError):
+    """Raised specifically when a requested timeframe key does not correspond to exactly one manifest
+    entry (unknown / ambiguous / no-alias). Distinct from a hash failure or a status (sealed) failure
+    so the cause is diagnosable from the exception type as well as the message. 'M15' and 'M15_v2' are
+    distinct keys with no default, alias, or fallback between them."""
 
 
 def load_manifest(path: str = MANIFEST_PATH) -> dict[str, Any]:
@@ -65,20 +73,26 @@ def load_manifest(path: str = MANIFEST_PATH) -> dict[str, Any]:
     return parsed
 
 
-def _validated_entry(manifest: dict[str, Any], tf: str) -> dict[str, Any]:
-    """Return the timeframe entry ONLY if its status is exactly VALIDATED. Raise `ManifestError`
-    otherwise -- the sealed (no-access) outcome for M15_v2 (AWAITING_DATA_FILE_HASH), M5/H1
-    (AWAITING_REGIME_MAP_AND_DATA_FILE_HASH), and any timeframe absent from the manifest (H4/D1).
-    Distinct keys ('M15' vs 'M15_v2') are never aliased -- the caller must pass one exact key."""
+def _entry(manifest: dict[str, Any], tf: str) -> dict[str, Any]:
+    """Return the manifest entry for tf, or raise IdentifierError if tf names no exact entry
+    (unknown/ambiguous key -- H4/D1, a typo, or a bare/generic request). No alias/default/fallback."""
     timeframes: Any = manifest.get("timeframes")
     if not isinstance(timeframes, dict):
         raise ManifestError("split manifest has no `timeframes` table -- fail-closed")
     entry: Any = timeframes.get(tf)
     if not isinstance(entry, dict):
-        raise ManifestError(
-            f"timeframe {tf!r} is absent from the split manifest -- fail-closed "
-            "(a missing status is never treated as open)."
+        raise IdentifierError(
+            f"timeframe {tf!r} does not correspond to exactly one manifest entry -- fail-closed with "
+            "AMBIGUOUS/UNKNOWN IDENTIFIER (no alias, default, or fallback; name an exact key such as "
+            "'M15' or 'M15_v2')."
         )
+    return entry
+
+
+def _validated_entry(manifest: dict[str, Any], tf: str) -> dict[str, Any]:
+    """Return the entry ONLY if its status is exactly VALIDATED. IdentifierError if the key is unknown;
+    ManifestError (status/sealed failure) if it is known but not VALIDATED."""
+    entry = _entry(manifest, tf)
     status: Any = entry.get("status")
     if status != "VALIDATED":
         raise ManifestError(
@@ -86,6 +100,57 @@ def _validated_entry(manifest: dict[str, Any], tf: str) -> dict[str, Any]:
             "fail_closed_default (zero bars readable as discovery)."
         )
     return entry
+
+
+def _range(obj: Any, ctx: str) -> tuple[int, int]:
+    """Extract (start_epoch, end_epoch) from a manifest range object, fail-closed on any malformation.
+    Coordinates are used verbatim from the manifest -- never recomputed, derived, or rounded."""
+    if not isinstance(obj, dict):
+        raise ManifestError(f"{ctx}: range object missing -- fail-closed")
+    start: Any = obj.get("start_epoch")
+    end: Any = obj.get("end_epoch")
+    if not isinstance(start, int) or not isinstance(end, int) or start > end:
+        raise ManifestError(f"{ctx}: malformed range (start_epoch/end_epoch) -- fail-closed")
+    return (start, end)
+
+
+def segmentation_plan(manifest: dict[str, Any], tf: str) -> dict[str, list[tuple[int, int]]]:
+    """Return the runtime access plan for a VALIDATED timeframe, purely from manifest coordinates:
+        {"discovery": [(s,e), ...], "quarantine": [(s,e), ...]}
+    `discovery` is what the loader may deliver (the union of the per-segment discovery halves, or the
+    single global discovery_range for M15). `quarantine` is the union of every embargo band -- per
+    segment: the LEADING gap [segment_start, discovery_start), the intra_segment_embargo, and the
+    TRAILING gap [sealed_end, segment_end); or the single embargo_range for M15. Everything the caller
+    then finds outside both sets is SEALED by default (fully-sealed segments, the M15_v2 overlap and
+    post-M15 tail, an unlabeled recent tail, etc.) -- never delivered."""
+    entry = _validated_entry(manifest, tf)
+    discovery: list[tuple[int, int]] = []
+    quarantine: list[tuple[int, int]] = []
+    segments: Any = entry.get("regime_segments")
+    if isinstance(segments, list):
+        for i, seg in enumerate(segments):
+            if not isinstance(seg, dict):
+                raise ManifestError(f"{tf} regime_segments[{i}] malformed -- fail-closed")
+            seg_s, seg_e = _range(seg.get("segment_range"), f"{tf} seg{i} segment_range")
+            if "discovery_range" in seg:  # a split segment
+                ds, de = _range(seg["discovery_range"], f"{tf} seg{i} discovery_range")
+                es, ee = _range(seg.get("intra_segment_embargo"), f"{tf} seg{i} intra_segment_embargo")
+                _ss, sealed_end = _range(seg.get("sealed_range"), f"{tf} seg{i} sealed_range")
+                discovery.append((ds, de))
+                if seg_s < ds:
+                    quarantine.append((seg_s, ds))       # leading boundary embargo
+                quarantine.append((es, ee))              # intra-segment embargo
+                if sealed_end < seg_e:
+                    quarantine.append((sealed_end, seg_e))  # trailing boundary embargo
+            # else: a TOO_SHORT_FULLY_SEALED segment -> sealed by default (no discovery/quarantine)
+    elif "discovery_range" in entry:  # single_global_cutoff (M15 legacy)
+        discovery.append(_range(entry["discovery_range"], f"{tf} discovery_range"))
+        if "embargo_range" in entry:
+            quarantine.append(_range(entry["embargo_range"], f"{tf} embargo_range"))
+    else:
+        raise ManifestError(
+            f"{tf} is VALIDATED but has neither regime_segments nor a discovery_range -- fail-closed")
+    return {"discovery": discovery, "quarantine": quarantine}
 
 
 def discovery_window(manifest: dict[str, Any], tf: str) -> tuple[int, int]:
