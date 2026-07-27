@@ -24,6 +24,16 @@ reconstruct the account's true all-time-high equity from history MT5 does not ex
 If the real historical peak exceeds what this object has observed since construction (and no seed was
 supplied), drawdown will read smaller than reality until enough live observation accumulates. This is a
 disclosed limitation, not a silent estimate.
+
+**Mandate 2 (2026-07-27), persistence**: an optional injected `SqliteStateStore` makes the high-water
+mark survive a process restart -- without one, behavior is byte-for-byte the prior in-memory-only
+version (every pre-Mandate-2 test still passes unmodified). With one, the persisted value (a REAL prior
+observation) takes precedence over `initial_equity_high_water_mark` (a fallback seed only meaningful
+when nothing has been persisted yet), and every ratchet-up writes through immediately. Consecutive-loss
+detection is NOT touched by this mandate -- it has no in-memory state to lose on restart, since
+`compute_consecutive_losses` is recomputed from a live 7-day MT5 deal-history query on every single
+call, restart or not; its own separately-disclosed limitation (bounded to that same 7-day window) is a
+data-window question, not a persistence one, and remains its own, still-not-authorized graph item.
 """
 
 from __future__ import annotations
@@ -38,10 +48,12 @@ from ai_trader.mt5_pnl_source.computation import (
 )
 from ai_trader.mt5_pnl_source.gateway import MT5HistoryGateway
 from ai_trader.mt5_pnl_source.types import DealRecord, PortfolioDataUnavailableError
+from ai_trader.persistent_state.store import SqliteStateStore
 from ai_trader.risk_manager.types import PortfolioState
 
 _SECONDS_PER_DAY = 86_400
 _SECONDS_PER_WEEK = 7 * _SECONDS_PER_DAY
+_HIGH_WATER_MARK_KEY = "mt5_pnl_source.equity_high_water_mark"
 
 
 def _default_clock() -> int:
@@ -56,10 +68,15 @@ class MT5PortfolioStateSource:
     def __init__(
         self, gateway: MT5HistoryGateway, clock: Callable[[], int] = _default_clock,
         initial_equity_high_water_mark: float | None = None,
+        state_store: SqliteStateStore | None = None,
     ) -> None:
         self._gateway = gateway
         self._clock = clock
-        self._equity_high_water_mark = initial_equity_high_water_mark
+        self._state_store = state_store
+        persisted = None if state_store is None else state_store.get_value(_HIGH_WATER_MARK_KEY)
+        self._equity_high_water_mark = (
+            persisted if persisted is not None else initial_equity_high_water_mark
+        )
 
     def current_portfolio_state(self) -> PortfolioState:
         now = self._clock()
@@ -69,6 +86,8 @@ class MT5PortfolioStateSource:
 
         if self._equity_high_water_mark is None or equity > self._equity_high_water_mark:
             self._equity_high_water_mark = equity
+            if self._state_store is not None:
+                self._state_store.set_value(_HIGH_WATER_MARK_KEY, self._equity_high_water_mark)
 
         day_start = now - (now % _SECONDS_PER_DAY)
         week_start = now - _SECONDS_PER_WEEK

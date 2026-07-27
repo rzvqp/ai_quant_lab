@@ -4,11 +4,14 @@ tracking."""
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from ai_trader.mt5_pnl_source.source import MT5PortfolioStateSource
 from ai_trader.mt5_pnl_source.tests._fixtures import FakeMT5HistoryGateway, make_gateway
 from ai_trader.mt5_pnl_source.types import PortfolioDataUnavailableError
+from ai_trader.persistent_state.store import SqliteStateStore
 
 AS_OF = 1_700_000_000
 _DAY = 86_400
@@ -118,3 +121,74 @@ def test_never_defaults_to_zero_on_incomplete_data_does_not_swallow_the_exceptio
         assert False, "expected PortfolioDataUnavailableError, got a result instead"
     except PortfolioDataUnavailableError:
         pass
+
+
+# -- Mandate 2 (2026-07-27): equity high-water-mark persistence -- a restart must not reset the peak --
+
+
+def test_high_water_mark_survives_a_simulated_restart(tmp_path: Path) -> None:
+    """The core acceptance proof: a brand-new `MT5PortfolioStateSource` instance, given the SAME
+    `SqliteStateStore`, must resume from the persisted high-water mark, not reset to whatever equity it
+    first observes after restart -- exactly the failure mode disclosed at Step 3."""
+    store = SqliteStateStore(tmp_path / "state.db")
+    gateway = make_gateway(equity=9_000.0)
+
+    source_before_restart = MT5PortfolioStateSource(gateway, clock=lambda: AS_OF, state_store=store)
+    source_before_restart.current_portfolio_state()  # observes 9_000.0, ratchets HWM to 9_000.0
+
+    # Simulated restart: a brand-new source object, same store, but equity has since DROPPED --
+    # exactly the scenario Step 3 disclosed as broken (a fresh, lower first-observed value would
+    # otherwise become the new, false high-water mark).
+    gateway.set_equity(7_000.0)
+    source_after_restart = MT5PortfolioStateSource(gateway, clock=lambda: AS_OF, state_store=store)
+    portfolio = source_after_restart.current_portfolio_state()
+
+    assert portfolio.equity == 7_000.0
+    assert portfolio.equity_high_water_mark == 9_000.0  # recovered from the store, not reset to 7_000.0
+
+
+def test_persisted_high_water_mark_takes_precedence_over_a_seeded_initial_value() -> None:
+    """A persisted value represents a REAL prior observation; a caller-supplied seed is only a
+    fallback for the very first run, when nothing has been persisted yet."""
+    store = SqliteStateStore(":memory:")
+    gateway = make_gateway(equity=8_000.0)
+    first = MT5PortfolioStateSource(gateway, clock=lambda: AS_OF, state_store=store)
+    first.current_portfolio_state()  # persists high-water mark 8_000.0
+
+    second = MT5PortfolioStateSource(
+        gateway, clock=lambda: AS_OF, initial_equity_high_water_mark=1_000.0, state_store=store,
+    )
+    portfolio = second.current_portfolio_state()
+
+    assert portfolio.equity_high_water_mark == 8_000.0  # persisted value wins, not the 1_000.0 seed
+
+
+def test_seeded_initial_value_is_used_when_nothing_is_persisted_yet() -> None:
+    store = SqliteStateStore(":memory:")
+    gateway = make_gateway(equity=8_000.0)
+    source = MT5PortfolioStateSource(
+        gateway, clock=lambda: AS_OF, initial_equity_high_water_mark=12_000.0, state_store=store,
+    )
+    portfolio = source.current_portfolio_state()
+    assert portfolio.equity_high_water_mark == 12_000.0
+
+
+def test_high_water_mark_ratchet_writes_through_immediately() -> None:
+    store = SqliteStateStore(":memory:")
+    gateway = make_gateway(equity=8_000.0)
+    source = MT5PortfolioStateSource(gateway, clock=lambda: AS_OF, state_store=store)
+    source.current_portfolio_state()
+
+    gateway.set_equity(9_500.0)
+    source.current_portfolio_state()  # ratchets up to 9_500.0, must write through immediately
+
+    fresh_view = MT5PortfolioStateSource(make_gateway(equity=1.0), clock=lambda: AS_OF, state_store=store)
+    assert fresh_view.current_portfolio_state().equity_high_water_mark == 9_500.0
+
+
+def test_without_a_state_store_nothing_is_persisted() -> None:
+    """No `state_store` argument at all -- the exact prior, in-memory-only behavior -- remains the
+    default; every other test in this file already proves this, this test names it explicitly."""
+    gateway = make_gateway(equity=8_000.0)
+    source = MT5PortfolioStateSource(gateway, clock=lambda: AS_OF)
+    assert source.current_portfolio_state().equity_high_water_mark == 8_000.0

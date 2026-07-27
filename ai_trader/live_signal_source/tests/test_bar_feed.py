@@ -3,6 +3,7 @@ plus fail-closed and dedup behavior."""
 
 from __future__ import annotations
 
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -10,6 +11,7 @@ import pytest
 from ai_trader.live_signal_source.bar_feed import LiveBarFeed
 from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
 from ai_trader.live_signal_source.types import BarFeedError
+from ai_trader.persistent_state.store import SqliteStateStore
 
 SYMBOL = "XAUUSD"
 M15_SECONDS = 15 * 60
@@ -108,3 +110,60 @@ def test_bar_seconds_must_be_positive() -> None:
 def test_lookback_count_must_be_positive() -> None:
     with pytest.raises(ValueError):
         LiveBarFeed(FakeMT5Gateway(), SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, lookback_count=0)
+
+
+# -- Mandate 2 (2026-07-27): watermark persistence -- restart must be deterministic, never duplicate --
+
+
+def test_watermark_survives_a_simulated_restart(tmp_path: Path) -> None:
+    """The core acceptance proof: a brand-new `LiveBarFeed` instance, given the SAME `SqliteStateStore`
+    (simulating a process restart, not just a fresh object), must not re-emit a bar the prior instance
+    already emitted and persisted."""
+    store = SqliteStateStore(tmp_path / "state.db")
+    closed_open = NOW - 1_000
+    gateway = FakeMT5Gateway(rates=[RawRate(time=closed_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+
+    feed_before_restart = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW, state_store=store,
+    )
+    first = feed_before_restart.poll()
+    assert len(first) == 1
+
+    # Simulated restart: a brand-new LiveBarFeed object, same store, same symbol/timeframe, same
+    # underlying (unchanged) gateway data -- exactly what a real restart would see.
+    feed_after_restart = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW, state_store=store,
+    )
+    second = feed_after_restart.poll()
+
+    assert second == ()  # NOT re-emitted -- watermark was loaded from the store, not reset to None
+
+
+def test_watermark_is_scoped_per_symbol_and_timeframe(tmp_path: Path) -> None:
+    """Two different symbols must not share a watermark -- a bar closed for XAUUSD must never suppress
+    an equally-timed bar for a different symbol."""
+    store = SqliteStateStore(tmp_path / "state.db")
+    closed_open = NOW - 1_000
+    gateway_a = FakeMT5Gateway(rates=[RawRate(time=closed_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    gateway_b = FakeMT5Gateway(rates=[RawRate(time=closed_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+
+    feed_a = LiveBarFeed(
+        gateway_a, "XAUUSD", mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW, state_store=store,
+    )
+    feed_a.poll()
+
+    feed_b = LiveBarFeed(
+        gateway_b, "EURUSD", mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW, state_store=store,
+    )
+    assert len(feed_b.poll()) == 1  # a fresh symbol -- not suppressed by XAUUSD's own watermark
+
+
+def test_without_a_state_store_nothing_is_persisted() -> None:
+    """No `state_store` argument at all -- the exact prior, in-memory-only behavior -- is still the
+    default; every other test in this file already proves this, this test names it explicitly."""
+    closed_open = NOW - 1_000
+    gateway = FakeMT5Gateway(rates=[RawRate(time=closed_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+
+    assert len(feed.poll()) == 1
+    assert feed.poll() == ()  # in-memory dedup still works without any store at all

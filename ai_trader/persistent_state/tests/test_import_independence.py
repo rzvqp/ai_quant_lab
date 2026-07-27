@@ -1,6 +1,6 @@
-"""Static import-boundary verification (CEO rule 9: only `mt5_gateway.py`'s own `RealMT5Gateway` may
-import `MetaTrader5`; CEO instruction, 2026-07-25: this package must never create another path to MT5,
-and must never receive an execution-capable adapter)."""
+"""Static import-boundary verification -- same 5-check pattern as every prior live package's own
+precedent, even though this package has no MT5/execution surface at all: consistency, not because any
+violation is plausible here."""
 
 from __future__ import annotations
 
@@ -20,13 +20,7 @@ _FORBIDDEN_MODULE_PREFIXES = (
     "ai_trader.shadow_evidence",
 )
 
-_ALLOWED_AI_TRADER_PREFIXES = (
-    "ai_trader.mt5_pnl_source",
-    "ai_trader.execution_engine.adapters.mt5_gateway",
-    "ai_trader.risk_manager",
-    "ai_trader.risk_manager_live",
-    "ai_trader.persistent_state",
-)
+_ALLOWED_AI_TRADER_PREFIXES = ("ai_trader.persistent_state",)
 
 
 def _production_source_files() -> list[Path]:
@@ -46,10 +40,7 @@ def _imported_module_names(source_path: Path) -> set[str]:
 
 def test_no_metatrader5_import_anywhere() -> None:
     for source_path in _production_source_files():
-        assert "MetaTrader5" not in source_path.read_text(encoding="utf-8"), (
-            f"{source_path.name} references MetaTrader5 -- only ai_trader/execution_engine/adapters/"
-            "mt5_gateway.py may do this (CEO rule 9); this package must extend it, never re-import it"
-        )
+        assert "MetaTrader5" not in source_path.read_text(encoding="utf-8")
 
 
 def test_no_forbidden_imports_in_any_production_module() -> None:
@@ -80,7 +71,6 @@ def test_only_depends_on_allowed_ai_trader_packages() -> None:
 
 
 def test_no_order_submission_vocabulary() -> None:
-    """This package reads P&L history -- it must never itself submit/modify/cancel an order."""
     forbidden = ("order_send", "order_check", "submit_order", "cancel_order", "close_position")
     violations: dict[str, set[str]] = {}
     for source_path in _production_source_files():
@@ -92,8 +82,6 @@ def test_no_order_submission_vocabulary() -> None:
 
 
 def test_never_references_an_execution_capable_adapter_type() -> None:
-    """Never `BrokerAdapter`/`DryRunBrokerAdapter`/`MT5DemoBrokerAdapter` -- only the read-only
-    `MT5HistoryGateway` this package defines itself."""
     forbidden = ("BrokerAdapter", "DryRunBrokerAdapter", "MT5DemoBrokerAdapter")
     violations: dict[str, set[str]] = {}
     for source_path in _production_source_files():

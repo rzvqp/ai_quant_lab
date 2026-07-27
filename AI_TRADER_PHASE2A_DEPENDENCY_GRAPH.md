@@ -52,12 +52,12 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    field, never caches (every call re-reads the gateway fresh). Not wired into `orchestrate()` or any
    other caller — this step built the bridge itself only. See
    `AI_TRADER_PHASE2A_STEP4_ACCOUNT_BRIDGE_REPORT.md`.
-   **NEW — equity high-water-mark survives a process restart** (CEO-added, 2026-07-26, disclosed as
-   Step 3's own limitation): `MT5PortfolioStateSource` only ratchets its high-water mark from whichever
-   equity value it first observes after construction — a process restart during a months-long shadow run
-   resets that reference. The circuit breaker would then compute drawdown against a false, lower peak,
-   and could fail to trip when it should. Same class of problem as Step 1's persistent suspension state,
-   on a different variable. Must exist **before Phase 3**. **Not authorized to build now.**
+   **Equity high-water-mark survives a process restart — DONE (Mandate 2, 2026-07-27).** Was: disclosed
+   as Step 3's own limitation, `MT5PortfolioStateSource` only ratcheted its high-water mark from
+   whichever equity value it first observed after construction. Now: an injected `SqliteStateStore`
+   persists the mark, taking precedence over any caller-supplied seed once a real value exists.
+   Restart-determinism proven directly (`test_high_water_mark_survives_a_simulated_restart`). See
+   `AI_TRADER_MANDATE2_PERSISTENCE_FRAMEWORK_REPORT.md`.
    **NEW — consecutive-loss detection beyond the weekly window** (CEO-added, 2026-07-26, disclosed as
    Step 3's own limitation): bounded to the same 7-day window fetched for weekly P&L; a losing streak
    older than 7 days would not be seen in full. Must exist **before Phase 3**. **Not authorized to build
@@ -84,17 +84,21 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    a broker maintenance window) is silently and permanently unrecoverable, with no reason code, no flag,
    no journal marker — indistinguishable from "no signal." Applies with or without a process restart.
    **Not authorized to build.**
-   **NEW — `LiveBarFeed` watermark restart-survival** (CEO-verified, 2026-07-26, same report):
-   `_last_emitted_ts_open` is a plain in-memory attribute, reset to `None` on every fresh construction.
-   The first `poll()` after a restart re-emits every closed bar still inside the lookback window,
-   including ones already evaluated/journaled before the restart — duplicate re-processing, not merely
-   lost coverage. Same structural class as Step 3's equity-high-water-mark/consecutive-loss disclosures,
-   a new variable. **Not authorized to build.**
-   **NEW — `LiveSignalJournal` history restart-survival** (CEO-verified, 2026-07-26, same report,
-   found during verification, broader than the watermark issue above): `_entries` is a plain in-memory
-   list, never persisted — a restarted process's journal starts genuinely empty, with zero record that
-   any prior run occurred at all, independent of whatever the bar-feed watermark fix would achieve.
-   **Not authorized to build.**
+   **`LiveBarFeed` watermark restart-survival — DONE (Mandate 2, 2026-07-27).** Was: CEO-verified,
+   2026-07-26, `_last_emitted_ts_open` was a plain in-memory attribute, reset to `None` on every fresh
+   construction, causing the first `poll()` after a restart to re-emit every closed bar still inside the
+   lookback window — duplicate re-processing, not merely lost coverage. Now: an injected
+   `SqliteStateStore`, keyed per `(symbol, mt5_timeframe)`, persists the watermark; restart-determinism
+   proven directly (`test_watermark_survives_a_simulated_restart`).
+   **`LiveSignalJournal` history restart-survival — DONE (Mandate 2, 2026-07-27).** Was: CEO-verified,
+   2026-07-26, found during verification, broader than the watermark issue above — `_entries` was a
+   plain in-memory list, never persisted, so a restarted process's journal started genuinely empty. Now:
+   the same `SqliteStateStore` persists every entry (candidate included, round-trips intact), loaded in
+   full at construction; restart-determinism proven directly
+   (`test_history_survives_a_simulated_restart`). See `AI_TRADER_MANDATE2_PERSISTENCE_FRAMEWORK_REPORT.md`
+   for both. **Bar/gap continuity detection remains NOT authorized to build** — persistence is not gap
+   detection; a mid-run connection drop with no restart is still unrecovered/unflagged, per Mandate 2's
+   own explicit exclusion ("Nu detectarea de goluri").
 7. **NEW — EMERGENCY_STOP reset operation** (this update, 2026-07-25) — see its own entry below. Must
    exist **before Phase 3** (the long-running shadow-mode operational run), not before Phase 3 is
    *designed*. **Not authorized to build now** — explicitly deferred, added to this graph only.
@@ -104,16 +108,14 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    no commission is ever paid, so cost reconciliation changes nothing observed. Both remain real
    preconditions for DEMO execution specifically, not for observation; deferring them costs nothing, while
    every day of shadow observation delayed is a day of forward evidence that can never be recovered.
-9. **#7 — VERIFIED, disposition pending CEO decision.** Confirmed in code, not assumed: no caller of
+9. **#7 — REMAINS OPEN (CEO ruling, 2026-07-27): NOT subsumed by #6.** Confirmed in code: no caller of
    `CandidateSignalProducer.run_once()`/`LiveBarFeed.poll()` exists anywhere outside their own
-   definitions, and no loop/scheduler construct (`while True`, `schedule`, `APScheduler`, `asyncio.run`,
-   `threading.Timer`) exists anywhere in `ai_trader/` outside tests. **#6 does NOT subsume #7** — a
-   scheduler/loop is a real, separate, currently nonexistent piece. Verification also surfaced three new
-   items (bar/gap continuity detection; `LiveBarFeed` watermark restart-survival; `LiveSignalJournal`
-   history restart-survival — all under item 6 above) and clarified they are two distinct failure
-   triggers (mid-run window gap vs. restart-caused state loss) converging on the same structural class
-   already disclosed at Step 3. See `AI_TRADER_ITEM7_SCHEDULER_VERIFICATION_REPORT.md`. No code touched
-   for this verification.
+   definitions, and no loop/scheduler construct exists anywhere in `ai_trader/` outside tests. A
+   scheduler/loop remains a real, separate, currently nonexistent piece — still not authorized to build.
+   Verification surfaced the two now-DONE persistence items above (item 6) plus the still-open bar/gap
+   continuity detection item. **Order is fixed: persistence first (Mandate 2, DONE), loop after — not
+   yet authorized.** See `AI_TRADER_ITEM7_SCHEDULER_VERIFICATION_REPORT.md` and
+   `AI_TRADER_MANDATE2_PERSISTENCE_FRAMEWORK_REPORT.md`.
 10. **#14** — validated edge connected. Entirely outside engineering control; not planned, not estimated.
 
 The sections below are the ORIGINAL dependency analysis this order was built from — kept for the

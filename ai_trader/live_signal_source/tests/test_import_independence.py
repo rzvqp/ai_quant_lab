@@ -30,6 +30,7 @@ _ALLOWED_AI_TRADER_PREFIXES = (
     "ai_trader.live_signal_source",
     "ai_trader.execution_engine.adapters.mt5_gateway",
     "ai_trader.signal_engine.types",
+    "ai_trader.persistent_state",
 )
 
 

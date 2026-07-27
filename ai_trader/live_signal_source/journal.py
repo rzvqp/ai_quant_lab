@@ -5,23 +5,69 @@ record dataclasses were reused verbatim, and what "reuse" concretely means here 
 Append-only by construction: the only mutator is `record()` -- there is no remove/clear/replace method
 anywhere on this class, and `entries` is exposed as an immutable `tuple`, never the backing list.
 
-**Scope, disclosed**: in-memory only this step. No disk/database persistence was authorized or built --
-a restarted process starts with an empty journal. Nothing in the CEO's Step 5 specification named
-persistence as a requirement (unlike Step 1's suspension state, which explicitly needed to survive a
-restart); if the CEO wants that guarantee, it is a separate, not-yet-authorized decision.
+**Mandate 2 (2026-07-27), persistence**: an optional injected `SqliteStateStore` makes the full
+observation history survive a process restart -- without one, behavior is byte-for-byte the prior
+in-memory-only version (every pre-Mandate-2 test still passes unmodified). With one, every entry ever
+recorded is loaded back at construction (not just what this instance itself has seen), and every new
+`record()` call writes through immediately. `log_name` scopes multiple journals sharing one store, the
+same way `LiveBarFeed`'s watermark key scopes per `(symbol, mt5_timeframe)`.
 """
 
 from __future__ import annotations
 
-from ai_trader.live_signal_source.types import LiveSignalJournalEntry
+import json
+
+from ai_trader.live_signal_source.types import LiveCandidate, LiveSignalJournalEntry
+from ai_trader.persistent_state.store import SqliteStateStore
+from ai_trader.signal_engine.types import Direction
+
+_DEFAULT_LOG_NAME = "live_signal_source.journal"
+
+
+def _serialize_entry(entry: LiveSignalJournalEntry) -> str:
+    candidate_payload: dict[str, object] | None = None
+    if entry.candidate is not None:
+        c = entry.candidate
+        candidate_payload = {
+            "strategy_id": c.strategy_id, "symbol": c.symbol, "direction": c.direction.value,
+            "entry": c.entry, "stop": c.stop, "target": c.target, "session": c.session,
+            "magic_number": c.magic_number, "comment": c.comment, "as_of": c.as_of,
+        }
+    return json.dumps({"symbol": entry.symbol, "as_of": entry.as_of, "candidate": candidate_payload})
+
+
+def _deserialize_entry(payload: str) -> LiveSignalJournalEntry:
+    data = json.loads(payload)
+    candidate: LiveCandidate | None = None
+    raw_candidate = data["candidate"]
+    if raw_candidate is not None:
+        candidate = LiveCandidate(
+            strategy_id=raw_candidate["strategy_id"], symbol=raw_candidate["symbol"],
+            direction=Direction(raw_candidate["direction"]), entry=raw_candidate["entry"],
+            stop=raw_candidate["stop"], target=raw_candidate["target"],
+            session=raw_candidate["session"], magic_number=raw_candidate["magic_number"],
+            comment=raw_candidate["comment"], as_of=raw_candidate["as_of"],
+        )
+    return LiveSignalJournalEntry(symbol=data["symbol"], as_of=data["as_of"], candidate=candidate)
 
 
 class LiveSignalJournal:
-    def __init__(self) -> None:
-        self._entries: list[LiveSignalJournalEntry] = []
+    def __init__(
+        self, state_store: SqliteStateStore | None = None, log_name: str = _DEFAULT_LOG_NAME,
+    ) -> None:
+        self._state_store = state_store
+        self._log_name = log_name
+        if state_store is None:
+            self._entries: list[LiveSignalJournalEntry] = []
+        else:
+            self._entries = [
+                _deserialize_entry(payload) for payload in state_store.read_log_entries(log_name)
+            ]
 
     def record(self, entry: LiveSignalJournalEntry) -> None:
         self._entries.append(entry)
+        if self._state_store is not None:
+            self._state_store.append_log_entry(self._log_name, _serialize_entry(entry))
 
     @property
     def entries(self) -> tuple[LiveSignalJournalEntry, ...]:
