@@ -1,7 +1,7 @@
 // node --test pullers/replay_seek.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { nextSeekMs, legacyMidnightSeekMs, barSeconds, nextOverlapSeekMs } from './replay_seek.mjs';
+import { nextSeekMs, legacyMidnightSeekMs, barSeconds, nextOverlapSeekMs, escalateSleep } from './replay_seek.mjs';
 
 // A real intraday oldest bar (not aligned to midnight): 2011-07-28T03:00:00Z.
 // This is exactly the kind of bar the M15 floor walk lands on, where the old
@@ -114,4 +114,41 @@ test('overlap walk: no provisional (rightmost) bar reaches the file', () => {
   let gaps = 0;
   for (let i = 1; i < times.length; i++) if (times[i] - times[i - 1] !== BS) gaps++;
   assert.equal(gaps, 0, 'overlap walk left a gap');
+});
+
+// ---- adaptive stall recovery ----
+
+test('escalateSleep grows by factor and caps at maxMs', () => {
+  const opt = { baseMs: 2000, maxMs: 8000, factor: 1.6 };
+  assert.equal(escalateSleep(2000, opt), 3200);
+  assert.equal(escalateSleep(3200, opt), 5120);
+  assert.equal(escalateSleep(5120, opt), 8000);   // 8192 capped to 8000
+  assert.equal(escalateSleep(8000, opt), 8000);   // stays pinned at max
+  assert.throws(() => escalateSleep(2000, { baseMs: 0, maxMs: 8000 }));
+  assert.throws(() => escalateSleep(2000, { baseMs: 5000, maxMs: 1000 }));
+});
+
+test('adaptive loop: a transient stall self-heals, a real floor still stops', () => {
+  const BASE = 2000, MAX = 8000, LIMIT = 4;
+  // model a "loader": returns progress=false until the sleep is >= readyAt, then true; a floor never readies.
+  function runWalk(readyAt) {
+    let sleep = BASE, stale = 0, steps = 0, healed = false;
+    for (let i = 0; i < 50; i++) {
+      steps++;
+      const progressed = readyAt !== Infinity && sleep >= readyAt;
+      if (progressed) { sleep = BASE; stale = 0; healed = true; return { stopped: false, healed, steps }; }
+      if (sleep < MAX) sleep = escalateSleep(sleep, { baseMs: BASE, maxMs: MAX });
+      else stale++;
+      if (stale >= LIMIT) return { stopped: true, healed, steps };
+    }
+    return { stopped: false, healed, steps };
+  }
+  // transient: readies once sleep reaches 5120ms -> should heal, not stop
+  const t = runWalk(5000);
+  assert.equal(t.stopped, false);
+  assert.equal(t.healed, true);
+  // genuine floor: never readies -> escalates to max, then stalls out and stops
+  const f = runWalk(Infinity);
+  assert.equal(f.stopped, true);
+  assert.equal(f.healed, false);
 });

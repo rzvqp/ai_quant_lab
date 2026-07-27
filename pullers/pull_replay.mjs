@@ -24,7 +24,7 @@
 import { evaluate, KNOWN_PATHS } from './src/connection.js';
 import { setSymbol, setTimeframe } from './src/core/chart.js';
 import fs from 'fs';
-import { nextOverlapSeekMs } from './replay_seek.mjs';
+import { nextOverlapSeekMs, escalateSleep } from './replay_seek.mjs';
 
 const RP = KNOWN_PATHS.replayApi;
 const BARS = KNOWN_PATHS.mainSeriesBars;
@@ -39,6 +39,7 @@ const OUT = arg('out');
 const MAX_ITERS = parseInt(arg('max-iters', '4000'), 10);
 const STALL_LIMIT = parseInt(arg('stall', '4'), 10);
 const STEP_SLEEP = parseInt(arg('sleep', '1900'), 10);
+const MAX_SLEEP = parseInt(arg('max-sleep', String(Math.max(8000, STEP_SLEEP * 4))), 10);
 const FLUSH_EVERY = parseInt(arg('flush', '25'), 10);
 const OVERLAP = parseInt(arg('overlap', '5'), 10);   // window overlap in bars (>=2) — see FIX 2
 if (!OUT) { console.error('ERROR: --out <path> is required'); process.exit(2); }
@@ -108,19 +109,27 @@ await sleep(2500);
 { const b = await readBarsRetry(); if (b) { add(b); oldest = Math.min(oldest, b[0][0]); } }
 console.log(`TF=${TF} floor=${iso(FLOOR)} overlap=${OVERLAP} start oldest=${iso(oldest)} total=${map.size}`);
 
-let stale = 0, reachedFloor = false;
+// Adaptive stall recovery: on a no-progress step, escalate the sleep (deep-history windows can load
+// slower than the base sleep) and only count toward the stall limit once the sleep is pinned at
+// MAX_SLEEP — a transient slow load self-heals, a genuine floor still stops. Replaces the manual
+// resume-with-longer-sleep dance used on the M15/M5 pulls.
+let stale = 0, reachedFloor = false, curSleep = STEP_SLEEP;
 for (let i = 1; i <= MAX_ITERS && oldest > FLOOR; i++) {
   await selectDate(nextOverlapSeekMs(oldest, OVERLAP, TF));
-  await sleep(STEP_SLEEP);
+  await sleep(curSleep);
   const bars = await readBarsRetry();
-  if (!bars) { stale++; if (stale >= STALL_LIMIT) { console.log(`no bars ${stale}x -> stop`); break; } continue; }
-  const wf = bars[0][0];
-  const added = add(bars);
-  if (wf < oldest) { oldest = wf; stale = 0; }
-  else { stale++; }
-  if (i % 5 === 0) console.log(`iter ${i}: oldest=${iso(oldest)} +${added} total=${map.size} stale=${stale}`);
+  const wf = bars ? bars[0][0] : oldest;
+  const added = bars ? add(bars) : 0;
+  if (bars && wf < oldest) {
+    oldest = wf; stale = 0; curSleep = STEP_SLEEP;            // progress -> reset sleep
+  } else if (curSleep < MAX_SLEEP) {
+    curSleep = escalateSleep(curSleep, { baseMs: STEP_SLEEP, maxMs: MAX_SLEEP });  // give TV more time
+  } else {
+    stale++;                                                   // already at max sleep -> real stall
+  }
+  if (i % 5 === 0) console.log(`iter ${i}: oldest=${iso(oldest)} +${added} total=${map.size} stale=${stale} sleep=${curSleep}`);
   if (i % FLUSH_EVERY === 0) flush();
-  if (stale >= STALL_LIMIT) { console.log(`FLOOR reached — oldest stable at ${iso(oldest)}`); reachedFloor = true; break; }
+  if (stale >= STALL_LIMIT) { console.log(`FLOOR reached — oldest stable at ${iso(oldest)} (sleep pinned at ${curSleep}ms)`); reachedFloor = true; break; }
 }
 
 try { await evaluate(`${RP}.stopReplay()`); } catch (e) {}

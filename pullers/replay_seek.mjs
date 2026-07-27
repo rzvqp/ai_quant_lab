@@ -67,3 +67,16 @@ export function nextOverlapSeekMs(frontierSec, overlapBars, tf) {
   }
   return (frontierSec + overlapBars * barSeconds(tf)) * 1000;
 }
+
+// Adaptive stall recovery. Deep-history windows sometimes load slower than the per-step sleep,
+// producing a TRANSIENT no-progress step that, with a fixed sleep, would prematurely trip the stall
+// limit (observed on the M15 and M5 pulls, each requiring a manual resume with a longer sleep). Instead
+// of a manual resume, escalate the sleep on each no-progress step (giving TV more time) and reset it on
+// progress. A genuine floor keeps failing even at maxMs, so the caller only counts toward the stall
+// limit once the sleep is already pinned at maxMs — a slow load self-heals, a real floor still stops.
+export function escalateSleep(currentMs, { baseMs, maxMs, factor = 1.6 } = {}) {
+  if (!(baseMs > 0) || !(maxMs >= baseMs)) {
+    throw new Error(`escalateSleep: need 0 < baseMs <= maxMs, got baseMs=${baseMs} maxMs=${maxMs}`);
+  }
+  return Math.min(Math.round(currentMs * factor), maxMs);
+}
