@@ -21,12 +21,18 @@ from typing import Any
 import numpy as np
 import pandas as pd  # type: ignore[import-untyped]
 
-from .split_manifest import ManifestError, discovery_window, load_manifest
+from .split_manifest import (
+    ManifestError,
+    discovery_window,
+    entry_file,
+    load_manifest,
+    verify_data_file,
+)
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(_ROOT, "data", "market")
 
-LOADER_VERSION = "flowA_common_v3_manifest_gated_2026-07-27"
+LOADER_VERSION = "flowA_common_v4_manifest_and_datafile_hash_gated_2026-07-27"
 
 # CEO-approved boundary (authorization message, 2026-07-21): the Research Lab's own consumed/invalidated
 # terminal holdout, 2025-10-23 09:15 UTC -> 2026-07-13 06:00 UTC. No observation at or after the start of
@@ -67,8 +73,8 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
     (True only when this function returns successfully), `min_date_used`, `max_date_used`, `n_bars_used`,
     `n_bars_before_cutoff`, `n_bars_excluded_by_cutoff`, `loader_version`, `timeframe`.
     """
-    if tf not in ("M15", "M5", "H1", "H4", "D1"):
-        raise HoldoutConfigError(f"tf must be one of M15/M5/H1/H4/D1, got {tf!r}")
+    if tf not in ("M15", "M15_v2", "M5", "H1", "H4", "D1"):
+        raise HoldoutConfigError(f"tf must be one of M15/M15_v2/M5/H1/H4/D1, got {tf!r}")
     if not data_split_id:
         raise HoldoutConfigError(
             "data_split_id is required -- fail-closed: this loader assumes no default split.")
@@ -82,20 +88,27 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
         raise HoldoutConfigError(f"cutoff {cutoff!r} could not be parsed as a timestamp: {e}") from e
     cutoff_ts = cutoff_ts.tz_localize("UTC") if cutoff_ts.tzinfo is None else cutoff_ts.tz_convert("UTC")
 
-    # MANIFEST GATE. discovery_window() raises for any timeframe not exactly VALIDATED (M5/H1 =
-    # AWAITING_REGIME_MAP, H4/D1 = absent) and for a missing/tampered manifest -- all of which surface
-    # here as HoldoutConfigError, i.e. sealed. Only M15's VALIDATED discovery segment gets through.
+    # MANIFEST GATE -- two independent fail-closed checks, both of which must pass:
+    #   (1) load_manifest() verifies the manifest's own content_hash.
+    #   (2) discovery_window()/entry_file() require the timeframe status be EXACTLY "VALIDATED"
+    #       (M15_v2 = AWAITING_DATA_FILE_HASH, M5/H1 = AWAITING_REGIME_MAP_AND_DATA_FILE_HASH, H4/D1
+    #       absent -- all sealed), and verify_data_file() checks the governed file's SHA-256 against the
+    #       manifest so a swapped/one-byte-modified data file is rejected. The file to read comes from
+    #       the entry's file_path (NOT constructed from tf) -- that is how 'M15' resolves to the legacy
+    #       superseded file and 'M15_v2' to the extended canonical file without aliasing.
+    # Any failure surfaces here as HoldoutConfigError, i.e. no access.
     try:
         manifest = load_manifest()
         disc_start_epoch, disc_end_epoch = discovery_window(manifest, tf)
+        file_path, expected_sha = entry_file(manifest, tf)
+        data_path = verify_data_file(_ROOT, file_path, expected_sha)
     except ManifestError as e:
         raise HoldoutConfigError(str(e)) from e
     disc_start_ts = pd.Timestamp(disc_start_epoch, unit="s", tz="UTC")
     disc_end_ts = pd.Timestamp(disc_end_epoch, unit="s", tz="UTC")
     eff_end_ts = min(cutoff_ts, disc_end_ts)  # manifest embargo wins; the caller may only tighten
 
-    path = os.path.join(DATA_DIR, f"OANDA_XAUUSD_{tf}.csv")
-    raw = pd.read_csv(path).drop_duplicates("time").sort_values("time").reset_index(drop=True)
+    raw = pd.read_csv(data_path).drop_duplicates("time").sort_values("time").reset_index(drop=True)
     raw["dt"] = pd.to_datetime(raw["time"], unit="s", utc=True)
     n_before = int(len(raw))
 
@@ -125,6 +138,8 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
         manifest_hash=manifest_ch.get("value") if isinstance(manifest_ch, dict) else None,
         manifest_discovery_start=disc_start_ts.isoformat(),
         manifest_discovery_end=disc_end_ts.isoformat(),
+        data_file_path=file_path,
+        data_file_sha256=expected_sha,
         holdout_excluded=True,
         min_date_used=str(d["dt"].min()),
         max_date_used=str(d["dt"].max()),

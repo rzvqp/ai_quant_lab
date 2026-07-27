@@ -1,6 +1,6 @@
 {
   "manifest_id": "STAT-SPLIT-MANIFEST",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "published_date": "2026-07-27",
   "authority": "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification authority only, per Contract Statistician<->Validation Engine SS1.7. This file is consumed by loaders and executing divisions; it is not modified by them. Any change requires a new version and a re-issued hash.",
   "source_documents": [
@@ -68,96 +68,235 @@
       "embargo_bars": 1000,
       "embargo_seconds": 900000,
       "discovery_range": {
-        "start_epoch": 1671187500, "start_iso": "2022-12-16T10:45:00Z",
-        "end_epoch": 1760310900, "end_iso": "2025-10-12T23:15:00Z"
+        "start_epoch": 1671187500,
+        "start_iso": "2022-12-16T10:45:00Z",
+        "end_epoch": 1760310900,
+        "end_iso": "2025-10-12T23:15:00Z"
       },
       "embargo_range": {
-        "start_epoch": 1760310900, "start_iso": "2025-10-12T23:15:00Z",
-        "end_epoch": 1762110900, "end_iso": "2025-11-02T19:15:00Z"
+        "start_epoch": 1760310900,
+        "start_iso": "2025-10-12T23:15:00Z",
+        "end_epoch": 1762110900,
+        "end_iso": "2025-11-02T19:15:00Z"
       },
       "sealed_range": {
-        "start_epoch": 1762110900, "start_iso": "2025-11-02T19:15:00Z",
-        "end_epoch": 1783922400, "end_iso": "2026-07-13T06:00:00Z"
+        "start_epoch": 1762110900,
+        "start_iso": "2025-11-02T19:15:00Z",
+        "end_epoch": 1783922400,
+        "end_iso": "2026-07-13T06:00:00Z"
       },
       "regime_segments": null,
-      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "not yet requested prior to this version; see formal_requests_to_data_acquisition" },
-      "status": "VALIDATED"
+      "data_file_sha256": {
+        "value": "c777cb9c6097287850b590b205ea4227b1a32ecb9255bdd611723f0364c64e86",
+        "status": "PROVIDED_BY_DATA_ACQUISITION_AWAITING_STATISTICIAN_RATIFICATION",
+        "source": "SHA-256 computed directly from the physical LF-canonical file by Data Acquisition (Mandate 2.5); published in this commit and in DATA_ACQUISITION_FINAL_REPORT.md. Not relayed secondhand."
+      },
+      "status": "VALIDATED",
+      "file_path": "data/market/OANDA_XAUUSD_M15__SUPERSEDED_v1_2022-12-16_to_2026-07-13_R03terminal.csv"
     },
     "M15_v2": {
       "bar_seconds": 900,
       "dataset": {
         "n_bars": 355696,
-        "start_epoch": 1311638400, "start_iso": "2011-07-26T00:00:00Z",
-        "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z",
+        "start_epoch": 1311638400,
+        "start_iso": "2011-07-26T00:00:00Z",
+        "end_epoch": 1785110400,
+        "end_iso": "2026-07-27T00:00:00Z",
         "date_precision_note": "Date-only precision as reported; exact first/last-bar HH:MM:SS pending Data Acquisition confirmation (see formal_requests_to_data_acquisition)."
       },
       "split_method": "50_50_stratified_by_regime_segment_with_inherited_overlap",
       "regime_map_provenance": "Segment boundaries below use the four-bucket regime characterization from Research Lab's FOUR_REGIME_RUN_STATUS_v1.0.md (2011-2015 bear -42%, 2015-2020 bull +86%, 2020-2022 correction -17%, 2022-2026 bull +223%), operationalized into exact instants via a disclosed convention: each year-label transition = that calendar year's January 1st, 00:00:00Z. This is a convention applied to an already-existing characterization, not a fresh day-precision mechanical run -- flagged in formal_requests_to_data_acquisition for confirmation/refinement in a future version. Sufficient for this version's functional purpose (real, disclosed, non-arbitrary boundaries enabling fail-closed enforcement), not a claim of day-level statistical precision.",
       "overlap_with_M15": {
-        "range": { "start_epoch": 1671187500, "start_iso": "2022-12-16T10:45:00Z", "end_epoch": 1783922400, "end_iso": "2026-07-13T06:00:00Z" },
+        "range": {
+          "start_epoch": 1671187500,
+          "start_iso": "2022-12-16T10:45:00Z",
+          "end_epoch": 1783922400,
+          "end_iso": "2026-07-13T06:00:00Z"
+        },
         "rule": "See dataset_identity_resolution rule_2. M15_v2 inherits M15's discovery_range/embargo_range/sealed_range verbatim for this range; it is not independently split here."
       },
       "embargo_bars": 1000,
       "embargo_seconds": 900000,
       "regime_segments": [
         {
-          "label": "2011-2015 bear (-42%)", "type": "bear",
-          "segment_range": { "start_epoch": 1311638400, "start_iso": "2011-07-26T00:00:00Z", "end_epoch": 1420070400, "end_iso": "2015-01-01T00:00:00Z" },
+          "label": "2011-2015 bear (-42%)",
+          "type": "bear",
+          "segment_range": {
+            "start_epoch": 1311638400,
+            "start_iso": "2011-07-26T00:00:00Z",
+            "end_epoch": 1420070400,
+            "end_iso": "2015-01-01T00:00:00Z"
+          },
           "split_ratio": "50/50",
-          "discovery_range": { "start_epoch": 1311638400, "start_iso": "2011-07-26T00:00:00Z", "end_epoch": 1364954400, "end_iso": "2013-04-03T02:00:00Z" },
-          "intra_segment_embargo": { "start_epoch": 1364954400, "start_iso": "2013-04-03T02:00:00Z", "end_epoch": 1366754400, "end_iso": "2013-04-23T22:00:00Z" },
-          "sealed_range": { "start_epoch": 1366754400, "start_iso": "2013-04-23T22:00:00Z", "end_epoch": 1419170400, "end_iso": "2014-12-21T14:00:00Z" },
-          "trailing_inter_segment_embargo": { "start_epoch": 1419170400, "start_iso": "2014-12-21T14:00:00Z", "end_epoch": 1420970400, "end_iso": "2015-01-11T10:00:00Z" }
+          "discovery_range": {
+            "start_epoch": 1311638400,
+            "start_iso": "2011-07-26T00:00:00Z",
+            "end_epoch": 1364954400,
+            "end_iso": "2013-04-03T02:00:00Z"
+          },
+          "intra_segment_embargo": {
+            "start_epoch": 1364954400,
+            "start_iso": "2013-04-03T02:00:00Z",
+            "end_epoch": 1366754400,
+            "end_iso": "2013-04-23T22:00:00Z"
+          },
+          "sealed_range": {
+            "start_epoch": 1366754400,
+            "start_iso": "2013-04-23T22:00:00Z",
+            "end_epoch": 1419170400,
+            "end_iso": "2014-12-21T14:00:00Z"
+          },
+          "trailing_inter_segment_embargo": {
+            "start_epoch": 1419170400,
+            "start_iso": "2014-12-21T14:00:00Z",
+            "end_epoch": 1420970400,
+            "end_iso": "2015-01-11T10:00:00Z"
+          }
         },
         {
-          "label": "2015-2020 bull (+86%)", "type": "bull",
-          "segment_range": { "start_epoch": 1420070400, "start_iso": "2015-01-01T00:00:00Z", "end_epoch": 1577836800, "end_iso": "2020-01-01T00:00:00Z" },
+          "label": "2015-2020 bull (+86%)",
+          "type": "bull",
+          "segment_range": {
+            "start_epoch": 1420070400,
+            "start_iso": "2015-01-01T00:00:00Z",
+            "end_epoch": 1577836800,
+            "end_iso": "2020-01-01T00:00:00Z"
+          },
           "split_ratio": "50/50",
-          "discovery_range": { "start_epoch": 1420970400, "start_iso": "2015-01-11T10:00:00Z", "end_epoch": 1498053600, "end_iso": "2017-06-21T14:00:00Z" },
-          "intra_segment_embargo": { "start_epoch": 1498053600, "start_iso": "2017-06-21T14:00:00Z", "end_epoch": 1499853600, "end_iso": "2017-07-12T10:00:00Z" },
-          "sealed_range": { "start_epoch": 1499853600, "start_iso": "2017-07-12T10:00:00Z", "end_epoch": 1576936800, "end_iso": "2019-12-21T14:00:00Z" },
-          "trailing_inter_segment_embargo": { "start_epoch": 1576936800, "start_iso": "2019-12-21T14:00:00Z", "end_epoch": 1578736800, "end_iso": "2020-01-11T10:00:00Z" }
+          "discovery_range": {
+            "start_epoch": 1420970400,
+            "start_iso": "2015-01-11T10:00:00Z",
+            "end_epoch": 1498053600,
+            "end_iso": "2017-06-21T14:00:00Z"
+          },
+          "intra_segment_embargo": {
+            "start_epoch": 1498053600,
+            "start_iso": "2017-06-21T14:00:00Z",
+            "end_epoch": 1499853600,
+            "end_iso": "2017-07-12T10:00:00Z"
+          },
+          "sealed_range": {
+            "start_epoch": 1499853600,
+            "start_iso": "2017-07-12T10:00:00Z",
+            "end_epoch": 1576936800,
+            "end_iso": "2019-12-21T14:00:00Z"
+          },
+          "trailing_inter_segment_embargo": {
+            "start_epoch": 1576936800,
+            "start_iso": "2019-12-21T14:00:00Z",
+            "end_epoch": 1578736800,
+            "end_iso": "2020-01-11T10:00:00Z"
+          }
         },
         {
-          "label": "2020-2022 correction (-17%)", "type": "correction",
-          "segment_range": { "start_epoch": 1577836800, "start_iso": "2020-01-01T00:00:00Z", "end_epoch": 1640995200, "end_iso": "2022-01-01T00:00:00Z" },
+          "label": "2020-2022 correction (-17%)",
+          "type": "correction",
+          "segment_range": {
+            "start_epoch": 1577836800,
+            "start_iso": "2020-01-01T00:00:00Z",
+            "end_epoch": 1640995200,
+            "end_iso": "2022-01-01T00:00:00Z"
+          },
           "split_ratio": "50/50",
-          "discovery_range": { "start_epoch": 1578736800, "start_iso": "2020-01-11T10:00:00Z", "end_epoch": 1608516000, "end_iso": "2020-12-21T02:00:00Z" },
-          "intra_segment_embargo": { "start_epoch": 1608516000, "start_iso": "2020-12-21T02:00:00Z", "end_epoch": 1610316000, "end_iso": "2021-01-10T22:00:00Z" },
-          "sealed_range": { "start_epoch": 1610316000, "start_iso": "2021-01-10T22:00:00Z", "end_epoch": 1640095200, "end_iso": "2021-12-21T14:00:00Z" },
-          "trailing_inter_segment_embargo": { "start_epoch": 1640095200, "start_iso": "2021-12-21T14:00:00Z", "end_epoch": 1641895200, "end_iso": "2022-01-11T10:00:00Z" }
+          "discovery_range": {
+            "start_epoch": 1578736800,
+            "start_iso": "2020-01-11T10:00:00Z",
+            "end_epoch": 1608516000,
+            "end_iso": "2020-12-21T02:00:00Z"
+          },
+          "intra_segment_embargo": {
+            "start_epoch": 1608516000,
+            "start_iso": "2020-12-21T02:00:00Z",
+            "end_epoch": 1610316000,
+            "end_iso": "2021-01-10T22:00:00Z"
+          },
+          "sealed_range": {
+            "start_epoch": 1610316000,
+            "start_iso": "2021-01-10T22:00:00Z",
+            "end_epoch": 1640095200,
+            "end_iso": "2021-12-21T14:00:00Z"
+          },
+          "trailing_inter_segment_embargo": {
+            "start_epoch": 1640095200,
+            "start_iso": "2021-12-21T14:00:00Z",
+            "end_epoch": 1641895200,
+            "end_iso": "2022-01-11T10:00:00Z"
+          }
         },
         {
-          "label": "2022 pre-overlap sliver (part of the broader 2022-2026 bull +223% macro-regime; only the portion before M15's own dataset begins is M15_v2's own jurisdiction -- see overlap_with_M15 for the rest)", "type": "bull_partial",
-          "segment_range": { "start_epoch": 1640995200, "start_iso": "2022-01-01T00:00:00Z", "end_epoch": 1671187500, "end_iso": "2022-12-16T10:45:00Z" },
+          "label": "2022 pre-overlap sliver (part of the broader 2022-2026 bull +223% macro-regime; only the portion before M15's own dataset begins is M15_v2's own jurisdiction -- see overlap_with_M15 for the rest)",
+          "type": "bull_partial",
+          "segment_range": {
+            "start_epoch": 1640995200,
+            "start_iso": "2022-01-01T00:00:00Z",
+            "end_epoch": 1671187500,
+            "end_iso": "2022-12-16T10:45:00Z"
+          },
           "split_ratio": "50/50",
-          "discovery_range": { "start_epoch": 1641895200, "start_iso": "2022-01-11T10:00:00Z", "end_epoch": 1655191350, "end_iso": "2022-06-14T07:22:30Z" },
-          "intra_segment_embargo": { "start_epoch": 1655191350, "start_iso": "2022-06-14T07:22:30Z", "end_epoch": 1656991350, "end_iso": "2022-07-05T03:22:30Z" },
-          "sealed_range": { "start_epoch": 1656991350, "start_iso": "2022-07-05T03:22:30Z", "end_epoch": 1670287500, "end_iso": "2022-12-06T00:45:00Z" },
+          "discovery_range": {
+            "start_epoch": 1641895200,
+            "start_iso": "2022-01-11T10:00:00Z",
+            "end_epoch": 1655191350,
+            "end_iso": "2022-06-14T07:22:30Z"
+          },
+          "intra_segment_embargo": {
+            "start_epoch": 1655191350,
+            "start_iso": "2022-06-14T07:22:30Z",
+            "end_epoch": 1656991350,
+            "end_iso": "2022-07-05T03:22:30Z"
+          },
+          "sealed_range": {
+            "start_epoch": 1656991350,
+            "start_iso": "2022-07-05T03:22:30Z",
+            "end_epoch": 1670287500,
+            "end_iso": "2022-12-06T00:45:00Z"
+          },
           "handoff_embargo_to_M15_onesided": {
-            "range": { "start_epoch": 1670287500, "start_iso": "2022-12-06T00:45:00Z", "end_epoch": 1671187500, "end_iso": "2022-12-16T10:45:00Z" },
+            "range": {
+              "start_epoch": 1670287500,
+              "start_iso": "2022-12-06T00:45:00Z",
+              "end_epoch": 1671187500,
+              "end_iso": "2022-12-16T10:45:00Z"
+            },
             "note": "One-sided (1000 bars, not 2000): the full margin is taken entirely from this segment's sealed tail. M15's own dataset start (1671187500) is NOT shifted -- per CEO's explicit instruction that the M15 entry remains untouched."
           }
         }
       ],
       "post_M15_tail": {
-        "range": { "start_epoch": 1783922400, "start_iso": "2026-07-13T06:00:00Z", "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z" },
+        "range": {
+          "start_epoch": 1783922400,
+          "start_iso": "2026-07-13T06:00:00Z",
+          "end_epoch": 1785110400,
+          "end_iso": "2026-07-27T00:00:00Z"
+        },
         "classification": "sealed",
         "reason": "13.75 days -- shorter than a single embargo width (10.4 days) applied on each side would leave anything usable. Too short to split meaningfully; defaults to fully sealed (the conservative choice when a segment is inadequate for its own split, per the same principle already used for H1/M5 short-segment handling)."
       },
       "irreplaceable_segment_flag": {
-        "range": { "start_epoch": 1142812800, "start_iso": "2006-03-20T00:00:00Z", "end_epoch": 1311638400, "end_iso": "2011-07-26T00:00:00Z" },
+        "range": {
+          "start_epoch": 1142812800,
+          "start_iso": "2006-03-20T00:00:00Z",
+          "end_epoch": 1311638400,
+          "end_iso": "2011-07-26T00:00:00Z"
+        },
         "note": "This range is OUTSIDE M15_v2's own dataset (M15_v2 starts 2011-07-26) -- it exists only on H1 (see H1.irreplaceable_segment_flag below). Included here as a cross-reference so a reader of the M15_v2 entry does not assume M15_v2 covers it."
       },
-      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "requested this version; see formal_requests_to_data_acquisition. A value was relayed secondhand via CEO this round and is deliberately NOT used here." },
-      "status": "AWAITING_DATA_FILE_HASH"
+      "data_file_sha256": {
+        "value": "57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37",
+        "status": "PROVIDED_BY_DATA_ACQUISITION_AWAITING_STATISTICIAN_RATIFICATION",
+        "source": "SHA-256 computed directly from the physical LF-canonical file by Data Acquisition (Mandate 2.5); published in this commit and in DATA_ACQUISITION_FINAL_REPORT.md. Not relayed secondhand."
+      },
+      "status": "AWAITING_DATA_FILE_HASH",
+      "file_path": "data/market/OANDA_XAUUSD_M15.csv"
     },
     "M5": {
       "bar_seconds": 300,
       "dataset": {
         "n_bars": 354669,
-        "start_epoch": 1627344000, "start_iso": "2021-07-27T00:00:00Z",
-        "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z",
+        "start_epoch": 1627344000,
+        "start_iso": "2021-07-27T00:00:00Z",
+        "end_epoch": 1785110400,
+        "end_iso": "2026-07-27T00:00:00Z",
         "date_precision_note": "Date-only precision as reported; exact first/last-bar HH:MM:SS pending Data Acquisition confirmation."
       },
       "split_method": "50_50_stratified_by_regime_segment",
@@ -166,17 +305,26 @@
       "embargo_seconds": 900000,
       "embargo_derivation": "TRACK_HORIZON=960 M15 bars = 864000s = 10 days. M15/M5 bar-second ratio = 900/300 = 3. Raw M5-equivalent = 960*3 = 2880 bars. Margin factor 25/24 applied: 2880*25/24 = 3000.",
       "regime_segments": "AWAITING_REGIME_MAP",
-      "discovery_range": null, "embargo_range": null, "sealed_range": null,
-      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "requested this version; see formal_requests_to_data_acquisition. A value was relayed secondhand via CEO this round and is deliberately NOT used here." },
+      "discovery_range": null,
+      "embargo_range": null,
+      "sealed_range": null,
+      "data_file_sha256": {
+        "value": "cbb6eebe1a189ebb20972318a8d98a36bfa461d2cd030bbaa7ba5430cc9f3814",
+        "status": "PROVIDED_BY_DATA_ACQUISITION_AWAITING_STATISTICIAN_RATIFICATION",
+        "source": "SHA-256 computed directly from the physical LF-canonical file by Data Acquisition (Mandate 2.5); published in this commit and in DATA_ACQUISITION_FINAL_REPORT.md. Not relayed secondhand."
+      },
       "status": "AWAITING_REGIME_MAP_AND_DATA_FILE_HASH",
-      "loader_contract": "Per fail_closed_default: while status != VALIDATED, 100% of M5 bars are SEALED. Data Acquisition may whitelist M5 in the loader code now; the data itself stays inert until both the regime map and the data-file hash are delivered and confirmed."
+      "loader_contract": "Per fail_closed_default: while status != VALIDATED, 100% of M5 bars are SEALED. Data Acquisition may whitelist M5 in the loader code now; the data itself stays inert until both the regime map and the data-file hash are delivered and confirmed.",
+      "file_path": "data/market/OANDA_XAUUSD_M5.csv"
     },
     "H1": {
       "bar_seconds": 3600,
       "dataset": {
         "n_bars": 122601,
-        "start_epoch": 1142812800, "start_iso": "2006-03-20T00:00:00Z",
-        "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z",
+        "start_epoch": 1142812800,
+        "start_iso": "2006-03-20T00:00:00Z",
+        "end_epoch": 1785110400,
+        "end_iso": "2026-07-27T00:00:00Z",
         "date_precision_note": "Date-only precision as reported; exact first/last-bar HH:MM:SS pending Data Acquisition confirmation."
       },
       "split_method": "50_50_stratified_by_regime_segment",
@@ -185,19 +333,32 @@
       "embargo_seconds": 900000,
       "embargo_derivation": "TRACK_HORIZON=960 M15 bars = 864000s = 10 days. M15/H1 bar-second ratio = 3600/900 = 4. Raw H1-equivalent = 960/4 = 240 bars. Margin factor 25/24 applied: 240*25/24 = 250.",
       "regime_segments": "AWAITING_REGIME_MAP",
-      "discovery_range": null, "embargo_range": null, "sealed_range": null,
+      "discovery_range": null,
+      "embargo_range": null,
+      "sealed_range": null,
       "irreplaceable_segment_flag": {
-        "range": { "start_epoch": 1142812800, "start_iso": "2006-03-20T00:00:00Z", "end_epoch": 1311638400, "end_iso": "2011-07-26T00:00:00Z" },
+        "range": {
+          "start_epoch": 1142812800,
+          "start_iso": "2006-03-20T00:00:00Z",
+          "end_epoch": 1311638400,
+          "end_iso": "2011-07-26T00:00:00Z"
+        },
         "note": "The single most irreplaceable segment in the lab's history: never observed at any resolution, in this lab, ever -- not even by the withdrawn M15-extended attempt. Superseded reference point: M15_v2's actual delivered start (2011-07-26) replaces the earlier withdrawn attempt's target date (2011-07-25). This field exists so a consumer reading ONLY this JSON (not the prose protocol documents) still sees the heightened-vigilance flag. Its irreplaceability is a reason for MORE caution before opening it, not less -- it does not change the split_ratio or embargo width, which remain the standard 50/50 and 250-bar rules once a regime map is delivered."
       },
-      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "requested this version; see formal_requests_to_data_acquisition. A value was relayed secondhand via CEO this round and is deliberately NOT used here." },
+      "data_file_sha256": {
+        "value": "414adcbe02b8a66469a75c08428ab336267154c19b44fb2f569e252643b1078a",
+        "status": "PROVIDED_BY_DATA_ACQUISITION_AWAITING_STATISTICIAN_RATIFICATION",
+        "source": "SHA-256 computed directly from the physical LF-canonical file by Data Acquisition (Mandate 2.5); published in this commit and in DATA_ACQUISITION_FINAL_REPORT.md. Not relayed secondhand."
+      },
       "status": "AWAITING_REGIME_MAP_AND_DATA_FILE_HASH",
-      "loader_contract": "Per fail_closed_default: while status != VALIDATED, 100% of H1 bars are SEALED, including the never-seen 2006-2011 segment."
+      "loader_contract": "Per fail_closed_default: while status != VALIDATED, 100% of H1 bars are SEALED, including the never-seen 2006-2011 segment.",
+      "file_path": "acquisition_staging/OANDA_XAUUSD_H1.csv"
     }
   },
   "content_hash": {
     "algorithm": "sha256",
     "computed_over": "this exact file with this content_hash.value field set to the empty string \"\", UTF-8 bytes, no trailing newline added or removed beyond what is committed",
-    "value": "4d686374f04d3be8e54d1f372e637e99400425ca1459954dfe1368ca808e2c27"
-  }
+    "value": "99b9b385e76590f213ccbfd42285be4f075b5daf04abd57f31d085c09da7a57b"
+  },
+  "changelog_v2_1": "Data Acquisition (Mandate 2.5) injects the four data_file_sha256 values, each computed DIRECTLY from the physical LF-canonical data file in Data Acquisition's own environment, and adds a file_path to every entry. H1's file_path points into acquisition_staging/ because H1 is NOT connected to canonical (Mandate 2 Correction 1: AWAITING_REGIME_MAP). Timeframe statuses are UNCHANGED: M15 stays VALIDATED, M15_v2 stays AWAITING_DATA_FILE_HASH, M5/H1 stay AWAITING_REGIME_MAP_AND_DATA_FILE_HASH. Promotion is the Statistician's to make; Data Acquisition only supplies the file-hash evidence. content_hash recomputed by the same validated method (UTF-8 bytes, LF-only, content_hash.value blanked)."
 }

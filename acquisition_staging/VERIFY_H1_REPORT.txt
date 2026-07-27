@@ -1,0 +1,88 @@
+==============================================================================
+VERIFICATION — OANDA:XAUUSD H1   new=acquisition_staging/OANDA_XAUUSD_H1.csv
+==============================================================================
+
+[VERIFICATION 0a] native H1 vs EXISTING resampled-from-M15 H1 (overlap)
+  NOTE: the existing H1 was resampled from the OLD M15 (7-col, 'sub'), not natively pulled,
+  and the old M15 carried the provisional-edge defect. So this is NOT a same-source compare;
+  small OHLC/volume differences are expected. Authoritative check is CHECK 1 below.
+  overlap bars                 : 20832  (2023-01-02 23:00:00Z..2026-07-13 05:00:00Z)
+  all timestamps :00 aligned   : True
+  bars with OHLC difference    : 1  (0.00%)  max|delta|=1.8900
+  bars with volume difference  : 1  (0.00%)
+     2023-12-26 14:00:00Z  native=(2058.81, 2061.955, 2054.585, 2057.21)  resampled=(2060.7, 2061.77, 2054.585, 2057.21)
+
+[CHECK 1] CONSISTENCY — aggregate extended M15 to hourly vs native H1 (SAME SOURCE)
+  complete hourly buckets compared : 88567
+  incomplete buckets skipped       : 982  (mostly the 21:00 UTC maintenance hour)
+  OHLC mismatches (EXACT)          : 0
+  volume mismatches                : 11
+  >>> CHECK 1 VERDICT (OHLC) : PASS <<<
+
+[CHECK 2] COVERAGE MAP — bars per UTC hour
+  00:00 UTC      5255  #######################################
+  01:00 UTC      5261  #######################################
+  02:00 UTC      5260  #######################################
+  03:00 UTC      5259  #######################################
+  04:00 UTC      5262  ########################################
+  05:00 UTC      5262  ########################################
+  06:00 UTC      5260  #######################################
+  07:00 UTC      5256  #######################################
+  08:00 UTC      5254  #######################################
+  09:00 UTC      5255  #######################################
+  10:00 UTC      5254  #######################################
+  11:00 UTC      5253  #######################################
+  12:00 UTC      5257  #######################################
+  13:00 UTC      5259  #######################################
+  14:00 UTC      5255  #######################################
+  15:00 UTC      5256  #######################################
+  16:00 UTC      5252  #######################################
+  17:00 UTC      5227  #######################################
+  18:00 UTC      5196  #######################################
+  19:00 UTC      5149  #######################################
+  20:00 UTC      5130  ######################################
+  21:00 UTC      3142  #######################
+  22:00 UTC      4139  ###############################
+  23:00 UTC      5248  #######################################
+
+[CHECK 3] GAPS (missing intervals > one bar; weekends separate)
+  weekend gaps            : 1080
+  intra-week gaps > 1 bar : 2316
+     2012-12-24 18:00:00Z -> 2012-12-26 13:00:00Z   43.0 h (43 bars)
+     2012-12-31 18:00:00Z -> 2013-01-02 01:00:00Z   31.0 h (31 bars)
+     2013-12-24 18:00:00Z -> 2013-12-25 23:00:00Z   29.0 h (29 bars)
+     2013-12-31 18:00:00Z -> 2014-01-01 23:00:00Z   29.0 h (29 bars)
+     2014-12-24 18:00:00Z -> 2014-12-25 23:00:00Z   29.0 h (29 bars)
+     2014-12-31 18:00:00Z -> 2015-01-01 23:00:00Z   29.0 h (29 bars)
+     2019-12-24 18:00:00Z -> 2019-12-25 23:00:00Z   29.0 h (29 bars)
+     2024-12-24 18:00:00Z -> 2024-12-25 23:00:00Z   29.0 h (29 bars)
+     2025-12-24 18:00:00Z -> 2025-12-25 23:00:00Z   29.0 h (29 bars)
+     2008-12-24 21:00:00Z -> 2008-12-25 23:00:00Z   26.0 h (26 bars)
+     2018-12-31 21:00:00Z -> 2019-01-01 23:00:00Z   26.0 h (26 bars)
+     2019-12-31 21:00:00Z -> 2020-01-01 23:00:00Z   26.0 h (26 bars)
+
+[CHECK 4] INTEGRITY
+  sha256         : 414adcbe02b8a66469a75c08428ab336267154c19b44fb2f569e252643b1078a
+  bars           : 122601
+  distinct times : 122601  (duplicates: 0)
+  first bar      : 1142812800  2006-03-20 00:00:00Z
+  last  bar      : 1785171600  2026-07-27 17:00:00Z
+  span           : 20.36 years
+
+[CHECK 5] ANOMALIES — high amplitude on low volume
+  generic (range>=p99.9 [72.600] AND vol<=p5 [191]): 0
+
+[CHECK 6] BAR AMPLITUDE (high-low) per session
+  session          n     median          IQR (25-75)
+  asia         42075      2.544   [   1.601,    4.209]
+  london       26273      3.485   [   2.216,    5.670]
+  ny           41724      3.945   [   2.370,    6.750]
+  late         12529      1.810   [   1.122,    3.058]
+
+[CHECK 7] REGIME COVERAGE — descriptive (yearly closes; full map is on extended M15)
+  year-end closes: 2006:637, 2007:834, 2008:882, 2009:1097, 2010:1421, 2011:1565, 2012:1676, 2013:1205, 2014:1183, 2015:1061, 2016:1152, 2017:1303, 2018:1282, 2019:1517, 2020:1898, 2021:1829, 2022:1824, 2023:2063, 2024:2624, 2025:4323, 2026:4077
+  (2006-2011 pre-dates the M15 file — new regime territory: 2008 crisis run-up + 2011 peak.)
+
+==============================================================================
+END OF REPORT — nothing integrated, nothing modified.
+==============================================================================

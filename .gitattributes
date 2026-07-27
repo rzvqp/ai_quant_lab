@@ -1,1 +1,5 @@
 config/split_manifest.json -text
+data/market/OANDA_XAUUSD_M15.csv -text
+data/market/OANDA_XAUUSD_M5.csv -text
+data/market/OANDA_XAUUSD_M15__SUPERSEDED_v1_2022-12-16_to_2026-07-13_R03terminal.csv -text
+acquisition_staging/OANDA_XAUUSD_H1.csv -text

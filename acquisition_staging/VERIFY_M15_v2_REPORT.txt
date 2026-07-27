@@ -1,0 +1,99 @@
+==============================================================================
+VERIFICATION — OANDA:XAUUSD M15
+  new=acquisition_staging/OANDA_XAUUSD_M15.csv
+  existing=data/market/OANDA_XAUUSD_M15.csv
+==============================================================================
+
+[VERIFICATION 0 / CHECK 1] CONTROL — bar-by-bar OHLCV vs existing on overlap
+  Standard: ZERO mismatches, except the ONE pre-named exception below.
+  total overlap mismatches   : 1
+  named-exception mismatches : 1
+     [allowed] 2026-07-13 06:00:00Z  new=(4053.765, 4056.36, 4044.06, 4050.9, 13464.0)  existing=(4053.765, 4056.36, 4044.06, 4049.775, 8201.0)  (existing terminal bar 2026-07-13 06:00Z; TEST B: new=13464 correct, existing=8201 provisional)
+  DISALLOWED mismatches      : 0
+  >>> VERIFICATION 0 VERDICT : PASS <<<
+  existing bars              : 84152
+  overlap range              : 2022-12-16 10:45:00Z -> 2026-07-13 06:00:00Z
+  overlap bars compared      : 84152
+  existing bars NOT in new   : 0
+  OHLCV mismatches (EXACT)   : 0   (0.000% of overlap)
+  ZERO mismatches — extended file supersedes the existing cleanly (same source).
+
+[CHECK 2] COVERAGE MAP — bars per UTC hour
+  00:00 UTC     15473  #######################################
+  01:00 UTC     15481  #######################################
+  02:00 UTC     15483  #######################################
+  03:00 UTC     15483  #######################################
+  04:00 UTC     15478  #######################################
+  05:00 UTC     15481  #######################################
+  06:00 UTC     15479  #######################################
+  07:00 UTC     15482  #######################################
+  08:00 UTC     15479  #######################################
+  09:00 UTC     15478  #######################################
+  10:00 UTC     15477  #######################################
+  11:00 UTC     15480  #######################################
+  12:00 UTC     15480  #######################################
+  13:00 UTC     15484  ########################################
+  14:00 UTC     15480  #######################################
+  15:00 UTC     15480  #######################################
+  16:00 UTC     15480  #######################################
+  17:00 UTC     15361  #######################################
+  18:00 UTC     15187  #######################################
+  19:00 UTC     15046  ######################################
+  20:00 UTC     15014  ######################################
+  21:00 UTC      5957  ###############  <-- maintenance gap
+  22:00 UTC     10505  ###########################
+  23:00 UTC     15468  #######################################
+
+[CHECK 3] GAPS (missing intervals > one bar; weekends separate)
+  weekend gaps               : 800
+  intra-week gaps > 1 bar    : 3142
+  longest 15 intra-week gaps :
+     2012-12-24 18:00:00Z -> 2012-12-26 13:00:00Z   2580 min  (172 bars missing)
+     2012-12-31 18:00:00Z -> 2013-01-02 01:00:00Z   1860 min  (124 bars missing)
+     2013-12-24 18:00:00Z -> 2013-12-25 23:00:00Z   1740 min  (116 bars missing)
+     2013-12-31 18:00:00Z -> 2014-01-01 23:00:00Z   1740 min  (116 bars missing)
+     2014-12-24 18:15:00Z -> 2014-12-25 23:00:00Z   1725 min  (115 bars missing)
+     2019-12-24 18:30:00Z -> 2019-12-25 23:00:00Z   1710 min  (114 bars missing)
+     2024-12-24 18:30:00Z -> 2024-12-25 23:00:00Z   1710 min  (114 bars missing)
+     2025-12-24 18:30:00Z -> 2025-12-25 23:00:00Z   1710 min  (114 bars missing)
+     2014-12-31 18:45:00Z -> 2015-01-01 23:00:00Z   1695 min  (113 bars missing)
+     2018-12-31 21:45:00Z -> 2019-01-01 23:00:00Z   1515 min  (101 bars missing)
+     2019-12-31 21:45:00Z -> 2020-01-01 23:00:00Z   1515 min  (101 bars missing)
+     2024-12-31 21:45:00Z -> 2025-01-01 23:00:00Z   1515 min  (101 bars missing)
+     2025-12-31 21:45:00Z -> 2026-01-01 23:00:00Z   1515 min  (101 bars missing)
+     2018-12-24 23:15:00Z -> 2018-12-25 23:00:00Z   1425 min  (95 bars missing)
+     2015-12-31 23:00:00Z -> 2016-01-01 13:15:00Z   855 min  (57 bars missing)
+
+[CHECK 4] INTEGRITY
+  sha256         : 57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37
+  bars           : 355696
+  distinct times : 355696   (duplicates: 0)
+  first bar      : 1311697800  2011-07-26 16:30:00Z
+  last  bar      : 1785168900  2026-07-27 16:15:00Z
+  span           : 15.00 years
+
+[CHECK 5] ANOMALIES — high amplitude on low volume
+  generic (range>=p99.9 [41.850] AND vol<=p5 [74]) : 0
+  documented M15 signature (range 120-136 @ vol 748-3980)  : 0
+
+[CHECK 6] BAR AMPLITUDE (high-low) per session
+  session          n     median          IQR (25-75)
+  asia        123840      1.372   [   0.852,    2.342]
+  london       77394      1.804   [   1.130,    3.005]
+  ny          122532      1.973   [   1.174,    3.500]
+  late         31930      0.980   [   0.609,    1.730]
+
+[CHECK 7] REGIME COVERAGE — descriptive swing map (monthly closes, 15% reversal)
+  Descriptive only: no indicator/edge, no hypothesis. For split pre-registration.
+  from         to              start$      end$     chg%  regime
+  2011-07-31   2011-08-31      1615.4    1827.4    +13.1  UP
+  2011-08-31   2015-12-31      1827.4    1060.6    -42.0  DOWN
+  2015-12-31   2020-07-31      1060.6    1976.0    +86.3  UP
+  2020-07-31   2022-10-31      1976.0    1632.5    -17.4  DOWN
+  2022-10-31   2026-02-27      1632.5    5278.5   +223.3  UP
+  2026-02-27   2026-06-30      5278.5    4005.8    -24.1  DOWN
+  year-end closes: 2011:1565, 2012:1676, 2013:1205, 2014:1183, 2015:1061, 2016:1152, 2017:1303, 2018:1282, 2019:1517, 2020:1898, 2021:1829, 2022:1824, 2023:2063, 2024:2624, 2025:4323, 2026:4085
+
+==============================================================================
+END OF REPORT — nothing integrated, nothing modified.
+==============================================================================

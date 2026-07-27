@@ -1,0 +1,5 @@
+VERIFICATION 0b (H1) half-window-offset double pull
+slice 2014-01-01 23:00:00Z..2014-06-24 17:00:00Z common=2910
+phase differs 2910/2910
+OHLCV mismatches A vs B: 0
+VERDICT: PASS

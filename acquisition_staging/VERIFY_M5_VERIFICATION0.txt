@@ -1,0 +1,7 @@
+VERIFICATION 0 (M5) — half-window-offset double pull (no external reference for pre-2022)
+control slice : 2024-01-08 00:00:00Z .. 2024-02-29 11:25:00Z
+A bars=10704  B bars=10566  common=10566  (B seed shifted -150 bars = half window)
+phase differs (edgeFromRight A!=B): 10566/10566 bars  -> windows genuinely offset, test is valid
+OHLCV mismatches A vs B (EXACT): 0
+VERDICT: PASS — overlap method is stable on the M5 series; no boundary artifact without external reference.
+controlA/controlB CSVs retained alongside this file as evidence.
