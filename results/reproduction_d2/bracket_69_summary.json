@@ -1,0 +1,8 @@
+{
+ "n_flipped": 69,
+ "best_profitable": 22,
+ "convention_dependent": 22,
+ "exclusion_created": 47,
+ "sanity_worst_eq_baseline": true,
+ "sanity_excl_eq_repro": true
+}

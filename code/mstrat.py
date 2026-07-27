@@ -59,17 +59,19 @@ def simulate(d,setups,cfg=CFG):
         if ek=='rr': tgt=entry+dirn*ep*risk
         elif ek in ('opp_liq','opp_struct'): tgt=ep
         else: tgt=None
-        best=entry; ex=None; xi=None
+        best=entry; ex=None; xi=None; tfirst=cfg.get('target_first', False)   # target_first = MEASUREMENT toggle (best-case bracket); default False = pre-registered stop-first worst-case
         for j in range(ei,min(ei+to,n)):
             if trail:
                 best=max(best,hi[j]) if dirn>0 else min(best,lo[j]); ts=best-dirn*1.5*atr[si]
                 stop=max(stop,ts) if dirn>0 else min(stop,ts)
-            if dirn>0:
-                if lo[j]<=stop: ex=stop;xi=j;break
-                if tgt is not None and np.isfinite(tgt) and hi[j]>=tgt: ex=tgt;xi=j;break
+            hitS = (lo[j]<=stop) if dirn>0 else (hi[j]>=stop)
+            hitT = (tgt is not None and np.isfinite(tgt)) and ((hi[j]>=tgt) if dirn>0 else (lo[j]<=tgt))
+            if tfirst:
+                if hitT: ex=tgt;xi=j;break
+                if hitS: ex=stop;xi=j;break
             else:
-                if hi[j]>=stop: ex=stop;xi=j;break
-                if tgt is not None and np.isfinite(tgt) and lo[j]<=tgt: ex=tgt;xi=j;break
+                if hitS: ex=stop;xi=j;break
+                if hitT: ex=tgt;xi=j;break
         if ex is None: xi=min(ei+to,n-1); ex=cl[xi]
         # WP-1 INVALID-EXECUTION (D2, docs/MIN_STOP_FLOOR_PREREG): a FLOORED (widened) trade that resolves on
         # its own entry bar = gap-through-floored-stop-at-entry / same-bar ambiguous fill -> excluded, not
