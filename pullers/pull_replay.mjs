@@ -96,7 +96,10 @@ if (seed) {
   if (newestT + barSec > nowSec) { seed = seed.slice(0, -1); console.log(`dropped still-forming bar ${iso(newestT)}`); }
   console.log(`realtime seed: +${add(seed)} bars, newest ${iso(seed.at(-1)[0])}`);
 }
-let oldest = map.size ? Math.min(...map.keys()) : (seed ? seed[0][0] : Math.floor(Date.parse('2026-01-01T00:00:00Z') / 1000));
+// NB: reduce, not Math.min(...spread) — the resume path can hold 300k+ keys and a spread of that
+// many arguments overflows the call stack (RangeError: Maximum call stack size exceeded).
+function minKey(m) { let lo = Infinity; for (const k of m.keys()) if (k < lo) lo = k; return lo; }
+let oldest = map.size ? minKey(map) : (seed ? seed[0][0] : Math.floor(Date.parse('2026-01-01T00:00:00Z') / 1000));
 
 // Enter replay with an overlapping window: it ends OVERLAP bars inside the realtime-collected
 // region (so its provisional rightmost bar is already-collected) and fetches older bars to the left.
