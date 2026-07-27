@@ -1,8 +1,8 @@
 # STATISTICIAN — REGULI PRE-ÎNREGISTRATE PENTRU SETUL DE 11 ANI (M15) ȘI M5
 ### Scrise înainte ca fișierele să fie conectabile în orice loader
 
-**Document ID:** STAT-11YR-PREREG-v1.0
-**Data:** 2026-07-25 · **Autor:** Statistician
+**Document ID:** STAT-11YR-PREREG-v1.1
+**Data:** 2026-07-25 (v1.0) · **Amendat:** 2026-07-25 (v1.1, §2 — regula de proveniență a parametrilor împrumutați) · **Autor:** Statistician
 **Statut:** Reguli, nu o alegere de dată. Comise înainte de a vedea harta de regimuri (verificarea 7 a Data Acquisition) și înainte ca fișierele M15 extins (2011-07-25 → 2022-12-16) și M5 (2021-07-22 → azi) să fie conectate în `edge_research/_common.py` sau orice alt loader.
 
 **Precedentul pe care îl închid:** de trei ori în acest laborator, datele au fost accesibile înainte să existe o regulă — holdout-ul original, Setul B (loader fără cutoff), Setul B din nou (rulare pornită înainte de mesaj). De fiecare dată cauza a fost aceeași secvență greșită. Acest document există ca regula să existe ÎNAINTE de a treia oară deveni a patra.
@@ -45,6 +45,22 @@ Standardul relevant nu e "a fost vreodată acest tip de concept informat, difuz,
 5. Niciun parametru liber lăsat de ales la momentul confirmării.
 
 Dacă vreunul din cele 37 pe care nu le-am văzut e narativ pe oricare din aceste 5 puncte, ACEA ipoteză specifică nu merge direct la confirmare — se operaționalizează întâi, separat, înainte de a atinge datele noi, ca să nu se repete exact tiparul "operaționalizare după ce vezi ce iese convenabil".
+
+### [v1.1] Regula de proveniență pentru parametrii împrumutați din convențiile deja existente
+
+**Întrebarea CEO care a declanșat asta:** dacă Flow A operaționalizează o ipoteză narativă preluând un prag deja folosit în alt script (ex. `REACTION_THRESHOLD=1.0×ATR`, `REVISIT_HORIZON=480`), fără să privească datele noi — e suficient ca protecție?
+
+**Nu, nu ca regulă generală — dar nici insuficient universal. Depinde de proveniența cifrei împrumutate, iar protecția "fără să privească datele" nu verifică asta.** "A privi datele noi" e forma cea mai evidentă de contaminare; nu e singura. O convenție deja folosită poate fi ea însăși — subtil, fără căutare formală de parametri — informată de faptul că "a mers" pe fereastra 2022-2025, chiar dacă nimeni n-a rulat explicit o căutare de grilă.
+
+**Testul pe care îl cer, per parametru împrumutat, înainte de a-l accepta:**
+
+1. **E o convenție generică de normalizare/rotunjire** (1,0×ATR ca "o unitate de volatilitate locală"; "N zile de tranzacționare" ca orizont calendaristic; 50%/61,8% ca procent standard) **care ar fi fost alegerea naturală indiferent de ce fereastră de piață s-ar fi examinat vreodată** → acceptabilă pentru reutilizare.
+2. **Sau a fost vreodată cifra specifică calculată, comparată, sau aleasă pe baza oricărui rezultat cuantificat rulat pe 2022-2025** (backtest, hit-rate, orice) — chiar informal, chiar fără a fi numit "optimizare" → **nu e acceptabilă fără o sursă independentă** (ex. o convenție deja publicată în literatura ICT, care predatează acest proiect) — sau ipoteza rezultată se marchează explicit cu rezerva că parametrizarea ei păstrează o dependență reziduală de fereastra adiacentă confirmării.
+3. **Pentru cazuri la limită:** cere o justificare explicită, independentă de orice calcul pe 2022-2025 ("e o definiție standard de analiză tehnică, folosită independent de instrument/fereastră" — nu "așa a mers la E010").
+
+**Verificare suplimentară obligatorie, nu opțională:** pentru orice parametru împrumutat conform punctului 1, cere raportarea rezultatului sub **1-2 alternative la fel de generice** (ex. 0,75×ATR și 1,25×ATR în loc de doar 1,0×ATR). Dacă rezultatul rămâne calitativ stabil pe acest interval, alegerea specifică nu era load-bearing. Dacă rezultatul se schimbă calitativ între aceste alternative la fel de rezonabile, cifra "generică" ascunde de fapt o potrivire fină, chiar dacă neintenționată.
+
+**Cerință de disclosure:** fiecare parametru împrumutat trebuie să vină cu proveniența lui explicită scrisă ("1,0×ATR, reutilizat din `_profile.py`, justificat ca unitate generică de volatilitate, niciodată calculat sau comparat împotriva vreunui rezultat de backtest specific") — nu reutilizare tăcută.
 
 ## 3. Pragul M5 — regula de nedeterminare
 
