@@ -1,0 +1,21 @@
+{
+ "body_median_excl_frac": 0.0,
+ "total_excluded": 7371,
+ "subtype_agg": {
+  "ambiguous": 606,
+  "gap_stop": 5816,
+  "target_only": 949,
+  "neg_risk": 0,
+  "other": 0
+ },
+ "subtype_pct": {
+  "ambiguous": 8.2,
+  "gap_stop": 78.9,
+  "target_only": 12.9,
+  "neg_risk": 0.0,
+  "other": 0.0
+ },
+ "n47_above_median": 47,
+ "n47_above_5x_median": 47,
+ "median_excl_frac_47": 0.0556
+}
