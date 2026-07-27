@@ -1,0 +1,122 @@
+{
+  "manifest_id": "STAT-SPLIT-MANIFEST",
+  "version": "1.0.0",
+  "published_date": "2026-07-27",
+  "authority": "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification authority only, per Contract Statistician<->Validation Engine SS1.7. This file is consumed by loaders and executing divisions; it is not modified by them. Any change requires a new version and a re-issued hash.",
+  "source_documents": [
+    "ai_quant_lab/statistician/STATISTICIAN_11YR_DATASET_PREREGISTRATION_RULES_v1.0.md (v1.2)",
+    "ai_quant_lab/statistician/STATISTICIAN_M5_PREREGISTRATION_PROTOCOL_v1.0.md",
+    "ai_quant_lab/statistician/STATISTICIAN_M5_INDETERMINACY_THRESHOLD_SPEC_v1.0.md",
+    "ai_quant_lab/statistician/STATISTICIAN_H1_PREREGISTRATION_PROTOCOL_v1.0.md"
+  ],
+  "structural_gap_this_file_closes": "Statistician's protocols live in ai_quant_lab; the loader and data live in ai_quant_lab-alpha-automation. Executing divisions had no mechanically-readable copy of the governing split rules. This file is that copy, published on branch alpha-automation-v1.",
+  "fail_closed_default": {
+    "rule": "Any timeframe, or any regime segment within a timeframe, whose status below is not exactly \"VALIDATED\" MUST be treated by every loader as FULLY SEALED -- zero bars readable as discovery, zero bars usable for parameterization or testing. A missing, pending, or partially-populated status is never to be treated as \"open\" or \"discovery by default\".",
+    "reason": "The documented failure mode is a loader reading an un-partitioned timeframe as entirely discovery and silently burning the sealed half. Fail-closed makes that failure mode structurally impossible: an unfinished config blocks access instead of granting it."
+  },
+  "same_window_resampled_predicate": {
+    "description": "A test on timeframe B is NOT an independent confirmation of a hypothesis whose parameters were fixed using timeframe A data if the two calendar windows overlap, regardless of which resolution is finer, and regardless of which half of any timeframe's own discovery/sealed split the overlapping portion falls into.",
+    "inputs": {
+      "parameterization_window": "{start_epoch, end_epoch} -- the calendar range of data (at any timeframe) that informed the hypothesis's frozen parameters",
+      "test_window": "{start_epoch, end_epoch, timeframe} -- the calendar range and resolution of the data proposed as a confirmation test"
+    },
+    "formula": "overlap_seconds = max(0, min(parameterization_window.end_epoch, test_window.end_epoch) - max(parameterization_window.start_epoch, test_window.start_epoch))",
+    "predicate": "is_same_window_resampled := (overlap_seconds > 0)",
+    "action_if_true": "Label the result SAME-WINDOW-RESAMPLED. Never report it as an independent, out-of-sample, or cross-resolution confirmation. This holds even if test_window falls entirely inside the sealed half of its own timeframe's split -- overlap with another timeframe's parameterization window is evaluated independently of that timeframe's own internal split.",
+    "action_if_false": "Eligible to be reported as an independent confirmation, subject to every other applicable rule (borrowed-parameter provenance, family-wise correction, etc.)."
+  },
+  "margin_factor": {
+    "value": "25/24",
+    "note": "The single safety-margin factor used consistently across every embargo derivation below (960->1000 M15 bars; 2880->3000 M5 bars; 240->250 H1 bars). Applied, not re-chosen, at each resolution."
+  },
+  "timeframes": {
+    "M15": {
+      "bar_seconds": 900,
+      "dataset": {
+        "n_bars": 84152,
+        "start_epoch": 1671187500,
+        "start_iso": "2022-12-16T10:45:00Z",
+        "end_epoch": 1783922400,
+        "end_iso": "2026-07-13T06:00:00Z"
+      },
+      "split_method": "single_global_cutoff",
+      "split_method_justification": "This is the CURRENT, already-loadable, already-in-production M15 dataset (already whitelisted in the loader alongside H1/H4/D1) -- distinct from the extended 2011-2026 'M15 v2' dataset referenced separately in Research Lab's FOUR_REGIME_RUN_STATUS_v1.0.md, which is NOT yet connected (P1 unmet there) and is OUT OF SCOPE for this manifest. Re-deriving a fresh regime-segment-stratified split for this already-live dataset now would retroactively unsettle a large body of already-closed, CEO-ratified determinations (DC-0003, DC-0004, S18 certification, scoped-FDR) that were built on its existing single cutoff. The existing cutoff is therefore preserved as-is, not recomputed.",
+      "cutoff_epoch": 1761210900,
+      "cutoff_iso": "2025-10-23T09:15:00Z",
+      "cutoff_provenance": "Pre-existing sealed_registry boundary (VE), predates this manifest and the stratified-split rule; preserved unchanged.",
+      "embargo_bars": 1000,
+      "embargo_seconds": 900000,
+      "embargo_note_governance": "This 1000-bar embargo band was NOT applied when the original cutoff was set and used for already-closed work (DC-0003, DC-0004, S18, scoped-FDR). It is added here going forward, which only tightens protection (shrinks usable discovery/sealed edges, never expands them) -- a safe direction. Flagged, not auto-resolved: whether any already-closed determination used discovery-side data inside what is now the embargo band is a governance question for CEO, not something this manifest adjudicates.",
+      "discovery_range": {
+        "start_epoch": 1671187500,
+        "start_iso": "2022-12-16T10:45:00Z",
+        "end_epoch": 1760310900,
+        "end_iso": "2025-10-12T23:15:00Z"
+      },
+      "embargo_range": {
+        "start_epoch": 1760310900,
+        "start_iso": "2025-10-12T23:15:00Z",
+        "end_epoch": 1762110900,
+        "end_iso": "2025-11-02T19:15:00Z"
+      },
+      "sealed_range": {
+        "start_epoch": 1762110900,
+        "start_iso": "2025-11-02T19:15:00Z",
+        "end_epoch": 1783922400,
+        "end_iso": "2026-07-13T06:00:00Z"
+      },
+      "regime_segments": null,
+      "status": "VALIDATED"
+    },
+    "M5": {
+      "bar_seconds": 300,
+      "dataset": {
+        "n_bars": 354669,
+        "start_epoch": 1627344000,
+        "start_iso": "2021-07-27T00:00:00Z",
+        "end_epoch": 1785110400,
+        "end_iso": "2026-07-27T00:00:00Z",
+        "date_precision_note": "Start/end given at date resolution by Data Acquisition's report; exact first/last-bar HH:MM:SS to be confirmed by Data Acquisition and substituted here without changing this file's version (a value correction, not a rule change)."
+      },
+      "split_method": "50_50_stratified_by_regime_segment",
+      "split_method_justification": "Same principle as M15-extended's original design: mechanical, disclosed regime map, split within each contiguous segment (not one global cutoff), 50/50 default with a documented 60/40 exception only for a segment too short for 50% discovery to be useful, decided before results.",
+      "embargo_bars": 3000,
+      "embargo_seconds": 900000,
+      "embargo_derivation": "TRACK_HORIZON=960 M15 bars = 864000s = 10 days. M15/M5 bar-second ratio = 900/300 = 3. Raw M5-equivalent = 960*3 = 2880 bars. Margin factor 25/24 applied: 2880*25/24 = 3000.",
+      "regime_segments": "AWAITING_REGIME_MAP",
+      "discovery_range": null,
+      "embargo_range": null,
+      "sealed_range": null,
+      "status": "AWAITING_REGIME_MAP",
+      "loader_contract": "Per fail_closed_default above: while status != VALIDATED, 100% of M5 bars are SEALED. No discovery access permitted. Data Acquisition may whitelist M5 in the loader code now; the data itself stays inert until a mechanical regime map is delivered and this entry is updated to status VALIDATED with populated regime_segments/discovery_range/embargo_range/sealed_range, in a new manifest version with a new hash."
+    },
+    "H1": {
+      "bar_seconds": 3600,
+      "dataset": {
+        "n_bars": 122601,
+        "start_epoch": 1142812800,
+        "start_iso": "2006-03-20T00:00:00Z",
+        "end_epoch": 1785110400,
+        "end_iso": "2026-07-27T00:00:00Z",
+        "date_precision_note": "Same date-resolution caveat as M5 above."
+      },
+      "split_method": "50_50_stratified_by_regime_segment",
+      "split_method_justification": "Same principle, applied to H1's own window. 2006-03-20 to (at least) 2011-07-25 has never been observed in this lab at any resolution, including the withdrawn M15-extended attempt -- the single most irreplaceable segment in the lab's history. No different split ratio is derived for it without a clean justification; heightened governance vigilance against discretionary access is recorded instead, see STATISTICIAN_H1_PREREGISTRATION_PROTOCOL_v1.0.md SS1.",
+      "embargo_bars": 250,
+      "embargo_seconds": 900000,
+      "embargo_derivation": "TRACK_HORIZON=960 M15 bars = 864000s = 10 days. M15/H1 bar-second ratio = 3600/900 = 4. Raw H1-equivalent = 960/4 = 240 bars. Margin factor 25/24 applied: 240*25/24 = 250.",
+      "regime_segments": "AWAITING_REGIME_MAP",
+      "discovery_range": null,
+      "embargo_range": null,
+      "sealed_range": null,
+      "status": "AWAITING_REGIME_MAP",
+      "loader_contract": "Per fail_closed_default above: while status != VALIDATED, 100% of H1 bars are SEALED. No discovery access permitted, including the never-seen 2006-2011 segment -- its irreplaceability is a reason for MORE caution before opening it, not less."
+    }
+  },
+  "out_of_scope_note": "An extended 'M15 v2' dataset (2011-2026) is referenced in ai_quant_lab/docs/FOUR_REGIME_RUN_STATUS_v1.0.md as a precondition for a separate four-regime measurement run. That dataset is NOT connected (Research Lab's own P1 status: unmet) and is NOT the 'M15' entry above. Do not conflate the two -- when M15 v2 is actually connected and verified, it requires its own timeframe entry in a future manifest version, not a silent merge into the current M15 entry.",
+  "content_hash": {
+    "algorithm": "sha256",
+    "computed_over": "this exact file with this content_hash.value field set to the empty string \"\", UTF-8 bytes, no trailing newline added or removed beyond what is committed",
+    "value": "e6f7ec2db9f412e5f39194e0dbc4870e1f0e716be1dfd988edfb492b43b50103"
+  }
+}

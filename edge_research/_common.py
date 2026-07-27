@@ -16,13 +16,17 @@ that wants Flow A market data must call this function with real split configurat
 closed (raises `HoldoutConfigError`).
 """
 import os
+from typing import Any
+
 import numpy as np
-import pandas as pd
+import pandas as pd  # type: ignore[import-untyped]
+
+from .split_manifest import ManifestError, discovery_window, load_manifest
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(_ROOT, "data", "market")
 
-LOADER_VERSION = "flowA_common_v2_holdout_enforced_2026-07-21"
+LOADER_VERSION = "flowA_common_v3_manifest_gated_2026-07-27"
 
 # CEO-approved boundary (authorization message, 2026-07-21): the Research Lab's own consumed/invalidated
 # terminal holdout, 2025-10-23 09:15 UTC -> 2026-07-13 06:00 UTC. No observation at or after the start of
@@ -39,25 +43,32 @@ class HoldoutConfigError(ValueError):
     """Raised when `load()` cannot fail-closed-verify its holdout configuration."""
 
 
-def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple:
-    """The sole data-reading entry point for Flow A. tf in {'M15','H1','H4','D1'}.
+def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """The sole data-reading entry point for Flow A. tf in {'M15','M5','H1','H4','D1'}.
+
+    Access is gated by the hash-verified split manifest (`config/split_manifest.json`): a timeframe is
+    readable ONLY if its manifest status is exactly ``VALIDATED``, and ONLY within that timeframe's
+    manifest ``discovery_range``. Under the manifest published 2026-07-27 that means M15 only -- M5 and
+    H1 are ``AWAITING_REGIME_MAP`` (100% sealed) and H4/D1 are absent from the manifest (also sealed,
+    per its fail_closed_default). The manifest ``discovery_range`` end carries the Statistician's
+    1000-bar embargo and BINDS against a more-permissive caller ``cutoff`` -- the effective upper bound
+    is the tighter of the manifest end and the caller cutoff.
 
     `data_split_id` and `cutoff` are mandatory keyword-only arguments with no default -- calling this
     function without both explicitly supplied is a TypeError (Python's own fail-closed behavior); an
-    explicitly empty/None value for either raises `HoldoutConfigError`. `cutoff` is applied as an
-    EXCLUSIVE upper bound (`dt < cutoff`) on the UTC `dt` column immediately after parsing, before ATR/
-    session/day-of-week are computed -- so no holdout-period observation is ever aggregated or
-    transformed, not even transiently.
+    explicitly empty/None value for either raises `HoldoutConfigError`. The manifest discovery window is
+    applied on the UTC `dt` column immediately after parsing, before ATR/session/day-of-week are
+    computed -- so no out-of-window observation is ever aggregated or transformed, not even transiently.
 
     Returns `(df, meta)`. `df` is sorted by time, deduped, with a UTC `dt` column, ATR-14, session tag,
-    and day-of-week, restricted to `dt < cutoff`. `meta` is the auditable split-metadata dict required by
-    EDGE_RESEARCH_PROTOCOL.md SS8: `data_split_id`, `holdout_cutoff`, `holdout_excluded` (True only when
-    this function returns successfully -- there is no code path that returns False; failure raises
-    instead), `min_date_used`, `max_date_used`, `n_bars_used`, `n_bars_before_cutoff`,
-    `n_bars_excluded_by_cutoff`, `loader_version`, `timeframe`.
+    and day-of-week, restricted to `[discovery_start, min(cutoff, discovery_end))`. `meta` is the
+    auditable split-metadata dict: `data_split_id`, `requested_cutoff`, `holdout_cutoff` (the effective
+    upper bound), `manifest_version`, `manifest_hash`, `manifest_discovery_start/end`, `holdout_excluded`
+    (True only when this function returns successfully), `min_date_used`, `max_date_used`, `n_bars_used`,
+    `n_bars_before_cutoff`, `n_bars_excluded_by_cutoff`, `loader_version`, `timeframe`.
     """
-    if tf not in ("M15", "H1", "H4", "D1"):
-        raise HoldoutConfigError(f"tf must be one of M15/H1/H4/D1, got {tf!r}")
+    if tf not in ("M15", "M5", "H1", "H4", "D1"):
+        raise HoldoutConfigError(f"tf must be one of M15/M5/H1/H4/D1, got {tf!r}")
     if not data_split_id:
         raise HoldoutConfigError(
             "data_split_id is required -- fail-closed: this loader assumes no default split.")
@@ -71,18 +82,32 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple:
         raise HoldoutConfigError(f"cutoff {cutoff!r} could not be parsed as a timestamp: {e}") from e
     cutoff_ts = cutoff_ts.tz_localize("UTC") if cutoff_ts.tzinfo is None else cutoff_ts.tz_convert("UTC")
 
+    # MANIFEST GATE. discovery_window() raises for any timeframe not exactly VALIDATED (M5/H1 =
+    # AWAITING_REGIME_MAP, H4/D1 = absent) and for a missing/tampered manifest -- all of which surface
+    # here as HoldoutConfigError, i.e. sealed. Only M15's VALIDATED discovery segment gets through.
+    try:
+        manifest = load_manifest()
+        disc_start_epoch, disc_end_epoch = discovery_window(manifest, tf)
+    except ManifestError as e:
+        raise HoldoutConfigError(str(e)) from e
+    disc_start_ts = pd.Timestamp(disc_start_epoch, unit="s", tz="UTC")
+    disc_end_ts = pd.Timestamp(disc_end_epoch, unit="s", tz="UTC")
+    eff_end_ts = min(cutoff_ts, disc_end_ts)  # manifest embargo wins; the caller may only tighten
+
     path = os.path.join(DATA_DIR, f"OANDA_XAUUSD_{tf}.csv")
     raw = pd.read_csv(path).drop_duplicates("time").sort_values("time").reset_index(drop=True)
     raw["dt"] = pd.to_datetime(raw["time"], unit="s", utc=True)
     n_before = int(len(raw))
 
-    # Cutoff applied HERE, before any indicator/session/day-of-week computation -- no holdout row is
-    # ever fed into ATR, session tagging, or any later aggregation.
-    d = raw.loc[raw["dt"] < cutoff_ts].reset_index(drop=True)
+    # Manifest discovery window applied HERE, before any indicator/session/day-of-week computation. Bars
+    # below discovery_start (e.g. the out-of-scope extended-M15 2011-2022 territory) and at/after the
+    # effective end (embargo + sealed) are never fed into ATR, session tagging, or any later aggregation.
+    d = raw.loc[(raw["dt"] >= disc_start_ts) & (raw["dt"] < eff_end_ts)].reset_index(drop=True)
     if len(d) == 0:
         raise HoldoutConfigError(
-            f"cutoff {cutoff_ts.isoformat()} excluded all {n_before} rows for {tf} -- "
-            f"check cutoff/data alignment (fail-closed: refusing to return an empty, unauditable result).")
+            f"manifest discovery window [{disc_start_ts.isoformat()}, {eff_end_ts.isoformat()}) "
+            f"excluded all {n_before} rows for {tf} -- check alignment "
+            "(fail-closed: refusing to return an empty, unauditable result).")
 
     h, l, c = d["high"], d["low"], d["close"]
     tr = np.maximum(h - l, np.maximum((h - c.shift()).abs(), (l - c.shift()).abs()))
@@ -91,9 +116,15 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple:
     d["session"] = np.select([hh < 8, hh < 13, hh < 21], ["asia", "london", "ny"], default="late")
     d["dow"] = d["dt"].dt.day_name()
 
-    meta = dict(
+    manifest_ch: Any = manifest.get("content_hash", {})
+    meta: dict[str, Any] = dict(
         data_split_id=data_split_id,
-        holdout_cutoff=cutoff_ts.isoformat(),
+        requested_cutoff=cutoff_ts.isoformat(),
+        holdout_cutoff=eff_end_ts.isoformat(),
+        manifest_version=manifest.get("version"),
+        manifest_hash=manifest_ch.get("value") if isinstance(manifest_ch, dict) else None,
+        manifest_discovery_start=disc_start_ts.isoformat(),
+        manifest_discovery_end=disc_end_ts.isoformat(),
         holdout_excluded=True,
         min_date_used=str(d["dt"].min()),
         max_date_used=str(d["dt"].max()),
@@ -112,7 +143,7 @@ def vol_regime(d: pd.DataFrame, col: str = "atr14", window: int = 200) -> pd.Ser
     return pd.cut(pr, bins=[-0.01, 1 / 3, 2 / 3, 1.01], labels=["low", "mid", "high"])
 
 
-def bootstrap_mean_ci(x: np.ndarray, n_boot: int = 5000, seed: int = 7) -> tuple:
+def bootstrap_mean_ci(x: np.ndarray, n_boot: int = 5000, seed: int = 7) -> tuple[float, float, float]:
     if len(x) == 0:
         return (np.nan, np.nan, np.nan)
     rng = np.random.default_rng(seed)
@@ -123,7 +154,7 @@ def bootstrap_mean_ci(x: np.ndarray, n_boot: int = 5000, seed: int = 7) -> tuple
     return (float(x.mean()), float(lo), float(hi))
 
 
-def summarize(x: np.ndarray) -> dict:
+def summarize(x: np.ndarray) -> dict[str, Any]:
     x = np.asarray(x, dtype=float)
     if len(x) == 0:
         return dict(n=0)
