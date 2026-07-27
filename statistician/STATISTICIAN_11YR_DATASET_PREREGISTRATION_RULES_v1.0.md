@@ -1,8 +1,9 @@
 # STATISTICIAN — REGULI PRE-ÎNREGISTRATE PENTRU SETUL DE 11 ANI (M15) ȘI M5
 ### Scrise înainte ca fișierele să fie conectabile în orice loader
 
-**Document ID:** STAT-11YR-PREREG-v1.1
-**Data:** 2026-07-25 (v1.0) · **Amendat:** 2026-07-25 (v1.1, §2 — regula de proveniență a parametrilor împrumutați) · **Autor:** Statistician
+**Document ID:** STAT-11YR-PREREG-v1.2
+**Data:** 2026-07-25 (v1.0) · **Amendat:** 2026-07-25 (v1.1, §2 — regula de proveniență a parametrilor împrumutați) · 2026-07-27 (v1.2 — §3 SUPERSEDAT) · **Autor:** Statistician
+**[v1.2] §3 de mai jos e SUPERSEDAT integral de `STATISTICIAN_M5_INDETERMINACY_THRESHOLD_SPEC_v1.0.md`** (prag fix pe distanța stopului, fără RR și fără distribuția reală → înlocuit cu criteriul derivat `C(S,RR)=S(1+RR)`, evaluat per sesiune, pe distribuția reală livrată de Data Acquisition). Textul §3 rămâne mai jos ca istoric, nu ca regulă activă. Vezi și `STATISTICIAN_M5_PREREGISTRATION_PROTOCOL_v1.0.md` pentru împărțirea/carantina specifică M5.
 **Statut:** Reguli, nu o alegere de dată. Comise înainte de a vedea harta de regimuri (verificarea 7 a Data Acquisition) și înainte ca fișierele M15 extins (2011-07-25 → 2022-12-16) și M5 (2021-07-22 → azi) să fie conectate în `edge_research/_common.py` sau orice alt loader.
 
 **Precedentul pe care îl închid:** de trei ori în acest laborator, datele au fost accesibile înainte să existe o regulă — holdout-ul original, Setul B (loader fără cutoff), Setul B din nou (rulare pornită înainte de mesaj). De fiecare dată cauza a fost aceeași secvență greșită. Acest document există ca regula să existe ÎNAINTE de a treia oară deveni a patra.
