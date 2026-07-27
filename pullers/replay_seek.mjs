@@ -36,3 +36,34 @@ export function legacyMidnightSeekMs(oldestBarSec) {
   const dstr = new Date(oldestBarSec * 1000).toISOString().slice(0, 10);
   return new Date(dstr + 'T00:00:00Z').getTime();
 }
+
+// Bar length in seconds for the intraday resolutions we pull.
+export function barSeconds(tf) {
+  const m = { '1': 60, '5': 300, '15': 900, '30': 1800, '60': 3600, '240': 14400 };
+  const s = m[String(tf)];
+  if (!s) throw new Error(`barSeconds: unsupported timeframe ${tf}`);
+  return s;
+}
+
+// SECOND-DEFECT FIX (window-boundary provisional bar).
+//
+// The replay cursor bar (the newest/rightmost bar of the loaded window) carries a PROVISIONAL
+// close+volume. With adjacent, non-overlapping windows + first-seen dedup, that provisional bar
+// is the only capture of its timestamp and is saved verbatim (~1 bar per 300, silently, across
+// the whole file). The original lab pipeline avoided this by leaving boundary GAPS and back-filling
+// them as interior bars (pull_gapfill.mjs); this reproduces the proven property directly in one
+// pass: OVERLAP the windows so each window's provisional rightmost bar lands inside the
+// already-collected region, where first-seen dedup keeps the earlier FINAL (interior) value.
+//
+// Given the oldest bar collected so far, return the selectDate() argument (ms) whose window ends
+// `overlapBars` bars INTO the collected region (so it re-covers the previous boundary) while still
+// fetching ~(windowSize - overlapBars) genuinely older bars to the left. overlapBars >= 2.
+export function nextOverlapSeekMs(frontierSec, overlapBars, tf) {
+  if (!Number.isFinite(frontierSec)) {
+    throw new Error(`nextOverlapSeekMs: frontierSec must be finite, got ${frontierSec}`);
+  }
+  if (!(overlapBars >= 2)) {
+    throw new Error(`nextOverlapSeekMs: overlapBars must be >= 2, got ${overlapBars}`);
+  }
+  return (frontierSec + overlapBars * barSeconds(tf)) * 1000;
+}
