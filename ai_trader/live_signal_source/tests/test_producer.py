@@ -1,0 +1,86 @@
+"""`CandidateSignalProducer` tests -- including the CEO's own acceptance test for #6: the system runs
+end-to-end, through `NullRecognitionRule`, and produces zero candidates."""
+
+from __future__ import annotations
+
+from ai_trader.live_signal_source.bar_feed import LiveBarFeed
+from ai_trader.live_signal_source.journal import LiveSignalJournal
+from ai_trader.live_signal_source.producer import CandidateSignalProducer
+from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
+from ai_trader.live_signal_source.types import Bar, LiveCandidate, NullRecognitionRule
+from ai_trader.signal_engine.types import Direction
+
+SYMBOL = "XAUUSD"
+M15_SECONDS = 15 * 60
+NOW = 1_700_000_000
+
+
+class _AlwaysLongRule:
+    """Test-only `RecognitionRule` -- NOT shipped, exists only to prove the producer correctly passes
+    through whatever a real rule (someday) would return."""
+
+    def evaluate(self, bar: Bar) -> LiveCandidate | None:
+        return LiveCandidate(
+            strategy_id="TEST_STRATEGY", symbol=bar.symbol, direction=Direction.LONG,
+            entry=bar.close, stop=bar.close - 1.0, target=None, session="LONDON",
+            magic_number=1, comment="test", as_of=bar.ts_close,
+        )
+
+
+def _closed_bar_gateway(*ts_opens: int) -> FakeMT5Gateway:
+    return FakeMT5Gateway(rates=[
+        RawRate(time=ts, open=2000.0, high=2001.0, low=1999.0, close=2000.5) for ts in ts_opens
+    ])
+
+
+def test_null_rule_produces_zero_candidates_end_to_end() -> None:
+    """The CEO's own acceptance test for #6, verbatim: the system runs cap-coada (end to end) and
+    produces zero candidates."""
+    gateway = _closed_bar_gateway(NOW - 2_000, NOW - 1_000)
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    journal = LiveSignalJournal()
+    producer = CandidateSignalProducer(feed, NullRecognitionRule(), journal)
+
+    candidates = producer.run_once()
+
+    assert candidates == ()
+
+
+def test_null_rule_still_journals_every_observed_bar() -> None:
+    """The "eyes" the CEO described: even with zero candidates, the journal proves bars were observed."""
+    gateway = _closed_bar_gateway(NOW - 2_000, NOW - 1_000)
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    journal = LiveSignalJournal()
+    producer = CandidateSignalProducer(feed, NullRecognitionRule(), journal)
+
+    producer.run_once()
+
+    assert len(journal.entries) == 2
+    assert all(entry.candidate is None for entry in journal.entries)
+    assert all(entry.symbol == SYMBOL for entry in journal.entries)
+
+
+def test_a_rule_that_returns_a_candidate_is_passed_through_and_journaled() -> None:
+    gateway = _closed_bar_gateway(NOW - 1_000)
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    journal = LiveSignalJournal()
+    producer = CandidateSignalProducer(feed, _AlwaysLongRule(), journal)
+
+    candidates = producer.run_once()
+
+    assert len(candidates) == 1
+    assert candidates[0].direction is Direction.LONG
+    assert len(journal.entries) == 1
+    assert journal.entries[0].candidate is candidates[0]
+
+
+def test_no_new_bars_produces_nothing_and_journals_nothing() -> None:
+    gateway = FakeMT5Gateway(rates=[])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    journal = LiveSignalJournal()
+    producer = CandidateSignalProducer(feed, NullRecognitionRule(), journal)
+
+    candidates = producer.run_once()
+
+    assert candidates == ()
+    assert journal.entries == ()

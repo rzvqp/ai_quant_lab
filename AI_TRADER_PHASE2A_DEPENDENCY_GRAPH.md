@@ -6,6 +6,23 @@ instruction. The 4 "PARTIAL" preconditions from that audit are out of scope here
 ordering constraint is imposed externally (persistent suspension state first); everything else below is
 derived, not assumed.
 
+## Validation scope rule (CEO decision, 2026-07-26)
+
+Step 4 stopped a full-tree `pytest ai_trader/` run (unbounded, pulling in unrelated heavy research
+suites) and rescoped to Step 3's own precedent — the same named list of packages, not the whole
+repository. That was the right call for Step 4 specifically, because `mt5_account_bridge` is a brand-new
+package nothing else imports. But the same reduced scope was also used for Step 3, which modified two
+EXISTING, already-shared files (`execution_orchestrator/engine.py`, `reason_codes.py`) — and that worked
+out correctly only because nothing outside the named list happened to import those two files in a way the
+change could break. It was not verified, it was fortunate. **Standing rule, effective now:**
+
+- **Adding a new, standalone package nothing imports yet** → reduced scope (that package + its own direct
+  dependencies) is sufficient. State in the report why the package is currently unimported, so the reduced
+  scope is a justified fact, not an assumption.
+- **Modifying an EXISTING file that anything outside the current step's named scope imports** → run the
+  entire `ai_trader/` tree, regardless of how long it takes. No exceptions, no scope negotiation after the
+  fact — decide this BEFORE choosing the pytest invocation, not after judging the result looks fine.
+
 ## Approved order (CEO decision, 2026-07-25) and status
 
 1. **#1 Persistent suspension state — DONE.** `a27802d`, pushed to `trader/ai-trader-implementation`,
@@ -45,7 +62,17 @@ derived, not assumed.
    Step 3's own limitation): bounded to the same 7-day window fetched for weekly P&L; a losing streak
    older than 7 days would not be seen in full. Must exist **before Phase 3**. **Not authorized to build
    now.**
-5. **#6** — live signal source (Piesa 1 bar feed, Piesa 2 candidate producer, Piesa 3 journal).
+5. **#6 — DONE.** New package `ai_trader/live_signal_source/`: `LiveBarFeed` (Piesa 1, emits a bar only
+   at close, proven via a dedicated forming-bar test), `CandidateSignalProducer` (Piesa 2, injected
+   `RecognitionRule`, shipped only with `NullRecognitionRule`), `LiveSignalJournal` (Piesa 3,
+   append-only, in-memory). Acceptance test passes verbatim: the pipeline runs end-to-end and produces
+   zero candidates. Two disclosed design decisions, both explained in the report: (1) a new
+   `LiveCandidate` type instead of importing `execution_orchestrator.types.CandidateSignal` directly,
+   since that module transitively imports execution-capable machinery at load time; (2) the journal
+   reuses `Direction` (the same shared type `shadow_evidence.types` itself reuses) rather than any of
+   `shadow_evidence`'s six record dataclasses verbatim, none of which fit a pre-risk-evaluation event
+   without fabricating fields. See `AI_TRADER_PHASE2A_STEP5_LIVE_SIGNAL_SOURCE_REPORT.md`. Not wired
+   into `orchestrate()` or any other caller — no scheduler/loop drives it yet (that's item #7, next).
 6. **NEW — long-running process robustness** (crash/restart/resume-from-correct-state/stopped-signal for
    a multi-week unattended shadow process). Not itemized in any of the four audits; added by CEO decision
    after this graph's own §7 flagged it as a gap item 6 alone doesn't cover.
