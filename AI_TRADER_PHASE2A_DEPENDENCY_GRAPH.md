@@ -76,6 +76,25 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
 6. **NEW — long-running process robustness** (crash/restart/resume-from-correct-state/stopped-signal for
    a multi-week unattended shadow process). Not itemized in any of the four audits; added by CEO decision
    after this graph's own §7 flagged it as a gap item 6 alone doesn't cover.
+   **NEW — bar/gap continuity detection** (CEO-verified, 2026-07-26, `AI_TRADER_ITEM7_SCHEDULER_
+   VERIFICATION_REPORT.md`): `LiveBarFeed.poll()` only dedups against `_last_emitted_ts_open`, never
+   checks that the next emitted bar's `ts_open` is exactly one `bar_seconds` after the previous one.
+   A gap smaller than `lookback_count` bars is recovered by accident (still inside the window
+   `copy_rates_from` returns); a gap larger than it (dropped connection, terminal restart mid-session,
+   a broker maintenance window) is silently and permanently unrecoverable, with no reason code, no flag,
+   no journal marker — indistinguishable from "no signal." Applies with or without a process restart.
+   **Not authorized to build.**
+   **NEW — `LiveBarFeed` watermark restart-survival** (CEO-verified, 2026-07-26, same report):
+   `_last_emitted_ts_open` is a plain in-memory attribute, reset to `None` on every fresh construction.
+   The first `poll()` after a restart re-emits every closed bar still inside the lookback window,
+   including ones already evaluated/journaled before the restart — duplicate re-processing, not merely
+   lost coverage. Same structural class as Step 3's equity-high-water-mark/consecutive-loss disclosures,
+   a new variable. **Not authorized to build.**
+   **NEW — `LiveSignalJournal` history restart-survival** (CEO-verified, 2026-07-26, same report,
+   found during verification, broader than the watermark issue above): `_entries` is a plain in-memory
+   list, never persisted — a restarted process's journal starts genuinely empty, with zero record that
+   any prior run occurred at all, independent of whatever the bar-feed watermark fix would achieve.
+   **Not authorized to build.**
 7. **NEW — EMERGENCY_STOP reset operation** (this update, 2026-07-25) — see its own entry below. Must
    exist **before Phase 3** (the long-running shadow-mode operational run), not before Phase 3 is
    *designed*. **Not authorized to build now** — explicitly deferred, added to this graph only.
@@ -85,8 +104,16 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    no commission is ever paid, so cost reconciliation changes nothing observed. Both remain real
    preconditions for DEMO execution specifically, not for observation; deferring them costs nothing, while
    every day of shadow observation delayed is a day of forward evidence that can never be recovered.
-9. **#7** — confirm whether a separate scheduler/loop is needed at all once #6 is built, or whether the
-   bar-close event already satisfies it (the CEO's own framing: "probabil da, verifică și raportează").
+9. **#7 — VERIFIED, disposition pending CEO decision.** Confirmed in code, not assumed: no caller of
+   `CandidateSignalProducer.run_once()`/`LiveBarFeed.poll()` exists anywhere outside their own
+   definitions, and no loop/scheduler construct (`while True`, `schedule`, `APScheduler`, `asyncio.run`,
+   `threading.Timer`) exists anywhere in `ai_trader/` outside tests. **#6 does NOT subsume #7** — a
+   scheduler/loop is a real, separate, currently nonexistent piece. Verification also surfaced three new
+   items (bar/gap continuity detection; `LiveBarFeed` watermark restart-survival; `LiveSignalJournal`
+   history restart-survival — all under item 6 above) and clarified they are two distinct failure
+   triggers (mid-run window gap vs. restart-caused state loss) converging on the same structural class
+   already disclosed at Step 3. See `AI_TRADER_ITEM7_SCHEDULER_VERIFICATION_REPORT.md`. No code touched
+   for this verification.
 10. **#14** — validated edge connected. Entirely outside engineering control; not planned, not estimated.
 
 The sections below are the ORIGINAL dependency analysis this order was built from — kept for the
