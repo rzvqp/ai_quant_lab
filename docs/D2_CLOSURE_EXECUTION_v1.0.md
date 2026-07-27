@@ -35,12 +35,31 @@ Comparație completă 1972 (`results/reproduction_d2/d2_verify_summary.json`):
 **CONSTATARE NOTABILĂ (direcție opusă așteptării pre-declarate), consemnată nu concluzionată:** CEO se aștepta ca excluderea să „îndepărteze observații majoritar din ipoteze deja pierzătoare, curăță măsurătoarea, nu descoperă nimic." Măsurat: tranzacțiile INVALID eliminate erau **majoritar pierzătoare** (stop-out-uri pe stopuri mici floor-uite), deci eliminarea lor a **RIDICAT** profitabilitatea aparentă — **69 de ipoteze au trecut din pierzătoare în (marginal) profitabile** (hist_prof 357→426). Deci curățarea NU e cosmetică: schimbă care ipoteze sunt net-profitabile.
 **Calificări (fără a concluziona):** (1) cele 69 sunt **structural-stop → integral în afara regimului validat** (matched_null@v1 nu le poate testa) → **nu sunt descoperiri**; (2) profitabilitatea lor e marginală (erau la graniță; eliminarea câtorva pierzători le-a trecut peste); (3) dacă profitabilitatea „curățată" e edge real sau artefact de eliminare selectivă a tranzacțiilor ne-executabile e **întrebare de Statistician**, nu a Research Lab. Direcția rămâne conservatoare pe axa concentrării (§8 diagnostic: floor-ul trunchiază coada), dar pe axa profitabilității cleaning-ul mută 69 peste prag.
 
+### WP-4b — MECANISMUL (de ce 357→426 NU e eliminare selectivă / p-hacking)
+Consemnat cu citare, ca să nu fie citit greșit peste șase luni. Bucla de ieșire din `mstrat.simulate` verifică **stopul ÎNAINTEA țintei**:
+```
+code/mstrat.py:68   if lo[j]<=stop: ex=stop;xi=j;break      # (long) STOP verificat primul
+code/mstrat.py:69   if tgt is not None and ... hi[j]>=tgt: ex=tgt;xi=j;break   # ținta abia după
+```
+(identic short: liniile 71/72; și în `simulate_ref` 128/129, 131/132). Consecință: **pe orice bară unde ATÂT stopul CÂT ȘI ținta sunt atinse, stopul câștigă întotdeauna** — tranzacția e scorată drept pierdere. Aceasta e exact „worst-case model" pre-înregistrat în `docs/MIN_STOP_FLOOR_PREREG.md:31` („entry/exit inside the same bar with **ambiguous fill that the worst-case model cannot resolve**").
+
+Deci cele 58.225 de tranzacții INVALID eliminate erau majoritar pierzătoare **PRIN CONSTRUCȚIE**: bara ambiguă a fost mereu rezolvată în **defavoarea** strategiei (stop-first). **Excluderea lor NU introduce o părtinire optimistă — elimină una PESIMISTĂ care era deja acolo.** Mișcarea hist_prof 357→426 nu vine dintr-o selecție favorabilă, ci din retragerea unei penalizări pe cazuri intrabar nerezolvabile pe care spec-ul le marchează ca ne-măsurabile. (Notă tehnică: regula mea exclude toate cele lărgite-same-bar, nu doar cele stop-first-ambigue; contrastul stop-first e mecanismul dominant de ce eliminatele erau pierzătoare.)
+
+**Ce rămâne DESCHIS (întrebare de Statistician, NU a Research Lab):** că părtinirea era pesimistă **nu** implică automat că **excluderea totală** e remediul corect. Alternativa e **raportarea separată** — tranzacții rezolvabile vs. ambigue — în loc de eliminare. Iar cele 69 nou-profitabile pot fi reale **sau** doar mai puțin penalizate. Se transmite Statisticianului împreună cu întrebarea despre potrivirea lui R.
+
 ---
 
-## Guvernanță / stare
-- Baseline `results/FAMILY_RESULTS.parquet` **neatins**. Re-rularea D2-închis trăiește în `results/reproduction_d2/` (version-stamped).
-- **Promovarea** lui `reproduction_d2` la FAMILY_RESULTS canonic = **decizie separată CEO/guvernanță** (nu o fac unilateral, consistent cu tiparul de ratificare al laboratorului).
-- Documentele descriptive deja comise (concentration inventory, outcome distribution, scoped-FDR) rămân valide pe baseline; nu sunt invalidate.
-- **WP-5′ (calibrare structurală separată) NEAUTORIZAT — neînceput.** Închiderea D2 e NECESARĂ dar NU SUFICIENTĂ pentru testarea structurală (vezi `D2_CLOSURE_SIZING_v1.0.md` Q3 + întrebarea de Statistician despre potrivirea lui R).
+## Guvernanță / stare (decizie CEO 2026-07-25)
+- Baseline `results/FAMILY_RESULTS.parquet` **neatins**. Re-rularea D2-închis trăiește în `results/reproduction_d2/` (version-stamped). **Se păstrează AMBELE.**
+- **`reproduction_d2` NU se promovează la canonic ACUM.** Motiv (CEO): FAMILY_RESULTS actual e baza pentru inventarul de concentrare, diagnosticul de stop-floor, măsurătoarea de distribuție, certificarea S18 și toate rapoartele Flow C — înlocuirea azi ar face fiecare cifră citată în ele nereproductibilă fără notă. `reproduction_d2` devine canonic **doar după ce Statisticianul se pronunță asupra excluderii**, și atunci **cu un document de tranziție** care mapează cifrele vechi la cele noi.
+- Documentele descriptive deja comise rămân valide pe baseline; nu sunt invalidate.
+- **WP-5′ (calibrare structurală separată) NEAUTORIZAT — neînceput.** Închiderea D2 e NECESARĂ dar NU SUFICIENTĂ pentru testarea structurală.
+- **Consecință de dimensiune a problemei (semnalată de CEO):** regimul structural are acum **426** ipoteze profitabile (nu 357) și rămâne **netestabil**; poarta e în continuare calibrarea structurală, care depinde de întrebarea despre R.
 
-**WP-1..4 executate. Cele 412 provabil neschimbate (0.000e+00). Holdout SEALED. WP-5′ neînceput.**
+## STANDBY — se așteaptă Statisticianul la DOUĂ întrebări
+1. **Potrivirea lui `R = pnl/risc`** ca variabilă de rezultat pentru regimul structural (varianță explozivă la risc→0 e proprietate a statisticii, nu a rezoluției; date fine măsoară mai bine numitorul, nu-l fac mai mare). — `D2_CLOSURE_SIZING_v1.0.md`.
+2. **Tratamentul corect al tranzacțiilor ambigue:** excludere totală (implementat acum) vs. raportare separată rezolvabile/ambigue. — §WP-4b de mai sus.
+
+Până la răspunsuri: **NU** încep WP-5′, **NU** promovez nimic la canonic, **NU** re-rulez nimic.
+
+**WP-1..4 executate. Cele 412 provabil neschimbate (0.000e+00). Holdout SEALED. WP-5′ neînceput. STANDBY.**
