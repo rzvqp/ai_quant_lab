@@ -1,0 +1,180 @@
+{
+  "measurement": "E015-V1_dependence_structure",
+  "note": "STRUCTURE ONLY -- no outcome, no p, no threshold",
+  "by_tf": {
+    "M15": {
+      "tf": "M15",
+      "countable_report": {
+        "n_events": 1688,
+        "kept": 1553,
+        "excluded_warmup": 30,
+        "excluded_right_edge": 105,
+        "forward_needed": 1010
+      },
+      "forward_window_bars": 50,
+      "nominal_n": {
+        "total_visits": 3219,
+        "distinct_zones": 1315,
+        "visit1_rows": 1546,
+        "visit2plus_rows": 1673,
+        "by_bucket": {
+          "1": {
+            "n_rows": 1546,
+            "n_distinct_zones": 1315,
+            "n_distinct_zone_visit_pairs": 1315
+          },
+          "2": {
+            "n_rows": 925,
+            "n_distinct_zones": 759,
+            "n_distinct_zone_visit_pairs": 759
+          },
+          "3": {
+            "n_rows": 748,
+            "n_distinct_zones": 334,
+            "n_distinct_zone_visit_pairs": 621
+          }
+        }
+      },
+      "duplication": {
+        "ob_events_with_visits": 1546,
+        "distinct_zones": 1315,
+        "duplicate_ob_events": 231,
+        "total_visit_rows": 3219,
+        "distinct_zone_visit_pairs": 2695,
+        "exact_duplicate_visit_rows": 524,
+        "zones_hit_by_multiple_events": 195,
+        "max_events_for_one_zone": 4
+      },
+      "visits_per_ob": {
+        "n_obs": 1315,
+        "median": 2.0,
+        "max": 10,
+        "mean": 2.049429657794677,
+        "obs_with_exactly_1_visit": 556,
+        "obs_with_more_than_1_visit": 759,
+        "histogram": {
+          "1": 556,
+          "2": 425,
+          "3": 180,
+          "4": 80,
+          "5": 40,
+          "6": 21,
+          "7": 5,
+          "8": 5,
+          "9": 2,
+          "10": 1
+        }
+      },
+      "forward_overlap": {
+        "median": 10.0,
+        "mean": 10.122708915812364,
+        "max": 30,
+        "pct_zero_overlap": 0.005902454178316247,
+        "distribution": {
+          "0": 19,
+          "1": 4,
+          "2": 47,
+          "3-5": 343,
+          "6-10": 1454,
+          ">10": 1352
+        }
+      },
+      "collisions": {
+        "distinct_bars_with_a_visit": 2386,
+        "bars_with_multiple_visits": 613,
+        "visits_sharing_a_bar": 1446,
+        "bars_multi_from_different_zones": 263,
+        "bars_multi_from_same_zone_only": 350,
+        "distinct_hours_with_a_visit": 1831,
+        "hours_with_multiple_visits": 823,
+        "visits_sharing_an_hour": 2211
+      }
+    },
+    "H1": {
+      "tf": "H1",
+      "countable_report": {
+        "n_events": 400,
+        "kept": 299,
+        "excluded_warmup": 16,
+        "excluded_right_edge": 85,
+        "forward_needed": 1010
+      },
+      "forward_window_bars": 50,
+      "nominal_n": {
+        "total_visits": 698,
+        "distinct_zones": 245,
+        "visit1_rows": 299,
+        "visit2plus_rows": 399,
+        "by_bucket": {
+          "1": {
+            "n_rows": 299,
+            "n_distinct_zones": 245,
+            "n_distinct_zone_visit_pairs": 245
+          },
+          "2": {
+            "n_rows": 212,
+            "n_distinct_zones": 170,
+            "n_distinct_zone_visit_pairs": 170
+          },
+          "3": {
+            "n_rows": 187,
+            "n_distinct_zones": 68,
+            "n_distinct_zone_visit_pairs": 139
+          }
+        }
+      },
+      "duplication": {
+        "ob_events_with_visits": 299,
+        "distinct_zones": 245,
+        "duplicate_ob_events": 54,
+        "total_visit_rows": 698,
+        "distinct_zone_visit_pairs": 554,
+        "exact_duplicate_visit_rows": 144,
+        "zones_hit_by_multiple_events": 46,
+        "max_events_for_one_zone": 3
+      },
+      "visits_per_ob": {
+        "n_obs": 245,
+        "median": 2.0,
+        "max": 8,
+        "mean": 2.2612244897959184,
+        "obs_with_exactly_1_visit": 75,
+        "obs_with_more_than_1_visit": 170,
+        "histogram": {
+          "1": 75,
+          "2": 102,
+          "3": 32,
+          "4": 16,
+          "5": 10,
+          "6": 7,
+          "7": 1,
+          "8": 2
+        }
+      },
+      "forward_overlap": {
+        "median": 10.0,
+        "mean": 10.348137535816619,
+        "max": 29,
+        "pct_zero_overlap": 0.004297994269340974,
+        "distribution": {
+          "0": 3,
+          "1": 5,
+          "2": 7,
+          "3-5": 43,
+          "6-10": 337,
+          ">10": 303
+        }
+      },
+      "collisions": {
+        "distinct_bars_with_a_visit": 483,
+        "bars_with_multiple_visits": 156,
+        "visits_sharing_a_bar": 371,
+        "bars_multi_from_different_zones": 63,
+        "bars_multi_from_same_zone_only": 93,
+        "distinct_hours_with_a_visit": 483,
+        "hours_with_multiple_visits": 156,
+        "visits_sharing_an_hour": 371
+      }
+    }
+  }
+}

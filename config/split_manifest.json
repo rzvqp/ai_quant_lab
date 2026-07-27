@@ -1,19 +1,40 @@
 {
   "manifest_id": "STAT-SPLIT-MANIFEST",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "published_date": "2026-07-27",
   "authority": "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification authority only, per Contract Statistician<->Validation Engine SS1.7. This file is consumed by loaders and executing divisions; it is not modified by them. Any change requires a new version and a re-issued hash.",
   "source_documents": [
     "ai_quant_lab/statistician/STATISTICIAN_11YR_DATASET_PREREGISTRATION_RULES_v1.0.md (v1.2)",
     "ai_quant_lab/statistician/STATISTICIAN_M5_PREREGISTRATION_PROTOCOL_v1.0.md",
     "ai_quant_lab/statistician/STATISTICIAN_M5_INDETERMINACY_THRESHOLD_SPEC_v1.0.md",
-    "ai_quant_lab/statistician/STATISTICIAN_H1_PREREGISTRATION_PROTOCOL_v1.0.md"
+    "ai_quant_lab/statistician/STATISTICIAN_H1_PREREGISTRATION_PROTOCOL_v1.0.md",
+    "ai_quant_lab/docs/FOUR_REGIME_RUN_STATUS_v1.0.md (Research Lab -- source of the M15_v2 four-bucket regime characterization used below)"
   ],
-  "structural_gap_this_file_closes": "Statistician's protocols live in ai_quant_lab; the loader and data live in ai_quant_lab-alpha-automation. Executing divisions had no mechanically-readable copy of the governing split rules. This file is that copy, published on branch alpha-automation-v1.",
+  "changelog_v2": "Adds the M15_v2 (2011-2026) timeframe entry with populated regime segments; adds a dataset_identity_resolution rule for M15 vs M15_v2 (previously absent -- v1 only had M15-current); adds a data_file_sha256 integrity field to every entry, gated as described in fail_closed_default; adds an irreplaceable_segment_flag on H1 and M15_v2 for 2006-2011.",
   "fail_closed_default": {
-    "rule": "Any timeframe, or any regime segment within a timeframe, whose status below is not exactly \"VALIDATED\" MUST be treated by every loader as FULLY SEALED -- zero bars readable as discovery, zero bars usable for parameterization or testing. A missing, pending, or partially-populated status is never to be treated as \"open\" or \"discovery by default\".",
-    "reason": "The documented failure mode is a loader reading an un-partitioned timeframe as entirely discovery and silently burning the sealed half. Fail-closed makes that failure mode structurally impossible: an unfinished config blocks access instead of granting it."
+    "rule": "A timeframe entry is loadable ONLY if its top-level \"status\" field is exactly \"VALIDATED\". Every other value (AWAITING_REGIME_MAP, AWAITING_DATA_FILE_HASH, AWAITING_REGIME_MAP_AND_DATA_FILE_HASH, or any value not listed here) means the loader MUST treat 100% of that timeframe's bars as SEALED -- zero bars readable as discovery, zero bars usable for parameterization or testing. A missing, pending, or partially-populated status is never to be treated as \"open\" or \"discovery by default\".",
+    "reason": "The documented failure mode is a loader reading an un-partitioned timeframe as entirely discovery and silently burning the sealed half. Fail-closed makes that failure mode structurally impossible: an unfinished config blocks access instead of granting it.",
+    "exception_for_already_operating_entries": "M15 (current) is already live in production (already read correctly by the loader per Data Acquisition's confirmation). Its status stays VALIDATED even though its data_file_sha256 is still PENDING_FORMAL_VERIFICATION below -- downgrading an already-operating, already-confirmed entry was not requested and would disrupt working access for a purely-additive integrity check. The three timeframes below that are NOT yet live (M15_v2, M5, H1) are held to the full standard: VALIDATED requires BOTH regime segments populated AND data_file_sha256 confirmed. There is no operational cost to being maximally strict on integrations that are not yet live."
   },
+  "dataset_identity_resolution": {
+    "problem": "M15 (current, 2022-2026, single-cutoff method) and M15_v2 (2011-2026, stratified method) overlap completely over M15's entire span. A generic request for 'M15' is ambiguous between them.",
+    "rule_1_no_implicit_default": "\"M15\" and \"M15_v2\" are distinct, explicit keys. There is no alias, no default, and no fallback between them. A loader or consumer request that does not specify one of these two exact keys MUST fail with an ambiguous-identifier error and grant zero access. Ambiguity is a hard error, never silently resolved -- this is the same fail-closed principle applied to identifiers instead of to status.",
+    "rule_2_overlap_inheritance_not_arbitration": "For the calendar range where M15_v2 overlaps M15's own dataset span ([M15.dataset.start_epoch, M15.dataset.end_epoch] = [1671187500, 1783922400]), M15_v2 does NOT independently compute or apply its own stratified split. It INHERITS M15's existing discovery_range/embargo_range/sealed_range verbatim for that exact range. This is not an arbitration rule (e.g. 'whichever is more restrictive wins') -- an arbitration rule was considered and rejected, because applying M15_v2's own stratified method to that range independently would produce a different (and, worked example showed, earlier/more conservative) boundary than M15's already-ratified cutoff, and enforcing whichever is 'more restrictive' would retroactively reclassify data that DC-0003/DC-0004/S18 already treated as open discovery -- exactly the disruption CEO's instruction to leave M15 untouched was meant to prevent. Inheritance (M15_v2 simply defers to M15's ruling for the shared range, computing nothing of its own there) avoids this entirely: the two entries are consistent by construction, not by comparison.",
+    "rule_3_each_entry_owns_only_its_non_overlapping_range": "M15_v2's OWN regime-segment split (see its regime_segments below) governs only: (a) the prefix 2011-07-26 to 2022-12-16T10:45:00Z (before M15's own data begins), and (b) the tail 2026-07-13T06:00:00Z to 2026-07-27T00:00:00Z (after M15's own data ends, since M15_v2's dataset extends 14 days further than M15's)."
+  },
+  "data_file_integrity": {
+    "description": "content_hash (bottom of this file) protects the integrity of this manifest's own text. It does NOT verify that the manifest's claims about a given data file (n_bars, date range) actually match the real file on disk -- a swapped data file would not be caught by content_hash alone. Each timeframe entry below therefore also carries data_file_sha256: the SHA-256 of the actual market-data file it governs. A loader MUST verify both: (1) this manifest's own content_hash, and (2) each data file's data_file_sha256 against the file it is about to read. A mismatch on EITHER check is fail-closed for that entry (and, for a manifest-level mismatch, for the whole file).",
+    "sourcing_requirement": "Every data_file_sha256 value below MUST be sourced directly from a document or commit formally published by Data Acquisition -- never copied secondhand from a CEO message or any other relayed report, per the same source-verification discipline applied to every other fact in this manifest. Three values were relayed to Statistician secondhand this round (via CEO, who had them from Data Acquisition's report) and are DELIBERATELY NOT used below for that reason. See formal_requests_to_data_acquisition."
+  },
+  "formal_requests_to_data_acquisition": [
+    "Publish, in a document or commit under Data Acquisition's own authorship, the SHA-256 of the M15_v2 data file (355,696 bars, 2011-07-26 to 2026-07-27).",
+    "Publish, likewise, the SHA-256 of the M5 data file (354,669 bars, 2021-07-27 to 2026-07-27).",
+    "Publish, likewise, the SHA-256 of the H1 data file (122,601 bars, 2006-03-20 to 2026-07-27).",
+    "Publish, likewise, the SHA-256 of the M15 (current) data file (84,152 bars) -- not previously requested; added now for schema consistency across all four entries.",
+    "Confirm or correct the exact first/last-bar timestamps (HH:MM:SS) for M15_v2, M5, and H1 -- currently recorded at date-only precision (00:00:00Z placeholder) in dataset.start/end below.",
+    "Confirm or refine, with exact mechanical (not calendar-year-rounded) transition dates, the four M15_v2 regime segment boundaries used below -- currently derived from the year-level characterization in FOUR_REGIME_RUN_STATUS_v1.0.md via a disclosed Jan-1-UTC convention, not from a fresh day-precision mechanical run.",
+    "Deliver an equivalent mechanical, disclosed regime characterization (segment type + start/end dates) for M5 and H1 -- none has been provided to Statistician for either as of this version; both remain AWAITING_REGIME_MAP until this is delivered."
+  ],
   "same_window_resampled_predicate": {
     "description": "A test on timeframe B is NOT an independent confirmation of a hypothesis whose parameters were fixed using timeframe A data if the two calendar windows overlap, regardless of which resolution is finer, and regardless of which half of any timeframe's own discovery/sealed split the overlapping portion falls into.",
     "inputs": {
@@ -22,7 +43,7 @@
     },
     "formula": "overlap_seconds = max(0, min(parameterization_window.end_epoch, test_window.end_epoch) - max(parameterization_window.start_epoch, test_window.start_epoch))",
     "predicate": "is_same_window_resampled := (overlap_seconds > 0)",
-    "action_if_true": "Label the result SAME-WINDOW-RESAMPLED. Never report it as an independent, out-of-sample, or cross-resolution confirmation. This holds even if test_window falls entirely inside the sealed half of its own timeframe's split -- overlap with another timeframe's parameterization window is evaluated independently of that timeframe's own internal split.",
+    "action_if_true": "Label the result SAME-WINDOW-RESAMPLED. Never report it as an independent, out-of-sample, or cross-resolution confirmation.",
     "action_if_false": "Eligible to be reported as an independent confirmation, subject to every other applicable rule (borrowed-parameter provenance, family-wise correction, etc.)."
   },
   "margin_factor": {
@@ -40,83 +61,143 @@
         "end_iso": "2026-07-13T06:00:00Z"
       },
       "split_method": "single_global_cutoff",
-      "split_method_justification": "This is the CURRENT, already-loadable, already-in-production M15 dataset (already whitelisted in the loader alongside H1/H4/D1) -- distinct from the extended 2011-2026 'M15 v2' dataset referenced separately in Research Lab's FOUR_REGIME_RUN_STATUS_v1.0.md, which is NOT yet connected (P1 unmet there) and is OUT OF SCOPE for this manifest. Re-deriving a fresh regime-segment-stratified split for this already-live dataset now would retroactively unsettle a large body of already-closed, CEO-ratified determinations (DC-0003, DC-0004, S18 certification, scoped-FDR) that were built on its existing single cutoff. The existing cutoff is therefore preserved as-is, not recomputed.",
+      "split_method_justification": "This is the CURRENT, already-loadable, already-in-production M15 dataset -- distinct from M15_v2 below. See dataset_identity_resolution for how the two coexist without ambiguity. Preserved unchanged: re-deriving its split would retroactively unsettle DC-0003, DC-0004, S18, scoped-FDR.",
       "cutoff_epoch": 1761210900,
       "cutoff_iso": "2025-10-23T09:15:00Z",
-      "cutoff_provenance": "Pre-existing sealed_registry boundary (VE), predates this manifest and the stratified-split rule; preserved unchanged.",
+      "cutoff_provenance": "Pre-existing sealed_registry boundary (VE), predates this manifest; preserved unchanged.",
       "embargo_bars": 1000,
       "embargo_seconds": 900000,
-      "embargo_note_governance": "This 1000-bar embargo band was NOT applied when the original cutoff was set and used for already-closed work (DC-0003, DC-0004, S18, scoped-FDR). It is added here going forward, which only tightens protection (shrinks usable discovery/sealed edges, never expands them) -- a safe direction. Flagged, not auto-resolved: whether any already-closed determination used discovery-side data inside what is now the embargo band is a governance question for CEO, not something this manifest adjudicates.",
       "discovery_range": {
-        "start_epoch": 1671187500,
-        "start_iso": "2022-12-16T10:45:00Z",
-        "end_epoch": 1760310900,
-        "end_iso": "2025-10-12T23:15:00Z"
+        "start_epoch": 1671187500, "start_iso": "2022-12-16T10:45:00Z",
+        "end_epoch": 1760310900, "end_iso": "2025-10-12T23:15:00Z"
       },
       "embargo_range": {
-        "start_epoch": 1760310900,
-        "start_iso": "2025-10-12T23:15:00Z",
-        "end_epoch": 1762110900,
-        "end_iso": "2025-11-02T19:15:00Z"
+        "start_epoch": 1760310900, "start_iso": "2025-10-12T23:15:00Z",
+        "end_epoch": 1762110900, "end_iso": "2025-11-02T19:15:00Z"
       },
       "sealed_range": {
-        "start_epoch": 1762110900,
-        "start_iso": "2025-11-02T19:15:00Z",
-        "end_epoch": 1783922400,
-        "end_iso": "2026-07-13T06:00:00Z"
+        "start_epoch": 1762110900, "start_iso": "2025-11-02T19:15:00Z",
+        "end_epoch": 1783922400, "end_iso": "2026-07-13T06:00:00Z"
       },
       "regime_segments": null,
+      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "not yet requested prior to this version; see formal_requests_to_data_acquisition" },
       "status": "VALIDATED"
+    },
+    "M15_v2": {
+      "bar_seconds": 900,
+      "dataset": {
+        "n_bars": 355696,
+        "start_epoch": 1311638400, "start_iso": "2011-07-26T00:00:00Z",
+        "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z",
+        "date_precision_note": "Date-only precision as reported; exact first/last-bar HH:MM:SS pending Data Acquisition confirmation (see formal_requests_to_data_acquisition)."
+      },
+      "split_method": "50_50_stratified_by_regime_segment_with_inherited_overlap",
+      "regime_map_provenance": "Segment boundaries below use the four-bucket regime characterization from Research Lab's FOUR_REGIME_RUN_STATUS_v1.0.md (2011-2015 bear -42%, 2015-2020 bull +86%, 2020-2022 correction -17%, 2022-2026 bull +223%), operationalized into exact instants via a disclosed convention: each year-label transition = that calendar year's January 1st, 00:00:00Z. This is a convention applied to an already-existing characterization, not a fresh day-precision mechanical run -- flagged in formal_requests_to_data_acquisition for confirmation/refinement in a future version. Sufficient for this version's functional purpose (real, disclosed, non-arbitrary boundaries enabling fail-closed enforcement), not a claim of day-level statistical precision.",
+      "overlap_with_M15": {
+        "range": { "start_epoch": 1671187500, "start_iso": "2022-12-16T10:45:00Z", "end_epoch": 1783922400, "end_iso": "2026-07-13T06:00:00Z" },
+        "rule": "See dataset_identity_resolution rule_2. M15_v2 inherits M15's discovery_range/embargo_range/sealed_range verbatim for this range; it is not independently split here."
+      },
+      "embargo_bars": 1000,
+      "embargo_seconds": 900000,
+      "regime_segments": [
+        {
+          "label": "2011-2015 bear (-42%)", "type": "bear",
+          "segment_range": { "start_epoch": 1311638400, "start_iso": "2011-07-26T00:00:00Z", "end_epoch": 1420070400, "end_iso": "2015-01-01T00:00:00Z" },
+          "split_ratio": "50/50",
+          "discovery_range": { "start_epoch": 1311638400, "start_iso": "2011-07-26T00:00:00Z", "end_epoch": 1364954400, "end_iso": "2013-04-03T02:00:00Z" },
+          "intra_segment_embargo": { "start_epoch": 1364954400, "start_iso": "2013-04-03T02:00:00Z", "end_epoch": 1366754400, "end_iso": "2013-04-23T22:00:00Z" },
+          "sealed_range": { "start_epoch": 1366754400, "start_iso": "2013-04-23T22:00:00Z", "end_epoch": 1419170400, "end_iso": "2014-12-21T14:00:00Z" },
+          "trailing_inter_segment_embargo": { "start_epoch": 1419170400, "start_iso": "2014-12-21T14:00:00Z", "end_epoch": 1420970400, "end_iso": "2015-01-11T10:00:00Z" }
+        },
+        {
+          "label": "2015-2020 bull (+86%)", "type": "bull",
+          "segment_range": { "start_epoch": 1420070400, "start_iso": "2015-01-01T00:00:00Z", "end_epoch": 1577836800, "end_iso": "2020-01-01T00:00:00Z" },
+          "split_ratio": "50/50",
+          "discovery_range": { "start_epoch": 1420970400, "start_iso": "2015-01-11T10:00:00Z", "end_epoch": 1498053600, "end_iso": "2017-06-21T14:00:00Z" },
+          "intra_segment_embargo": { "start_epoch": 1498053600, "start_iso": "2017-06-21T14:00:00Z", "end_epoch": 1499853600, "end_iso": "2017-07-12T10:00:00Z" },
+          "sealed_range": { "start_epoch": 1499853600, "start_iso": "2017-07-12T10:00:00Z", "end_epoch": 1576936800, "end_iso": "2019-12-21T14:00:00Z" },
+          "trailing_inter_segment_embargo": { "start_epoch": 1576936800, "start_iso": "2019-12-21T14:00:00Z", "end_epoch": 1578736800, "end_iso": "2020-01-11T10:00:00Z" }
+        },
+        {
+          "label": "2020-2022 correction (-17%)", "type": "correction",
+          "segment_range": { "start_epoch": 1577836800, "start_iso": "2020-01-01T00:00:00Z", "end_epoch": 1640995200, "end_iso": "2022-01-01T00:00:00Z" },
+          "split_ratio": "50/50",
+          "discovery_range": { "start_epoch": 1578736800, "start_iso": "2020-01-11T10:00:00Z", "end_epoch": 1608516000, "end_iso": "2020-12-21T02:00:00Z" },
+          "intra_segment_embargo": { "start_epoch": 1608516000, "start_iso": "2020-12-21T02:00:00Z", "end_epoch": 1610316000, "end_iso": "2021-01-10T22:00:00Z" },
+          "sealed_range": { "start_epoch": 1610316000, "start_iso": "2021-01-10T22:00:00Z", "end_epoch": 1640095200, "end_iso": "2021-12-21T14:00:00Z" },
+          "trailing_inter_segment_embargo": { "start_epoch": 1640095200, "start_iso": "2021-12-21T14:00:00Z", "end_epoch": 1641895200, "end_iso": "2022-01-11T10:00:00Z" }
+        },
+        {
+          "label": "2022 pre-overlap sliver (part of the broader 2022-2026 bull +223% macro-regime; only the portion before M15's own dataset begins is M15_v2's own jurisdiction -- see overlap_with_M15 for the rest)", "type": "bull_partial",
+          "segment_range": { "start_epoch": 1640995200, "start_iso": "2022-01-01T00:00:00Z", "end_epoch": 1671187500, "end_iso": "2022-12-16T10:45:00Z" },
+          "split_ratio": "50/50",
+          "discovery_range": { "start_epoch": 1641895200, "start_iso": "2022-01-11T10:00:00Z", "end_epoch": 1655191350, "end_iso": "2022-06-14T07:22:30Z" },
+          "intra_segment_embargo": { "start_epoch": 1655191350, "start_iso": "2022-06-14T07:22:30Z", "end_epoch": 1656991350, "end_iso": "2022-07-05T03:22:30Z" },
+          "sealed_range": { "start_epoch": 1656991350, "start_iso": "2022-07-05T03:22:30Z", "end_epoch": 1670287500, "end_iso": "2022-12-06T00:45:00Z" },
+          "handoff_embargo_to_M15_onesided": {
+            "range": { "start_epoch": 1670287500, "start_iso": "2022-12-06T00:45:00Z", "end_epoch": 1671187500, "end_iso": "2022-12-16T10:45:00Z" },
+            "note": "One-sided (1000 bars, not 2000): the full margin is taken entirely from this segment's sealed tail. M15's own dataset start (1671187500) is NOT shifted -- per CEO's explicit instruction that the M15 entry remains untouched."
+          }
+        }
+      ],
+      "post_M15_tail": {
+        "range": { "start_epoch": 1783922400, "start_iso": "2026-07-13T06:00:00Z", "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z" },
+        "classification": "sealed",
+        "reason": "13.75 days -- shorter than a single embargo width (10.4 days) applied on each side would leave anything usable. Too short to split meaningfully; defaults to fully sealed (the conservative choice when a segment is inadequate for its own split, per the same principle already used for H1/M5 short-segment handling)."
+      },
+      "irreplaceable_segment_flag": {
+        "range": { "start_epoch": 1142812800, "start_iso": "2006-03-20T00:00:00Z", "end_epoch": 1311638400, "end_iso": "2011-07-26T00:00:00Z" },
+        "note": "This range is OUTSIDE M15_v2's own dataset (M15_v2 starts 2011-07-26) -- it exists only on H1 (see H1.irreplaceable_segment_flag below). Included here as a cross-reference so a reader of the M15_v2 entry does not assume M15_v2 covers it."
+      },
+      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "requested this version; see formal_requests_to_data_acquisition. A value was relayed secondhand via CEO this round and is deliberately NOT used here." },
+      "status": "AWAITING_DATA_FILE_HASH"
     },
     "M5": {
       "bar_seconds": 300,
       "dataset": {
         "n_bars": 354669,
-        "start_epoch": 1627344000,
-        "start_iso": "2021-07-27T00:00:00Z",
-        "end_epoch": 1785110400,
-        "end_iso": "2026-07-27T00:00:00Z",
-        "date_precision_note": "Start/end given at date resolution by Data Acquisition's report; exact first/last-bar HH:MM:SS to be confirmed by Data Acquisition and substituted here without changing this file's version (a value correction, not a rule change)."
+        "start_epoch": 1627344000, "start_iso": "2021-07-27T00:00:00Z",
+        "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z",
+        "date_precision_note": "Date-only precision as reported; exact first/last-bar HH:MM:SS pending Data Acquisition confirmation."
       },
       "split_method": "50_50_stratified_by_regime_segment",
-      "split_method_justification": "Same principle as M15-extended's original design: mechanical, disclosed regime map, split within each contiguous segment (not one global cutoff), 50/50 default with a documented 60/40 exception only for a segment too short for 50% discovery to be useful, decided before results.",
+      "split_method_justification": "Mechanical, disclosed regime map, split within each contiguous segment, 50/50 default with a documented 60/40 exception only for a segment too short for 50% discovery to be useful, decided before results.",
       "embargo_bars": 3000,
       "embargo_seconds": 900000,
       "embargo_derivation": "TRACK_HORIZON=960 M15 bars = 864000s = 10 days. M15/M5 bar-second ratio = 900/300 = 3. Raw M5-equivalent = 960*3 = 2880 bars. Margin factor 25/24 applied: 2880*25/24 = 3000.",
       "regime_segments": "AWAITING_REGIME_MAP",
-      "discovery_range": null,
-      "embargo_range": null,
-      "sealed_range": null,
-      "status": "AWAITING_REGIME_MAP",
-      "loader_contract": "Per fail_closed_default above: while status != VALIDATED, 100% of M5 bars are SEALED. No discovery access permitted. Data Acquisition may whitelist M5 in the loader code now; the data itself stays inert until a mechanical regime map is delivered and this entry is updated to status VALIDATED with populated regime_segments/discovery_range/embargo_range/sealed_range, in a new manifest version with a new hash."
+      "discovery_range": null, "embargo_range": null, "sealed_range": null,
+      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "requested this version; see formal_requests_to_data_acquisition. A value was relayed secondhand via CEO this round and is deliberately NOT used here." },
+      "status": "AWAITING_REGIME_MAP_AND_DATA_FILE_HASH",
+      "loader_contract": "Per fail_closed_default: while status != VALIDATED, 100% of M5 bars are SEALED. Data Acquisition may whitelist M5 in the loader code now; the data itself stays inert until both the regime map and the data-file hash are delivered and confirmed."
     },
     "H1": {
       "bar_seconds": 3600,
       "dataset": {
         "n_bars": 122601,
-        "start_epoch": 1142812800,
-        "start_iso": "2006-03-20T00:00:00Z",
-        "end_epoch": 1785110400,
-        "end_iso": "2026-07-27T00:00:00Z",
-        "date_precision_note": "Same date-resolution caveat as M5 above."
+        "start_epoch": 1142812800, "start_iso": "2006-03-20T00:00:00Z",
+        "end_epoch": 1785110400, "end_iso": "2026-07-27T00:00:00Z",
+        "date_precision_note": "Date-only precision as reported; exact first/last-bar HH:MM:SS pending Data Acquisition confirmation."
       },
       "split_method": "50_50_stratified_by_regime_segment",
-      "split_method_justification": "Same principle, applied to H1's own window. 2006-03-20 to (at least) 2011-07-25 has never been observed in this lab at any resolution, including the withdrawn M15-extended attempt -- the single most irreplaceable segment in the lab's history. No different split ratio is derived for it without a clean justification; heightened governance vigilance against discretionary access is recorded instead, see STATISTICIAN_H1_PREREGISTRATION_PROTOCOL_v1.0.md SS1.",
+      "split_method_justification": "Same principle, applied to H1's own window. No regime map has been delivered for H1 yet -- see formal_requests_to_data_acquisition.",
       "embargo_bars": 250,
       "embargo_seconds": 900000,
       "embargo_derivation": "TRACK_HORIZON=960 M15 bars = 864000s = 10 days. M15/H1 bar-second ratio = 3600/900 = 4. Raw H1-equivalent = 960/4 = 240 bars. Margin factor 25/24 applied: 240*25/24 = 250.",
       "regime_segments": "AWAITING_REGIME_MAP",
-      "discovery_range": null,
-      "embargo_range": null,
-      "sealed_range": null,
-      "status": "AWAITING_REGIME_MAP",
-      "loader_contract": "Per fail_closed_default above: while status != VALIDATED, 100% of H1 bars are SEALED. No discovery access permitted, including the never-seen 2006-2011 segment -- its irreplaceability is a reason for MORE caution before opening it, not less."
+      "discovery_range": null, "embargo_range": null, "sealed_range": null,
+      "irreplaceable_segment_flag": {
+        "range": { "start_epoch": 1142812800, "start_iso": "2006-03-20T00:00:00Z", "end_epoch": 1311638400, "end_iso": "2011-07-26T00:00:00Z" },
+        "note": "The single most irreplaceable segment in the lab's history: never observed at any resolution, in this lab, ever -- not even by the withdrawn M15-extended attempt. Superseded reference point: M15_v2's actual delivered start (2011-07-26) replaces the earlier withdrawn attempt's target date (2011-07-25). This field exists so a consumer reading ONLY this JSON (not the prose protocol documents) still sees the heightened-vigilance flag. Its irreplaceability is a reason for MORE caution before opening it, not less -- it does not change the split_ratio or embargo width, which remain the standard 50/50 and 250-bar rules once a regime map is delivered."
+      },
+      "data_file_sha256": { "value": null, "status": "PENDING_FORMAL_VERIFICATION", "source": "requested this version; see formal_requests_to_data_acquisition. A value was relayed secondhand via CEO this round and is deliberately NOT used here." },
+      "status": "AWAITING_REGIME_MAP_AND_DATA_FILE_HASH",
+      "loader_contract": "Per fail_closed_default: while status != VALIDATED, 100% of H1 bars are SEALED, including the never-seen 2006-2011 segment."
     }
   },
-  "out_of_scope_note": "An extended 'M15 v2' dataset (2011-2026) is referenced in ai_quant_lab/docs/FOUR_REGIME_RUN_STATUS_v1.0.md as a precondition for a separate four-regime measurement run. That dataset is NOT connected (Research Lab's own P1 status: unmet) and is NOT the 'M15' entry above. Do not conflate the two -- when M15 v2 is actually connected and verified, it requires its own timeframe entry in a future manifest version, not a silent merge into the current M15 entry.",
   "content_hash": {
     "algorithm": "sha256",
     "computed_over": "this exact file with this content_hash.value field set to the empty string \"\", UTF-8 bytes, no trailing newline added or removed beyond what is committed",
-    "value": "e6f7ec2db9f412e5f39194e0dbc4870e1f0e716be1dfd988edfb492b43b50103"
+    "value": "4d686374f04d3be8e54d1f372e637e99400425ca1459954dfe1368ca808e2c27"
   }
 }

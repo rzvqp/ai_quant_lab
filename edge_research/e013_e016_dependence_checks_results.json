@@ -1,0 +1,93 @@
+{
+  "window": {
+    "split": "pre_holdout_2025-10-23T09-15-00Z_v1",
+    "n_bars": 67321,
+    "date_range": [
+      "2022-12-16 10:45:00+00:00",
+      "2025-10-23 09:00:00+00:00"
+    ]
+  },
+  "entry_counts": {
+    "E010_breaker": 4197,
+    "E013": 5802,
+    "E015_all": 10075,
+    "E015_visit1": 5802,
+    "E016": 5802,
+    "E013_total_rows": 6919,
+    "E016_total_rows": 6919
+  },
+  "check1_circularity": {
+    "selection_window": "first break-censored touch within [ob_idx+1, ob_idx+480]",
+    "measurement_window": "movement_profile [entry_idx+1, entry_idx+50]",
+    "windows_overlap": false,
+    "note": "adjacent, not overlapping: measurement starts strictly AFTER the mitigation bar; identical structure to E015 visit-1 (a reversal at the first touch is retained -- break censoring stops only LATER visits). Unlike E010, whose 'unflipped' selection window [ob+1, ob+480] coincided with its outcome window."
+  },
+  "check2_entry_overlap": {
+    "E013_vs_E010": {
+      "a": 5802,
+      "b": 4197,
+      "intersection": 652,
+      "pct_of_a": 0.1124,
+      "jaccard": 0.0698
+    },
+    "E013_vs_E016": {
+      "a": 5802,
+      "b": 5802,
+      "intersection": 5802,
+      "pct_of_a": 1.0,
+      "jaccard": 1.0
+    },
+    "E013_vs_E015_all": {
+      "a": 5802,
+      "b": 10075,
+      "intersection": 5802,
+      "pct_of_a": 1.0,
+      "jaccard": 0.5759
+    },
+    "E013_vs_E015_visit1": {
+      "a": 5802,
+      "b": 5802,
+      "intersection": 5802,
+      "pct_of_a": 1.0,
+      "jaccard": 1.0
+    },
+    "E016_vs_E010": {
+      "a": 5802,
+      "b": 4197,
+      "intersection": 652,
+      "pct_of_a": 0.1124,
+      "jaccard": 0.0698
+    },
+    "E016_vs_E015_visit1": {
+      "a": 5802,
+      "b": 5802,
+      "intersection": 5802,
+      "pct_of_a": 1.0,
+      "jaccard": 1.0
+    }
+  },
+  "check3_repeated_measurements": {
+    "E013": {
+      "ob_events": 6919,
+      "distinct_zones": 5803,
+      "duplicate_ob_events": 1116,
+      "distinct_zone_entry_pairs": 5803,
+      "exact_duplicate_rows": 1116,
+      "fwd_overlap_median": 5.0,
+      "fwd_overlap_mean": 4.885,
+      "fwd_overlap_max": 15,
+      "pct_zero_overlap": 0.0062
+    },
+    "E016": {
+      "ob_events": 6919,
+      "distinct_zones": 5803,
+      "duplicate_ob_events": 1116,
+      "distinct_zone_entry_pairs": 5803,
+      "exact_duplicate_rows": 1116,
+      "fwd_overlap_median": 5.0,
+      "fwd_overlap_mean": 4.885,
+      "fwd_overlap_max": 15,
+      "pct_zero_overlap": 0.0062
+    }
+  }
+}
