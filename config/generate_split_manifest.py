@@ -401,13 +401,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.1", "commit": "f08c254", "content": "Ratifies 6 of 7 market_structure/liquidity_mechanics design decisions (D1/D2/D4/D5/D6/D7); holds D3's cost-acceptability pending a real-data blind-window measurement (principle ratified, synthetic 16-bar estimate explicitly not sufficient); pre-registers LM-001 (Liquidity Basin Wick-Sweep-Reject), a new namespace chosen instead of the requested 'E001_v2' naming to avoid implying resuscitation of a REJECTED candidate"},
             {"version": "2.5.2", "commit": "00af4b1", "content": "Closes E004's fill-rate PENDING_CONTROL note: Flow A executed STATISTICIAN_E004_FILL_CONTROL_SPEC_v1.0.md exactly (commit b4d5f89) -- control rate 0.850 falls in the pre-registered (0.512,0.886) band, mechanical label OBSERVED_NOT_DISTINCTIVE, read off the table not chosen post-hoc"},
             {"version": "2.5.3", "commit": "a0295d8", "content": "Mandate 3.10: lifts D3_block_reset to full RATIFIED on VE's real-data blind-window audit (MK-01 Step 2, commit 260c4e3 -- bear 0.0305%/bull 0.0170%/correction 0.0396%, all far below the 1% low-cost threshold); corrects Statistician's own '8 structures' count to the correct '6' (3 discovery blocks x 2 swing types -- the fourth M15_v2 segment has no discovery_range); declares the half-open [start_epoch,end_epoch) boundary_convention as a single mechanical rule (resolves the recurring VE-vs-Research-Lab one-bar discrepancy, verified directly against OANDA_XAUUSD_M15.csv); rules CROSS_VERIFICATION_SPEC scope (applies to derived data artifacts, not generically to verification/measurement code reading only through an already-safe discovery mask -- explicit limit stated); registers the re_arming_bug_MK02 fix specification (found by VE, MK-01/MK-02 Step 1 commit 6b7948f) and confirms the D3 volume audit remains valid (mk_d3_volume_audit.py never imports detect_breaks, verified directly)"},
-            {"version": "2.5.4", "commit": "PENDING (this version)", "content": "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f, N=34,670 valid wick-sweeps, 86.7% of displacements <40 pips) and the resulting risk-framework decision (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0) -- SUPERSEDES the fixed stop_official=4.00/stop_sensitivity=5.00 execution layer: R is now geometry-derived per trade (never widened, same D2 anti-pattern at 8x scale if it were); a displacement_filter (>=10.1 pips, excludes 34.0% aggregate) derived from the lab's already-existing 3x cost-stress convention (alpha_lab.py:197), not chosen from reference points; a rejection_ceiling (>=65 pips, tail-only, CONFIRMED not re-derived) stays as originally proposed; statistical_test replaces the fixed-w*-vs-binomial-winrate test with mean net_R>0 (a single win-rate threshold cannot exist when R varies continuously per trade). Also confirms D-BPR's three-tolerance count + freeze-rule (VE's skeleton, commit 306d1dc) is NOT overridden, and reconfirms D3_bis/D-WEEK unchanged."},
+            {"version": "2.5.4", "commit": "04c096e", "content": "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f, N=34,670 valid wick-sweeps, 86.7% of displacements <40 pips) and the resulting risk-framework decision (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0) -- SUPERSEDES the fixed stop_official=4.00/stop_sensitivity=5.00 execution layer: R is now geometry-derived per trade (never widened, same D2 anti-pattern at 8x scale if it were); a displacement_filter (>=10.1 pips, excludes 34.0% aggregate) derived from the lab's already-existing 3x cost-stress convention (alpha_lab.py:197), not chosen from reference points; a rejection_ceiling (>=65 pips, tail-only, CONFIRMED not re-derived) stays as originally proposed; statistical_test replaces the fixed-w*-vs-binomial-winrate test with mean net_R>0 (a single win-rate threshold cannot exist when R varies continuously per trade). Also confirms D-BPR's three-tolerance count + freeze-rule (VE's skeleton, commit 306d1dc) is NOT overridden, and reconfirms D3_bis/D-WEEK unchanged."},
+            {"version": "2.5.5", "commit": "PENDING (this version)", "content": "Mandate 3.13: formulates LM-001's testable hypothesis against the 40-V0 5-criteria standard. Corrects the order's stated population (22,887) to the true combined-filter figure (21,048, 60.7% of 34,670) -- 22,887 was the displacement floor alone, never reduced by the 1,839 events also excluded by the 65-pip ceiling. Derives the decisive horizon (20 M15 bars) from the correct comparison family (_profile.HORIZONS, immediate-reaction, not TRACK_HORIZON/REVISIT_HORIZON's multi-day level-revisit family) linked to an already-real boundary (london session length, mtf.py:37-38); secondary horizons (1,3,5,10,50) reused verbatim, descriptive only, family stays 1. Declares no take-profit (pure time-exit). Discloses exit=time's 1.6x concentration vs exit=rr2 (OUTCOME_DISTRIBUTION_v1.0.md, 0.628 vs 0.387) as a mandatory accompanying diagnostic, not a blocker. Declines to confirm block_bootstrap@v1 (still textually UNVALIDATED, n=21,048 far beyond its calibrated range) or substitute matched_null@v1 (ATR-scaled-only, wrong regime per D2_CLOSURE_SIZING_v1.0.md) -- specifies a due-diligence calibration extension instead, with a pre-registered acceptance band and a named (not invented) structural-calibration fallback (WP-5')."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.4",
+        "version": "2.5.5",
         "published_date": "2026-07-28",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -434,6 +435,34 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_5": (
+            "Mandate 3.13: formulates LM-001's testable hypothesis against the same 5 criteria imposed "
+            "on the 40 V0s (explicit numeric threshold, horizon as bar count, declared population/"
+            "denominator, classification threshold, zero free parameters). Three flags resolved: (1) "
+            "'12 bars' was a categorical error, not just underived -- TRACK_HORIZON/REVISIT_HORIZON "
+            "(960/480) answer a different question (waiting for an OLD level to be revisited) than "
+            "LM-001's immediate post-sweep reaction; the correct family is _profile.HORIZONS (1,3,5,10,"
+            "20,50), already used for this exact measurement across all 40 edges. Decisive horizon = 20 "
+            "bars, DERIVED by linking an already-real horizon value to an already-real boundary (london "
+            "session length, mtf.py:37-38, exactly 5h = 20 M15 bars) -- not picked. Secondary horizons "
+            "(1,3,5,10,50) reused verbatim, descriptive only, family stays 1 (same K6-decisive/K12-"
+            "descriptive precedent as DC-0004). (2) No take-profit declared explicitly -- pure time-exit "
+            "at the horizon. (3) exit=time's 1.6x concentration vs exit=rr2 (OUTCOME_DISTRIBUTION_v1.0.md, "
+            "median net1 0.628 vs 0.387) confirmed directly and disclosed as a mandatory accompanying "
+            "diagnostic (reusing NET_CONCENTRATION_INVENTORY_v1.0.md's own metrics), not a blocker -- "
+            "time-exit is kept because it is the only construction coherent with continuous geometry-"
+            "derived R. Corrects the order's stated population (22,887, floor-only) to the true "
+            "combined-filter figure: N=21,048 (60.7% of 34,670) -- independently verified by "
+            "reconstructing all 34,670 events with both bounds applied together; the order's number had "
+            "not yet subtracted the 1,839 events (5.3%) also excluded by the 65-pip ceiling. Declines to "
+            "confirm block_bootstrap@v1 by extrapolation (still textually UNVALIDATED per its own "
+            "calibration record, and n=21,048 is >10x the largest calibrated point where even phi=0.6 "
+            "had not fully converged to nominal) or substitute matched_null@v1 (verified ATR-scaled-only "
+            "per D2_CLOSURE_SIZING_v1.0.md, wrong regime for LM-001's structural/geometric R) -- specifies "
+            "a due-diligence calibration extension on the existing S8 harness instead, with a pre-"
+            "registered acceptance band and the already-identified (not newly invented) WP-5' structural "
+            "calibration as the named fallback."
         ),
         "changelog_v2_5_4": (
             "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f) -- "
@@ -931,7 +960,18 @@ def build_manifest() -> dict[str, Any]:
                         },
                         "note": "bull and asia/late lose disproportionately more (structurally smaller displacements, per the geometry_audit percentiles -- bull median 10.7 pips, only marginally above the 10.1 threshold) -- disclosed, not hidden; does not change the threshold (derived from cost-stress, not class-balancing), but any future per-regime/session statistical test must read these post-filter N, not the raw geometry-audit counts.",
                         "verification": "Independently reconstructed by Statistician directly from code/lm001_geometry_audit.py:collect() on real data (exact count, not a percentile-table estimate).",
+                        "CAUTION": "This 'kept'=22,887 is the FLOOR ONLY (>=10.1 pips, unbounded above) -- it does NOT yet subtract the rejection_ceiling exclusion below. The TRUE final population (both bounds) is combined_population.n=21,048, not this number. Kept here unedited (it is a correct floor-only figure) precisely so the two are never conflated again -- see combined_population.",
                     },
+                },
+                "combined_population": {
+                    "rule": "The actual LM-001 hypothesis population is BOTH filters together: 10.1 <= displacement < 65.0 pips.",
+                    "n": 21048, "pct_of_total": 60.7,
+                    "by_regime": {
+                        "bear": {"n": 13863, "kept": 9248, "kept_pct": 66.7},
+                        "bull": {"n": 14190, "kept": 7186, "kept_pct": 50.6},
+                        "correction": {"n": 6617, "kept": 4614, "kept_pct": 69.7},
+                    },
+                    "correction_note": "STAT-LM001-HYPOTHESIS-v1.0 (Mandate 3.13) caught and corrected an order-stated population of 22,887 for this exact population -- that figure was the displacement_filter's floor-only count (see its CAUTION field above), never reduced by the 1,839 events (5.3%) also excluded by rejection_ceiling. Independently verified by reconstructing all 34,670 events directly.",
                 },
                 "rejection_ceiling": {
                     "status": "RATIFIED",
@@ -955,22 +995,58 @@ def build_manifest() -> dict[str, Any]:
                     "stop_4.00": {"RR_1.5": 0.44, "RR_2.0": 0.3667},
                     "stop_5.00": {"RR_1.5": 0.432, "RR_2.0": 0.36},
                 },
+                "horizon": {
+                    "status": "RATIFIED (STAT-LM001-HYPOTHESIS-v1.0, Mandate 3.13)",
+                    "primary_decisive": 20,
+                    "unit": "M15 bars",
+                    "derivation": (
+                        "'12 bars' (as originally floated) was a categorical error, not just underived: "
+                        "TRACK_HORIZON/REVISIT_HORIZON (960/480, edge_research/e015_order_block_"
+                        "remitigation.py:47, e010/e012) answer 'how long to wait for an OLD level to be "
+                        "revisited' -- a different mechanism than LM-001's immediate post-sweep reaction. "
+                        "The correct comparison family is edge_research/_profile.py:11 HORIZONS=(1,3,5,10,"
+                        "20,50), already built for exactly this measurement across all 40 edges "
+                        "(movement_profile). 20 is DERIVED, not picked: it is the value in HORIZONS that "
+                        "equals one full trading session's exact length (london=UTC[8,13)=5h=20 M15 bars, "
+                        "code/mtf.py:37-38) -- reaction measured within a session-comparable window, not "
+                        "smeared across sessions with different dynamics. No new number invented."
+                    ),
+                    "secondary_descriptive": [1, 3, 5, 10, 50],
+                    "secondary_note": "Reused verbatim from _profile.HORIZONS, reported but NOT part of the tested family -- same precedent as DC-0004's K6-decisive/K12-descriptive split.",
+                    "exit_boundary_safety": "Exit bar c+horizon must remain within the SAME discovery_range as the sweep bar c (same quarantine rule as the next-open entry) -- events where it does not are EXCLUDED, count disclosed by VE at execution, not hidden.",
+                },
+                "no_take_profit": "RATIFIED (STAT-LM001-HYPOTHESIS-v1.0): pure time-exit at the horizon (20 bars primary) -- NO take-profit target exists. Outcome is the price at close[c+20] regardless of intermediate path. Stated explicitly so this is never silently assumed either way by a future reader.",
+                "exit_concentration_disclosure": {
+                    "status": "MANDATORY, RATIFIED (STAT-LM001-HYPOTHESIS-v1.0)",
+                    "finding": "Confirmed directly in docs/OUTCOME_DISTRIBUTION_v1.0.md: exit=time carries 1.6x the net concentration of exit=rr2 across the measured strategy corpus (median net1 0.628 vs 0.387). Time-exit is kept anyway (the only construction coherent with continuous geometry-derived R), but this is a known, accepted tradeoff, not an oversight.",
+                    "requirement": "Any verdict on LM-001 must be accompanied by the same concentration diagnostics already used in NET_CONCENTRATION_INVENTORY_v1.0.md (best-trade share of total net_R, best-trade-removal collapse check) -- if the result is driven by 1-2 extreme net_R values, that must be visible alongside any positive verdict, never hidden behind a mean.",
+                },
                 "outcome_variable": (
-                    "net_R per trade, NOT win-rate-vs-frozen-threshold. net_R_i computed from that trade's "
-                    "own geometry-derived R_i and the already-established cost_round_trip=0.40 "
-                    "(STATISTICIAN_NET_OF_COST_OUTCOME_DEFINITION_v1.0.md) -- avoids discretizing a "
-                    "continuously-varying w*(R)=(R+cost)/((RR+1)*R) into one frozen number."
+                    "net_R per trade, NOT win-rate-vs-frozen-threshold. Formula (STAT-LM001-HYPOTHESIS-"
+                    "v1.0): net_R_i = direction_i * (close[c+20] - open[c+1]) / R_i - cost/R_i, "
+                    "direction_i = +1 (lower basin -> LONG) / -1 (upper basin -> SHORT), R_i computed from "
+                    "that trade's own geometry-derived displacement and the already-established "
+                    "cost_round_trip=0.40 (STATISTICIAN_NET_OF_COST_OUTCOME_DEFINITION_v1.0.md) -- avoids "
+                    "discretizing a continuously-varying w*(R)=(R+cost)/((RR+1)*R) into one frozen number."
                 ),
                 "tie_break": "worst-case (stop-first) default, mandatory worst/best bracket per STATISTICIAN_M5_INDETERMINACY_THRESHOLD_SPEC_v1.0.md SS7c for any combination whose status depends on treatment.",
             },
-            "family": "1 member (1 detector x RR=2.0 only; the RR=1.5/stop=5.00 sensitivity variants are dropped with the superseded fixed-stop scheme). Direction is mechanical, not a free parameter.",
+            "family": "1 member (1 detector x 1 decisive horizon (20 bars) x RR=2.0-equivalent via net_R). Direction is mechanical, does not multiply the family. Secondary horizons (1,3,5,10,50) are descriptive only, excluded from the family by design (STAT-LM001-HYPOTHESIS-v1.0).",
             "statistical_test": (
-                "RATIFIED (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0): mean net_R > 0 across all trades "
-                "passing displacement_filter and rejection_ceiling, tested via the lab's already-"
-                "established bootstrap/permutation-against-matched-null framework (reused, not invented). "
-                "REPLACES the exact one-sided binomial win-rate test -- a win-rate-vs-threshold test "
-                "assumes a single frozen w*, which cannot exist when R varies continuously per trade."
+                "RATIFIED (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0 + STAT-LM001-HYPOTHESIS-v1.0): "
+                "H0: mu_netR<=0 vs H1: mu_netR>0 (one-sided), bootstrap/permutation on the continuous "
+                "net_R series, BH-FDR alpha=0.05 over family of 1 (trivial, no adjustment needed at "
+                "family size 1). REPLACES the exact one-sided binomial win-rate test -- a win-rate-vs-"
+                "threshold test assumes a single frozen w*, which cannot exist when R varies continuously "
+                "per trade.",
             ),
+            "bootstrap_method": {
+                "status": "NOT YET CONFIRMED -- explicitly not extrapolated blindly (STAT-LM001-HYPOTHESIS-v1.0)",
+                "block_bootstrap_v1": "NOT confirmed for use as-is. Its own calibration record (validation_engine/BLOCK_BOOTSTRAP_S_CALIBRATION_RECORD.md) verdict is textually 'remains UNVALIDATED' -- unrepaired. Additionally, n=21,048 (combined_population.n) is >10x the largest calibrated point (n=2,000), where even phi=0.6 (moderate autocorrelation) had not fully converged to nominal (FPR 0.066, 'slightly anti-conservative'). Extrapolating an already-unvalidated method beyond its calibrated range is not a defensible pre-registration basis.",
+                "matched_null_v1": "NOT a valid substitute. Verified directly in docs/D2_CLOSURE_SIZING_v1.0.md lines 27-32: matched_null@v1 stays validated ONLY for the ATR-scaled regime; the structural/geometric regime (exactly what LM-001's R is -- displacement-derived, not ATR) 'has never been in the battery' -- requires its own structural calibration (WP-5', already identified in D2_CLOSURE_EXECUTION_v1.0.md, UNAUTHORIZED/not started). Using it here would repeat the exact scope error already flagged at D2.",
+                "required_due_diligence": "VE extends the existing S8 battery (ve/calibration/synthetic_block_bootstrap.py, already built -- no new infrastructure) with one additional synthetic-n point at n~21,000. Pre-registered acceptance band (fixed now): if FPR@0.05 at this n falls in the already-named 'nominal' range (~<=0.055-0.06, comparable to phi=0.4 at n=1,000-2,000), block_bootstrap@v1 is usable for LM-001 as specified. If it does NOT land nominal, the fallback is NOT matched_null@v1 (wrong scope, as above) -- LM-001 becomes the first concrete demand for the already-identified WP-5' structural calibration, not a new invention.",
+                "r_variance_note": "Connects to the still-open question in D2_CLOSURE_SIZING_v1.0.md line 55 (is R the right outcome variable when risk->0 -- explosive variance is a property of the statistic, not data resolution): LM-001's displacement_filter (R>=$1.21) already excludes the near-zero-risk regime (original D2 family's ~$0.05-0.12 stops) where that concern is sharpest -- does not resolve the general question, but LM-001 specifically does not inherit its worst case.",
+            },
             "success_failure_criteria_preregistered": {
                 "success": "Mean net_R significantly > 0 (BH-FDR alpha=0.05, family of 1) on pooled counts across ELIGIBLE regimes (see insufficient_n_rule).",
                 "failure": "Does not pass BH-FDR, PROVIDED at least one regime had sufficient n -- a failure on insufficient data is a different category, not a statistical failure.",
@@ -989,6 +1065,7 @@ def build_manifest() -> dict[str, Any]:
             "workflow_confirmed": "Validation Engine implements after this ratification; a different division (not the producer) verifies conformance per CROSS_VERIFICATION_SPEC; execution on real data awaits both -- not triggered by this registration.",
             "full_preregistration_document": "ai_quant_lab statistician/STATISTICIAN_MARKET_STRUCTURE_RATIFICATION_AND_PREREG_v1.0.md",
             "full_risk_framework_decision_document": "ai_quant_lab statistician/STATISTICIAN_LM001_RISK_FRAMEWORK_DECISION_v1.0.md",
+            "full_hypothesis_formulation_document": "ai_quant_lab statistician/STATISTICIAN_LM001_HYPOTHESIS_FORMULATION_v1.0.md",
         },
         "timeframes": {
             "M15": {
