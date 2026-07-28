@@ -396,13 +396,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.3.1", "commit": "774acea", "content": "H4/D1 hashes supplied by Data Acquisition, GENERATED_PENDING_RATIFICATION (Data-Acquisition-authored injection, not a Statistician version)"},
             {"version": "2.4.0", "commit": "9286981", "content": "E001/E002/E004 candidate verdicts; H4/D1 ratified to CONTEXT_DERIVED_VALIDATED"},
             {"version": "2.4.1", "commit": "ab0e823", "content": "H1_from_M15_v2 registered and ratified (file_path/hash later found to be incorrect -- see v2.4.2); commit-citation correction recorded (an order incorrectly cited 4e1f550 as v2.4.0 -- it is v2.2.0, three mandates earlier)"},
-            {"version": "2.4.2", "commit": "PENDING (this version)", "content": "Hotfix: reconciles the v2.4.1 self-contradiction on H1_from_M15_v2 (registered as CONTEXT_DERIVED_VALIDATED with a staging/UNREGISTERED file_path while another changelog said unregistered) -- Data Acquisition relocated the file (commit d99d241) within the same hotfix window, hash independently re-verified at the new path (byte-identical), entry promoted to CONTEXT_DERIVED_VALIDATED with the correct canonical path; added mechanical consistency checks to this generator (validate_context_derived_consistency)"},
+            {"version": "2.4.2", "commit": "2c7b2c7", "content": "Hotfix: reconciles the v2.4.1 self-contradiction on H1_from_M15_v2 (registered as CONTEXT_DERIVED_VALIDATED with a staging/UNREGISTERED file_path while another changelog said unregistered) -- Data Acquisition relocated the file (commit d99d241) within the same hotfix window, hash independently re-verified at the new path (byte-identical), entry promoted to CONTEXT_DERIVED_VALIDATED with the correct canonical path; added mechanical consistency checks to this generator (validate_context_derived_consistency)"},
+            {"version": "2.5.0", "commit": "PENDING (this version)", "content": "Registers legacy_428_atr_persistence_verdicts (367 ZERO_ALPHA_BASE_RATE / 58 REGIME_PERSISTENCE_FAILURE / 3 EXTREME_CONCENTRATION_FRAGILITY_wo1) and the deduplication_prescreening_rule (PROJECT_AUDIT.md D11/SSF); confirms M5 stays in the repository, its own AWAITING_REGIME_MAP status unchanged, while the separate M5-aligned HTF context effort is CANCELLED (CTO decision) -- distinct facts, not to be conflated"},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.4.2",
+        "version": "2.5.0",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -429,6 +430,18 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_0": (
+            "Registers legacy_428_atr_persistence_verdicts: granular REJECTED labels for the 428 ATR "
+            "hypotheses' three-regime persistence run (367 ZERO_ALPHA_BASE_RATE / 58 REGIME_PERSISTENCE_"
+            "FAILURE / 3 EXTREME_CONCENTRATION_FRAGILITY_wo1), each with an explicit scope delimitation "
+            "(rejects the tested parameterization on these 3 regimes with this outcome variable, not the "
+            "underlying market concepts). Registers deduplication_prescreening_rule (PROJECT_AUDIT.md D11/"
+            "SSF): mandatory mechanical pre-screening (trade-log hash identity, not summary-stat matching) "
+            "before any future multiple-testing correction, with Research Lab's already-executed results "
+            "folded in (1972->1440 distinct, 428->360 distinct). Adds m5_status_note distinguishing M5's "
+            "own unchanged status from the separately CANCELLED M5-aligned-HTF-context effort -- two "
+            "distinct facts, recorded so neither is later conflated with the other."
         ),
         "changelog_v2_4_2": (
             "Hotfix. Research Lab found a genuine internal self-contradiction: the same v2.4.1 document "
@@ -643,6 +656,86 @@ def build_manifest() -> dict[str, Any]:
             },
             "full_verdict_document": "ai_quant_lab statistician/STATISTICIAN_STRUCTURAL_V1_FINAL_VERDICT_v1.0.md",
         },
+        "legacy_428_atr_persistence_verdicts": {
+            "source": "Research Lab three-regime persistence run (commit 7927441, docs/THREE_REGIME_PERSISTENCE_RESULT_v1.0.md), verified directly by Statistician before this registration -- a descriptive measurement, not a per-hypothesis significance test.",
+            "regimes_tested": "3 (bear, bull, correction; 2011-2021, M15_v2 discovery) -- NOT 4. The 2022-2026 regime is excluded as SAME-WINDOW-RESAMPLED, independently confirmed via changelog_v2_4 in this manifest.",
+            "counts": {"profitable_in_3_of_3": 3, "profitable_in_2_of_3": 7, "profitable_in_1_of_3": 51, "profitable_in_0_of_3": 367, "total": 428},
+            "verdicts": {
+                "profitable_in_0_of_3": {"n": 367, "label": "REJECTED", "reason_code": "ZERO_ALPHA_BASE_RATE",
+                    "scope": (
+                        "Fails the descriptive profitability screen (n>=25, sumR>0, exp>0, pf>1.00) in all 3 "
+                        "tested regimes, at this frozen parameterization, with R (ATR-scaled) as the outcome "
+                        "variable. Does NOT mean the underlying S1-S51 family/market concept is permanently "
+                        "falsified -- a different parameterization, or the same parameterization on untested "
+                        "regimes, remains untested by this specific result. Based on a DESCRIPTIVE screen, not "
+                        "a per-hypothesis significance test with BH-FDR (unlike the SS7 binomial-tested E001/"
+                        "E002/E004 rejections) -- a real but evidentially different-weight finding."
+                    )},
+                "profitable_in_1_or_2_of_3": {"n": 58, "label": "REJECTED", "reason_code": "REGIME_PERSISTENCE_FAILURE",
+                    "scope": (
+                        "Profitable in 1 or 2 of 3 regimes but fails the persistence-across-regime-diversity "
+                        "bar (profitable in ALL tested regimes). Does not invalidate the regime(s) where it "
+                        "was profitable -- that result may be real -- only the claim of regime-general "
+                        "robustness."
+                    )},
+                "profitable_in_3_of_3": {"n": 3, "label": "REJECTED", "reason_code": "EXTREME_CONCENTRATION_FRAGILITY_wo1",
+                    "scope": (
+                        "Profitable in aggregate across all 3 regimes, but at least one regime's profitability "
+                        "is entirely one trade (wo1<=0). Does not invalidate the underlying market mechanism "
+                        "(failed breakout fade at PDH/PDL for S2; pw_high rejection for S17) -- rejects the "
+                        "claim that CURRENT evidence supports a distributed, robust edge. After deduplication "
+                        "(see deduplication_prescreening_rule below), these 3 IDs are 2 distinct strategies: "
+                        "S2 (92481423c6b8, duplicate a53441048c3c -- lb inert under ref=pdh_pdl) and S17 "
+                        "(f5afb9813f83), both exit=time. S2 is distributed in 2/3 regimes (concentrated only "
+                        "in correction, net1=2.80, wo1=-0.031); S17 is distributed in only 1/3 (concentrated "
+                        "in BOTH bull, net1=4.96/wo1=-0.037, AND correction, net1=23.9/wo1=-0.064) -- "
+                        "structurally more fragile than S2, though both receive the same label since neither "
+                        "is distributed across all three regimes."
+                    )},
+            },
+            "full_verdict_document": "ai_quant_lab statistician/STATISTICIAN_LEGACY428_PERSISTENCE_VERDICT_v1.0.md",
+            "base_rate_question": (
+                "CEO separately asked whether 3 observed all-3-regime persisters vs. 428*p^3=0.08 expected "
+                "under naive independence (~37x) warrants a formal correction. Statistician's answer (full "
+                "reasoning in the verdict document): almost certainly a dependence artifact from cross-regime "
+                "heterogeneity in latent per-strategy quality (thickens the all-regimes-profitable tail even "
+                "under a pure null) plus the 428 IDs not being 428 independent units (exact duplicates being "
+                "the extreme case, partial correlation from shared entries with different exits being the "
+                "pervasive one) -- both push the true expected count up, not down. No formal numeric "
+                "correction built now (n=2-3 has ~zero power to distinguish correlation from real edge "
+                "regardless of method) -- registered as a standing principle instead: any future formal "
+                "regime-persistence significance test at larger scale must use a null model accounting for "
+                "both correlation sources, never the naive m*p^k calculation."
+            ),
+        },
+        "deduplication_prescreening_rule": {
+            "rule": (
+                "Two hypothesis IDs are duplicates iff their realized trade logs (ordered entry_epoch/"
+                "exit_epoch/R tuples) are bit-for-bit identical over the same evaluated dataset -- NOT "
+                "matching summary statistics (exp/win/pf/n), which can coincidentally match or coincidentally "
+                "differ despite identical underlying trades. Mandatory pre-screening BEFORE any future "
+                "multiple-testing correction on any hypothesis-ID corpus: family size (m) must be the "
+                "deduplicated distinct-strategy count, never the raw ID count."
+            ),
+            "specified_in": "ai_quant_lab PROJECT_AUDIT.md D11 / SSF (deduplication algorithm: identity criterion, mechanical hash-based detection, canonical-ID retention via lexicographically-lowest tie-break, dual raw/deduplicated reporting requirement)",
+            "executed_result": {
+                "source": "Research Lab full duplicate audit (commit 80fb243, docs/DUPLICATE_AUDIT_v1.0.md), run against the exact specified criterion via an efficient two-stage implementation (summary-fingerprint pre-filter, trade-log-hash confirmation on candidates)",
+                "full_1972_corpus": {"ids": 1972, "distinct_strategies": 1440, "redundant": 532, "redundancy_pct": 27.0},
+                "atr_428_corpus": {"ids": 428, "distinct_strategies": 360, "redundant": 68, "redundancy_pct": 15.9},
+                "root_cause": "SYSTEMATIC, not accidental -- 87% of clusters (444/508) from lookback (liq_lb/lb) conditionally inert whenever liq_ref != 'swing', a structural code property; smaller config-specific collapses in exit (rr2/rr3), mode (S5), target (S12).",
+            },
+            "scope_limit": "Catches only exact duplication (correlation=1.0). Does NOT address the pervasive partial-correlation problem from IDs sharing the same entries with different exit rules (the already-documented S18 3-signals-x-2-exits pattern) -- necessary but not sufficient for a fully correct future family size.",
+        },
+        "m5_status_note": (
+            "M5 (native dataset, its own timeframe entry below) is UNCHANGED and stays in the repository -- "
+            "its own status (AWAITING_REGIME_MAP) is unaffected by anything in this version. Separately, the "
+            "effort to build M5-ALIGNED HTF context (H*_from_M5, block-local on M5's own discovery blocks, "
+            "needed for families S7/S9/S11/S15/S20) is CANCELLED (CTO decision) -- not merely blocked or "
+            "deferred. M5 itself remains necessary and undeprecated because DC-0008's R variable (the G6 "
+            "structural blocker) needs raw M5 data directly, independent of the cancelled HTF-context effort. "
+            "These are two distinct facts about two distinct things -- do not conflate M5's own status with "
+            "the cancelled context-derivation project."
+        ),
         "timeframes": {
             "M15": {
                 "bar_seconds": M15_BAR_SECONDS,
