@@ -74,4 +74,4 @@ Blocat acum, pentru aplicare ulterioară dacă harta de sensibilitate trece prag
 
 ---
 
-**Publicat pe `statistician-foundation`. Manifestul se incrementează. Holdout SEALED — nimic executat aici, doar specificat.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.7 (commit `b98070c`, `alpha-automation-v1`). Holdout SEALED — nimic executat aici, doar specificat.**
