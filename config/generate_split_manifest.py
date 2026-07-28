@@ -405,13 +405,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.5", "commit": "1d03e4f", "content": "Mandate 3.13: formulates LM-001's testable hypothesis against the 40-V0 5-criteria standard. Corrects the order's stated population (22,887) to the true combined-filter figure (21,048, 60.7% of 34,670) -- 22,887 was the displacement floor alone, never reduced by the 1,839 events also excluded by the 65-pip ceiling. Derives the decisive horizon (20 M15 bars) from the correct comparison family (_profile.HORIZONS, immediate-reaction, not TRACK_HORIZON/REVISIT_HORIZON's multi-day level-revisit family) linked to an already-real boundary (london session length, mtf.py:37-38); secondary horizons (1,3,5,10,50) reused verbatim, descriptive only, family stays 1. Declares no take-profit (pure time-exit). Discloses exit=time's 1.6x concentration vs exit=rr2 (OUTCOME_DISTRIBUTION_v1.0.md, 0.628 vs 0.387) as a mandatory accompanying diagnostic, not a blocker. Declines to confirm block_bootstrap@v1 (still textually UNVALIDATED, n=21,048 far beyond its calibrated range) or substitute matched_null@v1 (ATR-scaled-only, wrong regime per D2_CLOSURE_SIZING_v1.0.md) -- specifies a due-diligence calibration extension instead, with a pre-registered acceptance band and a named (not invented) structural-calibration fallback (WP-5')."},
             {"version": "2.5.6", "commit": "00dfa6f", "content": "Mandate 3.14: resolves all nine open questions from the MK-03/MK-04 partial implementation (VE, commit 7984670). Family 1 (Q5 MK-03/MK-04): D7-consumption confirmed, but rejects an added 'session/day' lifetime clause not present in D7 -- PDH consumed at first same-day touch, no new dimension. Family 2 (Q6/Q4 MK-03): wick/close asymmetry now grounded in direct code precedent (e015's wick touch_mask for mitigation, e010/e012's close-based violation for polarity flips) -- 3-tier gradient specified (CE-50 touch / full fill / inversion). Family 3: FVGs don't survive a block boundary (D4-analog); Q3-week derived from the already-resolved Q3-day via a gap-detection rule, not a new clock. Resolves MK-03 Q4 (IFVG inversion, the only fully-blocking primitive) by reusing verbatim an identical definition independently found in two already-frozen V0s (E010, E012). Ratifies the three small mechanically-forced items (MK-03 Q1, MK-04 Q4, reconfirms MK-04 Q3-day)."},
             {"version": "2.5.7", "commit": "9c02af7", "content": "Mandate 3.17: block_bootstrap@v1 verdict INVALIDATED_FOR_THIS_SCALE for LM-001 (measured S8 curve nominal through phi=0.50, anti-conservative at phi=0.60, e441bcf) -- declines to map density (8.64 avg concurrent, e441bcf) onto the AR(1) curve, both because the derive-before-seeing-the-result ordering was violated (disclosed) and because the AR(1) parametrization is structurally the wrong instrument for LM-001's finite-memory overlapping-window dependency (a 28-bar block fully contains a 20-bar true dependency window, unlike any AR(1)). Closes the (0.50,0.55] threshold gap via fail_closed_default. WP-5' concretely sized: rebuild the null generator to match the true overlap mechanism, reusing the existing S8 FPR-measurement harness. MK-03/MK-04 FULLY RATIFIED at commit 1930467 after a full (not just report) code read -- 34 tests verified, mypy --strict clean. Registers the SMC_S1/S2/S3/S13/S16 nomenclature under a rigid protected prefix (verified collision against the legacy grammar, including two production strategy_runtime files), connects them to the Open-R risk framework, and mandates D11/SS F dedup pre-screening before enrollment."},
-            {"version": "2.5.8", "commit": "PENDING (this version)", "content": "Mandate 3.18: formalizes all 20 SMC_S* families (verified in code/mstrat.py's ECON dict -- S1-S20 is the legacy grammar's full family list). Flags that validation_engine/capabilities.json is the wrong registration target (its own deliberately_absent field excludes hypothesis-specific event primitives by design) -- registers here instead. Closes the horizon arithmetic gap (20 families, 4 session constants) via 4 declared groups: A=20 bars (LM-001's own immediate-reaction derivation, reused), B=native session length (asia/ny=32, london=20, late=12, from mtf.py), C=empirical day/week length independently computed (day=92, week=460 bars, median, matching institutional_levels.py's own '92 is not a constant' caveat), D=no horizon forced where the primitive itself is missing. 9 families fully state-machine-specified on only the 4 ratified modules (SMC_S1=LM-001, S2, S3, S7, S10 with a disclosed substitution, S11, S13, S16, S17). 11 honestly flagged as not forced: 3 cheap gaps (S5/S6/S19, near-trivial missing extensions), 6 genuine primitive-class gaps (S4/S8/S9/S14/S15/S20), 1 partial gap (S12), 1 reclassified as a stratification dimension not a standalone family (S18). Flags conceptual dedup-collision risk pairs for mandatory hash verification once code exists, declines to report a distinct-family count before trade logs exist. All formalized families AWAITING_VALIDATION_ENGINE_CODE; none promoted to VALIDATED until WP-5' delivers the oracle."},
+            {"version": "2.5.8", "commit": "74de879", "content": "Mandate 3.18: formalizes all 20 SMC_S* families (verified in code/mstrat.py's ECON dict -- S1-S20 is the legacy grammar's full family list). Flags that validation_engine/capabilities.json is the wrong registration target (its own deliberately_absent field excludes hypothesis-specific event primitives by design) -- registers here instead. Closes the horizon arithmetic gap (20 families, 4 session constants) via 4 declared groups: A=20 bars (LM-001's own immediate-reaction derivation, reused), B=native session length (asia/ny=32, london=20, late=12, from mtf.py), C=empirical day/week length independently computed (day=92, week=460 bars, median, matching institutional_levels.py's own '92 is not a constant' caveat), D=no horizon forced where the primitive itself is missing. 9 families fully state-machine-specified on only the 4 ratified modules (SMC_S1=LM-001, S2, S3, S7, S10 with a disclosed substitution, S11, S13, S16, S17). 11 honestly flagged as not forced: 3 cheap gaps (S5/S6/S19, near-trivial missing extensions), 6 genuine primitive-class gaps (S4/S8/S9/S14/S15/S20), 1 partial gap (S12), 1 reclassified as a stratification dimension not a standalone family (S18). Flags conceptual dedup-collision risk pairs for mandatory hash verification once code exists, declines to report a distinct-family count before trade logs exist. All formalized families AWAITING_VALIDATION_ENGINE_CODE; none promoted to VALIDATED until WP-5' delivers the oracle."},
+            {"version": "2.5.9", "commit": "PENDING (this version)", "content": "Mandate 3.19: Q1 (fully blocks WP-5's sample_event_positions) resolved -- reproduce the FULL empirical spacing/degree distribution, not just the mean, to avoid hiding regime-dependent behavior (the same failure mode that partially sank the AR(1) battery). Q2-Q6 resolved: fixed segment allocation + excluded boundary windows; session-stratified not aggregate-only density; 69% shared-horizon as a derived consequence not an imposed invariant; empirical (not normal) iid shocks; shock-sum aggregation scoped explicitly to FPR calibration only. L stays variable downstream. Ratifies Definition 1 (LiquiditySweep=D6, confirmation not new) and Definition 4 (PDH/PDL/Weekly=already-ratified detect_level_touches) unchanged. Derives Definition 3 (LiquidityVoid) as a hybrid temporal-OR-size criterion ($1.20, 3x cost-stress, reused derivation logic) after empirically proving neither criterion alone covers the intended concept (248 size-only vs 119 time-only qualifying transitions, verified on the actual 84,152-bar tested dataset). Fixes Definition 2 (Order Block/Breaker)'s zone contradiction (body [Close,Open], not body+wick) and specifies a validity-window/measurement-window separation before implementation to pre-empt E010's exact circularity defect. Scopes missing primitives to only the actually-blocked SMC_S* families: Range (S12, resolved via recomposition, upgraded to formalized) and MTF-Trend (S9/S20, resolved via recomposition of already-validated H1/H4/D1_from_M15_v2 context) need no new primitive; Volatility/Expansion (S4/S8) gets its measure defined (reusing the lab's official E000 Parkinson standard) with the threshold deferred to its own derivation; S14/S15 remain genuinely gapped (no primitive in either given module); S5/S6/S19 confirmed as a cheap Module-4 extension, not Module 5/6. Order Block/Breaker/Mitigation/Rejection and Compression confirmed NOT needed by any blocked family, not constructed."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.8",
+        "version": "2.5.9",
         "published_date": "2026-07-28",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -438,6 +439,40 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_9": (
+            "Mandate 3.19: three deliverables. (1) Q1 (fully blocks WP-5's sample_event_positions, "
+            "answered first per priority): reproduce the FULL empirical spacing/degree distribution "
+            "(the existing spacing_histogram config field), not just the mean (7.64) -- avoids hiding "
+            "regime-dependent behavior, the same failure mode that partially sank the original AR(1) "
+            "battery. Q2-Q6 resolved: segment allocation fixed at empirical counts with boundary "
+            "windows excluded (reusing the real audit's own rule); session-stratified density (not "
+            "aggregate-only, direct precedent from the AR(1) battery's own regime-dependence); the 69% "
+            "shared-horizon figure treated as a derived consequence, not an independently-imposed "
+            "invariant; empirical (bootstrap-resampled) iid shocks, not normal, given this lab's "
+            "repeatedly-documented heavy tails; shock-sum horizon aggregation, explicitly scoped to "
+            "FPR calibration only, not the full net_R pipeline. L stays variable {10,20,28,40} "
+            "downstream. (2) Four axiomatic definitions: Definition 1 (LiquiditySweep) and Definition 4 "
+            "(PDH/PDL/Weekly fixed reference) RATIFIED as confirmations of already-implemented D6/"
+            "detect_level_touches, verified directly in code. Definition 3 (LiquidityVoid) DERIVED as "
+            "a hybrid temporal-OR-size criterion ($1.20 size threshold from the already-established 3x "
+            "cost-stress convention, reused verbatim gapfind.py temporal rule) -- proven empirically "
+            "that neither criterion alone covers the intended concept (248 size-only vs 119 time-only "
+            "qualifying transitions on the actual 84,152-bar tested dataset, independently reproduced "
+            "exactly). Definition 2 (Order Block/Breaker) FIXED on two problems: the zone contradiction "
+            "(body=[Close,Open], not body+wick, preserving the wick's exclusive touch-mechanic role per "
+            "MK-03 Q4/Q6 discipline) and E010's exact circularity risk, pre-empted by specifying a "
+            "structurally-separate validity window (active until touched=consumed OR closed-through="
+            "breaker) and measurement window (starts only at the qualifying event, never at OB "
+            "formation) BEFORE any implementation. (3) Missing primitives scoped to only the actually-"
+            "blocked SMC_S* families: Range (SMC_S12, upgraded to fully formalized) and MTF-Trend "
+            "(SMC_S9/S20) resolved via recomposition of already-ratified/validated primitives, no new "
+            "primitive needed; Volatility/Expansion (SMC_S4/S8) measure defined (reusing the lab's "
+            "official E000 Parkinson standard), exact threshold deferred to its own derivation; SMC_S14/"
+            "S15 confirmed still genuinely gapped (no primitive in either given module); SMC_S5/S6/S19 "
+            "confirmed as a cheap Module-4 extension, not Module 5/6; Order Block/Breaker/Mitigation/"
+            "Rejection and Compression confirmed NOT needed by any blocked family, not constructed. All "
+            "families remain AWAITING_VALIDATION_ENGINE_CODE. Holdout SEALED, no backtest run."
         ),
         "changelog_v2_5_8": (
             "Mandate 3.18: formalizes all 20 SMC_S* families (S1-S20, verified as the legacy grammar's "
@@ -1161,6 +1196,16 @@ def build_manifest() -> dict[str, Any]:
                     "AR(1) mapping could have given; if still anti-conservative, escalate L further or reconsider the estimator."
                 ),
                 "r_variance_note": "Connects to the still-open question in D2_CLOSURE_SIZING_v1.0.md line 55 (is R the right outcome variable when risk->0 -- explosive variance is a property of the statistic, not data resolution): LM-001's displacement_filter (R>=$1.21) already excludes the near-zero-risk regime (original D2 family's ~$0.05-0.12 stops) where that concern is sharpest -- does not resolve the general question, but LM-001 specifically does not inherit its worst case.",
+                "wp5_prime_open_questions_RESOLVED": {
+                    "status": "RESOLVED (Mandate 3.19, STAT-WP5-Q1-DEFINITIONS-PRIMITIVES-v1.0), read VE's skeleton (code/wp5_null_generator.py, commit db249ee) in full, mypy --strict verified directly before answering.",
+                    "Q1_fully_blocking": "sample_event_positions reproduces the FULL empirical spacing/degree distribution (the existing spacing_histogram config field), NOT just the mean (7.64) -- matching only the mean risks hiding regime-dependent behavior in the degree tail, the exact failure mode that partially sank the original AR(1) battery (phi=0.4 nominal, phi=0.6 anti-conservative, hidden by a single-phi summary). Mean is reproduced automatically as a consequence of matching the full distribution -- not a separate target.",
+                    "Q2_partial": "Event counts per discovery segment (bear/bull/correction) FIXED at empirical counts (9,254/7,186/4,614), not re-sampled -- consistency with the already-stratified-by-regime audit. Boundary window [c,c+H] exceeding the segment end: EXCLUDED, not truncated -- same rule as the real audit's own 6-excluded-at-horizon-boundary.",
+                    "Q3_partial": "STRATIFIED by session, not aggregate-only -- direct precedent: the AR(1) battery's own regime-dependent FPR (phi=0.4 passes, phi=0.6 fails) shows aggregate summaries can hide anti-conservative pockets. Reproduce session densities (london 9.85/ny 9.36 vs asia 6.92/late 6.27); report FPR both aggregate and per-session.",
+                    "Q4_clarification": "'69% shared horizon' is a DERIVED CONSEQUENCE of spacing+H=20, not an independently-imposed invariant -- algebraically (H-spacing)/H. Treated as a post-generation verification check (confirms Q1 was implemented correctly), not an input constraint (imposing it separately risks an over-constrained, potentially inconsistent system).",
+                    "Q5_partial": "Shocks drawn via bootstrap resampling of REAL empirical M15 per-bar returns from the discovery bars -- NOT assumed normal. Heavy tails are an already-repeatedly-documented property of this lab's own trade/return data; a normal assumption would understate tail risk in the dangerous (over-confident) direction.",
+                    "Q6_clarification": "Shock-sum aggregation, consistent with Q5 -- under empirically-resampled shocks (not an artificial proxy), the shock-sum over the window IS the faithful price-move reproduction (close[c+H]-open[c+1] literally equals the sum of intermediate returns), so there is no real tension between 'sum' and 'faithful reproduction' once Q5 is resolved empirically. Explicit scope: this calibrates the DEPENDENCE STRUCTURE for FPR only, not the full net_R pipeline (R-normalization, cost, direction) -- that remains the substantive LM-001 test itself.",
+                    "L_stays_variable": "L in {10,20,28,40} remains a downstream estimator parameter, not fixed by this resolution, per VE's own skeleton design.",
+                },
             },
             "success_failure_criteria_preregistered": {
                 "success": "Mean net_R significantly > 0 (BH-FDR alpha=0.05, family of 1) on pooled counts across ELIGIBLE regimes (see insufficient_n_rule).",
@@ -1332,23 +1377,29 @@ def build_manifest() -> dict[str, Any]:
                     "threshold": "spike = distance from entry to Weekly H/L + 2 pips.",
                     "horizon_group": "C (week_bars=460)",
                 },
+                "SMC_S12": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Range Rotation",
+                    "upgraded_at": "Mandate 3.19 (STAT-WP5-Q1-DEFINITIONS-PRIMITIVES-v1.0) -- corrects Statistician's own 3.18 'partially gapped' classification; no new primitive needed after all.",
+                    "primitives": ["liquidity_mechanics (paired basins) + market_structure (classified swings, block confinement D4)"],
+                    "range_definition": "A pair of basins (one support-side, one resistance-side) that are BOTH: (a) from CLASSIFIED swings in the SAME discovery block (D4); (b) UNCONSUMED (neither swept yet, D7); (c) adjacent -- no OTHER classified swing of greater extremity exists between their formation and the current bar (ensures they are the current nearest bounding structure, not stale/superseded levels).",
+                    "mechanics": "Sweep-reject (D6/D7) at either basin of a qualifying pair -> entry at next-open, direction = mechanical (away from swept basin, same as SMC_S1), 'rotation' = repeated alternating sweep-reject cycles between the same pair over time.",
+                    "threshold": "spike = distance from entry to the swept basin + 2 pips.",
+                    "horizon_group": "A",
+                },
             },
             "families_gapped_or_different_nature": {
                 "cheap_gaps_near_trivial_extension": {
-                    "SMC_S5": "Opening-Range Momentum -- needs a 'first-K-bars-of-session high/low' computation, absent from all 4 modules (institutional_levels only does day/week, not opening range).",
-                    "SMC_S6": "Session-Transition Momentum -- needs 'previous SESSION high/low' (analog to PDH/PDL but per-session), same missing extension as S5.",
+                    "SMC_S5": "Opening-Range Momentum -- needs a 'first-K-bars-of-session high/low' computation, absent from all 4 modules (institutional_levels only does day/week, not opening range). Same missing-extension family as S6/S19 -- Module 4's day/week OHLC pattern applied at session granularity, not a new Module 5/6 primitive.",
+                    "SMC_S6": "Session-Transition Momentum -- needs 'previous SESSION high/low' (analog to PDH/PDL but per-session), same missing extension as S5/S19.",
                     "SMC_S19": "Session Gap -- needs session open/close price, same missing-extension family as S5/S6.",
                 },
                 "genuine_gaps_missing_primitive_class": {
-                    "SMC_S4": "Volatility-Regime Expansion -- needs a volatility-regime classifier. Exists conceptually as a KB-promoted primitive elsewhere in the lab, but NOT implemented in any of the 4 ratified code modules.",
-                    "SMC_S8": "Extension Mean-Reversion -- needs an ATR-relative distance. ATR itself is already computed and used elsewhere in the codebase (alpha_lab.py, mstrat.py) -- a smaller gap than S4/S9/S14, just not part of these 4 modules.",
-                    "SMC_S9": "MTF-Trend Momentum -- needs cross-timeframe (H1/H4/D1) trend classification, absent from all 4 modules.",
-                    "SMC_S14": "Momentum Exhaustion -- needs a ROC/RSI-type indicator, absent from all 4 modules.",
-                    "SMC_S15": "Trend Acceleration -- needs a swing-to-swing rate-of-change measure; market_structure detects swings but does not compute this.",
-                    "SMC_S20": "Hybrid Sweep+MTF -- depends on the same missing MTF-trend primitive as S9.",
-                },
-                "partially_gapped": {
-                    "SMC_S12": "Range Rotation -- the sweep-reject mechanic exists at each end (D6/D7), but no primitive exists for 'a pair of basins that define a stable range' -- any two nearby basins is not automatically a coherent range. Not forced.",
+                    "SMC_S4": "Volatility-Regime Expansion -- MEASURE now defined (Mandate 3.19): reuses the lab's own OFFICIAL E000 standard (Parkinson log-range ln(H/L), primary). 'Expansion regime' = current volatility in the upper percentile of its own trailing distribution. The exact percentile threshold is DEFERRED to its own dedicated derivation (analogous to the LM-001 geometry audit) -- not invented now.",
+                    "SMC_S8": "Extension Mean-Reversion -- MEASURE now defined (Mandate 3.19): distance from a reference normalized by the same Parkinson volatility measure as S4. Threshold likewise deferred to its own derivation. Smaller gap than S9/S14/S15/S20 -- the underlying measure (volatility) is an already-official lab standard, just not part of the 4 MK-01..04 modules.",
+                    "SMC_S9": "MTF-Trend Momentum -- RESOLVED VIA RECOMPOSITION (Mandate 3.19), no new primitive needed: market_structure's own swing/HH-HL-LH-LL classification applied to the already-CONTEXT_DERIVED_VALIDATED H1_from_M15_v2/H4_from_M15_v2/D1_from_M15_v2 context bars, requiring trend-direction alignment across >=2 resolutions. Composition of already-ratified/validated pieces, not a new research primitive.",
+                    "SMC_S14": "Momentum Exhaustion -- needs a ROC/RSI-type indicator. STILL GENUINELY GAPPED after Modules 5-6 (Mandate 3.19 checked): this concept does not appear in either module's given list -- not force-fit into Volatility or Trend.",
+                    "SMC_S15": "Trend Acceleration -- needs a swing-to-swing rate-of-change measure. STILL GENUINELY GAPPED after Modules 5-6 (Mandate 3.19 checked): Trend (Module 6) classifies direction, not its rate of change -- neither module covers acceleration.",
+                    "SMC_S20": "Hybrid Sweep+MTF -- RESOLVED VIA THE SAME RECOMPOSITION AS S9 (Mandate 3.19): depends on the identical already-ratified MTF-Trend composition, no separate new primitive.",
                 },
                 "not_a_standalone_family": {
                     "SMC_S18": "Time-of-Day -- confirmed the legacy S18 was always a STRATIFICATION dimension (hour/session) applied to OTHER signals, not its own trigger -- consistent with the already-documented 'S18 = 3 signals x 2 exits' finding (Mandate 3.10). Recommendation: NOT a 20th independent hypothesis -- remains a reporting stratification (asia/london/ny/late, already applied to SMC_S1/LM-001) over the other families.",
@@ -1365,6 +1416,52 @@ def build_manifest() -> dict[str, Any]:
             },
             "status_rule": "ALL formalized families: AWAITING_VALIDATION_ENGINE_CODE. Gapped families: GAPPED (missing primitive, specified per family above). SMC_S18: NOT_A_STANDALONE_FAMILY. NONE may be promoted to VALIDATED until WP-5' (Mandate 3.17) delivers the oracle.",
             "full_state_machines_document": "ai_quant_lab statistician/STATISTICIAN_SMC_S_STATE_MACHINES_v1.0.md",
+        },
+        "axiomatic_definitions_module5_6": {
+            "source": "CEO Mandate 3.19, four axiomatic definitions proposed for ratification; Statistician verified each directly against code before ratifying or fixing.",
+            "definition_1_LiquiditySweep": {
+                "status": "RATIFIED -- confirmation, not a new definition",
+                "verification": "Verified directly in code/liquidity_mechanics.py:detect_sweeps -- formula matches exactly: low[c]<p AND close[c]>p (BELOW basin), symmetric high[c]>p AND close[c]<p (ABOVE). Identical to D6. The require_close_back_inside=False parameter already exists precisely for the 'if close breaks beyond, label moves to BOS' distinction.",
+            },
+            "definition_4_PDH_PDL_Weekly_fixed_reference": {
+                "status": "RATIFIED -- unchanged",
+                "verification": "Confirmed consistent with detect_level_touches (Mandate 3.14/3.17): consumed at first wick touch within the current day/week's availability window, no re-arming.",
+            },
+            "definition_3_LiquidityVoid": {
+                "status": "RATIFIED -- threshold DERIVED, hybrid criterion (not size alone, not time alone)",
+                "verification": "Independently reproduced CEO's exact figures on the actual 84,152-bar dataset tested (data/market/OANDA_XAUUSD_M15__SUPERSEDED_v1_2022-12-16_to_2026-07-13_R03terminal.csv, NOT the current 355,696-bar M15.csv): 48,321 (57.4%) strict-inequality bars, median $0.02, p90 $0.095, p99 $0.55, >$1.00=377, >$5.00=123 -- exact match.",
+                "size_threshold_derived": "$1.20 = 3x the already-established cost_round_trip ($0.40), same logic as the LM-001 displacement floor derivation -- 344 bars at this threshold, not chosen from the $1.00 eyeballed figure.",
+                "why_hybrid_not_size_alone": "Empirically decomposed on the same 84,152 bars: 248 bars are SIZE-only gaps (>$1.20, no time discontinuity -- the CPI-slippage pattern, invisible to a time-only criterion); 119 bars are TIME-only gaps (temporal discontinuity, no large jump -- weekend reopens, invisible to a size-only criterion); 96 overlap. Neither criterion alone covers the intended concept.",
+                "final_definition": "A bar transition (c->c+1) qualifies as a LiquidityVoid iff EITHER: (temporal) time[c+1]-time[c] > 900s, excluding the already-documented daily maintenance window (~20:00-21:59 UTC, <=75min -- reused verbatim from code/gapfind.py's own existing rule); OR (size) |Open[c+1]-Close[c]| > $1.20. 463 qualifying transitions on the same 84,152-bar dataset (215 temporal + 344 size - 96 overlap).",
+            },
+            "definition_2_OrderBlock_Breaker": {
+                "status": "RATIFIED WITH TWO FIXES, specified before any implementation",
+                "problem_1_zone_contradiction_fixed": "For a bearish OB, body=[Close,Open] (Open>Close). The proposed formula [Open,Low] covers body PLUS the lower wick, a materially larger zone than 'the body' the text claims. DECIDED: active zone = the BODY, [Close_Bdown,Open_Bdown] -- the text's stated intent is correct, the formula is the error, formula corrected not the concept. Reasoning: the wick already has an established, exclusive role in this lab (D6: wick=penetration/touch, close=confirmation) -- including the wick in the OB zone itself would make 'touching the OB' ambiguous (wick-touch vs body-touch would mean different things), breaking the discipline already applied at MK-03 Q4/Q6.",
+                "problem_2_E010_circularity_preempted": (
+                    "E010 failed because its selection window ('OB not yet violated within the test horizon') and measurement window ('did price continue within the SAME horizon') were IDENTICAL "
+                    "(min(idx+1+480,n) both places). Specified now, before VE implements, to prevent the same defect: "
+                    "(1) VALIDITY window -- an OB stays active from formation until EITHER (a) a wick touch in the zone (D7-analog consumption, used once, no re-arm) OR (b) a decisive CLOSE beyond the zone "
+                    "(becomes a 'breaker' -- reused verbatim from the already-ratified E010/E012 inversion criterion, Mandate 3.14). (a) and (b) are DIFFERENT events; (a) does not imply (b). "
+                    "(2) MEASUREMENT window -- begins ONLY at the qualifying event bar (a) or (b), never at OB formation, running the group-A horizon (20 bars) forward from THAT point. "
+                    "By construction these two windows cannot collapse into the same window computed twice, unlike E010's identical selection/measurement windows."
+                ),
+            },
+            "missing_primitives_module5_6": {
+                "not_needed_by_any_blocked_family_not_constructed": "Order Block/Breaker/Mitigation/Rejection (Module 5 -- handled separately above via Definition 2, for its own reasons, not because any blocked SMC_S* family needs it); Compression (Module 6 -- no family names it).",
+                "resolved_via_recomposition_no_new_primitive": {
+                    "Range": "Needed by SMC_S12 (upgraded from partially-gapped to fully formalized, see smc_s_state_machines.families_formalized.SMC_S12) -- a pair of unconsumed, same-block, structurally-adjacent basins. Built entirely from already-ratified liquidity_mechanics/market_structure, no new primitive.",
+                    "MTF_Trend": "Needed by SMC_S9/SMC_S20 -- market_structure's own swing classification applied to the already-CONTEXT_DERIVED_VALIDATED H1/H4/D1_from_M15_v2 bars, requiring cross-resolution alignment. Composition of already-ratified/validated pieces, not new research.",
+                },
+                "new_primitive_measure_defined_threshold_deferred": {
+                    "Volatility_Expansion": "Needed by SMC_S4/SMC_S8 -- measure = the lab's own OFFICIAL E000 standard (Parkinson log-range ln(H/L), primary). Exact regime/percentile threshold DEFERRED to its own dedicated derivation (same discipline as the LM-001 pip filter) -- not invented now.",
+                },
+                "still_genuinely_gapped_after_modules_5_6": {
+                    "SMC_S14": "Momentum Exhaustion -- needs ROC/RSI-type indicator. Does not appear in either Module 5 or Module 6's given list -- not force-fit.",
+                    "SMC_S15": "Trend Acceleration -- needs swing-to-swing rate-of-change. Trend (Module 6) alone classifies direction, not its rate of change.",
+                },
+                "cheap_extension_of_module4_not_module5_6": "SMC_S5/S6/S19 need session-level OHLC (open/high/low/close per session) -- a mechanical extension of institutional_levels' existing day/week pattern to session granularity (mtf.py's already-established boundaries), not a genuine new Module 5/6 primitive.",
+            },
+            "full_resolution_document": "ai_quant_lab statistician/STATISTICIAN_WP5_Q1_DEFINITIONS_MISSING_PRIMITIVES_v1.0.md",
         },
         "timeframes": {
             "M15": {
