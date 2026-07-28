@@ -400,13 +400,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.0", "commit": "da7ca85", "content": "Registers legacy_428_atr_persistence_verdicts (367 ZERO_ALPHA_BASE_RATE / 58 REGIME_PERSISTENCE_FAILURE / 3 EXTREME_CONCENTRATION_FRAGILITY_wo1) and the deduplication_prescreening_rule (PROJECT_AUDIT.md D11/SSF); confirms M5 stays in the repository, its own AWAITING_REGIME_MAP status unchanged, while the separate M5-aligned HTF context effort is CANCELLED (CTO decision) -- distinct facts, not to be conflated"},
             {"version": "2.5.1", "commit": "f08c254", "content": "Ratifies 6 of 7 market_structure/liquidity_mechanics design decisions (D1/D2/D4/D5/D6/D7); holds D3's cost-acceptability pending a real-data blind-window measurement (principle ratified, synthetic 16-bar estimate explicitly not sufficient); pre-registers LM-001 (Liquidity Basin Wick-Sweep-Reject), a new namespace chosen instead of the requested 'E001_v2' naming to avoid implying resuscitation of a REJECTED candidate"},
             {"version": "2.5.2", "commit": "00af4b1", "content": "Closes E004's fill-rate PENDING_CONTROL note: Flow A executed STATISTICIAN_E004_FILL_CONTROL_SPEC_v1.0.md exactly (commit b4d5f89) -- control rate 0.850 falls in the pre-registered (0.512,0.886) band, mechanical label OBSERVED_NOT_DISTINCTIVE, read off the table not chosen post-hoc"},
-            {"version": "2.5.3", "commit": "PENDING (this version)", "content": "Mandate 3.10: lifts D3_block_reset to full RATIFIED on VE's real-data blind-window audit (MK-01 Step 2, commit 260c4e3 -- bear 0.0305%/bull 0.0170%/correction 0.0396%, all far below the 1% low-cost threshold); corrects Statistician's own '8 structures' count to the correct '6' (3 discovery blocks x 2 swing types -- the fourth M15_v2 segment has no discovery_range); declares the half-open [start_epoch,end_epoch) boundary_convention as a single mechanical rule (resolves the recurring VE-vs-Research-Lab one-bar discrepancy, verified directly against OANDA_XAUUSD_M15.csv); rules CROSS_VERIFICATION_SPEC scope (applies to derived data artifacts, not generically to verification/measurement code reading only through an already-safe discovery mask -- explicit limit stated); registers the re_arming_bug_MK02 fix specification (found by VE, MK-01/MK-02 Step 1 commit 6b7948f) and confirms the D3 volume audit remains valid (mk_d3_volume_audit.py never imports detect_breaks, verified directly)"},
+            {"version": "2.5.3", "commit": "a0295d8", "content": "Mandate 3.10: lifts D3_block_reset to full RATIFIED on VE's real-data blind-window audit (MK-01 Step 2, commit 260c4e3 -- bear 0.0305%/bull 0.0170%/correction 0.0396%, all far below the 1% low-cost threshold); corrects Statistician's own '8 structures' count to the correct '6' (3 discovery blocks x 2 swing types -- the fourth M15_v2 segment has no discovery_range); declares the half-open [start_epoch,end_epoch) boundary_convention as a single mechanical rule (resolves the recurring VE-vs-Research-Lab one-bar discrepancy, verified directly against OANDA_XAUUSD_M15.csv); rules CROSS_VERIFICATION_SPEC scope (applies to derived data artifacts, not generically to verification/measurement code reading only through an already-safe discovery mask -- explicit limit stated); registers the re_arming_bug_MK02 fix specification (found by VE, MK-01/MK-02 Step 1 commit 6b7948f) and confirms the D3 volume audit remains valid (mk_d3_volume_audit.py never imports detect_breaks, verified directly)"},
+            {"version": "2.5.4", "commit": "PENDING (this version)", "content": "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f, N=34,670 valid wick-sweeps, 86.7% of displacements <40 pips) and the resulting risk-framework decision (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0) -- SUPERSEDES the fixed stop_official=4.00/stop_sensitivity=5.00 execution layer: R is now geometry-derived per trade (never widened, same D2 anti-pattern at 8x scale if it were); a displacement_filter (>=10.1 pips, excludes 34.0% aggregate) derived from the lab's already-existing 3x cost-stress convention (alpha_lab.py:197), not chosen from reference points; a rejection_ceiling (>=65 pips, tail-only, CONFIRMED not re-derived) stays as originally proposed; statistical_test replaces the fixed-w*-vs-binomial-winrate test with mean net_R>0 (a single win-rate threshold cannot exist when R varies continuously per trade). Also confirms D-BPR's three-tolerance count + freeze-rule (VE's skeleton, commit 306d1dc) is NOT overridden, and reconfirms D3_bis/D-WEEK unchanged."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.3",
+        "version": "2.5.4",
         "published_date": "2026-07-28",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -433,6 +434,34 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_4": (
+            "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f) -- "
+            "N=34,670 valid wick-sweeps on the 130,491 M15_v2 discovery bars (N excluded=1, boundary "
+            "constraint fired exactly once as designed); AGGREGATE displacement fractions <40 pips=86.7%, "
+            "[40,65)=8.0%, >=65=5.3% (worst cell ny=79.2%<40) -- confirms a 40-pip fixed floor would "
+            "IMPOSE risk on the large majority instead of deriving it from geometry (D2's mechanic at 8x "
+            "scale, $4.00 vs D2's $0.50 floor); CTO's rejection of the fixed floor is correct. Resulting "
+            "risk-framework decision (STATISTICIAN_LM001_RISK_FRAMEWORK_DECISION_v1.0.md): (1) no single "
+            "break-even win-rate threshold can exist -- w*(R)=(R+cost)/((RR+1)*R) is a continuous function "
+            "of the geometry-derived R, not a frozen number (the same STAT-EXEC-CONTRACT SS7 formula, "
+            "independently reproduced exactly across all six reference rows); outcome variable becomes "
+            "mean net_R per trade, tested via the lab's existing bootstrap/permutation framework, not a "
+            "win-rate-vs-threshold binomial test. (2) A displacement_filter (exclude <10.1 pips, R<$1.21) "
+            "is RATIFIED, DERIVED (not chosen from the 18.0/14.0/10.1-pip reference points offered) from "
+            "the lab's ALREADY-EXISTING 3x cost-stress convention (alpha_lab.py:197) reaching cost/R=100% "
+            "-- excludes 34.0% aggregate (11,783/34,670; independently reconstructed by Statistician "
+            "directly from code/lm001_geometry_audit.py:collect(), exact count not a percentile estimate; "
+            "by-regime 25.7%/47.1%/23.2% bear/bull/correction, by-session 45.2%/30.5%/23.0%/50.4% "
+            "asia/london/ny/late -- disclosed, not hidden). (3) The 65-pip rejection_ceiling is CONFIRMED "
+            "(not re-derived) as tail-only exclusion (sits above aggregate p90=46.98, cuts 5.3% aggregate) "
+            "-- does not share the fixed-floor's D2 mechanic since it excludes trades rather than "
+            "widening R, and pre-empts the already-documented single-trade NET-concentration pathology. "
+            "(4) R stays geometry-derived per eligible trade, confirmed never widened -- the displacement "
+            "filter decides eligibility only, never modifies R of a trade that passes it. Also confirms "
+            "D-BPR's three-tolerance count + smallest-tolerance-clearing-n>=25 freeze rule (already written "
+            "into the skeleton by VE, commit 306d1dc) is NOT overridden, and reconfirms D3_bis/D-WEEK "
+            "unchanged from the prior mandate."
         ),
         "changelog_v2_5_3": (
             "Mandate 3.10: four determinations. (1) Lifts D3_block_reset from PRINCIPLE_RATIFIED_COST_"
@@ -847,37 +876,119 @@ def build_manifest() -> dict[str, Any]:
                 "PROVENANCE, not version."
             ),
             "scope": "M15_v2 discovery blocks only (D5), excluding the 2022-2026 regime as SAME-WINDOW-RESAMPLED, same 3 regimes as the SS9.4.1 structural contracts.",
+            "geometry_audit": {
+                "status": "COMPLETE",
+                "source": "code/lm001_geometry_audit.py (commit f901e3f), STAT-LM001-GEOMETRY-MK03-MK04-v1.0 (49d0a14); independently reconstructed by Statistician directly from the same collect() path on real data -- percentiles matched VE's report to the 4th decimal.",
+                "n_valid": 34670, "n_excluded_no_next_open": 1,
+                "aggregate_fractions_pips": {"<40": 86.7, "[40,65)": 8.0, ">=65": 5.3},
+                "aggregate_percentiles_pips": {"min": -3.58, "p10": 4.44, "p25": 7.96, "median": 14.68, "p75": 26.76, "p90": 46.98, "max": 607.55},
+                "finding": "86.7% of displacements fall under 40 pips (worst cell ny=79.2%) -- a 40-pip fixed floor would IMPOSE risk on the large majority instead of deriving it from geometry, the D2 mechanic at 8x scale ($4.00 vs D2's $0.50 floor). CTO rejected the fixed floor on this basis.",
+            },
             "execution_layer": {
                 "entry": "next-bar-open after the maturation (wick-sweep) bar, direction determined mechanically by basin type (support matured -> long, resistance matured -> short) -- not a free choice, does not multiply the family.",
-                "stop_official": 4.00, "stop_sensitivity": 5.00, "cost_round_trip": 0.40,
-                "targets": {
+                "cost_round_trip": 0.40,
+                "risk_construction": (
+                    "RATIFIED (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0): GEOMETRY-DERIVED PER TRADE, not "
+                    "fixed. R_i = (displacement_i + 2 pips buffer) * TICK, displacement_i = distance from "
+                    "next-open entry to the manipulation wick extreme, measured directly per trade "
+                    "(STAT-LM001-GEOMETRY-MK03-MK04-v1.0). NEVER widened to a floor for any trade that "
+                    "passes the displacement_filter below -- widening is exactly the D2 mechanic (engine "
+                    "imposes a risk the setup didn't request), here at 8x the scale that produced D2 "
+                    "originally. The displacement_filter decides ELIGIBILITY only; it never modifies R of "
+                    "an eligible trade."
+                ),
+                "stop_official_SUPERSEDED": {
+                    "value": 4.00, "status": "SUPERSEDED",
+                    "reason": "See geometry_audit.finding above -- kept here, marked SUPERSEDED not deleted, per standing documentation discipline.",
+                },
+                "displacement_filter": {
+                    "status": "RATIFIED",
+                    "rule": "EXCLUDE trades with displacement < 10.1 pips (R < $1.21). A filter on ELIGIBILITY, not a floor on RISK -- never touches R of a trade that passes it.",
+                    "derivation": (
+                        "Derived, NOT chosen from the reference points offered (18.0/14.0/10.1 pips at "
+                        "20%/25%/33% cost/R): the threshold is the displacement at which the lab's "
+                        "ALREADY-EXISTING 3x cost-stress convention (code/alpha_lab.py:197, c2: "
+                        "spread_ticks*=3, slip_ticks*=3 -> cost_stress=3*0.40=1.20, already used for "
+                        "sensitivity testing per STATISTICIAN_NET_OF_COST_OUTCOME_DEFINITION_v1.0.md SS5) "
+                        "would consume the ENTIRE risk of the trade (cost_stress/R=100%): "
+                        "(displacement+2)*0.10=1.20 -> displacement=10.0 pips (10.1 on discrete data). At "
+                        "1x/default cost this is cost/R=33.1% -- coincides with the loosest of the three "
+                        "reference points, not because it was picked among them, but because that IS "
+                        "where the existing stress convention saturates."
+                    ),
+                    "exclusion_fraction": {
+                        "aggregate": {"n": 34670, "excluded": 11783, "excluded_pct": 34.0, "kept": 22887, "kept_pct": 66.0},
+                        "by_regime": {
+                            "bear": {"n": 13863, "kept": 10299, "kept_pct": 74.3, "excluded_pct": 25.7},
+                            "bull": {"n": 14190, "kept": 7509, "kept_pct": 52.9, "excluded_pct": 47.1},
+                            "correction": {"n": 6617, "kept": 5079, "kept_pct": 76.8, "excluded_pct": 23.2},
+                        },
+                        "by_session": {
+                            "asia": {"n": 11219, "kept": 6153, "kept_pct": 54.8, "excluded_pct": 45.2},
+                            "london": {"n": 8796, "kept": 6117, "kept_pct": 69.5, "excluded_pct": 30.5},
+                            "ny": {"n": 12228, "kept": 9412, "kept_pct": 77.0, "excluded_pct": 23.0},
+                            "late": {"n": 2427, "kept": 1205, "kept_pct": 49.6, "excluded_pct": 50.4},
+                        },
+                        "note": "bull and asia/late lose disproportionately more (structurally smaller displacements, per the geometry_audit percentiles -- bull median 10.7 pips, only marginally above the 10.1 threshold) -- disclosed, not hidden; does not change the threshold (derived from cost-stress, not class-balancing), but any future per-regime/session statistical test must read these post-filter N, not the raw geometry-audit counts.",
+                        "verification": "Independently reconstructed by Statistician directly from code/lm001_geometry_audit.py:collect() on real data (exact count, not a percentile-table estimate).",
+                    },
+                },
+                "rejection_ceiling": {
+                    "status": "RATIFIED",
+                    "rule": "EXCLUDE trades with displacement >= 65 pips -- tail rejection, not a floor. CEO's original proposal CONFIRMED on review, not re-derived.",
+                    "reasoning": (
+                        "65 pips sits above aggregate p90 (46.98) -- cuts only the genuine tail (5.3% "
+                        "aggregate, 2.1%-8.4% per cell), not the distribution's mass (unlike the rejected "
+                        "40-pip floor, which cut below the median). Pre-empts the already-documented "
+                        "single-trade NET-concentration pathology (NET_CONCENTRATION_INVENTORY_v1.0.md) "
+                        "rather than introducing a new risk."
+                    ),
+                },
+                "targets": "Reward = 2 x R_i, R_i geometry-derived per trade (see risk_construction) -- RR=2.0 only, the fixed-stop RR_1.5 variant is dropped with the superseded stop.",
+                "targets_SUPERSEDED": {
                     "stop_4.00": {"RR_1.5": 6.00, "RR_2.0": 8.00},
                     "stop_5.00": {"RR_1.5": 7.50, "RR_2.0": 10.00},
                 },
-                "break_even_thresholds": {
+                "break_even_thresholds_SUPERSEDED": {
+                    "status": "SUPERSEDED -- a single w* cannot exist when R varies continuously per trade (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0)",
                     "formula": "w* = (1 + cost/S) / (RR + 1)",
                     "stop_4.00": {"RR_1.5": 0.44, "RR_2.0": 0.3667},
                     "stop_5.00": {"RR_1.5": 0.432, "RR_2.0": 0.36},
                 },
+                "outcome_variable": (
+                    "net_R per trade, NOT win-rate-vs-frozen-threshold. net_R_i computed from that trade's "
+                    "own geometry-derived R_i and the already-established cost_round_trip=0.40 "
+                    "(STATISTICIAN_NET_OF_COST_OUTCOME_DEFINITION_v1.0.md) -- avoids discretizing a "
+                    "continuously-varying w*(R)=(R+cost)/((RR+1)*R) into one frozen number."
+                ),
                 "tie_break": "worst-case (stop-first) default, mandatory worst/best bracket per STATISTICIAN_M5_INDETERMINACY_THRESHOLD_SPEC_v1.0.md SS7c for any combination whose status depends on treatment.",
             },
-            "family": "2 members (1 detector x 2 RR); direction is mechanical, not a free parameter, so it does not multiply the family; the 5.00 stop is a sensitivity variant, not a third family member.",
-            "statistical_test": "Exact one-sided binomial (ratified SS7), pooled trial counts across the 3 tested regimes per RR member, BH-FDR at alpha=0.05 over the family of 2.",
+            "family": "1 member (1 detector x RR=2.0 only; the RR=1.5/stop=5.00 sensitivity variants are dropped with the superseded fixed-stop scheme). Direction is mechanical, not a free parameter.",
+            "statistical_test": (
+                "RATIFIED (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0): mean net_R > 0 across all trades "
+                "passing displacement_filter and rejection_ceiling, tested via the lab's already-"
+                "established bootstrap/permutation-against-matched-null framework (reused, not invented). "
+                "REPLACES the exact one-sided binomial win-rate test -- a win-rate-vs-threshold test "
+                "assumes a single frozen w*, which cannot exist when R varies continuously per trade."
+            ),
             "success_failure_criteria_preregistered": {
-                "success": "Passes BH-FDR at alpha=0.05 over the family of 2, on pooled counts across ELIGIBLE regimes (see insufficient_n_rule).",
+                "success": "Mean net_R significantly > 0 (BH-FDR alpha=0.05, family of 1) on pooled counts across ELIGIBLE regimes (see insufficient_n_rule).",
                 "failure": "Does not pass BH-FDR, PROVIDED at least one regime had sufficient n -- a failure on insufficient data is a different category, not a statistical failure.",
             },
             "insufficient_n_rule": (
                 "Reused convention: n>=25 (Discovery Screen V1 / persistence-leaderboard threshold), not a "
-                "new number. Per-regime: <25 qualifying events -> that regime marked INSUFFICIENT_N for this "
+                "new number. Evaluated on the POST-FILTER population (displacement in [10.1,65) pips), NOT "
+                "the raw wick-sweep count -- the filter changes the actual eligible/tradeable universe. "
+                "Per-regime: <25 qualifying events -> that regime marked INSUFFICIENT_N for this "
                 "hypothesis, EXCLUDED from the pooled count (never treated as zero or as failure), fraction "
                 "disclosed explicitly. Pooled: if total n across eligible regimes stays <25 after exclusions, "
-                "the whole RR member's verdict is TESTABLE BUT INSUFFICIENT EVIDENCE (established vocabulary, "
-                "e.g. DC-0004) -- NOT REJECTED. If both RR members land here, the whole LM-001 line gets this "
-                "verdict, with the D3 blind window recorded explicitly as the likely primary cause, not hidden."
+                "the whole hypothesis's verdict is TESTABLE BUT INSUFFICIENT EVIDENCE (established "
+                "vocabulary, e.g. DC-0004) -- NOT REJECTED, with the D3 blind window recorded explicitly as "
+                "the likely primary cause if applicable, not hidden."
             ),
-            "workflow_confirmed": "Validation Engine implements after this ratification; a different division (not the producer) verifies conformance per CROSS_VERIFICATION_SPEC; execution on real data awaits both -- not triggered by this registration. D3's cost measurement is a separate precondition, not gated by this workflow but not yet satisfied either.",
+            "workflow_confirmed": "Validation Engine implements after this ratification; a different division (not the producer) verifies conformance per CROSS_VERIFICATION_SPEC; execution on real data awaits both -- not triggered by this registration.",
             "full_preregistration_document": "ai_quant_lab statistician/STATISTICIAN_MARKET_STRUCTURE_RATIFICATION_AND_PREREG_v1.0.md",
+            "full_risk_framework_decision_document": "ai_quant_lab statistician/STATISTICIAN_LM001_RISK_FRAMEWORK_DECISION_v1.0.md",
         },
         "timeframes": {
             "M15": {
