@@ -54,7 +54,8 @@ from market_structure import Block  # noqa: E402
 from trading_strategies import StrategySignal, detect_s1, net_R  # noqa: E402  # SMC_S1 peste liquidity_mechanics
 
 # ── GARD 1 ────────────────────────────────────────────────────────────────────────────────────────
-GATED_BY_CTO: bool = True    # True = nicio execuție. Se ridică DOAR prin decizie CTO explicită.
+GATED_BY_CTO: bool = False   # RIDICAT prin decizie CTO explicită (Mandat 5.11, prima execuție pe date reale).
+#                              GARD 2 (segmentul sigilat) RĂMÂNE NEATINS — nicio autorizare scrisă emisă.
 
 # ── parametrii Open-R pentru SMC_S1 (= LM-001) ──────────────────────────────────────────────────────
 HORIZON_S1 = 20              # orizont GRUPA A, ieșire pură pe timp

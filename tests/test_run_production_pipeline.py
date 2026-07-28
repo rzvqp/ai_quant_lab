@@ -16,10 +16,11 @@ if _CODE not in sys.path:
 import run_production_pipeline as RP  # noqa: E402
 
 
-# ── GARD 1 ──────────────────────────────────────────────────────────────────────────────────────
-def test_execute_raises_while_gated_by_cto():
-    """.execute() ridică excepție cât timp GATED_BY_CTO e True (oprește orice execuție, înainte de date)."""
-    assert RP.GATED_BY_CTO is True
+# ── GARD 1 (mecanismul, independent de valoarea de producție a flag-ului) ──────────────────────────
+def test_execute_raises_while_gated_by_cto(monkeypatch):
+    """MECANISMUL GARD 1: cât timp GATED_BY_CTO e True, .execute() ridică CtoGateError înainte de orice
+    date. Testat prin monkeypatch ca să nu depindă de valoarea de producție (ridicată la Mandat 5.11)."""
+    monkeypatch.setattr(RP, "GATED_BY_CTO", True)
     with pytest.raises(RP.CtoGateError):
         RP.ProductionPipeline().execute()
 
