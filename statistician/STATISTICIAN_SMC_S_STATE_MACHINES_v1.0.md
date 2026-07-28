@@ -107,4 +107,4 @@ Nu există încă cod/tranzacții pentru nicio familie (`AWAITING_VALIDATION_ENG
 
 **Stare pentru toate cele 9 formalizate: `AWAITING_VALIDATION_ENGINE_CODE`. Cele 11 rămase: `GAPPED` (primitivă lipsă) sau `NOT_A_STANDALONE_FAMILY` (S18). Nicio familie nu trece în `VALIDATED` până când WP-5' nu livrează oracolul (Mandatul 3.17).** Holdout SEALED, neatins. Niciun backtest rulat.
 
-**Înregistrat în `config/split_manifest.json` (NU `capabilities.json`, cf. secțiunii de mai sus), incrementat la v2.5.8 pe `alpha-automation-v1`.**
+**Înregistrat în `config/split_manifest.json` (NU `capabilities.json`, cf. secțiunii de mai sus), incrementat la v2.5.8 (commit `74de879`, `alpha-automation-v1`).**
