@@ -314,7 +314,7 @@ def build_manifest() -> dict[str, Any]:
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.3.0",
+        "version": "2.4.0",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -322,6 +322,20 @@ def build_manifest() -> dict[str, Any]:
             "config/generate_split_manifest.py, not hand-transcribed."
         ),
         "generator": "config/generate_split_manifest.py",
+        "changelog_v2_4": (
+            "Registers the Mandate 4.1 transactional-evaluation verdicts (Flow A commit 1a64812, "
+            "verified directly by Statistician against the source report/script/results, not merely "
+            "accepted) under candidate_verdicts: E001/E002/E004 REJECTED -- NEGATIVE_EXPECTANCY_UNDER_"
+            "COST at the SS9.4.1 parameterization (stop $4/$5, RR 1:1/1:2) -- winrate below the cost-"
+            "adjusted break-even in all 3 regimes tested (bear/bull/correction, 2011-2021; the 2022-2026 "
+            "regime is excluded as SAME-WINDOW-RESAMPLED, Statistician's own earlier 4-regime mandate "
+            "was in error, corrected here), BH-FDR family of 6 passing none. Scope explicitly delimited: "
+            "this rejects the SS9.4.1 stop/RR parameterization, not the underlying ICT concepts -- a "
+            "differently-parameterized candidate would need its own full review. E004's fill rate "
+            "(0.662-0.736) is registered PENDING_CONTROL, not as CONFIRMED_STRUCTURAL_ANOMALY -- no "
+            "denominator exists yet for how often a comparable, non-FVG-selected gap fills over the "
+            "same window; a specific control is registered as required before any anomaly label."
+        ),
         "changelog_v2_3": (
             "Adds context_derived_htf: the mechanical rule for resampling H4/D1 context bars from "
             "M15_v2 (CTO-approved Option B, since the lab's existing H1/H4/D1 context files were "
@@ -411,6 +425,47 @@ def build_manifest() -> dict[str, Any]:
         },
         "margin_factor": {"value": "25/24", "note": "960->1000 M15; 2880->3000 M5; 240->250 H1."},
         "context_derived_htf": htf_resample_rule,
+        "candidate_verdicts": {
+            "source": "Flow A Mandate 4.1 (commit 1a64812, edge_research/MANDATE41_TRANSACTIONAL_EVAL.md), verified directly by Statistician against the report, evaluation script, and results JSON before this registration.",
+            "statistical_test": {
+                "method": "exact one-sided binomial (scipy.stats.binom.sf), not a normal approximation",
+                "break_even_threshold": "w* = (1 + cost/S) / (RR + 1); cost=0.4, so RR1:1 -> 0.550 at S=4.00 / 0.540 at S=5.00; RR1:2 -> 0.367 at S=4.00 / 0.360 at S=5.00",
+                "family": "3 contracts x 2 RR = 6, trial counts pooled across all tested regimes per contract-RR pair before testing (regime is a descriptive robustness breakdown, not a test multiplier)",
+                "ratified_in": "ai_quant_lab statistician/STATISTICIAN_EXECUTION_CONTRACT_STRUCTURAL_V1_v1.0.md SS7 (v1.2)",
+            },
+            "regimes_tested": "3 (bear, bull, correction; 2011-07-26 to 2021-09-03) -- NOT 4. The 2022-2026 regime is M15-legacy territory that informed V1's own parameterization and falls under same_window_resampled_predicate; Statistician's original 4-regime mandate was in error, corrected here per explicit instruction.",
+            "verdicts": {
+                "E001": {"label": "REJECTED", "reason_code": "NEGATIVE_EXPECTANCY_UNDER_COST",
+                          "scope": "Rejects the SS9.4.1 parameterization (stop $4.00/$5.00, RR 1:1/1:2) only -- not the underlying Asia-range sweep-and-reverse concept. A differently-parameterized candidate would be new, requiring its own full review."},
+                "E002": {"label": "REJECTED", "reason_code": "NEGATIVE_EXPECTANCY_UNDER_COST",
+                          "scope": "Rejects the SS9.4.1 parameterization only -- not the underlying Frankfurt-aggressive-move-reverses-in-London concept."},
+                "E004": {"label": "REJECTED", "reason_code": "NEGATIVE_EXPECTANCY_UNDER_COST",
+                          "scope": "Rejects the SS9.4.1 parameterization only -- not the underlying FVG follow-through concept.",
+                          "fill_rate_note": {
+                              "observed": {"bear": 0.718, "bull": 0.736, "correction": 0.662},
+                              "status": "PENDING_CONTROL",
+                              "reason": (
+                                  "Gaps in general are known to fill often over a generous horizon on any "
+                                  "instrument/timeframe; without a baseline fill rate for a comparable, non-"
+                                  "FVG-selected gap over the same 50-bar horizon and regimes, this cannot be "
+                                  "distinguished from 'gaps just fill, E004 shows nothing distinctive'. NOT "
+                                  "labeled CONFIRMED_STRUCTURAL_ANOMALY without that control."
+                              ),
+                              "required_control": (
+                                  "Generic 3-bar imbalances (E012 detect_fvgs), no 13:30-15:30 UTC window "
+                                  "restriction, no first-of-session restriction, same 50-bar horizon, same 3 "
+                                  "regimes, comparable n."
+                              ),
+                              "preregistered_interpretation": (
+                                  "Control near 0.66-0.74 (e.g. within +-0.10) -> OBSERVED_NOT_DISTINCTIVE. "
+                                  "Control well below (e.g. <0.40-0.50, formal two-proportion test) -> "
+                                  "CONFIRMED_STRUCTURAL_ANOMALY becomes a live candidate, still pending final "
+                                  "Statistician verdict, not automatic."
+                              ),
+                          }},
+            },
+            "full_verdict_document": "ai_quant_lab statistician/STATISTICIAN_STRUCTURAL_V1_FINAL_VERDICT_v1.0.md",
+        },
         "timeframes": {
             "M15": {
                 "bar_seconds": M15_BAR_SECONDS,
