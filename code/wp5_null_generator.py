@@ -1,134 +1,98 @@
-"""WP-5' — generator de null STRUCTURAL pentru LM-001. SCHELET NEIMPLEMENTAT.
+"""WP-5' — generator de null STRUCTURAL pentru LM-001. IMPLEMENTAT (v2.5.9, 444e0e8).
 
 Nul construit pe MECANISMUL REAL de dependență al LM-001 — ferestre de orizont SUPRAPUSE peste
 șocuri i.i.d. per bară — NU pe un proxy AR(1). `block_bootstrap@v1` a fost INVALIDATED_FOR_THIS_SCALE
-(manifest v2.5.7, STAT-BLOCKBOOTSTRAP-MK-SMC-v1.0) fiindcă a fost calibrat contra unui AR(1): un AR(1)
-are memorie INFINITĂ (decadere geometrică ce nu se anulează niciodată), pe când mecanismul real are
-memorie FINITĂ — autocorelația scade LINIAR și devine exact 0 dincolo de lag ~H. Un bloc L≥H conține
-INTEGRAL dependența finită — proprietate pe care niciun AR(1) n-o are la nicio lungime de bloc. Deci
-curba AR(1) răspundea la altă întrebare; nulul de aici pune întrebarea corectă.
+fiindcă a fost calibrat contra unui AR(1): AR(1) are memorie INFINITĂ (decadere geometrică), pe când
+mecanismul real are memorie FINITĂ — autocorelația → 0 dincolo de lag ~H. Un bloc L≥H conține INTEGRAL
+dependența finită — proprietate pe care niciun AR(1) n-o are.
 
-Definiții pure. NU citește prețuri, NU apelează `load()`, NU rulează backtest, NU atinge axa prețurilor.
-Reproduce STRUCTURA DE SUPRAPUNERE, nu un coeficient de autocorelație — diferența e chiar motivul
-eșecului lui block_bootstrap.
+Definiții pure — clasa NU citește prețuri; primește pozițiile de eveniment (structura de suprapunere
+empirică) și pool-urile de șocuri empirice deja extrase, per segment. Reproduce STRUCTURA DE
+SUPRAPUNERE, nu un coeficient de autocorelație.
 
-MECANISM (manifest v2.5.7, `wp5_prime_sizing_for_lm001`):
-  1. șocuri i.i.d. per bară (increment i.i.d., fără memorie);
-  2. rezultatul fiecărui eveniment = suma șocurilor pe fereastra de orizont H=20 bare, [c, c+H];
-  3. pozițiile evenimentelor eșantionate la distribuția EMPIRICĂ a spațierii inter-eveniment
-     (histograma de grad măsurată de VE, NU doar media ≈6,2 bare).
-  Invarianți de reprodus (măsurați de VE, Mandat 5.5): grad mediu de suprapunere concurentă = 7,64;
-  orizont partajat = 69% = (H − spațiere_medie)/H = (20 − 6,2)/20; confinare pe segment de descoperire
-  (suprapunerea NU traversează carantina, analog D4).
+DECIZII (Q1-Q6, RESOLVED, manifest v2.5.9):
+  Q1 — reproduce distribuția EMPIRICĂ COMPLETĂ de spațiere/grad, NU media. Aici: se condiționează pe
+     POZIȚIILE EMPIRICE EXACTE ale evenimentelor (realizarea exactă a histogramei — cea mai tare formă
+     a lui Q1, nu o eșantionare aproximativă). Media rezultă automat.
+  Q2 — numărători per segment FIXATE la empiric (bear/bull/correction); ferestrele [c,c+H] care depășesc
+     capătul segmentului EXCLUSE (nu trunchiate) — deja aplicat la extragerea pozițiilor.
+  Q3 — STRATIFICAT pe sesiune: fiecare eveniment poartă sesiunea barei-eveniment; FPR se raportează
+     agregat ȘI per sesiune.
+  Q4 — „69% orizont partajat" = CONSECINȚĂ DERIVATĂ (verificare post-generare), NU target impus.
+  Q5 — șocuri i.i.d. reeșantionate bootstrap din randamentele REALE per-bară M15 (barele de descoperire),
+     NU normale — cozi grele documentate; normalul ar subestima riscul de coadă (direcția periculoasă).
+  Q6 — rezultat = SUMA șocurilor pe [c, c+H] = `close[c+H]−open[c+1]` (literal suma randamentelor). Scop:
+     calibrează STRUCTURA DE DEPENDENȚĂ pentru FPR, NU pipeline-ul net_R complet (R geometric/cost/direcție).
 
-UTILIZARE (aval, NU fixat aici): seria-null se trece prin `block_bootstrap@v1` la L ∈ {10, 20, 28, 40}
-prin harness-ul EXISTENT `ve/calibration/synthetic_block_bootstrap.py` — se schimbă DOAR generatorul de
-null, nicio infrastructură nouă. **L VARIAZĂ, nu se fixează** (constructorul expune seria; L e parametrul
-estimatorului, în aval). Dacă FPR@0,05 iese nominal la L≥28, block_bootstrap@v1 devine validat SPECIFIC
-pentru mecanismul real de suprapunere — rezultat mai puternic decât orice mapare pe AR(1).
-
-ÎNTREBĂRI DESCHISE (enumerate, NErezolvate — le trimit Statisticianului; clasificate ca la MK-03/04):
-
-  Q1 (invariantul de suprapunere) — BLOCHEAZĂ COMPLET `sample_event_positions`.
-     Ce se păstrează EXACT la re-eșantionare: media gradului (7,64), distribuția completă (histograma
-     de grad), sau ambele? Nu se poate eșantiona fără a ști ce invariant e ținta. Ce trebuie decis:
-     media vs distribuția vs ambele.
-  Q2 (granițe de bloc / alocare pe segmente) — BLOCHEAZĂ PARȚIAL (distribuția pe segmente, nu mecanismul).
-     Suprapunerea nu poate traversa carantina (D4). Numărul de evenimente per segment de descoperire se
-     fixează la cel empiric (bear/bull/correction), proporțional, sau se re-eșantionează? Fereastra [c,c+H]
-     care ar depăși capătul segmentului — exclusă (ca la audit) sau trunchiată? Ce trebuie decis: alocarea
-     pe segmente + tratamentul ferestrei la graniță.
-  Q3 (structura de sesiune) — BLOCHEAZĂ PARȚIAL (realismul per-sesiune, nu FPR-ul agregat).
-     Densitatea diferă pe sesiuni (london 9,85 / ny 9,36 vs asia 6,92 / late 6,27). Nulul reproduce
-     densitatea PER SESIUNE sau doar agregatul 7,64? Ce trebuie decis: densitate agregată vs stratificată
-     pe sesiune.
-  Q4 (semnificația lui „69% orizont partajat") — CLARIFICARE (neblocantă dacă e derivat).
-     E o CONSECINȚĂ derivată a spațierii + orizontului (se reproduce automat odată ce spațierea empirică
-     e reprodusă), sau un invariant INDEPENDENT de impus separat? Ce trebuie decis: 69% derivat vs impus.
-  Q5 (distribuția șocurilor i.i.d.) — BLOCHEAZĂ PARȚIAL (realismul distribuției, nu mecanismul dependenței).
-     Șocurile per bară: normale (varianță unitară) sau potrivite la distribuția empirică a randamentelor
-     (cozi grele)? Mecanismul de suprapunere e independent de forma șocului; realismul cozii nu e. Ce
-     trebuie decis: normal vs empiric.
-  Q6 (agregarea pe orizont) — CLARIFICARE (neblocantă).
-     Rezultatul LM-001 e net_R la exit c+H (close-to-close); suma șocurilor pe [c, c+H] o aproximează ca
-     structură de dependență. E aproximarea suficientă pentru calibrarea FPR, sau contează forma exactă a
-     agregării? Ce trebuie decis: sumă de șocuri vs randament reprodus fidel.
+UTILIZARE: `generate_null_series` → seria de rezultate per-eveniment (o realizare de null); se dă lui
+`block_bootstrap@v1` la L ∈ {10,20,28,40} (harness existent). L VARIAZĂ, nu e fixat aici.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Mapping, Sequence
+from typing import Sequence
 
 import numpy as np
 
 
 @dataclass(frozen=True)
 class OverlapNullConfig:
-    """Configurația nulului structural — invarianții măsurați de VE + geometria de segmente."""
+    """Structura empirică (pozitii + sesiuni + pool-uri de șocuri), per segment de descoperire."""
 
     horizon: int
-    """H — fereastra de rezultat, în bare M15 (20 = o sesiune london)."""
+    """H — fereastra de rezultat, în bare M15 (20)."""
 
-    n_events: int
-    """Numărul total de evenimente de reprodus (21.048)."""
+    event_positions: Sequence[Sequence[int]]
+    """Per segment: indicii barelor-eveniment EMPIRICI (Q1 exact; Q2 numărători; ferestre de margine deja excluse)."""
+
+    event_sessions: Sequence[Sequence[str]]
+    """Per segment: eticheta de sesiune a fiecărui eveniment (Q3), aliniată la `event_positions`."""
+
+    shock_pools: Sequence[Sequence[float]]
+    """Per segment: pool-ul de randamente REALE per-bară M15 din barele de descoperire (Q5)."""
 
     segment_lengths: Sequence[int]
-    """Lungimile segmentelor de descoperire (bare). Suprapunerea e confinată în segment (D4)."""
-
-    spacing_histogram: Mapping[int, int]
-    """Distribuția EMPIRICĂ a gradului/spațierii inter-eveniment (histograma de grad a VE) — nu doar media."""
-
-    target_avg_concurrent: float
-    """Invariant: gradul mediu de suprapunere concurentă (7,64)."""
-
-    shared_horizon_frac: float
-    """Invariant: fracția de orizont partajat, (H − spațiere_medie)/H (0,69). Vezi Q4."""
-
-    session_densities: Mapping[str, float] | None = None
-    """Opțional: densitatea concurentă per sesiune (london/ny/asia/late). None = doar agregat. Vezi Q3."""
+    """Per segment: numărul de bare (pentru lungimea seriei de șocuri)."""
 
 
 class Wp5StructuralNullGenerator:
-    """Generează serii-null care reproduc STRUCTURA DE SUPRAPUNERE a LM-001 (nu un AR(1)).
-
-    Constructorul expune seria; lungimea de bloc L a estimatorului `block_bootstrap@v1` e aplicată în
-    AVAL (L ∈ {10,20,28,40}, variabilă — vezi docstring-ul modulului). NEIMPLEMENTAT: schelet inert.
-    """
+    """Serii-null care reproduc STRUCTURA DE SUPRAPUNERE a LM-001. L e parametru în AVAL, nefixat aici."""
 
     def __init__(self, config: OverlapNullConfig) -> None:
         self.config = config
 
-    def sample_event_positions(self, rng: np.random.Generator) -> list[list[int]]:
-        """Re-eșantionează pozițiile temporale ale evenimentelor per segment, la spațierea empirică,
-        confinat în segment (D4). Returnează, per segment, indicii barelor-eveniment.
+    def sample_event_positions(self) -> list[list[int]]:
+        """Pozițiile evenimentelor per segment = realizarea EMPIRICĂ EXACTĂ (Q1, forma tare: reproduce
+        distribuția completă de spațiere/grad exact, nu o eșantionează). Structura pe care se condiționează."""
+        return [list(p) for p in self.config.event_positions]
 
-        NEIMPLEMENTAT — depinde de Q1 (ce invariant de suprapunere se fixează) și Q2 (alocarea pe segmente).
-        """
-        raise NotImplementedError("WP-5': Q1 (invariant de suprapunere) + Q2 (alocare pe segmente)")
+    def resample_shocks(self, seg_i: int, rng: np.random.Generator) -> np.ndarray:
+        """Șocuri i.i.d. pentru segmentul `seg_i` = bootstrap cu înlocuire din pool-ul empiric (Q5).
+        Lungime = numărul de bare al segmentului. Fără presupunere distribuțională."""
+        pool = np.asarray(self.config.shock_pools[seg_i], dtype=float)
+        n_bars = self.config.segment_lengths[seg_i]
+        return pool[rng.integers(0, len(pool), size=n_bars)]
 
-    def generate_iid_shocks(self, n_bars: int, rng: np.random.Generator) -> np.ndarray:
-        """Șocuri i.i.d. per bară (fără memorie) — sursa increment-ului.
+    def horizon_sum_outcomes(self, shocks: np.ndarray, positions: Sequence[int]) -> np.ndarray:
+        """Rezultatul fiecărui eveniment = suma șocurilor pe [c, c+H] (Q6). Ferestrele suprapuse (evenimente
+        la < H bare) partajează șocuri → dependență cu MEMORIE FINITĂ (→0 dincolo de lag H)."""
+        H = self.config.horizon
+        cum = np.concatenate(([0.0], np.cumsum(shocks)))          # prefix-sum pentru sume O(1)
+        out = np.empty(len(positions))
+        for i, c in enumerate(positions):
+            out[i] = cum[c + H] - cum[c]                           # suma șocurilor pe [c, c+H)
+        return out
 
-        NEIMPLEMENTAT — depinde de Q5 (distribuția șocurilor: normal vs empiric).
-        """
-        raise NotImplementedError("WP-5': Q5 (distribuția șocurilor i.i.d.)")
-
-    def horizon_sum_outcomes(
-        self, shocks: np.ndarray, event_positions: Sequence[int],
-    ) -> np.ndarray:
-        """Rezultatul fiecărui eveniment = suma șocurilor pe fereastra de orizont [c, c+H]. Ferestrele
-        suprapuse creează dependența cu MEMORIE FINITĂ (→0 dincolo de lag H).
-
-        NEIMPLEMENTAT — depinde de Q2 (tratamentul ferestrei la graniță) și Q6 (agregarea pe orizont).
-        """
-        raise NotImplementedError("WP-5': Q2 (graniță) + Q6 (agregare pe orizont)")
-
-    def generate_null_series(self, rng: np.random.Generator) -> np.ndarray:
-        """Seria-null completă (net_R-like) pentru cele `n_events` evenimente, ce se dă lui
-        `block_bootstrap@v1` în aval la L variabil.
-
-        NEIMPLEMENTAT — compune sample_event_positions + generate_iid_shocks + horizon_sum_outcomes;
-        depinde de toate întrebările deschise de mai sus.
-        """
-        raise NotImplementedError("WP-5': schelet — depinde de Q1-Q6 (vezi docstring-ul modulului)")
+    def generate_null_series(self, rng: np.random.Generator) -> tuple[np.ndarray, list[str]]:
+        """O realizare de null: per segment, reeșantionează șocuri (Q5) și calculează sumele pe orizont pe
+        pozițiile empirice (Q1). Returnează (rezultate per-eveniment combinate, etichetele de sesiune). Fără
+        edge injectat; `block_bootstrap` centrează și măsoară FPR pe structura reală de suprapunere."""
+        positions = self.sample_event_positions()
+        outcomes: list[np.ndarray] = []
+        sessions: list[str] = []
+        for seg_i in range(len(self.config.segment_lengths)):
+            shocks = self.resample_shocks(seg_i, rng)
+            outcomes.append(self.horizon_sum_outcomes(shocks, positions[seg_i]))
+            sessions.extend(self.config.event_sessions[seg_i])
+        return np.concatenate(outcomes), sessions
