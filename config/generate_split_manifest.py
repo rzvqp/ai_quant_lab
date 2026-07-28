@@ -232,9 +232,89 @@ def build_manifest() -> dict[str, Any]:
     m5_segC = split_segment(b_2026_02 + EMBARGO_SECONDS, b_2026_06, leading_embargo_taken=True, trailing_embargo_needed=True, bar_seconds=M5_BAR_SECONDS)
     m5_tail = split_segment(b_2026_06 + EMBARGO_SECONDS, m5_last, leading_embargo_taken=True, trailing_embargo_needed=False, bar_seconds=M5_BAR_SECONDS)
 
+    # ---- M15_v2 discovery blocks (every disjoint discovery sub-range: the M15_v2-owned segments'
+    # own discovery portions, plus the inherited M15 discovery range for the overlap window) --
+    # gathered mechanically, not re-typed, so the HTF resample rule below operates on the exact
+    # same ranges already computed above.
+    m15_v2_discovery_blocks: list[Range] = [
+        seg for seg in (seg1.discovery, seg2.discovery, seg3.discovery) if seg is not None
+    ] + [Range(m15_legacy_first, m15_cutoff - EMBARGO_SECONDS)]  # inherited from M15 (existing), unchanged
+
+    htf_resample_rule: dict[str, Any] = {
+        "provenance_key": "CONTEXT_DERIVED_VALIDATED",
+        "source_timeframe": "M15_v2",
+        "source_file_sha256": sha256_file(m15_v2_path),
+        "principle": (
+            "An HTF bar is a deterministic aggregation (OHLCV rollup) of its constituent M15_v2 bars. "
+            "If even one constituent bar is sealed or in an embargo band, the aggregate's O/H/L/C/V "
+            "values are mathematically a function of that sealed information -- this is not a possible "
+            "leak, it is a certain one (e.g. a D1 high is max() over its 96 M15 highs; if any one of "
+            "those 96 is sealed and happens to be the day's high, the D1 'high' passed to context IS "
+            "the sealed value, directly). A 'mark it but keep the tainted value' rule would still leak "
+            "to any consumer that reads OHLCV without checking the flag -- the same fragility this "
+            "manifest's fail-closed design already rejects elsewhere. Exclusion is therefore not merely "
+            "preferred, it is the only rule consistent with the rest of this system."
+        ),
+        "mechanical_rule": (
+            "For an HTF bar of N M15_v2 bars (H4: N=16, D1: N=96) with a fixed, calendar-aligned window "
+            "[w_start, w_end): construct it if and only if all N M15_v2 bars whose timestamps fall in "
+            "[w_start, w_end) exist AND belong entirely to a SINGLE discovery block from "
+            "m15_v2_discovery_blocks below (never spanning two separate discovery blocks, even though "
+            "both are 'discovery' -- removes any ambiguity at the source rather than relying on the "
+            "embargo gap between them to catch it incidentally). If any of the N required bars is "
+            "missing, or belongs to an embargo band, or belongs to the sealed range, the HTF bar for "
+            "that window is NOT constructed -- absent from the output file entirely, never null-filled, "
+            "never present-but-flagged. No partial or truncated HTF bar (fewer than N components) is "
+            "ever emitted, regardless of how many of the N components happen to be valid discovery bars."
+        ),
+        "segment_vs_quarantine_boundary_note": (
+            "A segment-to-segment (regime-type) transition and a discovery/quarantine transition are "
+            "the SAME thing under this rule, not two cases needing separate treatment: every inter-"
+            "segment transition in M15_v2's own regime_segments already carries its own embargo band "
+            "(see STATISTICIAN_H1_PREREGISTRATION_PROTOCOL_v1.0.md / the M15_v2 segments above), so an "
+            "HTF bar straddling a segment boundary is, by construction, also straddling a quarantine "
+            "band and is excluded by the same mechanical rule -- no additional case distinction exists."
+        ),
+        "incomplete_edge_bars_note": (
+            "HTF bar boundaries are fixed by calendar/session convention (independent of where a "
+            "discovery block happens to start or end), so a discovery block's first and last calendar-"
+            "aligned HTF windows will typically NOT align exactly with the block's own start/end epoch. "
+            "Any such boundary-adjacent HTF window that would need bars outside the block is excluded "
+            "under the same rule -- it is not truncated to whatever partial data exists inside the "
+            "block."
+        ),
+        "m15_v2_discovery_blocks": [b.to_json() for b in m15_v2_discovery_blocks],
+        "entries": {
+            "H4_from_M15_v2": {
+                "aggregation_bars": 16, "bar_seconds": 14400,
+                "data_file_sha256": {"value": None, "status": "AWAITING_DATA_ACQUISITION_GENERATION"},
+                "status": "AWAITING_GENERATION",
+            },
+            "D1_from_M15_v2": {
+                "aggregation_bars": 96, "bar_seconds": 86400,
+                "data_file_sha256": {"value": None, "status": "AWAITING_DATA_ACQUISITION_GENERATION"},
+                "status": "AWAITING_GENERATION",
+            },
+        },
+        "who_does_what": (
+            "Statistician specifies this rule and registers it here. Data Acquisition executes the "
+            "generation and supplies the resulting data_file_sha256 for H4_from_M15_v2 and "
+            "D1_from_M15_v2 -- Statistician does not generate these files and does not ratify a hash it "
+            "produced itself, same separation already applied to the four base data-file hashes "
+            "(Statistician ratifies, Data Acquisition measures)."
+        ),
+        "distinct_from_native_H1": (
+            "This section governs H4/D1 CONTEXT bars resampled from M15_v2 -- it is unrelated to the "
+            "separately-acquired NATIVE H1 dataset (its own file, its own data_file_sha256, currently "
+            "AWAITING_REGIME_MAP as its own timeframe entry above). Do not conflate the two, same "
+            "discipline as the M15/M15_v2 identifier resolution."
+        ),
+        "unblocks": "Research Lab's context guard, once both H4_from_M15_v2 and D1_from_M15_v2 reach status VALIDATED.",
+    }
+
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.2.0",
+        "version": "2.3.0",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -242,6 +322,21 @@ def build_manifest() -> dict[str, Any]:
             "config/generate_split_manifest.py, not hand-transcribed."
         ),
         "generator": "config/generate_split_manifest.py",
+        "changelog_v2_3": (
+            "Adds context_derived_htf: the mechanical rule for resampling H4/D1 context bars from "
+            "M15_v2 (CTO-approved Option B, since the lab's existing H1/H4/D1 context files were "
+            "already resamples of M15 -- confirmed by their 7-column format vs. 6). Addresses the "
+            "blocking reserve that M15_v2's discovery mask is a union of disjoint blocks separated by "
+            "quarantine bands (loader delivers only 130,491 of 355,696 bars) -- an HTF bar aggregating "
+            "16 (H4) or 96 (D1) M15 bars whose window straddles a quarantine or sealed boundary would "
+            "otherwise encode sealed information directly into its OHLCV values, making context the "
+            "leak channel. Rule: exclude any HTF bar not fully constructible from a single discovery "
+            "block, no partial/truncated bars, no case distinction between segment-boundary and "
+            "discovery/quarantine-boundary straddles (they are the same thing here). Registers "
+            "H4_from_M15_v2 and D1_from_M15_v2 under provenance CONTEXT_DERIVED_VALIDATED with the "
+            "source file's own hash for traceability; both AWAITING_GENERATION -- Statistician "
+            "specifies and registers, Data Acquisition generates and supplies the resulting hashes."
+        ),
         "changelog_v2_2": (
             "Ratified all four data_file_sha256 values (independently recomputed by Statistician "
             "directly against the physical files, not merely accepted from Data Acquisition's report -- "
@@ -315,6 +410,7 @@ def build_manifest() -> dict[str, Any]:
             "action_if_true": "Label SAME-WINDOW-RESAMPLED; never an independent confirmation.",
         },
         "margin_factor": {"value": "25/24", "note": "960->1000 M15; 2880->3000 M5; 240->250 H1."},
+        "context_derived_htf": htf_resample_rule,
         "timeframes": {
             "M15": {
                 "bar_seconds": M15_BAR_SECONDS,
