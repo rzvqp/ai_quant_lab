@@ -54,3 +54,24 @@ Data Acquisition mută activ fișiere în directoarele canonice (M15_v2 a apăru
 2. Dacă (B): ratificarea resample-ului din M15_v2 (și, ideal, o intrare de manifest pentru contextul derivat).
 
 Până atunci: **NU încep** — o rulare acum ar coruptă matricea de persistență pentru familiile HTF. Jumătatea sigilată neatinsă. Holdout SEALED. WP-5′ neînceput. STANDBY pe P3.
+
+## UPDATE v1.2 (2026-07-28) — manifest v2.4.1 (`ab0e823`); scop = 3 regimuri; blocaj NOU pe H1 context
+
+**Scop corectat la TREI regimuri (confirmat de manifest, nu doar de CEO).** Manifestul `changelog_v2_4`: „bear/bull/correction, 2011-2021; **the 2022-2026 regime is excluded as SAME-WINDOW-RESAMPLED, Statistician's own earlier 4-regime mandate was in error, corrected here**." Descoperirea M15_v2 = bear 52.403 + bull 52.851 + correction 25.237 = **130.491 bare** (cifre CEO; le voi verifica drept invariant de contabilitate la rulare). Leaderboard-ul de persistență = pe **3 regimuri** (3/2/1/0). Eroarea de numărătoare (a CEO, în mandate anterioare) — consemnată.
+
+**Loader v6 = al Flow A**, `edge_research/_common.py`: „never imports the frozen Research Lab engine or any ai_trader package." Deci NU alimentează mstrat; Research Lab încarcă contextul singur (M15_v2 + HTF derivat), filtrat pe intervalele de discovery din manifest, per-bloc (leakage-safe), verificând numărătorile de discovery vs. cifrele CEO.
+
+**BLOCAJ NOU (P3-bis) — contextul H1 derivat NU e livrat în `data/market`, iar manifestul se contrazice intern:**
+- CEO: „H1 … promovat la CONTEXT_DERIVED_VALIDATED."
+- Manifest `changelog_v2_4_htf_ratification`: H1_from_M15_v2 „is **NOT registered here** … stays in **acquisition_staging/, unregistered**, pending a future decision."
+- Intrarea H1: `file_path = "acquisition_staging/OANDA_XAUUSD_H1_from_M15_v2_UNREGISTERED.csv"` (staging, `_UNREGISTERED`, NU în `data/market/`).
+- `changelog_v2_4_1` pretinde „Registers H1_from_M15_v2" → **contradicție internă a manifestului**.
+- mstrat are nevoie de `h1_trend_up` (S9/S11/S15). Fără H1 în `data/market`, acele familii rulează pe H1 NaN în 2011-2021 → **persistență coruptă**.
+
+**BLOCAJ (flux) — directorul canonic încă se scrie:** `H4_from_M15_v2`/`D1_from_M15_v2` au apărut apoi au dispărut între două citiri consecutive (prezente în bash, absente în Python secunde mai târziu). Fără snapshot stabil verificabil prin hash, nu rulez.
+
+**Ce cer (Data Acquisition / Statistician), ca să pornesc:**
+1. Livrarea `OANDA_XAUUSD_H1_from_M15_v2.csv` în **`data/market/`** (nu staging/`_UNREGISTERED`) + reconcilierea contradicției interne a manifestului privind înregistrarea H1.
+2. Confirmarea că directorul canonic **s-a așezat** (fișierele nu mai apar/dispar) — ca să pot face un snapshot stabil, verificat prin content_hash + data_file_sha256.
+
+Guard actualizat corespunzător (P3 va verifica și H1_from_M15_v2 în `data/market`). **NU încep. Sealed neatins. Holdout SEALED. WP-5′ neînceput. STANDBY.**
