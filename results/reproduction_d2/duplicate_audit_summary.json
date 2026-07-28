@@ -1,0 +1,18 @@
+{
+ "n_clusters_body": 508,
+ "dup_ids_body": 1040,
+ "inert_params": {
+  "liq_lb": 372,
+  "exit": 20,
+  "lb": 72,
+  "mode": 48,
+  "target": 8
+ },
+ "clusters_by_family": {
+  "S1": 372,
+  "S2": 48,
+  "S5": 48,
+  "S12": 16,
+  "S3": 24
+ }
+}
