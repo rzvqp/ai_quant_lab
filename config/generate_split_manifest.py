@@ -404,13 +404,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.4", "commit": "04c096e", "content": "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f, N=34,670 valid wick-sweeps, 86.7% of displacements <40 pips) and the resulting risk-framework decision (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0) -- SUPERSEDES the fixed stop_official=4.00/stop_sensitivity=5.00 execution layer: R is now geometry-derived per trade (never widened, same D2 anti-pattern at 8x scale if it were); a displacement_filter (>=10.1 pips, excludes 34.0% aggregate) derived from the lab's already-existing 3x cost-stress convention (alpha_lab.py:197), not chosen from reference points; a rejection_ceiling (>=65 pips, tail-only, CONFIRMED not re-derived) stays as originally proposed; statistical_test replaces the fixed-w*-vs-binomial-winrate test with mean net_R>0 (a single win-rate threshold cannot exist when R varies continuously per trade). Also confirms D-BPR's three-tolerance count + freeze-rule (VE's skeleton, commit 306d1dc) is NOT overridden, and reconfirms D3_bis/D-WEEK unchanged."},
             {"version": "2.5.5", "commit": "1d03e4f", "content": "Mandate 3.13: formulates LM-001's testable hypothesis against the 40-V0 5-criteria standard. Corrects the order's stated population (22,887) to the true combined-filter figure (21,048, 60.7% of 34,670) -- 22,887 was the displacement floor alone, never reduced by the 1,839 events also excluded by the 65-pip ceiling. Derives the decisive horizon (20 M15 bars) from the correct comparison family (_profile.HORIZONS, immediate-reaction, not TRACK_HORIZON/REVISIT_HORIZON's multi-day level-revisit family) linked to an already-real boundary (london session length, mtf.py:37-38); secondary horizons (1,3,5,10,50) reused verbatim, descriptive only, family stays 1. Declares no take-profit (pure time-exit). Discloses exit=time's 1.6x concentration vs exit=rr2 (OUTCOME_DISTRIBUTION_v1.0.md, 0.628 vs 0.387) as a mandatory accompanying diagnostic, not a blocker. Declines to confirm block_bootstrap@v1 (still textually UNVALIDATED, n=21,048 far beyond its calibrated range) or substitute matched_null@v1 (ATR-scaled-only, wrong regime per D2_CLOSURE_SIZING_v1.0.md) -- specifies a due-diligence calibration extension instead, with a pre-registered acceptance band and a named (not invented) structural-calibration fallback (WP-5')."},
             {"version": "2.5.6", "commit": "00dfa6f", "content": "Mandate 3.14: resolves all nine open questions from the MK-03/MK-04 partial implementation (VE, commit 7984670). Family 1 (Q5 MK-03/MK-04): D7-consumption confirmed, but rejects an added 'session/day' lifetime clause not present in D7 -- PDH consumed at first same-day touch, no new dimension. Family 2 (Q6/Q4 MK-03): wick/close asymmetry now grounded in direct code precedent (e015's wick touch_mask for mitigation, e010/e012's close-based violation for polarity flips) -- 3-tier gradient specified (CE-50 touch / full fill / inversion). Family 3: FVGs don't survive a block boundary (D4-analog); Q3-week derived from the already-resolved Q3-day via a gap-detection rule, not a new clock. Resolves MK-03 Q4 (IFVG inversion, the only fully-blocking primitive) by reusing verbatim an identical definition independently found in two already-frozen V0s (E010, E012). Ratifies the three small mechanically-forced items (MK-03 Q1, MK-04 Q4, reconfirms MK-04 Q3-day)."},
-            {"version": "2.5.7", "commit": "PENDING (this version)", "content": "Mandate 3.17: block_bootstrap@v1 verdict INVALIDATED_FOR_THIS_SCALE for LM-001 (measured S8 curve nominal through phi=0.50, anti-conservative at phi=0.60, e441bcf) -- declines to map density (8.64 avg concurrent, e441bcf) onto the AR(1) curve, both because the derive-before-seeing-the-result ordering was violated (disclosed) and because the AR(1) parametrization is structurally the wrong instrument for LM-001's finite-memory overlapping-window dependency (a 28-bar block fully contains a 20-bar true dependency window, unlike any AR(1)). Closes the (0.50,0.55] threshold gap via fail_closed_default. WP-5' concretely sized: rebuild the null generator to match the true overlap mechanism, reusing the existing S8 FPR-measurement harness. MK-03/MK-04 FULLY RATIFIED at commit 1930467 after a full (not just report) code read -- 34 tests verified, mypy --strict clean. Registers the SMC_S1/S2/S3/S13/S16 nomenclature under a rigid protected prefix (verified collision against the legacy grammar, including two production strategy_runtime files), connects them to the Open-R risk framework, and mandates D11/SS F dedup pre-screening before enrollment."},
+            {"version": "2.5.7", "commit": "9c02af7", "content": "Mandate 3.17: block_bootstrap@v1 verdict INVALIDATED_FOR_THIS_SCALE for LM-001 (measured S8 curve nominal through phi=0.50, anti-conservative at phi=0.60, e441bcf) -- declines to map density (8.64 avg concurrent, e441bcf) onto the AR(1) curve, both because the derive-before-seeing-the-result ordering was violated (disclosed) and because the AR(1) parametrization is structurally the wrong instrument for LM-001's finite-memory overlapping-window dependency (a 28-bar block fully contains a 20-bar true dependency window, unlike any AR(1)). Closes the (0.50,0.55] threshold gap via fail_closed_default. WP-5' concretely sized: rebuild the null generator to match the true overlap mechanism, reusing the existing S8 FPR-measurement harness. MK-03/MK-04 FULLY RATIFIED at commit 1930467 after a full (not just report) code read -- 34 tests verified, mypy --strict clean. Registers the SMC_S1/S2/S3/S13/S16 nomenclature under a rigid protected prefix (verified collision against the legacy grammar, including two production strategy_runtime files), connects them to the Open-R risk framework, and mandates D11/SS F dedup pre-screening before enrollment."},
+            {"version": "2.5.8", "commit": "PENDING (this version)", "content": "Mandate 3.18: formalizes all 20 SMC_S* families (verified in code/mstrat.py's ECON dict -- S1-S20 is the legacy grammar's full family list). Flags that validation_engine/capabilities.json is the wrong registration target (its own deliberately_absent field excludes hypothesis-specific event primitives by design) -- registers here instead. Closes the horizon arithmetic gap (20 families, 4 session constants) via 4 declared groups: A=20 bars (LM-001's own immediate-reaction derivation, reused), B=native session length (asia/ny=32, london=20, late=12, from mtf.py), C=empirical day/week length independently computed (day=92, week=460 bars, median, matching institutional_levels.py's own '92 is not a constant' caveat), D=no horizon forced where the primitive itself is missing. 9 families fully state-machine-specified on only the 4 ratified modules (SMC_S1=LM-001, S2, S3, S7, S10 with a disclosed substitution, S11, S13, S16, S17). 11 honestly flagged as not forced: 3 cheap gaps (S5/S6/S19, near-trivial missing extensions), 6 genuine primitive-class gaps (S4/S8/S9/S14/S15/S20), 1 partial gap (S12), 1 reclassified as a stratification dimension not a standalone family (S18). Flags conceptual dedup-collision risk pairs for mandatory hash verification once code exists, declines to report a distinct-family count before trade logs exist. All formalized families AWAITING_VALIDATION_ENGINE_CODE; none promoted to VALIDATED until WP-5' delivers the oracle."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.7",
+        "version": "2.5.8",
         "published_date": "2026-07-28",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -437,6 +438,40 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_8": (
+            "Mandate 3.18: formalizes all 20 SMC_S* families (S1-S20, verified as the legacy grammar's "
+            "own full family list in code/mstrat.py's ECON dict -- not just the 15 'remaining' the order "
+            "assumed). Flags that validation_engine/capabilities.json is the WRONG registration target -- "
+            "its own deliberately_absent field explicitly excludes 'hypothesis-specific event primitives' "
+            "and 'predefined session definitions' by design -- registers here instead (same authority/"
+            "versioning as every prior LM-001/MK-03/MK-04 entry). Closes the horizon arithmetic gap (20 "
+            "families cannot derive 20 distinct horizons from 4 session constants) via 4 declared groups: "
+            "A=20 bars (LM-001's own immediate-reaction derivation, reused, not re-derived); B=native "
+            "session length (asia/ny=32 bars, london=20, late=12, from the 4 already-established mtf.py "
+            "boundaries); C=empirical day/week length, independently computed by Statistician by "
+            "reconstructing the 17:00-NY day anchor and the derive_week_index gap rule directly on the "
+            "130,491 discovery bars (median day=92 bars, median week=460 bars -- exactly matching "
+            "institutional_levels.py's own '92 is just the most common value, not a constant' caveat); "
+            "D=no horizon forced where the underlying primitive is missing. 9 families fully state-"
+            "machine-specified using only the 4 ratified modules: SMC_S1 (=LM-001, referenced not "
+            "re-derived), S2 (BOS+CHoCH fade), S3 (BOS+retest continuation), S7 (trend-pullback via "
+            "swing sequence), S10 (displacement redefined as BOS, substitution disclosed transparently), "
+            "S11 (CHoCH-primary reversal), S13 (FVG CE-50 reaction), S16 (PDH/PDL rejection, horizon "
+            "group C), S17 (Weekly H/L rejection, COMPLETE-only population, horizon group C). 11 "
+            "families honestly NOT forced: S5/S6/S19 (cheap gaps -- near-trivial missing extensions of "
+            "institutional_levels' own day/week pattern to opening-range/session-level/session-open-"
+            "close); S4/S8/S9/S14/S15/S20 (genuine primitive-class gaps -- volatility regime, ATR-"
+            "relative distance, MTF trend, momentum/ROC, swing acceleration, all absent from the 4 "
+            "ratified modules); S12 (partially gapped -- sweep-reject exists per end but no 'paired-"
+            "basins-define-a-range' primitive); S18 (reclassified as a stratification dimension, not a "
+            "standalone family, consistent with the already-documented 'S18 = 3 signals x 2 exits' "
+            "finding from Mandate 3.10). Flags conceptual dedup-collision risk pairs (S2/S11 both CHoCH-"
+            "based, S3/S7 both continuation-flavored) for mandatory hash verification once VE builds "
+            "code -- declines to report a distinct-family count now, since D11/SS F requires a measured "
+            "trade-log hash, not a guess. All 9 formalized families AWAITING_VALIDATION_ENGINE_CODE; "
+            "none promoted to VALIDATED until WP-5' (Mandate 3.17) delivers the oracle. Holdout SEALED "
+            "throughout, no backtest run."
         ),
         "changelog_v2_5_7": (
             "Mandate 3.17: three deliverables. (1) block_bootstrap@v1 VERDICT: INVALIDATED_FOR_THIS_"
@@ -1215,6 +1250,121 @@ def build_manifest() -> dict[str, Any]:
                 "naively, the SAME mechanism can recur. This is a real, already-materialized risk in this exact lab, not a theoretical one."
             ),
             "full_registration_document": "ai_quant_lab statistician/STATISTICIAN_BLOCK_BOOTSTRAP_VERDICT_MK_RATIFICATION_SMC_NOMENCLATURE_v1.0.md",
+        },
+        "smc_s_state_machines": {
+            "source": "CEO Mandate 3.18 -- formalizes all 20 SMC_S* families (verified directly in code/mstrat.py's ECON dict: S1-S20 is the legacy grammar's own full family list, not just the 5 already named as nomenclature at Mandate 3.17).",
+            "capabilities_json_mismatch_flagged": (
+                "Read validation_engine/capabilities.json directly before writing anything into it. Its own "
+                "deliberately_absent field explicitly lists 'Hypothesis-specific event primitives (sweep_reject, "
+                "liquidity_grab, compression)' and 'Predefined session definitions (NY/London/Asia)' as deliberately "
+                "excluded by design -- it is a hypothesis-agnostic statistical-methods grammar (test_methods, "
+                "variable_primitives, population_predicates), not a place for 20 hypothesis-specific SMC_S* "
+                "families. Registered here (split_manifest.json, v2.5.8) instead -- same authority/versioning "
+                "scheme as every prior LM-001/MK-03/MK-04 registration -- rather than forcing content into a file "
+                "whose own documented design principle it would violate."
+            ),
+            "open_r_shared_template": "R_i=(spike_i+2 pips)*TICK($0.10), never widened; eligibility filter spike_i in [10.1,65.0) pips (floor portable, ceiling placeholder per family per Mandate 3.17); net_R_i=direction_i*(exit_price-entry_price)/R_i - cost/R_i, cost=$0.40.",
+            "horizon_groups": {
+                "A_immediate_reaction": {"bars": 20, "source": "Reused verbatim from LM-001's own derivation (Mandate 3.13): _profile.HORIZONS linked to london session length (5h=20 M15 bars, mtf.py:37-38). Used by families whose trigger is a POINT event (sweep/BOS/CHoCH/FVG formation) testing immediate reaction."},
+                "B_native_session_length": {"asia": 32, "london": 20, "ny": 32, "late": 12, "source": "Native bar-length of the 4 already-established UTC session boundaries (mtf.py:37-38): asia<8h=8h=32 bars, london[8,13)=5h=20 bars, ny[13,21)=8h=32 bars, late>=21h=3h=12 bars. Used by families whose trigger IS a specific session."},
+                "C_empirical_period_length": {
+                    "day_bars": 92, "week_bars": 460,
+                    "source": "Independently computed by Statistician (not assumed) by reconstructing the 17:00-NY DST-aware day anchor (code/resample_ny.py's own logic) and the derive_week_index gap rule (MK-04 Q3-week) directly on the 130,491 M15_v2 discovery bars: day length median=92 (mean 91.9, mode 92, matches institutional_levels.py's own '92 is just the most common value' caveat exactly); week length median=460 (mean 451.5, mode 460). Used by families anchored to PDH/PDL/Weekly levels.",
+                },
+                "D_no_horizon_no_primitive": "Not derived -- see gapped families below. No horizon is forced where the underlying event primitive itself does not exist in the 4 ratified modules.",
+            },
+            "families_formalized": {
+                "SMC_S1": {"status": "AWAITING_VALIDATION_ENGINE_CODE", "note": "= LM-001, referenced not re-derived. See full_hypothesis_formulation_document and full_risk_framework_decision_document.", "horizon_group": "A"},
+                "SMC_S2": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Failed Breakout / Failed Sweep",
+                    "primitives": ["market_structure (BOS on close, CHoCH)"],
+                    "mechanics": "BOS at bar b in direction D (close beyond a CLASSIFIED swing) -> a CHoCH (opposite structural break) occurs within <=20 bars (group A, reused as the qualification window) -> entry at next-open after the CHoCH bar, direction = OPPOSITE of the original BOS (fade). No CHoCH in window -> event not eligible (excluded, not a separate failure outcome).",
+                    "threshold": "spike = distance from entry to the broken BOS-level extremum + 2 pips.",
+                    "population": "BOS events on M15_v2 discovery bars followed by a qualifying within-window CHoCH, minus the [10.1,65.0) filter.",
+                    "horizon_group": "A (both the CHoCH-qualification window and the net_R measurement window)",
+                },
+                "SMC_S3": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Breakout Retest Continuation",
+                    "primitives": ["market_structure (BOS)", "D6 wick/close asymmetry re-applied to the BOS level itself"],
+                    "mechanics": "BOS at bar b in direction D -> a later bar's WICK touches the broken level within <=20 bars but its CLOSE stays on the breakout side (does not close back through) -> entry at next-open, direction = SAME as BOS (continuation). Mechanically distinct from SMC_S2 on the same retest bar (a bar cannot simultaneously close-through and not-close-through), though both can originate from the same BOS.",
+                    "threshold": "spike = distance from entry to the retested level + 2 pips.",
+                    "horizon_group": "A",
+                },
+                "SMC_S7": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Trend-Pullback Continuation",
+                    "primitives": ["market_structure (>=2 consecutive same-direction CLASSIFIED swings, e.g. HH+HL or LH+LL)"],
+                    "mechanics": "Once a trend is established (>=2 consecutive same-direction swings), the NEXT swing continues it (a new HL higher / LH lower, no CHoCH triggered) -> entry at next-open after that swing's confirmed_idx, direction = the established trend.",
+                    "threshold": "spike = distance from entry to the new swing extreme + 2 pips.",
+                    "horizon_group": "A (default, no family-specific derivation given -- declared as such, not hidden)",
+                },
+                "SMC_S10": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Displacement Continuation",
+                    "substitution_disclosed": "The legacy 'displacement' concept (range bar >1.5x ATR) uses ATR, outside the 4 ratified modules. Substitutes market_structure's own BOS (an already-decisive directional close-break) as the trigger instead -- flagged transparently, a reader may reject this substitution as too far from the original concept.",
+                    "mechanics": "Confirmed BOS -> entry at next-open, direction = BOS direction, tests CONTINUATION (unlike SMC_S2's fade).",
+                    "threshold": "spike = distance from entry to the BOS level + 2 pips.",
+                    "horizon_group": "A",
+                },
+                "SMC_S11": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Structure-Break Reversal",
+                    "primitives": ["market_structure (CHoCH as the PRIMARY signal, not following a recently-failed BOS -- explicit distinction from SMC_S2)"],
+                    "mechanics": "CHoCH occurs at the end of an established trend sequence -> entry at next-open after the CHoCH's confirmed_idx, direction = the NEW direction (opposite the prior trend).",
+                    "threshold": "spike = distance from entry to the CHoCH extreme + 2 pips.",
+                    "horizon_group": "A",
+                },
+                "SMC_S13": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Liquidity Void / Imbalance Fill",
+                    "primitives": ["imbalance_mechanics (detect_fvgs, ce50_touch_idx = the D7 consumption point, detect_fvg_reactions)"],
+                    "mechanics": "FVG forms -> CE-50 touch (wick, D7 consumption) -> entry at next-open after the touch bar, direction = BACK toward the FVG's ORIGINAL direction (bet that the gap holds as support/resistance).",
+                    "threshold": "spike = distance from entry to CE-50 + 2 pips.",
+                    "horizon_group": "A",
+                },
+                "SMC_S16": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Previous Day Levels",
+                    "primitives": ["institutional_levels (compute_prior_day_levels, detect_level_touches -- D7 consumption already implemented)"],
+                    "mechanics": "PDH/PDL available (Q4) -> wick touch (already implemented, consumed at first touch) -> entry at next-open, direction = AWAY from the level (rejection, analog to SMC_S1 but on institutional levels not swing-derived basins).",
+                    "threshold": "spike = distance from entry to PDH/PDL + 2 pips.",
+                    "horizon_group": "C (day_bars=92)",
+                },
+                "SMC_S17": {
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Weekly Levels",
+                    "primitives": ["institutional_levels (compute_prior_week_levels, D-WEEK)"],
+                    "mechanics": "Identical to SMC_S16 on Weekly H/L. MANDATORY restriction: only COMPLETE levels (>=5 days) enter the PRIMARY population -- PARTIAL levels excluded from the primary population (disclosed as a separate stratum per D-WEEK, never silently pooled).",
+                    "threshold": "spike = distance from entry to Weekly H/L + 2 pips.",
+                    "horizon_group": "C (week_bars=460)",
+                },
+            },
+            "families_gapped_or_different_nature": {
+                "cheap_gaps_near_trivial_extension": {
+                    "SMC_S5": "Opening-Range Momentum -- needs a 'first-K-bars-of-session high/low' computation, absent from all 4 modules (institutional_levels only does day/week, not opening range).",
+                    "SMC_S6": "Session-Transition Momentum -- needs 'previous SESSION high/low' (analog to PDH/PDL but per-session), same missing extension as S5.",
+                    "SMC_S19": "Session Gap -- needs session open/close price, same missing-extension family as S5/S6.",
+                },
+                "genuine_gaps_missing_primitive_class": {
+                    "SMC_S4": "Volatility-Regime Expansion -- needs a volatility-regime classifier. Exists conceptually as a KB-promoted primitive elsewhere in the lab, but NOT implemented in any of the 4 ratified code modules.",
+                    "SMC_S8": "Extension Mean-Reversion -- needs an ATR-relative distance. ATR itself is already computed and used elsewhere in the codebase (alpha_lab.py, mstrat.py) -- a smaller gap than S4/S9/S14, just not part of these 4 modules.",
+                    "SMC_S9": "MTF-Trend Momentum -- needs cross-timeframe (H1/H4/D1) trend classification, absent from all 4 modules.",
+                    "SMC_S14": "Momentum Exhaustion -- needs a ROC/RSI-type indicator, absent from all 4 modules.",
+                    "SMC_S15": "Trend Acceleration -- needs a swing-to-swing rate-of-change measure; market_structure detects swings but does not compute this.",
+                    "SMC_S20": "Hybrid Sweep+MTF -- depends on the same missing MTF-trend primitive as S9.",
+                },
+                "partially_gapped": {
+                    "SMC_S12": "Range Rotation -- the sweep-reject mechanic exists at each end (D6/D7), but no primitive exists for 'a pair of basins that define a stable range' -- any two nearby basins is not automatically a coherent range. Not forced.",
+                },
+                "not_a_standalone_family": {
+                    "SMC_S18": "Time-of-Day -- confirmed the legacy S18 was always a STRATIFICATION dimension (hour/session) applied to OTHER signals, not its own trigger -- consistent with the already-documented 'S18 = 3 signals x 2 exits' finding (Mandate 3.10). Recommendation: NOT a 20th independent hypothesis -- remains a reporting stratification (asia/london/ny/late, already applied to SMC_S1/LM-001) over the other families.",
+                },
+            },
+            "dedup_prescreening": {
+                "status": "MANDATORY BEFORE ENROLLMENT, per PROJECT_AUDIT.md D11/SS F (ai_quant_lab) -- cannot yet run mechanically (no trade logs exist, AWAITING_VALIDATION_ENGINE_CODE for all families).",
+                "conceptual_collision_risk_flagged_for_hash_verification": {
+                    "SMC_S2_vs_SMC_S11": "Both CHoCH-based, deliberately differentiated (S2 requires a specific recently-failed BOS; S11 requires only a CHoCH at trend end) but run on the same market_structure code -- real overlap risk, mandatory hash check once implemented.",
+                    "SMC_S3_vs_SMC_S7": "Both continuation-flavored, differentiated (S3 requires an explicit BOS+retest; S7 requires an established trend + next swing, no new BOS) -- same shared code risk.",
+                    "SMC_S1_S13_S16": "All three are sweep-reject-flavored but on geometrically distinct entities (swing-derived basin / FVG CE-50 / institutional PDH-PDL) -- lower collision risk but still to be hash-verified, not assumed.",
+                },
+                "distinct_count_not_reportable_yet": "No distinct-family count is reported here -- D11/SS F requires a measured trade-log hash, not a guess; reporting a number now would be assumption presented as measurement.",
+            },
+            "status_rule": "ALL formalized families: AWAITING_VALIDATION_ENGINE_CODE. Gapped families: GAPPED (missing primitive, specified per family above). SMC_S18: NOT_A_STANDALONE_FAMILY. NONE may be promoted to VALIDATED until WP-5' (Mandate 3.17) delivers the oracle.",
+            "full_state_machines_document": "ai_quant_lab statistician/STATISTICIAN_SMC_S_STATE_MACHINES_v1.0.md",
         },
         "timeframes": {
             "M15": {
