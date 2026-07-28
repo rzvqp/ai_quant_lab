@@ -100,9 +100,20 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    (`test_history_survives_a_simulated_restart`). See `AI_TRADER_MANDATE2_PERSISTENCE_FRAMEWORK_REPORT.md`
    for both. Bar/gap continuity detection (Mandate 2 explicitly excluded it: "Nu detectarea de goluri")
    is now separately DONE via Mandate 3, Element 1 — see the entry above.
-7. **NEW — EMERGENCY_STOP reset operation** (this update, 2026-07-25) — see its own entry below. Must
-   exist **before Phase 3** (the long-running shadow-mode operational run), not before Phase 3 is
-   *designed*. **Not authorized to build now** — explicitly deferred, added to this graph only.
+7. **EMERGENCY_STOP reset operation — DONE (Mandate 3, Element 2, 2026-07-27).** Was: disclosed at Step 1
+   as permanent once entered, no reset path. Now: `reset_emergency_stop(state_store, reason, as_of)` in
+   `risk_manager_live/circuit_breaker.py` — the only function that clears it, requires a non-empty
+   reason, journals reason+timestamp before persisting the new READY state, never automatic, never
+   implicit on restart (proven directly: loading a persisted EMERGENCY_STOP after a simulated restart
+   leaves it unchanged, with an empty reset audit trail). Required discovering and closing an adjacent,
+   previously-unbuilt gap first: `TradingCircuitState` itself did not survive a restart (not part of
+   Mandate 2's three components — verified, not assumed) — `persist_circuit_state`/
+   `load_persisted_circuit_state` close that, via the same `SqliteStateStore`, without changing
+   `evaluate_circuit_state` itself at all. See
+   `AI_TRADER_MANDATE3_ELEMENT2_EMERGENCY_STOP_RESET_REPORT.md`. Required the FULL `ai_trader/` tree
+   validation (circuit_breaker.py is imported by execution_orchestrator) — 2871 passed, 2 skipped, 0
+   failed after one one-line allow-list fix; 227 pre-existing mypy errors found in unrelated packages
+   (simulation/shadow_evidence/strategy_runtime tests), disclosed, not fixed, out of scope.
 8. **#3, #4** — cross-candidate/per-cycle budget accounting, cost-model reconciliation. Moved AFTER #6 by
    explicit CEO decision: in shadow mode no order is ever sent (`Piesa 2` never receives the execution
    adapter, enforced statically) — nothing spends margin, so a per-cycle budget has nothing to exceed, and

@@ -19,7 +19,7 @@ _FORBIDDEN_MODULE_PREFIXES = (
 
 _ALLOWED_AI_TRADER_PREFIXES = (
     "ai_trader.risk_manager_live", "ai_trader.risk_manager", "ai_trader.scoring_engine",
-    "ai_trader.signal_engine", "ai_trader.market_scanner",
+    "ai_trader.signal_engine", "ai_trader.market_scanner", "ai_trader.persistent_state",
 )
 
 
