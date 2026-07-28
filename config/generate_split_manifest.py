@@ -305,7 +305,7 @@ def build_manifest() -> dict[str, Any]:
                     "simple UTC alignment; reimplementing that check correctly was out of scope for this "
                     "ratification. File integrity (hash, row count) IS independently verified above."
                 ),
-                "status": "VALIDATED",
+                "status": "CONTEXT_DERIVED_VALIDATED",
             },
             "D1_from_M15_v2": {
                 "aggregation_bars": 96, "bar_seconds": 86400,
@@ -319,7 +319,45 @@ def build_manifest() -> dict[str, Any]:
                     "source": "Independently computed by Statistician directly against the physical file at generation time; matches Data Acquisition's reported value exactly.",
                 },
                 "rule_compliance_note": "See H4_from_M15_v2.rule_compliance_note -- identical basis.",
-                "status": "VALIDATED",
+                "status": "CONTEXT_DERIVED_VALIDATED",
+            },
+            "H1_from_M15_v2": {
+                "aggregation_bars": 4, "bar_seconds": 3600,
+                "file_path": "acquisition_staging/OANDA_XAUUSD_H1_from_M15_v2_UNREGISTERED.csv",
+                "window_convention": "Anchored UTC hour (matches native H1), per code/resample_ny.py. sub = count of constituent M15_v2 bars.",
+                "generation": {"bars_with_rule": 49580, "bars_without_rule": 89549, "bars_eliminated": 39969,
+                               "generated_by": "Data Acquisition, Mandate 2.7 (on separate CEO instruction)"},
+                "data_file_sha256": {
+                    "value": sha256_file(os.path.join(_ROOT, "acquisition_staging", "OANDA_XAUUSD_H1_from_M15_v2_UNREGISTERED.csv")),
+                    "status": "CONFIRMED_BY_STATISTICIAN",
+                    "source": "Independently computed by Statistician directly against the physical file at generation time; matches Data Acquisition's reported value (DATA_ACQUISITION_FINAL_REPORT.md line 140, commit 774acea) exactly.",
+                },
+                "rule_compliance_note": "See H4_from_M15_v2.rule_compliance_note -- identical basis.",
+                "classification_delimitation": (
+                    "H1_from_M15_v2 is a CONTEXT-DERIVED ARTIFACT (identical mechanical rule as H4/D1 "
+                    "above -- no new methodology), registered for the interval M15_v2's discovery blocks "
+                    "happen to cover (roughly 2011-2021), specifically to unblock Research Lab's mstrat "
+                    "context guard. It does NOT substitute for, replace, or speak to the status of the "
+                    "separately-acquired NATIVE H1 dataset (its own timeframe entry above, still "
+                    "AWAITING_REGIME_MAP, untouched by this registration)."
+                ),
+                "governance_note_operational_motivation_disclosed": (
+                    "Flagged explicitly, per instruction, rather than accepted silently: the REASON this "
+                    "entry is registered now is operational (unblocking a downstream consumer) rather "
+                    "than a property of the data reaching some qualification threshold on its own -- the "
+                    "native H1 dataset has not completed its own regime-map registration path, and this "
+                    "derived proxy is being registered instead of waiting for it. This is the first "
+                    "instance in this project of a classification driven by a desired outcome rather "
+                    "than by what the data represents. It is accepted here ONLY because: (1) it uses the "
+                    "exact same, already-validated mechanical rule as H4/D1, introducing no new method; "
+                    "(2) it is explicitly and permanently labeled as distinct from and non-substitutive "
+                    "of the native H1 entry, which remains untouched and separately trackable; (3) no "
+                    "information about the native H1 dataset's own status is obscured or implied resolved "
+                    "by this registration. This is NOT a template: a future request to register a derived "
+                    "proxy specifically to bypass a pending native dataset's own qualification path must "
+                    "be justified anew on its own facts, not assumed permitted by this precedent."
+                ),
+                "status": "CONTEXT_DERIVED_VALIDATED",
             },
         },
         "who_does_what": (
@@ -330,17 +368,26 @@ def build_manifest() -> dict[str, Any]:
             "(Statistician ratifies, Data Acquisition measures)."
         ),
         "distinct_from_native_H1": (
-            "This section governs H4/D1 CONTEXT bars resampled from M15_v2 -- it is unrelated to the "
+            "This section governs H4/D1/H1 CONTEXT bars resampled from M15_v2 -- it is unrelated to the "
             "separately-acquired NATIVE H1 dataset (its own file, its own data_file_sha256, currently "
-            "AWAITING_REGIME_MAP as its own timeframe entry above). Do not conflate the two, same "
-            "discipline as the M15/M15_v2 identifier resolution."
+            "AWAITING_REGIME_MAP as its own timeframe entry above). H1_from_M15_v2 in particular does "
+            "NOT substitute for or resolve the native H1 entry's own status -- see its own "
+            "classification_delimitation and governance_note above. Do not conflate any of the three "
+            "with the native entries, same discipline as the M15/M15_v2 identifier resolution."
         ),
-        "unblocks": "Research Lab's context guard -- both H4_from_M15_v2 and D1_from_M15_v2 are now status VALIDATED.",
+        "unblocks": "Research Lab's context guard -- H4_from_M15_v2, D1_from_M15_v2, and H1_from_M15_v2 are all status CONTEXT_DERIVED_VALIDATED. Statistician confirms to CEO when Research Lab's guard may actually start -- promotion here does not auto-trigger it.",
+        "version_history": [
+            {"version": "2.2.0", "commit": "4e1f550", "content": "M15_v2 + M5 regime segments"},
+            {"version": "2.3.0", "commit": "a4c0baf", "content": "HTF context resample rule specified"},
+            {"version": "2.3.1", "commit": "774acea", "content": "H4/D1 hashes supplied by Data Acquisition, GENERATED_PENDING_RATIFICATION (Data-Acquisition-authored injection, not a Statistician version)"},
+            {"version": "2.4.0", "commit": "9286981", "content": "E001/E002/E004 candidate verdicts; H4/D1 ratified to CONTEXT_DERIVED_VALIDATED"},
+            {"version": "2.4.1", "commit": "PENDING (this version)", "content": "H1_from_M15_v2 registered and ratified; commit-citation correction recorded (an order incorrectly cited 4e1f550 as v2.4.0 -- it is v2.2.0, three mandates earlier)"},
+        ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.4.0",
+        "version": "2.4.1",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -348,6 +395,26 @@ def build_manifest() -> dict[str, Any]:
             "config/generate_split_manifest.py, not hand-transcribed."
         ),
         "generator": "config/generate_split_manifest.py",
+        "changelog_v2_4_1": (
+            "Records a commit-citation correction: a CTO order cited 'manifest v2.4.0, commit 4e1f550' "
+            "-- 4e1f550 is v2.2.0, three mandates earlier (see version_history above for the real "
+            "chain). Freezing state by citing that commit would freeze a stale version; recorded here "
+            "so the correction is durable, not just conversational. Registers H1_from_M15_v2 under "
+            "context_derived_htf.entries (hash 524977d0...f660, 49,580 bars, independently verified "
+            "directly against the physical file, cross-checked against Data Acquisition's "
+            "DATA_ACQUISITION_FINAL_REPORT.md line 140 -- not copied from any relayed message), with an "
+            "explicit classification_delimitation and governance_note disclosing that this is the first "
+            "registration in the project driven by an operational need (unblocking Research Lab's "
+            "mstrat context guard) rather than by the data reaching a qualification threshold on its "
+            "own -- accepted only because it reuses the already-validated H4/D1 mechanism unchanged, "
+            "stays permanently distinct from the native H1 entry, and is explicitly NOT a template for "
+            "future convenience-driven classifications. Promotes H4/D1/H1_from_M15_v2 status from "
+            "VALIDATED to the more specific CONTEXT_DERIVED_VALIDATED (matching provenance_key exactly, "
+            "avoiding confusion with base-timeframe VALIDATED). Statistician ratifies hashes only, not "
+            "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
+            "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
+            "SPEC_v1.0), not a weakness papered over."
+        ),
         "changelog_v2_4": (
             "Registers the Mandate 4.1 transactional-evaluation verdicts (Flow A commit 1a64812, "
             "verified directly by Statistician against the source report/script/results, not merely "
