@@ -16,6 +16,16 @@ survive a process restart -- without one, behavior is byte-for-byte the prior in
 (every pre-Mandate-2 test still passes unmodified). With one, the watermark is loaded from the store at
 construction (instead of starting at `None`) and written through on every `poll()` that emits new bars,
 keyed per `(symbol, mt5_timeframe)` so two feeds sharing one store never collide.
+
+**Mandate 3, Element 1 (2026-07-27), gap continuity detection**: `poll()` now also checks that each
+newly emitted bar's `ts_open` is exactly one `bar_seconds` after the previous one (either the last bar
+emitted earlier in this same `poll()` batch, or `_last_emitted_ts_open` carried over from before --
+including a value LOADED from the persisted watermark, so a gap that occurred while the process was
+down is detected exactly the same way as one that occurred mid-run, no special-casing). A violation is
+reported as a `GapRecord` (classified via `gap_classification.classify_gap`) -- never filled, never
+interpolated, never estimated. `last_gaps()` returns whatever gaps were found during the MOST RECENT
+`poll()` call only (empty before the first `poll()`, and reset to empty on any `poll()` that finds no
+new gap).
 """
 
 from __future__ import annotations
@@ -24,7 +34,8 @@ import time
 from typing import Callable
 
 from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway
-from ai_trader.live_signal_source.types import Bar, BarFeedError
+from ai_trader.live_signal_source.gap_classification import classify_gap
+from ai_trader.live_signal_source.types import Bar, BarFeedError, GapRecord
 from ai_trader.persistent_state.store import SqliteStateStore
 
 
@@ -53,10 +64,16 @@ class LiveBarFeed:
         self._last_emitted_ts_open: int | None = (
             None if state_store is None else self._load_persisted_watermark(state_store)
         )
+        self._last_gaps: tuple[GapRecord, ...] = ()
 
     def _load_persisted_watermark(self, state_store: SqliteStateStore) -> int | None:
         persisted = state_store.get_value(self._watermark_key)
         return None if persisted is None else int(persisted)
+
+    def last_gaps(self) -> tuple[GapRecord, ...]:
+        """Gaps found during the most recent `poll()` call only -- not an accumulated history (the
+        journal, via `CandidateSignalProducer`, is responsible for retaining that)."""
+        return self._last_gaps
 
     def poll(self) -> tuple[Bar, ...]:
         """Returns every newly CLOSED bar since the previous `poll()` call, oldest first. Never returns
@@ -94,6 +111,19 @@ class LiveBarFeed:
             ))
 
         closed_bars.sort(key=lambda b: b.ts_open)
+
+        gaps: list[GapRecord] = []
+        previous_ts_open = self._last_emitted_ts_open
+        for bar in closed_bars:
+            if previous_ts_open is not None and bar.ts_open != previous_ts_open + self._bar_seconds:
+                gaps.append(GapRecord(
+                    symbol=self._symbol, gap_start=previous_ts_open, gap_end=bar.ts_open,
+                    duration_seconds=bar.ts_open - previous_ts_open,
+                    classification=classify_gap(previous_ts_open, bar.ts_open),
+                ))
+            previous_ts_open = bar.ts_open
+        self._last_gaps = tuple(gaps)
+
         if closed_bars:
             self._last_emitted_ts_open = closed_bars[-1].ts_open
             if self._state_store is not None:

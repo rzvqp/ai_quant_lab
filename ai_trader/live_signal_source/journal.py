@@ -11,13 +11,24 @@ in-memory-only version (every pre-Mandate-2 test still passes unmodified). With 
 recorded is loaded back at construction (not just what this instance itself has seen), and every new
 `record()` call writes through immediately. `log_name` scopes multiple journals sharing one store, the
 same way `LiveBarFeed`'s watermark key scopes per `(symbol, mt5_timeframe)`.
+
+**Mandate 3, Element 1 (2026-07-27), gaps are journaled too**: `record_gap()`/`gaps` follow the exact
+same shape and persistence discipline as `record()`/`entries`, on a SEPARATE log (`f"{log_name}.gaps"`)
+so a `GapRecord` row is never confused with a `LiveSignalJournalEntry` row. This is what makes all three
+classifications (MAINTENANCE/WEEKEND/UNEXPECTED) durably visible -- CEO: "un consumator care citeste
+jurnalul peste sase luni nu poate distinge un shadow sanatos de unul cu pierderi" without them.
 """
 
 from __future__ import annotations
 
 import json
 
-from ai_trader.live_signal_source.types import LiveCandidate, LiveSignalJournalEntry
+from ai_trader.live_signal_source.types import (
+    GapClassification,
+    GapRecord,
+    LiveCandidate,
+    LiveSignalJournalEntry,
+)
 from ai_trader.persistent_state.store import SqliteStateStore
 from ai_trader.signal_engine.types import Direction
 
@@ -51,17 +62,39 @@ def _deserialize_entry(payload: str) -> LiveSignalJournalEntry:
     return LiveSignalJournalEntry(symbol=data["symbol"], as_of=data["as_of"], candidate=candidate)
 
 
+def _serialize_gap(gap: GapRecord) -> str:
+    return json.dumps({
+        "symbol": gap.symbol, "gap_start": gap.gap_start, "gap_end": gap.gap_end,
+        "duration_seconds": gap.duration_seconds, "classification": gap.classification.value,
+    })
+
+
+def _deserialize_gap(payload: str) -> GapRecord:
+    data = json.loads(payload)
+    return GapRecord(
+        symbol=data["symbol"], gap_start=data["gap_start"], gap_end=data["gap_end"],
+        duration_seconds=data["duration_seconds"],
+        classification=GapClassification(data["classification"]),
+    )
+
+
 class LiveSignalJournal:
     def __init__(
         self, state_store: SqliteStateStore | None = None, log_name: str = _DEFAULT_LOG_NAME,
     ) -> None:
         self._state_store = state_store
         self._log_name = log_name
+        self._gap_log_name = f"{log_name}.gaps"
         if state_store is None:
             self._entries: list[LiveSignalJournalEntry] = []
+            self._gaps: list[GapRecord] = []
         else:
             self._entries = [
                 _deserialize_entry(payload) for payload in state_store.read_log_entries(log_name)
+            ]
+            self._gaps = [
+                _deserialize_gap(payload)
+                for payload in state_store.read_log_entries(self._gap_log_name)
             ]
 
     def record(self, entry: LiveSignalJournalEntry) -> None:
@@ -69,6 +102,15 @@ class LiveSignalJournal:
         if self._state_store is not None:
             self._state_store.append_log_entry(self._log_name, _serialize_entry(entry))
 
+    def record_gap(self, gap: GapRecord) -> None:
+        self._gaps.append(gap)
+        if self._state_store is not None:
+            self._state_store.append_log_entry(self._gap_log_name, _serialize_gap(gap))
+
     @property
     def entries(self) -> tuple[LiveSignalJournalEntry, ...]:
         return tuple(self._entries)
+
+    @property
+    def gaps(self) -> tuple[GapRecord, ...]:
+        return tuple(self._gaps)

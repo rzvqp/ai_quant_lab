@@ -21,6 +21,7 @@ own -- confirmed clean of any execution-capable transitive import before use (it
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import Protocol
 
 from ai_trader.signal_engine.types import Direction
@@ -142,3 +143,44 @@ class LiveSignalJournalEntry:
     def __post_init__(self) -> None:
         if not self.symbol:
             raise ValueError("LiveSignalJournalEntry.symbol must not be empty")
+
+
+class GapClassification(str, Enum):
+    """CEO instruction, 2026-07-27: three categories, all visible, only one a problem -- "un consumator
+    care citeste jurnalul peste sase luni nu poate distinge un shadow sanatos de unul cu pierderi" fara
+    toate trei."""
+
+    MAINTENANCE = "MAINTENANCE"
+    WEEKEND = "WEEKEND"
+    UNEXPECTED = "UNEXPECTED"
+
+
+@dataclass(frozen=True, slots=True)
+class GapRecord:
+    """One detected continuity break in `LiveBarFeed`'s own emitted sequence -- reported, never filled
+    (CEO: "golul se raporteaza, nu se umple. Fara imputare, fara interpolare"). `gap_start` is the last
+    known-good bar's own `ts_open` (matching `code/gapfind.py`'s own `t0`, reused verbatim for
+    classification -- see `gap_classification.py`); `gap_end` is the first bar seen after the gap
+    (`t1`). `duration_seconds` is their literal difference, matching that script's own `mins` basis
+    exactly (open-to-open, not close-to-open)."""
+
+    symbol: str
+    gap_start: int
+    gap_end: int
+    duration_seconds: int
+    classification: GapClassification
+
+    def __post_init__(self) -> None:
+        if not self.symbol:
+            raise ValueError("GapRecord.symbol must not be empty")
+        if self.gap_end <= self.gap_start:
+            raise ValueError(
+                f"GapRecord.gap_end must be after gap_start, got "
+                f"gap_start={self.gap_start!r} gap_end={self.gap_end!r}"
+            )
+        if self.duration_seconds != self.gap_end - self.gap_start:
+            raise ValueError(
+                f"GapRecord.duration_seconds must equal gap_end - gap_start, got "
+                f"duration_seconds={self.duration_seconds!r}, "
+                f"gap_end - gap_start={self.gap_end - self.gap_start!r}"
+            )

@@ -84,3 +84,32 @@ def test_no_new_bars_produces_nothing_and_journals_nothing() -> None:
 
     assert candidates == ()
     assert journal.entries == ()
+
+
+def test_a_gap_detected_by_the_feed_is_journaled_by_the_producer() -> None:
+    """Mandate 3, Element 1 (2026-07-27): the producer is what connects `LiveBarFeed.last_gaps()` to
+    the journal -- the feed only detects, it never journals on its own."""
+    first_open = NOW - 5 * 60 * 60
+    second_open = NOW - 1_000
+    gateway = _closed_bar_gateway(first_open, second_open)
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    journal = LiveSignalJournal()
+    producer = CandidateSignalProducer(feed, NullRecognitionRule(), journal)
+
+    producer.run_once()
+
+    assert len(journal.gaps) == 1
+    assert journal.gaps[0].gap_start == first_open
+    assert journal.gaps[0].gap_end == second_open
+
+
+def test_no_gap_is_journaled_when_bars_are_contiguous() -> None:
+    first_open = NOW - 2 * M15_SECONDS
+    gateway = _closed_bar_gateway(first_open, first_open + M15_SECONDS)
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    journal = LiveSignalJournal()
+    producer = CandidateSignalProducer(feed, NullRecognitionRule(), journal)
+
+    producer.run_once()
+
+    assert journal.gaps == ()

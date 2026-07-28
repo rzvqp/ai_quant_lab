@@ -76,14 +76,16 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
 6. **NEW — long-running process robustness** (crash/restart/resume-from-correct-state/stopped-signal for
    a multi-week unattended shadow process). Not itemized in any of the four audits; added by CEO decision
    after this graph's own §7 flagged it as a gap item 6 alone doesn't cover.
-   **NEW — bar/gap continuity detection** (CEO-verified, 2026-07-26, `AI_TRADER_ITEM7_SCHEDULER_
-   VERIFICATION_REPORT.md`): `LiveBarFeed.poll()` only dedups against `_last_emitted_ts_open`, never
-   checks that the next emitted bar's `ts_open` is exactly one `bar_seconds` after the previous one.
-   A gap smaller than `lookback_count` bars is recovered by accident (still inside the window
-   `copy_rates_from` returns); a gap larger than it (dropped connection, terminal restart mid-session,
-   a broker maintenance window) is silently and permanently unrecoverable, with no reason code, no flag,
-   no journal marker — indistinguishable from "no signal." Applies with or without a process restart.
-   **Not authorized to build.**
+   **Bar/gap continuity detection — DONE (Mandate 3, Element 1, 2026-07-27).** Was: CEO-verified,
+   2026-07-26, `LiveBarFeed.poll()` only deduped against `_last_emitted_ts_open`, never checked that the
+   next emitted bar's `ts_open` was exactly one `bar_seconds` after the previous one — a gap larger than
+   `lookback_count` bars was silently and permanently unrecoverable, indistinguishable from "no signal."
+   Now: every continuity break is reported (never filled/interpolated) as a `GapRecord`, classified
+   MAINTENANCE (reusing `code/gapfind.py`'s own "mins<=75 and hour in (20,21)" rule verbatim), WEEKEND
+   (spans a UTC Saturday, a new disclosed decision — no prior rule existed to reuse), or UNEXPECTED (the
+   only actionable category), and journaled durably via `LiveSignalJournal.record_gap()`/`.gaps` (same
+   persistence discipline as Mandate 2, a separate log). See
+   `AI_TRADER_MANDATE3_ELEMENT1_GAP_DETECTION_REPORT.md`.
    **`LiveBarFeed` watermark restart-survival — DONE (Mandate 2, 2026-07-27).** Was: CEO-verified,
    2026-07-26, `_last_emitted_ts_open` was a plain in-memory attribute, reset to `None` on every fresh
    construction, causing the first `poll()` after a restart to re-emit every closed bar still inside the
@@ -96,9 +98,8 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    the same `SqliteStateStore` persists every entry (candidate included, round-trips intact), loaded in
    full at construction; restart-determinism proven directly
    (`test_history_survives_a_simulated_restart`). See `AI_TRADER_MANDATE2_PERSISTENCE_FRAMEWORK_REPORT.md`
-   for both. **Bar/gap continuity detection remains NOT authorized to build** — persistence is not gap
-   detection; a mid-run connection drop with no restart is still unrecovered/unflagged, per Mandate 2's
-   own explicit exclusion ("Nu detectarea de goluri").
+   for both. Bar/gap continuity detection (Mandate 2 explicitly excluded it: "Nu detectarea de goluri")
+   is now separately DONE via Mandate 3, Element 1 — see the entry above.
 7. **NEW — EMERGENCY_STOP reset operation** (this update, 2026-07-25) — see its own entry below. Must
    exist **before Phase 3** (the long-running shadow-mode operational run), not before Phase 3 is
    *designed*. **Not authorized to build now** — explicitly deferred, added to this graph only.

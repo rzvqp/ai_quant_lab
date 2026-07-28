@@ -10,7 +10,7 @@ import pytest
 
 from ai_trader.live_signal_source.bar_feed import LiveBarFeed
 from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
-from ai_trader.live_signal_source.types import BarFeedError
+from ai_trader.live_signal_source.types import BarFeedError, GapClassification
 from ai_trader.persistent_state.store import SqliteStateStore
 
 SYMBOL = "XAUUSD"
@@ -167,3 +167,164 @@ def test_without_a_state_store_nothing_is_persisted() -> None:
 
     assert len(feed.poll()) == 1
     assert feed.poll() == ()  # in-memory dedup still works without any store at all
+
+
+# -- Mandate 3, Element 1 (2026-07-27): gap continuity detection -- reported, never filled --
+
+
+def _ts(year: int, month: int, day: int, hour: int, minute: int = 0) -> int:
+    import datetime
+
+    return int(datetime.datetime(year, month, day, hour, minute, tzinfo=datetime.timezone.utc).timestamp())
+
+
+def test_no_gap_when_consecutive_bars_are_exactly_one_bar_apart() -> None:
+    first_open = _ts(2026, 7, 28, 10, 0)  # Tuesday, ordinary mid-session hour
+    gateway = FakeMT5Gateway(rates=[
+        RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5),
+        RawRate(time=first_open + M15_SECONDS, open=1.5, high=2.5, low=1.0, close=2.0),
+    ])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=lambda: first_open + 2 * M15_SECONDS,
+    )
+    feed.poll()
+    assert feed.last_gaps() == ()
+
+
+def test_no_gap_flagged_for_the_very_first_bar_ever_seen() -> None:
+    """No prior watermark exists yet -- there is nothing to compare against, so this must never be
+    reported as a gap (a brand-new symbol/feed startup is not a continuity break)."""
+    first_open = _ts(2026, 7, 28, 10, 0)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: first_open + M15_SECONDS,
+    )
+    feed.poll()
+    assert feed.last_gaps() == ()
+
+
+def test_unexpected_gap_within_a_single_poll_batch() -> None:
+    first_open = _ts(2026, 7, 28, 10, 0)  # Tuesday
+    second_open = first_open + 4 * 60 * 60  # 4 hours later -- not maintenance, not weekend
+    gateway = FakeMT5Gateway(rates=[
+        RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5),
+        RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0),
+    ])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=lambda: second_open + M15_SECONDS,
+    )
+    feed.poll()
+
+    gaps = feed.last_gaps()
+    assert len(gaps) == 1
+    assert gaps[0].symbol == SYMBOL
+    assert gaps[0].gap_start == first_open
+    assert gaps[0].gap_end == second_open
+    assert gaps[0].duration_seconds == second_open - first_open
+    assert gaps[0].classification == GapClassification.UNEXPECTED
+
+
+class _MutableClock:
+    def __init__(self, now: int) -> None:
+        self.now = now
+
+    def __call__(self) -> int:
+        return self.now
+
+
+def test_gap_detected_across_two_separate_poll_calls() -> None:
+    first_open = _ts(2026, 7, 28, 10, 0)
+    clock = _MutableClock(first_open + M15_SECONDS)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock)
+    feed.poll()
+    assert feed.last_gaps() == ()
+
+    second_open = first_open + 3 * 60 * 60
+    gateway.rates = [RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0)]
+    clock.now = second_open + M15_SECONDS
+    feed.poll()
+
+    gaps = feed.last_gaps()
+    assert len(gaps) == 1
+    assert gaps[0].gap_start == first_open
+    assert gaps[0].gap_end == second_open
+
+
+def test_last_gaps_only_reflects_the_most_recent_poll() -> None:
+    first_open = _ts(2026, 7, 28, 10, 0)
+    second_open = first_open + 4 * 60 * 60
+    gateway = FakeMT5Gateway(rates=[
+        RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5),
+        RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0),
+    ])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=lambda: second_open + M15_SECONDS,
+    )
+    feed.poll()
+    assert len(feed.last_gaps()) == 1
+
+    gateway.rates = []
+    feed.poll()
+    assert feed.last_gaps() == ()  # no NEW gap this poll -- not still reporting the old one
+
+
+def test_maintenance_gap_is_classified_correctly() -> None:
+    first_open = _ts(2026, 7, 28, 20, 0)  # Tuesday 20:00 UTC -- the documented daily break window
+    second_open = first_open + 60 * 60  # 60 minutes later -- within the 75-minute allowance
+    gateway = FakeMT5Gateway(rates=[
+        RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5),
+        RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0),
+    ])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=lambda: second_open + M15_SECONDS,
+    )
+    feed.poll()
+    assert feed.last_gaps()[0].classification == GapClassification.MAINTENANCE
+
+
+def test_weekend_gap_is_classified_correctly() -> None:
+    first_open = _ts(2026, 7, 24, 21, 0)  # Friday close
+    second_open = _ts(2026, 7, 26, 21, 0)  # Sunday reopen
+    gateway = FakeMT5Gateway(rates=[
+        RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5),
+        RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0),
+    ])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=lambda: second_open + M15_SECONDS,
+    )
+    feed.poll()
+    assert feed.last_gaps()[0].classification == GapClassification.WEEKEND
+
+
+def test_gap_detection_uses_the_persisted_watermark_after_a_simulated_restart(tmp_path: Path) -> None:
+    """A gap that occurred WHILE the process was down must still be detected after restart -- the
+    watermark loaded from `SqliteStateStore` (Mandate 2) is exactly what continuity is checked
+    against, no special-casing needed."""
+    store = SqliteStateStore(tmp_path / "state.db")
+    first_open = _ts(2026, 7, 28, 10, 0)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed_before_restart = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=lambda: first_open + M15_SECONDS, state_store=store,
+    )
+    feed_before_restart.poll()
+
+    second_open = first_open + 5 * 60 * 60  # a gap that happened during the "outage"
+    gateway.rates = [RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0)]
+    feed_after_restart = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=lambda: second_open + M15_SECONDS, state_store=store,
+    )
+    feed_after_restart.poll()
+
+    gaps = feed_after_restart.last_gaps()
+    assert len(gaps) == 1
+    assert gaps[0].gap_start == first_open
+    assert gaps[0].gap_end == second_open
+    assert gaps[0].classification == GapClassification.UNEXPECTED

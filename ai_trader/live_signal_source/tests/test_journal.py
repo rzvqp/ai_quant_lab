@@ -5,7 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 
 from ai_trader.live_signal_source.journal import LiveSignalJournal
-from ai_trader.live_signal_source.types import LiveCandidate, LiveSignalJournalEntry
+from ai_trader.live_signal_source.types import (
+    GapClassification,
+    GapRecord,
+    LiveCandidate,
+    LiveSignalJournalEntry,
+)
 from ai_trader.persistent_state.store import SqliteStateStore
 from ai_trader.signal_engine.types import Direction
 
@@ -112,3 +117,76 @@ def test_without_a_state_store_nothing_is_persisted() -> None:
     journal = LiveSignalJournal()
     journal.record(LiveSignalJournalEntry(symbol="XAUUSD", as_of=100, candidate=None))
     assert len(journal.entries) == 1
+
+
+# -- Mandate 3, Element 1 (2026-07-27): gaps are journaled too -- visible for six months, not silent --
+
+
+def _gap(gap_start: int = 100, gap_end: int = 200) -> GapRecord:
+    return GapRecord(
+        symbol="XAUUSD", gap_start=gap_start, gap_end=gap_end, duration_seconds=gap_end - gap_start,
+        classification=GapClassification.UNEXPECTED,
+    )
+
+
+def test_starts_with_no_gaps() -> None:
+    journal = LiveSignalJournal()
+    assert journal.gaps == ()
+
+
+def test_record_gap_appends_in_order() -> None:
+    journal = LiveSignalJournal()
+    first = _gap(100, 200)
+    second = _gap(300, 400)
+
+    journal.record_gap(first)
+    journal.record_gap(second)
+
+    assert journal.gaps == (first, second)
+
+
+def test_gaps_history_survives_a_simulated_restart(tmp_path: Path) -> None:
+    store = SqliteStateStore(tmp_path / "state.db")
+    journal_before_restart = LiveSignalJournal(state_store=store)
+    journal_before_restart.record_gap(_gap(100, 200))
+
+    journal_after_restart = LiveSignalJournal(state_store=store)
+
+    assert len(journal_after_restart.gaps) == 1
+    assert journal_after_restart.gaps[0] == _gap(100, 200)
+
+
+def test_all_three_gap_classifications_round_trip_through_persistence() -> None:
+    store = SqliteStateStore(":memory:")
+    journal_before_restart = LiveSignalJournal(state_store=store)
+    maintenance = GapRecord(
+        symbol="XAUUSD", gap_start=1000, gap_end=1500, duration_seconds=500,
+        classification=GapClassification.MAINTENANCE,
+    )
+    weekend = GapRecord(
+        symbol="XAUUSD", gap_start=2000, gap_end=175_000, duration_seconds=173_000,
+        classification=GapClassification.WEEKEND,
+    )
+    unexpected = _gap(3000, 3500)
+    journal_before_restart.record_gap(maintenance)
+    journal_before_restart.record_gap(weekend)
+    journal_before_restart.record_gap(unexpected)
+
+    journal_after_restart = LiveSignalJournal(state_store=store)
+
+    assert journal_after_restart.gaps == (maintenance, weekend, unexpected)
+
+
+def test_gaps_and_entries_do_not_interfere_with_each_other() -> None:
+    journal = LiveSignalJournal()
+    journal.record(LiveSignalJournalEntry(symbol="XAUUSD", as_of=100, candidate=None))
+    journal.record_gap(_gap())
+
+    assert len(journal.entries) == 1
+    assert len(journal.gaps) == 1
+
+
+def test_gaps_has_no_remove_or_clear_method() -> None:
+    journal = LiveSignalJournal()
+    assert not hasattr(journal, "remove_gap")
+    assert not hasattr(journal, "clear_gaps")
