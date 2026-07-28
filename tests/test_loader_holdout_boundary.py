@@ -241,11 +241,25 @@ def test_a_pure_discovery_D1_bar_exists_and_aggregates_correctly() -> None:
 
 
 @pytest.mark.parametrize("key", ["H4_from_M15_v2", "D1_from_M15_v2"])
-def test_context_key_recognized_but_sealed_pending_ratification(key: str) -> None:
-    # recognized (NOT IdentifierError) but sealed on status GENERATED_PENDING_RATIFICATION
-    assert CTX["entries"][key]["status"] == "GENERATED_PENDING_RATIFICATION"
+def test_ratified_context_keys_load_and_verify(key: str) -> None:
+    # manifest v2.4.1 promoted H4/D1 to CONTEXT_DERIVED_VALIDATED -> loadable (whole file, dual hash).
+    assert CTX["entries"][key]["status"] == "CONTEXT_DERIVED_VALIDATED"
+    d, meta = C.load(key, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+    assert len(d) == CTX["entries"][key]["generation"]["bars_with_rule"]
+    assert meta["data_file_sha256"] == CTX["entries"][key]["data_file_sha256"]["value"]
+    assert meta["manifest_hash"] == MAN["content_hash"]["value"]
+
+
+def test_h1_from_m15_v2_awaits_path_reconciliation() -> None:
+    # CTO hotfix moved the derived H1 to data/market/OANDA_XAUUSD_H1_from_M15_v2.csv, but manifest v2.4.1
+    # still registers it at the old acquisition_staging path -> fail-closed (file not found) until the
+    # Statistician updates file_path. Documents the pending reconciliation; the file itself is present.
+    h1 = CTX["entries"]["H1_from_M15_v2"]
+    assert h1["status"] == "CONTEXT_DERIVED_VALIDATED"
+    assert not os.path.isfile(os.path.join(_ROOT, h1["file_path"]))  # stale staging path
+    assert os.path.isfile(os.path.join(_ROOT, "data/market/OANDA_XAUUSD_H1_from_M15_v2.csv"))
     with pytest.raises(C.HoldoutConfigError):
-        C.load(key, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+        C.load("H1_from_M15_v2", data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
 
 
 @pytest.mark.parametrize("key", ["H4_from_M15_v2", "D1_from_M15_v2"])
