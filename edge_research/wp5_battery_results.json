@@ -1,0 +1,53 @@
+{
+  "config": {
+    "n_events": 21048,
+    "H": 20,
+    "B": 2000,
+    "n_series": 200,
+    "mean_spacing": 3.819700585810371,
+    "shared_horizon": 0.8090149707094815,
+    "_q4_note": "mean_spacing/shared_horizon above are MISCOMPUTED (pooled local segment indices, sorted across segments). Corrected per-segment values below. FPR results are UNAFFECTED (they use per-segment positions in generate_null_series).",
+    "mean_spacing_corrected_per_segment": 8.52,
+    "shared_horizon_corrected_per_segment": 0.574,
+    "median_spacing_bars": 5.0,
+    "fraction_consecutive_gaps_lt_H": 0.897
+  },
+  "by_L": {
+    "10": {
+      "fpr_aggregate": 0.045,
+      "fpr_by_session": {
+        "asia": 0.015,
+        "london": 0.03,
+        "ny": 0.075,
+        "late": 0.055
+      }
+    },
+    "20": {
+      "fpr_aggregate": 0.04,
+      "fpr_by_session": {
+        "asia": 0.015,
+        "london": 0.03,
+        "ny": 0.06,
+        "late": 0.045
+      }
+    },
+    "28": {
+      "fpr_aggregate": 0.04,
+      "fpr_by_session": {
+        "asia": 0.015,
+        "london": 0.025,
+        "ny": 0.055,
+        "late": 0.045
+      }
+    },
+    "40": {
+      "fpr_aggregate": 0.04,
+      "fpr_by_session": {
+        "asia": 0.015,
+        "london": 0.03,
+        "ny": 0.05,
+        "late": 0.045
+      }
+    }
+  }
+}
