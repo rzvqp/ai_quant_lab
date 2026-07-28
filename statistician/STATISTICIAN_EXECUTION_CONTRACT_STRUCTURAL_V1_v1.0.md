@@ -1,8 +1,19 @@
 # STATISTICIAN — CLARIFICARE + CONTRACT DE EXECUȚIE SEPARAT (E001/E002/E004)
 
-**Document ID:** STAT-EXEC-CONTRACT-STRUCTV1-v1.0
-**Data:** 2026-07-27 · **Autor:** Statistician
+**Document ID:** STAT-EXEC-CONTRACT-STRUCTV1-v1.1
+**Data:** 2026-07-27 (v1.0) · **Amendat:** 2026-07-27 (v1.1 — PATCH, patru corecturi decise de CTO după citirea integrală a Flow A, commit `3e8821b`)
 **Nu modifică V1-urile.** E001/E002/E004 rămân exact cum sunt înghețate — binare, fără R, fără stop. Acest document specifică un contract de execuție SEPARAT, care simulează tranzacții în jurul evenimentului lor structural deja înghețat, fără să-l redefinească.
+
+---
+
+## PATCH v1.1 — LOG DE CORECȚII (textul vechi rămâne mai jos, marcat SUPERSEDED, nu șters)
+
+Flow A a citit contractul integral și a raportat patru probleme, verificate direct de mine acum în `V1_OPERATIONALIZED_CONTRACTS.md` (secțiunile E001-V1/E002-V1/E004-V1) înainte de a scrie corecțiile — nu doar acceptate din mesaj:
+
+1. **E001 — decizie CTO, aplicată:** intrarea e pe prima bară IMEDIAT DUPĂ bara de sweep (bara de manipulare), în direcția INVERSĂ spargerii — nu pe bara de rezultat ("a atins extrema opusă" e outcome-ul măsurat de V1, nu setup-ul).
+2. **E002 — direcție confirmată de CTO; O EXTINDERE PROPRIE, semnalată ca atare, nu ca decizie CTO:** citind textul real E002-V1, observ ACELAȘI defect structural ca la E001 — formularea mea originală intra pe bara la care pragul de retrace 50% se satisface (outcome-ul), nu pe bara de setup (imediat după fereastra Frankfurt). Corectez prin analogie directă cu principiul deja decis pentru E001, dar marchez explicit: **aceasta nu e o decizie CTO transmisă, e propria mea aplicare a aceluiași raționament — cere confirmare sau respingere explicită**, nu se tratează ca finalizată doar pentru că "pare la fel".
+3. **E004 — verificat ÎNAINTE de a îngheța, cum ai cerut:** textul V0/V1 complet există în `V1_OPERATIONALIZED_CONTRACTS.md`, secțiunea "E004-V1 — First Post-US-Open FVG Follow-Through". **E004 NU e un `movement_profile` generic** — e urmărirea unui FVG (fair value gap) de 3 bare, prima al cărei bar-mijlociu cade în fereastra 13:30–15:30 UTC (referință deschidere COMEX RTH), cu clasificare continuation/reversal/stall măsurată **în direcția polarității FVG-ului**, PLUS un binar separat, **fill** (prețul reintră în zona FVG în interiorul orizontului de 50 bare) — pe care contractul meu original nu-l cuprindea deloc, neavând vizibilitate pe text. Ambele corectate mai jos.
+4. **RR — corecție aritmetică, confirmată eronată în original:** §3 vechi spunea "8,00 dolari (RR 1:1)" — greșit. La stop 4,00: RR 1:1 → țintă **4,00**; RR 1:2 → țintă **8,00**. La stop 5,00 (variantă): RR 1:1 → **5,00**; RR 1:2 → **10,00**.
 
 ---
 
@@ -28,9 +39,9 @@ Criteriul `C(S,RR)=S(1+RR)` comparat cu percentilele distribuției (Q1/p90) e un
 
 Intrarea are loc la **deschiderea barei imediat următoare** barei pe care se satisface pentru prima dată condiția structurală/binară deja înghețată a fiecărui V1 — convenția `entry@next-open`, lookahead-safe, deja stabilită în `mstrat.py`, reutilizată identic, nu reinventată. Contractul de execuție NU introduce o definiție structurală nouă — adaugă doar CÂND se intră și CUM se dimensionează riscul în jurul unui eveniment a cărui existență/moment sunt determinate integral de definiția înghețată a fiecărui V1.
 
-- **E001** ("a atins extrema opusă"): intrare la prima bară după cea pe care se atinge extrema opusă (referința rămâne cea din V1 — range-ul Asia — doar ca reper de eveniment, NU ca definiție de R; R-ul vechi, lățimea range-ului Asia, e înlocuit integral de stopul fix de mai jos).
-- **E002** ("reversal ≥50% retrace până la 13:00"): intrare la prima bară după cea pe care pragul de 50% retrace e satisfăcut, DOAR dacă evenimentul se declanșează înainte de 13:00 — altfel, nicio tranzacție în acea zi/sesiune.
-- **E004** (`movement_profile` continuation/reversal/stall): intrare la prima bară după cea pe care clasificarea deja înghețată rezolvă într-una din cele trei categorii. **Notă:** nu am vizibilitate directă asupra textului V0 complet pentru E004 (nu l-am putut localiza în acest checkout) — regula de mai sus e generică și corectă indiferent de mecanica exactă de clasificare; execuția aplică regula pe definiția deja înghețată a Flow A, nu inventează una nouă dacă mecanica diferă de presupunerea mea.
+- ~~**E001** ("a atins extrema opusă"): intrare la prima bară după cea pe care se atinge extrema opusă...~~ **SUPERSEDED — Flow A avea dreptate, decizie CTO:** "a atins extrema opusă" e outcome-ul V1 (măsurat pe orizontul de 52 bare), nu setup-ul. La momentul ăla mișcarea e deja consumată, nu rămâne nicio direcție forward. **Intrare corectă:** pe prima bară IMEDIAT DUPĂ bara de sweep — bara London (`session=='london'`) a cărei extremă tranzacționează ≥0,25×ATR14 dincolo de o extremă Asia (E027, deja verificat în textul V1). **Direcție: INVERSĂ spargerii** — dacă sweep-ul a spart extrema Asia de SUS, tranzacția e SHORT (pariu pe atingerea extremei Asia de jos, opusă); simetric pentru sweep în jos → LONG.
+- ~~**E002** ("reversal ≥50% retrace până la 13:00"): intrare la prima bară după cea pe care pragul de 50% retrace e satisfăcut...~~ **SUPERSEDED — extindere proprie prin analogie cu E001, NU decizie CTO, cere confirmare explicită:** citind E002-V1 (`V1_OPERATIONALIZED_CONTRACTS.md`), pragul de retrace 50% e outcome-ul măsurat pe fereastra Londra (20 bare, 08:00→13:00), exact ca la E001 — nu setup-ul. **Intrare propusă:** pe prima bară după închiderea ferestrei Frankfurt (bara 08:00 UTC), condiționat de mișcarea agresivă deja confirmată (`|Δ|≥1,5×ATR14` la 06:00, per V1). **Direcție: OPUSĂ mișcării Frankfurt** (pariu pe reversal/retrace, nu pe continuare). Direcția de reversal față de extinderea pre-market e cea confirmată de CTO — timing-ul de intrare de mai sus e propria mea corecție, marcată explicit ca atare.
+- ~~**E004** (`movement_profile` continuation/reversal/stall): intrare la prima bară după cea pe care clasificarea deja înghețată rezolvă...~~ **SUPERSEDED — text V0/V1 verificat acum, nu presupus:** E004-V1 = "First Post-US-Open FVG Follow-Through" (`V1_OPERATIONALIZED_CONTRACTS.md`) — nu e un `movement_profile` generic. Populație: primul FVG (imbalance 3 bare) al zilei a cărui bară-mijlocie cade în fereastra 13:30–15:30 UTC (deschidere COMEX RTH). **Intrare corectă:** pe prima bară după formarea completă a FVG-ului (imediat după închiderea celei de-a 3-a bare a pattern-ului) — nu la rezolvarea clasificării `movement_profile` (aceea e outcome-ul, orizont 50 bare). **Direcție = polaritatea FVG-ului** (gap bullish → long, gap bearish → short). **Mapare binară (decizie CTO):** continuation = mișcare în direcția polarității FVG-ului (impulsul care a format gap-ul); reversal = direcția opusă. **Metrică suplimentară, omisă din original, adăugată acum:** `fill` — binar separat, prețul reintră în zona FVG `[zone_low, zone_high]` în interiorul orizontului de 50 bare — se raportează alături de rezultatul de tranzacție (win/loss/R), nu combinat cu el.
 
 **Cel mult o intrare per sesiune/zi per contract**, dacă evenimentul structural e legat de sesiune (cazul aparent pentru toate trei).
 
@@ -42,7 +53,14 @@ Intrarea are loc la **deschiderea barei imediat următoare** barei pe care se sa
 
 ### 3. Țintă — RR 1:1 și RR 1:2, raportate separat
 
-Două ținte, niciodată combinate într-un singur rezultat: **8,00 dolari (RR 1:1)** și **8,00-10,00 dolari (RR 1:2, în funcție de stopul folosit — 8,00 la stop 4,00; 10,00 la stop 5,00)**. Fiecare combinație (contract × stop-oficial-sau-variantă × RR) raportată ca rând propriu, niciodată agregată.
+~~Două ținte, niciodată combinate într-un singur rezultat: **8,00 dolari (RR 1:1)** și **8,00-10,00 dolari (RR 1:2...)**~~ **SUPERSEDED — eroare aritmetică, corectată:** RR = țintă/stop, deci RR 1:1 înseamnă țintă EGALĂ cu stopul, nu 8,00.
+
+| Stop | RR 1:1 (țintă) | RR 1:2 (țintă) |
+|---|---|---|
+| 4,00 (oficial) | **4,00** | **8,00** |
+| 5,00 (senzitivitate) | **5,00** | **10,00** |
+
+Fiecare combinație (contract × stop-oficial-sau-variantă × RR) raportată ca rând propriu, niciodată agregată. Familia de 6 teste primare din §6 (3 contracte × 2 RR) rămâne neschimbată ca număr — doar valorile țintă erau greșite, nu structura familiei.
 
 ### 4. Regula de tie-break same-bar
 
