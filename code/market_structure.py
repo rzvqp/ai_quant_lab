@@ -233,15 +233,24 @@ def detect_breaks(
     for b_i, block in enumerate(blocks):
         block_swings = [s for s in swings if s.block_index == b_i]
 
+        # PATCH re-armare (Mandat 5.2, regulă ratificată de Statistician): un swing depășit
+        # de corp intră într-o mulțime de CONSUMATE (nivel de bazin). Bucla de activare îl
+        # SARE UPSTREAM, înainte de atribuirea live_*. NICIODATĂ anulare downstream — vechiul
+        # `live_* = None` de după rupere nu ținea, pentru că activarea îl reactiva din același
+        # swing la bara următoare.
+        consumed: set[int] = set()
+
         live_hh: Swing | None = None
         live_ll: Swing | None = None
         live_hl: Swing | None = None
         live_lh: Swing | None = None
 
         for c in range(block.start, block.end):
-            # Activează swing-urile confirmate STRICT înainte de bara curentă.
+            # Referințele active se recompun în fiecare bară din swing-urile NECONSUMATE,
+            # confirmate STRICT înainte de bara curentă (filtru upstream, înainte de atribuire).
+            live_hh = live_ll = live_hl = live_lh = None
             for s in block_swings:
-                if s.confirmed_idx >= c:
+                if s.confirmed_idx >= c or s.idx in consumed:
                     continue
                 if s.label is StructureLabel.HH:
                     live_hh = s
@@ -256,17 +265,17 @@ def detect_breaks(
 
             if live_hh is not None and px > live_hh.price:
                 out.append(_mk_break(c, BreakKind.BOS_BULL, live_hh, px, b_i))
-                live_hh = None
+                consumed.add(live_hh.idx)
             elif live_lh is not None and px > live_lh.price:
                 out.append(_mk_break(c, BreakKind.CHOCH_BULL, live_lh, px, b_i))
-                live_lh = None
+                consumed.add(live_lh.idx)
 
             if live_ll is not None and px < live_ll.price:
                 out.append(_mk_break(c, BreakKind.BOS_BEAR, live_ll, px, b_i))
-                live_ll = None
+                consumed.add(live_ll.idx)
             elif live_hl is not None and px < live_hl.price:
                 out.append(_mk_break(c, BreakKind.CHOCH_BEAR, live_hl, px, b_i))
-                live_hl = None
+                consumed.add(live_hl.idx)
 
     return out
 
