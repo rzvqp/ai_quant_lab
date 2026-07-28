@@ -6,3 +6,7 @@ acquisition_staging/OANDA_XAUUSD_H1.csv -text
 data/market/OANDA_XAUUSD_H4_from_M15_v2.csv -text
 data/market/OANDA_XAUUSD_D1_from_M15_v2.csv -text
 data/market/OANDA_XAUUSD_H1_from_M15_v2.csv -text
+code/market_structure.py -text
+code/liquidity_mechanics.py -text
+code/market_structure.py -text
+code/liquidity_mechanics.py -text
