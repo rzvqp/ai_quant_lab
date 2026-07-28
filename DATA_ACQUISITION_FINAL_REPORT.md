@@ -144,9 +144,11 @@ fără truncare). Ancorare 17:00 NY DST-aware (H4/D1), oră UTC (H1) — ca `cod
 - **Manifest v2.3.1**: injectate `data_file_sha256` + `file_path` pentru H4/D1; status
   AWAITING_GENERATION → **GENERATED_PENDING_RATIFICATION** (NU promovat — ratifică Statisticianul).
   content_hash `534b8925…`.
-- **H1_from_M15_v2**: manifestul înregistrează DOAR H4/D1 (spune explicit că H1 e datasetul nativ). Am
-  generat H1 pe instrucțiunea CEO dar **NU e înregistrat** — ținut în `acquisition_staging/…UNREGISTERED.csv`,
-  hash raportat, în așteptarea unei intrări din partea Statisticianului. Nu l-am injectat/gate-uit.
+- **H1_from_M15_v2**: inițial ținut în staging (neînregistrat). **Hotfix (CTO): H1 derivat e obligatoriu
+  pentru contextul mstrat (S9/S11/S15 au nevoie de `h1_trend_up`, altfel NaN 2011-2021).** Mutat în canonic
+  ca `data/market/OANDA_XAUUSD_H1_from_M15_v2.csv`, fixat `-text` (LF), hash calculat DUPĂ mutare via Python
+  = `524977d02aff3622bf1503d61183d7710fa3e0c3c25436bf9f19e0ccc343f660` (49.580 bare). NU injectat în
+  manifest — Statisticianul îl înregistrează/reconciliează.
 - **Loader v6**: recunoaște cheile context-derivate (din `context_derived_htf.entries`), aceeași
   verificare dublă de hash; livrează fișierul întreg (deja discovery-safe prin construcție) DOAR când e
   ratificat; acum GENERATED_PENDING_RATIFICATION → sigilat.
