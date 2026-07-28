@@ -57,4 +57,4 @@ Am verificat fiecare din primitivele Modulelor 5/6/7 individual, față de cele 
 
 **LM-001 rămâne blocat prin decizia CTO** (biblioteca completă înainte de orice simulare) — nu prin vreo problemă statistică; oracolul rămâne ratificat, execuția rămâne asignată VE, doar secvențierea se amână. **Holdout SEALED, neatins.**
 
-**VE implementează după publicare. Manifestul se incrementează.**
+**VE implementează după publicare. Manifestul incrementat la v2.6.1 (commit `2fb948f`, `alpha-automation-v1`).**
