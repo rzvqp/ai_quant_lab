@@ -398,13 +398,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.4.1", "commit": "ab0e823", "content": "H1_from_M15_v2 registered and ratified (file_path/hash later found to be incorrect -- see v2.4.2); commit-citation correction recorded (an order incorrectly cited 4e1f550 as v2.4.0 -- it is v2.2.0, three mandates earlier)"},
             {"version": "2.4.2", "commit": "2c7b2c7", "content": "Hotfix: reconciles the v2.4.1 self-contradiction on H1_from_M15_v2 (registered as CONTEXT_DERIVED_VALIDATED with a staging/UNREGISTERED file_path while another changelog said unregistered) -- Data Acquisition relocated the file (commit d99d241) within the same hotfix window, hash independently re-verified at the new path (byte-identical), entry promoted to CONTEXT_DERIVED_VALIDATED with the correct canonical path; added mechanical consistency checks to this generator (validate_context_derived_consistency)"},
             {"version": "2.5.0", "commit": "da7ca85", "content": "Registers legacy_428_atr_persistence_verdicts (367 ZERO_ALPHA_BASE_RATE / 58 REGIME_PERSISTENCE_FAILURE / 3 EXTREME_CONCENTRATION_FRAGILITY_wo1) and the deduplication_prescreening_rule (PROJECT_AUDIT.md D11/SSF); confirms M5 stays in the repository, its own AWAITING_REGIME_MAP status unchanged, while the separate M5-aligned HTF context effort is CANCELLED (CTO decision) -- distinct facts, not to be conflated"},
-            {"version": "2.5.1", "commit": "PENDING (this version)", "content": "Ratifies 6 of 7 market_structure/liquidity_mechanics design decisions (D1/D2/D4/D5/D6/D7); holds D3's cost-acceptability pending a real-data blind-window measurement (principle ratified, synthetic 16-bar estimate explicitly not sufficient); pre-registers LM-001 (Liquidity Basin Wick-Sweep-Reject), a new namespace chosen instead of the requested 'E001_v2' naming to avoid implying resuscitation of a REJECTED candidate"},
+            {"version": "2.5.1", "commit": "f08c254", "content": "Ratifies 6 of 7 market_structure/liquidity_mechanics design decisions (D1/D2/D4/D5/D6/D7); holds D3's cost-acceptability pending a real-data blind-window measurement (principle ratified, synthetic 16-bar estimate explicitly not sufficient); pre-registers LM-001 (Liquidity Basin Wick-Sweep-Reject), a new namespace chosen instead of the requested 'E001_v2' naming to avoid implying resuscitation of a REJECTED candidate"},
+            {"version": "2.5.2", "commit": "PENDING (this version)", "content": "Closes E004's fill-rate PENDING_CONTROL note: Flow A executed STATISTICIAN_E004_FILL_CONTROL_SPEC_v1.0.md exactly (commit b4d5f89) -- control rate 0.850 falls in the pre-registered (0.512,0.886) band, mechanical label OBSERVED_NOT_DISTINCTIVE, read off the table not chosen post-hoc"},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.1",
+        "version": "2.5.2",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -431,6 +432,15 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_2": (
+            "Closes candidate_verdicts.verdicts.E004.fill_rate_note, discovered mid-work merging remote "
+            "changes: Flow A executed STATISTICIAN_E004_FILL_CONTROL_SPEC_v1.0.md exactly and mechanically "
+            "(commit b4d5f89) -- E004 fill 0.7148 (n=1164) vs. generic-gap control 0.8500 (n=1660), Fisher "
+            "exact one-sided p=1.000 (does not reject; E004 fills LESS than control, not more). Control "
+            "rate falls in the pre-registered (0.512,0.886) band -> OBSERVED_NOT_DISTINCTIVE, read off the "
+            "table fixed before this run, not chosen after seeing the number. Confirms the original "
+            "reserve against CONFIRMED_STRUCTURAL_ANOMALY was correct."
         ),
         "changelog_v2_5_1": (
             "Registers market_structure_ratification: 6 of 7 market_structure.py/liquidity_mechanics.py "
@@ -646,25 +656,29 @@ def build_manifest() -> dict[str, Any]:
                 "E004": {"label": "REJECTED", "reason_code": "NEGATIVE_EXPECTANCY_UNDER_COST",
                           "scope": "Rejects the SS9.4.1 parameterization only -- not the underlying FVG follow-through concept.",
                           "fill_rate_note": {
-                              "observed": {"bear": 0.718, "bull": 0.736, "correction": 0.662},
-                              "status": "PENDING_CONTROL",
-                              "reason": (
+                              "observed_mandate_4_1": {"bear": 0.718, "bull": 0.736, "correction": 0.662},
+                              "control_mandate_4_2": {
+                                  "source": "Flow A, commit b4d5f89, executing STATISTICIAN_E004_FILL_CONTROL_SPEC_v1.0.md (b02c5a1) exactly, mechanically",
+                                  "e004_fill_pooled": 0.7148, "e004_n": 1164,
+                                  "control_fill_pooled": 0.8500, "control_n": 1660,
+                                  "fisher_exact_one_sided_p": 1.000,
+                                  "note": "E004 fills LESS than the generic-gap control (0.7148 vs 0.8500), not more.",
+                              },
+                              "status": "OBSERVED_NOT_DISTINCTIVE",
+                              "status_derivation": (
+                                  "Control rate 0.850 falls within the pre-registered (0.512, 0.886) band -> "
+                                  "OBSERVED_NOT_DISTINCTIVE, read mechanically off the pre-registered table, not "
+                                  "chosen after seeing the result (the table was fixed before this run). Did NOT "
+                                  "reach OBSERVED_BELOW_BASELINE (would require control >=0.886) despite the "
+                                  "point estimate showing E004 below control -- the pre-registered band, not the "
+                                  "raw point estimate, is the deciding rule."
+                              ),
+                              "reason_for_original_reserve": (
                                   "Gaps in general are known to fill often over a generous horizon on any "
                                   "instrument/timeframe; without a baseline fill rate for a comparable, non-"
-                                  "FVG-selected gap over the same 50-bar horizon and regimes, this cannot be "
-                                  "distinguished from 'gaps just fill, E004 shows nothing distinctive'. NOT "
-                                  "labeled CONFIRMED_STRUCTURAL_ANOMALY without that control."
-                              ),
-                              "required_control": (
-                                  "Generic 3-bar imbalances (E012 detect_fvgs), no 13:30-15:30 UTC window "
-                                  "restriction, no first-of-session restriction, same 50-bar horizon, same 3 "
-                                  "regimes, comparable n."
-                              ),
-                              "preregistered_interpretation": (
-                                  "Control near 0.66-0.74 (e.g. within +-0.10) -> OBSERVED_NOT_DISTINCTIVE. "
-                                  "Control well below (e.g. <0.40-0.50, formal two-proportion test) -> "
-                                  "CONFIRMED_STRUCTURAL_ANOMALY becomes a live candidate, still pending final "
-                                  "Statistician verdict, not automatic."
+                                  "FVG-selected gap over the same 50-bar horizon and regimes, the raw E004 rate "
+                                  "could not be distinguished from 'gaps just fill, E004 shows nothing "
+                                  "distinctive' -- confirmed correct by the control result itself."
                               ),
                           }},
             },
