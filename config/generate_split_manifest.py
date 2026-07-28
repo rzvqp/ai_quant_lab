@@ -397,13 +397,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.4.0", "commit": "9286981", "content": "E001/E002/E004 candidate verdicts; H4/D1 ratified to CONTEXT_DERIVED_VALIDATED"},
             {"version": "2.4.1", "commit": "ab0e823", "content": "H1_from_M15_v2 registered and ratified (file_path/hash later found to be incorrect -- see v2.4.2); commit-citation correction recorded (an order incorrectly cited 4e1f550 as v2.4.0 -- it is v2.2.0, three mandates earlier)"},
             {"version": "2.4.2", "commit": "2c7b2c7", "content": "Hotfix: reconciles the v2.4.1 self-contradiction on H1_from_M15_v2 (registered as CONTEXT_DERIVED_VALIDATED with a staging/UNREGISTERED file_path while another changelog said unregistered) -- Data Acquisition relocated the file (commit d99d241) within the same hotfix window, hash independently re-verified at the new path (byte-identical), entry promoted to CONTEXT_DERIVED_VALIDATED with the correct canonical path; added mechanical consistency checks to this generator (validate_context_derived_consistency)"},
-            {"version": "2.5.0", "commit": "PENDING (this version)", "content": "Registers legacy_428_atr_persistence_verdicts (367 ZERO_ALPHA_BASE_RATE / 58 REGIME_PERSISTENCE_FAILURE / 3 EXTREME_CONCENTRATION_FRAGILITY_wo1) and the deduplication_prescreening_rule (PROJECT_AUDIT.md D11/SSF); confirms M5 stays in the repository, its own AWAITING_REGIME_MAP status unchanged, while the separate M5-aligned HTF context effort is CANCELLED (CTO decision) -- distinct facts, not to be conflated"},
+            {"version": "2.5.0", "commit": "da7ca85", "content": "Registers legacy_428_atr_persistence_verdicts (367 ZERO_ALPHA_BASE_RATE / 58 REGIME_PERSISTENCE_FAILURE / 3 EXTREME_CONCENTRATION_FRAGILITY_wo1) and the deduplication_prescreening_rule (PROJECT_AUDIT.md D11/SSF); confirms M5 stays in the repository, its own AWAITING_REGIME_MAP status unchanged, while the separate M5-aligned HTF context effort is CANCELLED (CTO decision) -- distinct facts, not to be conflated"},
+            {"version": "2.5.1", "commit": "PENDING (this version)", "content": "Ratifies 6 of 7 market_structure/liquidity_mechanics design decisions (D1/D2/D4/D5/D6/D7); holds D3's cost-acceptability pending a real-data blind-window measurement (principle ratified, synthetic 16-bar estimate explicitly not sufficient); pre-registers LM-001 (Liquidity Basin Wick-Sweep-Reject), a new namespace chosen instead of the requested 'E001_v2' naming to avoid implying resuscitation of a REJECTED candidate"},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.0",
+        "version": "2.5.1",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -430,6 +431,19 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_1": (
+            "Registers market_structure_ratification: 6 of 7 market_structure.py/liquidity_mechanics.py "
+            "design decisions ratified (D1 lookahead, D2 tie-break, D4 basin-no-survive-gap, D5 M15_v2-"
+            "only scope, D6 current-bar wick-sweep, D7 basin-consumed); D3 (block-boundary reset) ratified "
+            "in principle only, cost-acceptability withheld pending a real-data blind-window measurement "
+            "(a synthetic 16-bar estimate is explicitly not sufficient) -- a decision threshold (<=1%/1-5%/"
+            ">5% of a block's own discovery bar count) specified since none was given. Registers "
+            "lm_001_preregistration: a new hypothesis (renamed from the requested 'E001_v2_Wick_Sweep_"
+            "Execution' to avoid implying resuscitation of a REJECTED candidate at a narrower "
+            "parameterization) with full execution layer, family size, statistical test, pre-registered "
+            "success/failure criteria, and an explicit insufficient-N rule (reusing the established n>=25 "
+            "convention, TESTABLE BUT INSUFFICIENT EVIDENCE rather than REJECTED on low data)."
         ),
         "changelog_v2_5_0": (
             "Registers legacy_428_atr_persistence_verdicts: granular REJECTED labels for the 428 ATR "
@@ -736,6 +750,71 @@ def build_manifest() -> dict[str, Any]:
             "These are two distinct facts about two distinct things -- do not conflate M5's own status with "
             "the cancelled context-derivation project."
         ),
+        "market_structure_ratification": {
+            "source": "CEO Mandate 3.9 -- reference modules market_structure.py/liquidity_mechanics.py, draft, synthetic-data-tested only, not in this repository. Statistician has not read the modules themselves; ratification is against the seven decisions as described.",
+            "corrected_reading": "D3 loses 8 structures TOTAL (4 blocks x 2 swing types), not 8 per block boundary -- confirmed correct before building on it; the order as relayed carried the misreading.",
+            "decisions": {
+                "D1_lookahead": {"status": "RATIFIED", "note": "confirmed_idx=idx+k; breaks use only confirmed_idx<c. No safer construction exists."},
+                "D2_tiebreak": {"status": "RATIFIED", "note": "Strict inequality both sides. Mentioned-not-implemented alternative (strict-left/non-strict-right) requires its own synthetic verification before ever replacing this, not a silent swap."},
+                "D3_block_reset": {
+                    "status": "PRINCIPLE_RATIFIED_COST_PENDING",
+                    "principle_note": "Reset at block boundary, first-per-type UNCLASSIFIED, is the only lookahead-safe construction given the already-established discovery-block quarantine architecture -- no safer alternative to ratify against.",
+                    "cost_note": "NOT ratified on the synthetic 16-bar estimate (both swings UNCLASSIFIED, zero basins) -- too small to say anything about real swing density.",
+                    "required_measurement": "Per discovery block (M15_v2 segments, excluding 2022-2026 as SAME-WINDOW-RESAMPLED): total swings detected by type, count remaining UNCLASSIFIED, and the blind-window bar count from the block's own discovery start to the first CLASSIFIED structure, reported both as an absolute bar count and as a percentage of that block's own discovery bar count.",
+                    "decision_threshold": "blind window <=1% of block's discovery bars -> ratified low-cost; 1-5% -> ratified but requires mandatory per-block disclosure in any downstream hypothesis; >5% -> NOT ratified as specified, requires redesign (e.g. reconsidering k or an alternative quarantine-safe reference bootstrap) before real-data use.",
+                },
+                "D4_basin_no_survive_gap": {"status": "RATIFIED", "note": "Consistent with D3 -- a basin that cannot exist without a reference that doesn't cross quarantine cannot survive across it either."},
+                "D5_no_m5_m15_mapping": {"status": "RATIFIED", "note": "Scopes LM-001 to M15_v2 discovery blocks only -- NOT M5 -- until/unless a working cross-resolution structure mapping exists."},
+                "D6_wick_sweep_current_bar": {"status": "RATIFIED", "note": "low[c]<basin AND close[c]>basin (support; symmetric for resistance), entirely on bar c, no lookahead."},
+                "D7_basin_consumed": {"status": "RATIFIED", "note": "Matured basin consumed, not re-armed. Mentioned-not-implemented re-arming alternative needs its own verification before ever replacing this, same discipline as D2."},
+            },
+            "full_ratification_document": "ai_quant_lab statistician/STATISTICIAN_MARKET_STRUCTURE_RATIFICATION_AND_PREREG_v1.0.md",
+        },
+        "lm_001_preregistration": {
+            "name": "LM-001 (Liquidity Basin Wick-Sweep-Reject)",
+            "naming_note": (
+                "CEO's mandate requested 'E001_v2_Wick_Sweep_Execution'; Statistician objected to the name, "
+                "not the hypothesis. E001 was REJECTED at its specific parameterization (Asia-range sweep, "
+                "London-open reversal, hourly window, session clause) -- a generic any-basin/any-session/no-"
+                "window wick-sweep detector is structurally broader, not a revision. Naming it _v2 would "
+                "misleadingly suggest resuscitation of a rejected candidate. LM (liquidity mechanics) is a "
+                "new namespace, outside the already-claimed E0xx (all 40 original V0s) and S0xx (S1-S51) "
+                "spaces. The conceptual kinship to E001 (shared sweep-and-reject mechanism) is recorded as "
+                "PROVENANCE, not version."
+            ),
+            "scope": "M15_v2 discovery blocks only (D5), excluding the 2022-2026 regime as SAME-WINDOW-RESAMPLED, same 3 regimes as the SS9.4.1 structural contracts.",
+            "execution_layer": {
+                "entry": "next-bar-open after the maturation (wick-sweep) bar, direction determined mechanically by basin type (support matured -> long, resistance matured -> short) -- not a free choice, does not multiply the family.",
+                "stop_official": 4.00, "stop_sensitivity": 5.00, "cost_round_trip": 0.40,
+                "targets": {
+                    "stop_4.00": {"RR_1.5": 6.00, "RR_2.0": 8.00},
+                    "stop_5.00": {"RR_1.5": 7.50, "RR_2.0": 10.00},
+                },
+                "break_even_thresholds": {
+                    "formula": "w* = (1 + cost/S) / (RR + 1)",
+                    "stop_4.00": {"RR_1.5": 0.44, "RR_2.0": 0.3667},
+                    "stop_5.00": {"RR_1.5": 0.432, "RR_2.0": 0.36},
+                },
+                "tie_break": "worst-case (stop-first) default, mandatory worst/best bracket per STATISTICIAN_M5_INDETERMINACY_THRESHOLD_SPEC_v1.0.md SS7c for any combination whose status depends on treatment.",
+            },
+            "family": "2 members (1 detector x 2 RR); direction is mechanical, not a free parameter, so it does not multiply the family; the 5.00 stop is a sensitivity variant, not a third family member.",
+            "statistical_test": "Exact one-sided binomial (ratified SS7), pooled trial counts across the 3 tested regimes per RR member, BH-FDR at alpha=0.05 over the family of 2.",
+            "success_failure_criteria_preregistered": {
+                "success": "Passes BH-FDR at alpha=0.05 over the family of 2, on pooled counts across ELIGIBLE regimes (see insufficient_n_rule).",
+                "failure": "Does not pass BH-FDR, PROVIDED at least one regime had sufficient n -- a failure on insufficient data is a different category, not a statistical failure.",
+            },
+            "insufficient_n_rule": (
+                "Reused convention: n>=25 (Discovery Screen V1 / persistence-leaderboard threshold), not a "
+                "new number. Per-regime: <25 qualifying events -> that regime marked INSUFFICIENT_N for this "
+                "hypothesis, EXCLUDED from the pooled count (never treated as zero or as failure), fraction "
+                "disclosed explicitly. Pooled: if total n across eligible regimes stays <25 after exclusions, "
+                "the whole RR member's verdict is TESTABLE BUT INSUFFICIENT EVIDENCE (established vocabulary, "
+                "e.g. DC-0004) -- NOT REJECTED. If both RR members land here, the whole LM-001 line gets this "
+                "verdict, with the D3 blind window recorded explicitly as the likely primary cause, not hidden."
+            ),
+            "workflow_confirmed": "Validation Engine implements after this ratification; a different division (not the producer) verifies conformance per CROSS_VERIFICATION_SPEC; execution on real data awaits both -- not triggered by this registration. D3's cost measurement is a separate precondition, not gated by this workflow but not yet satisfied either.",
+            "full_preregistration_document": "ai_quant_lab statistician/STATISTICIAN_MARKET_STRUCTURE_RATIFICATION_AND_PREREG_v1.0.md",
+        },
         "timeframes": {
             "M15": {
                 "bar_seconds": M15_BAR_SECONDS,
