@@ -53,4 +53,4 @@ Aveai dreptate — asimetria era corectă dar nescrisă. O scriu, cu precedent d
 
 **Nu am rulat niciun backtest, nu am atins date reale dincolo de citirea directă a codului deja commit-uit. Independent de calibrarea S8 aflată în derulare la VE (n≈21.000, LM-001) — subiecte disjuncte, cum ai confirmat.**
 
-**Manifestul se incrementează la v2.5.6 după publicarea acestui document.** Statistician se oprește aici.
+**Manifestul incrementat la v2.5.6 (commit `00dfa6f`, `alpha-automation-v1`), după publicarea acestui document.** Statistician se oprește aici.
