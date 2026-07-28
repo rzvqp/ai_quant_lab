@@ -1,7 +1,7 @@
 # STATISTICIAN — CLARIFICARE + CONTRACT DE EXECUȚIE SEPARAT (E001/E002/E004)
 
-**Document ID:** STAT-EXEC-CONTRACT-STRUCTV1-v1.1
-**Data:** 2026-07-27 (v1.0) · **Amendat:** 2026-07-27 (v1.1 — PATCH, patru corecturi decise de CTO după citirea integrală a Flow A, commit `3e8821b`)
+**Document ID:** STAT-EXEC-CONTRACT-STRUCTV1-v1.2
+**Data:** 2026-07-27 (v1.0) · **Amendat:** 2026-07-27 (v1.1 — PATCH, patru corecturi decise de CTO după citirea integrală a Flow A, commit `3e8821b`) · **Amendat:** 2026-07-27 (v1.2 — §7 nou, statistic-testul ratificat, omisiune reală a v1.1)
 **Nu modifică V1-urile.** E001/E002/E004 rămân exact cum sunt înghețate — binare, fără R, fără stop. Acest document specifică un contract de execuție SEPARAT, care simulează tranzacții în jurul evenimentului lor structural deja înghețat, fără să-l redefinească.
 
 ---
@@ -73,6 +73,15 @@ Fiecare combinație (contract × stop-oficial-sau-variantă × RR) raportată ca
 ### 6. Corecție de testare multiplă — familia se declară acum
 
 Familia primară: 3 contracte × 2 RR = **6 teste primare** (stopul-variantă de 5,00 e senzitivitate, nu un test suplimentar în familie). Corecție BH-FDR obligatorie peste această familie de 6, pragul declarat înainte de a atinge date, consecvent cu convenția deja stabilită în laborator — nu Bonferroni simplu, dat fiind corelația probabilă între cele trei contracte (aceeași fereastră de piață, posibil aceeași populație parțial suprapusă).
+
+### 7. Statistic-testul — RATIFICAT [v1.2], omisiune reală în v1.1
+
+Flow A a semnalat corect că v1.1 nu specifica testul și a ales, declarat explicit înainte de a-l aplica tacit, un **binomial exact, one-sided**, contra pragului de break-even ajustat la cost. **Ratific — vezi `STATISTICIAN_STRUCTURAL_V1_FINAL_VERDICT_v1.0.md` pentru raționamentul complet.**
+
+- **Prag:** `w* = (1 + cost/S) / (RR + 1)` — la stop 4,00/cost 0,4: RR1:1 → 0,550; RR1:2 → 0,367. La stop 5,00: RR1:1 → 0,540; RR1:2 → 0,360.
+- **Test:** `P(X ≥ k | n, w*)` binomial exact (ex. `scipy.stats.binom.sf(k-1, n, w*)`) — NU aproximare normală, validă indiferent de n.
+- **Familia FDR (§6, neschimbată ca număr = 6):** numărătorii se pun laolaltă (pooled) peste toate regimurile testate pentru fiecare pereche contract×RR, ÎNAINTE de test — regimul e o defalcare descriptivă de robustețe, nu o multiplicare a testelor (consecvent cu regula deja stabilită pentru programul celor 4 regimuri).
+- **Condiție de valabilitate, pentru orice reutilizare viitoare a acestui test sub acest contract:** asumpția de independență (Bernoulli iid) e rezonabilă la ≤1 intrare/sesiune/zi per contract — dacă o suită viitoare are frecvență mult mai mare sau poziții suprapuse, independența trebuie reexaminată înainte de a reutiliza testul necondiționat.
 
 ---
 
