@@ -68,4 +68,4 @@ Două motive independente, niciunul suficient singur pentru o respingere complet
 
 ---
 
-**Manifestul se incrementează la v2.5.5 după publicarea acestui document, nu înainte.** Nu am rulat niciun test, nu am atins holdout-ul, nu am construit tranzacții reale. Statistician se oprește aici.
+**Manifestul incrementat la v2.5.5 (commit `1d03e4f`, `alpha-automation-v1`), după publicarea acestui document, nu înainte.** Nu am rulat niciun test, nu am atins holdout-ul, nu am construit tranzacții reale. Statistician se oprește aici.
