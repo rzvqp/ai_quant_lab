@@ -126,6 +126,35 @@ M15_v2, 3000 la M5) și jumătățile sigilate excluse. Coordonatele vin verbati
   jumătate sigilată NU apare (dovada că segmentarea e reală), H1 aruncă, identificator ambiguu aruncă distinct.
 - Commit `alpha-automation-v1`. H1 rămâne blocat; Research Lab blocat până la harta de regim H1.
 
+## 5e. Mandat 2.7 — context HTF derivat (loader v6, manifest v2.3.1)
+
+Generat H1/H4/D1 prin resample din M15_v2 (`57f4ed95…`) cu regula: **o bară HTF există doar dacă
+fereastra ei calendar-aliniată e integral într-un SINGUR bloc de descoperire M15_v2** (fără straddle,
+fără truncare). Ancorare 17:00 NY DST-aware (H4/D1), oră UTC (H1) — ca `code/resample_ny.py`; format
+7 coloane cu `sub`.
+
+| Derivat | Cu regula | Fără regula | Eliminate (straddle+afară) | sha256 |
+|---|---|---|---|---|
+| H4_from_M15_v2 | 12.832 | 23.186 | 10.354 (7+10.347) | `f8f23f6e…ffee5` |
+| D1_from_M15_v2 | 2.141 | 3.878 | 1.737 (7+1.730) | `dad51764…492f` |
+| H1_from_M15_v2 (NEÎNREGISTRAT) | 49.580 | 89.549 | 39.969 (6+39.963) | `524977d0…f660` |
+
+- Câte 1 bară straddle eliminată per graniță de bloc. Acoperire în 4 blocuri (2011-13, 2016-18,
+  2020-21, 2022-25) **cu goluri** între — raportată non-continuu (D1: 564/576/275/726 bare per bloc).
+- **Manifest v2.3.1**: injectate `data_file_sha256` + `file_path` pentru H4/D1; status
+  AWAITING_GENERATION → **GENERATED_PENDING_RATIFICATION** (NU promovat — ratifică Statisticianul).
+  content_hash `534b8925…`.
+- **H1_from_M15_v2**: manifestul înregistrează DOAR H4/D1 (spune explicit că H1 e datasetul nativ). Am
+  generat H1 pe instrucțiunea CEO dar **NU e înregistrat** — ținut în `acquisition_staging/…UNREGISTERED.csv`,
+  hash raportat, în așteptarea unei intrări din partea Statisticianului. Nu l-am injectat/gate-uit.
+- **Loader v6**: recunoaște cheile context-derivate (din `context_derived_htf.entries`), aceeași
+  verificare dublă de hash; livrează fișierul întreg (deja discovery-safe prin construcție) DOAR când e
+  ratificat; acum GENERATED_PENDING_RATIFICATION → sigilat.
+- `mypy --strict` curat; teste **28/28** — nicio bară HTF nu traversează o graniță (fiecare graniță),
+  count == regula, bară-discovery-pură corectă, chei recunoscute dar sigilate, hash + un-byte respins.
+
+**Research Lab rămâne blocat** până când Statisticianul promovează H4/D1 la CONTEXT_DERIVED_VALIDATED.
+
 ## 6. Amplitudinea barei M5 — pragul minim de stop §9 (CHECK 6)
 
 Mediană high-low (puncte): TOATE **1,400**, IQR [0,815–2,655], p90 4,995. Per sesiune: asia 1,220 ·

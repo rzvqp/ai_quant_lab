@@ -179,6 +179,88 @@ def test_bad_hash_manifest_and_absent_manifest_fail_closed() -> None:
             SM.load_manifest(os.path.join(td, "nope.json"))
 
 
+# ---------- Mandate 2.7: derived HTF context (H4_from_M15_v2 / D1_from_M15_v2) ----------
+
+CTX = MAN["context_derived_htf"]
+CTX_BLOCKS = [(b["start_epoch"], b["end_epoch"]) for b in CTX["m15_v2_discovery_blocks"]]
+
+
+def _read_htf(entry_key: str) -> list[tuple[int, float, float, float, float, float, int]]:
+    fp = CTX["entries"][entry_key]["file_path"]
+    rows = []
+    with open(os.path.join(_ROOT, fp), newline="") as f:
+        r = csv.reader(f)
+        header = next(r)
+        assert header == ["time", "open", "high", "low", "close", "volume", "sub"], header
+        for ln in r:
+            if ln and ln[0].strip():
+                rows.append((int(ln[0]), float(ln[1]), float(ln[2]), float(ln[3]),
+                             float(ln[4]), float(ln[5]), int(ln[6])))
+    return rows
+
+
+@pytest.mark.parametrize("key,bar_sec", [("H4_from_M15_v2", 14400), ("D1_from_M15_v2", 86400)])
+def test_no_htf_bar_straddles_a_discovery_boundary(key: str, bar_sec: int) -> None:
+    # every delivered HTF bar's window must lie fully inside ONE discovery block; i.e. no bar that
+    # would straddle any block boundary exists in the file (covers every boundary, not just the first).
+    rows = _read_htf(key)
+    for t, *_rest in rows:
+        assert any(s <= t and t + bar_sec <= e for s, e in CTX_BLOCKS), \
+            f"{key}: bar {t} straddles a discovery boundary but is present"
+
+
+@pytest.mark.parametrize("key", ["H4_from_M15_v2", "D1_from_M15_v2"])
+def test_coverage_has_gaps_between_blocks(key: str) -> None:
+    # delivered coverage is NOT continuous: each block contributes a contiguous run, with real gaps
+    # (embargo + sealed + other regimes) between blocks -- at least 3 gaps for 4 blocks.
+    ts = [t for t, *_ in _read_htf(key)]
+    blocks_hit = sum(1 for s, e in CTX_BLOCKS if any(s <= t < e for t in ts))
+    gaps = sum(1 for i in range(1, len(ts)) if ts[i] - ts[i - 1] > 7 * 86400)
+    assert blocks_hit >= 3 and gaps >= blocks_hit - 1, f"{key}: expected gaps between blocks"
+
+
+@pytest.mark.parametrize("key", ["H4_from_M15_v2", "D1_from_M15_v2"])
+def test_bar_count_matches_generation_record(key: str) -> None:
+    assert len(_read_htf(key)) == CTX["entries"][key]["generation"]["bars_with_rule"]
+
+
+def test_a_pure_discovery_D1_bar_exists_and_aggregates_correctly() -> None:
+    # pick a D1 bar deep inside block0 and verify OHLCV == aggregate of its constituent M15_v2 bars
+    rows = _read_htf("D1_from_M15_v2")
+    b0s, b0e = CTX_BLOCKS[0]
+    sample = next(r for r in rows if b0s + 30 * 86400 < r[0] < b0e - 30 * 86400)  # well inside block0
+    t, o, h, l, c, v, sub = sample
+    m15 = pd.read_csv(os.path.join(_ROOT, MAN["timeframes"]["M15_v2"]["file_path"]))
+    comp = m15[(m15["time"] >= t) & (m15["time"] < t + 86400)]
+    assert len(comp) == sub and sub > 0
+    assert abs(o - comp.iloc[0]["open"]) < 1e-9
+    assert abs(c - comp.iloc[-1]["close"]) < 1e-9
+    assert abs(h - comp["high"].max()) < 1e-9
+    assert abs(l - comp["low"].min()) < 1e-9
+    assert abs(v - comp["volume"].sum()) < 1e-6
+
+
+@pytest.mark.parametrize("key", ["H4_from_M15_v2", "D1_from_M15_v2"])
+def test_context_key_recognized_but_sealed_pending_ratification(key: str) -> None:
+    # recognized (NOT IdentifierError) but sealed on status GENERATED_PENDING_RATIFICATION
+    assert CTX["entries"][key]["status"] == "GENERATED_PENDING_RATIFICATION"
+    with pytest.raises(C.HoldoutConfigError):
+        C.load(key, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+
+
+@pytest.mark.parametrize("key", ["H4_from_M15_v2", "D1_from_M15_v2"])
+def test_context_file_hash_matches_manifest_and_one_byte_mod_rejected(key: str) -> None:
+    fp = CTX["entries"][key]["file_path"]
+    exp = CTX["entries"][key]["data_file_sha256"]["value"]
+    SM.verify_data_file(_ROOT, fp, exp)  # matches
+    with tempfile.TemporaryDirectory() as td:
+        dst = os.path.join(td, "c.csv")
+        shutil.copyfile(os.path.join(_ROOT, fp), dst)
+        b = bytearray(open(dst, "rb").read()); b[len(b) // 2] ^= 0x01; open(dst, "wb").write(b)
+        with pytest.raises(SM.ManifestError):
+            SM.verify_data_file(td, "c.csv", exp)
+
+
 def _print_breakdown() -> None:
     for tf in ("M15_v2", "M5"):
         _, m = C.load(tf, data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
