@@ -18,14 +18,16 @@ aparține acestui modul.
 
 ÎNTREBĂRI DESCHISE PENTRU STATISTICIAN (neratificate):
 
-  Q1 (reset D3_bis)  Cum se resetează PDH/PDL la o graniță de bloc de descoperire?
-     O „zi anterioară" a cărei bară traversează banda de carantină NU are un
-     precedent valid — se marchează nivelul UNAVAILABLE la începutul fiecărui bloc,
-     ca analogul D3? CEO a numit explicit această întrebare.
-  Q2 (săptămână tăiată de graniță)  Ce se întâmplă cu o săptămână tăiată de o graniță
-     de bloc? Weekly High/Low se calculează pe săptămâna parțială din interiorul
-     blocului, sau se marchează UNAVAILABLE până la prima săptămână completă din bloc?
-     CEO a numit explicit această întrebare.
+  D3_bis (RATIFICAT — STAT-LM001-GEOMETRY-MK03-MK04-v1.0)  Memoria zilnică (PDH/PDL) se
+     RESETEAZĂ complet la fiecare graniță de bloc de descoperire; prima zi din segmentul
+     nou e UNCLASSIFIED — nu există „zi precedentă" validă în bloc, iar a împrumuta una din
+     afară ar încălca arhitectura de carantină. Analogul exact al D3, aceeași motivație.
+  D-WEEK (RATIFICAT)  O săptămână trunchiată de o graniță PRODUCE un Weekly High/Low
+     (calculat exclusiv pe barele active din bloc, fără împrumut extern), DAR poartă
+     obligatoriu `days_contributing` (1-5) și `completeness` ("COMPLETE"=5 zile / "PARTIAL"=<5).
+     Consumatorii din aval NU pot trata silent un nivel PARTIAL identic cu unul COMPLETE —
+     fie îl exclud, fie îl tratează ca strat separat declarat explicit. Aceeași disciplină ca
+     D3/D4: discontinuitățile de graniță trebuie vizibile, nu netezite.
   Q3 (definiția zilei/săptămânii)  Granița de zi = 00:00 UTC (ca Path A la DC-0004)?
      Granița de săptămână = luni 00:00 UTC? Fus fix, fără DST? Trebuie declarat, nu deduc.
   Q4 (disponibilitate/lag, analog D1)  PDH e cunoscut abia de la deschiderea zilei
@@ -65,6 +67,12 @@ class ReferenceLevel:
 
     block_index: int
 
+    days_contributing: int | None = None
+    """Doar Weekly (D-WEEK): zile active care au contribuit (1-5). None pentru PDH/PDL."""
+
+    completeness: str | None = None
+    """Doar Weekly (D-WEEK): "COMPLETE" (5 zile) sau "PARTIAL" (<5). None pentru PDH/PDL."""
+
 
 def compute_prior_day_levels(
     high: Sequence[float],
@@ -76,9 +84,10 @@ def compute_prior_day_levels(
 
     `day_index[i]` = eticheta de zi calendaristică a barei i (Q3: 00:00 UTC?).
 
-    NEIMPLEMENTAT — depinde de Q1 (reset D3_bis), Q3 (granița de zi), Q4 (lag).
+    NEIMPLEMENTAT — D3_bis RATIFICAT (reset complet la graniță, prima zi UNCLASSIFIED),
+    dar Q3 (granița de zi/00:00 UTC?) și Q4 (lag de disponibilitate) rămân neratificate.
     """
-    raise NotImplementedError("MK-04 neratificat: Q1 (reset D3_bis), Q3 (zi), Q4 (lag)")
+    raise NotImplementedError("MK-04: D3_bis ratificat; Q3 (granița de zi) + Q4 (lag) neratificate")
 
 
 def compute_prior_week_levels(
@@ -87,8 +96,10 @@ def compute_prior_week_levels(
     week_index: Sequence[int],
     blocks: Sequence[Block],
 ) -> list[ReferenceLevel]:
-    """Weekly High/Low per săptămână, cu tratamentul săptămânii tăiate de graniță.
+    """Weekly High/Low per săptămână. Fiecare nivel poartă `days_contributing` (1-5) și
+    `completeness` COMPLETE/PARTIAL (D-WEEK) — o săptămână trunchiată produce nivel, dar marcat.
 
-    NEIMPLEMENTAT — depinde de Q2 (săptămână tăiată), Q3 (granița de săptămână), Q4 (lag).
+    NEIMPLEMENTAT — D-WEEK RATIFICAT (nivel cu days_contributing + completeness), dar
+    Q3 (granița de săptămână) și Q4 (lag) rămân neratificate.
     """
-    raise NotImplementedError("MK-04 neratificat: Q2 (săptămână tăiată), Q3, Q4")
+    raise NotImplementedError("MK-04: D-WEEK ratificat; Q3 (granița de săptămână) + Q4 (lag) neratificate")

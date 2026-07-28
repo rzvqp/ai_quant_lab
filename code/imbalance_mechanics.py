@@ -26,9 +26,17 @@ CONCEPTE (definiții ICT/SMC, pure geometrie de preț):
      Se ratifică aceeași convenție ca D1 (consumatorii forward folosesc confirmed_idx)?
   Q2 (graniță de bloc, analog D3)  Supraviețuiește un FVG unei granițe de bloc de
      descoperire? Se resetează mașina de stare ca la D3, sau imbalanțele au altă regulă?
-  Q3 (BPR „aceeași fereastră de preț")  Ce înseamnă exact suprapunere pentru BPR —
-     intersecție de intervale nevidă? un prag minim de suprapunere (%)? egalitate de
-     limite? CEO a numit explicit această întrebare ca nedecisă.
+  D-BPR (RATIFICAT — STAT-LM001-GEOMETRY-MK03-MK04-v1.0)  BPR = suprapunere între un FVG
+     bullish și unul bearish într-o fereastră de MAXIM 3 bare. Toleranța NU e fixă la 0,00:
+     se NUMĂRĂ evenimentele la trei toleranțe — 0,00 / 0,10 / 0,25 dolari — pur descriptiv.
+     REGULA DE ÎNGHEȚ (fixată ÎNAINTE de orice numărătoare, ca să nu fie aleasă după cifre):
+     se îngheață CEA MAI MICĂ toleranță a cărei numărătoare atinge n≥25. Dacă 0,00 atinge
+     → 0,00 (cea mai strictă/defensabilă); altfel 0,10; altfel 0,25. Dacă nici 0,25 nu
+     atinge n≥25, BPR NU e testabilă la M15_v2 cu acest n — se raportează ca atare, NU se
+     forțează un prag artificial. Monotonă și mecanică: favorizează precizia maximă fezabilă
+     statistic, nu „mai multe evenimente". (Motiv: prețul aurului are 2 zecimale — coincidența
+     exactă la 0,00 între două goluri independente e improbabilă; zero la 0,00 nu ar dovedi
+     absența BPR, ci doar o precizie pe care prețul n-o are.)
   Q4 (inversare IFVG, analog D6)  Când se consideră un FVG „inversat" — close prin el,
      sau doar wick? Integral pe bara curentă (fără lookahead) sau pe fereastră?
   Q5 (consumare / re-armare, analog D7)  Un FVG mitigat (atins de CE 50% sau umplut
@@ -104,12 +112,16 @@ def detect_inverse_fvgs(
     raise NotImplementedError("MK-03 neratificat: Q4 (inversare), Q5 (consumare)")
 
 
-def detect_bpr(
+def count_bpr(
     fvgs: Sequence[FairValueGap],
     blocks: Sequence[Block],
-) -> list[BalancedPriceRange]:
-    """Detectează Balanced Price Ranges (suprapunere bullish×bearish FVG).
+    tolerances: tuple[float, ...] = (0.0, 0.10, 0.25),
+    max_window_bars: int = 3,
+) -> dict[float, int]:
+    """Numără suprapunerile bullish×bearish FVG (fereastră ≤ max_window_bars) la fiecare
+    toleranță — pur descriptiv. Regula de îngheț (cea mai mică toleranță cu n≥25) e a
+    consumatorului, decisă ÎNAINTE de a vedea cifrele (D-BPR, vezi docstring-ul modulului).
 
-    NEIMPLEMENTAT — depinde de Q3 (definiția „aceleiași ferestre de preț").
+    NEIMPLEMENTAT — restul deciziilor MK-03 (Q1/Q2/Q4/Q5/Q6) nu sunt ratificate.
     """
-    raise NotImplementedError("MK-03 neratificat: Q3 (definiția suprapunerii BPR)")
+    raise NotImplementedError("MK-03: numărătoarea BPR e specificată (D-BPR) dar restul MK-03 neratificat (Q1/Q2/Q4/Q5/Q6)")
