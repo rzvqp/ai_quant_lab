@@ -323,14 +323,28 @@ def build_manifest() -> dict[str, Any]:
             },
             "H1_from_M15_v2": {
                 "aggregation_bars": 4, "bar_seconds": 3600,
-                "file_path": "acquisition_staging/OANDA_XAUUSD_H1_from_M15_v2_UNREGISTERED.csv",
+                "file_path": "data/market/OANDA_XAUUSD_H1_from_M15_v2.csv",
+                "file_path_note": (
+                    "RELOCATED (commit d99d241, Data Acquisition hotfix). v2.4.1 incorrectly registered "
+                    "this entry's file_path as acquisition_staging/..._UNREGISTERED.csv -- a staging path "
+                    "whose own filename said UNREGISTERED, while status simultaneously read "
+                    "CONTEXT_DERIVED_VALIDATED and another changelog said the opposite (not registered). "
+                    "v2.4.2 reverted to pending; Data Acquisition then moved the file to "
+                    "data/market/OANDA_XAUUSD_H1_from_M15_v2.csv (clean name) with .gitattributes pinned "
+                    "-text (LF) BEFORE the move specifically to prevent a CRLF conversion changing the "
+                    "hash (the same lesson as the legacy M15 8f865b87-vs-c777cb9c incident). The "
+                    "recomputed hash is BYTE-IDENTICAL to the pre-move staging value -- confirmed "
+                    "independently by Statistician re-hashing the file at its NEW path, not by reusing "
+                    "the remembered value; the two only coincide because the move was truly byte-"
+                    "preserving here, not assumed."
+                ),
                 "window_convention": "Anchored UTC hour (matches native H1), per code/resample_ny.py. sub = count of constituent M15_v2 bars.",
                 "generation": {"bars_with_rule": 49580, "bars_without_rule": 89549, "bars_eliminated": 39969,
-                               "generated_by": "Data Acquisition, Mandate 2.7 (on separate CEO instruction)"},
+                               "generated_by": "Data Acquisition, Mandate 2.7 (on separate CEO instruction); relocated Mandate hotfix d99d241"},
                 "data_file_sha256": {
-                    "value": sha256_file(os.path.join(_ROOT, "acquisition_staging", "OANDA_XAUUSD_H1_from_M15_v2_UNREGISTERED.csv")),
+                    "value": sha256_file(os.path.join(_ROOT, "data", "market", "OANDA_XAUUSD_H1_from_M15_v2.csv")),
                     "status": "CONFIRMED_BY_STATISTICIAN",
-                    "source": "Independently computed by Statistician directly against the physical file at generation time; matches Data Acquisition's reported value (DATA_ACQUISITION_FINAL_REPORT.md line 140, commit 774acea) exactly.",
+                    "source": "Independently computed by Statistician directly against the physical file AT ITS NEW LOCATION at generation time; matches Data Acquisition's reported post-move value (commit d99d241) exactly.",
                 },
                 "rule_compliance_note": "See H4_from_M15_v2.rule_compliance_note -- identical basis.",
                 "classification_delimitation": (
@@ -381,13 +395,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.3.0", "commit": "a4c0baf", "content": "HTF context resample rule specified"},
             {"version": "2.3.1", "commit": "774acea", "content": "H4/D1 hashes supplied by Data Acquisition, GENERATED_PENDING_RATIFICATION (Data-Acquisition-authored injection, not a Statistician version)"},
             {"version": "2.4.0", "commit": "9286981", "content": "E001/E002/E004 candidate verdicts; H4/D1 ratified to CONTEXT_DERIVED_VALIDATED"},
-            {"version": "2.4.1", "commit": "PENDING (this version)", "content": "H1_from_M15_v2 registered and ratified; commit-citation correction recorded (an order incorrectly cited 4e1f550 as v2.4.0 -- it is v2.2.0, three mandates earlier)"},
+            {"version": "2.4.1", "commit": "ab0e823", "content": "H1_from_M15_v2 registered and ratified (file_path/hash later found to be incorrect -- see v2.4.2); commit-citation correction recorded (an order incorrectly cited 4e1f550 as v2.4.0 -- it is v2.2.0, three mandates earlier)"},
+            {"version": "2.4.2", "commit": "PENDING (this version)", "content": "Hotfix: reconciles the v2.4.1 self-contradiction on H1_from_M15_v2 (registered as CONTEXT_DERIVED_VALIDATED with a staging/UNREGISTERED file_path while another changelog said unregistered) -- Data Acquisition relocated the file (commit d99d241) within the same hotfix window, hash independently re-verified at the new path (byte-identical), entry promoted to CONTEXT_DERIVED_VALIDATED with the correct canonical path; added mechanical consistency checks to this generator (validate_context_derived_consistency)"},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.4.1",
+        "version": "2.4.2",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -415,6 +430,52 @@ def build_manifest() -> dict[str, Any]:
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
         ),
+        "changelog_v2_4_2": (
+            "Hotfix. Research Lab found a genuine internal self-contradiction: the same v2.4.1 document "
+            "asserted, in one changelog, that H1_from_M15_v2 'is NOT registered here... stays in "
+            "acquisition_staging/, unregistered' while another changelog said 'Registers H1_from_M15_v2', "
+            "and the entry's own file_path pointed at a staging file whose name says UNREGISTERED while "
+            "its status read CONTEXT_DERIVED_VALIDATED. Neither Statistician nor CEO verified the "
+            "resulting manifest before it was relayed to Research Lab as fact -- the fourth time in one "
+            "day a claim taken from a report proved inexact on checking the source. Root cause: two "
+            "changelogs describing the same entity from different versions, with nothing checking "
+            "consistency between them or against the live entry. Fix, in two steps within this same "
+            "version: (1) H1_from_M15_v2 first reverted to status AWAITING_FILE_RELOCATION, file_path "
+            "and data_file_sha256 cleared -- the old staging hash 524977d0...f660 explicitly NOT reused "
+            "on the (correct) assumption that a move might change file bytes; (2) Data Acquisition then "
+            "completed the relocation (commit d99d241, data/market/OANDA_XAUUSD_H1_from_M15_v2.csv, "
+            ".gitattributes pinned -text BEFORE the move to prevent a CRLF conversion) and Statistician "
+            "re-verified by independently re-hashing the file at its NEW path -- the recomputed hash "
+            "turned out byte-identical to the old staging value, confirmed rather than assumed, so the "
+            "entry is promoted straight to CONTEXT_DERIVED_VALIDATED with the correct canonical path. "
+            "Both prior changelogs kept verbatim, each now carries an explicit *_correction sibling field "
+            "marking what is superseded and why, "
+            "same treatment as superseded_regime_map_v2_0_0. governance_note_operational_motivation_"
+            "disclosed and classification_delimitation are UNCHANGED -- still valid, not affected by the "
+            "file-path bug. Added mechanical consistency checks (validate_context_derived_consistency, "
+            "run before every write) so this class of error -- an unverified claim propagating through "
+            "the manifest -- cannot recur silently: verifies every CONTEXT_DERIVED_VALIDATED entry has a "
+            "non-null hash matching a fresh recomputation against its own file_path, and that no such "
+            "entry's file_path contains 'acquisition_staging' or 'UNREGISTERED' (the exact pattern that "
+            "caused this bug). Mechanical, not by reading -- the second time this project has published "
+            "a manifest claim nobody verified (the first was the M15 entry describing the superseded "
+            "file)."
+        ),
+        "changelog_v2_4_1_correction": {
+            "status": "PARTIALLY_SUPERSEDED_BY_v2_4_2",
+            "reason": (
+                "changelog_v2_4_1's H1_from_M15_v2 file_path (acquisition_staging/..._UNREGISTERED.csv) "
+                "and hash (524977d0...f660) were the pre-relocation staging file's -- registering them "
+                "as file_path/data_file_sha256 on a CONTEXT_DERIVED_VALIDATED entry, while the filename "
+                "itself said UNREGISTERED and an earlier changelog (changelog_v2_4_htf_ratification) said "
+                "the opposite, was an internal contradiction Research Lab caught by reading the resulting "
+                "manifest -- neither Statistician nor CEO verified it beforehand. Everything else in "
+                "changelog_v2_4_1 (the commit-citation correction, the CONTEXT_DERIVED_VALIDATED renaming, "
+                "the H4/D1 ratification) remains accurate and unchanged. Only the H1_from_M15_v2 file_"
+                "path/hash claim is corrected -- see the H1_from_M15_v2 entry above (status "
+                "AWAITING_FILE_RELOCATION) and changelog_v2_4_2 below."
+            ),
+        },
         "changelog_v2_4": (
             "Registers the Mandate 4.1 transactional-evaluation verdicts (Flow A commit 1a64812, "
             "verified directly by Statistician against the source report/script/results, not merely "
@@ -441,6 +502,17 @@ def build_manifest() -> dict[str, Any]:
             "commit) but is NOT registered here -- no mandate has covered its registration; it stays in "
             "acquisition_staging/, unregistered, pending a future decision."
         ),
+        "changelog_v2_4_htf_ratification_correction": {
+            "status": "SUPERSEDED_IN_FRAMING_BY_LATER_VERSIONS",
+            "reason": (
+                "This entry's 'H1_from_M15_v2 is NOT registered here' claim was accurate when written "
+                "(v2.4.0). v2.4.1 then registered it, but with a stale staging file_path/hash -- itself "
+                "corrected in v2.4.2 (see changelog_v2_4_1_correction and changelog_v2_4_2). As of this "
+                "version, H1_from_M15_v2 IS a real entry under context_derived_htf.entries, status "
+                "AWAITING_FILE_RELOCATION -- read this changelog as a historical snapshot of v2.4.0, not "
+                "the current state."
+            ),
+        },
         "changelog_v2_3": (
             "Adds context_derived_htf: the mechanical rule for resampling H4/D1 context bars from "
             "M15_v2 (CTO-approved Option B, since the lab's existing H1/H4/D1 context files were "
@@ -696,8 +768,58 @@ def sha256_file(path: str) -> str:
     return h.hexdigest()
 
 
+class ManifestConsistencyError(ValueError):
+    """Raised when context_derived_htf entries are internally inconsistent -- never written to disk."""
+
+
+def validate_context_derived_consistency(manifest: dict[str, Any]) -> None:
+    """Mechanical checks, not by reading. Added after a real incident: v2.4.1 registered
+    H1_from_M15_v2 as CONTEXT_DERIVED_VALIDATED with a staging/UNREGISTERED file_path while a
+    changelog said the opposite -- nobody verified the generated file before it was relayed as
+    fact. This function makes that specific class of error impossible to publish silently again.
+    """
+    entries = manifest["context_derived_htf"]["entries"]
+    for key, entry in entries.items():
+        status = entry.get("status")
+        file_path = entry.get("file_path")
+        sha_block = entry.get("data_file_sha256", {})
+        if status == "CONTEXT_DERIVED_VALIDATED":
+            if not file_path:
+                raise ManifestConsistencyError(
+                    f"{key}: status is CONTEXT_DERIVED_VALIDATED but file_path is missing/null."
+                )
+            lowered = file_path.lower()
+            if "acquisition_staging" in lowered or "unregistered" in lowered:
+                raise ManifestConsistencyError(
+                    f"{key}: status is CONTEXT_DERIVED_VALIDATED but file_path ({file_path}) looks like "
+                    "a staging/unregistered path -- the exact pattern that caused the v2.4.1 incident."
+                )
+            stored_hash = sha_block.get("value")
+            if not stored_hash:
+                raise ManifestConsistencyError(
+                    f"{key}: status is CONTEXT_DERIVED_VALIDATED but data_file_sha256.value is missing/null."
+                )
+            recomputed = sha256_file(os.path.join(_ROOT, file_path))
+            if recomputed != stored_hash:
+                raise ManifestConsistencyError(
+                    f"{key}: stored hash {stored_hash} does not match a fresh recomputation "
+                    f"{recomputed} against {file_path} -- file changed since the hash was recorded, or "
+                    "the hash was never real."
+                )
+        else:
+            # Not validated: file_path/hash MAY be present as pending-relocation metadata, but must
+            # never masquerade as ready -- no live consumer should read a hash off a non-validated entry.
+            if sha_block.get("status") == "CONFIRMED_BY_STATISTICIAN" and status != "CONTEXT_DERIVED_VALIDATED":
+                raise ManifestConsistencyError(
+                    f"{key}: data_file_sha256.status is CONFIRMED_BY_STATISTICIAN but entry status is "
+                    f"'{status}', not CONTEXT_DERIVED_VALIDATED -- a confirmed hash implies the entry "
+                    "should be validated; if it isn't, either promote it or downgrade the hash status."
+                )
+
+
 def main() -> None:
     manifest = build_manifest()
+    validate_context_derived_consistency(manifest)
     text = json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"
     text_blanked = text.replace('"value": ""', '"value": ""')  # placeholder already blank
     digest = hashlib.sha256(text_blanked.encode("utf-8")).hexdigest()
