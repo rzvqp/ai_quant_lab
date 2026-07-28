@@ -77,4 +77,4 @@ familie     1
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează după publicare. Holdout SEALED.**
+**Publicat pe `statistician-foundation`; manifestul incrementat la v2.6.0 (commit `4c9c20f`, `alpha-automation-v1`). Holdout SEALED.**
