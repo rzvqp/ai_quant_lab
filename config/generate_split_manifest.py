@@ -406,13 +406,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.6", "commit": "00dfa6f", "content": "Mandate 3.14: resolves all nine open questions from the MK-03/MK-04 partial implementation (VE, commit 7984670). Family 1 (Q5 MK-03/MK-04): D7-consumption confirmed, but rejects an added 'session/day' lifetime clause not present in D7 -- PDH consumed at first same-day touch, no new dimension. Family 2 (Q6/Q4 MK-03): wick/close asymmetry now grounded in direct code precedent (e015's wick touch_mask for mitigation, e010/e012's close-based violation for polarity flips) -- 3-tier gradient specified (CE-50 touch / full fill / inversion). Family 3: FVGs don't survive a block boundary (D4-analog); Q3-week derived from the already-resolved Q3-day via a gap-detection rule, not a new clock. Resolves MK-03 Q4 (IFVG inversion, the only fully-blocking primitive) by reusing verbatim an identical definition independently found in two already-frozen V0s (E010, E012). Ratifies the three small mechanically-forced items (MK-03 Q1, MK-04 Q4, reconfirms MK-04 Q3-day)."},
             {"version": "2.5.7", "commit": "9c02af7", "content": "Mandate 3.17: block_bootstrap@v1 verdict INVALIDATED_FOR_THIS_SCALE for LM-001 (measured S8 curve nominal through phi=0.50, anti-conservative at phi=0.60, e441bcf) -- declines to map density (8.64 avg concurrent, e441bcf) onto the AR(1) curve, both because the derive-before-seeing-the-result ordering was violated (disclosed) and because the AR(1) parametrization is structurally the wrong instrument for LM-001's finite-memory overlapping-window dependency (a 28-bar block fully contains a 20-bar true dependency window, unlike any AR(1)). Closes the (0.50,0.55] threshold gap via fail_closed_default. WP-5' concretely sized: rebuild the null generator to match the true overlap mechanism, reusing the existing S8 FPR-measurement harness. MK-03/MK-04 FULLY RATIFIED at commit 1930467 after a full (not just report) code read -- 34 tests verified, mypy --strict clean. Registers the SMC_S1/S2/S3/S13/S16 nomenclature under a rigid protected prefix (verified collision against the legacy grammar, including two production strategy_runtime files), connects them to the Open-R risk framework, and mandates D11/SS F dedup pre-screening before enrollment."},
             {"version": "2.5.8", "commit": "74de879", "content": "Mandate 3.18: formalizes all 20 SMC_S* families (verified in code/mstrat.py's ECON dict -- S1-S20 is the legacy grammar's full family list). Flags that validation_engine/capabilities.json is the wrong registration target (its own deliberately_absent field excludes hypothesis-specific event primitives by design) -- registers here instead. Closes the horizon arithmetic gap (20 families, 4 session constants) via 4 declared groups: A=20 bars (LM-001's own immediate-reaction derivation, reused), B=native session length (asia/ny=32, london=20, late=12, from mtf.py), C=empirical day/week length independently computed (day=92, week=460 bars, median, matching institutional_levels.py's own '92 is not a constant' caveat), D=no horizon forced where the primitive itself is missing. 9 families fully state-machine-specified on only the 4 ratified modules (SMC_S1=LM-001, S2, S3, S7, S10 with a disclosed substitution, S11, S13, S16, S17). 11 honestly flagged as not forced: 3 cheap gaps (S5/S6/S19, near-trivial missing extensions), 6 genuine primitive-class gaps (S4/S8/S9/S14/S15/S20), 1 partial gap (S12), 1 reclassified as a stratification dimension not a standalone family (S18). Flags conceptual dedup-collision risk pairs for mandatory hash verification once code exists, declines to report a distinct-family count before trade logs exist. All formalized families AWAITING_VALIDATION_ENGINE_CODE; none promoted to VALIDATED until WP-5' delivers the oracle."},
-            {"version": "2.5.9", "commit": "PENDING (this version)", "content": "Mandate 3.19: Q1 (fully blocks WP-5's sample_event_positions) resolved -- reproduce the FULL empirical spacing/degree distribution, not just the mean, to avoid hiding regime-dependent behavior (the same failure mode that partially sank the AR(1) battery). Q2-Q6 resolved: fixed segment allocation + excluded boundary windows; session-stratified not aggregate-only density; 69% shared-horizon as a derived consequence not an imposed invariant; empirical (not normal) iid shocks; shock-sum aggregation scoped explicitly to FPR calibration only. L stays variable downstream. Ratifies Definition 1 (LiquiditySweep=D6, confirmation not new) and Definition 4 (PDH/PDL/Weekly=already-ratified detect_level_touches) unchanged. Derives Definition 3 (LiquidityVoid) as a hybrid temporal-OR-size criterion ($1.20, 3x cost-stress, reused derivation logic) after empirically proving neither criterion alone covers the intended concept (248 size-only vs 119 time-only qualifying transitions, verified on the actual 84,152-bar tested dataset). Fixes Definition 2 (Order Block/Breaker)'s zone contradiction (body [Close,Open], not body+wick) and specifies a validity-window/measurement-window separation before implementation to pre-empt E010's exact circularity defect. Scopes missing primitives to only the actually-blocked SMC_S* families: Range (S12, resolved via recomposition, upgraded to formalized) and MTF-Trend (S9/S20, resolved via recomposition of already-validated H1/H4/D1_from_M15_v2 context) need no new primitive; Volatility/Expansion (S4/S8) gets its measure defined (reusing the lab's official E000 Parkinson standard) with the threshold deferred to its own derivation; S14/S15 remain genuinely gapped (no primitive in either given module); S5/S6/S19 confirmed as a cheap Module-4 extension, not Module 5/6. Order Block/Breaker/Mitigation/Rejection and Compression confirmed NOT needed by any blocked family, not constructed."},
+            {"version": "2.5.9", "commit": "444e0e8", "content": "Mandate 3.19: Q1 (fully blocks WP-5's sample_event_positions) resolved -- reproduce the FULL empirical spacing/degree distribution, not just the mean, to avoid hiding regime-dependent behavior (the same failure mode that partially sank the AR(1) battery). Q2-Q6 resolved: fixed segment allocation + excluded boundary windows; session-stratified not aggregate-only density; 69% shared-horizon as a derived consequence not an imposed invariant; empirical (not normal) iid shocks; shock-sum aggregation scoped explicitly to FPR calibration only. L stays variable downstream. Ratifies Definition 1 (LiquiditySweep=D6, confirmation not new) and Definition 4 (PDH/PDL/Weekly=already-ratified detect_level_touches) unchanged. Derives Definition 3 (LiquidityVoid) as a hybrid temporal-OR-size criterion ($1.20, 3x cost-stress, reused derivation logic) after empirically proving neither criterion alone covers the intended concept (248 size-only vs 119 time-only qualifying transitions, verified on the actual 84,152-bar tested dataset). Fixes Definition 2 (Order Block/Breaker)'s zone contradiction (body [Close,Open], not body+wick) and specifies a validity-window/measurement-window separation before implementation to pre-empt E010's exact circularity defect. Scopes missing primitives to only the actually-blocked SMC_S* families: Range (S12, resolved via recomposition, upgraded to formalized) and MTF-Trend (S9/S20, resolved via recomposition of already-validated H1/H4/D1_from_M15_v2 context) need no new primitive; Volatility/Expansion (S4/S8) gets its measure defined (reusing the lab's official E000 Parkinson standard) with the threshold deferred to its own derivation; S14/S15 remain genuinely gapped (no primitive in either given module); S5/S6/S19 confirmed as a cheap Module-4 extension, not Module 5/6. Order Block/Breaker/Mitigation/Rejection and Compression confirmed NOT needed by any blocked family, not constructed."},
+            {"version": "2.6.0", "commit": "PENDING (this version)", "content": "Mandate 3.20: block_bootstrap@v1 ratified VALIDATED for the finite-memory overlap mechanism (n~21,048, L>=H=20 -- VE's pre-registered prediction confirmed exactly: FPR@0.05 nominal at L=10/20/28/40, 0.0450/0.0400/0.0400/0.0400), scoped as an explicit field coexisting with the unchanged AR(1)-regime INVALIDATED_FOR_THIS_SCALE verdict -- two regimes, two verdicts, no ambiguity. Reconciles the Q4 spacing-metric discrepancy (not just flags it): traces the exact mechanical cause of 6.2-vs-8.52 bars (same-bar duplicate events inflate the naive bars/events ratio; the corrected figure excludes zero-length gaps between co-located events, verified directly: only 15,305 of 21,045 possible gaps are nonzero) and declares 8.52 bars/57.4% the new authoritative figure, superseding 6.2/69%, with the scope of the correction stated explicitly (does not affect the session-derived 20-bar horizon or the exact-position-conditioned FPR results). Confirms the Void-discrepancy resolution and the still-open, non-blocking OB-formation criterion. Confirms Q5's real-return shocks as calibration input (same category as the geometry/density audits) with an explicit written boundary. Rules that code/order_block_void.py TRIGGERS the CROSS_VERIFICATION_SPEC persistent-artifact exception flagged at Mandate 3.10 (VE both designed and implemented it, unlike D1-D7's Architect/VE cross-check) -- requires independent test verification by a different division before any hypothesis relies on it. UNBLOCKS LM-001: frozen v2.5.5 spec confirmed unchanged, execution assigned to Validation Engine (not Flow A), holdout confirmed untouched, the other 11 not-yet-formalized SMC_S* families explicitly deferred per instruction until LM-001's end-to-end run reports back."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.9",
+        "version": "2.6.0",
         "published_date": "2026-07-28",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -439,6 +440,33 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_6_0": (
+            "Mandate 3.20: the oracle is ratified and LM-001 is unblocked. VE delivered all three WP-5' "
+            "steps (commits 96d31ad/2935e81/edca965); Statistician verified by reading code directly, "
+            "then independently reconstructed the exact 21,048-event population and reproduced both the "
+            "buggy and corrected mean-spacing computations exactly matching VE's figures. (1) "
+            "block_bootstrap@v1 ratified VALIDATED for the finite-memory overlap mechanism (n~21,048, "
+            "L>=H=20) -- the pre-registered prediction confirmed exactly (FPR@0.05 nominal at all tested "
+            "L, including L=10<H, strengthening the 3.17 argument that this was about the wrong CATEGORY "
+            "of null process, not just a wrong L). Scoped as an explicit field, coexisting without "
+            "ambiguity with the unchanged AR(1)-regime INVALIDATED_FOR_THIS_SCALE verdict. (2) Three "
+            "findings: Void discrepancy confirmed resolved (VE's reproduction matches exactly); Q4 "
+            "spacing metric genuinely RECONCILED (not left open) -- traced the exact mechanical cause "
+            "(same-bar duplicate events inflate the naive 130,491/21,048=6.2 ratio; the corrected 8.52 "
+            "excludes zero-length gaps between co-located events, verified directly), declares 8.52/"
+            "57.4% authoritative, 6.2/69% superseded, scope of the correction stated explicitly (horizon "
+            "derivation and FPR results unaffected); OB formation criterion confirmed still open, non-"
+            "blocking. (3) Two governance rulings: Q5's real-return shocks confirmed as the same "
+            "permitted calibration-input category as the geometry/density audits, with an explicit "
+            "written boundary; code/order_block_void.py ruled to TRIGGER the CROSS_VERIFICATION_SPEC "
+            "persistent-artifact exception flagged at Mandate 3.10 (VE both designed and implemented it "
+            "with no independent check, unlike D1-D7's genuine Architect/VE cross-check) -- requires "
+            "independent test verification by a different division before use. LM-001 UNBLOCKED: the "
+            "frozen v2.5.5 spec confirmed unchanged, execution assigned to Validation Engine (already "
+            "built and tested the entire adjacent infrastructure) not Flow A, holdout confirmed "
+            "untouched (M15_v2 discovery blocks only), the other 11 not-yet-formalized families "
+            "explicitly deferred per instruction until LM-001's end-to-end result reports back."
         ),
         "changelog_v2_5_9": (
             "Mandate 3.19: three deliverables. (1) Q1 (fully blocks WP-5's sample_event_positions, "
@@ -1163,7 +1191,35 @@ def build_manifest() -> dict[str, Any]:
                 "per trade.",
             ),
             "bootstrap_method": {
-                "status": "RESOLVED (STAT-BLOCKBOOTSTRAP-MK-SMC-v1.0, Mandate 3.17): block_bootstrap@v1 -> INVALIDATED_FOR_THIS_SCALE. WP-5' ACTIVATED, concretely sized below.",
+                "status": "FINAL (Mandate 3.20, STAT-ORACLE-RATIFICATION-LM001-UNLOCK-v1.0): block_bootstrap@v1 has TWO COEXISTING, NON-OVERLAPPING verdicts across two different regimes -- see calibration_status_by_regime below. LM-001 is UNBLOCKED.",
+                "calibration_status_by_regime": {
+                    "AR1_regime": {"status": "INVALIDATED_FOR_THIS_SCALE", "unchanged_since": "Mandate 3.17 -- infinite-memory phi parametrization, wrong instrument for LM-001's actual dependence."},
+                    "overlap_mechanism_regime": {
+                        "status": "VALIDATED",
+                        "domain": "finite-memory overlapping-horizon dependence (LM-001's REAL mechanism, NOT AR(1)) -- n~21,048, L>=H=20 M15 bars.",
+                        "evidence": "VE, commits 96d31ad/2935e81 (WP-5' battery): FPR@0.05 = 0.0450 (L=10, L<H) / 0.0400 (L=20,28,40, L>=H) -- pre-registered prediction ('L>=H fully contains the finite-memory dependence -> FPR should land nominal') CONFIRMED exactly, including the honest observation that L=10<H is ALSO nominal (finite-memory dependence is easier for block bootstrap than AR(1) regardless of L -- strengthens the 3.17 argument as being about the wrong CATEGORY of instrument, not just a wrong number).",
+                    },
+                    "explicit_non_interaction": "Ratifying the overlap-mechanism regime as VALIDATED does NOT overturn or narrow the AR(1)-regime INVALIDATED_FOR_THIS_SCALE verdict -- two different null processes, two different verdicts, both must remain readable without ambiguity in this registry.",
+                },
+                "q4_spacing_metric_RECONCILED": {
+                    "status": "RECONCILED (Mandate 3.20), not merely left open",
+                    "old_figure_SUPERSEDED": "6.2 bars / 69% shared horizon (Mandate 3.13) = 130,491 total discovery bars / 21,048 filtered events -- counts EVERY filtered event as its own density 'slot', INCLUDING multiple events co-located on the exact same bar (a single bar can produce simultaneous qualifying sweeps on different basins).",
+                    "new_authoritative_figure": "8.52 bars mean spacing / 57.4% shared horizon -- computed directly from the EXACT empirical event positions (the same positions the WP-5' null generator conditions on), excluding zero-length gaps between co-located same-bar events. Verified directly by Statistician: of 21,045 theoretically possible gaps (21,048 events - 3 segments), only 15,305 are nonzero -- the other 5,740 are same-bar duplicate events.",
+                    "scope_of_correction": "Affects ONLY the descriptive spacing/overlap-fraction summary figure. Does NOT affect the 20-bar horizon (derived independently from london session length, Mandate 3.13, never from this spacing figure) NOR the FPR battery results (the null generator conditions on exact positions, never on this summary statistic, confirmed directly by re-deriving both the buggy and corrected values from real data).",
+                },
+                "wp5_battery_raw_results": {
+                    "source": "VE, commit 2935e81, edge_research/wp5_battery_results.json -- independently reproduced by Statistician (exact match on n_events, buggy mean_spacing=3.82, corrected mean_spacing=8.52).",
+                    "fpr_by_L": {"10": 0.045, "20": 0.04, "28": 0.04, "40": 0.04},
+                    "fpr_by_session_at_L28": {"asia": 0.015, "london": 0.025, "ny": 0.055, "late": 0.045},
+                },
+                "ob_formation_criterion_still_open": "Order Block FORMATION criterion (which candle becomes an OB) remains NotImplementedError, correctly not invented by VE -- non-blocking, no formalized family requires it yet.",
+                "q5_calibration_input_boundary_CONFIRMED": (
+                    "CONFIRMED (Mandate 3.20): Q5's real-M15-return shocks are the SAME permitted category as the geometry/density audits' price reads, "
+                    "with an explicit boundary written so it is not silently extended: reading real prices is permitted when it characterizes STRUCTURE/SHAPE "
+                    "(event positions, displacement geometry, the shape of a return distribution) WITHOUT touching LM-001's actual outcome (net_R sign, "
+                    "direction, profitability) -- which stays sealed until the real net_R test (see execution_assignment below) actually runs. It would STOP "
+                    "being the same category if prices were used to compute or preview the real net_R outcome ahead of that test."
+                ),
                 "curve_measured": {
                     "source": "VE, commit e441bcf: S8 curve completion at n=21,048 (edge_research/lm001_s8/complete_curve.py, B=10000, L=28, n_series=300) -- fills the gap where the originally-proposed phi=0.45 falls.",
                     "points": {"0.40": 0.0500, "0.45": 0.0433, "0.50": 0.0467, "0.60": 0.0767},
@@ -1210,6 +1266,13 @@ def build_manifest() -> dict[str, Any]:
             "success_failure_criteria_preregistered": {
                 "success": "Mean net_R significantly > 0 (BH-FDR alpha=0.05, family of 1) on pooled counts across ELIGIBLE regimes (see insufficient_n_rule).",
                 "failure": "Does not pass BH-FDR, PROVIDED at least one regime had sufficient n -- a failure on insufficient data is a different category, not a statistical failure.",
+            },
+            "UNBLOCKED_status": "UNBLOCKED (Mandate 3.20) -- block_bootstrap@v1 VALIDATED for the overlap mechanism at this exact scale/L (see lm_001_preregistration parent -> execution_layer.bootstrap_method). Frozen spec (v2.5.5) CONFIRMED UNCHANGED: population 21,048 filtered [10.1,65.0) pips, mechanical direction, 20-bar horizon (london-session-derived), pure time-exit at c+20 (no take-profit), net_R outcome, block bootstrap L>=28 vs H0:mu_netR<=0 (one-sided), family=1.",
+            "execution_assignment": {
+                "executor": "Validation Engine, NOT Flow A",
+                "reasoning": "VE already built and tested the entire adjacent infrastructure specific to LM-001 (geometry audit, density audit, WP-5' null generator, the wired block_bootstrap/wp5_battery.py harness) -- executing the real test is a minimal, natural extension of already-verified code, reusing block_bootstrap.run() on the REAL net_R series instead of a synthetic null. Flow A's infrastructure (_profile.py, movement/context/robustness battery) is scoped to the original 40 E0xx hypotheses' template, not to Open-R/net_R/block-bootstrap testing.",
+                "holdout_confirmation": "LM-001's population is entirely within the M15_v2 discovery blocks (130,491 bars) -- execution does not touch the sealed holdout.",
+                "scope_note": "Per explicit instruction, the other 11 not-yet-formalized SMC_S* families (S4/S8 awaiting the Parkinson threshold, S5/S6/S19 cheap gaps, S14/S15 genuinely gapped) are NOT completed now -- LM-001 (=SMC_S1) runs first, end to end, as a test of the whole chain before investing in formalizing the remaining nineteen.",
             },
             "insufficient_n_rule": (
                 "Reused convention: n>=25 (Discovery Screen V1 / persistence-leaderboard threshold), not a "
@@ -1445,6 +1508,20 @@ def build_manifest() -> dict[str, Any]:
                     "(2) MEASUREMENT window -- begins ONLY at the qualifying event bar (a) or (b), never at OB formation, running the group-A horizon (20 bars) forward from THAT point. "
                     "By construction these two windows cannot collapse into the same window computed twice, unlike E010's identical selection/measurement windows."
                 ),
+                "implementation_status": "IMPLEMENTED (code/order_block_void.py, commit edca965) -- zone + window separation frozen exactly as specified above. OB formation criterion (which candle becomes an OB) remains NotImplementedError, correctly not invented, non-blocking (no formalized family requires it).",
+                "cross_verification_spec_TRIGGERED": {
+                    "status": "TRIGGERED (Mandate 3.20) -- this is the first concrete instance of the persistent-artifact exception flagged at Mandate 3.10.",
+                    "ruling": (
+                        "code/order_block_void.py is NOT a one-time diagnostic (unlike the geometry/density audit scripts) -- it is a PERSISTENT PRIMITIVE MODULE, "
+                        "structurally identical in role to the four already-ratified modules (market_structure/liquidity_mechanics/imbalance_mechanics/"
+                        "institutional_levels): future hypotheses will import and call it repeatedly, reading through the manifest's mask each time. Unlike D1-D7 "
+                        "(Architect wrote the implementation, VE wrote independent tests -- a genuine cross-check), order_block_void.py was BOTH designed and "
+                        "implemented by VE with no independent verification. This satisfies the explicit limit written at Mandate 3.10 ('if this code becomes a "
+                        "persistent, widely-relied-upon artifact, the calculus changes') -- it is not a generic extension of CROSS_VERIFICATION_SPEC to code, it "
+                        "is this specific, previously-flagged condition being met."
+                    ),
+                    "requirement": "An independent test suite, written by a division OTHER than VE, verifying mechanically: zone=body not body+wick; validity/measurement window separation (cannot collapse into the same window); the hybrid Void criterion (temporal OR size, with maintenance-window exclusion) -- REQUIRED before any formalized hypothesis relies on this module. Which division is an operational assignment, not specified here.",
+                },
             },
             "missing_primitives_module5_6": {
                 "not_needed_by_any_blocked_family_not_constructed": "Order Block/Breaker/Mitigation/Rejection (Module 5 -- handled separately above via Definition 2, for its own reasons, not because any blocked SMC_S* family needs it); Compression (Module 6 -- no family names it).",
