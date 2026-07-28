@@ -16,6 +16,7 @@ if _CODE not in sys.path:
     sys.path.insert(0, _CODE)
 
 from market_structure import Block  # noqa: E402
+from institutional_levels import derive_week_index  # noqa: E402
 import trading_strategies as TS  # noqa: E402
 
 Detector = Callable[..., list[TS.StrategySignal]]
@@ -53,6 +54,37 @@ def _retest_series():  # BOS_BULL @16 apoi retest cu bară largă de respingere 
     for i in range(21, n):
         o[i] = h[i] = l[i] = c[i] = 106.8
     return o, h, l, c, [Block(0, n)], n
+
+
+def _pdh_series():  # day0 PDH=105 disponibil @10, atins @14 în day1 → S16 short
+    n = 20
+    day = [0] * 10 + [1] * 10
+    base = [100, 101, 102, 103, 104, 103, 102, 101, 100.5, 101,
+            102, 103, 104, 103.5, 104.8, 102.5, 103, 102.5, 103, 102.5]
+    o = [float(x) for x in base]; c = [float(x) for x in base]
+    h = [b + 0.3 for b in base]; l = [b - 0.3 for b in base]
+    h[4], l[4], l[0] = 105.0, 104.5, 99.7
+    h[14], l[14], o[14], c[14] = 105.1, 102.2, 103.0, 102.5     # fitil la PDH, close reject
+    o[15], c[15], h[15], l[15] = 102.8, 102.8, 103.1, 102.5
+    return o, h, l, c, [Block(0, n)], n, day
+
+
+def _weekly_series(week0_days: int = 5):  # week0 (N zile) HIGH=110 atins în week1
+    day_ord: list[int] = []
+    for d in range(week0_days):
+        day_ord += [d] * 5
+    day_ord += [7] * 8                                          # gol de weekend → week1
+    n = len(day_ord)
+    wk = derive_week_index(day_ord)
+    base = [100 + (i % 5) for i in range(5 * week0_days)] + [108, 109, 108, 109, 108, 109, 108, 109]
+    o = [float(x) for x in base]; c = [float(x) for x in base]
+    h = [b + 0.3 for b in base]; l = [b - 0.3 for b in base]
+    hi_bar = 12 if week0_days >= 3 else 2
+    h[hi_bar], l[hi_bar], l[2] = 110.0, 109.5, 99.0            # week0 HIGH=110
+    w1 = 5 * week0_days + 2                                     # o bară în week1
+    h[w1], l[w1], o[w1], c[w1] = 110.1, 107.8, 108.5, 108.0    # fitil la weekly high, reject
+    o[w1 + 1], c[w1 + 1], h[w1 + 1], l[w1 + 1] = 108.2, 108.2, 108.5, 108.0
+    return o, h, l, c, [Block(0, n)], n, day_ord, wk
 
 
 def _fvg_series():  # FVG bullish (formed_idx 5, gap [100.5,102.5], ce 101.5) + atingere CE-50 @11 → S13
@@ -118,6 +150,31 @@ def test_s13_imbalance_fill_activates():
     assert all(s.measurement_end == min(s.entry_idx + TS.HORIZON_GROUP_A, n) for s in sig)
 
 
+def test_s16_prior_day_levels_activates():
+    o, h, l, c, B, n, day = _pdh_series()
+    sig = TS.detect_s16(o, h, l, c, day, B)
+    assert len(sig) == 1
+    s = sig[0]
+    assert s.direction == -1 and s.family == "S16"             # respingere PDH → short
+    assert TS.ELIG_LO <= s.spike_pips < TS.ELIG_HI
+    assert s.measurement_end == min(s.entry_idx + TS.HORIZON_GROUP_C_DAY, n)
+
+
+def test_s17_weekly_levels_activates_complete_only():
+    o, h, l, c, B, n, day, wk = _weekly_series(week0_days=5)
+    sig = TS.detect_s17(o, h, l, c, day, wk, B)
+    assert len(sig) == 1
+    s = sig[0]
+    assert s.direction == -1 and s.family == "S17"
+    assert s.measurement_end == min(s.entry_idx + TS.HORIZON_GROUP_C_WEEK, n)
+
+
+def test_s17_excludes_partial_weekly():
+    # week0 are doar 3 zile → PARTIAL → exclus din populația primară, chiar dacă e atins
+    o, h, l, c, B, n, day, wk = _weekly_series(week0_days=3)
+    assert TS.detect_s17(o, h, l, c, day, wk, B) == []
+
+
 def test_eligibility_filter_skips_out_of_band():
     # spike prea mic: pool foarte aproape de intrare → skip
     n = 20
@@ -150,16 +207,28 @@ def test_no_lookahead_all():
     _assert_no_lookahead(TS.detect_s13, _fvg_series())
     for fn in (TS.detect_s2, TS.detect_s7, TS.detect_s10, TS.detect_s11):
         _assert_no_lookahead(fn, _trend_series())
+    # S16/S17 poartă day_index/week_index (fixe); le împachetăm pentru același helper
+    o, h, l, c, B, n, day = _pdh_series()
+    _assert_no_lookahead(lambda o_, h_, l_, c_, B_: TS.detect_s16(o_, h_, l_, c_, day, B_),
+                         (o, h, l, c, B, n))
+    o, h, l, c, B, n, day, wk = _weekly_series(5)
+    _assert_no_lookahead(lambda o_, h_, l_, c_, B_: TS.detect_s17(o_, h_, l_, c_, day, wk, B_),
+                         (o, h, l, c, B, n))
 
 
 def test_no_destructive_overlap():
     # niciun semnal cu ACELAȘI entry și direcții OPUSE în cadrul aceleiași familii
-    for fn, series in [(TS.detect_s2, _trend_series()), (TS.detect_s7, _trend_series()),
-                       (TS.detect_s10, _trend_series()), (TS.detect_s11, _trend_series()),
-                       (TS.detect_s1, _sweep_series()), (TS.detect_s3, _retest_series()),
-                       (TS.detect_s13, _fvg_series())]:
-        o, h, l, c, B, n = series
-        sig = fn(o, h, l, c, B)
+    o16, h16, l16, c16, B16, n16, day16 = _pdh_series()
+    o17, h17, l17, c17, B17, n17, day17, wk17 = _weekly_series(5)
+    cases: list[list[TS.StrategySignal]] = [
+        TS.detect_s2(*_trend_series()[:5]), TS.detect_s7(*_trend_series()[:5]),
+        TS.detect_s10(*_trend_series()[:5]), TS.detect_s11(*_trend_series()[:5]),
+        TS.detect_s1(*_sweep_series()[:5]), TS.detect_s3(*_retest_series()[:5]),
+        TS.detect_s13(*_fvg_series()[:5]),
+        TS.detect_s16(o16, h16, l16, c16, day16, B16),
+        TS.detect_s17(o17, h17, l17, c17, day17, wk17, B17),
+    ]
+    for sig in cases:
         by_entry: dict[int, set[int]] = {}
         for s in sig:
             by_entry.setdefault(s.entry_idx, set()).add(s.direction)

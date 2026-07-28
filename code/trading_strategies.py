@@ -43,6 +43,9 @@ from market_structure import (
 )
 from liquidity_mechanics import PoolSide, PoolTier, build_pools, detect_sweeps
 from imbalance_mechanics import FVGKind, detect_fvg_reactions, detect_fvgs
+from institutional_levels import (
+    LevelKind, compute_prior_day_levels, compute_prior_week_levels, detect_level_touches,
+)
 
 TICK = 0.10
 COST = 0.40
@@ -347,4 +350,70 @@ def detect_s13(
         sig = _emit("S13", t, entry, direction, spike_price, horizon, n)
         if sig is not None:
             out.append(sig)
+    return out
+
+
+# ─────────────────────────────── S16 — Previous Day Levels ───────────────────────────────
+def detect_s16(
+    open_: Sequence[float], high: Sequence[float], low: Sequence[float], close: Sequence[float],
+    day_index: Sequence[int], blocks: Sequence[Block], horizon: int = HORIZON_GROUP_C_DAY,
+) -> list[StrategySignal]:
+    """PDH/PDL disponibil (Q4) → atingere prin fitil (consumată O DATĂ la prima atingere, D7, deja în
+    `detect_level_touches`) → intrare next-open, direcție = respingere (PDH→short, PDL→long). Spike =
+    distanța la nivel. Orizont GRUPA C = 92 bare (mediană empirică zilnică, Statistician 3.18)."""
+    n = len(close)
+    levels = compute_prior_day_levels(high, low, day_index, blocks)
+    touches = detect_level_touches(high, low, levels, day_index, blocks)
+    out: list[StrategySignal] = []
+    for tch in touches:
+        entry = tch.touch_idx + 1
+        if entry >= n:
+            continue
+        direction = -1 if tch.level.kind is LevelKind.PDH else +1
+        spike_price = open_[entry] - tch.level.price
+        sig = _emit("S16", tch.touch_idx, entry, direction, spike_price, horizon, n)
+        if sig is not None:
+            out.append(sig)
+    return out
+
+
+# ─────────────────────────────── S17 — Weekly Levels ───────────────────────────────
+def detect_s17(
+    open_: Sequence[float], high: Sequence[float], low: Sequence[float], close: Sequence[float],
+    day_index: Sequence[int], week_index: Sequence[int], blocks: Sequence[Block],
+    horizon: int = HORIZON_GROUP_C_WEEK,
+) -> list[StrategySignal]:
+    """Identică S16 pe Weekly H/L. RESTRICȚIE (D-WEEK): doar nivelurile `COMPLETE` (≥5 zile) intră în
+    populația PRIMARĂ; `PARTIAL` excluse (nu pool-ate silențios). Orizont GRUPA C = 460 bare (mediană
+    empirică săptămânală, Statistician 3.18).
+
+    ⚠ EXTENSIE SEMNALATĂ: `detect_level_touches` acoperă DOAR nivelurile zilnice (PDH/PDL) — sare explicit
+    cele săptămânale (fereastră diferită). Reutilizez AICI regula de atingere D7 RATIFICATĂ (fitil la nivel,
+    consumat o dată, fără re-armare) pe fereastra de disponibilitate SĂPTĂMÂNALĂ (`available_idx` →
+    sfârșitul aceleiași săptămâni în bloc, prin `week_index`). NU inventez o regulă nouă — aplic aceeași
+    regulă verbatim pe altă fereastră; NU ating `institutional_levels.py` (înghețat)."""
+    n = len(close)
+    levels = [lv for lv in compute_prior_week_levels(high, low, day_index, week_index, blocks)
+              if lv.completeness == "COMPLETE"]
+    block_of = {b_i: b for b_i, b in enumerate(blocks)}
+    out: list[StrategySignal] = []
+    for lv in levels:
+        block = block_of.get(lv.block_index)
+        if block is None:
+            continue
+        wk = week_index[lv.available_idx]
+        for j in range(lv.available_idx, block.end):
+            if week_index[j] != wk:                          # a ieșit din săptămâna curentă
+                break
+            touched = high[j] >= lv.price if lv.kind is LevelKind.WEEKLY_HIGH else low[j] <= lv.price
+            if not touched:
+                continue
+            entry = j + 1
+            if entry < n:
+                direction = -1 if lv.kind is LevelKind.WEEKLY_HIGH else +1
+                spike_price = open_[entry] - lv.price
+                sig = _emit("S17", j, entry, direction, spike_price, horizon, n)
+                if sig is not None:
+                    out.append(sig)
+            break                                            # consumat la prima atingere (D7)
     return out
