@@ -1,0 +1,25 @@
+{
+ "leaderboard_428": {
+  "3": 3,
+  "2": 7,
+  "1": 51,
+  "0": 367
+ },
+ "leaderboard_412_eligible": {
+  "3": 3,
+  "2": 7,
+  "1": 51,
+  "0": 351
+ },
+ "n_persist_all3": 3,
+ "persisters": [
+  "92481423c6b8",
+  "a53441048c3c",
+  "f5afb9813f83"
+ ],
+ "expected_bars": {
+  "bear": 52403,
+  "bull": 52851,
+  "correction": 25237
+ }
+}
