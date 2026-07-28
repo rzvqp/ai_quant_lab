@@ -17,8 +17,11 @@ from typing import Any, Final
 
 __all__ = [
     "ManifestError", "IdentifierError", "MANIFEST_PATH", "load_manifest", "discovery_window",
-    "entry_file", "verify_data_file", "segmentation_plan",
+    "entry_file", "verify_data_file", "segmentation_plan", "resolve", "context_entry_file",
 ]
+
+# A context-derived entry is readable only once the Statistician has ratified it.
+_RATIFIED_CONTEXT_STATUSES = ("VALIDATED", "CONTEXT_DERIVED_VALIDATED")
 
 _ROOT: Final[str] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MANIFEST_PATH: Final[str] = os.path.join(_ROOT, "config", "split_manifest.json")
@@ -181,6 +184,49 @@ def entry_file(manifest: dict[str, Any], tf: str) -> tuple[str, str]:
     value: Any = dfs.get("value")
     if not isinstance(value, str) or len(value) != 64:
         raise ManifestError(f"timeframe {tf!r} data_file_sha256.value missing/malformed -- fail-closed")
+    return (file_path, value)
+
+
+def resolve(manifest: dict[str, Any], tf: str) -> tuple[str, dict[str, Any]]:
+    """Resolve a requested key to ('timeframe', entry) or ('context', entry). A base market key lives
+    under `timeframes`; a derived-context key (H4_from_M15_v2, D1_from_M15_v2) lives under
+    `context_derived_htf.entries`. Raise IdentifierError if the key is in neither (unknown/ambiguous;
+    no alias/default). A key present in BOTH would be ambiguous -> IdentifierError."""
+    tfs = manifest.get("timeframes")
+    ctx = manifest.get("context_derived_htf")
+    in_tf = isinstance(tfs, dict) and isinstance(tfs.get(tf), dict)
+    ctx_entries = ctx.get("entries") if isinstance(ctx, dict) else None
+    in_ctx = isinstance(ctx_entries, dict) and isinstance(ctx_entries.get(tf), dict)
+    if in_tf and in_ctx:
+        raise IdentifierError(f"timeframe {tf!r} is ambiguous (in both timeframes and context) -- fail-closed")
+    if in_tf:
+        return ("timeframe", tfs[tf])  # type: ignore[index]
+    if in_ctx:
+        return ("context", ctx_entries[tf])  # type: ignore[index]
+    raise IdentifierError(
+        f"timeframe {tf!r} does not correspond to exactly one manifest entry -- fail-closed with "
+        "AMBIGUOUS/UNKNOWN IDENTIFIER (no alias, default, or fallback; name an exact key)."
+    )
+
+
+def context_entry_file(manifest: dict[str, Any], tf: str) -> tuple[str, str]:
+    """For a derived-context key whose status is a ratified state, return (file_path, expected_sha256).
+    Raise ManifestError (sealed) if the entry is not yet ratified -- e.g. GENERATED_PENDING_RATIFICATION
+    -- so a supplied-but-unratified context file is never delivered."""
+    kind, entry = resolve(manifest, tf)
+    if kind != "context":
+        raise ManifestError(f"{tf!r} is not a context-derived entry -- fail-closed")
+    status: Any = entry.get("status")
+    if status not in _RATIFIED_CONTEXT_STATUSES:
+        raise ManifestError(
+            f"context-derived {tf!r} has status {status!r}, not ratified {_RATIFIED_CONTEXT_STATUSES} "
+            "-- 100% SEALED until the Statistician promotes it (Data Acquisition supplies, does not ratify)."
+        )
+    file_path: Any = entry.get("file_path")
+    dfs: Any = entry.get("data_file_sha256")
+    value: Any = dfs.get("value") if isinstance(dfs, dict) else None
+    if not isinstance(file_path, str) or not file_path or not isinstance(value, str) or len(value) != 64:
+        raise ManifestError(f"context-derived {tf!r} missing file_path/data_file_sha256 -- fail-closed")
     return (file_path, value)
 
 

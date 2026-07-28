@@ -24,8 +24,10 @@ import pandas as pd  # type: ignore[import-untyped]
 from .split_manifest import (
     IdentifierError,
     ManifestError,
+    context_entry_file,
     entry_file,
     load_manifest,
+    resolve,
     segmentation_plan,
     verify_data_file,
 )
@@ -33,7 +35,7 @@ from .split_manifest import (
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(_ROOT, "data", "market")
 
-LOADER_VERSION = "flowA_common_v5_runtime_segmentation_2026-07-27"
+LOADER_VERSION = "flowA_common_v6_context_derived_2026-07-27"
 
 # CEO-approved boundary (authorization message, 2026-07-21): the Research Lab's own consumed/invalidated
 # terminal holdout, 2025-10-23 09:15 UTC -> 2026-07-13 06:00 UTC. No observation at or after the start of
@@ -98,11 +100,22 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
     #     modified data file is rejected.
     #   * an unknown/ambiguous timeframe key raises IdentifierError, re-raised DISTINCTLY (not as the
     #     generic HoldoutConfigError) so it is diagnosable apart from a hash or a status failure.
+    plan: dict[str, list[tuple[int, int]]] | None
     try:
         manifest = load_manifest()
-        plan = segmentation_plan(manifest, tf)
-        file_path, expected_sha = entry_file(manifest, tf)
-        data_path = verify_data_file(_ROOT, file_path, expected_sha)
+        kind, _entry = resolve(manifest, tf)
+        if kind == "context":
+            # derived HTF context (H4_from_M15_v2 / D1_from_M15_v2): already discovery-safe by
+            # construction (built under the single-discovery-block rule), so no runtime segmentation --
+            # deliver the whole file. Readable ONLY once the Statistician ratifies it; the same dual hash
+            # (manifest content_hash + this file's sha256) still applies.
+            file_path, expected_sha = context_entry_file(manifest, tf)
+            data_path = verify_data_file(_ROOT, file_path, expected_sha)
+            plan = None
+        else:
+            plan = segmentation_plan(manifest, tf)
+            file_path, expected_sha = entry_file(manifest, tf)
+            data_path = verify_data_file(_ROOT, file_path, expected_sha)
     except IdentifierError:
         raise
     except ManifestError as e:
@@ -113,21 +126,26 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
     n_before = int(len(raw))
     ep = raw["time"]
 
-    # RUNTIME SEGMENTATION. Deliver ONLY the union of the manifest's discovery ranges, intersected with
-    # the caller cutoff (which may tighten but never widen). Every embargo band (leading/intra/trailing
-    # per segment, or M15's single embargo_range) is quarantine; everything outside discovery and
-    # quarantine -- fully-sealed segments, the M15_v2 overlap and post-M15 tail, any unlabeled recent
-    # tail -- is sealed by default. Ranges are half-open [start_epoch, end_epoch), used verbatim from the
-    # manifest, and applied on the epoch column BEFORE any indicator/session/day-of-week computation.
-    in_disc = pd.Series(False, index=raw.index)
-    for s_ep, e_ep in plan["discovery"]:
-        in_disc = in_disc | ((ep >= s_ep) & (ep < e_ep))
-    in_quar = pd.Series(False, index=raw.index)
-    for s_ep, e_ep in plan["quarantine"]:
-        in_quar = in_quar | ((ep >= s_ep) & (ep < e_ep))
-    if bool((in_disc & in_quar).any()):
-        raise HoldoutConfigError(
-            f"{tf}: manifest discovery and quarantine ranges overlap -- fail-closed (malformed plan).")
+    if plan is None:
+        # context-derived: the whole file is discovery-safe; only the caller cutoff may tighten.
+        in_disc = raw["dt"] < cutoff_ts
+        in_quar = pd.Series(False, index=raw.index)
+    else:
+        # RUNTIME SEGMENTATION (base timeframe). Deliver ONLY the union of the manifest's discovery
+        # ranges, intersected with the caller cutoff (may tighten, never widen). Every embargo band
+        # (leading/intra/trailing per segment, or M15's single embargo_range) is quarantine; everything
+        # outside discovery and quarantine -- fully-sealed segments, the M15_v2 overlap and post-M15
+        # tail, any unlabeled recent tail -- is sealed by default. Ranges are half-open
+        # [start_epoch, end_epoch), verbatim from the manifest, applied BEFORE any indicator computation.
+        in_disc = pd.Series(False, index=raw.index)
+        for s_ep, e_ep in plan["discovery"]:
+            in_disc = in_disc | ((ep >= s_ep) & (ep < e_ep))
+        in_quar = pd.Series(False, index=raw.index)
+        for s_ep, e_ep in plan["quarantine"]:
+            in_quar = in_quar | ((ep >= s_ep) & (ep < e_ep))
+        if bool((in_disc & in_quar).any()):
+            raise HoldoutConfigError(
+                f"{tf}: manifest discovery and quarantine ranges overlap -- fail-closed (malformed plan).")
     n_discovery = int(in_disc.sum())
     n_quarantine = int(in_quar.sum())
     n_sealed = n_before - n_discovery - n_quarantine
@@ -155,7 +173,7 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
         manifest_hash=manifest_ch.get("value") if isinstance(manifest_ch, dict) else None,
         data_file_path=file_path,
         data_file_sha256=expected_sha,
-        n_discovery_segments=len(plan["discovery"]),
+        n_discovery_segments=(len(plan["discovery"]) if plan is not None else 0),
         holdout_excluded=True,
         min_date_used=str(d["dt"].min()),
         max_date_used=str(d["dt"].max()),
