@@ -109,4 +109,4 @@ Verificat exact ce cere fiecare familie blocată, din Modulul 5 (Order Flow) și
 
 **Toate familiile rămân `AWAITING_VALIDATION_ENGINE_CODE`. Holdout SEALED, neatins. Niciun backtest rulat.**
 
-Publicat pe `statistician-foundation`; manifestul se incrementează după publicare.
+Publicat pe `statistician-foundation`; manifestul incrementat la v2.5.9 (commit `444e0e8`, `alpha-automation-v1`).
