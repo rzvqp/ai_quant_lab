@@ -22,19 +22,13 @@ STARE DECIZII:
      de sesiune distincte care au contribuit) și `completeness` COMPLETE (5) / PARTIAL (<5).
   Q3-zi (granița de zi) — REZOLVAT de CEO: ancora 17:00 NY DST-aware. Aplicat CALLER-SIDE prin
      `day_index`; modulul nu-l codifică. Neblocant pentru modul.
-  Q3-săptămână (granița de săptămână) — DESCHIS.  Când începe săptămâna (duminică 17:00 NY?).
-     Modulul folosește `week_index` (caller), deci nu blochează modulul, dar blochează derivarea
-     caller-side a lui `week_index`. Ce trebuie decis: definiția graniței de săptămână.
-  Q4 (lag / disponibilitate, analog D1) — NEBLOCANT.  `available_idx` = prima bară a perioadei
-     CURENTE (perioada anterioară e complet cunoscută la deschiderea celei curente) — mecanic
-     forțat, lookahead-safe. Implementat. Ratificarea formală rămâne de confirmat, nu blochează.
-  Q5 (consumare) — DESCHIS; blochează logica de consumare (neimplementată; nu se cere aici).
-     Un nivel măturat o dată se consumă (D7-analog) sau rămâne activ? Modulul DOAR calculează
-     nivelurile; sweeping/consumarea sunt în aval. Ce trebuie decis: consumare vs persistență.
-
-  CLARIFICARE (neblocantă): „Weekly cu rolling pe zile de sesiune" — am implementat săptămâni
-     DISCRETE (grupate pe `week_index`), nu o fereastră glisantă de 5 zile de sesiune. Dacă
-     intenția e o fereastră glisantă, cere re-specificare.
+  Q3-săptămână (granița de săptămână) — RESOLVED (v2.5.6): derivat din Q3-day (17:00 NY), NU ancoră
+     nouă — `week_index` incrementează la prima bară după un gol de >1 zi calendaristică (weekendul).
+     Helper `derive_week_index` (caller-side).
+  Q4 (lag / disponibilitate, analog D1) — RATIFICAT.  `available_idx` = prima bară a perioadei
+     curente — mecanic forțat, lookahead-safe. Implementat.
+  Q5 (consumare) — RATIFICAT (analog D7): un PDH maturat NU rămâne activ la a doua atingere în
+     aceeași zi — consumat la prima atingere în fereastra zilnică. `detect_level_touches`.
 """
 
 from __future__ import annotations
@@ -142,4 +136,65 @@ def compute_prior_week_levels(
             out.append(ReferenceLevel(price=wl, kind=LevelKind.WEEKLY_LOW,
                                       source_period_start=p0, available_idx=cur_first, block_index=b_i,
                                       days_contributing=n_days, completeness=completeness))
+    return out
+
+
+def derive_week_index(day_ordinal: Sequence[int]) -> list[int]:
+    """Derivă `week_index` din golul de weekend (MK-04 Q3-week, RESOLVED): incrementează la prima
+    bară a cărei zi urmează unui gol de >1 zi calendaristică față de ziua anterioară în bloc — NU
+    o ancoră nouă, ci derivat din Q3-day (17:00 NY) deja rezolvat.
+
+    `day_ordinal[i]` = ordinalul zilei calendaristice (17:00-NY) al barei i (monoton, cu goluri la
+    weekend). Derivare CALLER-SIDE — modulele de niveluri primesc `week_index`; asta doar îl produce.
+    """
+    out: list[int] = []
+    week = 0
+    prev_day: int | None = None
+    for d in day_ordinal:
+        if prev_day is not None and d != prev_day and d - prev_day > 1:
+            week += 1                                    # gol >1 zi = weekend → săptămână nouă
+        out.append(week)
+        prev_day = d
+    return out
+
+
+@dataclass(frozen=True)
+class LevelTouch:
+    """Prima atingere a unui nivel PDH/PDL în fereastra lui de disponibilitate (consumare D7)."""
+    level: ReferenceLevel
+    touch_idx: int
+    block_index: int
+
+
+def detect_level_touches(
+    high: Sequence[float],
+    low: Sequence[float],
+    levels: Sequence[ReferenceLevel],
+    day_index: Sequence[int],
+    blocks: Sequence[Block],
+) -> list[LevelTouch]:
+    """Prima atingere a fiecărui nivel PDH/PDL, consumat O DATĂ (D7, MK-04 Q5): un PDH maturat NU
+    rămâne activ la a doua atingere în ACEEAȘI zi.
+
+    Atingere = fitilul ajunge la nivel: `high[j] >= price` (PDH/rezistență) / `low[j] <= price`
+    (PDL/suport). Fereastra de disponibilitate = de la `available_idx` până la ultima bară a
+    aceleiași zile (`day_index`), în același bloc (D4). Doar niveluri zilnice (PDH/PDL); nivelurile
+    săptămânale au altă fereastră și se sar aici.
+    """
+    block_of = {b_i: block for b_i, block in enumerate(blocks)}
+    out: list[LevelTouch] = []
+    for lv in levels:
+        if lv.kind not in (LevelKind.PDH, LevelKind.PDL):
+            continue                                     # doar fereastra zilnică
+        block = block_of.get(lv.block_index)
+        if block is None:
+            continue
+        day = day_index[lv.available_idx]
+        for j in range(lv.available_idx, block.end):
+            if day_index[j] != day:                      # a ieșit din ziua curentă
+                break
+            touched = high[j] >= lv.price if lv.kind is LevelKind.PDH else low[j] <= lv.price
+            if touched:
+                out.append(LevelTouch(level=lv, touch_idx=j, block_index=lv.block_index))
+                break                                    # consumat la prima atingere (D7), fără re-armare
     return out

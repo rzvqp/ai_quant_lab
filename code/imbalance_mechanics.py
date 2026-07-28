@@ -1,46 +1,29 @@
-"""Imbalance mechanics — MK-03. IMPLEMENTARE PARȚIALĂ (doar ce e ratificat).
+"""Imbalance mechanics — MK-03. ÎNCHIS (toate întrebările rezolvate, manifest v2.5.6, 00dfa6f).
 
-Implementat: `detect_fvgs` (FVG pe 3 lumânări), `FairValueGap.ce_50`, `count_bpr` (D-BPR).
-Neimplementat, cu `NotImplementedError` + întrebare deschisă: `detect_inverse_fvgs` (IFVG).
+Implementat: `detect_fvgs`, `FairValueGap.ce_50`, `count_bpr` (D-BPR), `detect_inverse_fvgs`
+(Q4), `detect_fvg_reactions` (Q5+Q6 gradient + consumare D7).
 
-Definiții pure. NU citește date, NU apelează `load()`, NU cunoaște manifestul. Primește
-array-uri + blocuri; returnează structuri. Rămâne inert până când o ipoteză pre-înregistrată
-îl folosește (`no_unregistered_research_lines_rule`).
-
+Definiții pure. NU citește date, NU apelează `load()`, NU cunoaște manifestul. Rămâne inert
+până când o ipoteză pre-înregistrată îl folosește (`no_unregistered_research_lines_rule`).
 Depinde de `market_structure` pentru `Block`.
 
 CONCEPTE:
-  FVG   Fair Value Gap. Imbalanță pe 3 bare. Bullish: low[i+1] > high[i-1]; nivelul
-        = [high[i-1], low[i+1]]. Bearish: high[i+1] < low[i-1]; nivelul = [high[i+1], low[i-1]].
-  CE    Consequent Encroachment. Mijlocul 50% al FVG-ului (proprietate `ce_50`).
-  IFVG  Inverse FVG. Un FVG „închis complet de corpul opus" care își inversează polaritatea.
-  BPR   Balanced Price Range. Suprapunere bullish×bearish FVG în fereastră ≤3 bare (D-BPR).
+  FVG   Bullish: low[i+1]>high[i-1], nivel [high[i-1],low[i+1]]. Bearish simetric.
+  CE    Consequent Encroachment, mijloc 50% (`ce_50`).
+  IFVG  Inverse FVG. Prima close ulterioară dincolo de marginea îndepărtată → polaritate inversată.
+  BPR   Suprapunere bullish×bearish FVG în fereastră ≤3 bare (D-BPR).
 
-STARE DECIZII (echivalentele lui D1-D7):
-
-  Q1 (lookahead, analog D1) — NEBLOCANT.  `confirmed_idx = i+1` e MECANIC FORȚAT (un FVG pe
-     3 bare nu poate fi cunoscut înainte de bara i+1; nu există alternativă lookahead-safe,
-     exact ca D1). Implementat cu i+1. Ratificarea FORMALĂ a convenției rămâne de confirmat,
-     dar nu blochează — nu e o alegere liberă.
-  Q2 (graniță de bloc, analog D3) — DESCHIS; blochează DOAR durata de viață.  Formarea FVG
-     confinează fereastra de 3 bare într-un singur bloc (invariantul de carantină D3/D4 deja
-     stabilit — o fereastră care traversează o graniță e fără sens; NU e o decizie nouă).
-     DESCHIS rămâne: SUPRAVIEȚUIEȘTE un FVG deja format unei granițe de bloc ulterioare
-     (durata de viață / mitigare cross-bloc)? Blochează logica de supraviețuire/mitigare
-     cross-bloc, NU detectarea FVG. Ce trebuie decis: FVG-ul se invalidează la graniță (ca D4)
-     sau persistă?
-  D-BPR (RATIFICAT) — IMPLEMENTAT în `count_bpr`.  Numărătoare la 0,00/0,10/0,25, fără îngheț
-     (regula de îngheț — cea mai mică toleranță cu n≥25 — e a consumatorului, în avans).
-  Q4 (inversare IFVG, analog D6) — DESCHIS; blochează `detect_inverse_fvgs`.  „Închis complet
-     de corpul opus" e AMBIGUU: (a) o singură bară de sens opus al cărei CORP (open-close)
-     acoperă integral golul, SAU (b) o închidere (close) dincolo de marginea îndepărtată a
-     golului? Și: wick sau doar corp? Ce trebuie decis: definiția exactă a inversării.
-  Q5 (consumare / re-armare, analog D7) — DESCHIS; blochează logica de consumare (neimplementată).
-     Un FVG mitigat (atins de CE 50% sau umplut integral) se consumă (o singură dată) sau rămâne
-     activ (re-armare)? Ce trebuie decis: consumare vs re-armare.
-  Q6 (mitigare CE) — DESCHIS; blochează DETECTAREA mitigării, NU nivelul.  NIVELUL CE (`ce_50`)
-     e neambiguu (mijloc 50%) — implementat. DESCHIS: atingerea CE = wick sau close? Umplerea
-     integrală = wick sau close? Ce trebuie decis: criteriul de atingere.
+DECIZII (rezolvate — reutilizări de decizii existente, NU convenții noi):
+  Q1 (lookahead) — RATIFICAT: `confirmed_idx = i+1`, mecanic forțat (analog D1).
+  Q2 (graniță de bloc) — RATIFICAT: FVG-urile NU supraviețuiesc unei granițe de bloc (analog D4);
+     la sfârșit de bloc ies din scop. Toate funcțiile confinează în bloc.
+  D-BPR — `count_bpr`, numărătoare la 0,00/0,10/0,25, fără îngheț (regula e a consumatorului).
+  Q4 (inversare IFVG) — RESOLVED: prima bară ulterioară cu `close<lower` (bull)/`close>upper`
+     (bear) — CLOSE decisiv, nu fitil; verbatim din e010/e012. `detect_inverse_fvgs`.
+  Q5 (consumare) — RATIFICAT (analog D7): consumat o dată la prima atingere CE-50, fără re-armare,
+     în blocul curent (fără dimensiune sesiune/zi). `detect_fvg_reactions.ce50_touch_idx`.
+  Q6 (gradient CE) — RATIFICAT (asimetrie fitil/close): treapta 1 CE-50 (FITIL, low<=ce_50),
+     treapta 2 umplere (FITIL, low<=lower), treapta 3 inversare (CLOSE, close<lower). Simetric bear.
 """
 
 from __future__ import annotations
@@ -120,10 +103,88 @@ def detect_inverse_fvgs(
     fvgs: Sequence[FairValueGap],
     blocks: Sequence[Block],
 ) -> list[FairValueGap]:
-    """IFVG. NEIMPLEMENTAT — Q4: „închis complet de corpul opus" e ambiguu (corp-engulf vs
-    close dincolo de marginea îndepărtată; wick vs corp). Necesită definiția exactă a inversării.
+    """IFVG (MK-03 Q4, RESOLVED, manifest v2.5.6): un FVG bullish se inversează PRIMA DATĂ când o
+    bară ULTERIOARĂ are `close < lower` (marginea îndepărtată/joasă) — violare decisivă prin CLOSE,
+    nu fitil intrabar; bearish simetric: `close > upper`. Definiție reutilizată VERBATIM din
+    e010_breaker_block_snatch.py și e012_inverted_fvg.py (identică în ambele). NU engulf pe o bară;
+    prima închidere ulterioară dincolo de margine, oricâte bare durează. IFVG = entitate NOUĂ cu
+    polaritate inversată, aceeași zonă, „formată" la bara de inversare. Confinat în bloc (D4).
     """
-    raise NotImplementedError("MK-03 Q4: definitia IFVG 'inchis complet de corp opus' e ambigua")
+    block_of = {b_i: block for b_i, block in enumerate(blocks)}
+    out: list[FairValueGap] = []
+    for f in fvgs:
+        block = block_of.get(f.block_index)
+        if block is None:
+            continue
+        for j in range(f.confirmed_idx + 1, block.end):        # bară ulterioară, același bloc (D4)
+            if f.kind is FVGKind.BULLISH and close[j] < f.lower:
+                out.append(FairValueGap(formed_idx=j, confirmed_idx=j, lower=f.lower, upper=f.upper,
+                                        kind=FVGKind.BEARISH, block_index=f.block_index))
+                break
+            if f.kind is FVGKind.BEARISH and close[j] > f.upper:
+                out.append(FairValueGap(formed_idx=j, confirmed_idx=j, lower=f.lower, upper=f.upper,
+                                        kind=FVGKind.BULLISH, block_index=f.block_index))
+                break
+    return out
+
+
+@dataclass(frozen=True)
+class FvgReaction:
+    """Reacția unui FVG: gradientul în 3 trepte (Q6) + consumarea D7 (Q5). Indici None dacă treapta
+    nu s-a produs în bloc (D4)."""
+    formed_idx: int
+    kind: FVGKind
+    ce50_touch_idx: int | None      # treapta 1 (consumare D7, FITIL): low<=ce_50 / high>=ce_50
+    full_fill_idx: int | None       # treapta 2 (umplere, FITIL): low<=lower / high>=upper
+    inversion_idx: int | None       # treapta 3 (inversare, CLOSE): close<lower / close>upper (Q4)
+    block_index: int
+
+
+def detect_fvg_reactions(
+    high: Sequence[float],
+    low: Sequence[float],
+    close: Sequence[float],
+    fvgs: Sequence[FairValueGap],
+    blocks: Sequence[Block],
+) -> list[FvgReaction]:
+    """Gradientul în 3 trepte per FVG (Q6) + consumarea (Q5, D7), confinat în bloc (D4).
+
+    Treapta 1 — CE-50, la nivel de FITIL = CONSUMAREA (D7): `low<=ce_50` (bull) / `high>=ce_50`
+    (bear), prima atingere. Treapta 2 — umplere completă, FITIL: `low<=lower` / `high>=upper`.
+    Treapta 3 — inversare, CLOSE (Q4): `close<lower` / `close>upper`. Consumarea (D7) e la prima
+    atingere CE-50; umplerea și inversarea sunt proprietăți suplimentare înregistrate, NU re-armări.
+    Lifetime = blocul curent (fără dimensiune sesiune/zi — respins explicit în rezoluție).
+    """
+    block_of = {b_i: block for b_i, block in enumerate(blocks)}
+    out: list[FvgReaction] = []
+    for f in fvgs:
+        block = block_of.get(f.block_index)
+        if block is None:
+            continue
+        ce = f.ce_50
+        ce50: int | None = None
+        full: int | None = None
+        inv: int | None = None
+        for j in range(f.confirmed_idx + 1, block.end):
+            if f.kind is FVGKind.BULLISH:
+                if ce50 is None and low[j] <= ce:
+                    ce50 = j
+                if full is None and low[j] <= f.lower:
+                    full = j
+                if inv is None and close[j] < f.lower:
+                    inv = j
+            else:
+                if ce50 is None and high[j] >= ce:
+                    ce50 = j
+                if full is None and high[j] >= f.upper:
+                    full = j
+                if inv is None and close[j] > f.upper:
+                    inv = j
+            if ce50 is not None and full is not None and inv is not None:
+                break
+        out.append(FvgReaction(formed_idx=f.formed_idx, kind=f.kind, ce50_touch_idx=ce50,
+                               full_fill_idx=full, inversion_idx=inv, block_index=f.block_index))
+    return out
 
 
 def count_bpr(

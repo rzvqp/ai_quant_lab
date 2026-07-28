@@ -60,9 +60,9 @@ def test_fvg_window_confined_to_block():
         assert (f.block_index == 0 and 1 <= f.formed_idx <= 1) or (f.block_index == 1 and 4 <= f.formed_idx <= 4)
 
 
-def test_detect_inverse_fvgs_is_open_question():
-    with pytest.raises(NotImplementedError):
-        detect_inverse_fvgs([1.0], [1.0], [1.0], [], [Block(0, 1)])
+def test_detect_inverse_fvgs_now_implemented():
+    # Q4 rezolvat (v2.5.6): nu mai ridică NotImplementedError; [] pe input gol de FVG-uri
+    assert detect_inverse_fvgs([1.0], [1.0], [1.0], [], [Block(0, 1)]) == []
 
 
 # ─────────────────────────── MK-03: count_bpr (D-BPR) ────────────────────────
