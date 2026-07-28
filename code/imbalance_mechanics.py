@@ -1,47 +1,46 @@
-"""Imbalance mechanics — MK-03. SCHELET NEIMPLEMENTAT.
+"""Imbalance mechanics — MK-03. IMPLEMENTARE PARȚIALĂ (doar ce e ratificat).
 
-MK-03 NU e ratificat. Deciziile echivalente lui D1-D7 (pentru structura/lichiditate)
-NU există încă pentru imbalanțe. Acest fișier declară semnături, tipuri și definiții,
-cu `NotImplementedError` în corp. Deciziile deschise sunt scrise ca ÎNTREBĂRI, nu
-alese aici — le trimite CEO Statisticianului. A implementa acum ar însemna să aleg eu
-acele decizii.
+Implementat: `detect_fvgs` (FVG pe 3 lumânări), `FairValueGap.ce_50`, `count_bpr` (D-BPR).
+Neimplementat, cu `NotImplementedError` + întrebare deschisă: `detect_inverse_fvgs` (IFVG).
 
-Depinde (când va fi implementat) de `market_structure` pentru `Block`.
+Definiții pure. NU citește date, NU apelează `load()`, NU cunoaște manifestul. Primește
+array-uri + blocuri; returnează structuri. Rămâne inert până când o ipoteză pre-înregistrată
+îl folosește (`no_unregistered_research_lines_rule`).
 
-CONCEPTE (definiții ICT/SMC, pure geometrie de preț):
+Depinde de `market_structure` pentru `Block`.
 
-  FVG   Fair Value Gap. Imbalanță pe 3 bare. Bullish: low[i+1] > high[i-1] (gol
-        lăsat de bara i). Bearish: high[i+1] < low[i-1]. Nivelul gap-ului = [high[i-1],
-        low[i+1]] (bullish) / [high[i+1], low[i-1]] (bearish).
-  CE    Consequent Encroachment. Mijlocul 50% al FVG-ului — nivelul de referință
-        pentru mitigare parțială.
-  IFVG  Inverse FVG. Un FVG a cărui limită e violată și care își inversează polaritatea
-        (suport devine rezistență).
-  BPR   Balanced Price Range. Suprapunerea unui FVG bullish și a unuia bearish pe
-        ACEEAȘI fereastră de preț — o zonă de dublă imbalanță.
+CONCEPTE:
+  FVG   Fair Value Gap. Imbalanță pe 3 bare. Bullish: low[i+1] > high[i-1]; nivelul
+        = [high[i-1], low[i+1]]. Bearish: high[i+1] < low[i-1]; nivelul = [high[i+1], low[i-1]].
+  CE    Consequent Encroachment. Mijlocul 50% al FVG-ului (proprietate `ce_50`).
+  IFVG  Inverse FVG. Un FVG „închis complet de corpul opus" care își inversează polaritatea.
+  BPR   Balanced Price Range. Suprapunere bullish×bearish FVG în fereastră ≤3 bare (D-BPR).
 
-ÎNTREBĂRI DESCHISE PENTRU STATISTICIAN (echivalentele lui D1-D7, neratificate):
+STARE DECIZII (echivalentele lui D1-D7):
 
-  Q1 (lookahead, analog D1)  Un FVG la bara i cere bara i+1. Deci `confirmed_idx = i+1`.
-     Se ratifică aceeași convenție ca D1 (consumatorii forward folosesc confirmed_idx)?
-  Q2 (graniță de bloc, analog D3)  Supraviețuiește un FVG unei granițe de bloc de
-     descoperire? Se resetează mașina de stare ca la D3, sau imbalanțele au altă regulă?
-  D-BPR (RATIFICAT — STAT-LM001-GEOMETRY-MK03-MK04-v1.0)  BPR = suprapunere între un FVG
-     bullish și unul bearish într-o fereastră de MAXIM 3 bare. Toleranța NU e fixă la 0,00:
-     se NUMĂRĂ evenimentele la trei toleranțe — 0,00 / 0,10 / 0,25 dolari — pur descriptiv.
-     REGULA DE ÎNGHEȚ (fixată ÎNAINTE de orice numărătoare, ca să nu fie aleasă după cifre):
-     se îngheață CEA MAI MICĂ toleranță a cărei numărătoare atinge n≥25. Dacă 0,00 atinge
-     → 0,00 (cea mai strictă/defensabilă); altfel 0,10; altfel 0,25. Dacă nici 0,25 nu
-     atinge n≥25, BPR NU e testabilă la M15_v2 cu acest n — se raportează ca atare, NU se
-     forțează un prag artificial. Monotonă și mecanică: favorizează precizia maximă fezabilă
-     statistic, nu „mai multe evenimente". (Motiv: prețul aurului are 2 zecimale — coincidența
-     exactă la 0,00 între două goluri independente e improbabilă; zero la 0,00 nu ar dovedi
-     absența BPR, ci doar o precizie pe care prețul n-o are.)
-  Q4 (inversare IFVG, analog D6)  Când se consideră un FVG „inversat" — close prin el,
-     sau doar wick? Integral pe bara curentă (fără lookahead) sau pe fereastră?
-  Q5 (consumare / re-armare, analog D7)  Un FVG mitigat (atins de CE 50% sau umplut
-     integral) se consumă și nu mai produce semnale, sau rămâne activ (re-armare)?
-  Q6 (mitigare CE)  Atingerea CE 50% = wick sau close? Umplerea integrală = wick sau close?
+  Q1 (lookahead, analog D1) — NEBLOCANT.  `confirmed_idx = i+1` e MECANIC FORȚAT (un FVG pe
+     3 bare nu poate fi cunoscut înainte de bara i+1; nu există alternativă lookahead-safe,
+     exact ca D1). Implementat cu i+1. Ratificarea FORMALĂ a convenției rămâne de confirmat,
+     dar nu blochează — nu e o alegere liberă.
+  Q2 (graniță de bloc, analog D3) — DESCHIS; blochează DOAR durata de viață.  Formarea FVG
+     confinează fereastra de 3 bare într-un singur bloc (invariantul de carantină D3/D4 deja
+     stabilit — o fereastră care traversează o graniță e fără sens; NU e o decizie nouă).
+     DESCHIS rămâne: SUPRAVIEȚUIEȘTE un FVG deja format unei granițe de bloc ulterioare
+     (durata de viață / mitigare cross-bloc)? Blochează logica de supraviețuire/mitigare
+     cross-bloc, NU detectarea FVG. Ce trebuie decis: FVG-ul se invalidează la graniță (ca D4)
+     sau persistă?
+  D-BPR (RATIFICAT) — IMPLEMENTAT în `count_bpr`.  Numărătoare la 0,00/0,10/0,25, fără îngheț
+     (regula de îngheț — cea mai mică toleranță cu n≥25 — e a consumatorului, în avans).
+  Q4 (inversare IFVG, analog D6) — DESCHIS; blochează `detect_inverse_fvgs`.  „Închis complet
+     de corpul opus" e AMBIGUU: (a) o singură bară de sens opus al cărei CORP (open-close)
+     acoperă integral golul, SAU (b) o închidere (close) dincolo de marginea îndepărtată a
+     golului? Și: wick sau doar corp? Ce trebuie decis: definiția exactă a inversării.
+  Q5 (consumare / re-armare, analog D7) — DESCHIS; blochează logica de consumare (neimplementată).
+     Un FVG mitigat (atins de CE 50% sau umplut integral) se consumă (o singură dată) sau rămâne
+     activ (re-armare)? Ce trebuie decis: consumare vs re-armare.
+  Q6 (mitigare CE) — DESCHIS; blochează DETECTAREA mitigării, NU nivelul.  NIVELUL CE (`ce_50`)
+     e neambiguu (mijloc 50%) — implementat. DESCHIS: atingerea CE = wick sau close? Umplerea
+     integrală = wick sau close? Ce trebuie decis: criteriul de atingere.
 """
 
 from __future__ import annotations
@@ -64,7 +63,7 @@ class FairValueGap:
     """Bara de mijloc (i) a tiparului de 3 bare."""
 
     confirmed_idx: int
-    """Bara de la care gap-ul e cunoscut. Q1: propus i+1, neratificat."""
+    """Bara de la care gap-ul e cunoscut. = i+1 (mecanic forțat, Q1)."""
 
     upper: float
     lower: float
@@ -91,11 +90,27 @@ def detect_fvgs(
     low: Sequence[float],
     blocks: Sequence[Block],
 ) -> list[FairValueGap]:
-    """Detectează Fair Value Gaps pe 3 bare, confinate în blocuri.
+    """FVG pe 3 lumânări, cu fereastra [i-1, i, i+1] confinată integral într-un bloc.
 
-    NEIMPLEMENTAT — depinde de Q1 (confirmed_idx) și Q2 (granițe de bloc).
+    Bullish: `low[i+1] > high[i-1]` → nivel [high[i-1], low[i+1]].
+    Bearish: `high[i+1] < low[i-1]` → nivel [high[i+1], low[i-1]].
+    `formed_idx = i`, `confirmed_idx = i+1` (mecanic forțat, Q1). Confinarea ferestrei în
+    bloc e invariantul de carantină D3/D4, nu Q2 (supraviețuirea rămâne deschisă).
     """
-    raise NotImplementedError("MK-03 neratificat: Q1 (lookahead), Q2 (graniță de bloc)")
+    out: list[FairValueGap] = []
+    for b_i, block in enumerate(blocks):
+        for i in range(block.start + 1, block.end - 1):   # fereastra 3 bare în bloc
+            if low[i + 1] > high[i - 1]:
+                out.append(FairValueGap(
+                    formed_idx=i, confirmed_idx=i + 1,
+                    lower=high[i - 1], upper=low[i + 1],
+                    kind=FVGKind.BULLISH, block_index=b_i))
+            elif high[i + 1] < low[i - 1]:
+                out.append(FairValueGap(
+                    formed_idx=i, confirmed_idx=i + 1,
+                    lower=high[i + 1], upper=low[i - 1],
+                    kind=FVGKind.BEARISH, block_index=b_i))
+    return out
 
 
 def detect_inverse_fvgs(
@@ -105,11 +120,10 @@ def detect_inverse_fvgs(
     fvgs: Sequence[FairValueGap],
     blocks: Sequence[Block],
 ) -> list[FairValueGap]:
-    """Detectează FVG-uri inversate (IFVG).
-
-    NEIMPLEMENTAT — depinde de Q4 (criteriul de inversare) și Q5 (consumare).
+    """IFVG. NEIMPLEMENTAT — Q4: „închis complet de corpul opus" e ambiguu (corp-engulf vs
+    close dincolo de marginea îndepărtată; wick vs corp). Necesită definiția exactă a inversării.
     """
-    raise NotImplementedError("MK-03 neratificat: Q4 (inversare), Q5 (consumare)")
+    raise NotImplementedError("MK-03 Q4: definitia IFVG 'inchis complet de corp opus' e ambigua")
 
 
 def count_bpr(
@@ -118,10 +132,24 @@ def count_bpr(
     tolerances: tuple[float, ...] = (0.0, 0.10, 0.25),
     max_window_bars: int = 3,
 ) -> dict[float, int]:
-    """Numără suprapunerile bullish×bearish FVG (fereastră ≤ max_window_bars) la fiecare
-    toleranță — pur descriptiv. Regula de îngheț (cea mai mică toleranță cu n≥25) e a
-    consumatorului, decisă ÎNAINTE de a vedea cifrele (D-BPR, vezi docstring-ul modulului).
+    """D-BPR: numără suprapunerile bullish×bearish FVG (același bloc, `formed_idx` în ≤
+    `max_window_bars`) la fiecare toleranță — pur descriptiv, FĂRĂ îngheț.
 
-    NEIMPLEMENTAT — restul deciziilor MK-03 (Q1/Q2/Q4/Q5/Q6) nu sunt ratificate.
+    Suprapunere la toleranța `t`: `max(lower_a, lower_b) - min(upper_a, upper_b) <= t`.
+    La `t=0` cere intersecție/atingere strictă; monotonă în `t` (0→0,10→0,25). Regula de
+    îngheț (cea mai mică toleranță cu n≥25) e a consumatorului, decisă în avans — NU aici.
     """
-    raise NotImplementedError("MK-03: numărătoarea BPR e specificată (D-BPR) dar restul MK-03 neratificat (Q1/Q2/Q4/Q5/Q6)")
+    bulls = [f for f in fvgs if f.kind is FVGKind.BULLISH]
+    bears = [f for f in fvgs if f.kind is FVGKind.BEARISH]
+    counts: dict[float, int] = {t: 0 for t in tolerances}
+    for a in bulls:
+        for b in bears:
+            if a.block_index != b.block_index:
+                continue
+            if abs(a.formed_idx - b.formed_idx) > max_window_bars:
+                continue
+            gap = max(a.lower, b.lower) - min(a.upper, b.upper)   # ≤0 = suprapunere; >0 = distanță
+            for t in tolerances:
+                if gap <= t:
+                    counts[t] += 1
+    return counts
