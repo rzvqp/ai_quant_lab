@@ -42,6 +42,7 @@ from market_structure import (
     detect_breaks, detect_swings, label_structure,
 )
 from liquidity_mechanics import PoolSide, PoolTier, build_pools, detect_sweeps
+from imbalance_mechanics import FVGKind, detect_fvg_reactions, detect_fvgs
 
 TICK = 0.10
 COST = 0.40
@@ -312,6 +313,38 @@ def detect_s11(
             continue
         spike_price = open_[entry] - br.reference_swing.price
         sig = _emit("S11", br.idx, entry, direction, spike_price, horizon, n)
+        if sig is not None:
+            out.append(sig)
+    return out
+
+
+# ─────────────────────────────── S13 — Liquidity Void / Imbalance Fill ───────────────────────────────
+def detect_s13(
+    open_: Sequence[float], high: Sequence[float], low: Sequence[float], close: Sequence[float],
+    blocks: Sequence[Block], horizon: int = HORIZON_GROUP_A,
+) -> list[StrategySignal]:
+    """FVG se formează → atingere CE-50 (fitil, consumare D7 = `ce50_touch_idx`) → intrare next-open,
+    direcție = ÎNAPOI spre direcția ORIGINALĂ a FVG (bullish→long, bearish→short; pariu pe golul respectat
+    ca suport/rezistență). Spike = distanța de la intrare la CE-50. Orizont GRUPA A (20). Reutilizează
+    `imbalance_mechanics` verbatim (MK-03); consumarea e deja implementată în `detect_fvg_reactions`."""
+    n = len(close)
+    fvgs = detect_fvgs(high, low, blocks)
+    reactions = detect_fvg_reactions(high, low, close, fvgs, blocks)
+    ce_by: dict[tuple[int, int], float] = {(f.formed_idx, f.block_index): f.ce_50 for f in fvgs}
+    out: list[StrategySignal] = []
+    for r in reactions:
+        if r.ce50_touch_idx is None:                          # doar FVG-uri efectiv atinse la CE-50 (D7)
+            continue
+        ce = ce_by.get((r.formed_idx, r.block_index))
+        if ce is None:
+            continue
+        t = r.ce50_touch_idx
+        entry = t + 1
+        if entry >= n:
+            continue
+        direction = +1 if r.kind is FVGKind.BULLISH else -1
+        spike_price = open_[entry] - ce
+        sig = _emit("S13", t, entry, direction, spike_price, horizon, n)
         if sig is not None:
             out.append(sig)
     return out

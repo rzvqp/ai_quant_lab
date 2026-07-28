@@ -55,6 +55,15 @@ def _retest_series():  # BOS_BULL @16 apoi retest cu bară largă de respingere 
     return o, h, l, c, [Block(0, n)], n
 
 
+def _fvg_series():  # FVG bullish (formed_idx 5, gap [100.5,102.5], ce 101.5) + atingere CE-50 @11 → S13
+    n = 22
+    o = [99.0, 99.5, 100.0, 100.2, 100.3, 101.3, 103.0, 103.5, 103.6, 103.5, 103.4, 102.0, 103.6, 104.0] + [104.0] * 8
+    h = [99.3, 99.8, 100.3, 100.5, 100.5, 101.6, 103.3, 103.8, 103.9, 103.8, 103.7, 102.3, 103.9, 104.3] + [104.3] * 8
+    l = [98.7, 99.2, 99.7, 99.9, 100.1, 101.0, 102.5, 103.2, 103.3, 103.2, 103.1, 101.4, 103.3, 103.7] + [103.7] * 8
+    c = [99.0, 99.5, 100.0, 100.2, 100.3, 101.3, 103.0, 103.5, 103.6, 103.5, 103.4, 103.5, 103.6, 104.0] + [104.0] * 8
+    return o, h, l, c, [Block(0, n)], n
+
+
 # ── activare per familie ────────────────────────────────────────────────────────────────────────
 def test_s1_sweep_reversal_activates():
     o, h, l, c, B, n = _sweep_series()
@@ -100,6 +109,15 @@ def test_s11_structure_break_reversal_activates():
     assert len(sig) >= 1 and all(s.direction == -1 and s.family == "S11" for s in sig)
 
 
+def test_s13_imbalance_fill_activates():
+    o, h, l, c, B, n = _fvg_series()
+    sig = TS.detect_s13(o, h, l, c, B)
+    assert len(sig) >= 1 and all(s.family == "S13" for s in sig)
+    longs = [s for s in sig if s.direction == +1]
+    assert longs and all(TS.ELIG_LO <= s.spike_pips < TS.ELIG_HI for s in sig)   # bullish FVG → long
+    assert all(s.measurement_end == min(s.entry_idx + TS.HORIZON_GROUP_A, n) for s in sig)
+
+
 def test_eligibility_filter_skips_out_of_band():
     # spike prea mic: pool foarte aproape de intrare → skip
     n = 20
@@ -126,18 +144,20 @@ def _assert_no_lookahead(fn: Detector, series) -> None:
     assert before == after
 
 
-def test_no_lookahead_all_group1():
+def test_no_lookahead_all():
     _assert_no_lookahead(TS.detect_s1, _sweep_series())
     _assert_no_lookahead(TS.detect_s3, _retest_series())
+    _assert_no_lookahead(TS.detect_s13, _fvg_series())
     for fn in (TS.detect_s2, TS.detect_s7, TS.detect_s10, TS.detect_s11):
         _assert_no_lookahead(fn, _trend_series())
 
 
-def test_no_destructive_overlap_group1():
+def test_no_destructive_overlap():
     # niciun semnal cu ACELAȘI entry și direcții OPUSE în cadrul aceleiași familii
     for fn, series in [(TS.detect_s2, _trend_series()), (TS.detect_s7, _trend_series()),
                        (TS.detect_s10, _trend_series()), (TS.detect_s11, _trend_series()),
-                       (TS.detect_s1, _sweep_series()), (TS.detect_s3, _retest_series())]:
+                       (TS.detect_s1, _sweep_series()), (TS.detect_s3, _retest_series()),
+                       (TS.detect_s13, _fvg_series())]:
         o, h, l, c, B, n = series
         sig = fn(o, h, l, c, B)
         by_entry: dict[int, set[int]] = {}
