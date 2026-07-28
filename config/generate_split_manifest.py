@@ -287,13 +287,77 @@ def build_manifest() -> dict[str, Any]:
         "entries": {
             "H4_from_M15_v2": {
                 "aggregation_bars": 16, "bar_seconds": 14400,
-                "data_file_sha256": {"value": None, "status": "AWAITING_DATA_ACQUISITION_GENERATION"},
-                "status": "AWAITING_GENERATION",
+                "file_path": "data/market/OANDA_XAUUSD_H4_from_M15_v2.csv",
+                "window_convention": "Anchored 17:00 America/New_York (DST-aware), per code/resample_ny.py. sub = count of constituent M15_v2 bars.",
+                "generation": {"bars_with_rule": 12832, "bars_without_rule": 23186, "bars_eliminated": 10354,
+                               "generated_by": "Data Acquisition, Mandate 2.7"},
+                "data_file_sha256": {
+                    "value": sha256_file(os.path.join(_ROOT, "data", "market", "OANDA_XAUUSD_H4_from_M15_v2.csv")),
+                    "status": "CONFIRMED_BY_STATISTICIAN",
+                    "source": "Independently computed by Statistician directly against the physical file at generation time; matches Data Acquisition's reported value exactly.",
+                },
+                "rule_compliance_note": (
+                    "Boundary compliance (no HTF bar straddles a discovery-block edge) rests on Data "
+                    "Acquisition's own test suite (tests/test_loader_holdout_boundary.py, 28/28 passing, "
+                    "including dedicated straddle/coverage-gap/bar-count checks) -- NOT independently "
+                    "re-derived here. A naive UTC-aligned spot-check by Statistician flagged false "
+                    "positives because the real windowing is 17:00-America/New_York DST-aware, not "
+                    "simple UTC alignment; reimplementing that check correctly was out of scope for this "
+                    "ratification. File integrity (hash, row count) IS independently verified above."
+                ),
+                "status": "CONTEXT_DERIVED_VALIDATED",
             },
             "D1_from_M15_v2": {
                 "aggregation_bars": 96, "bar_seconds": 86400,
-                "data_file_sha256": {"value": None, "status": "AWAITING_DATA_ACQUISITION_GENERATION"},
-                "status": "AWAITING_GENERATION",
+                "file_path": "data/market/OANDA_XAUUSD_D1_from_M15_v2.csv",
+                "window_convention": "Anchored 17:00 America/New_York (DST-aware), per code/resample_ny.py. sub = count of constituent M15_v2 bars.",
+                "generation": {"bars_with_rule": 2141, "bars_without_rule": 3878, "bars_eliminated": 1737,
+                               "generated_by": "Data Acquisition, Mandate 2.7"},
+                "data_file_sha256": {
+                    "value": sha256_file(os.path.join(_ROOT, "data", "market", "OANDA_XAUUSD_D1_from_M15_v2.csv")),
+                    "status": "CONFIRMED_BY_STATISTICIAN",
+                    "source": "Independently computed by Statistician directly against the physical file at generation time; matches Data Acquisition's reported value exactly.",
+                },
+                "rule_compliance_note": "See H4_from_M15_v2.rule_compliance_note -- identical basis.",
+                "status": "CONTEXT_DERIVED_VALIDATED",
+            },
+            "H1_from_M15_v2": {
+                "aggregation_bars": 4, "bar_seconds": 3600,
+                "file_path": "acquisition_staging/OANDA_XAUUSD_H1_from_M15_v2_UNREGISTERED.csv",
+                "window_convention": "Anchored UTC hour (matches native H1), per code/resample_ny.py. sub = count of constituent M15_v2 bars.",
+                "generation": {"bars_with_rule": 49580, "bars_without_rule": 89549, "bars_eliminated": 39969,
+                               "generated_by": "Data Acquisition, Mandate 2.7 (on separate CEO instruction)"},
+                "data_file_sha256": {
+                    "value": sha256_file(os.path.join(_ROOT, "acquisition_staging", "OANDA_XAUUSD_H1_from_M15_v2_UNREGISTERED.csv")),
+                    "status": "CONFIRMED_BY_STATISTICIAN",
+                    "source": "Independently computed by Statistician directly against the physical file at generation time; matches Data Acquisition's reported value (DATA_ACQUISITION_FINAL_REPORT.md line 140, commit 774acea) exactly.",
+                },
+                "rule_compliance_note": "See H4_from_M15_v2.rule_compliance_note -- identical basis.",
+                "classification_delimitation": (
+                    "H1_from_M15_v2 is a CONTEXT-DERIVED ARTIFACT (identical mechanical rule as H4/D1 "
+                    "above -- no new methodology), registered for the interval M15_v2's discovery blocks "
+                    "happen to cover (roughly 2011-2021), specifically to unblock Research Lab's mstrat "
+                    "context guard. It does NOT substitute for, replace, or speak to the status of the "
+                    "separately-acquired NATIVE H1 dataset (its own timeframe entry above, still "
+                    "AWAITING_REGIME_MAP, untouched by this registration)."
+                ),
+                "governance_note_operational_motivation_disclosed": (
+                    "Flagged explicitly, per instruction, rather than accepted silently: the REASON this "
+                    "entry is registered now is operational (unblocking a downstream consumer) rather "
+                    "than a property of the data reaching some qualification threshold on its own -- the "
+                    "native H1 dataset has not completed its own regime-map registration path, and this "
+                    "derived proxy is being registered instead of waiting for it. This is the first "
+                    "instance in this project of a classification driven by a desired outcome rather "
+                    "than by what the data represents. It is accepted here ONLY because: (1) it uses the "
+                    "exact same, already-validated mechanical rule as H4/D1, introducing no new method; "
+                    "(2) it is explicitly and permanently labeled as distinct from and non-substitutive "
+                    "of the native H1 entry, which remains untouched and separately trackable; (3) no "
+                    "information about the native H1 dataset's own status is obscured or implied resolved "
+                    "by this registration. This is NOT a template: a future request to register a derived "
+                    "proxy specifically to bypass a pending native dataset's own qualification path must "
+                    "be justified anew on its own facts, not assumed permitted by this precedent."
+                ),
+                "status": "CONTEXT_DERIVED_VALIDATED",
             },
         },
         "who_does_what": (
@@ -304,17 +368,26 @@ def build_manifest() -> dict[str, Any]:
             "(Statistician ratifies, Data Acquisition measures)."
         ),
         "distinct_from_native_H1": (
-            "This section governs H4/D1 CONTEXT bars resampled from M15_v2 -- it is unrelated to the "
+            "This section governs H4/D1/H1 CONTEXT bars resampled from M15_v2 -- it is unrelated to the "
             "separately-acquired NATIVE H1 dataset (its own file, its own data_file_sha256, currently "
-            "AWAITING_REGIME_MAP as its own timeframe entry above). Do not conflate the two, same "
-            "discipline as the M15/M15_v2 identifier resolution."
+            "AWAITING_REGIME_MAP as its own timeframe entry above). H1_from_M15_v2 in particular does "
+            "NOT substitute for or resolve the native H1 entry's own status -- see its own "
+            "classification_delimitation and governance_note above. Do not conflate any of the three "
+            "with the native entries, same discipline as the M15/M15_v2 identifier resolution."
         ),
-        "unblocks": "Research Lab's context guard, once both H4_from_M15_v2 and D1_from_M15_v2 reach status VALIDATED.",
+        "unblocks": "Research Lab's context guard -- H4_from_M15_v2, D1_from_M15_v2, and H1_from_M15_v2 are all status CONTEXT_DERIVED_VALIDATED. Statistician confirms to CEO when Research Lab's guard may actually start -- promotion here does not auto-trigger it.",
+        "version_history": [
+            {"version": "2.2.0", "commit": "4e1f550", "content": "M15_v2 + M5 regime segments"},
+            {"version": "2.3.0", "commit": "a4c0baf", "content": "HTF context resample rule specified"},
+            {"version": "2.3.1", "commit": "774acea", "content": "H4/D1 hashes supplied by Data Acquisition, GENERATED_PENDING_RATIFICATION (Data-Acquisition-authored injection, not a Statistician version)"},
+            {"version": "2.4.0", "commit": "9286981", "content": "E001/E002/E004 candidate verdicts; H4/D1 ratified to CONTEXT_DERIVED_VALIDATED"},
+            {"version": "2.4.1", "commit": "PENDING (this version)", "content": "H1_from_M15_v2 registered and ratified; commit-citation correction recorded (an order incorrectly cited 4e1f550 as v2.4.0 -- it is v2.2.0, three mandates earlier)"},
+        ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.3.0",
+        "version": "2.4.1",
         "published_date": "2026-07-27",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -322,6 +395,52 @@ def build_manifest() -> dict[str, Any]:
             "config/generate_split_manifest.py, not hand-transcribed."
         ),
         "generator": "config/generate_split_manifest.py",
+        "changelog_v2_4_1": (
+            "Records a commit-citation correction: a CTO order cited 'manifest v2.4.0, commit 4e1f550' "
+            "-- 4e1f550 is v2.2.0, three mandates earlier (see version_history above for the real "
+            "chain). Freezing state by citing that commit would freeze a stale version; recorded here "
+            "so the correction is durable, not just conversational. Registers H1_from_M15_v2 under "
+            "context_derived_htf.entries (hash 524977d0...f660, 49,580 bars, independently verified "
+            "directly against the physical file, cross-checked against Data Acquisition's "
+            "DATA_ACQUISITION_FINAL_REPORT.md line 140 -- not copied from any relayed message), with an "
+            "explicit classification_delimitation and governance_note disclosing that this is the first "
+            "registration in the project driven by an operational need (unblocking Research Lab's "
+            "mstrat context guard) rather than by the data reaching a qualification threshold on its "
+            "own -- accepted only because it reuses the already-validated H4/D1 mechanism unchanged, "
+            "stays permanently distinct from the native H1 entry, and is explicitly NOT a template for "
+            "future convenience-driven classifications. Promotes H4/D1/H1_from_M15_v2 status from "
+            "VALIDATED to the more specific CONTEXT_DERIVED_VALIDATED (matching provenance_key exactly, "
+            "avoiding confusion with base-timeframe VALIDATED). Statistician ratifies hashes only, not "
+            "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
+            "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
+            "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_4": (
+            "Registers the Mandate 4.1 transactional-evaluation verdicts (Flow A commit 1a64812, "
+            "verified directly by Statistician against the source report/script/results, not merely "
+            "accepted) under candidate_verdicts: E001/E002/E004 REJECTED -- NEGATIVE_EXPECTANCY_UNDER_"
+            "COST at the SS9.4.1 parameterization (stop $4/$5, RR 1:1/1:2) -- winrate below the cost-"
+            "adjusted break-even in all 3 regimes tested (bear/bull/correction, 2011-2021; the 2022-2026 "
+            "regime is excluded as SAME-WINDOW-RESAMPLED, Statistician's own earlier 4-regime mandate "
+            "was in error, corrected here), BH-FDR family of 6 passing none. Scope explicitly delimited: "
+            "this rejects the SS9.4.1 stop/RR parameterization, not the underlying ICT concepts -- a "
+            "differently-parameterized candidate would need its own full review. E004's fill rate "
+            "(0.662-0.736) is registered PENDING_CONTROL, not as CONFIRMED_STRUCTURAL_ANOMALY -- no "
+            "denominator exists yet for how often a comparable, non-FVG-selected gap fills over the "
+            "same window; a specific control is registered as required before any anomaly label."
+        ),
+        "changelog_v2_4_htf_ratification": (
+            "Also ratifies Data Acquisition's H4/D1_from_M15_v2 generation (Mandate 2.7, commit "
+            "774acea, arrived via merge while preparing this version): both data_file_sha256 values "
+            "independently recomputed by Statistician directly against the physical files and matched "
+            "exactly. H4/D1_from_M15_v2 promoted CONTEXT_DERIVED_VALIDATED (status VALIDATED). Boundary-"
+            "compliance (no HTF bar straddles a discovery block edge) relies on Data Acquisition's own "
+            "test suite (28/28 passing) rather than an independent re-derivation of the 17:00-America/"
+            "New_York DST-aware windowing logic -- disclosed explicitly, not silently assumed. An "
+            "H1_from_M15_v2 file was also generated (on separate CEO instruction, per Data Acquisition's "
+            "commit) but is NOT registered here -- no mandate has covered its registration; it stays in "
+            "acquisition_staging/, unregistered, pending a future decision."
+        ),
         "changelog_v2_3": (
             "Adds context_derived_htf: the mechanical rule for resampling H4/D1 context bars from "
             "M15_v2 (CTO-approved Option B, since the lab's existing H1/H4/D1 context files were "
@@ -411,6 +530,47 @@ def build_manifest() -> dict[str, Any]:
         },
         "margin_factor": {"value": "25/24", "note": "960->1000 M15; 2880->3000 M5; 240->250 H1."},
         "context_derived_htf": htf_resample_rule,
+        "candidate_verdicts": {
+            "source": "Flow A Mandate 4.1 (commit 1a64812, edge_research/MANDATE41_TRANSACTIONAL_EVAL.md), verified directly by Statistician against the report, evaluation script, and results JSON before this registration.",
+            "statistical_test": {
+                "method": "exact one-sided binomial (scipy.stats.binom.sf), not a normal approximation",
+                "break_even_threshold": "w* = (1 + cost/S) / (RR + 1); cost=0.4, so RR1:1 -> 0.550 at S=4.00 / 0.540 at S=5.00; RR1:2 -> 0.367 at S=4.00 / 0.360 at S=5.00",
+                "family": "3 contracts x 2 RR = 6, trial counts pooled across all tested regimes per contract-RR pair before testing (regime is a descriptive robustness breakdown, not a test multiplier)",
+                "ratified_in": "ai_quant_lab statistician/STATISTICIAN_EXECUTION_CONTRACT_STRUCTURAL_V1_v1.0.md SS7 (v1.2)",
+            },
+            "regimes_tested": "3 (bear, bull, correction; 2011-07-26 to 2021-09-03) -- NOT 4. The 2022-2026 regime is M15-legacy territory that informed V1's own parameterization and falls under same_window_resampled_predicate; Statistician's original 4-regime mandate was in error, corrected here per explicit instruction.",
+            "verdicts": {
+                "E001": {"label": "REJECTED", "reason_code": "NEGATIVE_EXPECTANCY_UNDER_COST",
+                          "scope": "Rejects the SS9.4.1 parameterization (stop $4.00/$5.00, RR 1:1/1:2) only -- not the underlying Asia-range sweep-and-reverse concept. A differently-parameterized candidate would be new, requiring its own full review."},
+                "E002": {"label": "REJECTED", "reason_code": "NEGATIVE_EXPECTANCY_UNDER_COST",
+                          "scope": "Rejects the SS9.4.1 parameterization only -- not the underlying Frankfurt-aggressive-move-reverses-in-London concept."},
+                "E004": {"label": "REJECTED", "reason_code": "NEGATIVE_EXPECTANCY_UNDER_COST",
+                          "scope": "Rejects the SS9.4.1 parameterization only -- not the underlying FVG follow-through concept.",
+                          "fill_rate_note": {
+                              "observed": {"bear": 0.718, "bull": 0.736, "correction": 0.662},
+                              "status": "PENDING_CONTROL",
+                              "reason": (
+                                  "Gaps in general are known to fill often over a generous horizon on any "
+                                  "instrument/timeframe; without a baseline fill rate for a comparable, non-"
+                                  "FVG-selected gap over the same 50-bar horizon and regimes, this cannot be "
+                                  "distinguished from 'gaps just fill, E004 shows nothing distinctive'. NOT "
+                                  "labeled CONFIRMED_STRUCTURAL_ANOMALY without that control."
+                              ),
+                              "required_control": (
+                                  "Generic 3-bar imbalances (E012 detect_fvgs), no 13:30-15:30 UTC window "
+                                  "restriction, no first-of-session restriction, same 50-bar horizon, same 3 "
+                                  "regimes, comparable n."
+                              ),
+                              "preregistered_interpretation": (
+                                  "Control near 0.66-0.74 (e.g. within +-0.10) -> OBSERVED_NOT_DISTINCTIVE. "
+                                  "Control well below (e.g. <0.40-0.50, formal two-proportion test) -> "
+                                  "CONFIRMED_STRUCTURAL_ANOMALY becomes a live candidate, still pending final "
+                                  "Statistician verdict, not automatic."
+                              ),
+                          }},
+            },
+            "full_verdict_document": "ai_quant_lab statistician/STATISTICIAN_STRUCTURAL_V1_FINAL_VERDICT_v1.0.md",
+        },
         "timeframes": {
             "M15": {
                 "bar_seconds": M15_BAR_SECONDS,
