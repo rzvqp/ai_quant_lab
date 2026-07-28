@@ -70,4 +70,4 @@ Am citit ambele fișiere complet, linie cu linie, nu doar raportul. Confirmat: `
 
 ---
 
-**Holdout SEALED, neatins. Niciun backtest rulat. UTF-8, LF — verificat la generare.** Manifestul se incrementează la v2.5.7 după publicarea acestui document.
+**Holdout SEALED, neatins. Niciun backtest rulat. UTF-8, LF — verificat la generare.** Manifestul incrementat la v2.5.7 (commit `9c02af7`, `alpha-automation-v1`), după publicarea acestui document.
