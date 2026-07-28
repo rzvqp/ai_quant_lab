@@ -408,14 +408,15 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.8", "commit": "74de879", "content": "Mandate 3.18: formalizes all 20 SMC_S* families (verified in code/mstrat.py's ECON dict -- S1-S20 is the legacy grammar's full family list). Flags that validation_engine/capabilities.json is the wrong registration target (its own deliberately_absent field excludes hypothesis-specific event primitives by design) -- registers here instead. Closes the horizon arithmetic gap (20 families, 4 session constants) via 4 declared groups: A=20 bars (LM-001's own immediate-reaction derivation, reused), B=native session length (asia/ny=32, london=20, late=12, from mtf.py), C=empirical day/week length independently computed (day=92, week=460 bars, median, matching institutional_levels.py's own '92 is not a constant' caveat), D=no horizon forced where the primitive itself is missing. 9 families fully state-machine-specified on only the 4 ratified modules (SMC_S1=LM-001, S2, S3, S7, S10 with a disclosed substitution, S11, S13, S16, S17). 11 honestly flagged as not forced: 3 cheap gaps (S5/S6/S19, near-trivial missing extensions), 6 genuine primitive-class gaps (S4/S8/S9/S14/S15/S20), 1 partial gap (S12), 1 reclassified as a stratification dimension not a standalone family (S18). Flags conceptual dedup-collision risk pairs for mandatory hash verification once code exists, declines to report a distinct-family count before trade logs exist. All formalized families AWAITING_VALIDATION_ENGINE_CODE; none promoted to VALIDATED until WP-5' delivers the oracle."},
             {"version": "2.5.9", "commit": "444e0e8", "content": "Mandate 3.19: Q1 (fully blocks WP-5's sample_event_positions) resolved -- reproduce the FULL empirical spacing/degree distribution, not just the mean, to avoid hiding regime-dependent behavior (the same failure mode that partially sank the AR(1) battery). Q2-Q6 resolved: fixed segment allocation + excluded boundary windows; session-stratified not aggregate-only density; 69% shared-horizon as a derived consequence not an imposed invariant; empirical (not normal) iid shocks; shock-sum aggregation scoped explicitly to FPR calibration only. L stays variable downstream. Ratifies Definition 1 (LiquiditySweep=D6, confirmation not new) and Definition 4 (PDH/PDL/Weekly=already-ratified detect_level_touches) unchanged. Derives Definition 3 (LiquidityVoid) as a hybrid temporal-OR-size criterion ($1.20, 3x cost-stress, reused derivation logic) after empirically proving neither criterion alone covers the intended concept (248 size-only vs 119 time-only qualifying transitions, verified on the actual 84,152-bar tested dataset). Fixes Definition 2 (Order Block/Breaker)'s zone contradiction (body [Close,Open], not body+wick) and specifies a validity-window/measurement-window separation before implementation to pre-empt E010's exact circularity defect. Scopes missing primitives to only the actually-blocked SMC_S* families: Range (S12, resolved via recomposition, upgraded to formalized) and MTF-Trend (S9/S20, resolved via recomposition of already-validated H1/H4/D1_from_M15_v2 context) need no new primitive; Volatility/Expansion (S4/S8) gets its measure defined (reusing the lab's official E000 Parkinson standard) with the threshold deferred to its own derivation; S14/S15 remain genuinely gapped (no primitive in either given module); S5/S6/S19 confirmed as a cheap Module-4 extension, not Module 5/6. Order Block/Breaker/Mitigation/Rejection and Compression confirmed NOT needed by any blocked family, not constructed."},
             {"version": "2.6.0", "commit": "4c9c20f", "content": "Mandate 3.20: block_bootstrap@v1 ratified VALIDATED for the finite-memory overlap mechanism (n~21,048, L>=H=20 -- VE's pre-registered prediction confirmed exactly: FPR@0.05 nominal at L=10/20/28/40, 0.0450/0.0400/0.0400/0.0400), scoped as an explicit field coexisting with the unchanged AR(1)-regime INVALIDATED_FOR_THIS_SCALE verdict -- two regimes, two verdicts, no ambiguity. Reconciles the Q4 spacing-metric discrepancy (not just flags it): traces the exact mechanical cause of 6.2-vs-8.52 bars (same-bar duplicate events inflate the naive bars/events ratio; the corrected figure excludes zero-length gaps between co-located events, verified directly: only 15,305 of 21,045 possible gaps are nonzero) and declares 8.52 bars/57.4% the new authoritative figure, superseding 6.2/69%, with the scope of the correction stated explicitly (does not affect the session-derived 20-bar horizon or the exact-position-conditioned FPR results). Confirms the Void-discrepancy resolution and the still-open, non-blocking OB-formation criterion. Confirms Q5's real-return shocks as calibration input (same category as the geometry/density audits) with an explicit written boundary. Rules that code/order_block_void.py TRIGGERS the CROSS_VERIFICATION_SPEC persistent-artifact exception flagged at Mandate 3.10 (VE both designed and implemented it, unlike D1-D7's Architect/VE cross-check) -- requires independent test verification by a different division before any hypothesis relies on it. UNBLOCKS LM-001: frozen v2.5.5 spec confirmed unchanged, execution assigned to Validation Engine (not Flow A), holdout confirmed untouched, the other 11 not-yet-formalized SMC_S* families explicitly deferred per instruction until LM-001's end-to-end run reports back."},
-            {"version": "2.6.1", "commit": "PENDING (this version)", "content": "Mandate 3.21: resolves 4 chosen-not-derived parameters and Module 7's nature before CTO's Module 5/6/7 implementation proceeds. Volume filter for Order Block ELIMINATED from the core primitive (not included-with-caveat) -- unlike E022/E031's per-hypothesis caveat, baking an unconfirmed-provenance data dependency into a persistent foundational primitive would propagate the risk silently to every future consumer. Expansion threshold RESOLVED by reusing E010's already-frozen displacement-bar criterion verbatim (range>1.5x ATR14[i-1] AND body>=0.5x range) -- rejects the ungrounded 2.5x and a naive REACTION_THRESHOLD=1.0 substitution (wrong category of measurement). Compression's lookahead risk RESOLVED via a rolling, strictly causal 460-bar window (the empirical median week length already derived at Mandate 3.18/3.19, reused verbatim) -- the same window closes the threshold Mandate 3.19 deferred for SMC_S4/S8's Volatility/Expansion measure. Sessions CORRECTED -- no 'Cash' session exists (confirmed exactly 4: asia/london/ny/late); use 'london'/'ny'. Module 7 RULED a generic parametrizable confluence locator, not a hardcoded hypothesis -- the given example lacks all 5 pre-registration criteria and is not formalized as one; any specific combination wanting to become its own hypothesis needs full separate pre-registration. Anchoring question answered per-primitive: Trend/Volatility/Session are already anchored to concrete blocked families; three of Module 5's four named primitives (Breaker/Mitigation/Rejection) turn out to already be fully defined via reuse of already-ratified mechanics, not new abstractions; only Compression and the still-open OB formation criterion remain genuinely unanchored, accepted as abstract definitions with the risk explicitly disclosed. LM-001 remains blocked by the CTO's library-first sequencing, not by any statistical issue -- oracle ratification and VE execution assignment stand unchanged. Holdout SEALED."},
+            {"version": "2.6.1", "commit": "2fb948f", "content": "Mandate 3.21: resolves 4 chosen-not-derived parameters and Module 7's nature before CTO's Module 5/6/7 implementation proceeds. Volume filter for Order Block ELIMINATED from the core primitive (not included-with-caveat) -- unlike E022/E031's per-hypothesis caveat, baking an unconfirmed-provenance data dependency into a persistent foundational primitive would propagate the risk silently to every future consumer. Expansion threshold RESOLVED by reusing E010's already-frozen displacement-bar criterion verbatim (range>1.5x ATR14[i-1] AND body>=0.5x range) -- rejects the ungrounded 2.5x and a naive REACTION_THRESHOLD=1.0 substitution (wrong category of measurement). Compression's lookahead risk RESOLVED via a rolling, strictly causal 460-bar window (the empirical median week length already derived at Mandate 3.18/3.19, reused verbatim) -- the same window closes the threshold Mandate 3.19 deferred for SMC_S4/S8's Volatility/Expansion measure. Sessions CORRECTED -- no 'Cash' session exists (confirmed exactly 4: asia/london/ny/late); use 'london'/'ny'. Module 7 RULED a generic parametrizable confluence locator, not a hardcoded hypothesis -- the given example lacks all 5 pre-registration criteria and is not formalized as one; any specific combination wanting to become its own hypothesis needs full separate pre-registration. Anchoring question answered per-primitive: Trend/Volatility/Session are already anchored to concrete blocked families; three of Module 5's four named primitives (Breaker/Mitigation/Rejection) turn out to already be fully defined via reuse of already-ratified mechanics, not new abstractions; only Compression and the still-open OB formation criterion remain genuinely unanchored, accepted as abstract definitions with the risk explicitly disclosed. LM-001 remains blocked by the CTO's library-first sequencing, not by any statistical issue -- oracle ratification and VE execution assignment stand unchanged. Holdout SEALED."},
+            {"version": "2.7.6", "commit": "PENDING (this version)", "content": "SMC_S1 (=LM-001) real-data verdict: REJECTED_NET_OF_COST (new scoped sub-label, distinguishing a mechanically-demonstrated positive gross edge smaller than execution cost from 'no edge at all'). Statistician independently re-ran code/lm001_s1_execution.py (commit 0702958) and reproduced all figures exactly: n=9,247/7,181/4,614 (=21,042=21,048-6 excluded at horizon boundary), expectancy -0.1677/-0.1845/-0.2234 R, p_wp5 1.0/1.0/0.996. Verified mechanically (not chosen): best trade is 1.29% of total absolute loss (cost drag, not concentration), and net+cost=gross holds exactly at all three regimes (+0.072/+0.055/+0.017 R gross, monotonically decreasing). Oracle domain (block_bootstrap calibrated on horizon-sums, applied to net_R) CONFIRMED PARTIALLY: overlap mechanism transfers, but the battery's homogeneous-variance assumption was not tested against net_R's real heteroskedasticity -- doesn't change today's overwhelming non-rejection (any residual bias would work in the safer direction), and the per-regime n's fall within the range the same battery already validated via session stratification; states a standing asymmetric rule that a FUTURE positive result from this pipeline would need the gap closed first. SMC_S13 premise corrected: the order's 'exploit the 85% generic fill rate' is backwards -- E004 (same FVG-fill construct) already established 85% as baseline (OBSERVED_NOT_DISTINCTIVE) and E004's own gaps fill LESS often than that baseline (71.48%, z~8.75). Reformulates SMC_S13 as an execution-economics hypothesis only (does NOT claim above-baseline fill rates), fixing two technical problems: next-open market entry (not a CE-50 limit order, eliminating M15 fill-ambiguity, consistent with every other Open-R family) and reconfirming the 20-bar Group-A horizon (the implemented 12 bars was an error applying Group B's rule to a point-event family). Notes SMC_S10's concept-reloop (Research Lab: 'BOS-as-displacement decouples magnitude from structure') as acknowledged, explicitly deferred."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.6.1",
-        "published_date": "2026-07-28",
+        "version": "2.7.6",
+        "published_date": "2026-07-29",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
             "authority only, per Contract Statistician<->Validation Engine SS1.7. Generated by "
@@ -441,6 +442,42 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_7_6": (
+            "SMC_S1 (=LM-001) real-data verdict + SMC_S13 premise correction. Statistician independently "
+            "re-ran VE's real-data execution (code/lm001_s1_execution.py, commit 0702958) directly -- "
+            "reproduced every reported figure exactly: n=9,247/7,181/4,614 bear/bull/correction "
+            "(=21,042=21,048-6 excluded at horizon boundary), expectancy -0.1677/-0.1845/-0.2234 R, "
+            "p_wp5 1.0/1.0/0.996. Introduces REJECTED_NET_OF_COST, a new scoped sub-label distinguishing "
+            "'no edge at all' from 'a mechanically-demonstrated positive gross edge smaller than "
+            "execution cost' -- verified directly: best trade is 1.29% of total absolute loss (cost "
+            "drag, not concentration), and net+cost=gross holds exactly at all three regimes "
+            "(+0.072/+0.055/+0.017 R gross, monotonically decreasing bear->correction). Explicit "
+            "delimitation: rejects H1:mu_netR>0 at the current cost/construction only, not the "
+            "underlying sweep-reject mechanism or the gross edge's existence. Confirms the oracle's "
+            "domain PARTIALLY for this application: the overlap-dependence mechanism transfers to "
+            "net_R, but the WP-5' battery's homogeneous-variance assumption was never tested against "
+            "net_R's real heteroskedasticity (R_i varies $1.21-$6.50, plus direction sign) -- doesn't "
+            "change today's overwhelming non-rejection (any residual anti-conservative bias works in "
+            "the safer direction here), and the per-regime n's fall within the range the same battery "
+            "already validated via session stratification (asia/london/ny/late, all nominal). States a "
+            "standing asymmetric rule: negative results from this pipeline are robust to the gap; a "
+            "future POSITIVE result would not be, and must close the heteroskedasticity gap first, "
+            "written now so it is not re-litigated per result. SMC_S13: catches that the order's stated "
+            "motivation ('exploit the 85% generic gap-fill rate') is backwards -- verified directly that "
+            "E004 (the same FVG-fill construct) already established 85% as the GENERIC BASELINE "
+            "(OBSERVED_NOT_DISTINCTIVE) and that E004's own gaps fill LESS often than that baseline "
+            "(71.48%, z~8.75) -- the opposite direction from any 'exploit the rate' framing. Rejects the "
+            "'fills-more-than-baseline' reformulation on this evidence, notes 'continuation vs rejection "
+            "at CE-50' as a separate untouched future direction, and adopts an execution-economics-only "
+            "reformulation (does NOT claim above-baseline fill rates -- tests only whether the wider "
+            "B1-anchored stop's geometry produces net_R>0 after cost at the unchallenged baseline). "
+            "Fixes two technical problems in that reformulation: replaces the CE-50 limit order (M15 "
+            "fill-ambiguity) with next-open market entry, consistent with every other Open-R family; "
+            "reconfirms the 20-bar Group-A horizon (an implementation's '12 bars' was an error applying "
+            "Group B's session-native rule to a point-event-triggered family, not a new decision). Notes "
+            "SMC_S10's concept-reloop (Research Lab's cross-verification: BOS-as-displacement decouples "
+            "magnitude from structure) as acknowledged, explicitly deferred, not resolved here."
         ),
         "changelog_v2_6_1": (
             "Mandate 3.21: resolves 4 chosen-not-derived parameters plus Module 7's nature before the "
@@ -1305,6 +1342,35 @@ def build_manifest() -> dict[str, Any]:
                 "holdout_confirmation": "LM-001's population is entirely within the M15_v2 discovery blocks (130,491 bars) -- execution does not touch the sealed holdout.",
                 "scope_note": "Per explicit instruction, the other 11 not-yet-formalized SMC_S* families (S4/S8 awaiting the Parkinson threshold, S5/S6/S19 cheap gaps, S14/S15 genuinely gapped) are NOT completed now -- LM-001 (=SMC_S1) runs first, end to end, as a test of the whole chain before investing in formalizing the remaining nineteen.",
             },
+            "FINAL_VERDICT": {
+                "status": "REJECTED_NET_OF_COST",
+                "verified_by": "Statistician independently re-ran code/lm001_s1_execution.py (commit 0702958) directly -- all reported figures reproduced exactly.",
+                "results_by_regime": {
+                    "bear": {"n_trades": 9247, "winrate": 0.473, "expectancy_R": -0.1677, "net_sumR": -1550.8, "p_wp5": 1.0, "gross_edge_R_est": 0.072},
+                    "bull": {"n_trades": 7181, "winrate": 0.458, "expectancy_R": -0.1845, "net_sumR": -1324.7, "p_wp5": 1.0, "gross_edge_R_est": 0.055},
+                    "correction": {"n_trades": 4614, "winrate": 0.490, "expectancy_R": -0.2234, "net_sumR": -1030.6, "p_wp5": 0.996, "gross_edge_R_est": 0.017},
+                },
+                "population_confirmed": "9,247+7,181+4,614=21,042 = 21,048-6 (excluded at horizon boundary, Q2) -- matches exactly.",
+                "scope_delimitation": (
+                    "REJECTED_NET_OF_COST is a NEW scoped sub-label (same delimited-scope discipline as the 47 exclusion-dependent hypotheses "
+                    "and the 3 structural-V1 edges), distinguishing 'no edge at all' from 'a mechanically-demonstrated positive gross edge smaller "
+                    "than execution cost'. What IS rejected: H1: mu_netR>0 at the current $0.40 round-trip cost, on the frozen Open-R construction "
+                    "(spike+2 pips, no floor, [10.1,65.0) filter, 20-bar horizon, pure time-exit), on the 3 M15_v2 discovery regimes. What is NOT "
+                    "rejected: the sweep-reject mechanism itself, or the existence of a gross geometric edge -- verified mechanically (not chosen): "
+                    "the single best trade is only 1.29% of total absolute loss (cost drag distributed across the population, not concentration/"
+                    "fragility -- opposite of the NET_CONCENTRATION_INVENTORY collapse pattern), and net+cost=gross arithmetic holds exactly at all "
+                    "three regimes (gross_edge_R_est above, monotonically decreasing bear->correction). This verdict does not extrapolate to a "
+                    "different cost structure or a different risk construction -- either would require re-testing, not inference from this result."
+                ),
+                "oracle_domain_question": {
+                    "status": "CONFIRMED PARTIALLY, with explicit limits",
+                    "confirmed": "The overlap-dependence mechanism (what WP-5' calibrated) transfers to net_R -- R-normalization and direction are per-event scalars that don't change WHICH events share future shocks, only how the shared-shock sum converts to R units.",
+                    "not_tested": "The WP-5' battery used a relatively homogeneous-variance outcome series (raw shock-sums); net_R introduces real heteroskedasticity (R_i varies $1.21-$6.50 per trade) and sign changes (direction) not explicitly represented in that battery -- a genuine methodological gap, disclosed not hidden.",
+                    "why_todays_verdict_stands": "The result is an OVERWHELMING non-rejection (p~1.0/1.0/0.996, far from any decision threshold), not a borderline call sensitive to a small calibration error. Any residual anti-conservative bias (the theoretical risk of the method) would make the test MORE likely to find false positives, not more likely to hide a real negative -- so residual miscalibration risk would work in the SAFER direction for this specific negative conclusion.",
+                    "n_scope_already_partially_covered": "The three regime n's (4,614/7,181/9,247) fall within the range already tested via the SAME WP-5' battery's session-stratified FPR results (Mandate 3.20): asia n=5,915/london n=5,635/ny n=8,386/late n=1,118, all nominal. The smallest regime (correction, 4,614) is comparable to ny (8,386) and above late (1,118) -- not a fresh extrapolation.",
+                    "standing_asymmetric_rule": "NEGATIVE results from this pipeline are robust to the heteroskedasticity gap (per the argument above). A FUTURE POSITIVE result from the SAME pipeline would NOT be equally robust -- it must close the heteroskedasticity/exact-n gap via a dedicated WP-5' battery extension (real R_i/direction, not homogeneous shock-sums) before being trusted. Written now as a standing rule, not to be re-litigated per future result.",
+                },
+            },
             "insufficient_n_rule": (
                 "Reused convention: n>=25 (Discovery Screen V1 / persistence-leaderboard threshold), not a "
                 "new number. Evaluated on the POST-FILTER population (displacement in [10.1,65) pips), NOT "
@@ -1437,8 +1503,9 @@ def build_manifest() -> dict[str, Any]:
                     "horizon_group": "A (default, no family-specific derivation given -- declared as such, not hidden)",
                 },
                 "SMC_S10": {
-                    "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Displacement Continuation",
+                    "status": "AWAITING_VALIDATION_ENGINE_CODE -- VERDICT OPEN, RELOOP ACKNOWLEDGED, NOT RESOLVED", "concept": "Displacement Continuation",
                     "substitution_disclosed": "The legacy 'displacement' concept (range bar >1.5x ATR) uses ATR, outside the 4 ratified modules. Substitutes market_structure's own BOS (an already-decisive directional close-break) as the trigger instead -- flagged transparently, a reader may reject this substitution as too far from the original concept.",
+                    "reloop_acknowledged": "Research Lab's cross-verification (code/trading_strategies.py, commit 136fadc) found the BOS-substitution DECOUPLES magnitude from structure: trigger is a pure structural body-BOS, but the magnitude gate is the shared absolute pip band [10.1,65.0), not volatility-relative -- 'not an approximation, a hypothesis substitution'. Acknowledged, explicitly deferred to a future mandate, NOT resolved here.",
                     "mechanics": "Confirmed BOS -> entry at next-open, direction = BOS direction, tests CONTINUATION (unlike SMC_S2's fade).",
                     "threshold": "spike = distance from entry to the BOS level + 2 pips.",
                     "horizon_group": "A",
@@ -1453,9 +1520,20 @@ def build_manifest() -> dict[str, Any]:
                 "SMC_S13": {
                     "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Liquidity Void / Imbalance Fill",
                     "primitives": ["imbalance_mechanics (detect_fvgs, ce50_touch_idx = the D7 consumption point, detect_fvg_reactions)"],
-                    "mechanics": "FVG forms -> CE-50 touch (wick, D7 consumption) -> entry at next-open after the touch bar, direction = BACK toward the FVG's ORIGINAL direction (bet that the gap holds as support/resistance).",
+                    "mechanics": "FVG forms -> CE-50 touch (wick, D7 consumption) -> entry at NEXT-OPEN MARKET after the touch bar (RECONFIRMED, not a limit order at CE-50 -- see premise_correction below), direction = BACK toward the FVG's ORIGINAL direction (bet that the gap holds as support/resistance).",
                     "threshold": "spike = distance from entry to CE-50 + 2 pips.",
-                    "horizon_group": "A",
+                    "horizon_group": "A (RECONFIRMED 20 bars -- an implementation used 12 bars, the 'late'-session length, an ERROR applying Group B's rule to a point-event-triggered Group A family; not a new decision).",
+                    "premise_correction": (
+                        "RATIFIED (Mandate: SMC_S1 verdict/SMC_S13 premise): the order's stated motivation ('exploit the massive 85% generic gap-fill "
+                        "rate') is backwards -- verified directly that E004 ('US Market Open First FVG', the same FVG-fill construct) already "
+                        "established 85% as the GENERIC BASELINE (OBSERVED_NOT_DISTINCTIVE, pre-registered band (0.512,0.886)), and that E004's own "
+                        "gaps fill LESS often than that baseline (71.48%, z~8.75, opposite direction from any 'exploit the rate' framing). SMC_S13 "
+                        "does NOT claim FVGs fill more often than the established baseline. It tests EXECUTION ECONOMICS ONLY: at the unchallenged "
+                        "baseline fill rate, does the geometry of a B1-anchored stop (structurally wider than SMC_S1's, per the correct risk-design "
+                        "intuition in the order) produce net_R>0 after cost -- a claim about geometry, not about fill-rate predictability. The "
+                        "'fills significantly more than 85%' variant is REJECTED (E004 is the closest tested precedent and shows the opposite); "
+                        "'continuation vs. rejection at CE-50' is noted as a separate, untouched, possible future direction, not adopted here."
+                    ),
                 },
                 "SMC_S16": {
                     "status": "AWAITING_VALIDATION_ENGINE_CODE", "concept": "Previous Day Levels",
