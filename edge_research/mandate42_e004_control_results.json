@@ -1,0 +1,67 @@
+{
+  "mandate": "4.2",
+  "run_label": "CONTROL_RUN_E004_FILL",
+  "loader": "flowA_common_v6_context_derived_2026-07-27",
+  "manifest": "2.5.0",
+  "window": {
+    "tf": "M15_v2",
+    "split": "discovery",
+    "n_bars": 130491,
+    "range": [
+      "2011-07-26",
+      "2021-09-03"
+    ],
+    "regimes": 3
+  },
+  "seed": 7,
+  "fill_horizon": 50,
+  "per_regime": {
+    "bear_2011_2015": {
+      "label": "-42.0%",
+      "e004_n": 464,
+      "e004_fill": 333,
+      "e004_rate": 0.7177,
+      "control_n": 667,
+      "control_fill": 565,
+      "control_rate": 0.8471
+    },
+    "bull_2015_2020": {
+      "label": "+86.3%",
+      "e004_n": 478,
+      "e004_fill": 352,
+      "e004_rate": 0.7364,
+      "control_n": 671,
+      "control_fill": 575,
+      "control_rate": 0.8569
+    },
+    "corr_2020_2022": {
+      "label": "-17.4%",
+      "e004_n": 222,
+      "e004_fill": 147,
+      "e004_rate": 0.6622,
+      "control_n": 322,
+      "control_fill": 271,
+      "control_rate": 0.8416
+    }
+  },
+  "pooled": {
+    "e004_n": 1164,
+    "e004_fill": 832,
+    "e004_rate": 0.7148,
+    "control_n": 1660,
+    "control_fill": 1411,
+    "control_rate": 0.85
+  },
+  "fisher": {
+    "alternative": "greater(H1: p_E004 > p_control)",
+    "odds_ratio": 0.4422,
+    "p_one_sided": 1.0,
+    "rejects_at_0_05": false
+  },
+  "prereg_thresholds": {
+    "band_low": 0.512,
+    "band_high": 0.886,
+    "rule": "control<=0.512 AND Fisher rejects -> ANOMALY; control>=0.886 -> BELOW_BASELINE; else NOT_DISTINCTIVE"
+  },
+  "label": "OBSERVED_NOT_DISTINCTIVE"
+}
