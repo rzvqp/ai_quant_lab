@@ -403,13 +403,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.3", "commit": "a0295d8", "content": "Mandate 3.10: lifts D3_block_reset to full RATIFIED on VE's real-data blind-window audit (MK-01 Step 2, commit 260c4e3 -- bear 0.0305%/bull 0.0170%/correction 0.0396%, all far below the 1% low-cost threshold); corrects Statistician's own '8 structures' count to the correct '6' (3 discovery blocks x 2 swing types -- the fourth M15_v2 segment has no discovery_range); declares the half-open [start_epoch,end_epoch) boundary_convention as a single mechanical rule (resolves the recurring VE-vs-Research-Lab one-bar discrepancy, verified directly against OANDA_XAUUSD_M15.csv); rules CROSS_VERIFICATION_SPEC scope (applies to derived data artifacts, not generically to verification/measurement code reading only through an already-safe discovery mask -- explicit limit stated); registers the re_arming_bug_MK02 fix specification (found by VE, MK-01/MK-02 Step 1 commit 6b7948f) and confirms the D3 volume audit remains valid (mk_d3_volume_audit.py never imports detect_breaks, verified directly)"},
             {"version": "2.5.4", "commit": "04c096e", "content": "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f, N=34,670 valid wick-sweeps, 86.7% of displacements <40 pips) and the resulting risk-framework decision (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0) -- SUPERSEDES the fixed stop_official=4.00/stop_sensitivity=5.00 execution layer: R is now geometry-derived per trade (never widened, same D2 anti-pattern at 8x scale if it were); a displacement_filter (>=10.1 pips, excludes 34.0% aggregate) derived from the lab's already-existing 3x cost-stress convention (alpha_lab.py:197), not chosen from reference points; a rejection_ceiling (>=65 pips, tail-only, CONFIRMED not re-derived) stays as originally proposed; statistical_test replaces the fixed-w*-vs-binomial-winrate test with mean net_R>0 (a single win-rate threshold cannot exist when R varies continuously per trade). Also confirms D-BPR's three-tolerance count + freeze-rule (VE's skeleton, commit 306d1dc) is NOT overridden, and reconfirms D3_bis/D-WEEK unchanged."},
             {"version": "2.5.5", "commit": "1d03e4f", "content": "Mandate 3.13: formulates LM-001's testable hypothesis against the 40-V0 5-criteria standard. Corrects the order's stated population (22,887) to the true combined-filter figure (21,048, 60.7% of 34,670) -- 22,887 was the displacement floor alone, never reduced by the 1,839 events also excluded by the 65-pip ceiling. Derives the decisive horizon (20 M15 bars) from the correct comparison family (_profile.HORIZONS, immediate-reaction, not TRACK_HORIZON/REVISIT_HORIZON's multi-day level-revisit family) linked to an already-real boundary (london session length, mtf.py:37-38); secondary horizons (1,3,5,10,50) reused verbatim, descriptive only, family stays 1. Declares no take-profit (pure time-exit). Discloses exit=time's 1.6x concentration vs exit=rr2 (OUTCOME_DISTRIBUTION_v1.0.md, 0.628 vs 0.387) as a mandatory accompanying diagnostic, not a blocker. Declines to confirm block_bootstrap@v1 (still textually UNVALIDATED, n=21,048 far beyond its calibrated range) or substitute matched_null@v1 (ATR-scaled-only, wrong regime per D2_CLOSURE_SIZING_v1.0.md) -- specifies a due-diligence calibration extension instead, with a pre-registered acceptance band and a named (not invented) structural-calibration fallback (WP-5')."},
-            {"version": "2.5.6", "commit": "PENDING (this version)", "content": "Mandate 3.14: resolves all nine open questions from the MK-03/MK-04 partial implementation (VE, commit 7984670). Family 1 (Q5 MK-03/MK-04): D7-consumption confirmed, but rejects an added 'session/day' lifetime clause not present in D7 -- PDH consumed at first same-day touch, no new dimension. Family 2 (Q6/Q4 MK-03): wick/close asymmetry now grounded in direct code precedent (e015's wick touch_mask for mitigation, e010/e012's close-based violation for polarity flips) -- 3-tier gradient specified (CE-50 touch / full fill / inversion). Family 3: FVGs don't survive a block boundary (D4-analog); Q3-week derived from the already-resolved Q3-day via a gap-detection rule, not a new clock. Resolves MK-03 Q4 (IFVG inversion, the only fully-blocking primitive) by reusing verbatim an identical definition independently found in two already-frozen V0s (E010, E012). Ratifies the three small mechanically-forced items (MK-03 Q1, MK-04 Q4, reconfirms MK-04 Q3-day)."},
+            {"version": "2.5.6", "commit": "00dfa6f", "content": "Mandate 3.14: resolves all nine open questions from the MK-03/MK-04 partial implementation (VE, commit 7984670). Family 1 (Q5 MK-03/MK-04): D7-consumption confirmed, but rejects an added 'session/day' lifetime clause not present in D7 -- PDH consumed at first same-day touch, no new dimension. Family 2 (Q6/Q4 MK-03): wick/close asymmetry now grounded in direct code precedent (e015's wick touch_mask for mitigation, e010/e012's close-based violation for polarity flips) -- 3-tier gradient specified (CE-50 touch / full fill / inversion). Family 3: FVGs don't survive a block boundary (D4-analog); Q3-week derived from the already-resolved Q3-day via a gap-detection rule, not a new clock. Resolves MK-03 Q4 (IFVG inversion, the only fully-blocking primitive) by reusing verbatim an identical definition independently found in two already-frozen V0s (E010, E012). Ratifies the three small mechanically-forced items (MK-03 Q1, MK-04 Q4, reconfirms MK-04 Q3-day)."},
+            {"version": "2.5.7", "commit": "PENDING (this version)", "content": "Mandate 3.17: block_bootstrap@v1 verdict INVALIDATED_FOR_THIS_SCALE for LM-001 (measured S8 curve nominal through phi=0.50, anti-conservative at phi=0.60, e441bcf) -- declines to map density (8.64 avg concurrent, e441bcf) onto the AR(1) curve, both because the derive-before-seeing-the-result ordering was violated (disclosed) and because the AR(1) parametrization is structurally the wrong instrument for LM-001's finite-memory overlapping-window dependency (a 28-bar block fully contains a 20-bar true dependency window, unlike any AR(1)). Closes the (0.50,0.55] threshold gap via fail_closed_default. WP-5' concretely sized: rebuild the null generator to match the true overlap mechanism, reusing the existing S8 FPR-measurement harness. MK-03/MK-04 FULLY RATIFIED at commit 1930467 after a full (not just report) code read -- 34 tests verified, mypy --strict clean. Registers the SMC_S1/S2/S3/S13/S16 nomenclature under a rigid protected prefix (verified collision against the legacy grammar, including two production strategy_runtime files), connects them to the Open-R risk framework, and mandates D11/SS F dedup pre-screening before enrollment."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.6",
+        "version": "2.5.7",
         "published_date": "2026-07-28",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -436,6 +437,43 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_7": (
+            "Mandate 3.17: three deliverables. (1) block_bootstrap@v1 VERDICT: INVALIDATED_FOR_THIS_"
+            "SCALE for LM-001. VE delivered both a completed S8 curve (phi=0.40/0.0500, 0.45/0.0433, "
+            "0.50/0.0467 all nominal, 0.60/0.0767 anti-conservative -- boundary ~phi=0.55, DERIVED not "
+            "assumed, commit e441bcf) and a temporal density audit (8.64 avg concurrent events, 99.1% "
+            "overlapping, degree mean 7.64/p90 13/max 26, same commit) in the same delivery, but "
+            "declined VE's requested density->phi mapping onto the AR(1) curve -- explicitly disclosing "
+            "the ordering problem (the mapping was supposed to be derived BEFORE seeing the density, "
+            "never was) AND a deeper structural reason: the classical overlapping-window formula "
+            "(rho_1=(20-6.2)/20=69%, cross-checked against VE's measured degree_mean) describes a "
+            "FINITE-MEMORY process, unlike AR(1)'s infinite geometric decay -- a 28-bar block fully "
+            "contains a 20-bar true dependency window in a way no AR(1) at any block length does, so "
+            "lag-1-matching onto this curve targets the wrong instrument, not just an ill-timed one. "
+            "Closes the order's own gap in the threshold rule ((0.50,0.55] unspecified) by reusing the "
+            "manifest's own fail_closed_default: phi<=0.50 unblocks, phi>0.50 (including the untested "
+            "band) routes to WP-5'. WP-5' concretely sized for LM-001: rebuild the S8 harness's null "
+            "generator to simulate the TRUE overlapping-window mechanism (iid per-bar shocks, 20-bar "
+            "sums at the real empirical inter-event-spacing distribution) instead of AR(1), re-run FPR "
+            "across block lengths with the acceptance band fixed before running. (2) MK-03/MK-04 FULLY "
+            "RATIFIED at commit 1930467 -- code read in full (not just the report, per explicit "
+            "instruction), confirming detect_inverse_fvgs/detect_fvg_reactions/derive_week_index/"
+            "detect_level_touches all implement the ratified decisions exactly; 34 tests independently "
+            "reproduced (11+8+10+5), mypy --strict clean, the 4 pre-existing repo failures confirmed to "
+            "import neither module; one cosmetic docstring-header nit flagged, non-blocking. (3) "
+            "Registers SMC_S1/S2/S3/S13/S16 (Liquidity Sweep Reversal / Failed Breakout / Breakout "
+            "Retest Continuation / Liquidity Void-Imbalance Fill / Previous Day Levels) under a rigid "
+            "protected prefix -- verified the naming collision directly against the legacy grammar "
+            "(code/mstrat.py) AND two production strategy_runtime implementation files (S13, S16); "
+            "short form permanently banned for new families. Connects them to the 'Open-R' risk "
+            "framework (CEO's name for the already-ratified LM-001 construction): the 10.1-pip floor is "
+            "PORTABLE (derived from the cost/R formula alone) but the 65-pip ceiling is NOT (LM-001's "
+            "own empirical p90) -- treated as a placeholder for the other four families pending their "
+            "own geometry audits. Mandates the PROJECT_AUDIT.md D11/SS F trade-log-hash dedup pre-"
+            "screening before enrollment, not after, given the legacy grammar's own already-measured "
+            "27.0%-redundant/87%-single-parameter collapse. Status: AWAITING_VALIDATION_ENGINE_CODE. "
+            "Holdout SEALED throughout, no backtest run."
         ),
         "changelog_v2_5_6": (
             "Mandate 3.14: resolves all nine open questions from VE's partial MK-03/MK-04 "
@@ -1055,10 +1093,38 @@ def build_manifest() -> dict[str, Any]:
                 "per trade.",
             ),
             "bootstrap_method": {
-                "status": "NOT YET CONFIRMED -- explicitly not extrapolated blindly (STAT-LM001-HYPOTHESIS-v1.0)",
-                "block_bootstrap_v1": "NOT confirmed for use as-is. Its own calibration record (validation_engine/BLOCK_BOOTSTRAP_S_CALIBRATION_RECORD.md) verdict is textually 'remains UNVALIDATED' -- unrepaired. Additionally, n=21,048 (combined_population.n) is >10x the largest calibrated point (n=2,000), where even phi=0.6 (moderate autocorrelation) had not fully converged to nominal (FPR 0.066, 'slightly anti-conservative'). Extrapolating an already-unvalidated method beyond its calibrated range is not a defensible pre-registration basis.",
-                "matched_null_v1": "NOT a valid substitute. Verified directly in docs/D2_CLOSURE_SIZING_v1.0.md lines 27-32: matched_null@v1 stays validated ONLY for the ATR-scaled regime; the structural/geometric regime (exactly what LM-001's R is -- displacement-derived, not ATR) 'has never been in the battery' -- requires its own structural calibration (WP-5', already identified in D2_CLOSURE_EXECUTION_v1.0.md, UNAUTHORIZED/not started). Using it here would repeat the exact scope error already flagged at D2.",
-                "required_due_diligence": "VE extends the existing S8 battery (ve/calibration/synthetic_block_bootstrap.py, already built -- no new infrastructure) with one additional synthetic-n point at n~21,000. Pre-registered acceptance band (fixed now): if FPR@0.05 at this n falls in the already-named 'nominal' range (~<=0.055-0.06, comparable to phi=0.4 at n=1,000-2,000), block_bootstrap@v1 is usable for LM-001 as specified. If it does NOT land nominal, the fallback is NOT matched_null@v1 (wrong scope, as above) -- LM-001 becomes the first concrete demand for the already-identified WP-5' structural calibration, not a new invention.",
+                "status": "RESOLVED (STAT-BLOCKBOOTSTRAP-MK-SMC-v1.0, Mandate 3.17): block_bootstrap@v1 -> INVALIDATED_FOR_THIS_SCALE. WP-5' ACTIVATED, concretely sized below.",
+                "curve_measured": {
+                    "source": "VE, commit e441bcf: S8 curve completion at n=21,048 (edge_research/lm001_s8/complete_curve.py, B=10000, L=28, n_series=300) -- fills the gap where the originally-proposed phi=0.45 falls.",
+                    "points": {"0.40": 0.0500, "0.45": 0.0433, "0.50": 0.0467, "0.60": 0.0767},
+                    "boundary": "Nominal through phi=0.50; anti-conservative at phi=0.60. Boundary empirically between 0.50 and 0.60, approx phi~0.55 -- DERIVED from measurement, not assumed.",
+                },
+                "threshold_gap_closed": "The original rule (phi<=0.50 unblocks, phi>0.55 switches to WP-5') left (0.50,0.55] unspecified -- exactly where the measured boundary falls. Closed by reusing the manifest's own fail_closed_default principle, not a new tie-break: the untested band groups with the CONSERVATIVE side -- phi<=0.50 (the one measured nominal point) unblocks; phi>0.50, INCLUDING the untested (0.50,0.55] band, routes to WP-5'.",
+                "density_measured": {
+                    "source": "VE, commit e441bcf: code/lm001_density_audit.py on the 21,048-event [10.1,65.0] population.",
+                    "aggregate": {"n": 21054, "avg_concurrent": 8.64, "pct_overlapping": 99.1, "degree_mean": 7.64, "degree_p90": 13, "degree_max": 26},
+                    "cross_check": "Statistician's own overlap-fraction reference (marked as a benchmark, not a result): (20-6.2)/20=69% shared measurement window between consecutive events (21,048 events / 130,491 bars = 1 per 6.2 bars); independently cross-checked against VE's measured degree_mean=7.64 in a +/-20-bar window (expectation ~6.5 other events) -- consistent.",
+                },
+                "ordering_problem_disclosed": "Statistician was asked (prior mandate) to derive the density->phi mapping BEFORE seeing the measured density, so the mapping would not be modeled by the result. That derivation was never written; density and the completed phi curve arrived in the same delivery. Any mapping produced now cannot be shown independent of the result -- disclosed explicitly, same category as prior self-caught ordering issues (ratifying unread code, the 8->6 count correction), per Statistician's own standing discipline.",
+                "why_no_mapping_was_produced": (
+                    "Beyond the ordering problem: a density->phi mapping onto this AR(1) curve is not just untimely, it targets the WRONG INSTRUMENT. The classical overlapping-window "
+                    "autocorrelation formula (rho_1=(k-m)/k, k=20-bar horizon, m=6.2-bar average spacing =~69%) describes a FINITE-MEMORY process -- "
+                    "autocorrelation hits exactly zero beyond lag~20. AR(1)'s phi describes INFINITE geometric decay. Matching only the lag-1 correlation ignores exactly "
+                    "the property that matters for a block bootstrap with L=28: a 28-bar block fully CONTAINS a 20-bar-wide true dependency window, something no finite "
+                    "block length achieves against a true AR(1) (which never fully decays). A lag-1-matched phi could overstate OR understate the real risk -- the AR(1) "
+                    "curve answers a different question than the one LM-001's actual overlap mechanism poses. This is why the resolution is a new, purpose-built "
+                    "calibration (WP-5'), not a mapping onto the existing curve."
+                ),
+                "matched_null_v1": "Confirmed still NOT a valid substitute (D2_CLOSURE_SIZING_v1.0.md lines 27-32: ATR-scaled-only, wrong regime for LM-001's structural/geometric R) -- unchanged from the prior mandate's finding.",
+                "wp5_prime_sizing_for_lm001": (
+                    "Concretely sized, not just named (per explicit instruction): (1) build a null generator matching LM-001's REAL dependency mechanism -- "
+                    "iid per-bar shocks, 20-bar-horizon overlapping sums, sampled at the TRUE empirical inter-event-spacing distribution (VE's own degree "
+                    "histogram, not just the mean 6.2 bars); (2) run block_bootstrap@v1 (L in {10,20,28,40}) against this null at n~21,048, measuring FPR@0.05 "
+                    "via the SAME harness already built (ve/calibration/synthetic_block_bootstrap.py, only the null generator changes -- no new infrastructure "
+                    "beyond that swap); (3) acceptance band fixed BEFORE running this time (same nominal convention already used, ~FPR CI overlapping 0.05); "
+                    "(4) if nominal at L>=28, block_bootstrap@v1 becomes validated specifically for the TRUE overlap mechanism -- a stronger result than any "
+                    "AR(1) mapping could have given; if still anti-conservative, escalate L further or reconsider the estimator."
+                ),
                 "r_variance_note": "Connects to the still-open question in D2_CLOSURE_SIZING_v1.0.md line 55 (is R the right outcome variable when risk->0 -- explosive variance is a property of the statistic, not data resolution): LM-001's displacement_filter (R>=$1.21) already excludes the near-zero-risk regime (original D2 family's ~$0.05-0.12 stops) where that concern is sharpest -- does not resolve the general question, but LM-001 specifically does not inherit its worst case.",
             },
             "success_failure_criteria_preregistered": {
@@ -1082,6 +1148,8 @@ def build_manifest() -> dict[str, Any]:
             "full_hypothesis_formulation_document": "ai_quant_lab statistician/STATISTICIAN_LM001_HYPOTHESIS_FORMULATION_v1.0.md",
         },
         "mk03_mk04_ratification": {
+            "status": "FULLY RATIFIED (Mandate 3.17, STAT-BLOCKBOOTSTRAP-MK-SMC-v1.0), code-complete at commit 1930467",
+            "code_verification": "Statistician read code/imbalance_mechanics.py and code/institutional_levels.py IN FULL at commit 1930467 (not just the diff/report, per explicit instruction) -- confirmed detect_inverse_fvgs, detect_fvg_reactions, derive_week_index, detect_level_touches all implement exactly the ratified decisions below, no silently-introduced new conventions. mypy --strict clean; 34 tests pass (test_mk03_mk04.py + test_mk03_mk04_closures.py + test_structure.py + test_detect_breaks_rearm.py = 11+8+10+5, exact count independently reproduced); the 4 pre-existing repo test failures confirmed (grep) to import neither module. One cosmetic nit found by reading the code, non-blocking: institutional_levels.py's header docstring still says 'IMPLEMENTARE PARTIALA' though every decision inside is RATIFICAT/RESOLVED.",
             "source": "CEO Mandate 3.14 -- VE's partial implementation (commit 7984670, code/imbalance_mechanics.py + code/institutional_levels.py): implements only what is ratified, leaves the rest NotImplementedError, self-classifies each open question by how much it blocks. Statistician verified the commit directly (git show, no checkout -- discovery-mk-matrix-v1 occupied by a sibling worktree) before ratifying.",
             "bpr_tolerance_freeze_confirmed": "count_bpr's tolerances=(0.0,0.10,0.25) verified intact in commit 7984670 -- survived a third attempt to hard-freeze a single tolerance. The smallest-tolerance-reaching-n>=25 freeze rule (STAT-LM001-GEOMETRY-MK03-MK04-v1.0) stays the consumer's decision, not re-litigated.",
             "family_1_consumption": {
@@ -1118,6 +1186,35 @@ def build_manifest() -> dict[str, Any]:
                 "mk04_q3_day": {"status": "RECONFIRMED, already CEO-resolved", "rule": "17:00 New York, DST-aware anchor (code/resample_ny.py) -- non-blocking for the module, which takes day_index from the caller."},
             },
             "full_resolution_document": "ai_quant_lab statistician/STATISTICIAN_MK03_MK04_NINE_QUESTIONS_RESOLUTION_v1.0.md",
+            "full_code_ratification_document": "ai_quant_lab statistician/STATISTICIAN_BLOCK_BOOTSTRAP_VERDICT_MK_RATIFICATION_SMC_NOMENCLATURE_v1.0.md",
+        },
+        "smc_s_nomenclature": {
+            "status": "REGISTERED (Mandate 3.17) -- AWAITING_VALIDATION_ENGINE_CODE, no detector built yet for any of the 5 families",
+            "collision_verified": "Confirmed directly in code/mstrat.py's legacy REGISTRY: S1='liquidity-sweep mean-reversion', S2='failed-breakout fade', S3='breakout-retest momentum', S13 (FVG grid: fvg/mode/stop/exit), S16 (levels grid: pdh/pdl/pd_open/pd_close/pd_mid) all already exist. S13 and S16 additionally have real PRODUCTION implementation files (ai_trader/strategy_runtime/families/s13_imbalance_fill.py, s16_previous_day_levels.py, plus their own tests) -- a bare-form collision would hit production code, not just research naming.",
+            "families": {
+                "SMC_S1": "Liquidity Sweep Reversal",
+                "SMC_S2": "Failed Breakout / Failed Sweep",
+                "SMC_S3": "Breakout Retest Continuation",
+                "SMC_S13": "Liquidity Void / Imbalance Fill",
+                "SMC_S16": "Previous Day Levels",
+            },
+            "naming_rule": "RIGID, PROTECTED PREFIX, MANDATORY. The short form (S1, S13, etc.) is NEVER used for these or any future SMC family -- always SMC_S13, never S13. S1-S51 without a prefix refer PERMANENTLY to the decommissioned legacy grammar corpus (code/mstrat.py), never to any new SMC family, regardless of conceptual similarity.",
+            "open_r_framework": {
+                "name_note": "'Open-R' is CEO's name, adopted here -- it labels the risk construction already ratified across Mandates 3.11-3.13 for LM-001, now given a reusable label for cross-family application, not a new framework.",
+                "construction": "Geometric stop = the family's own structural 'spike' distance (e.g. wick extreme for SMC_S1's sweep, zone edge for SMC_S13's FVG -- each family instantiates its own geometric spike, the PRINCIPLE is shared, not the specific measurement) + 2 pips buffer, NEVER widened to a floor. net_R as the outcome variable throughout.",
+                "floor_portable": "10.1-pip minimum displacement filter REUSED AS-IS across all 5 families -- it is derived purely from the cost/R formula (cost_stress_3x/R=100%), a property of the shared risk-construction formula (cost=$0.40, TICK=$0.10), not of LM-001's own empirical displacement distribution. Portable by construction.",
+                "ceiling_NOT_portable": "65-pip rejection ceiling is NOT assumed to transfer as-is to SMC_S2/S3/S13/S16 -- it was derived from LM-001's OWN empirical p90 (46.98 pips), a data-dependent quantity. Treated as a PLACEHOLDER for the other four families pending their own geometry audits (same method as LM001_GEOMETRY_AUDIT_STEP1.md), not assumed final.",
+            },
+            "dedup_prescreening_mandatory_before_enrollment": (
+                "PROJECT_AUDIT.md D11/SS F (ai_quant_lab) applies MECHANICALLY, BEFORE any variant is enrolled for testing, not after: identity criterion = "
+                "bit-identical realized trade log (SHA-256 over entry_epoch,exit_epoch,R per trade), never summary statistics; canonical ID = "
+                "lexicographically lowest in an equivalence class; mandatory dual reporting (raw ID count + deduplicated distinct count), and the "
+                "deduplicated count is what's used for any future FDR correction. Verified directly (ai_quant_lab/PROJECT_AUDIT.md): the legacy grammar's "
+                "own dedup audit found 27.0% redundancy (532/1972 IDs) and 87% of clusters from a single conditionally-inert parameter -- if the 20 "
+                "combinatorial variants across these 5 families (crossed with existing grammar dimensions -- reference type, lookback, exit) are enumerated "
+                "naively, the SAME mechanism can recur. This is a real, already-materialized risk in this exact lab, not a theoretical one."
+            ),
+            "full_registration_document": "ai_quant_lab statistician/STATISTICIAN_BLOCK_BOOTSTRAP_VERDICT_MK_RATIFICATION_SMC_NOMENCLATURE_v1.0.md",
         },
         "timeframes": {
             "M15": {
