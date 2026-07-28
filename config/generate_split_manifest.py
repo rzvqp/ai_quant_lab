@@ -402,13 +402,14 @@ def build_manifest() -> dict[str, Any]:
             {"version": "2.5.2", "commit": "00af4b1", "content": "Closes E004's fill-rate PENDING_CONTROL note: Flow A executed STATISTICIAN_E004_FILL_CONTROL_SPEC_v1.0.md exactly (commit b4d5f89) -- control rate 0.850 falls in the pre-registered (0.512,0.886) band, mechanical label OBSERVED_NOT_DISTINCTIVE, read off the table not chosen post-hoc"},
             {"version": "2.5.3", "commit": "a0295d8", "content": "Mandate 3.10: lifts D3_block_reset to full RATIFIED on VE's real-data blind-window audit (MK-01 Step 2, commit 260c4e3 -- bear 0.0305%/bull 0.0170%/correction 0.0396%, all far below the 1% low-cost threshold); corrects Statistician's own '8 structures' count to the correct '6' (3 discovery blocks x 2 swing types -- the fourth M15_v2 segment has no discovery_range); declares the half-open [start_epoch,end_epoch) boundary_convention as a single mechanical rule (resolves the recurring VE-vs-Research-Lab one-bar discrepancy, verified directly against OANDA_XAUUSD_M15.csv); rules CROSS_VERIFICATION_SPEC scope (applies to derived data artifacts, not generically to verification/measurement code reading only through an already-safe discovery mask -- explicit limit stated); registers the re_arming_bug_MK02 fix specification (found by VE, MK-01/MK-02 Step 1 commit 6b7948f) and confirms the D3 volume audit remains valid (mk_d3_volume_audit.py never imports detect_breaks, verified directly)"},
             {"version": "2.5.4", "commit": "04c096e", "content": "Mandate 5.1/5.2: registers LM-001's real-data geometry audit (VE, commit f901e3f, N=34,670 valid wick-sweeps, 86.7% of displacements <40 pips) and the resulting risk-framework decision (STAT-LM001-RISK-FRAMEWORK-DECISION-v1.0) -- SUPERSEDES the fixed stop_official=4.00/stop_sensitivity=5.00 execution layer: R is now geometry-derived per trade (never widened, same D2 anti-pattern at 8x scale if it were); a displacement_filter (>=10.1 pips, excludes 34.0% aggregate) derived from the lab's already-existing 3x cost-stress convention (alpha_lab.py:197), not chosen from reference points; a rejection_ceiling (>=65 pips, tail-only, CONFIRMED not re-derived) stays as originally proposed; statistical_test replaces the fixed-w*-vs-binomial-winrate test with mean net_R>0 (a single win-rate threshold cannot exist when R varies continuously per trade). Also confirms D-BPR's three-tolerance count + freeze-rule (VE's skeleton, commit 306d1dc) is NOT overridden, and reconfirms D3_bis/D-WEEK unchanged."},
-            {"version": "2.5.5", "commit": "PENDING (this version)", "content": "Mandate 3.13: formulates LM-001's testable hypothesis against the 40-V0 5-criteria standard. Corrects the order's stated population (22,887) to the true combined-filter figure (21,048, 60.7% of 34,670) -- 22,887 was the displacement floor alone, never reduced by the 1,839 events also excluded by the 65-pip ceiling. Derives the decisive horizon (20 M15 bars) from the correct comparison family (_profile.HORIZONS, immediate-reaction, not TRACK_HORIZON/REVISIT_HORIZON's multi-day level-revisit family) linked to an already-real boundary (london session length, mtf.py:37-38); secondary horizons (1,3,5,10,50) reused verbatim, descriptive only, family stays 1. Declares no take-profit (pure time-exit). Discloses exit=time's 1.6x concentration vs exit=rr2 (OUTCOME_DISTRIBUTION_v1.0.md, 0.628 vs 0.387) as a mandatory accompanying diagnostic, not a blocker. Declines to confirm block_bootstrap@v1 (still textually UNVALIDATED, n=21,048 far beyond its calibrated range) or substitute matched_null@v1 (ATR-scaled-only, wrong regime per D2_CLOSURE_SIZING_v1.0.md) -- specifies a due-diligence calibration extension instead, with a pre-registered acceptance band and a named (not invented) structural-calibration fallback (WP-5')."},
+            {"version": "2.5.5", "commit": "1d03e4f", "content": "Mandate 3.13: formulates LM-001's testable hypothesis against the 40-V0 5-criteria standard. Corrects the order's stated population (22,887) to the true combined-filter figure (21,048, 60.7% of 34,670) -- 22,887 was the displacement floor alone, never reduced by the 1,839 events also excluded by the 65-pip ceiling. Derives the decisive horizon (20 M15 bars) from the correct comparison family (_profile.HORIZONS, immediate-reaction, not TRACK_HORIZON/REVISIT_HORIZON's multi-day level-revisit family) linked to an already-real boundary (london session length, mtf.py:37-38); secondary horizons (1,3,5,10,50) reused verbatim, descriptive only, family stays 1. Declares no take-profit (pure time-exit). Discloses exit=time's 1.6x concentration vs exit=rr2 (OUTCOME_DISTRIBUTION_v1.0.md, 0.628 vs 0.387) as a mandatory accompanying diagnostic, not a blocker. Declines to confirm block_bootstrap@v1 (still textually UNVALIDATED, n=21,048 far beyond its calibrated range) or substitute matched_null@v1 (ATR-scaled-only, wrong regime per D2_CLOSURE_SIZING_v1.0.md) -- specifies a due-diligence calibration extension instead, with a pre-registered acceptance band and a named (not invented) structural-calibration fallback (WP-5')."},
+            {"version": "2.5.6", "commit": "PENDING (this version)", "content": "Mandate 3.14: resolves all nine open questions from the MK-03/MK-04 partial implementation (VE, commit 7984670). Family 1 (Q5 MK-03/MK-04): D7-consumption confirmed, but rejects an added 'session/day' lifetime clause not present in D7 -- PDH consumed at first same-day touch, no new dimension. Family 2 (Q6/Q4 MK-03): wick/close asymmetry now grounded in direct code precedent (e015's wick touch_mask for mitigation, e010/e012's close-based violation for polarity flips) -- 3-tier gradient specified (CE-50 touch / full fill / inversion). Family 3: FVGs don't survive a block boundary (D4-analog); Q3-week derived from the already-resolved Q3-day via a gap-detection rule, not a new clock. Resolves MK-03 Q4 (IFVG inversion, the only fully-blocking primitive) by reusing verbatim an identical definition independently found in two already-frozen V0s (E010, E012). Ratifies the three small mechanically-forced items (MK-03 Q1, MK-04 Q4, reconfirms MK-04 Q3-day)."},
         ],
     }
 
     manifest: dict[str, Any] = {
         "manifest_id": "STAT-SPLIT-MANIFEST",
-        "version": "2.5.5",
+        "version": "2.5.6",
         "published_date": "2026-07-28",
         "authority": (
             "Statistician (ai_quant_lab, branch statistician-foundation) -- design/specification "
@@ -435,6 +436,19 @@ def build_manifest() -> dict[str, Any]:
             "rule-conformance (which rests on Data Acquisition's own 28/28-passing test suite) -- stated "
             "explicitly, again, as a real structural gap being addressed separately (CROSS_VERIFICATION_"
             "SPEC_v1.0), not a weakness papered over."
+        ),
+        "changelog_v2_5_6": (
+            "Mandate 3.14: resolves all nine open questions from VE's partial MK-03/MK-04 "
+            "implementation (commit 7984670 -- implements only what is ratified, self-classifies each "
+            "question by how much it blocks; BPR tolerance freeze rule confirmed intact through a "
+            "third attempt). See mk03_mk04_ratification for the full field-by-field registration: "
+            "Family 1 (D7-consumption, no invented session/day dimension), Family 2 (wick/close "
+            "asymmetry now grounded directly in e015's touch_mask and e010/e012's close-based "
+            "violation convention, both already-frozen code, not analogy alone), Family 3 (FVG "
+            "block-boundary non-survival, D-WEEK reconfirmed, Q3-week derived from Q3-day via a gap "
+            "rule), the sole fully-blocking primitive MK-03 Q4 (IFVG inversion) resolved by reusing "
+            "E010/E012's frozen definition verbatim, and the three small mechanically-forced "
+            "ratifications (MK-03 Q1, MK-04 Q4, MK-04 Q3-day reconfirmed)."
         ),
         "changelog_v2_5_5": (
             "Mandate 3.13: formulates LM-001's testable hypothesis against the same 5 criteria imposed "
@@ -1066,6 +1080,44 @@ def build_manifest() -> dict[str, Any]:
             "full_preregistration_document": "ai_quant_lab statistician/STATISTICIAN_MARKET_STRUCTURE_RATIFICATION_AND_PREREG_v1.0.md",
             "full_risk_framework_decision_document": "ai_quant_lab statistician/STATISTICIAN_LM001_RISK_FRAMEWORK_DECISION_v1.0.md",
             "full_hypothesis_formulation_document": "ai_quant_lab statistician/STATISTICIAN_LM001_HYPOTHESIS_FORMULATION_v1.0.md",
+        },
+        "mk03_mk04_ratification": {
+            "source": "CEO Mandate 3.14 -- VE's partial implementation (commit 7984670, code/imbalance_mechanics.py + code/institutional_levels.py): implements only what is ratified, leaves the rest NotImplementedError, self-classifies each open question by how much it blocks. Statistician verified the commit directly (git show, no checkout -- discovery-mk-matrix-v1 occupied by a sibling worktree) before ratifying.",
+            "bpr_tolerance_freeze_confirmed": "count_bpr's tolerances=(0.0,0.10,0.25) verified intact in commit 7984670 -- survived a third attempt to hard-freeze a single tolerance. The smallest-tolerance-reaching-n>=25 freeze rule (STAT-LM001-GEOMETRY-MK03-MK04-v1.0) stays the consumer's decision, not re-litigated.",
+            "family_1_consumption": {
+                "status": "RATIFIED",
+                "rule": "MK-03 Q5 (FVG mitigation) and MK-04 Q5 (PDH/PDL level touch) both resolve as D7-analog: consumed once, never re-armed. Lifetime stays IDENTICAL to D7 -- consumed within the entity's already-established existence window (current discovery block for FVGs; current-day availability window for PDH/PDL, already fixed by D3_bis/MK-04 Q4) -- NO new 'session/day' lifetime dimension is added.",
+                "rejected_addition": "The originally-proposed 'eliminated from the active matrix for the rest of the session/day' clause is REJECTED as stated -- D7 specifies no session/day-scoped lifetime, and inventing one for FVGs (which have no natural session boundary) would need its own derivation that was never given.",
+                "pdh_real_question_answered": "VE's actual question (not the tautological daily-recompute fact) was: within the SAME day, does a matured PDH survive a second touch? Answer: NO -- consumed at first touch within its existing daily availability window. Not a new dimension, just D7 applied to the window already fixed elsewhere.",
+            },
+            "family_2_wick_close_asymmetry": {
+                "status": "RATIFIED, now grounded in direct code precedent, not analogy alone",
+                "gradient": {
+                    "1_ce50_mitigation_wick": "low[i]<=ce_50 (bullish) / high[i]>=ce_50 (bearish) -- a touch, matches the wick-based touch_mask ALREADY used in edge_research/e015_order_block_remitigation.py:98 ((low<=zone_high)&(high>=zone_low)), applied at the CE-50 level.",
+                    "2_full_fill_wick": "low[i]<=lower (bullish) / high[i]>=upper (bearish) -- deeper touch, still wick, not yet inversion.",
+                    "3_inversion_close": "close[i]<lower (bullish) / close[i]>upper (bearish) -- REUSED VERBATIM from two already-frozen V0s, edge_research/e010_breaker_block_snatch.py and e012_inverted_fvg.py, both independently using 'the first later bar's close beyond the zone edge -- a decisive violation, not just an intrabar wick' for their own polarity-flip event. Not derived anew -- identical wording confirmed in both files.",
+                },
+                "reasoning": "A touch (wick) shows only that price momentarily revisited the zone -- says nothing about which side won that bar. A close beyond the far edge shows the opposite side WON that bar -- a capitulation, not a visit. Same mechanic D6 already uses (wick for penetration, close for return), now doubly corroborated by two frozen V0s using an identical convention for the analogous event.",
+                "consumption_link": "The original FVG consumes (Family 1/D7) at first CE-50 touch, regardless of later full-fill or inversion (those are additional recorded properties, not re-arm events). An inverted IFVG is a FRESH entity with its own independent consumption cycle for reaction in the new direction -- matches E010/E012's own 'revisit and react in the new, flipped-polarity direction' design exactly.",
+            },
+            "family_3_block_boundary_and_week_anchor": {
+                "status": "RATIFIED, unconditional support",
+                "fvg_block_survival": "FVGs do NOT survive a discovery-block boundary -- exact D4-analog: a zone whose formation depends on bars from one block cannot be tracked/acted upon in a later block without violating quarantine. At block end, the FVG (mitigated or not) simply exits scope -- not marked 'expired unmitigated', just no longer a trackable entity, same as a swing that doesn't survive D4.",
+                "discrete_weeks_partial_flag": "Reconfirmed, unchanged from D-WEEK: discrete weeks anchored to the block calendar, days_contributing + COMPLETE/PARTIAL.",
+                "q3_week_resolved": "MK-04 Q3-week (week boundary) resolved by DERIVING from the already-resolved Q3-day (17:00 NY DST-aware anchor, code/resample_ny.py), not a new independent clock: week_index increments at the first bar whose day_index follows a >1-calendar-day gap from the prior in-block day (the weekend) -- does not block the module (which takes week_index from the caller) but specifies the caller-side derivation so it is not chosen ad hoc.",
+            },
+            "mk03_q4_ifvg_inversion_RESOLVED": {
+                "status": "RESOLVED -- the only fully-blocking primitive, per VE's own classification",
+                "definition": "Bullish FVG inverts the first time a LATER bar has close < lower (the zone's far/low edge) -- a decisive violation via CLOSE, not an intrabar wick. Bearish symmetric: close > upper. Resolves both ambiguities: (a) NOT single-bar body-engulfment -- the first later close beyond the edge, however many bars it takes; (b) CLOSE, not wick.",
+                "source": "Reused verbatim from two already-frozen V0 hypotheses (edge_research/e010_breaker_block_snatch.py 'Breaker flip', edge_research/e012_inverted_fvg.py 'Inversion') -- not derived anew, independently confirmed identical in both files.",
+                "unblocks": "code/imbalance_mechanics.py:detect_inverse_fvgs",
+            },
+            "small_ratified_items": {
+                "mk03_q1_lookahead": {"status": "RATIFIED", "rule": "confirmed_idx=i+1, mechanically forced -- a 3-bar window cannot be known before bar i+1, exact D1 analog, no lookahead-safe alternative."},
+                "mk04_q4_availability": {"status": "RATIFIED", "rule": "available_idx = first bar of the current period (prior period is fully known at current period's open) -- same forced mechanic as D1, applied to daily/weekly levels."},
+                "mk04_q3_day": {"status": "RECONFIRMED, already CEO-resolved", "rule": "17:00 New York, DST-aware anchor (code/resample_ny.py) -- non-blocking for the module, which takes day_index from the caller."},
+            },
+            "full_resolution_document": "ai_quant_lab statistician/STATISTICIAN_MK03_MK04_NINE_QUESTIONS_RESOLUTION_v1.0.md",
         },
         "timeframes": {
             "M15": {
