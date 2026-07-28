@@ -44,6 +44,10 @@ Rata de umplere a unui gap, în general, e cunoscută ca fiind ridicată pe oric
 
 `CONFIRMED_STRUCTURAL_ANOMALY` e o etichetă tare, exact genul care se citează peste șase luni ca fapt stabilit. Nu o pun fără control.
 
+### Controlul cerut — specificat integral în `STATISTICIAN_E004_FILL_CONTROL_SPEC_v1.0.md` [amendat]
+
+**[Amendare]** rezumatul de mai jos era doar un schiță — Flow A a semnalat corect că nu era publicată ca document executabil separat. Specificația completă (populația exactă, testul statistic, interpretarea pre-înregistrată cu praguri numerice, eticheta per rezultat) e acum în documentul dedicat de mai sus, singurul pe care Flow A îl execută.
+
 ### Controlul cerut — specificat, ca Flow A să-l poată executa fără tur suplimentar
 
 Pe aceleași 3 regimuri (bear/bull/correction, excluzând regimul 2022-2026 pentru același motiv SAME-WINDOW-RESAMPLED), măsoară rata de umplere pentru o populație de gap-uri **generice**, NU selectate prin criteriile specifice E004:
