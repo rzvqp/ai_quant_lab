@@ -62,4 +62,4 @@ test           WP-5' block_bootstrap, L>=28
 
 **GARD 1 rămâne True (raportat de VE, consistent cu deblocarea deja confirmată). GARD 2 neatins. Sigilatul intact — nimic din acest document sau din numărătoarea de populație a atins vreodată datele sigilate.**
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.11 (commit `f782f0d`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
