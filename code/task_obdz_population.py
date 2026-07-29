@@ -44,8 +44,9 @@ for _p in (_HERE, _ROOT, os.path.join(_ROOT, "edge_research")):
         sys.path.insert(0, _p)
 
 from edge_research._common import PRE_HOLDOUT_SPLIT_ID, RESEARCH_HOLDOUT_CUTOFF_UTC, load
-import split_manifest as SM
-from order_flow import OrderBlockKind, detect_demand_zones, detect_mitigations, detect_order_blocks, track_breaker
+import split_manifest as SM  # type: ignore[import-not-found]
+from order_block_void import OrderBlockKind
+from order_flow import detect_demand_zones, detect_order_blocks
 
 ATR_FLOOR = 3.0 * 0.20 / 0.7          # ≈ 0,857$
 HORIZON, WEEK_BARS, N_MIN = 20, 460, 25
@@ -63,7 +64,8 @@ def _htf_trend(dfh: Any, period: int) -> Any:
 def _day_index(time: Any) -> np.ndarray:
     dt = pd.to_datetime(time, unit="s", utc=True)
     ny = dt.dt.tz_convert("America/New_York").dt.tz_localize(None)
-    return (ny - pd.Timedelta(hours=17)).dt.floor("D").values.astype("datetime64[D]").astype("int64")
+    days = (ny - pd.Timedelta(hours=17)).dt.floor("D").values.astype("datetime64[D]").astype("int64")
+    return np.asarray(days, dtype=np.int64)
 
 
 def _first_mitigation(ob: Any, high: Any, low: Any, close: Any, n: int) -> int | None:
