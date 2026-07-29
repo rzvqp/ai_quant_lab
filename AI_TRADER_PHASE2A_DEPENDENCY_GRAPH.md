@@ -132,6 +132,21 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    **Disclosed, not built**: a single tick's exception (e.g. a transient MT5 disconnect) propagates
    uncaught out of `run_forever()` — no retry/backoff policy exists; a real design decision, not yet
    specified.
+   **NEW — structural detector observer wiring (Mandate 4, authorized extension, investigation
+   complete).** `AI_TRADER_MANDATE4_STEP2_STRUCTURAL_DETECTOR_INVESTIGATION.md`: the seven named modules
+   (`market_structure`, `liquidity_mechanics`, `imbalance_mechanics`, `institutional_levels`,
+   `order_flow`, `market_state`, `interactions`) live in a SEPARATE repository (`ai_quant_lab-wp5b`), not
+   `ai_trader`'s own — no path/vendor/install bridge exists today (found while investigating, not
+   anticipated). Confirmed the block-boundary reset in every `Block`-based module exists to protect the
+   RESEARCH quarantine methodology only; live should use one single, ever-growing block, state flowing
+   continuously — matching the CEO's own hypothesis. `market_structure` (swings/BOS/CHoCH),
+   `imbalance_mechanics` (FVG/IFVG), and `market_state` (expansion/sessions/compression) have no other
+   blocker. `liquidity_mechanics`/`institutional_levels` need a day/week-boundary derivation that exists
+   only as an offline batch script (`resample_ny.py`), not a live-callable function.
+   `order_flow`'s Order Block formation criterion is an explicit `NotImplementedError` — cannot produce
+   any output at all. `interactions` deliberately not used — its own purpose is hypothesis-combination,
+   explicitly out of scope for a pure observer. **Not authorized to build yet — awaiting direction on the
+   cross-repo bridge question before wiring even the three unblocked modules.**
 10. **#14** — validated edge connected. Entirely outside engineering control; not planned, not estimated.
 
 The sections below are the ORIGINAL dependency analysis this order was built from — kept for the
