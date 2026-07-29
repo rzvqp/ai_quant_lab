@@ -108,4 +108,4 @@ VE a executat exact ce am specificat — erorile sunt ale mele. Corect că a re�
 
 ---
 
-**Nimic rulat suplimentar în acest document dincolo de re-verificarea independentă a rezultatului deja livrat. Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Nimic rulat suplimentar în acest document dincolo de re-verificarea independentă a rezultatului deja livrat. Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.15 (commit `9b4af52`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
