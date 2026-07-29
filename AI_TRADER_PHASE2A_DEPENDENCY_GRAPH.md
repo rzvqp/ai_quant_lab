@@ -120,14 +120,18 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    no commission is ever paid, so cost reconciliation changes nothing observed. Both remain real
    preconditions for DEMO execution specifically, not for observation; deferring them costs nothing, while
    every day of shadow observation delayed is a day of forward evidence that can never be recovered.
-9. **#7 — REMAINS OPEN (CEO ruling, 2026-07-27): NOT subsumed by #6.** Confirmed in code: no caller of
-   `CandidateSignalProducer.run_once()`/`LiveBarFeed.poll()` exists anywhere outside their own
-   definitions, and no loop/scheduler construct exists anywhere in `ai_trader/` outside tests. A
-   scheduler/loop remains a real, separate, currently nonexistent piece — still not authorized to build.
-   Verification surfaced the two now-DONE persistence items above (item 6) plus the still-open bar/gap
-   continuity detection item. **Order is fixed: persistence first (Mandate 2, DONE), loop after — not
-   yet authorized.** See `AI_TRADER_ITEM7_SCHEDULER_VERIFICATION_REPORT.md` and
+9. **#7 — DONE (Mandate 4, Step 1, 2026-07-28).** Was: confirmed not subsumed by #6, no loop/scheduler
+   construct existed anywhere. Now: `ai_trader/live_loop/LiveSignalLoop` — interval-based scheduling
+   (`tick()`/`run_forever()`), circuit breaker consulted fresh from the persisted state before every
+   single cycle's action (never cached), clean signal-based stop with the state store closed on exit.
+   Restart-correct watermark resume and gap journaling are inherited from Mandates 2/3, proven end-to-end
+   through the loop itself. Required the FULL `ai_trader/` tree per your own instruction to apply the
+   scope rule the same way — 2886 passed, 2 skipped, 0 failed, clean on the first run. See
+   `AI_TRADER_MANDATE4_STEP1_LOOP_REPORT.md`, `AI_TRADER_ITEM7_SCHEDULER_VERIFICATION_REPORT.md`, and
    `AI_TRADER_MANDATE2_PERSISTENCE_FRAMEWORK_REPORT.md`.
+   **Disclosed, not built**: a single tick's exception (e.g. a transient MT5 disconnect) propagates
+   uncaught out of `run_forever()` — no retry/backoff policy exists; a real design decision, not yet
+   specified.
 10. **#14** — validated edge connected. Entirely outside engineering control; not planned, not estimated.
 
 The sections below are the ORIGINAL dependency analysis this order was built from — kept for the
