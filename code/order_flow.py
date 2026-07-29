@@ -9,8 +9,8 @@ Parametri RATIFICAȚI (Statistician, manifest v2.6.1 `2fb948f`, doc `3c64848`):
     filtru într-o primitivă persistentă s-ar moșteni tăcut de orice familie viitoare). Importat din
     `order_block_void.py` (NEATINS — tocmai a trecut auditul independent `dcc9067`).
   - Criteriul de FORMARE al OB — RATIFICAT (Statistician 3.22, d9b4d12): impuls E010 + înghițire de corp a
-    barei opuse precedente, fără volum (vezi `detect_order_blocks`). ⚠ Interacțiune deschisă cu Mit/Rej
-    (impulsul înghite zona → vizită-1 spurioasă la scanarea de la `formation_idx+1`) — flag în `detect_order_blocks`.
+    barei opuse precedente, fără volum (vezi `detect_order_blocks`). Interacțiunea cu Mit/Rej (impulsul înghite
+    zona) REZOLVATĂ (v2.7.9): `_scan_reactions` scanează de la `formation_idx+2`, sărind bara de impuls.
   - Breaker / Mitigation / Rejection = definite prin REUTILIZARE a mecanicilor deja ratificate, nu invenții:
       Breaker   = criteriul de inversare E010/E012, verbatim `e010_breaker_block_snatch.py`: OB bullish
                   se inversează prima dată când CLOSE-ul unei bare cade sub PODEAUA OB = `Low_OB` (LOW-ul
@@ -96,13 +96,10 @@ def detect_order_blocks(
     doar bare ≤ i); `formation_idx = i-1` (bara-ancoră), astfel încât PODEAUA breaker-ului `low[formation_idx]`
     (frozen `track_breaker`) = LOW-ul barei OB corect, cf. spec.
 
-    ⚠ ÎNTREBARE DESCHISĂ (interacțiune cu Mitigation/Rejection înghețate) — vezi docstring-ul modulului:
-    `_scan_reactions` scanează de la `formation_idx+1 = i` (BARA DE IMPULS). Impulsul, prin construcție,
-    ÎNGHITE zona → `low[i] <= zone_upper ȘI high[i] >= zone_lower` mereu adevărat → ar înregistra o „vizită 1"
-    SPURIOASĂ chiar pe bara care a creat OB-ul. Formarea/zona/podeaua sunt corecte și testabile; interacțiunea
-    Mit/Rej cere fie săritul barei de impuls (scan de la `formation_idx+2`), fie altă convenție — NU o rezolv
-    unilateral (nu ating Mit/Rej înghețate). Clasificare: CLARIFICARE (blochează parțial pipeline-ul compus,
-    nu primitiva OB)."""
+    Interacțiunea cu Mitigation/Rejection (Q1) — REZOLVATĂ (Statistician v2.7.9, doc 45aa98a): impulsul
+    (`formation_idx+1`) înghite zona prin construcție → ar produce o vizită-1 spurioasă la Mit ȘI Rej;
+    `_scan_reactions` scanează acum de la `formation_idx+2`, sărind bara de impuls. Pipeline-ul compus
+    OB→Mit/Rej e deblocat; separarea anti-E010 rămâne neschimbată."""
     n = block_end
     atr = atr14(high, low, close)
     out: list[OrderBlock] = []
@@ -160,14 +157,22 @@ def _scan_reactions(
     ob: OrderBlock, high: Sequence[float], low: Sequence[float], close: Sequence[float], block_end: int,
     event_type: str, horizon: int, cooldown: int,
 ) -> list[ReactionEvent]:
-    """Nucleul comun Mitigation/Rejection: scanare forward-only cu cooldown E015 + separare anti-E010."""
+    """Nucleul comun Mitigation/Rejection: scanare forward-only cu cooldown E015 + separare anti-E010.
+
+    FIX DE CIRCULARITATE RATIFICAT (Statistician v2.7.9, doc 45aa98a, Q1): scanarea începe la
+    `formation_idx + 2`, SĂRIND bara de IMPULS (`formation_idx + 1`). Bara de impuls, prin condiția de
+    înghițire din `detect_order_blocks`, conține STRICT corpul zonei → `low<=zl` ȘI `high>=zh`, deci ar
+    produce garantat o vizită-1 SPURIOASĂ la AMBELE tipuri (Mitigation ȘI Rejection). O „vizită" = întoarcere
+    INDEPENDENTĂ la zonă; bara care A FORMAT zona nu e o întoarcere. Fereastra de SELECȚIE rămâne funcție pură
+    de bare `<= event_idx`, fereastra de MĂSURARE rămâne `[event_idx, event_idx+H)` — se schimbă DOAR startul
+    scanării (o singură bară, minimal). Fără efect retroactiv (nimic nu consumase încă funcțiile)."""
     zl, zh = ob.zone_lower, ob.zone_upper        # ZONA = CORPUL (ratificat)
     bull = ob.kind is OrderBlockKind.BULLISH
     stop = _breaker_stop(ob, high, low, close, block_end)
     out: list[ReactionEvent] = []
     visit = 0
     last_hit: int | None = None
-    for i in range(ob.formation_idx + 1, stop):
+    for i in range(ob.formation_idx + 2, stop):                     # +2: sare bara de impuls (fix Q1 v2.7.9)
         if event_type == "mitigation":
             hit = (low[i] <= zh) and (high[i] >= zl)                 # E015: span suprapune zona
         else:  # rejection — D6 wick-sweep-reject (detect_sweeps verbatim)

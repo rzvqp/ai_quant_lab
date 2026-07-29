@@ -44,6 +44,29 @@ def _engulfing_series(n: int = 18):
     return o, h, l, c, n
 
 
+def _ob_then_touch_series(touch_idx: int = 22, n: int = 30):
+    """Impuls bullish @16 (OB formation_idx=15, zonă corp [99,100], podea low[15]=98.8), preț SUS după impuls,
+    apoi o atingere LEGITIMĂ (fitil în zonă, close peste podea) la `touch_idx`."""
+    o, h, l, c, _ = _engulfing_series(n=n)
+    for j in range(17, n):
+        o[j] = h[j] = l[j] = c[j] = 101.5                     # sus, nu atinge zona, fără breaker
+    o[touch_idx], h[touch_idx], l[touch_idx], c[touch_idx] = 101.0, 101.2, 98.9, 100.2  # fitil în [99,100], close>98.8
+    return o, h, l, c, n
+
+
+def test_fix_impulse_bar_produces_no_reaction():
+    """Bara de impuls (16) NU mai produce o vizită; atingerea legitimă (22) apare în continuare — Mit ȘI Rej."""
+    o, h, l, c, n = _ob_then_touch_series(touch_idx=22)
+    ob = detect_order_blocks(o, h, l, c, n)[0]
+    assert ob.formation_idx == 15
+    mits = detect_mitigations(ob, h, l, c, n)
+    rejs = detect_rejections(ob, h, l, c, n)
+    assert all(e.event_idx != 16 for e in mits)               # impulsul nu mai e o vizită
+    assert all(e.event_idx != 16 for e in rejs)
+    assert [e.event_idx for e in mits] == [22]                # doar atingerea legitimă
+    assert [e.event_idx for e in rejs] == [22]                # low 98.9<99=zl, close 100.2>99 → rejecție D6
+
+
 def test_ob_formation_bullish_engulfing_impulse():
     o, h, l, c, n = _engulfing_series()
     obs = detect_order_blocks(o, h, l, c, n)
