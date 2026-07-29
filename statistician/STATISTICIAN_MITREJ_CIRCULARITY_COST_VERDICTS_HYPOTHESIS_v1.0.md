@@ -141,4 +141,4 @@ Construcția (DemandZone/OB compus, risc ATR, ieșire parțială) e structural d
 
 ---
 
-**Nimic re-rulat suplimentar în acest document dincolo de re-verificarea independentă a cifrelor deja livrate de VE. Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Nimic re-rulat suplimentar în acest document dincolo de re-verificarea independentă a cifrelor deja livrate de VE. Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.9 (commit `4216040`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
