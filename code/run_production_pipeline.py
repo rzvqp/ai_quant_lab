@@ -54,8 +54,8 @@ from market_structure import Block  # noqa: E402
 from trading_strategies import StrategySignal, detect_s1, net_R  # noqa: E402  # SMC_S1 peste liquidity_mechanics
 
 # ── GARD 1 ────────────────────────────────────────────────────────────────────────────────────────
-GATED_BY_CTO: bool = True      # COBORÂT la loc după rularea OBDZ-001 (Mandat curent). Se ridică EXCLUSIV
-#                               per rulare, prin decizie CTO. GARD 2 (segmentul sigilat) neatins mereu.
+GATED_BY_CTO: bool = True      # COBORÂT la loc după diagnosticul SL/TP OBDZ. Se ridică EXCLUSIV per rulare,
+#                               prin decizie CTO. GARD 2 (segmentul sigilat) neatins mereu.
 
 # ── parametrii Open-R pentru SMC_S1 (= LM-001) ──────────────────────────────────────────────────────
 HORIZON_S1 = 20              # orizont GRUPA A, ieșire pură pe timp
