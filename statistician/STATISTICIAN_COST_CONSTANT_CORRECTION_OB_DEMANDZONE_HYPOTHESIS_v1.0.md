@@ -135,4 +135,4 @@ Filtrul vechi `[10,1;65,0)` pici **se elimină** — derivat pe cost greșit ȘI
 
 ---
 
-**Nimic re-rulat în acest document. Publicat pe `statistician-foundation`; manifestul se incrementează. Holdout SEALED.**
+**Nimic re-rulat în acest document. Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.8 (commit `e66664c`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente). Holdout SEALED.**
