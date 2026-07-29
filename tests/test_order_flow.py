@@ -17,8 +17,21 @@ if _CODE not in sys.path:
 
 from order_block_void import OrderBlock, OrderBlockKind  # noqa: E402
 from order_flow import (  # noqa: E402
-    Breaker, ReactionEvent, detect_mitigations, detect_order_blocks, detect_rejections, track_breaker,
+    Breaker, DemandZone, ReactionEvent, detect_demand_zones, detect_mitigations, detect_order_blocks,
+    detect_rejections, track_breaker,
 )
+
+
+def test_demand_zone_is_full_range_superset_of_ob():
+    o, h, l, c, n = _engulfing_series()
+    obs = detect_order_blocks(o, h, l, c, n)
+    dzs = detect_demand_zones(o, h, l, c, n)
+    assert len(dzs) == len(obs) == 1
+    dz, ob = dzs[0], obs[0]
+    assert isinstance(dz, DemandZone) and dz.formation_idx == ob.formation_idx and dz.kind is ob.kind
+    # DemandZone = [Low, High] al barei-ancoră (15): superset STRICT al corpului OB [99,100]
+    assert (dz.zone_lower, dz.zone_upper) == (l[15], h[15]) == (98.8, 100.3)
+    assert dz.zone_lower <= ob.zone_lower and dz.zone_upper >= ob.zone_upper
 
 
 def _engulfing_series(n: int = 18):

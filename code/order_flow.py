@@ -201,3 +201,34 @@ def detect_rejections(
     """Rejecții (D6 sweep-reject): fitil penetrează podeaua/plafonul corpului ȘI închide înapoi înăuntru.
     Aceeași separare anti-E010 ca la mitigare — contract disjunct prin construcție, nu verificat după."""
     return _scan_reactions(ob, high, low, close, block_end, "rejection", horizon, cooldown)
+
+
+# ─────────────────────────────── DemandZone (PIESA 2, primitivă nouă) ───────────────────────────────
+@dataclass(frozen=True)
+class DemandZone:
+    """Zonă MACRO = intervalul COMPLET `[Low, High]` al barei-ancoră (fitil INCLUS) — NU corpul (Statistician
+    3.22, d9b4d12 Partea 3). NECONSUMABILĂ (reper persistent, re-testabil, ca un nivel S/R). SUPERSET geometric
+    strict al `OrderBlock` (corpul) pe ACEEAȘI bară: `zone_lower ≤ OB.zone_lower ≤ OB.zone_upper ≤ zone_upper`
+    (fiindcă `Low ≤ min(O,C)` și `High ≥ max(O,C)`). BULLISH = demand, BEARISH = supply."""
+    formation_idx: int
+    kind: OrderBlockKind
+    zone_lower: float        # = Low al barei-ancoră
+    zone_upper: float        # = High al barei-ancoră
+
+
+def detect_demand_zones(
+    open_: Sequence[float], high: Sequence[float], low: Sequence[float], close: Sequence[float], block_end: int,
+) -> list[DemandZone]:
+    """DemandZone per formare de OB (aceeași bară-ancoră, aceeași direcție), dar zona = intervalul COMPLET
+    `[Low, High]` al barei-ancoră. NECONSUMABILĂ. Reutilizează `detect_order_blocks` (aceeași formare impuls +
+    înghițire) — fiecare OB ⇒ exact o DemandZone pe bara lui, doar lărgită de la corp la fitil.
+
+    ⚠ INTERSECȚIA DemandZone × OrderBlock (ipoteza compusă din d9b4d12 Partea 3) rămâne ÎNTREBARE DESCHISĂ:
+    Statisticianul a semnalat ambiguitatea A=B (trivial, colapsează la simplul OB) vs A≠B (substanțial) și a
+    cerut CONFIRMARE înainte de implementare. NU o inventez — cele două primitive rămân SEPARATE aici; compusul
+    se implementează după ce Statisticianul confirmă interpretarea. Clasificare: CLARIFICARE."""
+    out: list[DemandZone] = []
+    for ob in detect_order_blocks(open_, high, low, close, block_end):
+        a = ob.formation_idx
+        out.append(DemandZone(formation_idx=a, kind=ob.kind, zone_lower=float(low[a]), zone_upper=float(high[a])))
+    return out
