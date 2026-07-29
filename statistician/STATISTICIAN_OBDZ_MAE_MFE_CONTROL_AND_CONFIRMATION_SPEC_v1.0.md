@@ -95,4 +95,4 @@ Verdictul pe A' (Sarcina 1) — ÎNCHIS, corectat. Măsurătoarea MAE/MFE+contro
 
 ---
 
-**Nimic rulat suplimentar în acest document dincolo de re-verificarea independentă a diagnosticului A' deja livrat. Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Nimic rulat suplimentar în acest document dincolo de re-verificarea independentă a diagnosticului A' deja livrat. Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.14 (commit `5dd3825`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
