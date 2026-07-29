@@ -8,8 +8,9 @@ Parametri RATIFICAȚI (Statistician, manifest v2.6.1 `2fb948f`, doc `3c64848`):
     referință la volum (filtrul de volum ELIMINAT — coloana `volume` are proveniență neconfirmată; un
     filtru într-o primitivă persistentă s-ar moșteni tăcut de orice familie viitoare). Importat din
     `order_block_void.py` (NEATINS — tocmai a trecut auditul independent `dcc9067`).
-  - Criteriul de FORMARE al OB (care lumânare DEVINE un OB) rămâne DESCHIS — `NotImplementedError`.
-    Statisticianul l-a lăsat explicit neancorat (nicio familie formalizată nu-l cere).
+  - Criteriul de FORMARE al OB — RATIFICAT (Statistician 3.22, d9b4d12): impuls E010 + înghițire de corp a
+    barei opuse precedente, fără volum (vezi `detect_order_blocks`). ⚠ Interacțiune deschisă cu Mit/Rej
+    (impulsul înghite zona → vizită-1 spurioasă la scanarea de la `formation_idx+1`) — flag în `detect_order_blocks`.
   - Breaker / Mitigation / Rejection = definite prin REUTILIZARE a mecanicilor deja ratificate, nu invenții:
       Breaker   = criteriul de inversare E010/E012, verbatim `e010_breaker_block_snatch.py`: OB bullish
                   se inversează prima dată când CLOSE-ul unei bare cade sub PODEAUA OB = `Low_OB` (LOW-ul
@@ -39,13 +40,17 @@ schimbă niciun eveniment cu `event_idx` anterior.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from enum import Enum
 from typing import Sequence
 
 from order_block_void import GROUP_A_HORIZON, OrderBlock, OrderBlockKind
+from market_state import atr14
 
 VISIT_COOLDOWN = 4  # E015: atingeri la ≤4 bare distanță = aceeași vizită
+DISP_MULT = 1.5     # E010 PRIMARY_DISP (criteriul de impuls, reutilizat verbatim)
+BODY_FRAC = 0.5     # E010 BODY_FRAC
 
 
 class ObLifecycle(Enum):
@@ -80,11 +85,50 @@ def detect_order_blocks(
     open_: Sequence[float], high: Sequence[float], low: Sequence[float], close: Sequence[float],
     block_end: int,
 ) -> list[OrderBlock]:
-    """Criteriul de FORMARE al OB — DESCHIS prin decizia Statisticianului (nicio familie formalizată nu-l
-    cere). NU îl inventez. Zona (corp) și separarea ferestrelor sunt înghețate în `order_block_void.py`."""
-    raise NotImplementedError(
-        "Criteriul de FORMARE al OB (care lumânare devine candidat OB) rămâne neancorat, cf. Statistician "
-        "v2.6.1. Breaker/Mitigation/Rejection primesc OB-ul ca INTRARE; formarea nu e inventată aici.")
+    """Criteriul de FORMARE al OB — RATIFICAT (Statistician Mandat 3.22, d9b4d12; manifest v2.7.8):
+      (a) lumânarea `i` e de IMPULS prin criteriul E010 deja ratificat (3.21): `range[i] > 1,5×ATR14[i-1]`
+          (ATR-ul barei PRECEDENTE) ȘI corp direcțional puternic `|close[i]-open[i]| >= 0,5×range[i]`;
+      (b) corpul lui `i` ÎNGHITE COMPLET corpul barei OPUSE imediat precedente `i-1` (de direcție inversă):
+          `min(O,C)[i] <= min(O,C)[i-1]` ȘI `max(O,C)[i] >= max(O,C)[i-1]`.
+    FĂRĂ filtru de volum (proveniență neconfirmată, aceeași motivație ca 3.21). Polaritate = a IMPULSULUI
+    (impuls bullish → OB BULLISH). Zona OB = CORPUL barei ÎNGHIȚITE (ancora), NESCHIMBAT (3.20). ATR14 =
+    reutilizat verbatim din `market_state.atr14` (înghețat). Forward-safe: OB cunoscut la bara `i` (folosește
+    doar bare ≤ i); `formation_idx = i-1` (bara-ancoră), astfel încât PODEAUA breaker-ului `low[formation_idx]`
+    (frozen `track_breaker`) = LOW-ul barei OB corect, cf. spec.
+
+    ⚠ ÎNTREBARE DESCHISĂ (interacțiune cu Mitigation/Rejection înghețate) — vezi docstring-ul modulului:
+    `_scan_reactions` scanează de la `formation_idx+1 = i` (BARA DE IMPULS). Impulsul, prin construcție,
+    ÎNGHITE zona → `low[i] <= zone_upper ȘI high[i] >= zone_lower` mereu adevărat → ar înregistra o „vizită 1"
+    SPURIOASĂ chiar pe bara care a creat OB-ul. Formarea/zona/podeaua sunt corecte și testabile; interacțiunea
+    Mit/Rej cere fie săritul barei de impuls (scan de la `formation_idx+2`), fie altă convenție — NU o rezolv
+    unilateral (nu ating Mit/Rej înghețate). Clasificare: CLARIFICARE (blochează parțial pipeline-ul compus,
+    nu primitiva OB)."""
+    n = block_end
+    atr = atr14(high, low, close)
+    out: list[OrderBlock] = []
+    for i in range(1, n):
+        prior_atr = atr[i - 1]
+        if math.isnan(prior_atr) or prior_atr <= 0:
+            continue
+        rng = float(high[i]) - float(low[i])
+        if rng <= DISP_MULT * prior_atr:                          # (a) impuls: range > 1,5×ATR14[i-1]
+            continue
+        if abs(float(close[i]) - float(open_[i])) < BODY_FRAC * rng:   # (a) corp >= 0,5×range
+            continue
+        impulse_bull = float(close[i]) > float(open_[i])
+        prev_bull = float(close[i - 1]) > float(open_[i - 1])
+        prev_bear = float(close[i - 1]) < float(open_[i - 1])
+        if impulse_bull and not prev_bear:                        # bara i-1 trebuie OPUSĂ impulsului
+            continue
+        if (not impulse_bull) and not prev_bull:
+            continue
+        i_lo, i_hi = min(float(open_[i]), float(close[i])), max(float(open_[i]), float(close[i]))
+        p_lo, p_hi = min(float(open_[i - 1]), float(close[i - 1])), max(float(open_[i - 1]), float(close[i - 1]))
+        if not (i_lo <= p_lo and i_hi >= p_hi):                   # (b) înghițire de CORP completă
+            continue
+        kind = OrderBlockKind.BULLISH if impulse_bull else OrderBlockKind.BEARISH
+        out.append(OrderBlock(formation_idx=i - 1, kind=kind, zone_lower=p_lo, zone_upper=p_hi))
+    return out
 
 
 def track_breaker(

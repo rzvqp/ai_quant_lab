@@ -21,6 +21,50 @@ from order_flow import (  # noqa: E402
 )
 
 
+def _engulfing_series(n: int = 18):
+    """Bare mici (ATR warmup), bară bearish 15, impuls bullish 16 care înghite corpul lui 15."""
+    o = [100.0] * n; h = [100.6] * n; l = [99.4] * n; c = [100.0] * n
+    for i in range(1, 15):
+        c[i] = 100.0 + (0.2 if i % 2 else -0.2)
+    o[15], c[15], h[15], l[15] = 100.0, 99.0, 100.3, 98.8     # bearish, body [99,100]
+    o[16], c[16], h[16], l[16] = 98.9, 101.5, 101.7, 98.7     # impuls bullish, înghite [99,100]
+    return o, h, l, c, n
+
+
+def test_ob_formation_bullish_engulfing_impulse():
+    o, h, l, c, n = _engulfing_series()
+    obs = detect_order_blocks(o, h, l, c, n)
+    assert len(obs) == 1
+    ob = obs[0]
+    assert ob.kind is OrderBlockKind.BULLISH
+    assert ob.formation_idx == 15                              # bara-ancoră ÎNGHIȚITĂ (i-1)
+    assert (ob.zone_lower, ob.zone_upper) == (99.0, 100.0)     # CORPUL barei înghițite
+    # podeaua breaker-ului frozen = low[formation_idx] = low al barei OB
+    assert l[ob.formation_idx] == 98.8
+
+
+def test_ob_formation_requires_opposite_and_engulfment():
+    # impuls bullish dar bara precedentă tot bullish (nu opusă) → fără OB
+    o, h, l, c, n = _engulfing_series()
+    o[15], c[15] = 99.0, 100.0                                 # bara 15 acum BULLISH (aceeași direcție)
+    assert detect_order_blocks(o, h, l, c, n) == []
+    # impuls prea slab (range mic) → fără OB
+    o2, h2, l2, c2, n2 = _engulfing_series()
+    h2[16], l2[16], o2[16], c2[16] = 100.4, 99.6, 99.7, 100.3  # range 0.8 < 1.5×ATR
+    assert detect_order_blocks(o2, h2, l2, c2, n2) == []
+
+
+def test_ob_formation_no_lookahead():
+    """Mutarea barelor de DUPĂ impuls nu schimbă niciun OB anterior (formarea folosește doar bare ≤ i)."""
+    o, h, l, c, n = _engulfing_series(n=30)
+    o[16], c[16], h[16], l[16] = 98.9, 101.5, 101.7, 98.7      # impuls @16
+    base = [(x.formation_idx, x.kind.value, x.zone_lower, x.zone_upper) for x in detect_order_blocks(o, h, l, c, n)]
+    for i in range(18, n):                                     # mutăm agresiv barele > impuls
+        o[i], h[i], l[i], c[i] = 500.0, 600.0, 50.0, 55.0
+    after = [(x.formation_idx, x.kind.value, x.zone_lower, x.zone_upper) for x in detect_order_blocks(o, h, l, c, n)]
+    assert [x for x in base if x[0] < 17] == [x for x in after if x[0] < 17]
+
+
 def _bull_ob() -> OrderBlock:
     # corp bullish [100,102]; bara OB are Low_OB=99 (fitil sub corp)
     return OrderBlock(formation_idx=0, kind=OrderBlockKind.BULLISH, zone_lower=100.0, zone_upper=102.0)
@@ -30,9 +74,8 @@ def _bear_ob() -> OrderBlock:
     return OrderBlock(formation_idx=0, kind=OrderBlockKind.BEARISH, zone_lower=100.0, zone_upper=102.0)
 
 
-def test_formation_is_open_not_invented():
-    with pytest.raises(NotImplementedError):
-        detect_order_blocks([1.0], [1.0], [1.0], [1.0], 1)
+def test_ob_formation_empty_on_trivial_input():
+    assert detect_order_blocks([1.0], [1.0], [1.0], [1.0], 1) == []   # fără ATR/impuls → fără OB
 
 
 def test_breaker_bullish_flips_on_close_below_Low_OB():
