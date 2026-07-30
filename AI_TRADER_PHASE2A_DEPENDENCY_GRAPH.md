@@ -132,21 +132,47 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    **Disclosed, not built**: a single tick's exception (e.g. a transient MT5 disconnect) propagates
    uncaught out of `run_forever()` — no retry/backoff policy exists; a real design decision, not yet
    specified.
-   **NEW — structural detector observer wiring (Mandate 4, authorized extension, investigation
-   complete).** `AI_TRADER_MANDATE4_STEP2_STRUCTURAL_DETECTOR_INVESTIGATION.md`: the seven named modules
-   (`market_structure`, `liquidity_mechanics`, `imbalance_mechanics`, `institutional_levels`,
-   `order_flow`, `market_state`, `interactions`) live in a SEPARATE repository (`ai_quant_lab-wp5b`), not
-   `ai_trader`'s own — no path/vendor/install bridge exists today (found while investigating, not
-   anticipated). Confirmed the block-boundary reset in every `Block`-based module exists to protect the
-   RESEARCH quarantine methodology only; live should use one single, ever-growing block, state flowing
-   continuously — matching the CEO's own hypothesis. `market_structure` (swings/BOS/CHoCH),
-   `imbalance_mechanics` (FVG/IFVG), and `market_state` (expansion/sessions/compression) have no other
-   blocker. `liquidity_mechanics`/`institutional_levels` need a day/week-boundary derivation that exists
-   only as an offline batch script (`resample_ny.py`), not a live-callable function.
-   `order_flow`'s Order Block formation criterion is an explicit `NotImplementedError` — cannot produce
-   any output at all. `interactions` deliberately not used — its own purpose is hypothesis-combination,
-   explicitly out of scope for a pure observer. **Not authorized to build yet — awaiting direction on the
-   cross-repo bridge question before wiring even the three unblocked modules.**
+   **NEW — structural detector observer wiring (Mandate 4, authorized extension). DONE.** Cross-repo
+   bridge: git submodule `vendor/alpha_automation_detectors`, pinned to
+   `61cbd58c3d5da19001b125b65d669ddad54a14c4` on `ai_quant_lab-alpha-automation`'s
+   `discovery-mk-matrix-v1` branch — chosen over vendoring (would fork the code immediately, risking
+   silent drift from "frozen and audited") and over a package install (source has no packaging metadata;
+   building one would mean modifying a repository this mandate doesn't authorize touching). Bridged via
+   `ai_trader/structural_observer/vendor_bridge.py`'s one `sys.path` insertion — the vendored scripts use
+   plain, non-namespaced imports assuming `code/` itself is on `sys.path`.
+   **Correction to the prior entry**: `order_flow.py`'s Order Block formation criterion is NOT a
+   `NotImplementedError` — that was a stale read from an old checkout (`ai_quant_lab-wp5b`, since
+   confirmed to be tracking the right branch but read before the file had been updated upstream). Re-read
+   fresh from HEAD: fully implemented (impulse + full-body-engulfment criterion), so `order_flow` is now
+   wired alongside the three already-unblocked modules.
+   **Wired**: `market_structure` (swings/BOS-CHoCH), `imbalance_mechanics` (FVG formation + CE50/full-fill/
+   inversion reaction stages), `market_state` (expansion/compression/session, recorded every bar), and
+   `order_flow` (Order Block formation/breaker/mitigation/rejection) — all as pure OBSERVATION into
+   `StructuralObservationLog` (same `SqliteStateStore` engine/convention as every other Mandate 2/3
+   journal). Single continuous `Block(0, len(bars))`, recomputed from scratch every `observe()` call,
+   deduped by fact-specific keys so nothing is journaled twice as the series grows — confirmed by
+   dedicated regrowth tests, not just by the base cases. Never produces a signal, never evaluates.
+   **Actual wiring point**: `ObservingNullRecognitionRule` — implements the SAME injected `RecognitionRule`
+   Protocol `NullRecognitionRule` does (Piesa 2's own seam), forwarding each bar to a `StructuralObserver`
+   before unconditionally returning `None`. Chosen over modifying `producer.py` directly: that would force
+   a module-level import of the vendor submodule onto every user of `CandidateSignalProducer`, even one
+   never given an observer — a real fragility increase to an already-audited, execution-independent
+   package for no behavioral gain, since the same effect is reachable through the existing injection seam.
+   Zero existing files modified by this step.
+   **`liquidity_mechanics`/`institutional_levels` remain OUT of scope, per explicit re-confirmation** —
+   both need a day/week-boundary derivation (17:00 NY DST-aware anchor) that exists only as an offline
+   batch script (`resample_ny.py`), not a live-callable function. `interactions` still deliberately not
+   used — its own purpose is hypothesis-combination, explicitly out of scope for a pure observer.
+   **Disclosed, not solved**: the accumulated bar history this observer keeps (`self._times` etc.) is
+   IN-MEMORY ONLY — unlike the bar-feed watermark/journal/equity high-water mark (persisted since Mandate
+   2), a restart empties it; already-recorded observations remain in the (persisted) journal, but
+   trailing-window detectors (`compression`'s 460-bar window) read `None`/invalid again until enough bars
+   re-accumulate. **Also not yet activated by any entrypoint**: no script in this codebase constructs
+   `CandidateSignalProducer`/`LiveSignalLoop` together for a real deployment — only tests do, for either
+   class, today — so substituting `ObservingNullRecognitionRule` for a bare `NullRecognitionRule()` at
+   whatever future entrypoint eventually assembles the live system is what activates real observation;
+   that entrypoint is not a decision this mandate made. See
+   `AI_TRADER_MANDATE4_STEP3_STRUCTURAL_OBSERVER_REPORT.md`.
 10. **#14** — validated edge connected. Entirely outside engineering control; not planned, not estimated.
 
 The sections below are the ORIGINAL dependency analysis this order was built from — kept for the
