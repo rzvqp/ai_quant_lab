@@ -59,4 +59,4 @@ Asimetria semnalată (bear/supply cu raport MFE/MAE 0,43 vs 0,68 la retragere, M
 
 ---
 
-**Nimic relaxat, nimic rulat pe mecanismul de intrare/ieșire în acest document — doar pâlnia de atingeri cerută, read-only. Sigilatul intact. Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Nimic relaxat, nimic rulat pe mecanismul de intrare/ieșire în acest document — doar pâlnia de atingeri cerută, read-only. Sigilatul intact. Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.17 (commit `81eeb7b`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
