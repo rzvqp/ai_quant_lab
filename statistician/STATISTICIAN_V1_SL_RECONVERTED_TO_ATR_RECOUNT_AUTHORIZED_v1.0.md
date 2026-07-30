@@ -55,4 +55,4 @@ Acesta rămâne EXACT V1 (Dubla Respingere), doar cu risc-sizing finalizat înai
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.28 (commit `8321301`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
