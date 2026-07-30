@@ -54,7 +54,7 @@ from market_structure import Block  # noqa: E402
 from trading_strategies import StrategySignal, detect_s1, net_R  # noqa: E402  # SMC_S1 peste liquidity_mechanics
 
 # ── GARD 1 ────────────────────────────────────────────────────────────────────────────────────────
-GATED_BY_CTO: bool = True      # COBORÂT la loc după rularea „fișe medicale" 10-tipuri (v2.7.29). Se ridică EXCLUSIV per rulare, prin
+GATED_BY_CTO: bool = True      # COBORÂT la loc după rularea descriptivă pe AN calendaristic (9 tipuri). Se ridică EXCLUSIV per rulare, prin
 #                               decizie CTO. GARD 2 (segmentul sigilat) neatins mereu.
 
 # ── parametrii Open-R pentru SMC_S1 (= LM-001) ──────────────────────────────────────────────────────
