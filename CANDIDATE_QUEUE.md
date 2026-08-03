@@ -43,4 +43,31 @@ ratified reaction detector reach PARTIALLY DEFINED (CAND-0001/0003); those **wit
 CURRENTLY TESTABLE (CAND-0004/0005) and route a reaction-detector spec request to the Statistician.
 CAND-0002 is self-triggering (the expansion bar is its own event), so it needs no separate reaction primitive.
 
-Producing continuously; next candidate appended when ready.
+---
+
+## STATE: `WAITING_FOR_NEW_PRIMITIVES` (2026, after CAND-0010)
+
+The reasonable distinct-mechanism combinations of the **currently, unambiguously-usable** ratified
+primitives are covered (CAND-0001…0010). Further candidates from this set would be parametric variants /
+context filters (prohibited) or would require unratified constructs. **No weak or duplicate candidate is
+forced.** Discovery auto-resumes the moment a new ratified primitive (or a scope ruling below) lands.
+
+**Unlocks that would immediately resume production** (each opens distinct mechanisms + their confluences):
+- ratified **void-reaction / void-fill** detector → completes CAND-0004 + void×level, void-fill confluences;
+- ratified **weekly-level touch** detector → completes CAND-0006 + weekly×level/FVG confluences;
+- ratified **BPR-reaction** detector → completes CAND-0005 + BPR confluences;
+- any ratified **structural stop/exit** primitive → completes Part B for all 10 (PARTIALLY → possibly DEFINED);
+- a **void price-zone** concept (the module stores void magnitude, not a fillable zone) → void-zone confluences.
+
+**⚠ FLAGGED FOR CEO RULING — potential immediate unlock, held fail-closed on ambiguity:**
+`code/order_flow.py` (Module 5, RATIFIED v2.6.1→v2.7.9) provides **circularity-free** reaction primitives —
+`detect_mitigations`, `detect_rejections`, `detect_demand_zones` — built with the **anti-E010 disjoint-
+window construction** (selection window a pure function of bars `≤ event_idx`; measurement window
+`[event_idx, +H)`; disjoint by construction, the exact defect that failed E010/E013/E016). These reuse
+`detect_order_blocks` (OB formation), so they are OB-anchored. The order-block **family** (E010/E013/E015/
+E016) is under a STRICT block — but those were the **old circular** candidates; these are the **ratified
+re-engineered** primitives. **Ambiguous whether the block covers them; Alpha will not build on them
+without a CEO ruling.** If permitted, they unlock: demand-zone reaction, sweep-rejection, mitigation
+(circularity-free), and their confluences with levels/FVGs/voids — a substantial new batch.
+
+Producing continuously; auto-resumes on a new ratified primitive or the ruling above.
