@@ -159,4 +159,4 @@ walk-forward       2 pliuri, fereastră expansivă, granițele de regim deja sta
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.35 (commit `fd54f0b`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente). Secțiunea `family_fixed_at_4` de la v2.7.33 marcată SUPERSEDED în loc, iar criteriile DEMO (v2.7.34) au primit un addendum de raportare.**
