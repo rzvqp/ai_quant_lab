@@ -1,16 +1,18 @@
-{"stage": "CHECK_1_CONNECTED", "wall_clock": 1785787175.9213505, "accepted": true, "reason": null}
-{"stage": "CHECK_2_ACCOUNT_IS_DEMO", "wall_clock": 1785787175.9219086, "account_is_demo": true, "trade_mode": "AccountTradeMode.DEMO", "server": "FusionMarkets-Demo"}
-{"stage": "CHECK_3_ALGO_TRADING_ENABLED", "wall_clock": 1785787175.9219327, "algo_trading_status": "ENABLED"}
-{"stage": "CHECK_4_TERMINAL_TRADE_ALLOWED", "wall_clock": 1785787175.9219432, "terminal_algo_trading_allowed": true}
-{"stage": "CHECK_5_ACCOUNT_TRADE_ALLOWED", "wall_clock": 1785787175.9219499, "account_trade_allowed": true}
-{"stage": "CHECK_6_7_SYMBOL_CAPABILITIES", "wall_clock": 1785787175.922051, "symbol": "XAUUSD", "caps": {"tick_size": 0.01, "lot_step": 0.01, "min_qty": 0.01, "max_qty": 100.0, "digits": 2, "spread": 5, "trade_mode": 4}}
-{"stage": "CHECK_8_TICK", "wall_clock": 1785787175.9220955, "tick_present": true, "bid": 4052.18, "ask": 4052.23, "tick_time": 1785797975}
-{"stage": "CHECK_8B_MARKET_OPEN", "wall_clock": 1785787175.922147, "market_open": true}
-{"stage": "CHECK_9_10_SPREAD_AT_ENTRY", "wall_clock": 1785787175.9221659, "bid": 4052.18, "ask": 4052.23, "spread_price": 0.0500000000001819, "broker_reported_spread_points": 5, "modeled_round_trip_cost": 0.2, "spread_vs_modeled_ratio": 0.2500000000009095}
-{"stage": "CHECK_11_MIN_VOLUME", "wall_clock": 1785787175.9221811, "min_volume": 0.01}
-{"stage": "ACCOUNT_SNAPSHOT", "wall_clock": 1785787175.9222655, "balance": 10026.83, "equity": 10026.83, "currency": "PLN", "leverage": 500, "margin_free": 10026.83, "contract_size": 100.0}
-{"stage": "PRE_EXISTING_POSITIONS_CHECK", "wall_clock": 1785787175.9223354, "count": 0}
-{"stage": "SAFETY_GUARD_REPORT", "wall_clock": 1785787175.9230587, "connected": true, "account_is_demo": true, "algo_trading_enabled": true, "server_matches_expected": true, "max_volume_configured": true, "market_open": true, "all_passed": true}
-{"stage": "SENDING_THROUGH_FULL_AI_TRADER_PIPELINE", "wall_clock": 1785787175.9230773, "note": "Execution Orchestrator -> Order Manager -> Broker Adapter -> MT5 order_check -> MT5 order_send"}
-{"stage": "CHECK_12_DRY_RUN_RESULT", "wall_clock": 1785787176.0492325, "approved": false, "order_state": null, "reason_codes": ["RISK_DENIED", "VOLUME_STEP_ROUNDING_BELOW_MIN"]}
-{"stage": "ABORT_FAIL_CLOSED", "wall_clock": 1785787176.0492558, "reason": "the identical dry-run did not pass completely -- refusing to send"}
+{"stage": "CHECK_1_CONNECTED", "wall_clock": 1785788266.4770892, "accepted": true, "reason": null}
+{"stage": "CHECK_2_ACCOUNT_IS_DEMO", "wall_clock": 1785788266.4775703, "account_is_demo": true, "trade_mode": "AccountTradeMode.DEMO", "server": "FusionMarkets-Demo"}
+{"stage": "CHECK_3_ALGO_TRADING_ENABLED", "wall_clock": 1785788266.4775949, "algo_trading_status": "ENABLED"}
+{"stage": "CHECK_4_TERMINAL_TRADE_ALLOWED", "wall_clock": 1785788266.4776056, "terminal_algo_trading_allowed": true}
+{"stage": "CHECK_5_ACCOUNT_TRADE_ALLOWED", "wall_clock": 1785788266.4776123, "account_trade_allowed": true}
+{"stage": "CHECK_6_7_SYMBOL_CAPABILITIES", "wall_clock": 1785788266.4777093, "symbol": "XAUUSD", "caps": {"tick_size": 0.01, "lot_step": 0.01, "min_qty": 0.01, "max_qty": 100.0, "digits": 2, "spread": 5, "trade_mode": 4}}
+{"stage": "CHECK_8_TICK", "wall_clock": 1785788266.4777522, "tick_present": true, "bid": 4052.21, "ask": 4052.26, "tick_time": 1785799065}
+{"stage": "CHECK_8B_MARKET_OPEN", "wall_clock": 1785788266.4778013, "market_open": true}
+{"stage": "CHECK_9_10_SPREAD_AT_ENTRY", "wall_clock": 1785788266.4778142, "bid": 4052.21, "ask": 4052.26, "spread_price": 0.0500000000001819, "broker_reported_spread_points": 5, "modeled_round_trip_cost": 0.2, "spread_vs_modeled_ratio": 0.2500000000009095}
+{"stage": "CHECK_11_MIN_VOLUME", "wall_clock": 1785788266.4778268, "min_volume": 0.01}
+{"stage": "ACCOUNT_SNAPSHOT", "wall_clock": 1785788266.4779172, "balance": 10026.83, "equity": 10026.83, "currency": "PLN", "leverage": 500, "margin_free": 10026.83, "contract_size": 100.0, "raw_tick_value": 3.7460100000000005, "raw_tick_size": 0.01, "point_value_per_unit_for_sizing": 3.7460100000000005, "point_value_per_lot_for_instrument_spec": 374.60100000000006}
+{"stage": "PRE_EXISTING_POSITIONS_CHECK", "wall_clock": 1785788266.4779656, "count": 0}
+{"stage": "SAFETY_GUARD_REPORT", "wall_clock": 1785788266.4787147, "connected": true, "account_is_demo": true, "algo_trading_enabled": true, "server_matches_expected": true, "max_volume_configured": true, "market_open": true, "all_passed": true}
+{"stage": "SENDING_THROUGH_FULL_AI_TRADER_PIPELINE", "wall_clock": 1785788266.4787338, "note": "Execution Orchestrator -> Order Manager -> Broker Adapter -> MT5 order_check -> MT5 order_send"}
+{"stage": "CHECK_12_DRY_RUN_RESULT", "wall_clock": 1785788266.6070547, "approved": false, "order_state": null, "reason_codes": ["RISK_DENIED", "VOLUME_STEP_ROUNDING_BELOW_MIN"]}
+{"stage": "CHECK_12_CALCULATION_TRACE", "wall_clock": 1785788266.607082, "trace": [{"stage": "DAILY_STATE_RESET_CHECKED", "passed": true, "detail": "same day"}, {"stage": "EMERGENCY_STOP_CHECKED", "passed": true, "detail": null}, {"stage": "MODE_CHECKED", "passed": true, "detail": "DRY_RUN"}, {"stage": "FRESHNESS_CHECKED", "passed": true, "detail": "candidate.as_of=1785788266 context.as_of=1785788266"}, {"stage": "CONTEXT_ENGINE_CALLED", "passed": true, "detail": null}, {"stage": "RECOGNITION_ENGINE_SKIPPED", "passed": true, "detail": null}, {"stage": "CONFIDENCE_ENGINE_CALLED", "passed": true, "detail": "A"}, {"stage": "ELIGIBILITY_CHECKED", "passed": true, "detail": null}, {"stage": "RISK_MANAGER_CALLED", "passed": true, "detail": "False"}]}
+{"stage": "REQUIRED_RISK_PCT_FOR_MIN_VOLUME_NOT_APPLIED", "wall_clock": 1785788266.607108, "min_volume": 0.01, "stop_distance": 81.04520000000002, "point_value_per_unit": 3.7460100000000005, "min_lot_risk_currency": 303.5961296520001, "equity": 10026.83, "required_risk_pct_for_min_lot": 0.030278376082171547, "configured_risk_pct": 0.005, "note": "computed for reporting ONLY -- risk_per_trade_pct and stop distance left untouched, per instruction"}
+{"stage": "ABORT_FAIL_CLOSED", "wall_clock": 1785788266.6071262, "reason": "the identical dry-run did not pass completely -- refusing to send"}

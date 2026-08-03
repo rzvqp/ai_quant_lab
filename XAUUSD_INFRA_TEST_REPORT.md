@@ -1,72 +1,72 @@
-# XAUUSD Infrastructure Test — Report
+# XAUUSD Infrastructure Test — Report (Attempt 2: point_value corrected)
 
-**Nature of this document**: CEO-authorized 2026-08-03 ("Trimite un ordin ACUM"). **No order was sent.**
-The test aborted fail-closed at the dry-run gate, before ever reaching the DEMO leg. Per explicit
-instruction — "Daca ceva pica pe drum, opresti si raportezi. Nu repari in graba ca sa treaca." — I
-stopped and am reporting, not attempting a fix.
+**Nature of this document**: follow-up to the first attempt (dry-run denied on `VOLUME_STEP_ROUNDING_BELOW_MIN`
+due to an unverified `point_value=1.0` copied from the BTCUSD script). CEO instruction, 2026-08-03:
+correct `point_value` from real `symbol_info`, don't assume, don't touch risk% or stop distance. **No
+order was sent on this attempt either — for a different, precisely quantified reason, not a
+configuration bug.**
 
-## What happened
+## 1. Real values read from `symbol_info` (not assumed, not copied)
 
-`xauusd_infra_test.py` (mirrors `btcusd_phase10_operational_test.py` line for line in structure, per
-instruction — same 12 checks, same fail-closed abort pattern, no PDH-PDL recognition rule involved at
-all). Checks 1 through 12 (connection, DEMO account, server=`FusionMarkets-Demo`, AlgoTrading, terminal/
-account trade-allowed, symbol capabilities, live tick, market open, spread, minimum volume, safety
-guards) **all passed**. The identical dry-run — required to pass before the DEMO leg is ever attempted —
-was **DENIED**: `RISK_DENIED`, `VOLUME_STEP_ROUNDING_BELOW_MIN`.
+| Field | Source | Value |
+|---|---|---|
+| `trade_contract_size` | `symbol_info(XAUUSD)` | **100.0** (troy ounces / lot) |
+| `trade_tick_value` | `symbol_info(XAUUSD)` | **3.74601** (account currency — PLN — per lot per tick) |
+| `trade_tick_size` | `symbol_info(XAUUSD)` | **0.01** |
 
-Confirmed clean afterward: zero open positions, zero open orders on the XAUUSD symbol.
+## 2. `point_value` corrected — two distinct fields, traced to their actual consumers
 
-## Root cause, traced exactly (not guessed)
+Confirmed by reading every consumer (`grep`, not assumed):
 
-`ai_trader/risk_manager/sizing.py`: `size_units = risk_budget_currency / (stop_distance * point_value)`.
-`ai_trader/risk_manager_live/engine.py`: `volume_lots = floor((size_units / contract_size) / lot_step) *
-lot_step`, denied if the result is below `instrument.min_volume`.
+- **`RiskConfig.sizing.point_value[symbol]`** — the ONE that feeds `risk_manager/sizing.py`'s actual
+  sizing formula (`config.point_value_for(symbol)` → `self.sizing.point_value.get(symbol, 1.0)`).
+  `risk_manager_live/engine.py`'s own comment documents that `compute_sizing`'s `size_units` output is
+  "base units (e.g. troy ounces)" — meaning this `point_value` must be **per UNIT (ounce)**, not per lot:
+  `tick_value / tick_size / contract_size = 3.74601 / 0.01 / 100 = 3.74601`.
+- **`InstrumentSpecification.point_value`** — a SEPARATE field, used ONLY for a `> 0` sanity check
+  (`risk_manager_live/engine.py:112`), never in the sizing math itself. Set to match the already-
+  established convention `mt5_account_bridge/source.py::read_instrument_specification` already uses for
+  this exact field: `tick_value / tick_size = 374.601` (per lot).
 
-With the account/market state actually read at test time:
-- `risk_per_trade_pct` (RiskConfig default) = **0.005** (0.5%) → `risk_budget_currency ≈ 0.005 ×
-  $10,026.83 ≈ $50.13`.
-- `stop_distance` = `entry × 0.02` (the same 2%-of-price convention `btcusd_phase10_operational_test.py`
-  used) ≈ `4052.23 × 0.02 ≈ $81.04`.
-- `point_value` = `1.0` — copied directly from the BTCUSD script's own value, **not independently
-  verified for XAUUSD**.
-- `size_units = 50.13 / (81.04 × 1.0) ≈ 0.619`.
-- `volume_lots_raw = 0.619 / contract_size(100) ≈ 0.0062` lots → floored to the `0.01` lot step →
-  **`0.00` lots** → below `min_volume = 0.01` → denied.
+Both are now genuinely derived from this run's own live `symbol_info` read — not assumed, not copied
+from BTCUSD.
 
-**Why BTCUSD's identical script pattern worked and XAUUSD's does not**: BTCUSD's `contract_size` is
-much smaller than XAUUSD's `100` (troy ounces per lot) — dividing by 100 is what pushes the XAUUSD
-result below the rounding threshold. This is not a code defect — `VOLUME_STEP_ROUNDING` is working
-exactly as designed (Comment in `engine.py`: "never grants more size than was risk-approved"). It is the
-formula correctly reporting that, at this account's actual equity ($10,026.83, PLN-denominated demo
-account) and the conservative 0.5% risk-per-trade default, a properly risk-sized 2%-stop XAUUSD position
-is genuinely smaller than the broker's minimum tradable lot.
+## 3. Result: dry-run denied again — `RISK_DENIED` / `VOLUME_STEP_ROUNDING_BELOW_MIN`
 
-**Not fixed, on purpose**: `point_value=1.0` is the same value BTCUSD's own script used, but I did not
-verify it is the economically correct value for XAUUSD before running this test — it may be too low (a
-correct, larger `point_value` would need a *smaller* raw stop-relative position, making this worse, not
-better) or the 2%-of-price stop convention itself may simply not fit a sub-$100-risk-budget account for
-an instrument priced near $4,000/oz. I have not diagnosed which, or changed anything, per the explicit
-instruction not to repair this in a hurry to force a pass.
-
-## The comparison you asked for — partially available
-
-The **entry-side spread was observed and logged before the abort** (Check 9/10, timestamped, real):
+Same reason code as attempt 1, but now for a **verified, quantified, real economic constraint**, not a
+configuration bug:
 
 | | Value |
 |---|---|
-| Bid / Ask at read time | 4052.18 / 4052.23 |
-| Observed spread | **$0.05** |
-| Modeled round-trip cost (project constant) | $0.20 |
-| Ratio (observed spread ÷ modeled) | **0.25** |
+| Broker minimum volume | 0.01 lots |
+| Stop distance (2% of entry, unchanged) | $81.05 |
+| `point_value` (corrected, per-unit) | 3.746 PLN/oz per $1 |
+| Risk required for the MINIMUM tradable position (0.01 lots) at this stop | **303.60 PLN** |
+| Account equity | 10,026.83 PLN |
+| **Required risk-per-trade % for 0.01 lots** | **≈ 3.03%** |
+| Configured `risk_per_trade_pct` (untouched, per instruction) | 0.5% |
 
-The observed spread was one quarter of the modeled round-trip constant — but this is only the
-**quoted spread at one moment**, not a realized round-trip cost: no order filled, so there is no
-entry/exit slippage, no realized fill price, and no genuine round-trip data point. **This does not
-answer the Statistician's question** — it's a single, honest, incomplete data point, not the "first real
-data point" the mandate asked for, since nothing was actually executed.
+**Neither `risk_per_trade_pct` nor the stop distance was changed** — the 3.03% figure above is computed
+and reported only, never applied. No order was sent; the dry-run denies before the DEMO leg is ever
+reached. Confirmed after: zero open positions, zero open orders on XAUUSD.
 
-## Status
+## 4. What this means, stated plainly
 
-No order sent. No position opened. Account unchanged. Awaiting your direction — whether to adjust
-`point_value`/the risk-per-trade convention for this test (a decision, not something I should invent),
-retry with an explicitly larger test position size, or something else.
+At this account's actual equity and the project's own 0.5% risk-per-trade default, a 2%-of-price stop on
+XAUUSD (~$81 at current prices) cannot be sized down to the broker's minimum tradable lot (0.01) without
+risking roughly six times the configured budget. This is not a bug in `point_value` (now corrected and
+verified) — it is the sizing formula correctly reporting a genuine mismatch between this account's size,
+the 0.5% risk convention, and gold's per-lot economics at a 2% stop.
+
+## 5. Stopping for a decision, per instruction
+
+Three ways forward exist, none of which I have applied:
+- Widen `risk_per_trade_pct` for this one test (you explicitly forbade this).
+- Use a tighter stop distance than 2% (you explicitly forbade changing this too).
+- Accept that the infrastructure test cannot exercise the FULL AI Trader risk-sizing pipeline at this
+  account size without one of the above, and instead test the send/close mechanics directly (bypassing
+  `compute_sizing`, submitting the broker's own minimum volume explicitly) — a different kind of test
+  than "exact ca testul BTCUSD," since BTCUSD's own script happened to size correctly by coincidence of
+  BTC's much smaller contract_size, not because it tested this same constraint.
+
+**No order sent. No position opened. Account unchanged. Awaiting your decision.**

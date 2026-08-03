@@ -143,8 +143,30 @@ def main() -> None:
         raw_account = adapter._demo_gateway.account_info()
         raw_symbol_info = adapter._demo_gateway.symbol_info(SYMBOL)
         contract_size = float(getattr(raw_symbol_info, "trade_contract_size", 1.0))
+        raw_tick_value = float(getattr(raw_symbol_info, "trade_tick_value", 0.0))
+        raw_tick_size = float(getattr(raw_symbol_info, "trade_tick_size", 0.0))
+        if raw_tick_value <= 0 or raw_tick_size <= 0 or contract_size <= 0:
+            abort(f"symbol_info returned a non-positive tick_value/tick_size/contract_size for {SYMBOL} -- cannot derive point_value")
+
+        # point_value CORRECTED (previous attempt copied 1.0 from the BTCUSD script, unverified for
+        # gold -- CEO instruction 2026-08-03: "citesti contract_size si point_value REALE din
+        # symbol_info... nu presupui, nu copiezi din alt simbol"). TWO DISTINCT consumers in this
+        # codebase, confirmed by reading (not assumed): `RiskConfig.sizing.point_value[symbol]` feeds
+        # `risk_manager/sizing.py::compute_sizing`'s own formula, where `size_units` is documented
+        # ("Converts base units (e.g. troy ounces)...", risk_manager_live/engine.py's own comment) to
+        # be the RAW UNDERLYING UNIT count (ounces), before a SEPARATE later division by
+        # `contract_size` converts to lots -- so THIS point_value must be per-UNIT (ounce), not
+        # per-LOT: `tick_value / tick_size / contract_size`. `InstrumentSpecification.point_value` is a
+        # DIFFERENT field (only used for a `> 0` sanity check in engine.py, confirmed by grepping every
+        # consumer) -- set to match the already-established, presumably-correct convention
+        # `mt5_account_bridge/source.py::read_instrument_specification` already uses for this exact
+        # field: `tick_value / tick_size` (per-LOT), never re-derived here.
+        point_value_per_unit = raw_tick_value / raw_tick_size / contract_size
+        point_value_per_lot = raw_tick_value / raw_tick_size
         log("ACCOUNT_SNAPSHOT", balance=raw_account.balance, equity=raw_account.equity, currency=raw_account.currency,
-            leverage=raw_account.leverage, margin_free=raw_account.margin_free, contract_size=contract_size)
+            leverage=raw_account.leverage, margin_free=raw_account.margin_free, contract_size=contract_size,
+            raw_tick_value=raw_tick_value, raw_tick_size=raw_tick_size,
+            point_value_per_unit_for_sizing=point_value_per_unit, point_value_per_lot_for_instrument_spec=point_value_per_lot)
 
         # Verify no pre-existing XAUUSD position before we start.
         pre_positions = adapter._demo_gateway.positions_get(SYMBOL) or ()
@@ -174,13 +196,13 @@ def main() -> None:
         daily_state = PortfolioDailyState(as_of=now)
         instrument = InstrumentSpecification(
             symbol=SYMBOL, tick_size=caps.tick_size, lot_step=caps.lot_step, min_volume=caps.min_qty,
-            max_volume=caps.max_qty, contract_size=contract_size, point_value=1.0,
+            max_volume=caps.max_qty, contract_size=contract_size, point_value=point_value_per_lot,
             margin_currency=str(raw_account.currency),
         )
         risk_config = RiskConfig()
         risk_config.filters.reference_spread[SYMBOL] = max(entry_spread_price * 3, 1.0)
         risk_config.filters.liquidity_floor[SYMBOL] = 0.1
-        risk_config.sizing.point_value[SYMBOL] = 1.0
+        risk_config.sizing.point_value[SYMBOL] = point_value_per_unit
         risk_context = RiskContext(as_of=now, per_symbol={SYMBOL: SymbolRiskSnapshot(
             atr=entry_spread_price * 20, atr_rolling_median=entry_spread_price * 20, current_spread=entry_spread_price,
             liquidity_proxy=1.0, is_weekend_gap=False, bars_since_gap=100, is_past_friday_cutoff=False,
@@ -233,7 +255,25 @@ def main() -> None:
         log("CHECK_12_DRY_RUN_RESULT", approved=outcome.dry_run_result.approved,
             order_state=None if outcome.dry_run_result.order_result is None else outcome.dry_run_result.order_result.state.value,
             reason_codes=outcome.dry_run_result.reason_codes)
+        log("CHECK_12_CALCULATION_TRACE", trace=[
+            {"stage": s.stage, "passed": s.passed, "detail": s.detail} for s in outcome.dry_run_result.calculation_trace
+        ])
         if not (outcome.dry_run_result.approved and outcome.dry_run_result.order_result is not None and outcome.dry_run_result.order_result.state.value == "ACKNOWLEDGED"):
+            # Required risk-per-trade-pct for a 0.01-lot position at THIS stop distance -- reported per
+            # explicit instruction ("Daca la 0,01 riscul iese peste 0,5%, raportezi cat e") -- NOT
+            # applied, never overrides risk_per_trade_pct or the stop distance, computed only to answer
+            # the question honestly before stopping.
+            stop_distance = abs(entry_requested_price - candidate.stop)
+            min_lot_risk_currency = min_volume * contract_size * stop_distance * point_value_per_unit
+            required_risk_pct_for_min_lot = min_lot_risk_currency / float(raw_account.equity)
+            log(
+                "REQUIRED_RISK_PCT_FOR_MIN_VOLUME_NOT_APPLIED",
+                min_volume=min_volume, stop_distance=stop_distance, point_value_per_unit=point_value_per_unit,
+                min_lot_risk_currency=min_lot_risk_currency, equity=raw_account.equity,
+                required_risk_pct_for_min_lot=required_risk_pct_for_min_lot,
+                configured_risk_pct=risk_config.sizing.risk_per_trade_pct,
+                note="computed for reporting ONLY -- risk_per_trade_pct and stop distance left untouched, per instruction",
+            )
             abort("the identical dry-run did not pass completely -- refusing to send")
 
         log("DEMO_RESULT", sent=outcome.sent, reason_codes=outcome.reason_codes)
