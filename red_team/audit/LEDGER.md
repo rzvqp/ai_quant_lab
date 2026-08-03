@@ -416,4 +416,41 @@
                red_team/. No candidate reviewed.
                STATE: TERMINAL STANDBY. Next entry [16], prev_hash E15.
   entry_hash:  E15
+
+[16] 2026-07-25
+  prev_hash:   E15
+  event:       VERDICT               # policy attack, Phase A — first non-DC target
+  reviewer:    Red Team
+  detail:      CEO tasked a Phase-A attack on PDH/PDL policy v1.1 (commit 78634d5, alpha-automation-v1,
+               POLICY_PDH_PDL_v1.md), PART A (entry mechanism) only; Part B unspecified by decision, not
+               attacked. Deliverable: policy_reviews/RT-POLICY-A-0001_PDH_PDL_v1.1.md. Nothing run on data;
+               policy not modified; no remedy designed; verification = branch/commit state + primitive defs.
+               VERDICT: PART A SURVIVES as a specification (defined, lookahead-safe, falsifiable) BUT the
+               HANDOFF IS BLOCKED by a fatal-for-handoff defect:
+                 F-A1 / W10 — the ratified primitives Part A is "grounded in" (code/institutional_levels.py:
+                 compute_prior_day_levels, detect_level_touches, ...) are NOT in commit 78634d5's tree and
+                 NOT on alpha-automation-v1. They exist ONLY on discovery-mk-matrix-v1 (verified via
+                 git branch --contains 1930467 → discovery-mk-matrix-v1, not alpha-automation-v1; ls-tree of
+                 78634d5 finds no such file). Same failure mode Part B openly declares (v8.5 nonexistent);
+                 sibling of W9 (cross-branch, never merged). NOT a mechanism defect — the code exists and is
+                 correct where it exists — but the policy's "built on ratified primitives in the repo" is
+                 branch-conditional and false on its own branch; a Statistician on alpha-automation-v1 finds
+                 the grounding absent. Resolution is an architecture/merge matter, not Red Team's to design.
+               TARGET RESULTS: T4 lookahead PASS (available_idx=first bar of current day/Q4, 17:00-NY
+               DST-aware anchor, D3_bis block reset, D7 first-touch consumption, entry@next-open — all
+               verified against the actual primitives on discovery-mk-matrix-v1); T6 falsifiability PASS
+               (precise mechanical rule, disconfirmable on a fixed horizon vs a matched null — a strength,
+               opposite of the DC-0015/0022/0024 sample-extremum candidates); T5 circularity — no self-overlap
+               in Part A (entry strictly post-trigger j+1), but an unstated interface guard is needed
+               (measurement must start at entry, reuse no bar in [available_idx, j]) — W-e010; T1 post-hoc
+               selection VALID but neutralised by the policy already de-privileging the 6/7 exploratory
+               figure (9-way search → chance expectation ~0.56; 6/7 is not evidence) — test selection-
+               corrected, W-sel; T2 level-vs-session confound UNBROKEN — needs session+level(placebo)-matched
+               null, W-conf; T3 distinctness plausible (<40% overlap with most) — check the single
+               highest-overlap type, W-ovl.
+               HANDOFF: conditional PASS to Statistician — blocker W10 must close first; W-sel/W-conf/W-ovl/
+               W-e010 are controls the Statistician applies (Red Team designs none). Integrity register: W10.
+               Nothing written outside red_team/.
+               STATE: awaiting CEO/Statistician routing. Next entry [17], prev_hash E16.
+  entry_hash:  E16
 ```
