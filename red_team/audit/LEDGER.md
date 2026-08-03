@@ -527,4 +527,44 @@
                in red_team/. Loop idle — no further eligible candidate in the handed set.
                STATE: OPERATIONAL, loop idle. Next entry [19], prev_hash E18.
   entry_hash:  E18
+
+[19] 2026-07-25
+  prev_hash:   E18
+  event:       VERDICT               # Part B attack, CAND-0001 v2.0 DEMO_BASELINE
+  reviewer:    Red Team
+  detail:      CEO tasked a Part-B attack on CAND-0001 PDH-PDL v2.0 (POLICY_PDH_PDL_v2.md @ 1558397,
+               alpha-automation-v1). Part A not re-attacked (already SURVIVED, RT-OPS-A-0001). Deliverable:
+               policy_reviews/RT-OPS-B-0001_PDH_PDL_v2.md. No data run; no alternative risk method proposed;
+               policy not modified. Verification = frozen policy + docs/MIN_STOP_FLOOR_PREREG.md.
+               Part B = single structural variant: stop = touch-bar extreme (low/high[touch_idx]); target =
+               opposite prior-day level (PDL-long→PDH, PDH-short→PDL); resolve at first of stop/target/
+               same-day time-stop; management ABSENT; sizing 1R; guards no-trade if next-open already
+               beyond stop or target.
+               PASS: LOOKAHEAD (all coords known at entry; the day boundary is the 17:00-NY CLOCK anchor
+               via resample_ny — deterministic, NOT derived from future OHLC; closing bar observed causally);
+               CIRCULARITY (stop anchored on the touch bar but measurement runs strictly touch_idx+1 forward
+               — selection and measurement do not overlap); HIDDEN OPTIMIZATION (ZERO tunable numeric
+               parameters → no optimization surface; justification is a general/negative fixed-ATR result,
+               not a PDH/PDL fit; no results-informed sign).
+               TWO DIRECT SAFETY DEFECTS (policy goes to a DEMO account):
+                 S1 — same-bar stop∧target: intrabar resolution order UNSPECIFIED and the repo's own
+                   worst-case convention (MIN_STOP_FLOOR_PREREG:31 — same-bar ambiguous fill → INVALID
+                   EXECUTION) is NOT invoked → optimistic-fill upward bias risk on DEMO. (Also = the
+                   AMBIGUITY finding.)
+                 S2 — no min_executable_risk floor: the ≤0 case is guarded (no trade), but a tiny-but-
+                   positive stop distance yields unbounded 1R position size; the repo floor is not applied.
+                   "R-metrics sizing-invariant" does not cover a real DEMO account's margin/fills.
+                 S3 (minor) — target touched-and-left earlier in the day / consumed-level-as-target not
+                   handled by the at-entry guard.
+               VERDICT: SURVIVED_RED_TEAM_A — CONDITIONAL, with a HARD PRE-DEMO SAFETY GATE. The mechanism
+               survives every adversarial axis; the safety defects are silence, not mechanism flaws, and are
+               governed by an EXISTING ratified convention (Engine v2 / MIN_STOP_FLOOR_PREREG) that Part B
+               fails to bind. Gate (Statistician DEMO criteria, not a Red Team remedy): (1) intrabar
+               collisions resolve worst-case / INVALID EXECUTION, not optimistic; (2) apply the
+               min_executable_risk floor to 1R sizing; (3) define the target-already-visited rule. If the
+               DEMO engine cannot be shown to enforce Engine-v2, the policy must NOT trade.
+               HANDOFF: Statistician for DEMO criteria (carry the 3-point gate + Part-A controls). Queue
+               row annotated. Nothing outside red_team/ except the queue status annotation on alpha-automation-v1.
+               STATE: OPERATIONAL. Next entry [20], prev_hash E19.
+  entry_hash:  E19
 ```
