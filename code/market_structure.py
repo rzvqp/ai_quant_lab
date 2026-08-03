@@ -165,7 +165,13 @@ def label_structure(swings: Sequence[Swing]) -> list[Swing]:
     Primul swing de fiecare tip într-un bloc rămâne UNCLASSIFIED — nu are
     referință, iar împrumutarea uneia din blocul anterior ar traversa
     carantina. D3.
+
+    F3 (extins de Red Team la `label_structure`, nu doar `detect_breaks`): clasificarea compară cu ULTIMUL
+    swing de același tip din ordinea listei — o ordine greșită produce etichete GREȘITE în TĂCERE. Precondiția
+    de ordonare fail-closed se impune și AICI, la intrare, înainte de orice etichetare.
     """
+    _assert_ordering_precondition(swings)                       # F3 — fail-closed (idem detect_breaks)
+
     out: list[Swing] = []
     last_high: dict[int, Swing] = {}
     last_low: dict[int, Swing] = {}

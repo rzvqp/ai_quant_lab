@@ -159,3 +159,21 @@ def test_f3_confirmed_before_extremum_raises() -> None:
     swings = [_swing(7, 5, 120.0, StructureLabel.HH)]         # confirmed_idx < idx
     with pytest.raises(ValueError, match="F3"):
         detect_breaks(close, swings, [Block(0, 20)])
+
+
+# ── F3 extins la label_structure (Red Team) — ordonarea impusă și AICI ──
+def test_f3_label_structure_valid_ordered_input_does_not_raise() -> None:
+    label_structure([_swing(3, 5, 110.0, StructureLabel.UNCLASSIFIED),
+                     _swing(7, 9, 120.0, StructureLabel.UNCLASSIFIED)])   # nu ridică
+
+
+def test_f3_label_structure_temporal_disorder_raises() -> None:
+    with pytest.raises(ValueError, match="F3"):
+        label_structure([_swing(7, 9, 120.0, StructureLabel.UNCLASSIFIED),
+                         _swing(3, 5, 110.0, StructureLabel.UNCLASSIFIED)])   # idx descrescător
+
+
+def test_f3_label_structure_duplicate_idx_raises() -> None:
+    with pytest.raises(ValueError, match="F3"):
+        label_structure([_swing(7, 9, 120.0, StructureLabel.UNCLASSIFIED),
+                         _swing(7, 9, 121.0, StructureLabel.UNCLASSIFIED)])   # idx duplicat
