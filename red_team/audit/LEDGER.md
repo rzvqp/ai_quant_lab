@@ -640,4 +640,40 @@
                if unenforceable don't trade; 0007 R:R<1 note). Queue Part-B cells annotated.
                STATE: OPERATIONAL. Next entry [22], prev_hash E21.
   entry_hash:  E21
+
+[22] 2026-07-25
+  prev_hash:   E21
+  event:       VERDICT               # OPERATIONAL — Phase A+B single pass, CAND-0011..0019 (9)
+  reviewer:    Red Team
+  detail:      Batch RT-OPS-AB-0003 (policy_reviews/RT-OPS-AB-0003_batch.md). Nine candidates, Part A (v1)
+               + Part B (v2), policies @ 0806d00. No data run; policies not modified; no risk method.
+               W10: order_flow 728fa557 verified (new); others re-confirmed — all match. MK-01/02: clean
+               (order_flow imports only order_block_void + market_state.atr14; confluences add only inert
+               Block + interactions) — none inherits F1/F2. order_flow causality verified (forward-only,
+               formation_idx=i-1, _scan from +2, CEO anti-E010 disjoint windows, Research-Lab-verified).
+               DIRECTIVE-BLOCK reconciled: the stale "OB family directive-BLOCKED" header is superseded by
+               the CEO ruling "order_flow re-engineered primitives unblocked" (E010/E013/E015/E016 blocked
+               as HYPOTHESES; MK-01/02 DRAFT-forbidden). None of the nine is the blocked E010 breaker-
+               continuation. Batch clear.
+               PHASE A: all 9 SURVIVED (lookahead/circularity/falsifiable/distinct PASS). Batch is a
+               base×second-structure lattice: bases OB-Rejection(0011)/OB-Mitigation(0014)/Demand-Zone(0013);
+               six confluences each a strict SUBSET of a base (0012/0015/0018⊂0011; 0016⊂0014; 0017/0019⊂0013)
+               → W-incr mandatory (test incremental value vs base + vs second structure). Grows the
+               multiple-testing family (already =7 cumulative).
+               PHASE B: lookahead/circularity/hidden-opt PASS all. S1 unspecified all (existing convention).
+               S2 structurally LOW (OB/zone stops anchored to large E010 impulse-bar extremes — inherently
+               wide; the CAND-0003 tiny-stop problem does not arise). Possible R:R<1 on deeper stops — note.
+               SEVERE — FINDING H' (block-only time-stop → live exit DISAPPEARS): per the Statistician, a
+               block is a discovery-data construct, so a block-boundary time-stop NEVER fires live. SIX
+               candidates have block-only fallback and thus NO live-valid time-stop — a position that can
+               never close if neither stop nor target-zone-edge is hit: CAND-0011, 0013, 0014, 0015, 0017,
+               0018. THREE are safe (day time-stop exists live): CAND-0012, 0016, 0019 (level-bearing).
+               READ-ACROSS: this WORSENS CAND-0002 too (its expansion block time-stop is likewise inert
+               live) — recommend re-opening CAND-0002.
+               VERDICTS: all 9 SURVIVED_RED_TEAM_A (Phase A); Part B all CONDITIONAL; 0 REJECTED. The six
+               H'-candidates carry a HARD GATE: DEMO criteria must bind a live-valid time-stop, else do not
+               trade. HANDOFF: Statistician protocol + DEMO criteria (hard gate; S1/S2 existing gate;
+               W-incr; multiple-testing family; doc fix for the stale block header).
+               STATE: OPERATIONAL. Next entry [23], prev_hash E22.
+  entry_hash:  E22
 ```
