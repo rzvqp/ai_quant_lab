@@ -30,6 +30,7 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0003** | FVG-CE50-REACTION | imbalance_reaction (MK-03) | `POLICY_FVG_REACTION_v1.md` | DEFINED | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0004** | LIQUIDITY-VOID | price_discontinuity_void (Mod.5) | `POLICY_LIQUIDITY_VOID_v1.md` | activation DEFINED; trigger FAIL-CLOSED | UNSPECIFIED (moot) | NOT CURRENTLY TESTABLE | spec request → Statistician (ratify a void-reaction detector) |
 | **CAND-0005** | BPR | balanced_price_range (MK-03) | `POLICY_BPR_v1.md` | activation DEFINED; trigger FAIL-CLOSED | UNSPECIFIED (moot) | NOT CURRENTLY TESTABLE | spec request → Statistician (ratify a BPR-reaction detector) |
+| **CAND-0006** | PWH-PWL | weekly_reference_levels (MK-04) | `POLICY_WEEKLY_LEVELS_v1.md` | activation DEFINED; trigger FAIL-CLOSED | UNSPECIFIED (moot) | NOT CURRENTLY TESTABLE | spec request → Statistician (ratify a weekly-level touch detector) |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
