@@ -54,36 +54,22 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `PRODUCING` — resumed after CEO ruling on `order_flow.py` (2026)
+## STATE: `WAITING_FOR_NEW_PRIMITIVES` — distinct-mechanism space of current ratified primitives substantially covered (after CAND-0019)
 
-**CEO RULING (granted):** the order-block-family block covers the OLD circular candidates
-(E010/E013/E015/E016) ONLY — NOT the re-engineered `order_flow.py` primitives (`detect_mitigations`,
-`detect_rejections`, `detect_demand_zones`, `detect_order_blocks`/`track_breaker` as anchors), whose
-selection/measurement windows are disjoint by construction (E010 circularity impossible; Red Team
-confirmed MK-01 F1/F2 non-contaminating — only the inert `Block` dataclass is imported). **UNBLOCKED.**
-STILL BLOCKED: E010/E013/E015/E016 as hypotheses; `market_structure.py`, `liquidity_mechanics.py` (DRAFT).
+**CEO ruling (order_flow re-engineered primitives unblocked) applied** — E010/E013/E015/E016 stay blocked as hypotheses; `market_structure.py`, `liquidity_mechanics.py` remain DRAFT-forbidden.
 
-New families now in production: **order-block sweep-rejection (CAND-0011)**, demand-zone reaction,
-mitigation (circularity-free), + confluences with levels / FVG / void.
+**Covered (19 candidates):** all base reaction families — level (0001), FVG (0003), OB-rejection (0011), OB-mitigation (0014), demand-zone (0013), compression→expansion (0002); interaction mechanisms — void×displacement (0008), level-break×displacement (0009), FVG-stack-density (0010); confluences — level×FVG (0007), rejection×level (0012), rejection×FVG (0015), mitigation×level (0016), demand-zone×FVG (0017), rejection×void (0018), demand-zone×level (0019). DEMO_BASELINE Part B completed for the 4 authorized pilots (0001/0002/0003/0007).
 
-The single-primitive space of the earlier ratified set (CAND-0001…0010) remains covered; no variants forced.
+**Why WAITING (not forcing weak candidates):** the remaining moves from the *current* primitives are either
+- **combinatorial pairwise permutations** of diminishing marginal distinctness — `mitigation×FVG`, `mitigation×void`, `demand-zone×void`, and higher-order (3-way) confluences. Each is technically distinct but is systematic mask-AND enumeration, not a new market hypothesis. **Producible on request; held back per "nu forța candidați slabi ca să umpli coada."**
+- or **blocked / studied-null:** a standalone breaker-continuation = E010 (blocked); an IFVG (`detect_inverse_fvgs`) reaction ≈ E012 (studied, V0 null) — not re-treated.
 
-**Unlocks that would immediately resume production** (each opens distinct mechanisms + their confluences):
-- ratified **void-reaction / void-fill** detector → completes CAND-0004 + void×level, void-fill confluences;
-- ratified **weekly-level touch** detector → completes CAND-0006 + weekly×level/FVG confluences;
-- ratified **BPR-reaction** detector → completes CAND-0005 + BPR confluences;
-- any ratified **structural stop/exit** primitive → completes Part B for all 10 (PARTIALLY → possibly DEFINED);
-- a **void price-zone** concept (the module stores void magnitude, not a fillable zone) → void-zone confluences.
+**Genuinely-new BASE families need a new ratified primitive (each unlocks a distinct family + its confluences):**
+- **void-reaction / void-fill** detector → CAND-0004 becomes testable + void-fill mechanisms;
+- **weekly-level touch** detector → CAND-0006 + weekly confluences;
+- **BPR-reaction** detector → CAND-0005 + BPR confluences;
+- a **void price-zone** concept (the module stores void *magnitude*, not a fillable zone) → void-zone mechanisms;
+- a **session-structure** primitive (session high/low/open — `sessions()` only labels) → session mechanisms;
+- any ratified **structural stop/exit** primitive → completes Part B for the non-pilot candidates.
 
-**⚠ FLAGGED FOR CEO RULING — potential immediate unlock, held fail-closed on ambiguity:**
-`code/order_flow.py` (Module 5, RATIFIED v2.6.1→v2.7.9) provides **circularity-free** reaction primitives —
-`detect_mitigations`, `detect_rejections`, `detect_demand_zones` — built with the **anti-E010 disjoint-
-window construction** (selection window a pure function of bars `≤ event_idx`; measurement window
-`[event_idx, +H)`; disjoint by construction, the exact defect that failed E010/E013/E016). These reuse
-`detect_order_blocks` (OB formation), so they are OB-anchored. The order-block **family** (E010/E013/E015/
-E016) is under a STRICT block — but those were the **old circular** candidates; these are the **ratified
-re-engineered** primitives. **Ambiguous whether the block covers them; Alpha will not build on them
-without a CEO ruling.** If permitted, they unlock: demand-zone reaction, sweep-rejection, mitigation
-(circularity-free), and their confluences with levels/FVGs/voids — a substantial new batch.
-
-Producing continuously; auto-resumes on a new ratified primitive or the ruling above.
+Auto-resumes the moment any of the above is ratified, or on CEO request to enumerate the remaining pairwise confluences.
