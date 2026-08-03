@@ -11,6 +11,13 @@ partial-ratified), `market_state.py` (compression/expansion/sessions, ratified S
 ratified), `order_flow.py` (order blocks, ratified — but the OB family is directive-BLOCKED).
 **NOT ratified (draft — not built on):** `market_structure.py` (MK-01), `liquidity_mechanics.py` (MK-02).
 
+**W10 handoff standard (mandatory, all policies):** every policy declares, for each cited primitive, a
+cross-repo reference block — `source_repository`, `source_branch`, `source_commit` (full hash),
+`source_file`, `primitive`, `source_hash` (sha256 of the file @ commit) — so a consumer verifies grounding
+without the files being co-located. The ratified primitives currently live on
+`alpha1/discovery-mk-matrix-v1` @ `8edbf9900b761b774b901a13a5b325be578468e6`, a **different branch** than
+these policies (`alpha-automation-v1`). Applied retroactively to CAND-0001/0002 and to every new candidate.
+
 **Standing gap affecting every candidate's Part B:** no ratified **structural** stop/exit primitive exists
 (fixed-ATR/RR is disqualified — identical 0.378–0.385 winrate across 6 mechanisms; the cited v8.5 M_031–
 M_034 is confirmed nonexistent). Every candidate's Part B is therefore UNSPECIFIED and routed to the

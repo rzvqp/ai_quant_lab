@@ -21,8 +21,25 @@ figures (winrate 0.435 @ n=356, expectancy_$ +0.334, gross edge +0.534, 4/4 sess
 | Field | Value |
 |---|---|
 | **policy_id** | `PDH-PDL` |
-| **version** | `1.1` (directive-corrected: the cited v8.5 library M_031–M_034 was confirmed nonexistent; not an access issue) |
+| **version** | `1.2` (W10: cross-repo primitive-source references added; no mechanism change) |
 | **family** | `institutional_reference_levels` (MK-04) |
+
+## Primitive source references — W10 (cross-repo grounding, verifiable without co-location)
+
+The cited primitives live on a **different branch** than this policy (which is on `alpha-automation-v1`).
+Each is pinned below so a consumer can verify grounding without the files being co-located.
+
+- **source_repository:** `github.com/rzvqp/ai_quant_lab-alpha-automation.git`
+- **source_branch:** `discovery-mk-matrix-v1`
+- **source_commit:** `8edbf9900b761b774b901a13a5b325be578468e6` (full)
+
+| source_file | primitive(s) | source_hash (sha256 of file @ commit) |
+|---|---|---|
+| `code/institutional_levels.py` | `compute_prior_day_levels`, `detect_level_touches`, `LevelKind`, `ReferenceLevel`, `LevelTouch` (MK-04, ratified) | `c284fa2c8cde5a4b345d773a65a3b7a563cdd2548c712a27e3d97cc0fb15b4a9` |
+| `code/resample_ny.py` | 17:00-NY DST-aware day anchor feeding `day_index` (caller-side) | `6c6237375e344337f8ad2491f66d0cb9a9e730451595cccdea4ebe6204699650` |
+
+*Verify:* `git show 8edbf9900b761b774b901a13a5b325be578468e6:code/institutional_levels.py | sha256sum`
+against `alpha1/discovery-mk-matrix-v1`.
 
 ---
 

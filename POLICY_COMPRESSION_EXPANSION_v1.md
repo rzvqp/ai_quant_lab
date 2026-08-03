@@ -18,8 +18,24 @@ NOT used). Ratified constants: `DISP_MULT=1.5`, `BODY_FRAC=0.5`, `ATR_WINDOW=14`
 | Field | Value |
 |---|---|
 | **policy_id** | `COMPRESSION-EXPANSION-BREAKOUT` |
-| **version** | `1.0` |
+| **version** | `1.1` (W10: cross-repo primitive-source references added; no mechanism change) |
 | **family** | `volatility_state_transition` (market_state, MK Mandate 5.8) |
+
+## Primitive source references — W10 (cross-repo grounding, verifiable without co-location)
+
+The cited primitives live on a **different branch** than this policy (which is on `alpha-automation-v1`).
+Pinned so a consumer can verify grounding without the files being co-located.
+
+- **source_repository:** `github.com/rzvqp/ai_quant_lab-alpha-automation.git`
+- **source_branch:** `discovery-mk-matrix-v1`
+- **source_commit:** `8edbf9900b761b774b901a13a5b325be578468e6` (full)
+
+| source_file | primitive(s) | source_hash (sha256 of file @ commit) |
+|---|---|---|
+| `code/market_state.py` | `compression`, `expansion`, `atr14`; constants `DISP_MULT=1.5`, `BODY_FRAC=0.5`, `ATR_WINDOW=14`, `COMPRESSION_WINDOW=460`, `COMPRESSION_PCTL=10.0` (ratified, Statistician v2.6.1 `2fb948f`) | `823cf66a7baa21a6a1268a05706d31c9449d1e2c5c56e70cd5ace01a8840504f` |
+
+*Verify:* `git show 8edbf9900b761b774b901a13a5b325be578468e6:code/market_state.py | sha256sum`
+against `alpha1/discovery-mk-matrix-v1`.
 
 ---
 
