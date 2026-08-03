@@ -715,4 +715,45 @@
                neither D2 nor D7; liquidity_mechanics not re-attacked. Nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [24], prev_hash E23.
   entry_hash:  E23
+
+[24] 2026-07-25
+  prev_hash:   E23
+  event:       VERDICT               # re-attack of the MK-01 cascade break semantics (stage 3, third pass)
+  reviewer:    Red Team
+  detail:      CEO tasked a re-attack of the cascade break semantics @ 0000225 (vs f4f8fab). Targets:
+               BOS∧CHoCH co-occurrence, order, F4. Do not reopen D2/D7-pools/F3; liquidity_mechanics
+               untouched. Deliverable: policy_reviews/RT-CODE-A-0003_MK01_cascade_semantics.md. No data run.
+               CHANGE: per bar c, ALL active unconsumed swings exceeded by close[c] → hits, sorted DESCENDING
+               by idx, one break each at c (both delay vectors fixed: single-slot live_* + intra-direction
+               if/elif that SUPPRESSED-and-LOST a same-bar CHoCH). Delivers what D7 already specified; only
+               the recording bar changes. My RT-CODE-A-0002 mis-timing finding is RESOLVED. Statistician
+               measured 40.9% of break-bars carry ≥2 breaks; 542 references were lost outright under old.
+               VERDICT: cascade semantics SURVIVES (count now conserved; emission sound).
+               TARGET 1 (BOS∧CHoCH same bar): NOT double-counting (distinct refs/labels, count conserved) —
+                 confirmed. Flag: the co-broken pair is often NESTED/dependent (breaking a higher HH implies
+                 breaking a lower LH) → downstream counting CHoCH as reversals over-counts in continuations.
+               TARGET 2 (order) — FINDING: the "descending-idx keeps the same first reference → strictly
+                 TIMING not reference" claim is INACCURATE for the ≥2-break/lost-break population. Old
+                 suppressed-and-lost the LH CHoCH so _first_break_after returned the surviving BOS ref; new
+                 DELIVERS the LH and, being higher idx, emits it FIRST → _first_break_after returns a DIFFERENT
+                 reference+kind. Demonstrable from the code's OWN test_bos_and_choch_same_bar (new br[0]=ref13;
+                 old would surface ref8). Holds for same-label cascades, FAILS for cross-kind lost-break.
+                 CAVEAT: _first_break_after is NOT in this commit (downstream, e.g. trading_strategies.py
+                 s2/s3/s10/s11) — recommend verifying first-reference stability there before relying on
+                 "timing-only". This aligns with the earlier note that S2/S3/S11 are affected in principle.
+               TARGET 3 (F4 opposite CHoCH): surface GREW (all-hits evaluates every swing) as the Statistician
+                 warned; simultaneous CHOCH_BULL∧CHOCH_BEAR / BOS∧opposite-CHoCH now more frequent. NOT a
+                 count/consumption defect (distinct refs) but emits contradictory same-bar signals; needs a
+                 downstream interpretation rule; does NOT block the cascade fix. Still open, now in scope.
+               COVERAGE: solid on the core (sustained cascade, lost-CHoCH-delivered, same-bar distinct refs,
+                 descending order). NOT exercised: F4 simultaneous OPPOSITE breaks; the _first_break_after
+                 preservation claim (order tested, selection not); aggregate count conservation over a complex
+                 series; cross-direction order edge (bearish highest-idx displacing a bullish first); high
+                 multiplicity (max-24 measured, tests use ≤3).
+               HANDOFF: CEO for MK-01/MK-02 ratification. Before ratifying: (a) verify first-reference
+               stability vs the real downstream consumers (not in this commit); (b) decide the F4
+               contradictory-signal rule; (c) add the four missing tests. Red Team designs no fix; reopens
+               nothing forbidden; liquidity_mechanics not re-attacked. Nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [25], prev_hash E24.
+  entry_hash:  E24
 ```
