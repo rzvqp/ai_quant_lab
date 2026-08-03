@@ -1,72 +1,76 @@
-# XAUUSD Infrastructure Test — Report (Attempt 2: point_value corrected)
+# XAUUSD Infrastructure Test — Report (Attempt 3: sizing bypassed — SUCCESS)
 
-**Nature of this document**: follow-up to the first attempt (dry-run denied on `VOLUME_STEP_ROUNDING_BELOW_MIN`
-due to an unverified `point_value=1.0` copied from the BTCUSD script). CEO instruction, 2026-08-03:
-correct `point_value` from real `symbol_info`, don't assume, don't touch risk% or stop distance. **No
-order was sent on this attempt either — for a different, precisely quantified reason, not a
-configuration bug.**
+**CEO instruction, 2026-08-03**: "Ocoleste compute_sizing pentru testul de instalatie. Volum 0,01
+explicit." — the installation test verifies the PIPE, not sizing. **Real order sent, confirmed, closed.
+Account confirmed flat.**
 
-## 1. Real values read from `symbol_info` (not assumed, not copied)
+## Sizing bypass — marked explicitly, verified by construction
 
-| Field | Source | Value |
-|---|---|---|
-| `trade_contract_size` | `symbol_info(XAUUSD)` | **100.0** (troy ounces / lot) |
-| `trade_tick_value` | `symbol_info(XAUUSD)` | **3.74601** (account currency — PLN — per lot per tick) |
-| `trade_tick_size` | `symbol_info(XAUUSD)` | **0.01** |
+`compute_sizing`/`RiskConfig` are **never imported, never constructed, never called** in this version of
+the script (confirmed: neither name appears anywhere in `xauusd_infra_test.py` at this commit).
+`TEST_VOLUME = 0.01` is a hardcoded module-level constant. The order is built directly as an
+`execution_engine.types.OrderRequest` — the same shape `execution_engine/builder.py::build_order` would
+normally produce from a sized `RiskDecision`, with `quantity` hardcoded instead of `sizing.size_units` —
+and sent straight to `MT5DemoBrokerAdapter.submit_order()`, bypassing `execution_orchestrator.orchestrate()`/
+`send_after_dry_run_gate()` entirely (both are inherently tied to the sizing-dependent `RiskDecision`
+pipeline, so bypassing sizing means bypassing them too). Every one of `submit_order()`'s OWN safety
+refusals (connected, DEMO, AlgoTrading, expected server, volume ceiling) still ran, unmodified — only
+the sizing computation was skipped, confirmed both in code comments and in the run's own journal
+(`ORDER_REQUEST_BUILT_SIZING_BYPASSED`, `sizing_bypassed: true`).
 
-## 2. `point_value` corrected — two distinct fields, traced to their actual consumers
-
-Confirmed by reading every consumer (`grep`, not assumed):
-
-- **`RiskConfig.sizing.point_value[symbol]`** — the ONE that feeds `risk_manager/sizing.py`'s actual
-  sizing formula (`config.point_value_for(symbol)` → `self.sizing.point_value.get(symbol, 1.0)`).
-  `risk_manager_live/engine.py`'s own comment documents that `compute_sizing`'s `size_units` output is
-  "base units (e.g. troy ounces)" — meaning this `point_value` must be **per UNIT (ounce)**, not per lot:
-  `tick_value / tick_size / contract_size = 3.74601 / 0.01 / 100 = 3.74601`.
-- **`InstrumentSpecification.point_value`** — a SEPARATE field, used ONLY for a `> 0` sanity check
-  (`risk_manager_live/engine.py:112`), never in the sizing math itself. Set to match the already-
-  established convention `mt5_account_bridge/source.py::read_instrument_specification` already uses for
-  this exact field: `tick_value / tick_size = 374.601` (per lot).
-
-Both are now genuinely derived from this run's own live `symbol_info` read — not assumed, not copied
-from BTCUSD.
-
-## 3. Result: dry-run denied again — `RISK_DENIED` / `VOLUME_STEP_ROUNDING_BELOW_MIN`
-
-Same reason code as attempt 1, but now for a **verified, quantified, real economic constraint**, not a
-configuration bug:
+## The requested numbers
 
 | | Value |
 |---|---|
-| Broker minimum volume | 0.01 lots |
-| Stop distance (2% of entry, unchanged) | $81.05 |
-| `point_value` (corrected, per-unit) | 3.746 PLN/oz per $1 |
-| Risk required for the MINIMUM tradable position (0.01 lots) at this stop | **303.60 PLN** |
-| Account equity | 10,026.83 PLN |
-| **Required risk-per-trade % for 0.01 lots** | **≈ 3.03%** |
-| Configured `risk_per_trade_pct` (untouched, per instruction) | 0.5% |
+| **Ticket** | **499680521** |
+| Volume | 0.01 lots (hardcoded) |
+| Entry requested price | 4051.93 |
+| Entry fill price | **4051.93** |
+| Entry slippage | **$0.00** |
+| Exit requested price | 4051.88 |
+| Exit fill price | **4051.88** |
+| Exit slippage | **$0.00** |
+| Spread observed at send (entry) | **$0.05** |
+| Spread observed at close (exit) | **$0.05** |
+| Realized round-trip cost (price units) | **$0.05** |
+| Realized round-trip cost, at 0.01 lots, in $ | **$0.05** |
+| Modeled round-trip cost (project constant) | $0.20 |
+| **Realized ÷ modeled ratio** | **0.25** |
+| Account balance before | 10,026.83 PLN |
+| Account balance after | **10,026.44 PLN** (Δ −0.39 PLN) |
+| Open positions after close | **0** |
+| Open orders after close | **0** |
 
-**Neither `risk_per_trade_pct` nor the stop distance was changed** — the 3.03% figure above is computed
-and reported only, never applied. No order was sent; the dry-run denies before the DEMO leg is ever
-reached. Confirmed after: zero open positions, zero open orders on XAUUSD.
+Both legs filled with **zero slippage** against the requested price — the broker filled exactly at the
+quoted bid/ask read immediately before each send.
 
-## 4. What this means, stated plainly
+## The comparison that matters — now a real, executed number
 
-At this account's actual equity and the project's own 0.5% risk-per-trade default, a 2%-of-price stop on
-XAUUSD (~$81 at current prices) cannot be sized down to the broker's minimum tradable lot (0.01) without
-risking roughly six times the configured budget. This is not a bug in `point_value` (now corrected and
-verified) — it is the sizing formula correctly reporting a genuine mismatch between this account's size,
-the 0.5% risk convention, and gold's per-lot economics at a 2% stop.
+**Realized round-trip cost = $0.05, exactly 25% of the $0.20 modeled constant used throughout this
+project's backtests.** Unlike the earlier $0.05 *quote* (attempt 1, which answered nothing because
+nothing filled), this is now derived from **two actual fills**: entry at 4051.93 (requested = filled,
+zero slippage), exit at 4051.88 (requested = filled, zero slippage). The realized price give-up between
+the two fills (4051.93 − 4051.88 = $0.05) is the genuine round-trip friction for this one trade, under
+the standard simplifying assumption that the true midpoint barely moved across the ~1–2 second hold
+(disclosed, not provable from a single trade — Statistician's own framing: "un ordin nu demonstreaza
+nimic, dar e primul punct de date real").
 
-## 5. Stopping for a decision, per instruction
+The account-currency (PLN) balance change (−0.39 PLN) is somewhat larger than the $0.05 price-cost alone
+would suggest at the derived point-value (≈0.19 PLN) — the difference is most likely commission and/or
+swap, neither isolated separately by this test; flagged, not resolved here.
 
-Three ways forward exist, none of which I have applied:
-- Widen `risk_per_trade_pct` for this one test (you explicitly forbade this).
-- Use a tighter stop distance than 2% (you explicitly forbade changing this too).
-- Accept that the infrastructure test cannot exercise the FULL AI Trader risk-sizing pipeline at this
-  account size without one of the above, and instead test the send/close mechanics directly (bypassing
-  `compute_sizing`, submitting the broker's own minimum volume explicitly) — a different kind of test
-  than "exact ca testul BTCUSD," since BTCUSD's own script happened to size correctly by coincidence of
-  BTC's much smaller contract_size, not because it tested this same constraint.
+## The separate finding, still on record
 
-**No order sent. No position opened. Account unchanged. Awaiting your decision.**
+**At the current account (10,026.83 PLN) with 0.5% risk-per-trade, gold is not tradeable at wide stops —
+the minimum lot requires 3.03%.** This applies to every strategy using this risk convention, not just
+this test. PDH-PDL's own stop is much tighter (touch-bar extreme, not 2%-of-price) and may fit inside
+the 0.5% budget — **not yet verified**, to be checked when PDH-PDL activation is actually authorized.
+
+## Verification
+
+Confirmed independently, via a fresh read-only connection, after the test process exited: **0 open
+positions, 0 open orders, balance/equity both 10,026.44 PLN, stable.**
+
+## Status
+
+One order. Sent, confirmed, closed, verified flat. Stopping here, as instructed.

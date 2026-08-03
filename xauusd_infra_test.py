@@ -1,16 +1,22 @@
-"""XAUUSD Infrastructure Test -- CEO-authorized 2026-08-03. "Exact ca testul BTCUSD din commit a3ef1c7,
-dar pe XAUUSD."
+"""XAUUSD Infrastructure Test -- CEO-authorized 2026-08-03, attempt 3: sizing BYPASSED.
 
-NOT a strategy test, NOT PDH-PDL. NOT going through PdhPdlRecognitionRule (explicit instruction: "NU
-treci prin regula de recunoastere"). Validates EXCLUSIVELY the execution infrastructure path: AI Trader
--> Execution Orchestrator -> Order Manager -> Broker Adapter -> MT5 order_check -> MT5 order_send ->
-confirmation -> controlled close -> report. Mirrors `btcusd_phase10_operational_test.py` line for line
-in structure; the only substantive differences are the symbol and the additional realized-cost/spread
-reporting the CEO specifically requested this time.
+"Ocoleste compute_sizing pentru testul de instalatie. Volum 0,01 explicit." -- the installation test
+verifies the PIPE (request -> adapter -> MT5 -> confirmation -> close -> flat account), not sizing.
+Those are two different things; the 3.03%-risk-for-min-lot finding from attempt 2 is real and stays on
+record (`XAUUSD_INFRA_TEST_REPORT.md`), but is out of scope for what this script now tests.
 
-ONE order only. Aborts fail-closed on any check failure -- no order sent on abort. Lives at repo root
-(mirroring `mt5_connectivity_probe.py`/`btcusd_phase10_operational_test.py`'s own precedent), not inside
-any `ai_trader` package, not part of the standing automated test suite.
+**SIZING IS EXPLICITLY BYPASSED FOR THIS INSTALLATION TEST ONLY** -- `risk_manager/sizing.py::compute_sizing`
+is NEVER CALLED, `RiskConfig` is NEVER CONSTRUCTED, `risk_per_trade_pct` is NEVER READ. Volume is a
+HARDCODED constant (`TEST_VOLUME = 0.01`), and the order is built directly (`execution_engine.types.OrderRequest`,
+the exact same shape `execution_engine/builder.py::build_order` would normally produce from a sized
+`RiskDecision`) and sent straight to `MT5DemoBrokerAdapter.submit_order()` -- skipping
+`execution_orchestrator.orchestrate()`/`send_after_dry_run_gate()` entirely, since bypassing sizing means
+there is no `RiskDecision` for that pipeline to run on. `submit_order()` itself still enforces every one
+of its own safety refusals (connected, DEMO, AlgoTrading, expected server, volume ceiling) -- ONLY the
+sizing computation is skipped, nothing else.
+
+NOT PDH-PDL, NOT going through `PdhPdlRecognitionRule`. ONE order. Aborts fail-closed on any check
+failure. Lives at repo root, not inside any `ai_trader` package, not part of the standing test suite.
 """
 
 from __future__ import annotations
@@ -19,25 +25,26 @@ import json
 import time
 from pathlib import Path
 
-from ai_trader.confidence_engine.types import ConfidenceEngineConfig
-from ai_trader.execution_engine.ledger import OrderLedger
-from ai_trader.execution_engine.types import BrokerCapabilities, MarketStatus, OrderType, TimeInForce
-from ai_trader.execution_orchestrator.types import CandidateSignal, ExecutionMode, OrchestratorConfig, OrchestratorDependencies
-from ai_trader.market_scanner.types import DataQualityLevel
+from ai_trader.execution_engine.types import (
+    BrokerCapabilitiesRef,
+    OrderConstraints,
+    OrderIntent,
+    OrderRefs,
+    OrderRequest,
+    OrderSide,
+    OrderType,
+    TimeInForce,
+)
 from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
-from ai_trader.mt5_demo_execution.gating import send_after_dry_run_gate
 from ai_trader.mt5_demo_execution.safety import is_market_open_for_symbol, verify_safety_guards
 from ai_trader.mt5_demo_execution.types import MT5DemoConfig
-from ai_trader.order_manager.dry_run_adapter import DryRunBrokerAdapter
-from ai_trader.order_manager.journal import OrderManagerAuditJournal
-from ai_trader.portfolio_manager_live.types import PortfolioDailyState
-from ai_trader.risk_manager.config import RiskConfig
-from ai_trader.risk_manager.types import PortfolioState, RiskContext, SymbolRiskSnapshot
-from ai_trader.risk_manager_live.types import AccountState, InstrumentSpecification
 from ai_trader.signal_engine.types import Direction
 
 SYMBOL = "XAUUSD"
 MODELED_ROUND_TRIP_COST = 0.20  # $ -- the constant assumed throughout the project's own backtests
+TEST_VOLUME = 0.01  # HARDCODED -- sizing bypassed for this installation test only (CEO, 2026-08-03)
+ORDER_SCHEMA_VERSION = "1.0.0"
+EXECUTION_ENGINE_VERSION = "1.0.0"
 JOURNAL_PATH = Path(__file__).parent / "xauusd_infra_test_journal.jsonl"
 
 journal: list[dict[str, object]] = []
@@ -127,46 +134,27 @@ def main() -> None:
         if entry_spread_price <= 0:
             abort("spread is not a positive, sane value")
 
-        # ---- Check 11: minimum allowed volume ----
+        # ---- Check 11: minimum allowed volume -- confirm the hardcoded TEST_VOLUME is actually valid ----
         min_volume = caps.min_qty
-        log("CHECK_11_MIN_VOLUME", min_volume=min_volume)
+        log("CHECK_11_MIN_VOLUME", min_volume=min_volume, test_volume_hardcoded=TEST_VOLUME,
+            sizing_bypassed=True, note="TEST_VOLUME is a hardcoded constant for this installation test -- NOT computed by risk_manager/sizing.py")
         if min_volume is None or min_volume <= 0:
             abort("could not determine a valid minimum volume")
+        if TEST_VOLUME < min_volume or TEST_VOLUME > caps.max_qty:
+            abort(f"TEST_VOLUME={TEST_VOLUME} outside broker-allowed range [{min_volume}, {caps.max_qty}]")
 
-        config = MT5DemoConfig(max_order_volume=min_volume, expected_server=status.server)
+        config = MT5DemoConfig(max_order_volume=TEST_VOLUME, expected_server=status.server)
         adapter._config = config  # script-level re-configuration of the already-connected instance;
-        # not a file/component modification -- MT5DemoConfig is a plain constructor parameter, supplied
-        # here only once the real minimum volume is known from the terminal itself.
+        # not a file/component modification -- MT5DemoConfig is a plain constructor parameter.
 
         # Read real account numbers directly from the already-approved, frozen read-only gateway --
-        # never fabricated.
+        # never fabricated. (contract_size/tick_value/tick_size are read for REPORTING only in this
+        # attempt -- point_value/RiskConfig are not constructed at all, since sizing is bypassed.)
         raw_account = adapter._demo_gateway.account_info()
         raw_symbol_info = adapter._demo_gateway.symbol_info(SYMBOL)
         contract_size = float(getattr(raw_symbol_info, "trade_contract_size", 1.0))
-        raw_tick_value = float(getattr(raw_symbol_info, "trade_tick_value", 0.0))
-        raw_tick_size = float(getattr(raw_symbol_info, "trade_tick_size", 0.0))
-        if raw_tick_value <= 0 or raw_tick_size <= 0 or contract_size <= 0:
-            abort(f"symbol_info returned a non-positive tick_value/tick_size/contract_size for {SYMBOL} -- cannot derive point_value")
-
-        # point_value CORRECTED (previous attempt copied 1.0 from the BTCUSD script, unverified for
-        # gold -- CEO instruction 2026-08-03: "citesti contract_size si point_value REALE din
-        # symbol_info... nu presupui, nu copiezi din alt simbol"). TWO DISTINCT consumers in this
-        # codebase, confirmed by reading (not assumed): `RiskConfig.sizing.point_value[symbol]` feeds
-        # `risk_manager/sizing.py::compute_sizing`'s own formula, where `size_units` is documented
-        # ("Converts base units (e.g. troy ounces)...", risk_manager_live/engine.py's own comment) to
-        # be the RAW UNDERLYING UNIT count (ounces), before a SEPARATE later division by
-        # `contract_size` converts to lots -- so THIS point_value must be per-UNIT (ounce), not
-        # per-LOT: `tick_value / tick_size / contract_size`. `InstrumentSpecification.point_value` is a
-        # DIFFERENT field (only used for a `> 0` sanity check in engine.py, confirmed by grepping every
-        # consumer) -- set to match the already-established, presumably-correct convention
-        # `mt5_account_bridge/source.py::read_instrument_specification` already uses for this exact
-        # field: `tick_value / tick_size` (per-LOT), never re-derived here.
-        point_value_per_unit = raw_tick_value / raw_tick_size / contract_size
-        point_value_per_lot = raw_tick_value / raw_tick_size
         log("ACCOUNT_SNAPSHOT", balance=raw_account.balance, equity=raw_account.equity, currency=raw_account.currency,
-            leverage=raw_account.leverage, margin_free=raw_account.margin_free, contract_size=contract_size,
-            raw_tick_value=raw_tick_value, raw_tick_size=raw_tick_size,
-            point_value_per_unit_for_sizing=point_value_per_unit, point_value_per_lot_for_instrument_spec=point_value_per_lot)
+            leverage=raw_account.leverage, margin_free=raw_account.margin_free, contract_size=contract_size)
 
         # Verify no pre-existing XAUUSD position before we start.
         pre_positions = adapter._demo_gateway.positions_get(SYMBOL) or ()
@@ -174,70 +162,7 @@ def main() -> None:
         if len(pre_positions) > 0:
             abort(f"{len(pre_positions)} pre-existing XAUUSD position(s) found before the test even started -- refusing to add ambiguity")
 
-        # ---- Build the full AI Trader dependency set, using REAL queried values wherever available ----
-        entry_requested_price = float(entry_tick.ask)  # BUY fills at ask
-        candidate = CandidateSignal(
-            strategy_id="S998", symbol=SYMBOL, direction=Direction.LONG,  # ORDER_SCHEMA.json requires ^S\d+$; S998, distinct from BTCUSD's own S999 infra-test id and PDH-PDL's S9001, never a real registered strategy
-            entry=entry_requested_price, stop=entry_requested_price * 0.98, target=entry_requested_price * 1.02,
-            session="INFRA_TEST", magic_number=900011, comment="XAUUSD-INFRA-TEST", as_of=now,
-        )
-        market_context = {
-            "meta": {"as_of": now, "symbol": SYMBOL},
-            "timeframes": {"M15": {"bars": [], "features": {}, "feature_history": []}},
-            "data_quality": {"level": "OK"},
-        }
-        account = AccountState(
-            as_of=now, currency=str(raw_account.currency), balance=float(raw_account.balance),
-            equity=float(raw_account.equity), margin_used=float(raw_account.balance) - float(raw_account.margin_free),
-            margin_free=float(raw_account.margin_free), margin_level=None, leverage=float(raw_account.leverage),
-            is_demo=True,
-        )
-        portfolio = PortfolioState(as_of=now, equity=float(raw_account.equity), equity_high_water_mark=float(raw_account.equity))
-        daily_state = PortfolioDailyState(as_of=now)
-        instrument = InstrumentSpecification(
-            symbol=SYMBOL, tick_size=caps.tick_size, lot_step=caps.lot_step, min_volume=caps.min_qty,
-            max_volume=caps.max_qty, contract_size=contract_size, point_value=point_value_per_lot,
-            margin_currency=str(raw_account.currency),
-        )
-        risk_config = RiskConfig()
-        risk_config.filters.reference_spread[SYMBOL] = max(entry_spread_price * 3, 1.0)
-        risk_config.filters.liquidity_floor[SYMBOL] = 0.1
-        risk_config.sizing.point_value[SYMBOL] = point_value_per_unit
-        risk_context = RiskContext(as_of=now, per_symbol={SYMBOL: SymbolRiskSnapshot(
-            atr=entry_spread_price * 20, atr_rolling_median=entry_spread_price * 20, current_spread=entry_spread_price,
-            liquidity_proxy=1.0, is_weekend_gap=False, bars_since_gap=100, is_past_friday_cutoff=False,
-            is_near_session_close=False, minutes_to_high_impact_event=999.0, data_quality=DataQualityLevel.OK,
-        )})
-        broker_caps = BrokerCapabilities(
-            supported_order_types=frozenset({OrderType.MARKET, OrderType.LIMIT, OrderType.BRACKET}),
-            supported_time_in_force=frozenset({TimeInForce.GTC, TimeInForce.IOC}),
-            tick_size=caps.tick_size, lot_step=caps.lot_step, min_qty=caps.min_qty, max_qty=min_volume,
-            market_status={SYMBOL: MarketStatus.OPEN},
-        )
-
-        dry_run_ledger = OrderLedger()
-        dry_run_journal = OrderManagerAuditJournal(Path(__file__).parent / "xauusd_infra_test_dry_run_journal.jsonl")
-        dry_run_adapter = DryRunBrokerAdapter(broker_caps)
-        dry_run_adapter.connect()
-        dry_run_deps = OrchestratorDependencies(
-            account=account, portfolio=portfolio, daily_state=daily_state, instrument=instrument,
-            risk_context=risk_context, risk_config=risk_config, broker_caps=broker_caps, ledger=dry_run_ledger,
-            order_journal=dry_run_journal, adapter=dry_run_adapter,
-        )
-        demo_ledger = OrderLedger()
-        demo_journal = OrderManagerAuditJournal(Path(__file__).parent / "xauusd_infra_test_demo_order_journal.jsonl")
-        demo_deps = OrchestratorDependencies(
-            account=account, portfolio=portfolio, daily_state=daily_state, instrument=instrument,
-            risk_context=risk_context, risk_config=risk_config, broker_caps=broker_caps, ledger=demo_ledger,
-            order_journal=demo_journal, adapter=adapter,
-        )
-
-        orchestrator_config = OrchestratorConfig(
-            recognition_pattern_id=None,  # infra test -- recognition is out of scope, optional input
-            confidence_config=ConfidenceEngineConfig(require_data_quality_ok=True, require_not_stale=True),
-        )
-
-        # ---- Check 12: run the full safety-guard report + require the identical dry-run to pass first ----
+        # ---- Check 12: safety-guard report (compute_sizing/RiskConfig are NEVER constructed here) ----
         safety_report = verify_safety_guards(adapter, config, symbol=SYMBOL)
         log("SAFETY_GUARD_REPORT", connected=safety_report.connected, account_is_demo=safety_report.account_is_demo,
             algo_trading_enabled=safety_report.algo_trading_enabled, server_matches_expected=safety_report.server_matches_expected,
@@ -246,52 +171,45 @@ def main() -> None:
         if not safety_report.all_passed:
             abort("final automated safety-guard verification did not all pass")
 
-        log("SENDING_THROUGH_FULL_AI_TRADER_PIPELINE", note="Execution Orchestrator -> Order Manager -> Broker Adapter -> MT5 order_check -> MT5 order_send")
-        outcome = send_after_dry_run_gate(
-            candidate, market_context, dry_run_deps, demo_deps, adapter, safety_report,
-            config=orchestrator_config,
+        # ---- Build the OrderRequest DIRECTLY -- the same shape execution_engine/builder.py::build_order
+        # would normally produce from a sized RiskDecision, with `quantity` hardcoded instead of
+        # `sizing.size_units`. No RiskDecision exists here because sizing was never run. ----
+        entry_requested_price = float(entry_tick.ask)  # BUY fills at ask
+        decision_id = f"XAUUSD-INFRA-SIZING-BYPASSED-{now}"
+        order = OrderRequest(
+            order_schema_version=ORDER_SCHEMA_VERSION, execution_engine_version=EXECUTION_ENGINE_VERSION,
+            order_request_id=f"OM-REQ-{decision_id}", client_order_id=f"OM-CID-{decision_id}",
+            decision_id=decision_id, strategy_id="S998",  # ORDER_SCHEMA.json requires ^S\d+$; distinct infra-test id
+            symbol=SYMBOL, timestamp=now, as_of=now, side=OrderSide.BUY, direction=Direction.LONG,
+            intent=OrderIntent.OPEN, order_type=OrderType.MARKET, time_in_force=TimeInForce.IOC,
+            quantity=TEST_VOLUME,  # HARDCODED -- sizing bypassed
+            constraints=OrderConstraints(max_slippage=entry_spread_price * 5, reduce_only=False, post_only=False),
+            broker_capabilities_ref=BrokerCapabilitiesRef(
+                tick_size=caps.tick_size, lot_step=caps.lot_step, min_qty=caps.min_qty, max_qty=caps.max_qty,
+            ),
+            refs=OrderRefs(risk_schema_version="SIZING_BYPASSED", risk_policy_version="SIZING_BYPASSED"),
         )
+        log("ORDER_REQUEST_BUILT_SIZING_BYPASSED", client_order_id=order.client_order_id, quantity=order.quantity,
+            order_type=order.order_type.value, side=order.side.value, sizing_bypassed=True,
+            note="compute_sizing/RiskConfig never constructed or called for this request")
 
-        log("CHECK_12_DRY_RUN_RESULT", approved=outcome.dry_run_result.approved,
-            order_state=None if outcome.dry_run_result.order_result is None else outcome.dry_run_result.order_result.state.value,
-            reason_codes=outcome.dry_run_result.reason_codes)
-        log("CHECK_12_CALCULATION_TRACE", trace=[
-            {"stage": s.stage, "passed": s.passed, "detail": s.detail} for s in outcome.dry_run_result.calculation_trace
-        ])
-        if not (outcome.dry_run_result.approved and outcome.dry_run_result.order_result is not None and outcome.dry_run_result.order_result.state.value == "ACKNOWLEDGED"):
-            # Required risk-per-trade-pct for a 0.01-lot position at THIS stop distance -- reported per
-            # explicit instruction ("Daca la 0,01 riscul iese peste 0,5%, raportezi cat e") -- NOT
-            # applied, never overrides risk_per_trade_pct or the stop distance, computed only to answer
-            # the question honestly before stopping.
-            stop_distance = abs(entry_requested_price - candidate.stop)
-            min_lot_risk_currency = min_volume * contract_size * stop_distance * point_value_per_unit
-            required_risk_pct_for_min_lot = min_lot_risk_currency / float(raw_account.equity)
-            log(
-                "REQUIRED_RISK_PCT_FOR_MIN_VOLUME_NOT_APPLIED",
-                min_volume=min_volume, stop_distance=stop_distance, point_value_per_unit=point_value_per_unit,
-                min_lot_risk_currency=min_lot_risk_currency, equity=raw_account.equity,
-                required_risk_pct_for_min_lot=required_risk_pct_for_min_lot,
-                configured_risk_pct=risk_config.sizing.risk_per_trade_pct,
-                note="computed for reporting ONLY -- risk_per_trade_pct and stop distance left untouched, per instruction",
-            )
-            abort("the identical dry-run did not pass completely -- refusing to send")
+        log("SENDING_DIRECTLY_TO_ADAPTER", note="OrderRequest -> MT5DemoBrokerAdapter.submit_order() -> MT5 order_check -> MT5 order_send (execution_orchestrator/send_after_dry_run_gate bypassed along with sizing)")
+        ack = adapter.submit_order(order)
+        log("SUBMIT_ORDER_ACK", accepted=ack.accepted, reason=ack.reason, broker_order_id=ack.broker_order_id)
+        if not ack.accepted:
+            abort(f"submit_order refused: {ack.reason}")
 
-        log("DEMO_RESULT", sent=outcome.sent, reason_codes=outcome.reason_codes)
-        if not outcome.sent or outcome.demo_result is None or outcome.demo_result.order_result is None:
-            abort(f"demo send did not succeed: {outcome.reason_codes}")
-
-        order_result = outcome.demo_result.order_result
-        demo_ledger_record = demo_ledger.get(order_result.client_order_id)
-        broker_order_ticket = demo_ledger_record.broker_order_id if demo_ledger_record is not None else None
-        entry_fill_price = order_result.avg_price
+        order_status = adapter.query_status(order.client_order_id)
+        entry_fill_price = order_status.avg_price if order_status is not None else None
         entry_slippage = None if entry_fill_price is None else abs(float(entry_fill_price) - entry_requested_price)
         log(
             "EXECUTION_CONFIRMED",
-            retcode="10009 (TRADE_RETCODE_DONE) -- inferred from BrokerAck.accepted=True, per MT5OrderSendResult.ok's own definition; the adapter does not expose the raw numeric retcode on BrokerAck (unmodified, out of scope to change)",
-            broker_order_ticket=broker_order_ticket, client_order_id=order_result.client_order_id,
-            state=order_result.state.value, filled_qty=order_result.filled_qty,
+            retcode="10009 (TRADE_RETCODE_DONE) -- inferred from BrokerAck.accepted=True, per MT5OrderSendResult.ok's own definition",
+            broker_order_ticket=ack.broker_order_id, client_order_id=order.client_order_id,
+            state=None if order_status is None else order_status.state.value,
+            filled_qty=None if order_status is None else order_status.filled_qty,
             entry_requested_price=entry_requested_price, entry_fill_price=entry_fill_price,
-            entry_slippage=entry_slippage, dry_run=order_result.dry_run, execution_wall_clock=time.time(),
+            entry_slippage=entry_slippage, execution_wall_clock=time.time(),
         )
 
         # ---- Controlled close: query the real position, then close it referencing its own ticket ----
@@ -320,7 +238,7 @@ def main() -> None:
                 exit_requested_price = close_price
                 close_request = {
                     "action": 1, "symbol": SYMBOL, "volume": volume, "type": close_type, "position": ticket,
-                    "price": close_price, "deviation": config.deviation_points, "magic": candidate.magic_number,
+                    "price": close_price, "deviation": config.deviation_points, "magic": 0,
                     "comment": "XAUUSD-INFRA-TEST-CLOSE", "type_time": 0, "type_filling": 1,
                 }
                 check_result = adapter._demo_gateway.order_check(close_request)
@@ -340,20 +258,28 @@ def main() -> None:
 
         # ---- Realized cost report -- the comparison that matters ----
         realized_round_trip_price_cost = None
+        realized_round_trip_dollars = None
         if entry_fill_price is not None and exit_fill_price is not None:
             # LONG: bought at (near) ask, sold at (near) bid, essentially immediately -- the direct
             # price give-up between the two fills is the realized round-trip friction, under the
             # simplifying assumption that the true midpoint barely moved in the ~1-2s hold (disclosed,
             # not proven -- a single trade cannot separate friction from genuine price movement).
             realized_round_trip_price_cost = float(entry_fill_price) - float(exit_fill_price)
+            # At TEST_VOLUME=0.01 lots (1 oz), a $1 price move = contract_size*TEST_VOLUME = 1 oz worth
+            # of USD P&L -- so the $ round-trip cost at this specific volume equals the price-unit cost
+            # times (contract_size * TEST_VOLUME), in the instrument's OWN quote currency (USD), not
+            # yet converted to account currency (PLN) -- reported as USD to match the project's own
+            # $0.20 modeled constant directly.
+            realized_round_trip_dollars = realized_round_trip_price_cost * contract_size * TEST_VOLUME
         log(
             "REALIZED_COST_REPORT",
             entry_spread_observed=entry_spread_price, exit_spread_observed=exit_spread_price,
             entry_requested_price=entry_requested_price, entry_fill_price=entry_fill_price, entry_slippage=entry_slippage,
             exit_requested_price=exit_requested_price, exit_fill_price=exit_fill_price, exit_slippage=exit_slippage,
             realized_round_trip_price_cost=realized_round_trip_price_cost,
-            modeled_round_trip_cost=MODELED_ROUND_TRIP_COST,
-            realized_vs_modeled_ratio=None if realized_round_trip_price_cost is None else realized_round_trip_price_cost / MODELED_ROUND_TRIP_COST,
+            realized_round_trip_dollars_at_test_volume=realized_round_trip_dollars,
+            test_volume=TEST_VOLUME, modeled_round_trip_cost=MODELED_ROUND_TRIP_COST,
+            realized_vs_modeled_ratio=None if realized_round_trip_dollars is None else realized_round_trip_dollars / MODELED_ROUND_TRIP_COST,
             note="realized_round_trip_price_cost assumes negligible mid-price movement during the ~1-2s "
                  "hold -- disclosed simplifying assumption, not proven by one trade. entry/exit spreads "
                  "observed independently are the assumption-free comparison against the modeled constant.",
