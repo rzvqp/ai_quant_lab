@@ -174,6 +174,19 @@ change could break. It was not verified, it was fortunate. **Standing rule, effe
    that entrypoint is not a decision this mandate made. See
    `AI_TRADER_MANDATE4_STEP3_STRUCTURAL_OBSERVER_REPORT.md`.
 10. **#14** — validated edge connected. Entirely outside engineering control; not planned, not estimated.
+11. **UPDATE — live entrypoint built and activated (CEO: "Porneste observarea live. Fara ordine.").**
+    `ai_trader/live_observation/` composes `RealMT5Gateway` -> `LiveBarFeed` ->
+    `ObservingNullRecognitionRule`/`StructuralObserver` -> `CandidateSignalProducer` -> `LiveSignalLoop`,
+    one shared `SqliteStateStore`, XAUUSD M15. **Found and fixed a critical, previously-undetected bug in
+    `LiveBarFeed.poll()` while sanity-checking against the real terminal**: `copy_rates_from` actually
+    returns a numpy structured array (`rate["field"]` item access), not a namedtuple (`rate.field`
+    attribute access) like every other MT5 call this codebase reads -- `poll()` had only ever been tested
+    against an attribute-accessible fake, so it silently failed on every genuinely real bar since Step 5.
+    Fixed with a dual-mode field reader (`_read_field`), proven with a new numpy-shaped test plus a
+    git-stash proof, then reconfirmed directly against the live terminal. Now running: detached background
+    process, real DEMO account (`FusionMarkets-Demo`), 30s poll interval, currently producing structural
+    observations and signal-journal entries (`candidate` always `None`) from real market data. See
+    `AI_TRADER_LIVE_OBSERVATION_ACTIVATION_REPORT.md`.
 
 The sections below are the ORIGINAL dependency analysis this order was built from — kept for the
 reasoning/evidence behind each item, not superseded by the numbered list above.

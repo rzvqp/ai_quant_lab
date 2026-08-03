@@ -102,6 +102,36 @@ def test_raises_when_a_rate_is_missing_a_required_field() -> None:
         feed.poll()
 
 
+def test_a_real_shaped_numpy_structured_array_is_read_correctly() -> None:
+    """Discovered against the real terminal (2026-07-30): `copy_rates_from`/`copy_rates_range` actually
+    return a numpy STRUCTURED ARRAY -- fields reached via `rate["time"]` item access, not `rate.time`
+    attribute access -- unlike every other MetaTrader5 call this codebase reads. Every prior test above
+    uses an attribute-accessible fake (`RawRate`/`SimpleNamespace`), which never exercised this shape;
+    `poll()` silently treated every field as missing and raised `BarFeedError` on a genuinely closed bar
+    the real terminal actually returned. This test uses `numpy.array` with the exact real dtype."""
+    numpy = pytest.importorskip("numpy")
+    closed_open = NOW - 1_000  # close = NOW - 1000 + 900 = NOW - 100 -- already in the past
+    real_shaped_rates = numpy.array(
+        [(closed_open, 2000.0, 2001.0, 1999.0, 2000.5, 100, 5, 0)],
+        dtype=[
+            ("time", "<i8"), ("open", "<f8"), ("high", "<f8"), ("low", "<f8"), ("close", "<f8"),
+            ("tick_volume", "<u8"), ("spread", "<i4"), ("real_volume", "<u8"),
+        ],
+    )
+    gateway = FakeMT5Gateway(rates=real_shaped_rates)
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+
+    bars = feed.poll()
+
+    assert len(bars) == 1
+    assert bars[0].ts_open == closed_open
+    assert bars[0].open == 2000.0
+    assert bars[0].high == 2001.0
+    assert bars[0].low == 1999.0
+    assert bars[0].close == 2000.5
+    assert bars[0].volume == 100.0
+
+
 def test_bar_seconds_must_be_positive() -> None:
     with pytest.raises(ValueError):
         LiveBarFeed(FakeMT5Gateway(), SYMBOL, mt5_timeframe=15, bar_seconds=0)

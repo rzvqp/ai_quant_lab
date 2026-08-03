@@ -43,6 +43,26 @@ def _default_clock() -> int:
     return int(time.time())
 
 
+def _read_field(rate: object, name: str) -> object | None:
+    """MT5's real `copy_rates_from`/`copy_rates_range` return a numpy STRUCTURED ARRAY -- each row's
+    fields are reached via `rate[name]` (item access), NOT `rate.name` (attribute access) -- unlike every
+    other MetaTrader5 call this codebase reads (`symbol_info_tick`, `account_info`, etc., all namedtuples
+    supporting attribute access). Discovered against the real terminal (2026-07-30): `getattr`-only field
+    reads silently returned `None` for every OHLC field, since a numpy structured scalar has no such
+    attributes, which `poll()` correctly treated as a genuine gateway failure -- but the real cause was
+    this file never having been exercised against the real return shape before, only against fake
+    fixtures built as attribute-accessible dataclasses. Tries attribute access first (so every existing
+    namedtuple-shaped fake keeps working unchanged), then item access (the real shape) -- duck-typed, so
+    this file never needs to import numpy directly."""
+    value = getattr(rate, name, None)
+    if value is not None:
+        return value
+    try:
+        return rate[name]  # type: ignore[index]
+    except (TypeError, IndexError, KeyError):
+        return None
+
+
 class LiveBarFeed:
     def __init__(
         self, gateway: MT5Gateway, symbol: str, mt5_timeframe: int, bar_seconds: int,
@@ -86,12 +106,12 @@ class LiveBarFeed:
 
         closed_bars: list[Bar] = []
         for rate in rates:
-            ts_open = getattr(rate, "time", None)
-            open_ = getattr(rate, "open", None)
-            high = getattr(rate, "high", None)
-            low = getattr(rate, "low", None)
-            close = getattr(rate, "close", None)
-            volume = getattr(rate, "tick_volume", None)
+            ts_open = _read_field(rate, "time")
+            open_ = _read_field(rate, "open")
+            high = _read_field(rate, "high")
+            low = _read_field(rate, "low")
+            close = _read_field(rate, "close")
+            volume = _read_field(rate, "tick_volume")
             if ts_open is None or open_ is None or high is None or low is None or close is None:
                 raise BarFeedError(
                     f"copy_rates_from({self._symbol!r}) returned a rate missing an OHLC field"
