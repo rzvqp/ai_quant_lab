@@ -496,4 +496,35 @@
                D3/D6. Integrity register: W11 (F1), W12 (F2). Nothing outside red_team/.
                STATE: awaiting CEO ratification decision. Next entry [18], prev_hash E17.
   entry_hash:  E17
+
+[18] 2026-07-25
+  prev_hash:   E17
+  event:       VERDICT               # OPERATIONAL MODE — first FIFO batch
+  reviewer:    Red Team
+  detail:      Red Team entered OPERATIONAL MODE (continuous FIFO processing of the Candidate Queue).
+               Batch RT-OPS-A-0001 (policy_reviews/RT-OPS-A-0001_batch.md). Eligible set: CAND-0001,
+               CAND-0002, CAND-0003, CAND-0007. BLOCKED/not processed: CAND-0004/0005/0006 (missing
+               reaction primitives). Not in handed set: CAND-0008/0009/0010. Six-dimension phase-A gate
+               each (lookahead/circularity/duplicate/distinct/falsifiable/logic). No data run, no remedy,
+               policies not modified; verification = reading frozen primitives + sha256 of every W10 pin.
+               W10 grounding VERIFIED for all: institutional_levels c284fa2c, resample_ny 6c623737,
+               market_state 823cf66a, imbalance_mechanics 45f8937e, interactions dafb4804 — all hashes
+               MATCH → the RT-POLICY-A-0001/W10 co-location blocker is closed (grounding verifiable
+               without co-location). No MK-01/MK-02 contamination: institutional_levels + imbalance_mechanics
+               import only the inert `Block` dataclass, not the F1/F2-affected detect_swings/detect_breaks;
+               market_state + interactions import neither.
+               VERDICTS: CAND-0001 SURVIVED_RED_TEAM_A (carry W-sel/W-conf/W-ovl/W-e010); CAND-0002
+               SURVIVED_RED_TEAM_A (compression lookahead verified in code; compression-anchoring
+               definitional risk carried, self-disclosed); CAND-0003 SURVIVED_RED_TEAM_A (FVG confirmed_idx
+               =i+1, reactions scanned strictly forward — cleanest); CAND-0007 SURVIVED_RED_TEAM_A (distinct
+               confluence hypothesis but a strict SUBSET of CAND-0001∩CAND-0003 → carry W-incr mandatory
+               incremental-value test vs each constituent; W-dilate honor after=0). 4/4 SURVIVED, 0 REJECTED.
+               All carried items are Statistician-stage controls, not phase-A rejections. Part B UNSPECIFIED
+               for all (standing structural-stop gap) → Statistician spec request.
+               CANDIDATE QUEUE updated: the four state cells set to SURVIVED_RED_TEAM_A (the reviewing
+               division sets lifecycle status, per the lifecycle model + explicit operational instruction).
+               That edit is on alpha-automation-v1 (the queue's branch); this Red Team record + report are
+               in red_team/. Loop idle — no further eligible candidate in the handed set.
+               STATE: OPERATIONAL, loop idle. Next entry [19], prev_hash E18.
+  entry_hash:  E18
 ```
