@@ -248,29 +248,37 @@ def _assert_ordering_precondition(swings: Sequence[Swing]) -> None:
         prev = s
 
 
+_BREAK_KIND: dict[StructureLabel, BreakKind] = {
+    StructureLabel.HH: BreakKind.BOS_BULL, StructureLabel.LL: BreakKind.BOS_BEAR,
+    StructureLabel.HL: BreakKind.CHOCH_BEAR, StructureLabel.LH: BreakKind.CHOCH_BULL,
+}
+
+
 def detect_breaks(
     close: Sequence[float],
     swings: Sequence[Swing],
     blocks: Sequence[Block],
 ) -> list[StructureBreak]:
-    """Body-BOS și CHoCH. Doar corpul declanșează; fitilele nu.
+    """Body-BOS și CHoCH — SEMANTICĂ DE CASCADĂ (Statistician v2.7.38). Doar corpul declanșează; fitilele nu.
 
-    BOS bullish   close[c] > price(ultimul HH confirmat)
-    BOS bearish   close[c] < price(ultimul LL confirmat)
-    CHoCH bearish close[c] < price(ultimul HL confirmat)
-    CHoCH bullish close[c] > price(ultimul LH confirmat)
+    BOS bullish   close[c] > price(HH)      CHoCH bullish close[c] > price(LH)
+    BOS bearish   close[c] < price(LL)      CHoCH bearish close[c] < price(HL)
 
-    D1: se folosește doar un swing cu confirmed_idx < c. Un swing al cărui
-    extrem e la idx dar care se confirmă la idx+k NU poate declanșa o rupere
-    înainte de idx+k.
+    CASCADĂ (v2.7.38): la bara c, TOATE swing-urile ACTIVE depășite de close[c] produc câte o rupere LA c —
+    nu eșalonat. Se corectează DOI vectori de întârziere: (a) pointerii live_* cu slot unic evaluau doar cel
+    mai recent swing de fiecare tip; (b) if/elif-ul intra-direcție SUPRIMA un LH depășit când un HH rupea pe
+    aceeași bară — iar dacă close-ul cădea la bara următoare, ruperea suprimată se pierdea DEFINITIV. Corecția
+    livrează ce D7 specifica deja (fiecare swing distinct → exact o rupere); D2/D7 NESCHIMBATE — se schimbă
+    DOAR bara pe care e înregistrată. Consecință: BOS și CHoCH pot apărea pe ACEEAȘI bară, contra referințelor
+    DISTINCTE (nu dublă numărare).
 
-    D7 (semantică pentru detect_breaks, ratificată): fiecare swing confirmat produce MAXIMUM o rupere
-    validă. După prima rupere, referința e CONSUMATĂ (mulțime `consumed`, nivel de bazin) și NU poate fi
-    reactivată pe barele următoare — filtrare UPSTREAM, înainte de atribuirea live_* (NU anulare downstream).
-    O rupere nouă vine doar dintr-un swing DISTINCT (index diferit). F2 (breakout menținut → o rupere pe
-    fiecare bară) e prevenit de acest filtru upstream, verificat prin regresie (bare 10-14 peste ref → 1 BOS).
+    D1: doar swing-uri cu confirmed_idx < c (fără lookahead). D7/re-armare: filtru UPSTREAM `consumed`
+    (Mandat 5.2), fiecare idx consumat o dată. F3: precondiția de ordonare, fail-closed, la intrare.
 
-    F3: precondiția de ordonare e impusă la intrare (`_assert_ordering_precondition`), fail-closed.
+    ORDINE (v2.7.38): rupturile emise la bara c = DESCRESCĂTOR după `reference_swing.idx` (cel mai recent swing
+    depășit primul). idx unic per swing → ordine totală. Motiv: păstrează referința pe care codul vechi deja o
+    alegea în prima poziție (consumatorul `_first_break_after` cu `b.idx < best.idx` nu poate separa idx egale)
+    → schimbarea rămâne strict de TIMING, nu de referință.
     """
     _assert_ordering_precondition(swings)                       # F3 — fail-closed, înainte de orice procesare
 
@@ -278,50 +286,23 @@ def detect_breaks(
 
     for b_i, block in enumerate(blocks):
         block_swings = [s for s in swings if s.block_index == b_i]
-
-        # PATCH re-armare (Mandat 5.2, regulă ratificată de Statistician): un swing depășit
-        # de corp intră într-o mulțime de CONSUMATE (nivel de bazin). Bucla de activare îl
-        # SARE UPSTREAM, înainte de atribuirea live_*. NICIODATĂ anulare downstream — vechiul
-        # `live_* = None` de după rupere nu ținea, pentru că activarea îl reactiva din același
-        # swing la bara următoare.
-        consumed: set[int] = set()
-
-        live_hh: Swing | None = None
-        live_ll: Swing | None = None
-        live_hl: Swing | None = None
-        live_lh: Swing | None = None
+        consumed: set[int] = set()                              # nivel de bazin, per bloc (D3 reset)
 
         for c in range(block.start, block.end):
-            # Referințele active se recompun în fiecare bară din swing-urile NECONSUMATE,
-            # confirmate STRICT înainte de bara curentă (filtru upstream, înainte de atribuire).
-            live_hh = live_ll = live_hl = live_lh = None
+            px = close[c]
+            # TOATE swing-urile active (confirmate < c, neconsumate) depășite de close[c] — ambele direcții
+            hits: list[Swing] = []
             for s in block_swings:
                 if s.confirmed_idx >= c or s.idx in consumed:
                     continue
-                if s.label is StructureLabel.HH:
-                    live_hh = s
-                elif s.label is StructureLabel.LL:
-                    live_ll = s
-                elif s.label is StructureLabel.HL:
-                    live_hl = s
-                elif s.label is StructureLabel.LH:
-                    live_lh = s
-
-            px = close[c]
-
-            if live_hh is not None and px > live_hh.price:
-                out.append(_mk_break(c, BreakKind.BOS_BULL, live_hh, px, b_i))
-                consumed.add(live_hh.idx)
-            elif live_lh is not None and px > live_lh.price:
-                out.append(_mk_break(c, BreakKind.CHOCH_BULL, live_lh, px, b_i))
-                consumed.add(live_lh.idx)
-
-            if live_ll is not None and px < live_ll.price:
-                out.append(_mk_break(c, BreakKind.BOS_BEAR, live_ll, px, b_i))
-                consumed.add(live_ll.idx)
-            elif live_hl is not None and px < live_hl.price:
-                out.append(_mk_break(c, BreakKind.CHOCH_BEAR, live_hl, px, b_i))
-                consumed.add(live_hl.idx)
+                if (s.label is StructureLabel.HH or s.label is StructureLabel.LH) and px > s.price:
+                    hits.append(s)
+                elif (s.label is StructureLabel.LL or s.label is StructureLabel.HL) and px < s.price:
+                    hits.append(s)
+            hits.sort(key=lambda s: s.idx, reverse=True)        # DESCRESCĂTOR după idx (cel mai recent primul)
+            for s in hits:
+                out.append(_mk_break(c, _BREAK_KIND[s.label], s, px, b_i))
+                consumed.add(s.idx)                             # consumat în ACELAȘI pas, înainte de a avansa
 
     return out
 
