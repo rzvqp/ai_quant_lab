@@ -35,6 +35,7 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0008** | VOID-DISPLACEMENT | discontinuity_driven_displacement (Mod.5×market_state) | `POLICY_VOID_DISPLACEMENT_v1.md` | DEFINED (2-primitive interaction) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0009** | LEVEL-BREAK-DRIVE | level_break_with_displacement (MK-04×market_state via Mod.7) | `POLICY_LEVEL_BREAK_DRIVE_v1.md` | DEFINED (3-primitive interaction; break-direction, opposite CAND-0001) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0010** | FVG-STACK-DENSITY | imbalance_density (MK-03 zones via Mod.7) | `POLICY_FVG_STACK_DENSITY_v1.md` | DEFINED (2-primitive interaction; same-polarity stack) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
+| **CAND-0011** | OB-SWEEP-REJECTION | order_block_rejection (Mod.5, circularity-free) | `POLICY_OB_REJECTION_v1.md` | DEFINED (2-primitive; anti-E010 disjoint windows) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
@@ -45,12 +46,19 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `WAITING_FOR_NEW_PRIMITIVES` (2026, after CAND-0010)
+## STATE: `PRODUCING` — resumed after CEO ruling on `order_flow.py` (2026)
 
-The reasonable distinct-mechanism combinations of the **currently, unambiguously-usable** ratified
-primitives are covered (CAND-0001…0010). Further candidates from this set would be parametric variants /
-context filters (prohibited) or would require unratified constructs. **No weak or duplicate candidate is
-forced.** Discovery auto-resumes the moment a new ratified primitive (or a scope ruling below) lands.
+**CEO RULING (granted):** the order-block-family block covers the OLD circular candidates
+(E010/E013/E015/E016) ONLY — NOT the re-engineered `order_flow.py` primitives (`detect_mitigations`,
+`detect_rejections`, `detect_demand_zones`, `detect_order_blocks`/`track_breaker` as anchors), whose
+selection/measurement windows are disjoint by construction (E010 circularity impossible; Red Team
+confirmed MK-01 F1/F2 non-contaminating — only the inert `Block` dataclass is imported). **UNBLOCKED.**
+STILL BLOCKED: E010/E013/E015/E016 as hypotheses; `market_structure.py`, `liquidity_mechanics.py` (DRAFT).
+
+New families now in production: **order-block sweep-rejection (CAND-0011)**, demand-zone reaction,
+mitigation (circularity-free), + confluences with levels / FVG / void.
+
+The single-primitive space of the earlier ratified set (CAND-0001…0010) remains covered; no variants forced.
 
 **Unlocks that would immediately resume production** (each opens distinct mechanisms + their confluences):
 - ratified **void-reaction / void-fill** detector → completes CAND-0004 + void×level, void-fill confluences;
