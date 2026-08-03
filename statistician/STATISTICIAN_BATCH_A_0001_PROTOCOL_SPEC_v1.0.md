@@ -90,4 +90,4 @@ Cele patru rânduri (`CAND-0001/0002/0003/0007`) trec de la `SURVIVED_RED_TEAM_A
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.33 (commit `a13b01b`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
