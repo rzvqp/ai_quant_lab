@@ -38,6 +38,7 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0011** | OB-SWEEP-REJECTION | order_block_rejection (Mod.5, circularity-free) | `POLICY_OB_REJECTION_v1.md` | DEFINED (2-primitive; anti-E010 disjoint windows) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0012** | OBREJ-LEVEL-CONFLUENCE | rejection_at_level_confluence (Mod.5×MK-04 via Mod.7) | `POLICY_OBREJ_LEVEL_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0013** | DEMAND-ZONE-REENTRY | demand_supply_zone_reaction (Mod.5, non-consumable) | `POLICY_DEMAND_ZONE_v1.md` | DEFINED (2-primitive; full-bar non-consumable zone) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
+| **CAND-0014** | OB-MITIGATION | order_block_mitigation (Mod.5, circularity-free) | `POLICY_OB_MITIGATION_v1.md` | DEFINED (2-primitive; first mitigation, anti-E010 disjoint) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
