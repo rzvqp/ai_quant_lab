@@ -567,4 +567,41 @@
                row annotated. Nothing outside red_team/ except the queue status annotation on alpha-automation-v1.
                STATE: OPERATIONAL. Next entry [20], prev_hash E19.
   entry_hash:  E19
+
+[20] 2026-07-25
+  prev_hash:   E19
+  event:       VERDICT               # OPERATIONAL MODE — second FIFO batch (Part A)
+  reviewer:    Red Team
+  detail:      Batch RT-OPS-A-0002 (policy_reviews/RT-OPS-A-0002_batch.md). Part A of CAND-0008
+               (VOID-DISPLACEMENT), CAND-0009 (LEVEL-BREAK-DRIVE), CAND-0010 (FVG-STACK-DENSITY),
+               policies @ 32236fd on alpha-automation-v1. Part B UNSPECIFIED for all three — not attacked.
+               No data run; policies not modified; no remedy.
+               W10 HASHES recomputed, all MATCH: order_block_void 6ec7adbf (new); institutional_levels
+               c284fa2c, market_state 823cf66a, imbalance_mechanics 45f8937e, interactions dafb4804
+               (re-confirmed). MK-01/MK-02 CONTAMINATION CHECK (imports read at 8edbf99): order_block_void,
+               market_state, interactions import neither; imbalance_mechanics + institutional_levels import
+               ONLY the inert Block dataclass, not the F1/F2-defective detect_swings/detect_breaks. None of
+               the three inherits F1/F2. New primitives verified causal: detect_liquidity_voids (void on
+               c→c+1, known at c+1), price_in_any_zone (element-wise, no future).
+               VERDICTS (3/3 SURVIVED_RED_TEAM_A, 0 REJECTED):
+                 CAND-0008 — clean; distinct from CAND-0004 (void alone, untestable) and CAND-0002.
+                   (Note: void size term is a fixed $1.20 ratified constant — standing characteristic.)
+                 CAND-0009 — distinct (break-continuation, opposite thesis to CAND-0001) but ONE-SIDED
+                   boundary: it overlaps CAND-0001 on displacement-touch bars and takes the OPPOSITE side
+                   there; CAND-0009 excludes reversals but CAND-0001 does NOT exclude breaks. Carry
+                   W-partition (Statistician decide mutual exclusion) + W-dir-mask (confluence expression
+                   should be direction-aligned; prose is clear, expression under-specifies).
+                 CAND-0010 — distinct (same-polarity FVG density) but a strict SUBSET of CAND-0003 (every
+                   trigger is a CAND-0003 CE-50 reaction + density). Carry W-incr (test density's
+                   incremental value vs single-FVG CAND-0003, same pattern as CAND-0007).
+               All carried items are Statistician-stage controls, not phase-A rejections.
+               Lookahead/circularity/falsifiability/logic PASS for all three (verified in code).
+               Queue: state cells for CAND-0008/0009/0010 set to SURVIVED_RED_TEAM_A.
+               NOTE (surfaced, not processed): the queue has since added CAND-0011/0012/0013, marked
+               queued→Red Team (A) — a NEW batch, not in this turn's handed set (0008/0009/0010). Flagged
+               for the next FIFO tick; not processed here (not handed, policies not yet read).
+               Also observed: Statistician bound the RT-OPS-B-0001 S1/S2/S3 safety gate as executable
+               preconditions (STAT-CAND0001-DEMO-CRITERIA-v1.0) — the Part-B condition was carried verbatim.
+               STATE: OPERATIONAL, handed batch done. Next entry [21], prev_hash E20.
+  entry_hash:  E20
 ```
