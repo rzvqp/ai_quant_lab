@@ -2,3 +2,7 @@
 	path = vendor/alpha_automation_detectors
 	url = https://github.com/rzvqp/ai_quant_lab-alpha-automation.git
 	branch = discovery-mk-matrix-v1
+[submodule "vendor/alpha_automation_demo_gate"]
+	path = vendor/alpha_automation_demo_gate
+	url = https://github.com/rzvqp/ai_quant_lab-alpha-automation.git
+	branch = alpha-automation-v1
