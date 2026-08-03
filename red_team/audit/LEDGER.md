@@ -676,4 +676,43 @@
                W-incr; multiple-testing family; doc fix for the stale block header).
                STATE: OPERATIONAL. Next entry [23], prev_hash E22.
   entry_hash:  E22
+
+[23] 2026-07-25
+  prev_hash:   E22
+  event:       VERDICT               # re-attack of the F2/F3 remediation (ratification stage 3, repeated)
+  reviewer:    Red Team
+  detail:      CEO tasked a re-attack of the F2/F3 remediation of market_structure.py @ f4f8fab (vs the
+               attacked 8edbf99). Do not reopen D2/D7; liquidity_mechanics untouched. Deliverable:
+               policy_reviews/RT-CODE-A-0002_MK01_F2F3_remediation.md. No data run; verification = diff +
+               remediated functions + regression tests read.
+               WHAT CHANGED: F2 = NO code change (consumption loop byte-identical; only a docstring
+               ratifying "each distinct swing → one break"; a re-verification, not a repair). F3 = real,
+               well-scoped: _assert_ordering_precondition added to the top of BOTH label_structure and
+               detect_breaks (my RT-CODE-A-0001 F3 extension, implemented), fail-closed on 4 invariants.
+               VERDICT: the remediation SURVIVES. F2 re-arm verified correct (test_c1_c7: bars 10-14 over
+               ref idx=7 → 1 BOS; test_c2 consumed-not-reactivated; test_c4 bull/bear symmetric) — docstring-
+               only so no regression risk. F3 extension correctly implemented + tested on both consumers.
+               NO new code defect introduced.
+               TWO FINDINGS (neither blocks ratification):
+                 (1) F3 OVER-STRICT (answers CEO's question — YES it can reject legitimate inputs): the
+                     precondition enforces GLOBAL idx-ordering, but both consumers only USE per-block order
+                     (they segregate by block_index). A per-block-sorted but globally-interleaved list
+                     (detect_swings called with blocks out of start-order, or concatenated outputs) is
+                     rejected with ValueError though it would process correctly. LOW severity (canonical
+                     pipeline never trips it; fail-closed = safe), untested (all F3 tests single-block).
+                 (2) NEW — cascade break MIS-TIMING (within ratified count-semantics, NOT reopening D7): the
+                     one-break-per-bar loop records older stacked swings' breaks 1..N-1 bars LATE (HH_a=100
+                     exceeded at bar c but its break recorded at c+1 after HH_b=110 consumes bar c). Count is
+                     ratified; TIMING is an unratified consequence. Reachable; downstream break-timing users
+                     affected. Untested — no test sustains a close above ≥2 stacked same-label swings
+                     (test_c3 separates its breaks in time, never exercising the cascade).
+               COVERAGE: suite solidly covers re-arm + F3 core; gaps = sustained cascade (existence+timing)
+               and the per-block-vs-global precondition edge; F4 (simultaneous opposite CHoCH, RT-CODE-A-0001)
+               remains OPEN but OUT OF SCOPE for this remediation.
+               HANDOFF: CEO for final MK-01/MK-02 ratification. Before ratifying, decide (a) is cascade break
+               TIMING acceptable (D7 settled count, not timing); (b) is the GLOBAL precondition scope intended
+               or should it match the consumers' PER-BLOCK requirement. Red Team designs no fix; reopens
+               neither D2 nor D7; liquidity_mechanics not re-attacked. Nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [24], prev_hash E23.
+  entry_hash:  E23
 ```
