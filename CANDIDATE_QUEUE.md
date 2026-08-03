@@ -42,6 +42,7 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0015** | OBREJ-FVG-CONFLUENCE | rejection_imbalance_confluence (Mod.5×MK-03 via Mod.7) | `POLICY_OBREJ_FVG_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction; rejection×FVG pair) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0016** | MITIG-LEVEL-CONFLUENCE | mitigation_at_level_confluence (Mod.5×MK-04 via Mod.7) | `POLICY_MITIG_LEVEL_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction; mitigation×level pair) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0017** | DZ-FVG-CONFLUENCE | zone_imbalance_confluence (Mod.5×MK-03 via Mod.7) | `POLICY_DZ_FVG_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction; demand-zone×FVG pair) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
+| **CAND-0018** | OBREJ-VOID-CONFLUENCE | rejection_at_discontinuity_confluence (Mod.5×Mod.5 via Mod.7) | `POLICY_OBREJ_VOID_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction; rejection×void pair) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
