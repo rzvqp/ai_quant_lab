@@ -27,5 +27,6 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 |---|---|---|---|---|---|---|---|
 | **CAND-0001** | PDH-PDL | institutional_reference_levels (MK-04) | `POLICY_PDH_PDL_v1.md` | DEFINED | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0002** | COMPRESSION-EXPANSION-BREAKOUT | volatility_state_transition (market_state) | `POLICY_COMPRESSION_EXPANSION_v1.md` | DEFINED (with disclosed compression-anchoring risk) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
+| **CAND-0003** | FVG-CE50-REACTION | imbalance_reaction (MK-03) | `POLICY_FVG_REACTION_v1.md` | DEFINED | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 
 Producing continuously; next candidate appended when ready.
