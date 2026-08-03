@@ -77,17 +77,22 @@ class RegimeData:
                  tm: list[int], atr: np.ndarray, day: np.ndarray, eod: np.ndarray, year: np.ndarray, n: int) -> None:
         self.label = label; self.o = o; self.h = h; self.l = l; self.c = c; self.tm = tm
         self.atr = atr; self.day = day; self.eod = eod; self.year = year; self.n = n
+        self.horizon_override: int | None = None     # v3: dacă e setat, time-stop = min(entry+H, n-1)
 
     def sig(self, entry_idx: int, direction: int, stop_price: float, target_price: float,
             block_horizon: bool = False) -> DemoSignal | None:
-        """block_horizon=True → time-stop pe granița de BLOC (n-1), conform contractelor cu horizon de bloc
-        (CAND-0003); implicit = time-stop de ZI (`eod`), pt. politicile cu horizon zilnic (CAND-0001/0007)."""
+        """time-stop: `horizon_override` (v3, fixed bar-count) > block (n-1) > zi (`eod`)."""
         if entry_idx >= self.n:
             return None
         a = float(self.atr[entry_idx - 1]) if entry_idx - 1 >= 0 else float("nan")
         if not np.isfinite(a) or a <= 0:
             return None
-        dend = self.n - 1 if block_horizon else int(self.eod[entry_idx])
+        if self.horizon_override is not None:
+            dend = min(entry_idx + self.horizon_override, self.n - 1)
+        elif block_horizon:
+            dend = self.n - 1
+        else:
+            dend = int(self.eod[entry_idx])
         return DemoSignal(entry_idx=entry_idx, direction=direction, strategy_stop_price=stop_price,
                           target_price=target_price, atr=a, effective_spread=EFF_SPREAD, cost=COST,
                           day_end_idx=dend)
@@ -537,8 +542,13 @@ def _metrics(rows: list[tuple[int, str, DemoTradeResult]]) -> dict[str, Any]:
     n_invalid = sum(1 for (_y, _reg, r) in rows if r.exit_reason == ExitReason.INVALID_EXECUTION.value)
     n_notrade = sum(1 for (_y, _reg, r) in rows if r.exit_reason == ExitReason.NO_TRADE.value)
     n = len(valid)
+    n_stop = sum(1 for r in valid if r.exit_reason == ExitReason.STOP.value)
+    n_target = sum(1 for r in valid if r.exit_reason == ExitReason.TARGET.value)
+    n_time = sum(1 for r in valid if r.exit_reason == ExitReason.TIME_STOP.value)
     base: dict[str, Any] = {"n_trades": n, "n_invalid": n_invalid, "n_no_trade": n_notrade,
-                            "invalid_fraction": round(n_invalid / (n + n_invalid), 4) if (n + n_invalid) else None}
+                            "invalid_fraction": round(n_invalid / (n + n_invalid), 4) if (n + n_invalid) else None,
+                            "exit_stop": n_stop, "exit_target": n_target, "exit_time_stop": n_time,
+                            "frac_time_stop": round(n_time / n, 4) if n else None}
     if n == 0:
         return base
     nr = np.array([r.net_R for (_y, _reg, r) in rows if r in valid], dtype=float)
@@ -587,30 +597,33 @@ def _metrics(rows: list[tuple[int, str, DemoTradeResult]]) -> dict[str, Any]:
     return base
 
 
-def main() -> int:
+def load_regimes() -> list[RegimeData]:
     dfm, _ = load("M15_v2", data_split_id=PRE_HOLDOUT_SPLIT_ID, cutoff=RESEARCH_HOLDOUT_CUTOFF_UTC)
-    print(f"loader v6 | M15={len(dfm)} | costuri MODELATE spread={EFF_SPREAD} cost={COST} tick={TICK_SIZE} | N_MIN={N_MIN}")
     if len(dfm) != 130_491:
-        print(f"STOP: M15 {len(dfm)}."); return 2
+        raise SystemExit(f"STOP: M15 {len(dfm)}.")
     dfm = dfm.sort_values("time").reset_index(drop=True)
     t_all = dfm["time"].to_numpy()
     manifest = SM.load_manifest()
     segs = [s for s in manifest["timeframes"]["M15_v2"]["regime_segments"] if "discovery_range" in s]
-
     regimes: list[RegimeData] = []
     for i, seg in enumerate(segs):
         rlabel = REGIMES[i]
         s_ep, e_ep = seg["discovery_range"]["start_epoch"], seg["discovery_range"]["end_epoch"]
         sub = dfm[(t_all >= s_ep) & (t_all < e_ep)].reset_index(drop=True)
         if EXPECTED_BARS.get(rlabel) not in (None, len(sub)):
-            print(f"STOP: {rlabel} {len(sub)} bare."); return 3
+            raise SystemExit(f"STOP: {rlabel} {len(sub)} bare.")
         n = len(sub)
         day = _day_index(sub["time"])
         regimes.append(RegimeData(
             rlabel, sub["open"].tolist(), sub["high"].tolist(), sub["low"].tolist(), sub["close"].tolist(),
             [int(x) for x in sub["time"].tolist()], sub["atr14"].to_numpy(), day, _eod_per_bar(day, n),
             pd.to_datetime(sub["time"], unit="s", utc=True).dt.year.to_numpy(), n))
+    return regimes
 
+
+def main() -> int:
+    print(f"loader v6 | costuri MODELATE spread={EFF_SPREAD} cost={COST} tick={TICK_SIZE} | N_MIN={N_MIN}")
+    regimes = load_regimes()
     out: dict[str, Any] = {"note": "descriptive triage; NOT validation; no p-value; costs modeled",
                            "costs": {"effective_spread": EFF_SPREAD, "cost": COST, "tick_size": TICK_SIZE},
                            "candidates": {}}
