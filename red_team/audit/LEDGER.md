@@ -604,4 +604,40 @@
                preconditions (STAT-CAND0001-DEMO-CRITERIA-v1.0) — the Part-B condition was carried verbatim.
                STATE: OPERATIONAL, handed batch done. Next entry [21], prev_hash E20.
   entry_hash:  E20
+
+[21] 2026-07-25
+  prev_hash:   E20
+  event:       VERDICT               # OPERATIONAL — Phase B batch (CAND-0002/0003/0007)
+  reviewer:    Red Team
+  detail:      Batch RT-OPS-B-0002 (policy_reviews/RT-OPS-B-0002_batch.md). Part B only, policies @ de31dcc.
+               Part A not re-attacked. Same targets as RT-OPS-B-0001. No data run; policies not modified;
+               no risk method proposed.
+               ALL THREE: lookahead PASS (all Part-B coords known at entry; event-exits observed strictly
+               forward), circularity PASS (stop anchored on trigger bar but measurement runs entry+1 forward
+               — disjoint), hidden-optimization PASS (zero tunable numeric parameters; CAND-0003 R:R≈1 is a
+               midpoint-geometry consequence, not chosen). S1 (intrabar "first of" order) unspecified in all
+               three — severity differs.
+               PER CANDIDATE:
+                 CAND-0002 (stop=opposite extreme of expansion bar; exit=first opposing expansion) —
+                   SURVIVED_RED_TEAM_A conditional. CEO Q "can the opposing expansion be absent?": YES →
+                   fallback is the BLOCK boundary → Finding H: trade can hold to block-end (weeks); much
+                   longer horizon than CAND-0001/0007's day time-stop; DEMO must weigh margin/gap exposure.
+                   S2 IMMUNE (expansion bar guarantees a wide stop). S1 mild (stop precedes next-open exit).
+                 CAND-0003 (stop=FVG far edge/Q4; target=FVG near edge) — SURVIVED_RED_TEAM_A conditional,
+                   TIGHTEST GATE. CEO Q "can the distance be arbitrarily small?": YES — stop = ce_50 − lower
+                   = FVG_height/2, arbitrarily small for small FVGs → S2 LIVE and ROUTINE (unbounded 1R).
+                   S1 ACUTE — stop and target are the two edges of one (small) FVG, one bar routinely spans
+                   both. If the floor + worst-case cannot be enforced, CAND-0003 must NOT trade.
+                 CAND-0007 (stop=min/max below BOTH structures; exit=opposite day level + day time-stop) —
+                   SURVIVED_RED_TEAM_A conditional. CEO Q "wider stop vs min_executable_risk floor?": the
+                   deeper-of-two stop is WIDER → rarely hits the floor → PROTECTIVE vs S2 (opposite of
+                   CAND-0003). Flip side (risk-quality, not safety): a very wide stop can give R:R<1 vs the
+                   opposite-level target. S1 rare (needs a bar spanning the daily range).
+               3/3 SURVIVED_RED_TEAM_A (conditional), 0 REJECTED. Every safety item is governed by the
+               EXISTING DEMO convention already bound for CAND-0001 (STAT-CAND0001-DEMO-CRITERIA-v1.0:
+               worst-case hierarchy + min_executable_risk floor). Handoff: Statistician DEMO criteria, apply
+               the same gate with per-candidate emphasis (0002 block-horizon rule; 0003 floor is routine →
+               if unenforceable don't trade; 0007 R:R<1 note). Queue Part-B cells annotated.
+               STATE: OPERATIONAL. Next entry [22], prev_hash E21.
+  entry_hash:  E21
 ```
