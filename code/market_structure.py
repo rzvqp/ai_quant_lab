@@ -210,6 +210,38 @@ def _relabel(s: Swing, label: StructureLabel) -> Swing:
     )
 
 
+def _assert_ordering_precondition(swings: Sequence[Swing]) -> None:
+    """F3 — precondiție de ORDONARE, fail-closed, impusă MECANIC (Mandat remediere F2/F3).
+
+    Bucla de activare din `detect_breaks` selectează referința live ca ULTIMUL swing de o etichetă
+    dată în ordinea listei — deci ordinea de intrare NU e igienă, ci CORECTITUDINE. Presupunerea
+    (semnalată la ratificarea etapei 2 ca risc latent) e acum DECLARATĂ și IMPUSĂ. Violarea ridică
+    `ValueError` — NU produce tăcut rezultate greșite. Verifică toate patru:
+      • ordine temporală   — `idx` strict crescător în ordinea listei
+      • identificatori unici — `idx` unic (implicat de strict crescător; mesaj explicit)
+      • confirmed_idx monoton — non-descrescător
+      • nicio confirmare înainte de extrem — `confirmed_idx >= idx` (partea de runtime — activarea DOAR
+        când `confirmed_idx < c` — rămâne impusă în buclă, D1).
+    `detect_swings` produce mereu această ordine (per-bloc, blocuri în ordine de index), deci pipeline-ul
+    real nu declanșează niciodată excepția; doar intrări construite manual, incoerente, o fac.
+    """
+    prev: Swing | None = None
+    for s in swings:
+        if s.confirmed_idx < s.idx:
+            raise ValueError(
+                f"F3: confirmed_idx ({s.confirmed_idx}) < idx ({s.idx}) — confirmare înainte de extrem.")
+        if prev is not None:
+            if s.idx == prev.idx:
+                raise ValueError(f"F3: idx duplicat ({s.idx}) — identificatori neunici.")
+            if s.idx < prev.idx:
+                raise ValueError(
+                    f"F3: idx neordonat ({s.idx} după {prev.idx}) — ordine temporală încălcată.")
+            if s.confirmed_idx < prev.confirmed_idx:
+                raise ValueError(
+                    f"F3: confirmed_idx nemonoton ({s.confirmed_idx} după {prev.confirmed_idx}).")
+        prev = s
+
+
 def detect_breaks(
     close: Sequence[float],
     swings: Sequence[Swing],
@@ -226,8 +258,16 @@ def detect_breaks(
     extrem e la idx dar care se confirmă la idx+k NU poate declanșa o rupere
     înainte de idx+k.
 
-    Un swing e consumat de prima rupere care îl depășește; nu se refolosește.
+    D7 (semantică pentru detect_breaks, ratificată): fiecare swing confirmat produce MAXIMUM o rupere
+    validă. După prima rupere, referința e CONSUMATĂ (mulțime `consumed`, nivel de bazin) și NU poate fi
+    reactivată pe barele următoare — filtrare UPSTREAM, înainte de atribuirea live_* (NU anulare downstream).
+    O rupere nouă vine doar dintr-un swing DISTINCT (index diferit). F2 (breakout menținut → o rupere pe
+    fiecare bară) e prevenit de acest filtru upstream, verificat prin regresie (bare 10-14 peste ref → 1 BOS).
+
+    F3: precondiția de ordonare e impusă la intrare (`_assert_ordering_precondition`), fail-closed.
     """
+    _assert_ordering_precondition(swings)                       # F3 — fail-closed, înainte de orice procesare
+
     out: list[StructureBreak] = []
 
     for b_i, block in enumerate(blocks):
