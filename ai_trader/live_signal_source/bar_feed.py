@@ -30,6 +30,7 @@ new gap).
 
 from __future__ import annotations
 
+import numbers
 import time
 from typing import Callable
 
@@ -43,24 +44,40 @@ def _default_clock() -> int:
     return int(time.time())
 
 
-def _read_field(rate: object, name: str) -> object | None:
+def _read_field(rate: object, name: str) -> int | float | None:
     """MT5's real `copy_rates_from`/`copy_rates_range` return a numpy STRUCTURED ARRAY -- each row's
     fields are reached via `rate[name]` (item access), NOT `rate.name` (attribute access) -- unlike every
-    other MetaTrader5 call this codebase reads (`symbol_info_tick`, `account_info`, etc., all namedtuples
+    other MT5 terminal call this codebase reads (`symbol_info_tick`, `account_info`, etc., all namedtuples
     supporting attribute access). Discovered against the real terminal (2026-07-30): `getattr`-only field
     reads silently returned `None` for every OHLC field, since a numpy structured scalar has no such
     attributes, which `poll()` correctly treated as a genuine gateway failure -- but the real cause was
     this file never having been exercised against the real return shape before, only against fake
     fixtures built as attribute-accessible dataclasses. Tries attribute access first (so every existing
     namedtuple-shaped fake keeps working unchanged), then item access (the real shape) -- duck-typed, so
-    this file never needs to import numpy directly."""
-    value = getattr(rate, name, None)
-    if value is not None:
-        return value
-    try:
-        return rate[name]  # type: ignore[index]
-    except (TypeError, IndexError, KeyError):
-        return None
+    this file never needs to import numpy directly.
+
+    Return type narrowed to `int | float | None` (not the raw `object | None` a fully generic reader
+    would have) -- every field this is ever called with (`time`/`open`/`high`/`low`/`close`/
+    `tick_volume`) is numeric by construction on both the real numpy shape and every fake used in
+    tests; validated with a `numbers.Real` check (NOT a plain `isinstance(value, (int, float))` --
+    confirmed by direct check that `numpy.int64` is NOT a Python `int` instance, though it IS
+    registered as a `numbers.Integral`/`numbers.Real` virtual subclass, as `numpy.float64` already is
+    via genuine inheritance from `float`) so a genuinely malformed value (a string, an object) is
+    treated as absent -- fail-closed -- not silently miscoerced, while every real numpy scalar type
+    this file actually receives is still accepted."""
+    value: object = getattr(rate, name, None)
+    if value is None:
+        try:
+            value = rate[name]  # type: ignore[index]
+        except (TypeError, IndexError, KeyError, ValueError):
+            # ValueError: numpy's own error for an unknown structured-array field name (confirmed
+            # directly -- distinct from the TypeError a non-subscriptable fake raises, and from the
+            # IndexError/KeyError a list/dict-shaped fake would raise for a bad key).
+            return None
+    if isinstance(value, numbers.Real):
+        return value  # type: ignore[return-value]  # numbers.Real is not statically int|float, but every
+        # concrete member this file ever sees (int, float, numpy.int64, numpy.float64) genuinely is
+    return None
 
 
 class LiveBarFeed:
