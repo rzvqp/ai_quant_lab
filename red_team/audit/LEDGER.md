@@ -453,4 +453,47 @@
                Nothing written outside red_team/.
                STATE: awaiting CEO/Statistician routing. Next entry [17], prev_hash E16.
   entry_hash:  E16
+
+[17] 2026-07-25
+  prev_hash:   E16
+  event:       VERDICT               # code attack, ratification stage 3/4
+  reviewer:    Red Team
+  detail:      CEO tasked ratification stage 3/4: attack ambiguity/circularity/lookahead in MK-01
+               (code/market_structure.py) + MK-02 (code/liquidity_mechanics.py), commit 8edbf99 on
+               discovery-mk-matrix-v1. Prior: Stage 1 Statistician 7/7 FIDEL (e642c1c); Stage 2 VE 12/12,
+               mypy clean, zero executability/leakage (d586903). Deliverable:
+               policy_reviews/RT-CODE-A-0001_MK01_MK02.md. No data run; modules not modified; no ratified
+               decision rewritten; verification = reading the frozen code only.
+               PASS: lookahead (D1) clean everywhere (confirmed_idx/available_idx discipline correct);
+               D6 sweep clean (completed-bar, path-agnostic, forward-free); D3 loss positional & neutral;
+               circularity none in-module (measurement window is downstream).
+               FINDINGS:
+                 F1 (W11) — D2 equality rejection is SELECTIVE, not neutral (answers the CEO's question):
+                   strict-both-sides discards plateaus/equal-highs = exactly the equal-extreme liquidity
+                   structures MK-02 exists to model (build_pools can never emit an equal-high pool). Bias is
+                   regime-dependent (worst at low ATR / 2-decimal gold, the 24.8/42.9/59.7% figures), i.e.
+                   confounded with the phenomenon under study. Code correct+lookahead-safe; ratification
+                   cost understated. Not a bug; a standing interpretive condition on all output.
+                 F2 (W12) — CONSUMPTION CASCADE, strongest finding: in detect_breaks, consuming the live
+                   same-label reference re-exposes an OLDER superseded same-label swing, which emits a
+                   SPURIOUS break on a later bar (reachable with 2 ascending HHs: break 100.5 then a second
+                   BOS vs 100). Over-counts breaks in trends/breakouts. NOT lookahead / leakage / crash, and
+                   literal D7 ("consumed by the first break that exceeds it") is satisfied — so stages 1-2
+                   pass it by construction; needs a semantic test. It is a D7 AMBIGUITY (is a superseded
+                   same-label swing still a live reference? code says yes; correct answer no) resolved the
+                   over-counting way. Red Team flags this directly as fatal-for-correctness for detect_breaks;
+                   ratification should not proceed on it until the reading is decided. No fix designed.
+                 F3 — undeclared/unenforced idx-ordering precondition (VE-flagged; confirmed + EXTENDED to
+                   label_structure, not just detect_breaks). Violation = silent wrong labels/breaks, no
+                   exception. Canonical pipeline safe; any re-sorted/merged/hand-built list corrupts output.
+                 F4 — minor: simultaneous opposite CHoCH on one bar when live_lh.price < close < live_hl.price
+                   (crossed structure near a triangle apex).
+                 D7 pool consumption — blocks legitimate RE-sweeps of the same level (one-shot); scope
+                   limitation, compounds F1.
+               HANDOFF: CEO for final ratification. Red Team does not ratify. Recommend: decide F2's reading
+               before ratifying detect_breaks; record F1 + D7 as standing interpretive conditions on all
+               MK-01/MK-02 output; declare+assert the F3 precondition; no action on lookahead/circularity/
+               D3/D6. Integrity register: W11 (F1), W12 (F2). Nothing outside red_team/.
+               STATE: awaiting CEO ratification decision. Next entry [18], prev_hash E17.
+  entry_hash:  E17
 ```
