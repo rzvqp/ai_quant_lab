@@ -34,6 +34,7 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0007** | LEVEL-FVG-CONFLUENCE | multi_structure_confluence (MK-04×MK-03 via Mod.7) | `POLICY_LEVEL_FVG_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0008** | VOID-DISPLACEMENT | discontinuity_driven_displacement (Mod.5×market_state) | `POLICY_VOID_DISPLACEMENT_v1.md` | DEFINED (2-primitive interaction) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0009** | LEVEL-BREAK-DRIVE | level_break_with_displacement (MK-04×market_state via Mod.7) | `POLICY_LEVEL_BREAK_DRIVE_v1.md` | DEFINED (3-primitive interaction; break-direction, opposite CAND-0001) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
+| **CAND-0010** | FVG-STACK-DENSITY | imbalance_density (MK-03 zones via Mod.7) | `POLICY_FVG_STACK_DENSITY_v1.md` | DEFINED (2-primitive interaction; same-polarity stack) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
