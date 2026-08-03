@@ -1,3 +1,5 @@
+> **SUPERSEDED by POLICY_COMPRESSION_EXPANSION_v3.md** — the v2 exit's third term was a discovery-only 'block boundary' that never fires on a live forward account. Kept for the record; do not use.
+
 # POLICY — Compression-to-Expansion Breakout — canonical schema — **v2.0 (Part B completed)**
 
 # 🟠 DEMO_BASELINE · NOT STATISTICALLY VALIDATED · NOT PRODUCTION APPROVED

@@ -1,3 +1,5 @@
+> **SUPERSEDED by POLICY_DEMAND_ZONE_v3.md** — the v2 exit's third term was a discovery-only 'block boundary' that never fires on a live forward account. Kept for the record; do not use.
+
 # POLICY — Demand/Supply-Zone Re-entry Reaction — **v2.0 (Part B completed, screening)**
 
 # 🟡 SCREENING_BASELINE · NOT STATISTICALLY VALIDATED · NOT PRODUCTION APPROVED

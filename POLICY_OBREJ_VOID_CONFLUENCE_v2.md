@@ -1,3 +1,5 @@
+> **SUPERSEDED by POLICY_OBREJ_VOID_CONFLUENCE_v3.md** — the v2 exit's third term was a discovery-only 'block boundary' that never fires on a live forward account. Kept for the record; do not use.
+
 # POLICY — OB Sweep-Rejection × Liquidity-Void Confluence — **v2.0 (Part B completed, screening)**
 
 # 🟡 SCREENING_BASELINE · NOT STATISTICALLY VALIDATED · NOT PRODUCTION APPROVED

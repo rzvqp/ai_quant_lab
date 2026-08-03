@@ -1,3 +1,5 @@
+> **SUPERSEDED by POLICY_OB_MITIGATION_v3.md** — the v2 exit's third term was a discovery-only 'block boundary' that never fires on a live forward account. Kept for the record; do not use.
+
 # POLICY — Order-Block Mitigation Reaction — **v2.0 (Part B completed, screening)**
 
 # 🟡 SCREENING_BASELINE · NOT STATISTICALLY VALIDATED · NOT PRODUCTION APPROVED
