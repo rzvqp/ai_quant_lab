@@ -40,6 +40,7 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0013** | DEMAND-ZONE-REENTRY | demand_supply_zone_reaction (Mod.5, non-consumable) | `POLICY_DEMAND_ZONE_v1.md` | DEFINED (2-primitive; full-bar non-consumable zone) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0014** | OB-MITIGATION | order_block_mitigation (Mod.5, circularity-free) | `POLICY_OB_MITIGATION_v1.md` | DEFINED (2-primitive; first mitigation, anti-E010 disjoint) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0015** | OBREJ-FVG-CONFLUENCE | rejection_imbalance_confluence (Mod.5×MK-03 via Mod.7) | `POLICY_OBREJ_FVG_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction; rejection×FVG pair) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
+| **CAND-0016** | MITIG-LEVEL-CONFLUENCE | mitigation_at_level_confluence (Mod.5×MK-04 via Mod.7) | `POLICY_MITIG_LEVEL_CONFLUENCE_v1.md` | DEFINED (3-primitive interaction; mitigation×level pair) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
