@@ -91,6 +91,22 @@ class PdhPdlRecognitionRule:
     def last_trigger(self) -> PdhPdlTrigger | None:
         return self._last_trigger
 
+    @property
+    def current_bar_count(self) -> int:
+        """The number of bars processed so far -- the SAME index space `PdhPdlTrigger.touch_idx`/
+        `.entry_idx` and `PendingPdhPdlTrade.entry_idx`/`.day_end_idx` refer to. The orchestration
+        layer's own per-bar bookkeeping (`PdhPdlOrchestrator.observe_bar`) must stay synchronized to
+        this exact count -- both this rule and the orchestrator index into the SAME conceptual bar
+        sequence, one bar behind (this count) or in front (an index already recorded)."""
+        return len(self._closes)
+
+    @property
+    def current_arrays(self) -> tuple[list[float], list[float], list[float], list[float]]:
+        """`(open, high, low, close)` -- the full accumulated arrays, for `PdhPdlOrchestrator.run_post_hoc_audit`,
+        which needs the complete day's bars to call the frozen engine. Returns the LIVE lists
+        themselves (not copies) -- read-only usage expected; the caller must not mutate them."""
+        return self._opens, self._highs, self._lows, self._closes
+
     def _no_trade(self, as_of: int, reason_code: str, **extra: object) -> None:
         self._audit.record(PdhPdlAuditEntry(
             symbol=self._symbol, as_of=as_of, kind=PdhPdlAuditKind.NO_TRADE,

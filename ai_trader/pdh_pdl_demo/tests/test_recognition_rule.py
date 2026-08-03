@@ -152,6 +152,31 @@ def test_entry_beyond_target_at_live_quote_is_no_trade() -> None:
     assert "NO_TRADE_ENTRY_BEYOND_TARGET" in reasons
 
 
+def test_current_bar_count_and_current_arrays_track_the_shared_bar_index_space() -> None:
+    """`PdhPdlOrchestrator.observe_bar`/`run_post_hoc_audit` (entrypoint.py) must index into the SAME
+    bar sequence this rule maintains internally -- these two accessors are that seam."""
+    pdh, pdl = 110.0, 90.0
+    day0 = _day0_warmup_bars(pdh, pdl, n=16)
+    day1_bar0 = _bar(DAY1_START, 100.0, 100.5, 99.5, 100.0)
+
+    journal = PdhPdlAuditJournal()
+    rule = PdhPdlRecognitionRule(SYMBOL, TICK_SIZE, _FakeTickReader(None), journal)
+
+    assert rule.current_bar_count == 0
+    rule.evaluate(day0[0])
+    assert rule.current_bar_count == 1
+    _feed(rule, day0[1:])
+    rule.evaluate(day1_bar0)
+    assert rule.current_bar_count == len(day0) + 1
+
+    open_, high, low, close = rule.current_arrays
+    assert len(open_) == len(high) == len(low) == len(close) == rule.current_bar_count
+    assert close[-1] == day1_bar0.close
+    assert high[-1] == day1_bar0.high
+    assert low[-1] == day1_bar0.low
+    assert open_[-1] == day1_bar0.open
+
+
 def test_atr_not_yet_available_is_no_trade() -> None:
     """Fewer than 15 bars fed -- ATR14 is NaN at the touch bar (vendored function's own documented
     warmup) -- must not silently proceed with an undefined risk floor."""
