@@ -50,4 +50,4 @@ Fiecare document se publică, se predă către VE, Candidate Queue se actualizea
 
 ---
 
-**Publicat pe `statistician-foundation`. Niciun protocol de definit azi — coada nu conține încă niciun candidat eligibil.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.32 (commit `41121d9`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente). Niciun protocol de definit azi — coada nu conține încă niciun candidat eligibil.**
