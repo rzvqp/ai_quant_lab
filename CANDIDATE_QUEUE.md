@@ -29,5 +29,13 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0002** | COMPRESSION-EXPANSION-BREAKOUT | volatility_state_transition (market_state) | `POLICY_COMPRESSION_EXPANSION_v1.md` | DEFINED (with disclosed compression-anchoring risk) | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0003** | FVG-CE50-REACTION | imbalance_reaction (MK-03) | `POLICY_FVG_REACTION_v1.md` | DEFINED | UNSPECIFIED | PARTIALLY DEFINED | queued → Red Team (A); risk → Statistician |
 | **CAND-0004** | LIQUIDITY-VOID | price_discontinuity_void (Mod.5) | `POLICY_LIQUIDITY_VOID_v1.md` | activation DEFINED; trigger FAIL-CLOSED | UNSPECIFIED (moot) | NOT CURRENTLY TESTABLE | spec request → Statistician (ratify a void-reaction detector) |
+| **CAND-0005** | BPR | balanced_price_range (MK-03) | `POLICY_BPR_v1.md` | activation DEFINED; trigger FAIL-CLOSED | UNSPECIFIED (moot) | NOT CURRENTLY TESTABLE | spec request → Statistician (ratify a BPR-reaction detector) |
+
+**Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
+objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
+(`detect_level_touches`) and single FVGs (`detect_fvg_reactions`). Candidates on objects **with** a
+ratified reaction detector reach PARTIALLY DEFINED (CAND-0001/0003); those **without** stop at NOT
+CURRENTLY TESTABLE (CAND-0004/0005) and route a reaction-detector spec request to the Statistician.
+CAND-0002 is self-triggering (the expansion bar is its own event), so it needs no separate reaction primitive.
 
 Producing continuously; next candidate appended when ready.
