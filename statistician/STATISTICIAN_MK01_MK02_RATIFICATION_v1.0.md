@@ -117,4 +117,4 @@ INTERZIS orice altă modificare de parametru „profitând" de re-rulare.
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.39 (commit `2d795bc`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
