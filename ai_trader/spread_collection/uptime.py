@@ -16,6 +16,7 @@ possibly have observed yet."""
 
 from __future__ import annotations
 
+import numbers
 from dataclasses import dataclass
 
 from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway
@@ -45,15 +46,22 @@ def _read_field(rate: object, name: str) -> int | float | None:
     """Same duck-typed numpy-structured-array-or-namedtuple reader as `live_signal_source.bar_feed`
     (not imported from there to avoid pulling in `LiveBarFeed`'s clock/state-store machinery for a
     read-only history query) -- identical field-access behavior, deliberately duplicated at this small
-    a size rather than adding a cross-package dependency for one helper."""
+    a size rather than adding a cross-package dependency for one helper.
+
+    Uses `numbers.Real`, NOT `isinstance(value, (int, float))` -- confirmed directly against the real
+    gateway (2026-08-04): `copy_rates_range` returns a numpy structured array, and `numpy.int64` is not
+    a Python `int` instance even though it IS a `numbers.Real` (this exact pitfall is what `bar_feed.py`
+    itself already documents; an earlier version of this duplicate used the plain check and silently
+    returned `None` for every real field, which is why `bars_passed` came back 0 across every session
+    on the very first live run of this module)."""
     value: object = getattr(rate, name, None)
     if value is None:
         try:
             value = rate[name]  # type: ignore[index]
         except (TypeError, IndexError, KeyError, ValueError):
             return None
-    if isinstance(value, (int, float)):
-        return value
+    if isinstance(value, numbers.Real):
+        return value  # type: ignore[return-value]
     return None
 
 

@@ -6,6 +6,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from ai_trader.spread_collection.journal import SpreadObservationLog
 from ai_trader.spread_collection.types import SpreadObservation
 from ai_trader.spread_collection.uptime import compute_session_uptime
@@ -164,3 +166,40 @@ def test_all_four_sessions_always_present_in_the_output() -> None:
     )
 
     assert {r.session for r in reports} == {"asia", "london", "ny", "late"}
+
+
+class _NumpyShapedGateway:
+    """Wraps a numpy structured array the way `RealMT5Gateway.copy_rates_range` actually does."""
+
+    def __init__(self, rates: Any) -> None:
+        self._rates = rates
+
+    def copy_rates_range(self, symbol: str, timeframe: int, date_from: int, date_to: int) -> Any:
+        return self._rates
+
+
+def test_a_real_shaped_numpy_structured_array_is_read_correctly() -> None:
+    """Discovered against the real terminal (2026-08-04): `copy_rates_range` returns a numpy
+    STRUCTURED ARRAY whose fields are `numpy.int64`/`numpy.float64`, not plain Python `int`/`float` --
+    a fake built from plain dicts (every test above) never exercises this and would not have caught
+    `_read_field` silently rejecting every real field via a too-narrow `isinstance` check. This is the
+    exact pitfall `live_signal_source.bar_feed`'s own equivalent test guards against."""
+    numpy = pytest.importorskip("numpy")
+    real_shaped_rates = numpy.array(
+        [(ASIA_BAR_OPEN, 2000.0, 2001.0, 1999.0, 2000.5, 100, 5, 0)],
+        dtype=[
+            ("time", "<i8"), ("open", "<f8"), ("high", "<f8"), ("low", "<f8"), ("close", "<f8"),
+            ("tick_volume", "<u8"), ("spread", "<i4"), ("real_volume", "<u8"),
+        ],
+    )
+    gateway = _NumpyShapedGateway(real_shaped_rates)
+    journal = SpreadObservationLog()
+    now = ASIA_BAR_OPEN + BAR_SECONDS + 100
+
+    reports = compute_session_uptime(
+        gateway, journal, SYMBOL, 15, BAR_SECONDS,  # type: ignore[arg-type]
+        window_start=ASIA_BAR_OPEN, window_end=now, now=now,
+    )
+
+    asia = next(r for r in reports if r.session == "asia")
+    assert asia.bars_passed == 1
