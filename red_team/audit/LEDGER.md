@@ -1406,4 +1406,68 @@
                  is safe to wire. Red Team designed no remedy, ran no data, modified nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [36], prev_hash E35.
   entry_hash:  E35
+
+[36] 2026-08-04
+  prev_hash:   E35
+  event:       VERDICT               # CODE ATTACK — level-2 H1 bias factors (bias_h1.py)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on code/bias_h1.py @ 81a0a62 (discovery-mk-matrix-v1), spec
+               STAT-LEVEL2-BIAS-H1-SPEC-v1.0 1b2933c / manifest v2.7.51. Level 2, step 3. Checklist:
+               lookahead/leakage/circularity/ambiguity/overfitting/hidden-params/reproducibility. Deliverable:
+               policy_reviews/RT-CODE-A-0011_bias_h1.md. Full source + NUMERIC verification on synthetic H1
+               (deps read-only from branch). No data run; nothing modified; no remedy.
+               VERDICT: PASS_WITH_LIMITATIONS.
+               LOOKAHEAD: PASS, PROVEN, stricter than required. compute_bias slices to [0, min(i,len)); reads
+                 only last CLOSED bar i-1. Numeric proof: scrambling bars>=i to a sentinel leaves ALL factors
+                 + zero_eligible_fraction IDENTICAL -> output is a function of [0,i) alone.
+               LEAKAGE: FAIL in the falsifiability DIAGNOSTIC (emitted factor clean). zero_eligible_fraction
+                 builds pools ONCE on [0,i) (excluding pools swept anywhere up to i-1) then reuses that set at
+                 each historical bar j -> a pool swept AFTER j is dropped from j's count (unknowable at j) ->
+                 overstates the zero-fraction. MEASURED (synthetic): code 0.978 vs causal per-bar 0.801 (~18pt
+                 too high). The emitted liquidity_above at i-1 is causal/correct; ONLY the metric leaks -- but
+                 that metric (99.21% zero) is the JUSTIFICATION that admitted the factor, so it is overstated
+                 and must be recomputed causally. (B-L1.)
+               CIRCULARITY: spec-disclosed + confirmed. Zero of four factors independent of the primitives
+                 candidates trigger on; structure_run_h1 = same detect_breaks as level 1 + structure candidates
+                 (redundancy map: detect_breaks/swings/build_pools/detect_sweeps -> gen_cand0020-0025); only
+                 NEWS independent. (B-L2.)
+               OVERFITTING: PASS (K_ATR=1.0 reused from v2.7.41 not chosen; DAY/WEEK measured 23/115 not
+                 transplanted; docstring forbids tuning k). HIDDEN PARAMS: PASS (all named + schema pre-
+                 registered). REPRODUCIBLE: PASS (deterministic; 66.39% level-1 agreement reproduces the
+                 Statistician; vocab from introspection; 24 tests + mypy). AMBIGUITY: minor (INJECTED
+                 attribution coarse, B-U1).
+               T1 factor active <1% = decor?: the <1% is INFLATED by B-L1; causally the factor fires ~20% (my
+                 synthetic), NOT decor -- the leakage UNDERSTATED coverage; '0 eligible' is a real state. Useful
+                 range = not ~0 not ~1; causal coverage is inside the band. Recompute before judging worth.
+               T2 lost edges / second tier: the tier WORKS on the known mechanism -- expansion (injected as a
+                 param into gen_cand0002/0008/0009, invisible to intra-func inspection) correctly flagged
+                 INJECTED (verified). BUT coarse+incomplete: attributes 'all_gen_cand_receiving_it' by name-at-
+                 module-level WITHOUT dataflow verification (can OVER-attribute any module-level ratified call),
+                 and blind to cross-module / indirect (partial/getattr/tables) injection. Catches the searched,
+                 not provably all. (B-U1.)
+               T3 vocabulary restriction: PASS, nothing legitimate lost -- functions IN (detect_breaks/
+                 expansion/build_pools/atr14/detect_sweeps/detect_swings), classes OUT (Block/PoolSide/BreakKind/
+                 LiquidityPool/PoolTier) verified. Limitation: isfunction would drop a ratified callable-class/
+                 partial/staticmethod (none today) -- not future-proof (B-U2).
+               T4 95% anchor or convenience: declared CONVENIENCE cutoff. At 66.39% agreement structure_run_h1
+                 = same detect_breaks at FINER resolution (H1 vs level-1 H4) -> 34% disagreement is resolution,
+                 not an independent axis; agreement rate cannot separate info from resolution-noise -> needs
+                 level-6 incremental-value measurement. Non-redundancy passes but marginal value unquantified.
+                 Consistent with spec (only NEWS independent). (B-U3.)
+               SEVERITY: B-L1 (lookahead in falsifiability metric, must recompute causally). B-L2 (redundancy/
+                 circularity by construction, marginal value unquantified). B-U1 (second tier coarse+incomplete).
+                 B-U2 (vocab function-only, not future-proof). B-U3 (95% convenience, info-vs-noise deferred).
+               SURVIVES: lookahead-free by construction (proven); factors-not-probability separated; overfitting-
+                 free; params disclosed + schema pre-registered; reproducible; vocab loses nothing legitimate;
+                 second tier surfaces the injected displacement edge static inspection had missed.
+               VERDICT: PASS_WITH_LIMITATIONS -- the emitted factors are causally sound and disclosed; the
+                 falsifiability metric that admitted the liquidity factor is computed with lookahead and
+                 overstated (recompute causally), and the factors are redundant-by-construction with the
+                 candidates (only NEWS independent; marginal value unquantified).
+               HANDOFF: CEO/Statistician -- recompute zero_eligible_fraction causally (B-L1); measure level-6
+                 incremental value of structure/displacement over level 1 (agreement != information, B-L2/U3);
+                 treat the redundancy inspection as covering the known mechanism only (B-U1/U2). Red Team
+                 designed no remedy, ran no data, modified nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [37], prev_hash E36.
+  entry_hash:  E36
 ```
