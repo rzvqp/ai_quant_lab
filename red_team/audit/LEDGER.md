@@ -1105,4 +1105,65 @@
                  modified nothing outside red_team/ (no queue annotation — target is engine code).
                STATE: OPERATIONAL. Next entry [31], prev_hash E30.
   entry_hash:  E30
+
+[31] 2026-07-30
+  prev_hash:   E30
+  event:       VERDICT               # CODE ATTACK — the statistical stack (C-R2) + W9 correction
+  reviewer:    Red Team
+  detail:      CEO tasked the second unattacked end from RT-AUDIT-CHAIN-0001 (C-R2): the code that VALIDATES.
+               Targets: matched_null.py, mn_calibration/adversarial/power, scoped_fdr_run.py, pilot_pvalue.py,
+               synth_price.py, the WP-5' block-bootstrap oracle. Deliverable:
+               policy_reviews/RT-CODE-A-0006_statistical_stack.md. Full source read by Red Team + git-level
+               W9 reconstruction + WP-5'/verdict-dependency sweeps. No data run; nothing modified; no remedy.
+               HEADLINE: NO verdict-producing defect found (unlike the enforcement engine RT-CODE-A-0005).
+                 The validation chain is structurally SOUNDER than the DEMO gate — correct FDR, clean window
+                 discipline, drift fix present+passing. The exposure is DOMAIN MISMATCH + lenient gates, not
+                 wrong math. Nothing promoted; chain fail-closed.
+               T1 W9 — CORRECTED (see verdicts_ledger correction [31]/E31): git-verified the flow-c D3 fix was
+                 CHERRY-PICKED onto statistician-foundation 2026-07-25 (d4fb426/4259382/d4ee4bb, new SHAs);
+                 code/matched_null.py + mn_adversarial.py byte-identical to flow-c (ATR-rescaling + drift
+                 battery), results PASS (ALL_SCENARIOS_CALIBRATED=true, drift fpr05=0.0), PROJECT_AUDIT D3 =
+                 RESOLVED. W9 read "open" because our check keyed on the ORIGINAL SHAs (uncontained) + flow-c
+                 unmerged (true) — BOTH blind to a cherry-pick; and [29]/[30] conflated code/matched_null
+                 (fixed) with the VE's separate validation_engine/F6 object (different test, still lacks the
+                 drift mechanism). This is a RED TEAM DOCUMENTATION DEFECT (S-D1), corrected append-only.
+               T1-bis SCOPE GAP (sharper than W9): PROJECT_AUDIT:8 — matched-null validated ONLY for 1.5xATR
+                 stops on generic signals; STRUCTURAL-stop families never in the calibration battery. EVERY
+                 current SMC candidate (PDH/PDL, session, weekly, persistent; DEMO pilots 0001/0003/0007) uses
+                 structural stops → the primary alpha test would run OUT OF DOMAIN on the actual pipeline.
+               T2 WP-5' oracle: validated at a SINGLE n=21,048, L>=H=20, "nu extrapolez", NO minimum-n stated.
+                 Predecessor AR(1) invalidation persists at 10x n (not finite-sample). Already applied per-
+                 regime at n<validated + on net_R, DISCLOSED (lm001_s1_execution.py:16-19). Block bootstrap
+                 degenerates at small n (n=7 CAND-0023 -> zero blocks). Out-of-domain for small-n candidates.
+               T3 FDR: bh_reject CORRECT BH step-up (p<=i*ALPHA/M, k-th faces k*alpha/M, NOT Bonferroni).
+                 Two distinct m's kept separate: scoped-FDR grammar M=412 vs candidate-family m=16. Residual:
+                 plain BH assumes independence/PRDS across same-60%-segment hypotheses — argued (W-partition),
+                 not verified.
+               T4 CIRCULARITY: NONE. research60/val20/holdout20-sealed disjoint; VALID_IDS from grammar stop-
+                 field + frozen n>=25, committed before any p; no selection leakage; matched-null is a causal
+                 permutation null, no E010 window nesting. Clean.
+               T5 VERDICT DEPENDENCIES: NOTHING promoted on matched-null/scoped-FDR/WP-5'. The one scoped-FDR
+                 survivor (S18 ce76669a3b2a) FAILS OOS (val p=0.0779>0.05) AND research_worthy=False (dd 33.4R
+                 >25R) -> two criteria disagree, routed to certification not promoted. Engines independent;
+                 WP-5' only consumer LM-001 read-only, deferred. So NO existing result is invalidated.
+               SEVERITY: S-D1 (defect: our stale W9 record, corrected). RISKS: S-R1 matched-null not validated
+                 for structural stops (the actual pipeline); S-R2 WP-5' single-n, small-n out-of-domain; S-R3
+                 lenient calibration gates (adversarial 2x, power 3x nominal; small N low power); S-R4 null
+                 unstratified (no regime-timing control); S-R5 whole stack inherits unattacked mstrat.simulate
+                 (C-R3; may share RT-CODE-A-0005 D1 optimism); S-R6 BH PRDS assumed not verified. UNDOCUMENTED:
+                 S-U1 results cherry-picked not re-run; S-U2 two m's unreconciled; S-U3 phase1 n-file untracked.
+               SURVIVES: BH correctness; window disjointness + no leakage; causal permutation null; drift fix
+                 present+passing (fpr05=0.0); adaptive-MC unbiased; k<25->p=1 fail-closed; nothing promoted.
+               VERDICT: the validation code SURVIVES as correct math; its GUARANTEES are narrower than the
+                 pipeline assumes (out-of-domain for structural stops + small n; lenient gates). No result
+                 invalidated (nothing promoted, near-positive fails OOS) — but any candidate put forward for
+                 validation would be judged by an engine outside its validated domain. Answers the CEO's
+                 caution: what validates is NOT broken like what enforces, but its scope is over-claimed.
+               HANDOFF: Statistician then CEO — correct W9 (done, append-only); extend calibration to
+                 structural stops before any candidate validation (S-R1); set WP-5' min-n (S-R2); tighten
+                 calibration gates / decide stratification / justify BH-under-dependence (S-R3/4/6); attack
+                 mstrat.simulate next (S-R5 = C-R3). Red Team designed no remedy, ran no data, modified nothing
+                 outside red_team/.
+               STATE: OPERATIONAL. Next entry [32], prev_hash E31.
+  entry_hash:  E31
 ```
