@@ -98,7 +98,7 @@ I câștigă    → NU e dovadă că „nivelul funcționează invers". Brațul 
                pe bare FĂRĂ nivel. Dacă nu-l bate, e trend, nu structură.
 ```
 
-### Interpretarea celor trei rezultate, pre-angajată ACUM
+### Interpretarea celor patru rezultate, pre-angajată ACUM
 
 ```
 1. F > I, semnificativ                    → fade-ul se transferă la săptămână.
