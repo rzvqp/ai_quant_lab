@@ -1,7 +1,8 @@
 """Liquidity mechanics — MK-02.
 
-DRAFT DE REFERINȚĂ. Nu e cod verificat. Necesită implementare, testare și
-ratificare de o divizie.
+RATIFICAT (manifest v2.7.39, commit `2d795bc`). Cod verificat: fidelitate (Statistician),
+executabilitate + leakage (VE), atac adversarial (Red Team). NU mai e draft.
+(Corecție de header cerută de Alpha — text, zero schimbare de cod.)
 
 Definiții pure. NU citește date, NU apelează `load()`, NU cunoaște manifestul.
 

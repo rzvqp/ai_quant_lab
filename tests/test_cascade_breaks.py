@@ -15,10 +15,27 @@ if _CODE not in sys.path:
     sys.path.insert(0, _CODE)
 
 from market_structure import (  # noqa: E402
-    Block, BreakKind, StructureBreak, StructureLabel, Swing, detect_breaks, detect_swings, label_structure,
+    Block, BreakKind, StructureBreak, StructureLabel, Swing, SwingKind, detect_breaks, detect_swings,
+    label_structure,
 )
 
 K = 2
+_HIGH_LABELS = (StructureLabel.HH, StructureLabel.LH)
+_LOW_LABELS = (StructureLabel.LL, StructureLabel.HL)
+
+
+def _sw(idx: int, confirmed: int, price: float, label: StructureLabel) -> Swing:
+    kind = SwingKind.HIGH if label in _HIGH_LABELS else SwingKind.LOW
+    return Swing(idx=idx, confirmed_idx=confirmed, price=price, kind=kind, label=label, block_index=0)
+
+
+def _ever_exceeded(s: Swing, close: list[float], n: int) -> bool:
+    for j in range(s.confirmed_idx + 1, n):
+        if s.label in _HIGH_LABELS and close[j] > s.price:
+            return True
+        if s.label in _LOW_LABELS and close[j] < s.price:
+            return True
+    return False
 
 
 def _base(n: int) -> tuple[list[float], list[float], list[float]]:
@@ -112,3 +129,65 @@ def test_descending_order_across_kinds() -> None:
     at25 = [b for b in detect_breaks(close, _labelled(high, low, n), [Block(0, n)]) if b.idx == 25]
     idxs = [b.reference_swing.idx for b in at25]
     assert idxs == sorted(idxs, reverse=True) and idxs == [18, 13, 8]
+
+
+# ── SARCINA 2 (v2.7.39): cele patru teste lipsă semnalate de Red Team ──
+def test_reference_selection_invariant_descending_is_load_bearing() -> None:
+    """Ordinea descrescătoare e PORTANTĂ, nu cosmetică: consumatorul (prima din listă la idx egal) primește
+    referința cu idx MAXIM = exact ce alegea slot-unic vechi (cel mai recent). Ascendent ar referi ALT nivel."""
+    n = 30
+    high, low, close = _base(n)
+    high[3] = 110.0; high[8] = 120.0; high[13] = 130.0; high[18] = 140.0
+    close[25] = 150.0
+    at25 = [b for b in detect_breaks(close, _labelled(high, low, n), [Block(0, n)]) if b.idx == 25]
+    idxs = [b.reference_swing.idx for b in at25]
+    assert idxs == [18, 13, 8]                                   # DESCRESCĂTOR — invariant impus
+    assert at25[0].reference_swing.idx == max(idxs)             # primul = cel mai recent (ca slot-unic vechi)
+    assert at25[0].reference_swing.idx != min(idxs)             # ascendent ar da altă referință → ordinea CONTEAZĂ
+
+
+def test_aggregate_conservation_each_exceeded_swing_breaks_exactly_once() -> None:
+    """Conservare agregată (invariantul pe care vechiul bug îl încălca): fiecare swing depășit produce EXACT o
+    rupere, toate referințele unice, mulțimea rupturilor = mulțimea swing-urilor depășite. Vechea semantică o încalcă."""
+    n = 26
+    high, low, close = _base(n)
+    high[3] = 110.0; high[8] = 120.0; high[13] = 115.0          # HH@8, LH@13
+    close[20] = 125.0                                            # depășește ambele
+    for c in range(21, n):
+        close[c] = 50.0                                          # close cade → LH pierdut sub vechea semantică
+    sw = _labelled(high, low, n)
+    new_refs = [b.reference_swing.idx for b in detect_breaks(close, sw, [Block(0, n)])]
+    exceeded = {s.idx for s in sw if s.label is not StructureLabel.UNCLASSIFIED and _ever_exceeded(s, close, n)}
+    assert len(new_refs) == len(set(new_refs))                  # niciun swing rupt de două ori
+    assert set(new_refs) == exceeded                            # conservare: TOATE cele depășite, doar ele
+    old_refs = {b.reference_swing.idx for b in _old_detect_breaks(close, sw, n)}
+    assert len(old_refs) < len(exceeded)                        # vechea semantică ÎNCĂLCA conservarea (a pierdut)
+
+
+def test_f4_opposite_simultaneous_breaks_distinct_refs() -> None:
+    """F4: pe o structură inversată (high-swing sub low-swing), un close intermediar rupe SIMULTAN bullish ȘI
+    bearish, contra referințelor distincte. Ordine descrescătoare după idx."""
+    n = 20
+    close = [50.0] * n
+    # confirmed_idx=11 pt. AMBELE → active abia de la bara 12 (nicio bară anterioară nu le poate rupe separat;
+    # orice close ∈(90,100) rupe simultan ambele, iar <=90 / >=100 ar rupe doar una — deci prima bară activă)
+    swings = [_sw(3, 11, 90.0, StructureLabel.HH), _sw(8, 11, 100.0, StructureLabel.HL)]   # HH 90 < HL 100
+    close[12] = 95.0                                             # 95>90 (BOS_BULL) ȘI 95<100 (CHOCH_BEAR)
+    br = [b for b in detect_breaks(close, swings, [Block(0, n)]) if b.idx == 12]
+    assert {b.kind for b in br} == {BreakKind.BOS_BULL, BreakKind.CHOCH_BEAR}   # opuse simultane
+    assert {b.reference_swing.idx for b in br} == {3, 8}                        # referințe distincte
+    assert br[0].reference_swing.idx == 8                                       # descrescător: HL@8 primul
+
+
+def test_high_multiplicity_ten_breaks_one_bar_descending_unique() -> None:
+    """Multiplicitate mare: 10 swing-uri active depășite de un singur close → 10 rupturi pe aceeași bară
+    (măsurătoarea a găsit până la 24; testele foloseau maxim 3)."""
+    n = 40
+    close = [50.0] * n
+    swings = [_sw(2 * i, 2 * i + 1, 100.0 + i, StructureLabel.HH) for i in range(1, 11)]   # idx 2..20
+    close[30] = 1000.0
+    at30 = [b for b in detect_breaks(close, swings, [Block(0, n)]) if b.idx == 30]
+    idxs = [b.reference_swing.idx for b in at30]
+    assert len(at30) == 10 and all(b.kind is BreakKind.BOS_BULL for b in at30)
+    assert idxs == sorted(idxs, reverse=True) == [20, 18, 16, 14, 12, 10, 8, 6, 4, 2]
+    assert len(set(idxs)) == 10

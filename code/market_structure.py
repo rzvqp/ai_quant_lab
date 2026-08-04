@@ -1,8 +1,8 @@
 """Market structure primitives — MK-01.
 
-DRAFT DE REFERINȚĂ. Nu e cod verificat. Necesită implementare, testare și
-ratificare de o divizie, conform separării producător/verificator din
-CROSS-VERIFY-SPEC.
+RATIFICAT (manifest v2.7.39, commit `2d795bc`). Cod verificat: fidelitate (Statistician),
+executabilitate + garduri F2/F3 + semantica de cascadă v2.7.38 (VE), atac adversarial (Red Team).
+NU mai e draft. (Corecție de header cerută de Alpha — text, zero schimbare de cod.)
 
 Definiții pure. Acest modul NU citește date, NU apelează `load()`, NU cunoaște
 manifestul. Primește array-uri și granițe de bloc; returnează structuri.
