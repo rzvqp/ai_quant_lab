@@ -39,16 +39,17 @@ for _p in (_HERE, _ROOT, os.path.join(_ROOT, "edge_research"), _ENGINE):
 from edge_research._common import PRE_HOLDOUT_SPLIT_ID, RESEARCH_HOLDOUT_CUTOFF_UTC, load
 import split_manifest as SM  # type: ignore[import-not-found]
 from market_structure import Block
-from market_state import compression, expansion
-from institutional_levels import LevelKind, compute_prior_day_levels, detect_level_touches
+from market_state import ATR_WINDOW, compression, expansion
+from institutional_levels import (LevelKind, compute_prior_day_levels, compute_prior_week_levels,
+                                  derive_week_index, detect_level_touches)
 from imbalance_mechanics import FVGKind, detect_fvgs, detect_fvg_reactions
 from order_block_void import OrderBlockKind, detect_liquidity_voids
 from order_flow import detect_demand_zones, detect_mitigations, detect_order_blocks, detect_rejections
 from market_structure import BreakKind, SwingKind, detect_breaks, detect_swings, label_structure
 from liquidity_mechanics import LiquidityPool, PoolSide, PoolTier, build_pools, detect_sweeps
-from session_levels import (SessionLevel, SessionLevelKind, compute_prior_session_levels,
-                            derive_session_index, detect_session_level_touches, detect_session_mid_touches,
-                            session_labels)
+from session_levels import (SessionLevel, SessionLevelKind, compute_persistent_session_levels,
+                            compute_prior_session_levels, derive_session_index,
+                            detect_session_level_touches, detect_session_mid_touches, session_labels)
 from pdh_pdl_demo_engine import DemoSignal, DemoTradeResult, ExitReason, simulate_demo_trades
 from dynamic_exit_engine import simulate_demo_trades_dynamic
 
@@ -258,9 +259,12 @@ def gen_cand0008_void_displacement(rd: RegimeData, exp: list[bool]) -> list[Demo
     return out
 
 
-def gen_cand0009_level_break_drive(rd: RegimeData, exp: list[bool]) -> list[DemoSignal]:
+def gen_cand0009_level_break_drive(rd: RegimeData, exp: list[bool], block: bool = False,
+                                   horizon: int = ATR_WINDOW) -> list[DemoSignal]:
     """Atingere de nivel + expansiune PE ACEEAȘI bară, în direcția RUPERII prin nivel: PDH+bull→long (break-up),
-    PDL+bear→short. stop=nivelul rupt (level.price); exit dinamic; horizon de BLOC. (Opus CAND-0001.)"""
+    PDL+bear→short. stop=nivelul rupt (level.price); exit dinamic. (Opus CAND-0001.)
+    v3 (default): time-stop = `ATR_WINDOW`=14 bare (live-valid). `block=True` → vechiul horizon de BLOC (v2,
+    discovery-only, NU există live) — păstrat DOAR pentru comparația vechi-vs-nou din re-screening."""
     blk = [Block(0, rd.n)]
     levels = compute_prior_day_levels(rd.h, rd.l, rd.day.tolist(), blk)
     out: list[DemoSignal] = []
@@ -275,7 +279,10 @@ def gen_cand0009_level_break_drive(rd: RegimeData, exp: list[bool]) -> list[Demo
             d = -1
         else:
             continue
-        s = rd.sig(ti + 1, d, float(t.level.price), float("nan"), block_horizon=True)
+        if block:
+            s = rd.sig(ti + 1, d, float(t.level.price), float("nan"), block_horizon=True)
+        else:
+            s = rd.sig(ti + 1, d, float(t.level.price), float("nan"), horizon_bars=horizon)
         if s is not None:
             out.append(s)
     return out
@@ -862,6 +869,291 @@ def gen_cand0031_session_ob(rd: RegimeData) -> list[DemoSignal]:
     return out
 
 
+# ══════════ CAND-0006: niveluri SĂPTĂMÂNALE (PWH/PWL), Route 3 (fără bias, direcție din tip) ══════════
+def _week_last_bar(widx: list[int], n: int) -> dict[int, int]:
+    last: dict[int, int] = {}
+    for j in range(n):
+        last[widx[j]] = j
+    return last
+
+
+def gen_cand0006_weekly(rd: RegimeData) -> list[DemoSignal]:
+    """PWH→short (stop=high[touch], target=PWL aceleiași săptămâni-sursă); PWL→long (stop=low, target=PWH).
+    DOAR săptămâni COMPLETE (≥5 zile); PARTIAL→no-trade. Atingere prin penetrare pe fereastra săptămânii curente
+    (compusă din reguli ratificate, `detect_level_touches` sare weekly). time-stop = granița săptămânii. FĂRĂ bias."""
+    blk = [Block(0, rd.n)]
+    widx = derive_week_index(rd.day.tolist())
+    levels = [lv for lv in compute_prior_week_levels(rd.h, rd.l, rd.day.tolist(), widx, blk)
+              if lv.completeness == "COMPLETE"]
+    opp: dict[int, dict[str, float]] = {}
+    for lv in levels:
+        opp.setdefault(lv.source_period_start, {})[
+            "WH" if lv.kind is LevelKind.WEEKLY_HIGH else "WL"] = lv.price
+    week_last = _week_last_bar(widx, rd.n)
+    out: list[DemoSignal] = []
+    for lv in levels:
+        wk = widx[lv.available_idx]
+        end = week_last[wk]
+        j_touch = None
+        for j in range(lv.available_idx, end + 1):
+            touched = rd.h[j] >= lv.price if lv.kind is LevelKind.WEEKLY_HIGH else rd.l[j] <= lv.price
+            if touched:
+                j_touch = j
+                break
+        if j_touch is None:
+            continue
+        pair = opp.get(lv.source_period_start, {})
+        if lv.kind is LevelKind.WEEKLY_HIGH:
+            d = -1; stop = rd.h[j_touch]; tgt = pair.get("WL")
+        else:
+            d = 1; stop = rd.l[j_touch]; tgt = pair.get("WH")
+        if tgt is None:
+            continue
+        s = rd.sig(j_touch + 1, d, float(stop), float(tgt), day_end_override=end)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+# ══════════ lot 5 (CAND-0032..0036): niveluri de sesiune PERSISTENTE, primitiva B + filtru ATR k=1.0 ══════════
+_K_FILTER = 1.0                                   # filtru de eligibilitate ATR (k=1.0 primar), manifest v2.7.41
+_PTRIG: dict[str, dict[str, int]] = {}            # numărătoare de DECLANȘATOARE (înainte de performanță)
+
+
+def _ptrig(cid: str, key: str, v: int = 1) -> None:
+    d = _PTRIG.setdefault(cid, {})
+    d[key] = d.get(key, 0) + v
+
+
+def _persistent_levels(rd: RegimeData) -> list[SessionLevel]:
+    return compute_persistent_session_levels(rd.h, rd.l, rd.session_index, rd.session_label, [Block(0, rd.n)])
+
+
+def _feligible(price: float, j: int, rd: RegimeData) -> bool:
+    """Filtru compus (NU lookahead): eligibil la bara `j` iff |price − close[j−1]| ≤ k×atr14[j−1]."""
+    if j - 1 < 0:
+        return False
+    a = float(rd.atr[j - 1])
+    return bool(np.isfinite(a) and a > 0 and abs(price - rd.c[j - 1]) <= _K_FILTER * a)
+
+
+def _nearest_persistent(levels: list[SessionLevel], kind: SessionLevelKind, entry_price: float,
+                        e: int, rd: RegimeData, above: bool) -> float | None:
+    """Cel mai apropiat nivel persistent de tip `kind`, ACTIV la `e`, eligibil-filtru la `e`, pe latura cerută."""
+    best: float | None = None
+    for lv in levels:
+        if lv.kind is not kind or not (lv.available_idx <= e <= lv.expiry_idx):
+            continue
+        p = lv.price
+        if (above and p <= entry_price) or (not above and p >= entry_price):
+            continue
+        if not _feligible(p, e, rd):
+            continue
+        if best is None or abs(p - entry_price) < abs(best - entry_price):
+            best = p
+    return best
+
+
+def gen_cand0032_persistent_sweep(rd: RegimeData) -> list[DemoSignal]:
+    """B-sweep: nivel persistent H/L eligibil-filtru, penetrare + close-back-inside pe bara `j` (own-sel=sweep).
+    HIGH→short, LOW→long. stop=fitilul sweep-ului; țintă=cel mai apropiat nivel persistent OPUS eligibil; 20 bare."""
+    lv = _persistent_levels(rd)
+    out: list[DemoSignal] = []
+    for t in detect_session_level_touches(rd.h, rd.l, lv):
+        L = t.level; j = t.touch_idx
+        _ptrig("CAND-0032", "hl_touches")
+        if j + 1 >= rd.n or not _feligible(L.price, j, rd):
+            continue
+        _ptrig("CAND-0032", "filter_eligible")
+        ep = float(rd.o[j + 1])
+        if L.kind is _SH:
+            if not (rd.c[j] < L.price):
+                continue
+            d = -1; stop = rd.h[j]; tgt = _nearest_persistent(lv, _SL, ep, j + 1, rd, above=False)
+        else:
+            if not (rd.c[j] > L.price):
+                continue
+            d = 1; stop = rd.l[j]; tgt = _nearest_persistent(lv, _SH, ep, j + 1, rd, above=True)
+        _ptrig("CAND-0032", "own_selectivity")
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0033_persistent_mid(rd: RegimeData) -> list[DemoSignal]:
+    """B-Mid (flagship CEO): Mid persistent eligibil-filtru, CONȚINERE (own-sel). Direcție declarată de latura de
+    apropiere (close[j-1]>Mid→long, <→short, ==→no-trade). stop=extrema far a barei; țintă=cel mai apropiat extrem
+    persistent în direcție eligibil; 20 bare. ⚠ CONȚINERE = raportare DURĂ de declanșatoare înainte de performanță."""
+    lv = _persistent_levels(rd)
+    out: list[DemoSignal] = []
+    for t in detect_session_mid_touches(rd.h, rd.l, lv):
+        L = t.level; j = t.touch_idx
+        _ptrig("CAND-0033", "mid_touches")
+        if j - 1 < 0 or j + 1 >= rd.n or not _feligible(L.price, j, rd):
+            continue
+        _ptrig("CAND-0033", "filter_eligible")
+        prev = rd.c[j - 1]; m = L.price
+        if prev == m:
+            continue
+        _ptrig("CAND-0033", "own_selectivity")                # conținere eligibilă cu direcție declarabilă
+        ep = float(rd.o[j + 1])
+        if prev > m:
+            d = 1; stop = rd.l[j]; tgt = _nearest_persistent(lv, _SH, ep, j + 1, rd, above=True)
+        else:
+            d = -1; stop = rd.h[j]; tgt = _nearest_persistent(lv, _SL, ep, j + 1, rd, above=False)
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0034_persistent_pdhpdl(rd: RegimeData) -> list[DemoSignal]:
+    """B × PDH/PDL PE ACEEAȘI bară, aliniate (HIGH×PDH→short, LOW×PDL→long). stop=extrema barei; țintă=nivelul opus
+    al ZILEI; time-stop de ZI (referință robustă la feed)."""
+    lv = _persistent_levels(rd)
+    blk = [Block(0, rd.n)]
+    levels = compute_prior_day_levels(rd.h, rd.l, rd.day.tolist(), blk)
+    opp = _opp_level_map(levels)
+    day_touch = {dt.touch_idx: dt for dt in detect_level_touches(rd.h, rd.l, levels, rd.day.tolist(), blk)}
+    out: list[DemoSignal] = []
+    for t in detect_session_level_touches(rd.h, rd.l, lv):
+        L = t.level; j = t.touch_idx
+        _ptrig("CAND-0034", "hl_touches")
+        if not _feligible(L.price, j, rd):
+            continue
+        _ptrig("CAND-0034", "filter_eligible")
+        dt = day_touch.get(j)
+        if dt is None:
+            continue
+        if L.kind is _SH and dt.level.kind is LevelKind.PDH:
+            d = -1; stop = rd.h[j]; tgt = opp.get(dt.level.source_period_start, {}).get("PDL")
+        elif L.kind is _SL and dt.level.kind is LevelKind.PDL:
+            d = 1; stop = rd.l[j]; tgt = opp.get(dt.level.source_period_start, {}).get("PDH")
+        else:
+            continue
+        _ptrig("CAND-0034", "own_selectivity")
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt))         # time-stop de ZI
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0035_persistent_fvg(rd: RegimeData) -> list[DemoSignal]:
+    """B × FVG polaritate potrivită la nivel (bara de atingere suprapune FVG, confirmat<=j). stop=mai adânc
+    (extrema barei / margine far FVG); țintă=margine near FVG (direcția reacției); 20 bare."""
+    lv = _persistent_levels(rd)
+    fvgs = detect_fvgs(rd.h, rd.l, [Block(0, rd.n)])
+    out: list[DemoSignal] = []
+    for t in detect_session_level_touches(rd.h, rd.l, lv):
+        L = t.level; j = t.touch_idx
+        _ptrig("CAND-0035", "hl_touches")
+        if not _feligible(L.price, j, rd):
+            continue
+        _ptrig("CAND-0035", "filter_eligible")
+        want = FVGKind.BEARISH if L.kind is _SH else FVGKind.BULLISH
+        f = next((g for g in fvgs if g.kind is want and g.confirmed_idx <= j
+                  and g.lower <= rd.h[j] and g.upper >= rd.l[j]), None)
+        if f is None:
+            continue
+        _ptrig("CAND-0035", "own_selectivity")
+        if L.kind is _SH:
+            d = -1; stop = max(rd.h[j], f.upper); tgt = f.lower
+        else:
+            d = 1; stop = min(rd.l[j], f.lower); tgt = f.upper
+        s = rd.sig(j + 1, d, float(stop), float(tgt), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0036_persistent_ob(rd: RegimeData) -> list[DemoSignal]:
+    """B × OB polaritate potrivită (corpul OB conține prețul nivelului, formation<j). stop=mai adânc (podeaua OB /
+    extrema barei); țintă=latura far a corpului OB; 20 bare."""
+    lv = _persistent_levels(rd)
+    obs = detect_order_blocks(rd.o, rd.h, rd.l, rd.c, rd.n)
+    out: list[DemoSignal] = []
+    for t in detect_session_level_touches(rd.h, rd.l, lv):
+        L = t.level; j = t.touch_idx
+        _ptrig("CAND-0036", "hl_touches")
+        if not _feligible(L.price, j, rd):
+            continue
+        _ptrig("CAND-0036", "filter_eligible")
+        want = OrderBlockKind.BEARISH if L.kind is _SH else OrderBlockKind.BULLISH
+        ob = next((o for o in obs if o.kind is want and o.formation_idx < j
+                   and o.zone_lower <= L.price <= o.zone_upper), None)
+        if ob is None:
+            continue
+        _ptrig("CAND-0036", "own_selectivity")
+        if L.kind is _SH:
+            d = -1; stop = max(rd.h[ob.formation_idx], rd.h[j]); tgt = ob.zone_lower
+        else:
+            d = 1; stop = min(rd.l[ob.formation_idx], rd.l[j]); tgt = ob.zone_upper
+        s = rd.sig(j + 1, d, float(stop), float(tgt), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def persistent_funnel(regimes: list[RegimeData]) -> dict[str, Any]:
+    """Palnia pe niveluri PERSISTENTE (primitiva B) — populația CEA MAI VECHE din pipeline. Red Team a prezis
+    INVERSAREA predicției Statisticianului (conflict structural MAXIM aici). Aceeași metrică: emise → atinse → aliniate."""
+    kinds = [_SH, _SL, _SM]
+    agg = {k: {"emitted": 0, "touched": 0, "aligned": 0} for k in kinds}
+    per_regime: dict[str, Any] = {}
+    for rd in regimes:
+        lv = _persistent_levels(rd)
+        f = {k: {"emitted": 0, "touched": 0, "aligned": 0} for k in kinds}
+        for x in lv:
+            f[x.kind]["emitted"] += 1
+        for t in detect_session_level_touches(rd.h, rd.l, lv):
+            k = t.level.kind; j = t.touch_idx; f[k]["touched"] += 1
+            if (k is _SH and rd.bias_dn[j]) or (k is _SL and rd.bias_up[j]):
+                f[k]["aligned"] += 1
+        for t in detect_session_mid_touches(rd.h, rd.l, lv):
+            j = t.touch_idx; f[_SM]["touched"] += 1
+            if j - 1 >= 0:
+                prev = rd.c[j - 1]; m = t.level.price
+                if (prev > m and rd.bias_up[j]) or (prev < m and rd.bias_dn[j]):
+                    f[_SM]["aligned"] += 1
+        per_regime[rd.label] = {k.value: v for k, v in f.items()}
+        for k in kinds:
+            for m2 in ("emitted", "touched", "aligned"):
+                agg[k][m2] += f[k][m2]
+    return {"per_regime": per_regime, "aggregate": {k.value: v for k, v in agg.items()}}
+
+
+def weekly_funnel(regimes: list[RegimeData]) -> dict[str, Any]:
+    """Palnia PWH/PWL (perioada cea mai LUNGĂ) — reconfirmă colapsul (Statistician: 6/275=2,2% cu bias). Route 3
+    NU folosește bias; aliniatul e raportat DOAR ca referință de conflict structural, nu ca filtru al politicii."""
+    hi, lo = LevelKind.WEEKLY_HIGH, LevelKind.WEEKLY_LOW
+    agg = {"weekly_high": {"emitted": 0, "touched": 0, "aligned": 0},
+           "weekly_low": {"emitted": 0, "touched": 0, "aligned": 0}}
+    for rd in regimes:
+        widx = derive_week_index(rd.day.tolist())
+        levels = [lv for lv in compute_prior_week_levels(rd.h, rd.l, rd.day.tolist(), widx, [Block(0, rd.n)])
+                  if lv.completeness == "COMPLETE"]
+        week_last = _week_last_bar(widx, rd.n)
+        for lv in levels:
+            key = "weekly_high" if lv.kind is hi else "weekly_low"
+            agg[key]["emitted"] += 1
+            wk = widx[lv.available_idx]; end = week_last[wk]
+            for j in range(lv.available_idx, end + 1):
+                touched = rd.h[j] >= lv.price if lv.kind is hi else rd.l[j] <= lv.price
+                if touched:
+                    agg[key]["touched"] += 1
+                    if (lv.kind is hi and rd.bias_dn[j]) or (lv.kind is lo and rd.bias_up[j]):
+                        agg[key]["aligned"] += 1
+                    break
+    return {"aggregate": agg}
+
+
 def session_funnel(regimes: list[RegimeData]) -> dict[str, Any]:
     """Palnia Statisticianului per tip de nivel (High/Low/Mid SEPARAT): emise → atinse geometric → aliniate la bias.
     Aliniat: HIGH→bias jos (short), LOW→bias sus (long), MID→bias = direcția declarată de apropiere (close[j-1] vs Mid)."""
@@ -936,7 +1228,14 @@ CANDIDATES: list[tuple[str, str, RunFn]] = [
     ("CAND-0029", "SESSION-PDHPDL-CONFLUENCE", _run_fixed(gen_cand0029_session_pdhpdl)),
     ("CAND-0030", "SESSION-FVG-CONFLUENCE", _run_fixed(gen_cand0030_session_fvg)),
     ("CAND-0031", "SESSION-OB-CONFLUENCE", _run_fixed(gen_cand0031_session_ob)),
+    ("CAND-0006", "PWH-PWL-WEEKLY-R3", _run_fixed(gen_cand0006_weekly)),
+    ("CAND-0032", "PERSISTENT-SESSION-SWEEP", _run_fixed(gen_cand0032_persistent_sweep)),
+    ("CAND-0033", "PERSISTENT-SESSION-MID", _run_fixed(gen_cand0033_persistent_mid)),
+    ("CAND-0034", "PERSISTENT-SESSION-PDHPDL", _run_fixed(gen_cand0034_persistent_pdhpdl)),
+    ("CAND-0035", "PERSISTENT-SESSION-FVG", _run_fixed(gen_cand0035_persistent_fvg)),
+    ("CAND-0036", "PERSISTENT-SESSION-OB", _run_fixed(gen_cand0036_persistent_ob)),
 ]
+_PTRIG_ORDER = ["hl_touches", "mid_touches", "filter_eligible", "own_selectivity"]
 
 
 def _mdd(equity: np.ndarray) -> float:
@@ -1074,6 +1373,12 @@ def main() -> int:
         m = _metrics(rows)
         out["candidates"][cid] = {"policy": name, **m}
         print(f"\n########## {cid} {name} ##########")
+        if cid in _PTRIG:                                     # numărul de DECLANȘATOARE, ÎNAINTE de performanță
+            d = _PTRIG[cid]
+            out["candidates"][cid]["triggers_before_performance"] = dict(d)
+            print("  DECLANȘATOARE (înainte de performanță): "
+                  + "  ".join(f"{k}={d[k]}" for k in _PTRIG_ORDER if k in d)
+                  + f"  → semnale={len([1 for _y,_r,_x in rows])}")
         if m["n_trades"] == 0:
             print(f"  n=0 (invalid={m['n_invalid']} no_trade={m['n_no_trade']})"); continue
         print(f"  n={m['n_trades']} | invalid={m['n_invalid']} ({m['invalid_fraction']}) no_trade={m['n_no_trade']}")
@@ -1102,6 +1407,24 @@ def main() -> int:
         print(f"  {kind:13s} emise={em:5d} → atinse={tc:5d} ({100.0*tc/em:.1f}%) → aliniate={al:4d} "
               f"({100.0*al/em:.1f}% din emise, {100.0*al/tc if tc else 0:.1f}% din atinse)")
     print("  (PWH/PWL: 6/275=2,2% aliniate; predicție Statistician: SESIUNILE suferă CEL MAI PUȚIN — perioada cea mai scurtă)")
+
+    # PALNIA PERSISTENTĂ (primitiva B) — a DOUA testare a predicției, în direcția OPUSĂ (Red Team: inversare la populația veche)
+    pfunnel = persistent_funnel(regimes)
+    out["persistent_funnel"] = pfunnel
+    print("\n### PALNIA PERSISTENTĂ / primitiva B (populația CEA MAI VECHE — Red Team prezice INVERSAREA) ###")
+    for kind, v in pfunnel["aggregate"].items():
+        em, tc, al = v["emitted"], v["touched"], v["aligned"]
+        print(f"  {kind:13s} emise={em:6d} → atinse={tc:6d} ({100.0*tc/em if em else 0:.1f}%) → aliniate={al:5d} "
+              f"({100.0*al/tc if tc else 0:.1f}% din atinse)")
+
+    # PALNIA SĂPTĂMÂNALĂ (PWH/PWL) — perioada cea mai LUNGĂ, reconfirmă colapsul
+    wfunnel = weekly_funnel(regimes)
+    out["weekly_funnel"] = wfunnel
+    print("\n### PALNIA SĂPTĂMÂNALĂ / PWH-PWL (perioada cea mai LUNGĂ — colaps de referință) ###")
+    for kind, v in wfunnel["aggregate"].items():
+        em, tc, al = v["emitted"], v["touched"], v["aligned"]
+        print(f"  {kind:12s} emise={em:5d} → atinse={tc:5d} ({100.0*tc/em if em else 0:.1f}%) → aliniate={al:4d} "
+              f"({100.0*al/tc if tc else 0:.1f}% din atinse)")
 
     path = os.path.join(_ROOT, "reports", "phase1_screening_results.json")
     os.makedirs(os.path.dirname(path), exist_ok=True)
