@@ -10,7 +10,9 @@ partial-ratified), `market_state.py` (compression/expansion/sessions, ratified S
 `imbalance_mechanics.py` (MK-03 FVG/BPR, CLOSED v2.5.6), `order_block_void.py` (liquidity void,
 ratified), `order_flow.py` (order blocks, ratified — OB primitives directive-UNBLOCKED as anchors),
 **`market_structure.py` (MK-01, RATIFIED — swings HH/HL/LH/LL, body-BOS, CHoCH; cascade semantics v2.7.38)
-and `liquidity_mechanics.py` (MK-02, RATIFIED — liquidity pools, wick-sweep, D7 consumption).**
+and `liquidity_mechanics.py` (MK-02, RATIFIED — liquidity pools, wick-sweep, D7 consumption),
+`session_levels.py` (MK-04 sessions, RATIFIED v2.7.39 / RT-CODE-A-0004 — prior/persistent session
+High/Low/Mid, touch + containment detectors; header clean, NOT draft).**
 
 > **⚠ MK-01/MK-02 stale-header flag (Flow A, 2026-08-04).** The CEO declares MK-01/MK-02 RATIFIED
 > (fidelity 7/7 Statistician, 12/12 VE, three Red Team attacks). The git history at
@@ -73,6 +75,12 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0023** | LEVEL-BOS-CONFLUENCE | structure_break_at_level_confluence (MK-04×MK-01 via Mod.7) | `POLICY_LEVEL_BOS_CONFLUENCE_v1.md` | DEFINED (3-primitive; BOS at PDH/PDL; no F4) | **COMPLETED — SCREENING** (structural: stop=broken level, exit=opposite prior-day level + day time-stop; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-01×MK-04 batch (`0000225`) · **W-incr vs better of {CAND-0001, standalone BOS}** · D2 carried → Red Team |
 | **CAND-0024** | SWEEP-FVG-CONFLUENCE | sweep_imbalance_confluence (MK-02×MK-03 via Mod.7) | `POLICY_SWEEP_FVG_CONFLUENCE_v1.md` | DEFINED (3-primitive; sweep×FVG polarity-matched; no F4) | **COMPLETED — SCREENING** (structural: stop=min(low[c],FVG.lower), exit=FVG near edge OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-02×MK-03 batch (`0000225`) · **W-incr ⊂ better of {CAND-0020, CAND-0003}** · D2 carried → Red Team |
 | **CAND-0025** | SWEEP-OB-CONFLUENCE | sweep_at_orderblock_confluence (MK-02×Mod.5 via Mod.7) | `POLICY_SWEEP_OB_CONFLUENCE_v1.md` | DEFINED (3-primitive; sweep into OB, polarity-matched; no F4) | **COMPLETED — SCREENING** (structural: stop=min(Low_OB,low[c]) deeper floor, exit=OB body far edge OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-02×Mod.5 batch (`0000225`) · **W-incr ⊂ better of {CAND-0020, CAND-0011}** · D2 carried → Red Team |
+| **CAND-0026** | SESSION-SWEEP-REVERSAL | session_sweep_reversal (MK-04 sessions, Primitive A) | `POLICY_SESSION_SWEEP_REVERSAL_v1.md` | DEFINED (session-level penetration + close-back-inside; the CEO-cited D6; no lookahead) | **COMPLETED — SCREENING** (structural: stop=sweep wick extreme, exit=opposite prior-session level OR session-boundary time-stop; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — session batch (`bf02dd2`) · **Primitive A only (2-3 active); B forbidden w/o filter** · ⚠ **FEED-ALIGNMENT WARNING attached** → Red Team |
+| **CAND-0027** | SESSION-TOUCH-REJECTION | session_level_touch_reaction (MK-04 sessions, Primitive A) | `POLICY_SESSION_TOUCH_REJECTION_v1.md` | DEFINED (session analog of CAND-0001; plain touch-reaction) | **COMPLETED — SCREENING** (structural: stop=touch-bar extreme, exit=opposite prior-session level OR session boundary; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — session batch (`bf02dd2`) · Primitive A only · **CAND-0026 ⊂ this (W-incr)** · ⚠ FEED-ALIGNMENT → Red Team |
+| **CAND-0028** | SESSION-MID-REACTION | session_mid_reaction (MK-04 sessions, Primitive A; Mid=containment) | `POLICY_SESSION_MID_REACTION_v1.md` | DEFINED (containment touch; **direction DECLARED by policy** — approach side, `close[j-1]` vs Mid; tie → no trade) | **COMPLETED — SCREENING** (structural: stop=containment-bar far extreme, exit=prior-session extreme in trade dir OR session boundary; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE, declared-direction)** | NEW — session batch (`bf02dd2`) · Primitive A only · **Mid has no intrinsic direction — policy declares + discloses** · ⚠ FEED-ALIGNMENT → Red Team |
+| **CAND-0029** | SESSION-PDHPDL-CONFLUENCE | session_at_daylevel_confluence (MK-04 sess × MK-04 PDH/PDL via Mod.7) | `POLICY_SESSION_PDHPDL_CONFLUENCE_v1.md` | DEFINED (3-primitive; session level coincident w/ prior-day level) | **COMPLETED — SCREENING** (structural: stop=touch-bar extreme, exit=opposite prior-DAY level + day time-stop; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — session batch (`bf02dd2`) · Primitive A only · **W-incr ⊂ better of {CAND-0027, CAND-0001}**; day leg feed-robust, session leg carries misalignment · ⚠ FEED-ALIGNMENT → Red Team |
+| **CAND-0030** | SESSION-FVG-CONFLUENCE | session_imbalance_confluence (MK-04 sess × MK-03 via Mod.7) | `POLICY_SESSION_FVG_CONFLUENCE_v1.md` | DEFINED (3-primitive; session level × FVG polarity-matched) | **COMPLETED — SCREENING** (structural: stop=deeper of touch extreme/FVG far edge, exit=opposite prior-session level OR session boundary; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — session batch (`bf02dd2`) · Primitive A only · **W-incr ⊂ better of {CAND-0027, CAND-0003}** · ⚠ FEED-ALIGNMENT → Red Team |
+| **CAND-0031** | SESSION-OB-CONFLUENCE | session_at_orderblock_confluence (MK-04 sess × Mod.5 via Mod.7) | `POLICY_SESSION_OB_CONFLUENCE_v1.md` | DEFINED (3-primitive; session level into OB, polarity-matched) | **COMPLETED — SCREENING** (structural: stop=min(Low_OB,touch extreme) deeper floor, exit=OB body far edge OR session boundary; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — session batch (`bf02dd2`) · Primitive A only · **W-incr ⊂ better of {CAND-0027, CAND-0011}** · ⚠ FEED-ALIGNMENT → Red Team |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
@@ -83,29 +91,36 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `WAITING_FOR_NEW_PRIMITIVES` — MK-01/MK-02 base + confluence space covered (after CAND-0025)
+## STATE: `WAITING_FOR_NEW_PRIMITIVES` — MK-01/MK-02 + session-levels base + confluence space covered (after CAND-0031)
 
-**CEO ruling applied (2026-08-04): MK-01/MK-02 RATIFIED, production resumed.** E010/E013/E015/E016 stay blocked as hypotheses. Stale-header flag raised (see top). D2 + F4 limitations carried, not repaired.
+**CEO ruling applied (2026-08-04): `session_levels.py` RATIFIED (RT-CODE-A-0004), production resumed.** Session batch CAND-0026..0031 produced on **Primitive A only** (2-3 active). Two mandatory constraints honored on every session candidate: **(1) Primitive B forbidden without a filter** — not used at all (saturation ruling: unfiltered volume is the losing pattern — DZ×FVG, CAND-0020 −15,409R, CAND-0024 −2,605R); **(2) FEED-ALIGNMENT WARNING** attached to each (session clock uses fixed UTC hours; OANDA-historic vs MT5-live bar sets diverge ~3h → backtest session extreme ≠ live; edge may not reproduce). **Rationale (CEO):** 22-candidate screening — all positives use levels, all 16 negatives don't, zero exceptions; sessions are the same class.
+
+**Prior ruling (still in force): MK-01/MK-02 RATIFIED.** E010/E013/E015/E016 stay blocked as hypotheses. MK-01/MK-02 stale-header flag raised (see top). D2 + F4 limitations carried, not repaired.
+
+**⚠ Hash drift caught (verify-don't-assume):** `market_structure.py` / `liquidity_mechanics.py` CHANGED between `0000225` and `bf02dd2` (f3dee97→629e662c, 1531cffa→d5bdc126). CAND-0020..0025 correctly pin `0000225` (immutable at that commit); the session batch pins `bf02dd2` and cites only the unchanged modules (`session_levels` 2af2b9e6, `market_state`/`institutional_levels`/`imbalance`/`order_flow`/`interactions` identical to `0000225`). Hashes recomputed at `bf02dd2`, not assumed.
 
 **MK-01/MK-02 batch produced (CAND-0020..0025, 6 candidates):** liquidity sweep+return (0020, MK-02), BOS+retest (0021, MK-01), CHoCH reversal (0022, MK-01 — **F4-flagged**), and the three named confluences — level×BOS (0023), sweep×FVG (0024), sweep×OB (0025). All SCREENING_BASELINE, Part A+B complete, W10 @ `0000225` with freshly-computed hashes.
 
 **Swing-failure NOT forced (honest collapse):** under MK-01/MK-02 a "swing failure / SFP" is not a distinct mechanism — a swept swing with close-back-inside IS the wick-sweep (= CAND-0020), and a failed continuation that flips character IS the CHoCH (= CAND-0022). Producing a third file would be relabeling, not a new hypothesis → **held back per "nu forța candidați slabi."**
 
-**⚠ Multiple-testing family (Statistician's to ratify):** CAND-0020..0025 arise from the SAME continuous-production line → they increment the cumulative BH-FDR family beyond 7. The exact count + the W-incr dependencies noted per row (0023/0024/0025 are subsets of existing singles) are routed to the Statistician; Flow A does not set the family number.
+**⚠ Multiple-testing family (Statistician's to ratify):** CAND-0020..0031 all arise from the SAME continuous-production line → they increment the cumulative BH-FDR family well beyond 7. The exact count + the W-incr subset dependencies noted per row (0023/0024/0025 vs MK singles; 0026 ⊂ 0027; 0029/0030/0031 ⊂ better of their two singles) are routed to the Statistician; Flow A does not set the family number.
 
-**Covered (25 candidates):** the 19 prior + the 6 MK-01/MK-02. DEMO_BASELINE Part B completed for the 4 authorized pilots (0001/0002/0003/0007); all others SCREENING.
+**Covered (31 candidates):** 19 base/MK-legacy + 6 MK-01/MK-02 (0020-0025) + 6 session-levels (0026-0031). DEMO_BASELINE Part B completed for the 4 authorized pilots (0001/0002/0003/0007); all others SCREENING.
 
-**Why WAITING (not forcing weak candidates):** the remaining moves from the *current* primitives (now incl. MK-01/MK-02) are either
-- **combinatorial pairwise permutations** of diminishing marginal distinctness — `mitigation×FVG`, `mitigation×void`, `demand-zone×void`, `sweep×level`, `BOS×FVG`, `BOS×OB`, `CHoCH×level`, and higher-order (3-way) confluences. Each is technically distinct but is systematic mask-AND enumeration, not a new market hypothesis. **Producible on request; held back per "nu forța candidați slabi ca să umpli coada."**
-- or **blocked / studied-null:** a standalone breaker-continuation = E010 (blocked); an IFVG (`detect_inverse_fvgs`) reaction ≈ E012 (studied, V0 null) — not re-treated.
-- **swing-failure / SFP** — collapses into CAND-0020 (wick-sweep) or CAND-0022 (CHoCH); not a distinct file (above).
+**Session-level families all covered:** sweep+reversal (0026), touch+rejection (0027), Mid reaction (0028, declared-direction), and the three confluences session×PDH/PDL (0029), session×FVG (0030), session×OB (0031). All on Primitive A; Primitive B untouched (would require a level-count filter first — not built).
+
+**Why WAITING (not forcing weak candidates):** the remaining moves from the *current* primitives are either
+- **combinatorial pairwise permutations** of diminishing marginal distinctness — `mitigation×FVG`, `mitigation×void`, `demand-zone×void`, `sweep×level`, `BOS×FVG`, `BOS×OB`, `CHoCH×level`, `session×sweep`, `session×BOS`, and higher-order (3-way) confluences. Each is technically distinct but is systematic mask-AND enumeration, not a new market hypothesis. **Producible on request; held back per "nu forța candidați slabi ca să umpli coada."**
+- **Primitive-B session mechanisms** (persistent/accumulating session levels) — **require a level-count filter first** (Red Team saturation ruling); producible only once a bounding filter is specified. Held.
+- or **blocked / studied-null:** standalone breaker-continuation = E010 (blocked); IFVG reaction ≈ E012 (studied null) — not re-treated.
+- **swing-failure / SFP** — collapses into CAND-0020 (wick-sweep) or CAND-0022 (CHoCH); not a distinct file.
 
 **Genuinely-new BASE families need a new ratified primitive (each unlocks a distinct family + its confluences):**
 - **void-reaction / void-fill** detector → CAND-0004 becomes testable + void-fill mechanisms;
 - **weekly-level touch** detector → CAND-0006 + weekly confluences;
 - **BPR-reaction** detector → CAND-0005 + BPR confluences;
 - a **void price-zone** concept (the module stores void *magnitude*, not a fillable zone) → void-zone mechanisms;
-- a **session-structure** primitive (session high/low/open — `sessions()` only labels) → session mechanisms;
+- a **Primitive-B level-count filter** spec → unlocks the persistent/accumulating session-level class;
 - any ratified **structural stop/exit** primitive → completes Part B for the non-pilot candidates.
 
-Auto-resumes the moment any of the above is ratified, or on CEO request to enumerate the remaining pairwise confluences. **Flagged imminent (CEO, 2026-08-04): session levels are being specified — when ratified they unlock a session-structure class (session high/low/open reactions + confluences). Not waited on.**
+Auto-resumes the moment any of the above is ratified, or on CEO request to enumerate the remaining pairwise confluences.
