@@ -84,3 +84,49 @@ service's contract is "best-effort, never blocking").
 Static tests forbid: any `MetaTrader5` reference, any import from `risk_manager`/`risk_manager_live`/
 `execution_engine`/`order_manager`/`portfolio_manager_live`/`simulation`, and any order-submission
 vocabulary -- this module cannot initiate a trading action even in principle (CEO rule 10).
+
+## 9. Addendum (2026-08-04) -- legacy chat-ID fallback, cross-division exposure
+
+§4 named the registry-based sibling convention and explicitly left closing that gap "out of this
+phase's scope, [for] a future session ... if the CEO specifies it." The CEO specified it: the machine's
+persisted User-scope environment carries `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` (no suffix, set by
+the older ad-hoc PowerShell mechanism referenced in §1) but not `TELEGRAM_CHAT_ID_PRIMARY`, so
+`load_credentials_from_env()` failed if actually invoked.
+
+**Fix**: `credentials.py` now reads `TELEGRAM_CHAT_ID_PRIMARY` first; if unset, it falls back to
+`TELEGRAM_CHAT_ID`. Chosen over the alternative (set `TELEGRAM_CHAT_ID_PRIMARY` manually via `setx`,
+keep the old variable too) because it is a code-level fix, not a machine-state fix -- it holds on any
+machine that only ever had the old variable, with no manual step to lose or forget, while a
+canonically-named variable still takes priority the moment one is set. Still zero registry code (`winreg`
+still appears nowhere) -- both variables are read the same way, via `os.environ`.
+
+**Verified live**: a real message sent through `notify()` (not the ad-hoc PowerShell path) reached the
+configured chat, HTTP 200, `ok: true`, first attempt.
+
+**Cross-division exposure**: this package has zero runtime dependencies beyond the standard library and
+zero imports from the rest of `ai_trader` (confirmed by import, not merely by reading the source: a bare
+system Python interpreter with no project venv, invoked from a sibling repo's working directory,
+successfully imported and used it after only `sys.path.insert(0, ".../ai_quant_lab-research-main")` --
+no `pip install`, no `pandas`/`numpy`/MetaTrader5 needed). See `TELEGRAM_NOTIFIER_CROSS_DIVISION_USAGE.md`
+for the exact snippet and message-format convention other divisions should use.
+
+## 10. Standalone CLI script (2026-08-04) -- for divisions that can't import this repo at all
+
+The other divisions (Alpha, Statistician, Red Team, VE) run in separate repos and sessions -- some
+callers of this service will never be Python code inside `ai_quant_lab-research-main` at all. Rather
+than making each division vendor or submodule this package, a small standalone script,
+`C:\Users\MEDION GAMING\tools\notify.py`, lives **outside every repo** (not tracked by any of them) and
+wraps the official package: `sys.path`-imports `ai_trader.telegram_notifier` for credential validation
+and the send itself (no duplicated retry/redaction/HTTP logic), adds a direct `HKCU\Environment`
+registry read (`winreg`) so it never depends on a shell session's possibly-stale inherited environment,
+and exposes a plain CLI:
+
+```
+python notify.py "<DIVIZIE>" "<status line>" ["<commit>"] ["<verdict>"]
+```
+
+Exit codes are the contract: `0` sent, `1` usage error, `2` credentials missing, `3` send failed --
+reason always on stderr, never silent. Verified working from a directory with no repo checked out in
+it, and verified failing correctly (isolated, without touching the real registry) for both the missing-
+credentials and send-rejected cases. See `TELEGRAM_NOTIFIER_CROSS_DIVISION_USAGE.md` for the exact
+call other divisions should paste into their own directives.

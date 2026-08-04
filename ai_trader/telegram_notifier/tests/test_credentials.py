@@ -29,3 +29,21 @@ def test_missing_primary_chat_id_raises() -> None:
     env = {"TELEGRAM_BOT_TOKEN": "TOK"}
     with pytest.raises(MissingTelegramCredentialsError):
         load_credentials_from_env(env)
+
+
+def test_falls_back_to_legacy_chat_id_when_primary_is_unset() -> None:
+    env = {"TELEGRAM_BOT_TOKEN": "TOK", "TELEGRAM_CHAT_ID": "999"}
+    credentials = load_credentials_from_env(env)
+    assert credentials.primary_chat_id == "999"
+
+
+def test_primary_chat_id_takes_priority_over_legacy_when_both_are_set() -> None:
+    env = {"TELEGRAM_BOT_TOKEN": "TOK", "TELEGRAM_CHAT_ID_PRIMARY": "111", "TELEGRAM_CHAT_ID": "999"}
+    credentials = load_credentials_from_env(env)
+    assert credentials.primary_chat_id == "111"
+
+
+def test_missing_both_primary_and_legacy_chat_id_raises() -> None:
+    env = {"TELEGRAM_BOT_TOKEN": "TOK"}
+    with pytest.raises(MissingTelegramCredentialsError):
+        load_credentials_from_env(env)
