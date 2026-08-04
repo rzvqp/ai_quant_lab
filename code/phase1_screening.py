@@ -44,6 +44,8 @@ from institutional_levels import LevelKind, compute_prior_day_levels, detect_lev
 from imbalance_mechanics import FVGKind, detect_fvgs, detect_fvg_reactions
 from order_block_void import OrderBlockKind, detect_liquidity_voids
 from order_flow import detect_demand_zones, detect_mitigations, detect_order_blocks, detect_rejections
+from market_structure import BreakKind, SwingKind, detect_breaks, detect_swings, label_structure
+from liquidity_mechanics import LiquidityPool, PoolSide, PoolTier, build_pools, detect_sweeps
 from pdh_pdl_demo_engine import DemoSignal, DemoTradeResult, ExitReason, simulate_demo_trades
 from dynamic_exit_engine import simulate_demo_trades_dynamic
 
@@ -80,8 +82,8 @@ class RegimeData:
         self.horizon_override: int | None = None     # v3: dacă e setat, time-stop = min(entry+H, n-1)
 
     def sig(self, entry_idx: int, direction: int, stop_price: float, target_price: float,
-            block_horizon: bool = False) -> DemoSignal | None:
-        """time-stop: `horizon_override` (v3, fixed bar-count) > block (n-1) > zi (`eod`)."""
+            block_horizon: bool = False, horizon_bars: int | None = None) -> DemoSignal | None:
+        """time-stop: `horizon_override` (v3, extern) > `horizon_bars` (per-semnal, fix) > block (n-1) > zi (`eod`)."""
         if entry_idx >= self.n:
             return None
         a = float(self.atr[entry_idx - 1]) if entry_idx - 1 >= 0 else float("nan")
@@ -89,6 +91,8 @@ class RegimeData:
             return None
         if self.horizon_override is not None:
             dend = min(entry_idx + self.horizon_override, self.n - 1)
+        elif horizon_bars is not None:
+            dend = min(entry_idx + horizon_bars, self.n - 1)
         elif block_horizon:
             dend = self.n - 1
         else:
@@ -492,6 +496,207 @@ def gen_cand0019_dz_level_confluence(rd: RegimeData) -> list[DemoSignal]:
     return out
 
 
+# ══════════ lot 3 (CAND-0020..0025): sweep-uri, pool-uri, BOS/CHoCH ══════════
+GROUP_A_HORIZON = 20
+_C22_AMBIGUOUS: dict[str, int] = {}                        # audit F4: bare cu CHoCH dublu-semn, per regim
+
+
+def _pools(rd: RegimeData) -> list[LiquidityPool]:
+    sw = label_structure(detect_swings(rd.h, rd.l, [Block(0, rd.n)], k=2))
+    return build_pools(sw, PoolTier.EXTERNAL)
+
+
+def _nearest_pool(pools: list[LiquidityPool], side: PoolSide, entry_price: float, d: int, at_bar: int) -> float | None:
+    """Prețul celui mai apropiat pool de partea `side`, disponibil (available_idx<=at_bar), dincolo de entry în
+    direcția d. None dacă niciunul (→ backstop de orizont)."""
+    best: float | None = None
+    bestd = 0.0
+    for p in pools:
+        if p.side is not side or p.available_idx > at_bar:
+            continue
+        if (d > 0 and p.price <= entry_price) or (d < 0 and p.price >= entry_price):
+            continue
+        dd = abs(p.price - entry_price)
+        if best is None or dd < bestd:
+            best = p.price; bestd = dd
+    return best
+
+
+def _pool_target(rd: RegimeData, pools: list[LiquidityPool], d: int, entry_price: float, at_bar: int) -> float:
+    """Ținta = cel mai apropiat pool opus SAU (dacă niciunul) o valoare inaccesibilă → doar stop/time-stop 20-bare."""
+    side = PoolSide.ABOVE if d > 0 else PoolSide.BELOW
+    tgt = _nearest_pool(pools, side, entry_price, d, at_bar)
+    return tgt if tgt is not None else (entry_price + 1e9 if d > 0 else entry_price - 1e9)
+
+
+def gen_cand0020_sweep_return(rd: RegimeData) -> list[DemoSignal]:
+    """Sweep wick (close-back-inside) → reversie. BELOW→long, ABOVE→short; stop=extrema măturată (low/high[c]);
+    țintă=cel mai apropiat pool OPUS OR orizont 20-bare."""
+    blk = [Block(0, rd.n)]
+    pools = _pools(rd)
+    out: list[DemoSignal] = []
+    for ev in detect_sweeps(rd.h, rd.l, rd.c, pools, blk, require_close_back_inside=True):
+        c = ev.idx
+        d = 1 if ev.pool.side is PoolSide.BELOW else -1
+        stop = rd.l[c] if d > 0 else rd.h[c]
+        entry = c + 1
+        if entry >= rd.n:
+            continue
+        s = rd.sig(entry, d, float(stop), _pool_target(rd, pools, d, float(rd.o[entry]), c), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0021_bos_retest(rd: RegimeData) -> list[DemoSignal]:
+    """BOS → primul retest (bara j>b cu low[j]<=P<=high[j]) în ≤20 bare; continuare. stop=extrema barei de
+    retest; țintă=pool în DIRECȚIA trendului OR 20-bare."""
+    blk = [Block(0, rd.n)]
+    sw = label_structure(detect_swings(rd.h, rd.l, blk, k=2))
+    pools = build_pools(sw, PoolTier.EXTERNAL)
+    out: list[DemoSignal] = []
+    for br in detect_breaks(rd.c, sw, blk):
+        d = 1 if br.kind is BreakKind.BOS_BULL else (-1 if br.kind is BreakKind.BOS_BEAR else 0)
+        if d == 0:
+            continue
+        P = br.reference_swing.price; b = br.idx; j = -1
+        for k in range(b + 1, min(b + GROUP_A_HORIZON, rd.n - 1) + 1):
+            if rd.l[k] <= P <= rd.h[k]:
+                j = k; break
+        if j < 0:
+            continue
+        entry = j + 1
+        if entry >= rd.n:
+            continue
+        stop = rd.l[j] if d > 0 else rd.h[j]
+        s = rd.sig(entry, d, float(stop), _pool_target(rd, pools, d, float(rd.o[entry]), j), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0022_choch_reversal(rd: RegimeData) -> list[DemoSignal]:
+    """CHoCH auto-declanșator. F4: bare cu CHoCH de AMBELE semne (CHOCH_BULL ȘI CHOCH_BEAR la același idx) →
+    NO TRADE (ambigue); numărul lor = câmp de audit. stop=extrema celui mai recent swing de tip OPUS înainte de c;
+    țintă=pool opus OR 20-bare."""
+    blk = [Block(0, rd.n)]
+    sw = label_structure(detect_swings(rd.h, rd.l, blk, k=2))
+    breaks = detect_breaks(rd.c, sw, blk)
+    pools = build_pools(sw, PoolTier.EXTERNAL)
+    by_bar: dict[int, set[BreakKind]] = {}
+    for b in breaks:
+        by_bar.setdefault(b.idx, set()).add(b.kind)
+    ambiguous = {c for c, ks in by_bar.items() if BreakKind.CHOCH_BULL in ks and BreakKind.CHOCH_BEAR in ks}
+    _C22_AMBIGUOUS[rd.label] = len(ambiguous)                # audit F4
+    out: list[DemoSignal] = []
+    for br in breaks:
+        if br.idx in ambiguous:                             # F4 no-trade pe bara ambiguă
+            continue
+        d = 1 if br.kind is BreakKind.CHOCH_BULL else (-1 if br.kind is BreakKind.CHOCH_BEAR else 0)
+        if d == 0:
+            continue
+        c = br.idx; entry = c + 1
+        if entry >= rd.n:
+            continue
+        want = SwingKind.LOW if d > 0 else SwingKind.HIGH   # stop = swing OPUS cel mai recent înainte de c
+        opp = [s for s in sw if s.confirmed_idx < c and s.kind is want]
+        if not opp:
+            continue
+        stop = max(opp, key=lambda s: s.idx).price
+        s = rd.sig(entry, d, float(stop), _pool_target(rd, pools, d, float(rd.o[entry]), c), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0023_level_bos_confluence(rd: RegimeData) -> list[DemoSignal]:
+    """BOS confluent cu atingere de nivel PE ACEEAȘI bară, aliniate: BOS_BULL×PDL→long, BOS_BEAR×PDH→short.
+    stop=nivelul (rupt/atins); țintă=nivelul opus al zilei; time-stop de ZI."""
+    blk = [Block(0, rd.n)]
+    sw = label_structure(detect_swings(rd.h, rd.l, blk, k=2))
+    breaks = detect_breaks(rd.c, sw, blk)
+    levels = compute_prior_day_levels(rd.h, rd.l, rd.day.tolist(), blk)
+    opp = _opp_level_map(levels)
+    touch_at = {t.touch_idx: t for t in detect_level_touches(rd.h, rd.l, levels, rd.day.tolist(), blk)}
+    out: list[DemoSignal] = []
+    for br in breaks:
+        d = 1 if br.kind is BreakKind.BOS_BULL else (-1 if br.kind is BreakKind.BOS_BEAR else 0)
+        if d == 0:
+            continue
+        t = touch_at.get(br.idx)
+        if t is None:
+            continue
+        if d > 0 and t.level.kind is LevelKind.PDL:
+            stop = t.level.price; tgt = opp.get(t.level.source_period_start, {}).get("PDH")
+        elif d < 0 and t.level.kind is LevelKind.PDH:
+            stop = t.level.price; tgt = opp.get(t.level.source_period_start, {}).get("PDL")
+        else:
+            continue
+        if tgt is None:
+            continue
+        s = rd.sig(br.idx + 1, d, float(stop), float(tgt))   # time-stop de ZI
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0024_sweep_fvg_confluence(rd: RegimeData) -> list[DemoSignal]:
+    """Sweep × FVG de polaritate potrivită (suprapune bara de sweep, confirmat<=c). stop=min/max(extrema sweep,
+    FVG edge); țintă=near edge FVG OR 20-bare."""
+    blk = [Block(0, rd.n)]
+    pools = _pools(rd)
+    fvgs = detect_fvgs(rd.h, rd.l, blk)
+    out: list[DemoSignal] = []
+    for ev in detect_sweeps(rd.h, rd.l, rd.c, pools, blk, require_close_back_inside=True):
+        c = ev.idx
+        d = 1 if ev.pool.side is PoolSide.BELOW else -1
+        want = FVGKind.BULLISH if d > 0 else FVGKind.BEARISH
+        f = next((g for g in fvgs if g.kind is want and g.confirmed_idx <= c
+                  and g.lower <= rd.h[c] and g.upper >= rd.l[c]), None)
+        if f is None:
+            continue
+        entry = c + 1
+        if entry >= rd.n:
+            continue
+        if d > 0:
+            stop = min(rd.l[c], f.lower); tgt = f.upper
+        else:
+            stop = max(rd.h[c], f.upper); tgt = f.lower
+        s = rd.sig(entry, d, float(stop), float(tgt), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0025_sweep_ob_confluence(rd: RegimeData) -> list[DemoSignal]:
+    """Sweep în OB de polaritate potrivită (corpul OB conține extrema măturată, formation<c). stop=podeaua mai
+    adâncă min(Low_OB, low[c]); țintă=latura îndepărtată a corpului OB OR 20-bare."""
+    blk = [Block(0, rd.n)]
+    pools = _pools(rd)
+    obs = detect_order_blocks(rd.o, rd.h, rd.l, rd.c, rd.n)
+    out: list[DemoSignal] = []
+    for ev in detect_sweeps(rd.h, rd.l, rd.c, pools, blk, require_close_back_inside=True):
+        c = ev.idx
+        d = 1 if ev.pool.side is PoolSide.BELOW else -1
+        want = OrderBlockKind.BULLISH if d > 0 else OrderBlockKind.BEARISH
+        sx = rd.l[c] if d > 0 else rd.h[c]
+        ob = next((o for o in obs if o.kind is want and o.formation_idx < c
+                   and o.zone_lower <= sx <= o.zone_upper), None)
+        if ob is None:
+            continue
+        entry = c + 1
+        if entry >= rd.n:
+            continue
+        if d > 0:
+            stop = min(rd.l[ob.formation_idx], rd.l[c]); tgt = ob.zone_upper
+        else:
+            stop = max(rd.h[ob.formation_idx], rd.h[c]); tgt = ob.zone_lower
+        s = rd.sig(entry, d, float(stop), float(tgt), horizon_bars=GROUP_A_HORIZON)
+        if s is not None:
+            out.append(s)
+    return out
+
+
 def _run_fixed(gen: GateFn) -> RunFn:
     def r(rd: RegimeData) -> tuple[list[DemoSignal], list[DemoTradeResult]]:
         sigs = gen(rd)
@@ -526,6 +731,12 @@ CANDIDATES: list[tuple[str, str, RunFn]] = [
     ("CAND-0017", "DZ-FVG-CONFLUENCE", _run_fixed(gen_cand0017_dz_fvg_confluence)),
     ("CAND-0018", "OBREJ-VOID-CONFLUENCE", _run_fixed(gen_cand0018_obrej_void_confluence)),
     ("CAND-0019", "DZ-LEVEL-CONFLUENCE", _run_fixed(gen_cand0019_dz_level_confluence)),
+    ("CAND-0020", "LIQUIDITY-SWEEP-RETURN", _run_fixed(gen_cand0020_sweep_return)),
+    ("CAND-0021", "BOS-RETEST", _run_fixed(gen_cand0021_bos_retest)),
+    ("CAND-0022", "CHOCH-REVERSAL", _run_fixed(gen_cand0022_choch_reversal)),
+    ("CAND-0023", "LEVEL-BOS-CONFLUENCE", _run_fixed(gen_cand0023_level_bos_confluence)),
+    ("CAND-0024", "SWEEP-FVG-CONFLUENCE", _run_fixed(gen_cand0024_sweep_fvg_confluence)),
+    ("CAND-0025", "SWEEP-OB-CONFLUENCE", _run_fixed(gen_cand0025_sweep_ob_confluence)),
 ]
 
 
@@ -649,6 +860,11 @@ def main() -> int:
         print("    " + "  ".join(yr_bits))
         print(f"  regimuri pozitive: {g['positive_regimes']}/3  " +
               "  ".join(f"{r}:{g['by_regime'][r].get('net_R','n0')}" for r in REGIMES))
+
+    out["CAND-0022_F4_audit"] = {"ambiguous_dual_sign_choch_bars_per_regime": dict(_C22_AMBIGUOUS),
+                                 "total": sum(_C22_AMBIGUOUS.values())}
+    print(f"\n### AUDIT F4 (CAND-0022) — bare cu CHoCH dublu-semn (NO-TRADE): "
+          f"{dict(_C22_AMBIGUOUS)} | total={sum(_C22_AMBIGUOUS.values())}")
 
     path = os.path.join(_ROOT, "reports", "phase1_screening_results.json")
     os.makedirs(os.path.dirname(path), exist_ok=True)
