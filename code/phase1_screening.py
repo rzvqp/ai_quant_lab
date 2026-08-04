@@ -46,6 +46,9 @@ from order_block_void import OrderBlockKind, detect_liquidity_voids
 from order_flow import detect_demand_zones, detect_mitigations, detect_order_blocks, detect_rejections
 from market_structure import BreakKind, SwingKind, detect_breaks, detect_swings, label_structure
 from liquidity_mechanics import LiquidityPool, PoolSide, PoolTier, build_pools, detect_sweeps
+from session_levels import (SessionLevel, SessionLevelKind, compute_prior_session_levels,
+                            derive_session_index, detect_session_level_touches, detect_session_mid_touches,
+                            session_labels)
 from pdh_pdl_demo_engine import DemoSignal, DemoTradeResult, ExitReason, simulate_demo_trades
 from dynamic_exit_engine import simulate_demo_trades_dynamic
 
@@ -76,14 +79,20 @@ def _eod_per_bar(day: np.ndarray, n: int) -> np.ndarray:
 class RegimeData:
     """Barele + derivatele unui regim (bloc unic), sursă comună pt. generatoarele de semnal."""
     def __init__(self, label: str, o: list[float], h: list[float], l: list[float], c: list[float],
-                 tm: list[int], atr: np.ndarray, day: np.ndarray, eod: np.ndarray, year: np.ndarray, n: int) -> None:
+                 tm: list[int], atr: np.ndarray, day: np.ndarray, eod: np.ndarray, year: np.ndarray, n: int,
+                 session_index: list[int], session_label: list[str], session_eod: np.ndarray,
+                 bias_up: np.ndarray, bias_dn: np.ndarray) -> None:
         self.label = label; self.o = o; self.h = h; self.l = l; self.c = c; self.tm = tm
         self.atr = atr; self.day = day; self.eod = eod; self.year = year; self.n = n
+        self.session_index = session_index; self.session_label = session_label; self.session_eod = session_eod
+        self.bias_up = bias_up; self.bias_dn = bias_dn
         self.horizon_override: int | None = None     # v3: dacă e setat, time-stop = min(entry+H, n-1)
 
     def sig(self, entry_idx: int, direction: int, stop_price: float, target_price: float,
-            block_horizon: bool = False, horizon_bars: int | None = None) -> DemoSignal | None:
-        """time-stop: `horizon_override` (v3, extern) > `horizon_bars` (per-semnal, fix) > block (n-1) > zi (`eod`)."""
+            block_horizon: bool = False, horizon_bars: int | None = None,
+            day_end_override: int | None = None) -> DemoSignal | None:
+        """time-stop: `horizon_override` (v3) > `day_end_override` (explicit, ex. graniță de sesiune) >
+        `horizon_bars` (fix) > block (n-1) > zi (`eod`)."""
         if entry_idx >= self.n:
             return None
         a = float(self.atr[entry_idx - 1]) if entry_idx - 1 >= 0 else float("nan")
@@ -91,6 +100,8 @@ class RegimeData:
             return None
         if self.horizon_override is not None:
             dend = min(entry_idx + self.horizon_override, self.n - 1)
+        elif day_end_override is not None:
+            dend = min(max(day_end_override, entry_idx), self.n - 1)
         elif horizon_bars is not None:
             dend = min(entry_idx + horizon_bars, self.n - 1)
         elif block_horizon:
@@ -697,6 +708,188 @@ def gen_cand0025_sweep_ob_confluence(rd: RegimeData) -> list[DemoSignal]:
     return out
 
 
+# ══════════ lot 4 (CAND-0026..0031): niveluri de SESIUNE, primitiva A ══════════
+_SH, _SL, _SM = SessionLevelKind.SESSION_HIGH, SessionLevelKind.SESSION_LOW, SessionLevelKind.SESSION_MID
+
+
+def _session_ctx(rd: RegimeData) -> tuple[dict[int, dict[SessionLevelKind, float]], list[Any], list[Any]]:
+    lv = compute_prior_session_levels(rd.h, rd.l, rd.session_index, rd.session_label, [Block(0, rd.n)])
+    src: dict[int, dict[SessionLevelKind, float]] = {}
+    for x in lv:
+        src.setdefault(x.source_session_start, {})[x.kind] = x.price
+    return src, list(detect_session_level_touches(rd.h, rd.l, lv)), list(detect_session_mid_touches(rd.h, rd.l, lv))
+
+
+def gen_cand0027_session_touch(rd: RegimeData) -> list[DemoSignal]:
+    """Atingere de nivel de sesiune (analog PDH/PDL): HIGH→short, LOW→long. stop=extrema barei de atingere;
+    țintă=extrema OPUSĂ a aceleiași sesiuni-sursă; time-stop = granița de sesiune."""
+    src, hl, _ = _session_ctx(rd)
+    out: list[DemoSignal] = []
+    for t in hl:
+        lv = t.level; j = t.touch_idx
+        if lv.kind is _SH:
+            d = -1; stop = rd.h[j]; tgt = src[lv.source_session_start].get(_SL)
+        else:
+            d = 1; stop = rd.l[j]; tgt = src[lv.source_session_start].get(_SH)
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt), day_end_override=lv.expiry_idx)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0026_session_sweep(rd: RegimeData) -> list[DemoSignal]:
+    """Sweep de nivel de sesiune = atingere + close-back-inside pe ACEEAȘI bară (⊂ CAND-0027). Închidere DINCOLO
+    (break) → NO TRADE. Reversie: HIGH→short, LOW→long."""
+    src, hl, _ = _session_ctx(rd)
+    out: list[DemoSignal] = []
+    for t in hl:
+        lv = t.level; j = t.touch_idx
+        if lv.kind is _SH:
+            if not (rd.c[j] < lv.price):                        # close-back-inside; altfel break → no trade
+                continue
+            d = -1; stop = rd.h[j]; tgt = src[lv.source_session_start].get(_SL)
+        else:
+            if not (rd.c[j] > lv.price):
+                continue
+            d = 1; stop = rd.l[j]; tgt = src[lv.source_session_start].get(_SH)
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt), day_end_override=lv.expiry_idx)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0028_session_mid(rd: RegimeData) -> list[DemoSignal]:
+    """Reacție la Mid (conținere). Direcție DECLARATĂ de latura de apropiere: close[j-1]>Mid→long (Mid ca suport),
+    <Mid→short, ==Mid→NO TRADE. stop=extrema OPUSĂ (far) a barei de conținere; țintă=extrema sesiunii în direcție."""
+    src, _, mid = _session_ctx(rd)
+    out: list[DemoSignal] = []
+    for t in mid:
+        lv = t.level; j = t.touch_idx
+        if j - 1 < 0:
+            continue
+        prev = rd.c[j - 1]; m = lv.price
+        if prev > m:
+            d = 1; stop = rd.l[j]; tgt = src[lv.source_session_start].get(_SH)
+        elif prev < m:
+            d = -1; stop = rd.h[j]; tgt = src[lv.source_session_start].get(_SL)
+        else:
+            continue                                            # tie → no trade
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt), day_end_override=lv.expiry_idx)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0029_session_pdhpdl(rd: RegimeData) -> list[DemoSignal]:
+    """Confluență nivel-sesiune × PDH/PDL PE ACEEAȘI bară, aliniate (HIGH×PDH→short, LOW×PDL→long). stop=extrema
+    barei; țintă=nivelul opus al ZILEI; time-stop de ZI (singurul cu horizon de zi)."""
+    src, hl, _ = _session_ctx(rd)
+    blk = [Block(0, rd.n)]
+    levels = compute_prior_day_levels(rd.h, rd.l, rd.day.tolist(), blk)
+    opp = _opp_level_map(levels)
+    day_touch = {dt.touch_idx: dt for dt in detect_level_touches(rd.h, rd.l, levels, rd.day.tolist(), blk)}
+    out: list[DemoSignal] = []
+    for t in hl:
+        lv = t.level; j = t.touch_idx
+        dt = day_touch.get(j)
+        if dt is None:
+            continue
+        if lv.kind is _SH and dt.level.kind is LevelKind.PDH:
+            d = -1; stop = rd.h[j]; tgt = opp.get(dt.level.source_period_start, {}).get("PDL")
+        elif lv.kind is _SL and dt.level.kind is LevelKind.PDL:
+            d = 1; stop = rd.l[j]; tgt = opp.get(dt.level.source_period_start, {}).get("PDH")
+        else:
+            continue
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt))           # time-stop de ZI
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0030_session_fvg(rd: RegimeData) -> list[DemoSignal]:
+    """Nivel-sesiune × FVG de polaritate potrivită (bara de atingere suprapune FVG, confirmat<=j). stop=mai adânc
+    (extrema barei / margine FVG); țintă=extrema opusă a sesiunii; time-stop de sesiune."""
+    src, hl, _ = _session_ctx(rd)
+    fvgs = detect_fvgs(rd.h, rd.l, [Block(0, rd.n)])
+    out: list[DemoSignal] = []
+    for t in hl:
+        lv = t.level; j = t.touch_idx
+        want = FVGKind.BEARISH if lv.kind is _SH else FVGKind.BULLISH
+        f = next((g for g in fvgs if g.kind is want and g.confirmed_idx <= j
+                  and g.lower <= rd.h[j] and g.upper >= rd.l[j]), None)
+        if f is None:
+            continue
+        if lv.kind is _SH:
+            d = -1; stop = max(rd.h[j], f.upper); tgt = src[lv.source_session_start].get(_SL)
+        else:
+            d = 1; stop = min(rd.l[j], f.lower); tgt = src[lv.source_session_start].get(_SH)
+        if tgt is None:
+            continue
+        s = rd.sig(j + 1, d, float(stop), float(tgt), day_end_override=lv.expiry_idx)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def gen_cand0031_session_ob(rd: RegimeData) -> list[DemoSignal]:
+    """Nivel-sesiune × OB de polaritate potrivită (corpul OB conține prețul nivelului, formation<j). stop=mai adânc
+    (podeaua OB / extrema barei); țintă=latura îndepărtată a corpului OB; time-stop de sesiune."""
+    src, hl, _ = _session_ctx(rd)
+    obs = detect_order_blocks(rd.o, rd.h, rd.l, rd.c, rd.n)
+    out: list[DemoSignal] = []
+    for t in hl:
+        lv = t.level; j = t.touch_idx
+        want = OrderBlockKind.BEARISH if lv.kind is _SH else OrderBlockKind.BULLISH
+        ob = next((o for o in obs if o.kind is want and o.formation_idx < j
+                   and o.zone_lower <= lv.price <= o.zone_upper), None)
+        if ob is None:
+            continue
+        if lv.kind is _SH:
+            d = -1; stop = max(rd.h[ob.formation_idx], rd.h[j]); tgt = ob.zone_lower
+        else:
+            d = 1; stop = min(rd.l[ob.formation_idx], rd.l[j]); tgt = ob.zone_upper
+        s = rd.sig(j + 1, d, float(stop), float(tgt), day_end_override=lv.expiry_idx)
+        if s is not None:
+            out.append(s)
+    return out
+
+
+def session_funnel(regimes: list[RegimeData]) -> dict[str, Any]:
+    """Palnia Statisticianului per tip de nivel (High/Low/Mid SEPARAT): emise → atinse geometric → aliniate la bias.
+    Aliniat: HIGH→bias jos (short), LOW→bias sus (long), MID→bias = direcția declarată de apropiere (close[j-1] vs Mid)."""
+    kinds = [_SH, _SL, _SM]
+    agg = {k: {"emitted": 0, "touched": 0, "aligned": 0} for k in kinds}
+    per_regime: dict[str, Any] = {}
+    for rd in regimes:
+        lv = compute_prior_session_levels(rd.h, rd.l, rd.session_index, rd.session_label, [Block(0, rd.n)])
+        f = {k: {"emitted": 0, "touched": 0, "aligned": 0} for k in kinds}
+        for x in lv:
+            f[x.kind]["emitted"] += 1
+        for t in detect_session_level_touches(rd.h, rd.l, lv):
+            k = t.level.kind; j = t.touch_idx; f[k]["touched"] += 1
+            if (k is _SH and rd.bias_dn[j]) or (k is _SL and rd.bias_up[j]):
+                f[k]["aligned"] += 1
+        for t in detect_session_mid_touches(rd.h, rd.l, lv):
+            j = t.touch_idx; f[_SM]["touched"] += 1
+            if j - 1 >= 0:
+                prev = rd.c[j - 1]; m = t.level.price
+                if (prev > m and rd.bias_up[j]) or (prev < m and rd.bias_dn[j]):
+                    f[_SM]["aligned"] += 1
+        per_regime[rd.label] = {k.value: v for k, v in f.items()}
+        for k in kinds:
+            for m2 in ("emitted", "touched", "aligned"):
+                agg[k][m2] += f[k][m2]
+    return {"per_regime": per_regime, "aggregate": {k.value: v for k, v in agg.items()}}
+
+
 def _run_fixed(gen: GateFn) -> RunFn:
     def r(rd: RegimeData) -> tuple[list[DemoSignal], list[DemoTradeResult]]:
         sigs = gen(rd)
@@ -737,6 +930,12 @@ CANDIDATES: list[tuple[str, str, RunFn]] = [
     ("CAND-0023", "LEVEL-BOS-CONFLUENCE", _run_fixed(gen_cand0023_level_bos_confluence)),
     ("CAND-0024", "SWEEP-FVG-CONFLUENCE", _run_fixed(gen_cand0024_sweep_fvg_confluence)),
     ("CAND-0025", "SWEEP-OB-CONFLUENCE", _run_fixed(gen_cand0025_sweep_ob_confluence)),
+    ("CAND-0026", "SESSION-SWEEP-REVERSAL", _run_fixed(gen_cand0026_session_sweep)),
+    ("CAND-0027", "SESSION-TOUCH-REJECTION", _run_fixed(gen_cand0027_session_touch)),
+    ("CAND-0028", "SESSION-MID-REACTION", _run_fixed(gen_cand0028_session_mid)),
+    ("CAND-0029", "SESSION-PDHPDL-CONFLUENCE", _run_fixed(gen_cand0029_session_pdhpdl)),
+    ("CAND-0030", "SESSION-FVG-CONFLUENCE", _run_fixed(gen_cand0030_session_fvg)),
+    ("CAND-0031", "SESSION-OB-CONFLUENCE", _run_fixed(gen_cand0031_session_ob)),
 ]
 
 
@@ -808,11 +1007,33 @@ def _metrics(rows: list[tuple[int, str, DemoTradeResult]]) -> dict[str, Any]:
     return base
 
 
+def _htf_trend(dfh: Any, period: int) -> Any:
+    ema20 = dfh["close"].ewm(span=20).mean(); ema50 = dfh["close"].ewm(span=50).mean()
+    tu = (ema20 > ema50).astype(float)
+    avail = dfh["time"].shift(-1); avail.iloc[-1] = int(dfh["time"].iloc[-1]) + period
+    return pd.DataFrame({"avail": avail.astype("int64"), "trend_up": tu.to_numpy()})
+
+
+def _session_eod(sidx: list[int], n: int) -> np.ndarray:
+    eod = np.empty(n, dtype=np.int64); last = n - 1
+    for j in range(n - 1, -1, -1):
+        if j < n - 1 and sidx[j] != sidx[j + 1]:
+            last = j
+        eod[j] = last
+    return eod
+
+
 def load_regimes() -> list[RegimeData]:
     dfm, _ = load("M15_v2", data_split_id=PRE_HOLDOUT_SPLIT_ID, cutoff=RESEARCH_HOLDOUT_CUTOFF_UTC)
+    dfh1, _ = load("H1_from_M15_v2", data_split_id=PRE_HOLDOUT_SPLIT_ID, cutoff=RESEARCH_HOLDOUT_CUTOFF_UTC)
+    dfh4, _ = load("H4_from_M15_v2", data_split_id=PRE_HOLDOUT_SPLIT_ID, cutoff=RESEARCH_HOLDOUT_CUTOFF_UTC)
     if len(dfm) != 130_491:
         raise SystemExit(f"STOP: M15 {len(dfm)}.")
     dfm = dfm.sort_values("time").reset_index(drop=True)
+    for name, dfh, per in (("h1", dfh1, 3600), ("h4", dfh4, 4 * 3600)):     # bias context-derived, forward-safe
+        htf = _htf_trend(dfh, per).sort_values("avail")
+        dfm = pd.merge_asof(dfm, htf.rename(columns={"trend_up": name}), left_on="time", right_on="avail",
+                            direction="backward").drop(columns="avail")
     t_all = dfm["time"].to_numpy()
     manifest = SM.load_manifest()
     segs = [s for s in manifest["timeframes"]["M15_v2"]["regime_segments"] if "discovery_range" in s]
@@ -825,10 +1046,16 @@ def load_regimes() -> list[RegimeData]:
             raise SystemExit(f"STOP: {rlabel} {len(sub)} bare.")
         n = len(sub)
         day = _day_index(sub["time"])
+        tm = [int(x) for x in sub["time"].tolist()]
+        sidx = derive_session_index(tm); slab = session_labels(tm)
+        h1 = sub["h1"].to_numpy(); h4 = sub["h4"].to_numpy()
+        bias_up = (h1 > 0.5) & (h4 > 0.5)
+        bias_dn = (h1 <= 0.5) & (h4 <= 0.5) & np.isfinite(h1) & np.isfinite(h4)
         regimes.append(RegimeData(
             rlabel, sub["open"].tolist(), sub["high"].tolist(), sub["low"].tolist(), sub["close"].tolist(),
-            [int(x) for x in sub["time"].tolist()], sub["atr14"].to_numpy(), day, _eod_per_bar(day, n),
-            pd.to_datetime(sub["time"], unit="s", utc=True).dt.year.to_numpy(), n))
+            tm, sub["atr14"].to_numpy(), day, _eod_per_bar(day, n),
+            pd.to_datetime(sub["time"], unit="s", utc=True).dt.year.to_numpy(), n,
+            sidx, slab, _session_eod(sidx, n), bias_up, bias_dn))
     return regimes
 
 
@@ -865,6 +1092,16 @@ def main() -> int:
                                  "total": sum(_C22_AMBIGUOUS.values())}
     print(f"\n### AUDIT F4 (CAND-0022) — bare cu CHoCH dublu-semn (NO-TRADE): "
           f"{dict(_C22_AMBIGUOUS)} | total={sum(_C22_AMBIGUOUS.values())}")
+
+    # PALNIA de sesiune (predicția Statisticianului) — per tip de nivel, High/Low/Mid SEPARAT
+    funnel = session_funnel(regimes)
+    out["session_funnel"] = funnel
+    print("\n### PALNIA DE SESIUNE (emise → atinse geometric → aliniate la bias), per tip (agregat) ###")
+    for kind, v in funnel["aggregate"].items():
+        em, tc, al = v["emitted"], v["touched"], v["aligned"]
+        print(f"  {kind:13s} emise={em:5d} → atinse={tc:5d} ({100.0*tc/em:.1f}%) → aliniate={al:4d} "
+              f"({100.0*al/em:.1f}% din emise, {100.0*al/tc if tc else 0:.1f}% din atinse)")
+    print("  (PWH/PWL: 6/275=2,2% aliniate; predicție Statistician: SESIUNILE suferă CEL MAI PUȚIN — perioada cea mai scurtă)")
 
     path = os.path.join(_ROOT, "reports", "phase1_screening_results.json")
     os.makedirs(os.path.dirname(path), exist_ok=True)
