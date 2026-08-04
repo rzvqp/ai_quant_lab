@@ -8,15 +8,36 @@ Flow A does not wait.
 **Ratified detector modules available** (verified 2026): `institutional_levels.py` (MK-04, PDH/PDL/weekly,
 partial-ratified), `market_state.py` (compression/expansion/sessions, ratified Statistician v2.6.1),
 `imbalance_mechanics.py` (MK-03 FVG/BPR, CLOSED v2.5.6), `order_block_void.py` (liquidity void,
-ratified), `order_flow.py` (order blocks, ratified — but the OB family is directive-BLOCKED).
-**NOT ratified (draft — not built on):** `market_structure.py` (MK-01), `liquidity_mechanics.py` (MK-02).
+ratified), `order_flow.py` (order blocks, ratified — OB primitives directive-UNBLOCKED as anchors),
+**`market_structure.py` (MK-01, RATIFIED — swings HH/HL/LH/LL, body-BOS, CHoCH; cascade semantics v2.7.38)
+and `liquidity_mechanics.py` (MK-02, RATIFIED — liquidity pools, wick-sweep, D7 consumption).**
+
+> **⚠ MK-01/MK-02 stale-header flag (Flow A, 2026-08-04).** The CEO declares MK-01/MK-02 RATIFIED
+> (fidelity 7/7 Statistician, 12/12 VE, three Red Team attacks). The git history at
+> `000022555e7344ccc89862dbb2091795ccbad25a` corroborates it exactly (`0000225` = "MK-01 cascade break
+> semantics v2.7.38 + cascade-frequency measurement"; `f4f8fab`/`f9f910b` = Red Team F2/F3). **BUT the two
+> module headers at that commit STILL carry the boilerplate line "DRAFT DE REFERINȚĂ. Nu e cod verificat.
+> Necesită… ratificare."** Flow A treats the CEO directive + verification history as authoritative and
+> cites `0000225` with freshly-computed hashes; **the stale DRAFT header line should be updated at source.**
+> Flagged per fail-closed discipline, not circumvented.
+>
+> **Two ratified limitations carried on every MK candidate (known, not repaired):** **D2** — MK-01's
+> strict-inequality tie-break means equal highs/lows never produce a swing, so `build_pools` can never
+> emit a pool on an equal-high/equal-low; measured selective cost 24.8%–59.7% of swings, biased against
+> exactly the equal-high/equal-low liquidity structures MK-02 models. Permanent interpretive restriction —
+> not circumvented, not compensated. **F4** — opposite-direction CHoCH can co-occur on one bar (more often
+> under the new semantics); any candidate whose direction reads CHoCH sign is FLAGGED and carries a
+> same-bar-collision → no-trade rule (only CAND-0022).
 
 **W10 handoff standard (mandatory, all policies):** every policy declares, for each cited primitive, a
 cross-repo reference block — `source_repository`, `source_branch`, `source_commit` (full hash),
 `source_file`, `primitive`, `source_hash` (sha256 of the file @ commit) — so a consumer verifies grounding
-without the files being co-located. The ratified primitives currently live on
-`alpha1/discovery-mk-matrix-v1` @ `8edbf9900b761b774b901a13a5b325be578468e6`, a **different branch** than
-these policies (`alpha-automation-v1`). Applied retroactively to CAND-0001/0002 and to every new candidate.
+without the files being co-located. The ratified primitives live on `alpha1/discovery-mk-matrix-v1`, a
+**different branch** than these policies (`alpha-automation-v1`). CAND-0001..0019 cite commit
+`8edbf9900b761b774b901a13a5b325be578468e6`; **the MK-01/MK-02 batch (CAND-0020..0025) cites the current
+branch tip `000022555e7344ccc89862dbb2091795ccbad25a`** (the ratified cascade-semantics commit — hashes
+recomputed at this commit, not assumed from `8edbf99`). Applied retroactively to CAND-0001/0002 and to
+every new candidate.
 
 **Standing gap affecting every candidate's Part B:** no ratified **structural** stop/exit primitive exists
 (fixed-ATR/RR is disqualified — identical 0.378–0.385 winrate across 6 mechanisms; the cited v8.5 M_031–
@@ -46,6 +67,12 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0017** | DZ-FVG-CONFLUENCE | zone_imbalance_confluence (Mod.5×MK-03 via Mod.7) | `POLICY_DZ_FVG_CONFLUENCE_v3.md` (v3.0; v2 superseded) | DEFINED (3-primitive interaction; demand-zone×FVG pair) | **COMPLETED — SCREENING** (structural: stop=min(DZ.lower,FVG.lower), exit=far side of combined zone; mgmt absent; 1R) · v3: live-valid exit adds 20-bar time-stop (GROUP_A_HORIZON), block-boundary removed | **DEFINED (SCREENING_BASELINE)** | **SURVIVED_RED_TEAM_A** (RT-OPS-AB-0003; W-incr ⊂CAND-0013) · Part B CONDITIONAL: 🔴 HARD GATE Finding H' (block-only time-stop is INERT live → no live-valid exit; if neither stop nor target-zone-edge is hit the trade NEVER closes; DEMO must bind a live time-stop, else DO NOT TRADE); S2 protected; bind S1 → Statistician |
 | **CAND-0018** | OBREJ-VOID-CONFLUENCE | rejection_at_discontinuity_confluence (Mod.5×Mod.5 via Mod.7) | `POLICY_OBREJ_VOID_CONFLUENCE_v3.md` (v3.0; v2 superseded) | DEFINED (3-primitive interaction; rejection×void pair) | **COMPLETED — SCREENING** (structural: stop=Low_OB breaker floor, target=OB body far edge; mgmt absent; 1R) · v3: live-valid exit adds 20-bar time-stop (GROUP_A_HORIZON), block-boundary removed | **DEFINED (SCREENING_BASELINE)** | **SURVIVED_RED_TEAM_A** (RT-OPS-AB-0003; W-incr ⊂CAND-0011) · Part B CONDITIONAL: 🔴 HARD GATE Finding H' (block-only time-stop is INERT live → no live-valid exit; if neither stop nor target-zone-edge is hit the trade NEVER closes; DEMO must bind a live time-stop, else DO NOT TRADE); S2 low; bind S1 → Statistician |
 | **CAND-0019** | DZ-LEVEL-CONFLUENCE | zone_at_level_confluence (Mod.5×MK-04 via Mod.7) | `POLICY_DZ_LEVEL_CONFLUENCE_v2.md` (v2.0; v1 = history) | DEFINED (3-primitive interaction; demand-zone×level pair) | **COMPLETED — SCREENING** (structural: stop=min(DZ.lower,low[touch]), exit=opposite prior-day level + day time-stop; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | **SURVIVED_RED_TEAM_A** (RT-OPS-AB-0003; W-incr ⊂CAND-0013) · Part B CONDITIONAL: day time-stop (day_index) is live-valid ✓; S2 protected; bind S1; possible R:R<1 → Statistician |
+| **CAND-0020** | LIQUIDITY-SWEEP-RETURN | liquidity_sweep_reversal (MK-02) | `POLICY_LIQUIDITY_SWEEP_RETURN_v1.md` | DEFINED (MK-02 wick-sweep, D6 lookahead-safe; no F4) | **COMPLETED — SCREENING** (structural: stop=swept wick extreme `low[c]`/`high[c]`, exit=nearest opposite pool OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-02 batch (`0000225`) · **D2 population restriction carried** (no equal-high/low pools) → Red Team |
+| **CAND-0021** | BOS-RETEST | structure_break_retest (MK-01 × Mod.7) | `POLICY_BOS_RETEST_v1.md` | DEFINED (MK-01 body-BOS + `price_in_zone` retest; no F4) | **COMPLETED — SCREENING** (structural: stop=retest-bar extreme `low[j]`/`high[j]`, exit=nearest trend-direction pool OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-01 batch (`0000225`) · D2 carried → Red Team |
+| **CAND-0022** | CHOCH-REVERSAL | change_of_character (MK-01) | `POLICY_CHOCH_REVERSAL_v1.md` | DEFINED (MK-01 CHoCH, self-triggering) · **⚠ F4-DEPENDENT** | **COMPLETED — SCREENING** (structural: stop=most-recent opposite-kind swing extreme, exit=nearest opposite pool OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** · **F4-FLAGGED** | NEW — MK-01 batch (`0000225`) · **F4 no-trade rule on same-bar dual-sign CHoCH; ambiguous-bar count = required audit field** · D2 carried → Red Team |
+| **CAND-0023** | LEVEL-BOS-CONFLUENCE | structure_break_at_level_confluence (MK-04×MK-01 via Mod.7) | `POLICY_LEVEL_BOS_CONFLUENCE_v1.md` | DEFINED (3-primitive; BOS at PDH/PDL; no F4) | **COMPLETED — SCREENING** (structural: stop=broken level, exit=opposite prior-day level + day time-stop; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-01×MK-04 batch (`0000225`) · **W-incr vs better of {CAND-0001, standalone BOS}** · D2 carried → Red Team |
+| **CAND-0024** | SWEEP-FVG-CONFLUENCE | sweep_imbalance_confluence (MK-02×MK-03 via Mod.7) | `POLICY_SWEEP_FVG_CONFLUENCE_v1.md` | DEFINED (3-primitive; sweep×FVG polarity-matched; no F4) | **COMPLETED — SCREENING** (structural: stop=min(low[c],FVG.lower), exit=FVG near edge OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-02×MK-03 batch (`0000225`) · **W-incr ⊂ better of {CAND-0020, CAND-0003}** · D2 carried → Red Team |
+| **CAND-0025** | SWEEP-OB-CONFLUENCE | sweep_at_orderblock_confluence (MK-02×Mod.5 via Mod.7) | `POLICY_SWEEP_OB_CONFLUENCE_v1.md` | DEFINED (3-primitive; sweep into OB, polarity-matched; no F4) | **COMPLETED — SCREENING** (structural: stop=min(Low_OB,low[c]) deeper floor, exit=OB body far edge OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — MK-02×Mod.5 batch (`0000225`) · **W-incr ⊂ better of {CAND-0020, CAND-0011}** · D2 carried → Red Team |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
@@ -56,15 +83,22 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `WAITING_FOR_NEW_PRIMITIVES` — distinct-mechanism space of current ratified primitives substantially covered (after CAND-0019)
+## STATE: `WAITING_FOR_NEW_PRIMITIVES` — MK-01/MK-02 base + confluence space covered (after CAND-0025)
 
-**CEO ruling (order_flow re-engineered primitives unblocked) applied** — E010/E013/E015/E016 stay blocked as hypotheses; `market_structure.py`, `liquidity_mechanics.py` remain DRAFT-forbidden.
+**CEO ruling applied (2026-08-04): MK-01/MK-02 RATIFIED, production resumed.** E010/E013/E015/E016 stay blocked as hypotheses. Stale-header flag raised (see top). D2 + F4 limitations carried, not repaired.
 
-**Covered (19 candidates):** all base reaction families — level (0001), FVG (0003), OB-rejection (0011), OB-mitigation (0014), demand-zone (0013), compression→expansion (0002); interaction mechanisms — void×displacement (0008), level-break×displacement (0009), FVG-stack-density (0010); confluences — level×FVG (0007), rejection×level (0012), rejection×FVG (0015), mitigation×level (0016), demand-zone×FVG (0017), rejection×void (0018), demand-zone×level (0019). DEMO_BASELINE Part B completed for the 4 authorized pilots (0001/0002/0003/0007).
+**MK-01/MK-02 batch produced (CAND-0020..0025, 6 candidates):** liquidity sweep+return (0020, MK-02), BOS+retest (0021, MK-01), CHoCH reversal (0022, MK-01 — **F4-flagged**), and the three named confluences — level×BOS (0023), sweep×FVG (0024), sweep×OB (0025). All SCREENING_BASELINE, Part A+B complete, W10 @ `0000225` with freshly-computed hashes.
 
-**Why WAITING (not forcing weak candidates):** the remaining moves from the *current* primitives are either
-- **combinatorial pairwise permutations** of diminishing marginal distinctness — `mitigation×FVG`, `mitigation×void`, `demand-zone×void`, and higher-order (3-way) confluences. Each is technically distinct but is systematic mask-AND enumeration, not a new market hypothesis. **Producible on request; held back per "nu forța candidați slabi ca să umpli coada."**
+**Swing-failure NOT forced (honest collapse):** under MK-01/MK-02 a "swing failure / SFP" is not a distinct mechanism — a swept swing with close-back-inside IS the wick-sweep (= CAND-0020), and a failed continuation that flips character IS the CHoCH (= CAND-0022). Producing a third file would be relabeling, not a new hypothesis → **held back per "nu forța candidați slabi."**
+
+**⚠ Multiple-testing family (Statistician's to ratify):** CAND-0020..0025 arise from the SAME continuous-production line → they increment the cumulative BH-FDR family beyond 7. The exact count + the W-incr dependencies noted per row (0023/0024/0025 are subsets of existing singles) are routed to the Statistician; Flow A does not set the family number.
+
+**Covered (25 candidates):** the 19 prior + the 6 MK-01/MK-02. DEMO_BASELINE Part B completed for the 4 authorized pilots (0001/0002/0003/0007); all others SCREENING.
+
+**Why WAITING (not forcing weak candidates):** the remaining moves from the *current* primitives (now incl. MK-01/MK-02) are either
+- **combinatorial pairwise permutations** of diminishing marginal distinctness — `mitigation×FVG`, `mitigation×void`, `demand-zone×void`, `sweep×level`, `BOS×FVG`, `BOS×OB`, `CHoCH×level`, and higher-order (3-way) confluences. Each is technically distinct but is systematic mask-AND enumeration, not a new market hypothesis. **Producible on request; held back per "nu forța candidați slabi ca să umpli coada."**
 - or **blocked / studied-null:** a standalone breaker-continuation = E010 (blocked); an IFVG (`detect_inverse_fvgs`) reaction ≈ E012 (studied, V0 null) — not re-treated.
+- **swing-failure / SFP** — collapses into CAND-0020 (wick-sweep) or CAND-0022 (CHoCH); not a distinct file (above).
 
 **Genuinely-new BASE families need a new ratified primitive (each unlocks a distinct family + its confluences):**
 - **void-reaction / void-fill** detector → CAND-0004 becomes testable + void-fill mechanisms;
