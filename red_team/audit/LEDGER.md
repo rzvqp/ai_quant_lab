@@ -756,4 +756,45 @@
                nothing forbidden; liquidity_mechanics not re-attacked. Nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [25], prev_hash E24.
   entry_hash:  E24
+
+[25] 2026-07-25
+  prev_hash:   E24
+  event:       VERDICT               # code attack, session_levels.py (MK-04 sessions)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on code/session_levels.py @ bf02dd2. Targets: lookahead/D3_bis/D7/
+               ambiguity + Mid, primitive-B saturation, straddle, backtest↔live. Deliverable:
+               policy_reviews/RT-CODE-A-0004_session_levels.md. No data run; module not modified; no remedy.
+               Contamination: imports only Block (inert) + session_of + _runs — no MK-01/MK-02 F1/F2.
+               session_of = fixed UTC-hour buckets (asia<8/london<13/ny<21/late).
+               VERDICT: module SURVIVES. Lookahead PASS (verified per field: level=closed-session max/min/mid,
+               available from the next session, touches scanned forward; future-mutation test confirms).
+               D3_bis PASS (per-block; A skips block's first session, B caps expiry at block end, no cross-
+               block window). D7 PASS (both detectors break at first touch; count_active deactivates at
+               min(touch,expiry)).
+               T1 Mid: SURVIVES. Containment low≤Mid≤high correct; "covers but doesn't trade" cannot happen
+                 for a real bar (range traversed). FLAG: degenerate zero-range session (max=min) → High=Low=Mid
+                 coincide → three coincident un-deduped levels/touches; untested.
+               T2 Primitive B saturation (median ~89, max 188 active): stated DIRECTLY — B WITHOUT A FILTER
+                 IS GUARANTEED TO DILUTE ("reaction at a level" unfalsifiable-by-saturation; the DZ×FVG
+                 18,275/−$2,432, CAND-0020 34,006/−15,409R, CAND-0024 18,852/−2,605R loss pattern). Primitive
+                 A (2-3) clean. B survives as a primitive (correct/lookahead-safe/D7) but HARD CONDITION: no
+                 candidate on B without a filter bounding the active-level count; the module's own
+                 count_active_persistent_levels precondition exists for exactly this.
+               T3 Straddle (8.32% cross a day boundary): SPECIFIED, not ambiguous — sessions segmented by
+                 session_index (session_of UTC), NOT day_index, so a straddling session is one run assigned
+                 to its session, never split; the old/new-day question does not arise. No defect.
+               T4 Backtest↔live: session_of uses fixed UTC hours; the 21 UTC boundary sits at the OANDA pause
+                 (20-21), MT5 differs +3h/23:45 weekend. The UTC label is feed-independent but the BAR SET in
+                 a session differs by feed → different High/Low/Mid → an OANDA-validated edge may not reproduce
+                 on MT5. CORRECTNESS-OF-TRANSFER (transferability), not mere interpretation; NOT a module defect
+                 (pure function). Affects EVERY future session-levels candidate (none yet); attach at creation.
+               COVERAGE (7 tests): solid on A/B semantics + lookahead + D3_bis + D7 + exceedance/containment.
+                 Gaps: degenerate coincidence; saturation scale (measurement); feed-alignment (cross-feed) —
+                 latter two not unit-testable.
+               HANDOFF: CEO ratify (sound); bind at candidate creation — (1) primitive B requires an
+                 active-level filter (reject B-candidates without one); (2) feed-alignment transferability
+                 warning on every session-levels candidate; consider a degenerate-coincidence test. Then Alpha
+                 builds candidates. Red Team designs no fix; reopens nothing. Nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [26], prev_hash E25.
+  entry_hash:  E25
 ```
