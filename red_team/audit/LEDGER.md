@@ -797,4 +797,48 @@
                  builds candidates. Red Team designs no fix; reopens nothing. Nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [26], prev_hash E25.
   entry_hash:  E25
+
+[26] 2026-07-25
+  prev_hash:   E25
+  event:       VERDICT               # OPERATIONAL MODE — Phase A+B, session candidates CAND-0026..0031
+  reviewer:    Red Team
+  detail:      CEO tasked Phase A + Phase B in one pass on the six session-level candidates
+               CAND-0026..0031 @ policy commit 0ce1e57 (alpha-automation-v1), like the 0011-0019 batch.
+               Deliverable: policy_reviews/RT-OPS-AB-0004_session_batch.md. No data run; policies not
+               modified; no remedy.
+               GROUNDING (recomputed, all MATCH): all six pin session_levels @ bf02dd2 = 2af2b9e6 (and it
+                 hashes to the empty-file value on alpha-automation-v1 → correct not-co-located W10 pin).
+                 market_state 823cf66a / institutional_levels c284fa2c / interactions dafb4804 /
+                 imbalance_mechanics 45f8937e / order_flow 728fa557 re-confirmed.
+               market_structure/liquidity_mechanics CHANGE (0000225→bf02dd2): CLEANLY handled — NO candidate
+                 cites either file; session_levels's only transitive touch of market_structure is the Block
+                 dataclass, UNCHANGED across that window (verified empty diff); the 6-line change is in break
+                 logic (not Block, not used here). No MK-01/MK-02 F1/F2 logic reaches any candidate.
+               SWEEP COMPOSITION (CAND-0026): CORRECT — no detect_session_sweeps exists; Alpha composed
+                 penetration (high[j]>=price) AND close-back-inside (close[j]<price), close-beyond→NO TRADE
+                 fail-closed = faithful PDH/PDL sweep-reject signature. Inherited (not a defect): consume-at-
+                 first-penetration (D7) → break-then-sweep sequences not detected; recall limitation, disclose.
+               MID DIRECTION (CAND-0028): DISCLOSED choice, not hidden — policy declares direction by approach
+                 side (close[j-1]>Mid→LONG, <→SHORT) and explicitly labels it an ASSUMPTION for RT/Statistician;
+                 close[j-1]==Mid → NO TRADE (fail-closed) verified. Approach-side rule = load-bearing untested
+                 assumption → Statistician must test its edge.
+               FINDING H' (block-only time-stop): ABSENT this batch — every candidate has a LIVE-VALID
+                 time-stop (session boundary expiry_idx, or day boundary 17:00-NY for CAND-0029). No H'.
+               WEEKLY-STRUCTURE SIGNAL: CAND-0026/0027/0029/0030/0031 inherit the touched-by-rallying-up vs
+                 short-bias anti-correlation (SESSION_HIGH reached by going UP, faded SHORT = PWH/PWL pathology);
+                 milder than daily per the Statistician's own period-length prediction — SIGNAL, measure per
+                 session. CAND-0028 (Mid, containment, no exceedance, no intrinsic side) EXEMPT.
+               W-incr (mandatory): CAND-0026 ⊂ 0027; 0029 ⊂ 0027∩0001; 0030 ⊂ 0027∩0003; 0031 ⊂ 0027∩0011.
+               PART B: lookahead/circularity/hidden-optimization PASS (zero tunable params). S1 intrabar order
+                 carried to the existing DEMO convention. S2 min_executable_risk floor: routine on the bases
+                 (0026/0027/0028 touch/containment-extreme stops), rarely binds on the confluences (wider
+                 min/max stops). Feed-alignment transferability warning (RT-CODE-A-0004) present in all six.
+               VERDICTS: 6 processed, 6 SURVIVED_RED_TEAM_A, 0 REJECTED — all Part B CONDITIONAL on the
+                 existing DEMO gate (S1 worst-case + min_executable_risk floor).
+               HANDOFF: Statistician — protocol + DEMO criteria; carry W-incr, the weekly-structure signal,
+                 the CAND-0028 approach-side assumption test, the feed-alignment warning, the sweep recall note.
+                 Multiple-testing family grows. Red Team modified no policy, ran no data, proposed no risk
+                 method. Nothing outside red_team/ (queue annotation only).
+               STATE: OPERATIONAL. Next entry [27], prev_hash E26.
+  entry_hash:  E26
 ```
