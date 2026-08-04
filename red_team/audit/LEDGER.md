@@ -1298,4 +1298,58 @@
                  red_team/ (no queue annotation -- not a candidate).
                STATE: OPERATIONAL. Next entry [34], prev_hash E33.
   entry_hash:  E33
+
+[34] 2026-08-02
+  prev_hash:   E33
+  event:       VERDICT               # CODE ATTACK — level-1 H4 regime classifier (target architecture)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on code/regime_classifier.py @ 82b1ca3 (discovery-mk-matrix-v1), spec
+               STAT-LEVEL1-REGIME-H4-SPEC-v1.0 7a9013d / manifest v2.7.49. Level 1, step 3 of 4. Checklist:
+               lookahead/leakage/circularity/ambiguity/overfitting/hidden-params/reproducibility. Deliverable:
+               policy_reviews/RT-CODE-A-0009_regime_classifier.md. Full source read + NUMERIC verification on
+               synthetic OHLC (deps imported read-only from branch). No data run; nothing modified; no remedy.
+               VERDICT: PASS_WITH_LIMITATIONS.
+               LOOKAHEAD: PASS, PROVEN. Trailing windows [i-W+1,i]; run propagated idx<=i; expansion[i] uses
+                 atr[i-1]. Numeric proof: classifying bar i on FULL [0,n] vs truncated [0,i+1] = 0 run-mismatch
+                 + 0 vol-band-mismatch over 78 bars -> label of i depends only on bars <=i. Retrospective
+                 monthly map explicitly forbidden.
+               LEAKAGE: PASS (trailing; truncation-stable). REPRODUCIBLE: PASS (deterministic, no RNG, stable
+                 under truncation). OVERFITTING: PASS (outcome-agnostic percentile partitions, reported-not-
+                 tuned). HIDDEN PARAMS: PASS (every constant named + provenance: W=30 DERIVAT, P33/67 & RUN cuts
+                 ALEGERE, K_SWING lab default, N_MIN fail-closed).
+               W=30 (own target): derivation CORRECT (30 ~ week of H4 = 29.84; 460 = quarter = unit transplant).
+                 "Undetectable downstream" claim REFINED: true under local stationarity (P10 -> ~10% occupancy,
+                 verified 9.8% at W=30) but NOT exact under non-stationarity (quarter window mixes vol regimes,
+                 rate shifts -- synthetic 9.8% vs 2.1%; per-bar labels differ ~4%). Hid, but not truly invisible.
+               DIRECTION FROM BOS RUN (own target): defensible (avoids a 3rd structure def, ADX rejected) but
+                 CIRCULAR/REDUNDANT (L-R1) -- detect_breaks is shared with structure-based candidates (S3/S11/
+                 MK-01), so the level-1 structure axis is NOT independent context for that candidate class;
+                 vol/news axes stay independent.
+               COMPRESSION/EXPANSION COLLAPSE (own target): measured-justified (99.5% of expansion in HIGH),
+                 near-lossless -- nine states recoverable as axis combos; loss = 0.5% of expansion bars outside
+                 HIGH drop their tag (is_expansion only subdivides the HIGH band). Minor, measured (L-U3).
+               NO-REGIME->NO-TRADE (own target/CEO condition): the SIGNAL is EMITTED (verified: n<W ->
+                 UNAVAILABLE; n<n_min / |run|==1 -> NEUTRAL conf=0; boundary -> low conf + soft weight) but the
+                 OUTCOME is NOT wired -- level 6 (RT-CODE-A-0008) consumes hard COUNTS not the soft RegimeState;
+                 the propagation low-conf->wider EV_LCB->no-trade needs a level-1->6 mapping that is not in
+                 either module. Condition preserved at the classifier, realization deferred to step-4 wiring
+                 (L-U2). Direct answer: signal comes out, "no trade" not yet demonstrable.
+               STATISTICIAN TARGETS: (a) equal-occupancy = LEGITIMATE convenience (runs geometric/memoryless ->
+                 no natural threshold -> any cut arbitrary -> balanced cells best default; declared a choice,
+                 not a market boundary). (b) |run|==1 = POST-FLIP not range; "RANGE" is a MISNOMER (verified idx
+                 65 run=-1 -> RANGE; code comment itself says "direcție proaspăt răsturnată"); direction NEUTRAL
+                 ok, band name misleads (L-U1). (c) soft assignment CAN hide a systematically wrong label -- it
+                 is BOUNDARY-LOCAL, gives no protection against a globally mis-defined band; deep-band bars get
+                 confidence 1.0 on a possibly-wrong label (this is why the window error hid) (L-R2).
+               SEVERITY: L-R1 (structural circularity/redundancy). L-R2 (soft assignment can't guard a mis-
+                 defined band + occupancy invariance only under stationarity). L-U1 (RANGE misnomer). L-U2
+                 (no-regime->no-trade emitted but unwired). L-U3 (0.5% expansion tag loss).
+               SURVIVES: lookahead-free (proven), reproducible, no hidden params, no overfitting, fail-closed,
+                 W=30 correct, collapse justified, equal-occupancy a declared convenience.
+               HANDOFF: CEO (step 4 of 4) then Statistician -- build+verify the level-1->6 propagation (L-U2 is
+                 the CEO condition, only a promise until wired); disclose structure-axis redundancy for
+                 structural candidates; note "RANGE"=post-flip; treat W=30 as a real modeling decision (per-bar
+                 labels change). Red Team designed no remedy, ran no data, modified nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [35], prev_hash E34.
+  entry_hash:  E34
 ```
