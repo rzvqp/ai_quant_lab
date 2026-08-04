@@ -1043,4 +1043,66 @@
                  candidate).
                STATE: OPERATIONAL. Next entry [30], prev_hash E29.
   entry_hash:  E29
+
+[30] 2026-07-29
+  prev_hash:   E29
+  event:       VERDICT               # CODE ATTACK — demo_gate_engine (C-R1 realized: independent attack)
+  reviewer:    Red Team
+  detail:      CEO tasked the first INDEPENDENT attack on the DEMO gate engine (built after ledger close,
+               previously only VE self-verified). Targets: demo_gate_engine/pdh_pdl_demo_engine.py @ 86304e7
+               (working tree == pinned, verified) + dynamic_exit_engine.py. Deliverable:
+               policy_reviews/RT-CODE-A-0005_demo_gate_engine.md. Full source of both engines + both test
+               files + MIN_STOP_FLOOR_PREREG.md read at source. No data run; engine not modified; no remedy.
+               HEADLINE: the gate does NOT fully impose S1. S2/S3/audit correct and complete; S1 hierarchy
+                 correct for every bar AFTER entry — but the ENTRY BAR's own stop is unguarded for
+                 non-floored trades.
+               DEFECT D1 (highest): both engines scan exits from entry_idx+1 and check the entry bar's stop
+                 ONLY when floored (pdh:139-142). For a NON-floored trade the entry bar is skipped, so an
+                 intrabar stop-out on ei is never registered. Since the open is the bar's FIRST tick,
+                 low[ei]<=exec_stop (long) is a REAL post-entry stop breach → worst-case STOP, ignored.
+                 DEMONSTRATED BY THE ENGINE'S OWN FIXTURE: test_invalid_execution_is_narrow_floored_only
+                 part (b) (test_pdh:141-143) — long, open 100, stop 99.0 (not floored), low[ei=1]=98.9
+                 (through the stop), bar 2 high 105 → engine returns TARGET (WIN); reality = stopped out at
+                 99.0 (LOSS). The test asserts only "!= INVALID_EXECUTION" → passes while ENCODING the
+                 optimistic misclassification. Turns a loss into a reported win. Majority case (flooring is
+                 the exception); symmetric on short; present in BOTH engines. Directly contradicts the S1
+                 "STOP over everything" claim — the exact failure S1 exists to prevent.
+               DEFECT D2 (confirms C-D1): dynamic_exit_engine.py:6-7,67 uses day_end_idx = BLOCK boundary
+                 (Finding H', never fires live) while pdh_pdl_demo_engine.py:57 uses the same DemoSignal
+                 field = DAY boundary. One dataclass field, two opposite meanings, no type distinction.
+                 Affected: CAND-0002 (DEMO_BASELINE) + any forward-event-exit policy; CAND-0002's Part B H'
+                 never remediated, now embedded in code.
+               RISK R1: prereg (MIN_STOP_FLOOR_PREREG:29-31) defines THREE INVALID conditions; the engine
+                 implements (a) gap-through-floored-at-entry + (b) zero/neg risk, but NOT (c) same-bar
+                 ambiguous entry/exit. The one place (c) arises (entry_idx==day_end_idx) resolves as
+                 TIME_STOP-at-close (pdh:162-163), optimistic, deviating from the prereg's "mark INVALID."
+               RISK R2 (confirms C-R7 + broader): dynamic:71 open_[j+1] safe only if caller sets
+                 day_end_idx<=n-1, no assert; broader, NEITHER engine asserts entry_idx<=day_end_idx<=n-1 —
+                 entry_idx>day_end_idx yields exit_idx<entry_idx (exit before entry) + garbage net_R. F3-class.
+               RISK R3: gap-through-stop on a non-entry bar fills at exec_stop_price not the worse gap open;
+                 residual slippage folded into the single observed cost constant (can't capture a tail gap).
+                 Ordering mandate met, fill-price worst-case not. Minor.
+               UNDOCUMENTED U1: K_SPREAD/K_TICK/K_ATR hardcoded copies of the prereg — silent-divergence
+                 hazard (same as ATR_WINDOW).
+               SURVIVES (verified): S1 hierarchy on ei+1..end (all collisions incl. triple, short-symmetric,
+                 optimistic-target forbidden); S2 (floor on corrected distance, strategy_stop_distance
+                 preserved, effective_spread observed) well-tested; S3 (strict ei+1, entry-bar target
+                 ignored, prior-day visit irrelevant) well-tested; INVALID narrow (a)+(b); ALL audit fields
+                 emitted every path (which is how D1 is provable from the fixture).
+               COVERAGE GAPS: entry-bar non-floored stop MASKED not tested (the D1 fixture asserts only
+                 !=INVALID); triple collision untested; entry_idx==/>day_end_idx untested; prereg clause-3
+                 untested; gap-fill price untested; dynamic engine (3 tests) has NO floor/INVALID/entry-bar/
+                 boundary/day-vs-block tests.
+               VERDICT: SURVIVES on S2/S3/audit/post-entry-S1; FAILS to fully impose S1 at the entry bar.
+                 The gate does NOT impose everything it claims (D1 shown by its own fixture; D2 embeds H').
+                 Exactly the class of defect independent review (not self-verification) exists to catch —
+                 audit risk C-R1 REALIZED. BLOCK any live wiring of the three waiting policies on this engine
+                 until D1 + D2 are closed; the VE BLOCK now holds for a second, independent reason.
+               HANDOFF: Statistician then CEO — D1 highest (loss-can-be-reported-as-win, rewrite the masking
+                 test to assert STOP); D2 (CAND-0002 must not wire live, separate the field's two meanings);
+                 R1/R2/R3/U1 carried; add the missing tests. Next Red Team target: the statistical stack
+                 (matched_null/pilot_pvalue/scoped_fdr; W9 open). Red Team designed no remedy, ran no data,
+                 modified nothing outside red_team/ (no queue annotation — target is engine code).
+               STATE: OPERATIONAL. Next entry [31], prev_hash E30.
+  entry_hash:  E30
 ```
