@@ -111,7 +111,7 @@ class RegimeData:
             dend = int(self.eod[entry_idx])
         return DemoSignal(entry_idx=entry_idx, direction=direction, strategy_stop_price=stop_price,
                           target_price=target_price, atr=a, effective_spread=EFF_SPREAD, cost=COST,
-                          day_end_idx=dend)
+                          time_stop_idx=dend)
 
 
 # ───────────────────────────── generatoare de semnal (contract frozen per politică) ─────────────────────────────
