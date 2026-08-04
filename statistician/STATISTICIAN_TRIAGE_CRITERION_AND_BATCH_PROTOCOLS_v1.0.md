@@ -155,4 +155,4 @@ INFIRMĂ:   sesiune <= zi. În acel caz predicția mea e greșită și o consemn
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.42 (commit `938710d`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
