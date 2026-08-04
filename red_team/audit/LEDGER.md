@@ -1231,4 +1231,71 @@
                  red_team/.
                STATE: OPERATIONAL. Next entry [33], prev_hash E32.
   entry_hash:  E32
+
+[33] 2026-08-01
+  prev_hash:   E32
+  event:       VERDICT               # CODE ATTACK — decision engine (level 6, CEO target architecture)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on decision_engine/decision_engine.py @ bdd15e5 (alpha-automation-v1),
+               spec STAT-DECISION-ENGINE-SPEC-v1.0 ccb31d9 / manifest v2.7.47. First new piece of the target
+               architecture; level 6, step 3 of 4. Deliverable: policy_reviews/RT-CODE-A-0008_decision_engine.md.
+               Full source read + NUMERIC verification on synthetic counts (engine imported read-only). No data
+               run; nothing modified; no remedy.
+               HEADLINE: SURVIVES. Math sound (Beta ppf verified, n=0 gate-repair works, k handled, three-
+                 outcome correction applied, fail-closed named). The 80% gate is REAL but LENIENT (not decor,
+                 mostly inert for high-n candidates; teeth at 95%). Real exposure = 3 caller-boundary trusts,
+                 not the arithmetic. Nothing wired yet (not invalidating anything).
+               BETA PPF (own target): VERIFIED CORRECT incl. tails. Exact on closed forms (Uniform/Beta(2,1)/
+                 (1,2)/arcsine to 1e-6); round-trip CDF(ppf)=q holds for realistic a,b (0.5..900) across tails.
+                 Only "mismatch" at a,b<=1e-3 (n=0 regime) where it returns ~0 = the CORRECT quantile (mass at
+                 {0,1}; round-trip metric uninformative on a near-vertical CDF). Gate impact none (new setup
+                 p_t_lcb~0 fail-closes).
+               k ESTIMATE (own target): cannot return negative — clamped [0,K_MAX] (:193). Verified: over-
+                 dispersed->0 (no shrinkage, wide interval, conservative), homogeneous->K_MAX, <2 sibs->0.
+               n=0 REPAIR (own target): works for the GATE in all cases. mu>0 -> p_t_hat = EXACTLY parent
+                 (0.400000; k_eff=max(k,1e-6) preserves alpha:beta=mu:(1-mu), k cancels at n=0). RESIDUAL
+                 (D-U2): mu=0 corner + n=0 -> p_t_hat=0.5 (old-bug value) in ev_point AUDIT field; gate SAFE
+                 (p_t_lcb=3.11e-61~0 -> ev_lcb=-1.0 -> enter=False, verified); UNTESTED (n=0 test uses mu=0.40).
+               T1 GATE-OR-FORMALITY: REAL gate, LENIENT. Blocks thin history (n=10 blocked, n=1000 passes,
+                 tested). But at 80% ~1 SE haircut; for thousands-of-trades candidates p_t_lcb~=p_t_hat -> near-
+                 equivalent to EV_point>0 -> almost nothing falls; bite is on new/low-n only; teeth at 95% post-
+                 DEMO. Also LCB pessimizes ONLY p_t (+cost), NOT p_h/E[X|h] (:298) -> not fully worst-case.
+                 Direct answer: not a formality, but soft at 80% and mostly inert for high-n candidates.
+               T2 MINUS-ONE worst possible or plausible: worst possible IN-MODEL (horizon exits are >-1R by
+                 construction, so -1 is below any real E[X|h]) but NOT worst in live -- the whole EV caps per-
+                 trade downside at -1R (stop=exactly -1R), inheriting mstrat's no-gap-slippage optimism (RT-CODE
+                 -A-0007 R3); a live gap over the stop fills <-1R. Fail-closed closed against the model, not the
+                 tail. (D-R2.)
+               T3 OPPORTUNISTIC DEEPENING: deepening-for-luck SELF-DEFEATS -- a sparse lucky cell widens its
+                 interval -> lowers p_t_lcb -> LCB blocks it (genuine strength). BUT schema-SELECTION (which
+                 descriptors/levels to build) is an uncorrected garden-of-forking-paths at the caller; only
+                 COUNTS are hashed (prob_table_hash :250), NOT the schema -> no audit proves pre-registration.
+               LOOKAHEAD (own target): none IN the engine (pure function of counts, no time/price). Trusts the
+                 caller that OutcomeCell counts are strictly prior-to-decision; no as-of-time enforcement; the
+                 tally window for p_t/p_h is unverifiable in-engine. (D-R1.)
+               CIRCULARITY (own target): real loop IFF counts are executed-only (selection bias + un-blockable
+                 freeze: blocked setup never trades -> never accumulates -> can't escape the block); avoided IFF
+                 counts are a shadow/paper record of ALL setups. Engine doesn't specify/enforce the source. (D-R1.)
+               D-U3: p_t and p_h shrunk INDEPENDENTLY (different k_t,k_h) can sum >1 (author-acknowledged :245);
+                 the p_s>=0 clamp then drops the stop penalty = OPTIMISTIC; rare at LCB (p_t pessimized), offset
+                 by the horizon term.
+               THREE-OUTCOME CORRECTION: confirmed applied -- p_t = target-hit (:288) not winrate; separate
+                 p_h/E[X|h]; EV formula :247. CAND-0001 category fix (p_t~0.05 not 0.175) structurally in force.
+               SEVERITY: D-R1 (3 caller-boundary trusts: schema-selection, as-of-time, count-source). D-R2
+                 (-1R cap inherits mstrat no-gap optimism). D-U1 (80% gate lenient/near-inert high-n). D-U2
+                 (n=0 mu=0 residual, audit-only). D-U3 (p_t+p_h>1 clamp optimistic). D-U4 (ppf audit value ~0
+                 un-interpretable at n=0).
+               SURVIVES: ppf accurate + gate-safe; n=0 mu>0 exact parent; k never negative; three-outcome EV;
+                 fail-closed named + D2 strict + feasibility + cost-as-parameter; 13 tests + mypy clean.
+               VERDICT: SURVIVES. Arithmetic sound; shrinkage+LCB self-protects against lucky deepening; gate
+                 real but lenient at 80% (teeth at 95%). Nothing invalidated (level 6, not wired, step 3 of 4).
+                 Real risk displaced to what the engine TRUSTS -- caller-populated hierarchy (schema/as-of/
+                 source) + the mstrat-inherited -1R cap -- none enforceable by a pure function.
+               HANDOFF: CEO (step 4 of 4) then Statistician -- bind at the caller a pre-registered hashed
+                 SCHEMA (not just counts), an as-of-decision-time guarantee, and a shadow/all-setups count
+                 source; note the -1R cap depends on mstrat's no-gap model; add the mu=0/n=0 test; decide the
+                 p_t+p_h>1 clamp semantics. Red Team designed no remedy, ran no data, modified nothing outside
+                 red_team/ (no queue annotation -- not a candidate).
+               STATE: OPERATIONAL. Next entry [34], prev_hash E33.
+  entry_hash:  E33
 ```
