@@ -1,3 +1,8 @@
+> **SUPERSEDED by POLICY_WEEKLY_LEVELS_v2.md** — v1 was NOT_CURRENTLY_TESTABLE, fail-closed on the
+> trigger. The Statistician (v2.7.40, `e68e0cd`) proved the block was the THESIS not the detector (275
+> touched / 6 bias-aligned). v2 reformulates via Route 3 (no bias; direction from level kind) and composes
+> the weekly touch from ratified pieces. Kept for the record; do not use.
+
 # POLICY — Prior Week High / Low (PWH/PWL) — canonical schema
 
 **candidate_id: `CAND-0006`.** Design artifact only. No execution, no data, no numeric parameter chosen,
