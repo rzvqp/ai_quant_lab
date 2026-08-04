@@ -7,21 +7,37 @@ PURĂ de bare + spread OBSERVAT; fără MT5, fără trimitere de ordine, fără 
 înghețată `1558397`). Impun DOAR gardurile + auditul.
 
 GARDURI:
-  S1  ierarhie worst-case STOP > TIME-STOP > TARGET la toate TREI coliziunile intrabar. Time-stop-ul e al ZILEI
-      (`day_end_idx` = ultima bară a zilei de intrare), nu un timeout pe bare. Pe bara-graniță, STOP primează;
-      dacă bara-graniță atinge ținta dar NU stopul → TIME-STOP (ieșire la close), nu ținta (presupunerea
-      optimistă interzisă de Red Team). Audit: `intrabar_ordering`.
+  S1  ierarhie worst-case STOP > TIME-STOP > TARGET la toate coliziunile intrabar. **Se aplică ȘI pe bara de
+      INTRARE (RT-CODE-A-0005 D1):** `open[entry_idx]` e primul tick al barei, deci un breach intrabar al stopului
+      executabil pe bara de intrare e un stop-out REAL DUPĂ intrare, la TOATE tranzacțiile (nu doar cele podite).
+      Time-stop-ul e cel al `time_stop_idx` (ultima bară de scanare, force-close la close-ul ei). Pe bara-graniță,
+      STOP primează; dacă bara-graniță atinge ținta dar NU stopul → TIME-STOP (ieșire la close), nu ținta
+      (presupunerea optimistă interzisă de Red Team). Audit: `intrabar_ordering`.
   S2  `min_executable_risk = max(2×effective_spread, 5×tick_size, 0,10×ATR)`; `executable_stop_distance =
       max(strategy_stop_distance, min_executable_risk)`; sizing 1R pe distanța CORECTATĂ. `effective_spread` =
       spread REAL observat (nu modelat). Audit: `strategy_stop_distance` (NU se suprascrie), `min_executable_risk`,
       `executable_stop_distance`, `floored`.
-  S3  ținta scanată STRICT de la `entry_idx+1`; o atingere anterioară în zi e irelevantă. Audit: fereastra de
-      scanare (`target_scan_start`/`target_scan_end`).
+  S3  ținta scanată STRICT de la `entry_idx+1`; o atingere anterioară în zi e irelevantă. Ținta de pe bara de
+      INTRARE e ignorată (conservator: pe bara de intrare contează doar stopul, S1). Audit: `target_scan_start`/
+      `target_scan_end`.
 
-INVALID_EXECUTION rămâne ÎNGUST (convenția MIN_STOP_FLOOR_PREREG): gap prin stopul PODIT la intrare (doar
-tranzacții podite, ca regimul ATR ne-podit să rămână neschimbat) SAU risc zero/negativ după podire. NU
-coliziunile obișnuite. Garda de intrare a politicii (nu se intră dacă next-open e dincolo de țintă / de stopul
-structural) → NO_TRADE, separat.
+`time_stop_idx` (RT-CODE-A-0005 D2): UN singur înțeles — indexul ULTIMEI bare de scanare la care poziția e
+force-închisă (time-stop la close). Caller-ul decide ce reprezintă (granița de zi pt. PDH/PDL, granița de bloc
+sau un orizont de N bare pt. alte politici); motorul îl tratează UNIFORM ca termen-limită. NU mai poartă două
+înțelesuri sub același nume (fostul `day_end_idx`).
+
+INVALID_EXECUTION rămâne ÎNGUST (prereg MIN_STOP_FLOOR_PREREG, cele TREI condiții — RT-CODE-A-0005 R1):
+  (1) gap prin stopul PODIT la intrare (doar tranzacții podite, ca regimul ATR ne-podit să rămână neschimbat);
+  (2) risc zero/negativ după podire;
+  (3) intrare/ieșire pe ACEEAȘI bară cu fill ambiguu nerezolvabil worst-case — `entry` deja dincolo de stopul
+      EXECUTABIL (gap la deschidere). Sub contractul înghețat clauza (3) e PRE-EMPTATĂ de garda de intrare
+      NO_TRADE (nepodit: stop structural = executabil) și IMPOSIBILĂ podit (executabilul e strict mai DEPARTE
+      decât structuralul, iar garda structurală garantează open-ul pe partea corectă) — o verificăm totuși
+      FAIL-CLOSED (clasa F3), ca un semnal malformat să pice, nu să producă un STOP fals.
+Coliziunile obișnuite (stop∧țintă pe o bară de scanare) NU sunt INVALID — le rezolvă S1. Garda de intrare a
+politicii (next-open dincolo de țintă / de stopul structural) → NO_TRADE, separat.
+
+PRECONDIȚIE F3 (RT-CODE-A-0005 R2, fail-closed): `0 <= entry_idx <= time_stop_idx <= n-1`.
 """
 
 from __future__ import annotations
@@ -54,7 +70,7 @@ class DemoSignal:
     atr: float                  # ATR la bara declanșator (pentru 0,10×ATR)
     effective_spread: float     # spread REAL observat la intrare (DEMO), unități de preț
     cost: float                 # cost round-trip OBSERVAT (spread+slippage), unități de preț
-    day_end_idx: int            # ultima bară a zilei de intrare (granița `day_index`) → bara de time-stop
+    time_stop_idx: int          # ULTIMA bară de scanare = termen-limită de force-close (înțeles UNIC, D2)
 
 
 @dataclass(frozen=True)
@@ -70,7 +86,7 @@ class DemoTradeResult:
     entry_idx: int
     entry_price: float
     direction: int
-    day_end_idx: int
+    time_stop_idx: int
     # S1 audit
     intrabar_ordering: str
     # S2 audit (strategy_stop_distance NU se suprascrie)
@@ -99,6 +115,12 @@ def simulate_demo_trade(
 
     `effective_spread` din semnal e valoarea OBSERVATĂ (DEMO) — S2 o folosește direct în podea, nu o constantă.
     """
+    n = len(close)
+    # ── PRECONDIȚIE F3 (R2), fail-closed ──
+    if not (0 <= sig.entry_idx <= sig.time_stop_idx <= n - 1):
+        raise ValueError(
+            f"F3: 0 <= entry_idx({sig.entry_idx}) <= time_stop_idx({sig.time_stop_idx}) <= n-1({n - 1}) încălcat.")
+
     d = sig.direction
     ei = sig.entry_idx
     entry = float(open_[ei])
@@ -110,7 +132,7 @@ def simulate_demo_trade(
     floored = strategy_stop_distance < min_exec
     exec_stop_price = entry - d * executable_stop_distance
     scan_start = ei + 1                         # S3
-    scan_end = sig.day_end_idx
+    scan_end = sig.time_stop_idx
 
     def _mk(traded: bool, reason: ExitReason, xi: int | None, xp: float | None, order: str) -> DemoTradeResult:
         net_R: float | None = None
@@ -121,27 +143,34 @@ def simulate_demo_trade(
         return DemoTradeResult(
             traded=traded, exit_reason=reason.value, exit_idx=xi, exit_price=xp,
             net_R=net_R, net_dollars=net_d, entry_idx=ei, entry_price=entry, direction=d,
-            day_end_idx=sig.day_end_idx, intrabar_ordering=order, effective_spread=sig.effective_spread,
+            time_stop_idx=sig.time_stop_idx, intrabar_ordering=order, effective_spread=sig.effective_spread,
             strategy_stop_distance=strategy_stop_distance, min_executable_risk=min_exec,
             executable_stop_distance=executable_stop_distance, floored=floored,
             executable_stop_price=exec_stop_price, target_scan_start=scan_start, target_scan_end=scan_end)
 
-    # risc zero/negativ după podire → INVALID (îngust)
+    # (2) risc zero/negativ după podire → INVALID (îngust)
     if executable_stop_distance <= 0:
         return _mk(True, ExitReason.INVALID_EXECUTION, None, None, "zero_or_negative_risk")
 
     # gardă de intrare a politicii (Part B): next-open deja dincolo de țintă / de stopul STRUCTURAL → NU se intră
+    # (pre-emptă clauza-3 INVALID pentru cazul nepodit: acolo stopul structural = cel executabil)
     if (d > 0 and entry >= sig.target_price) or (d < 0 and entry <= sig.target_price):
         return _mk(False, ExitReason.NO_TRADE, None, None, "no_trade_entry_beyond_target")
     if (d > 0 and entry <= sig.strategy_stop_price) or (d < 0 and entry >= sig.strategy_stop_price):
         return _mk(False, ExitReason.NO_TRADE, None, None, "no_trade_entry_beyond_structural_stop")
 
-    # INVALID îngust: gap prin stopul PODIT chiar pe bara de intrare (DOAR tranzacții podite)
-    entry_bar_breaches_floored = (low[ei] <= exec_stop_price) if d > 0 else (high[ei] >= exec_stop_price)
-    if floored and entry_bar_breaches_floored:
-        return _mk(True, ExitReason.INVALID_EXECUTION, ei, exec_stop_price, "gap_through_floored_stop_at_entry")
+    # (3) fill ambiguu nerezolvabil: open DEJA dincolo de stopul EXECUTABIL → INVALID (fail-closed, normal pre-emptat)
+    if (d > 0 and entry <= exec_stop_price) or (d < 0 and entry >= exec_stop_price):
+        return _mk(True, ExitReason.INVALID_EXECUTION, ei, exec_stop_price, "ambiguous_same_bar_fill")
 
-    # ── S1 + S3: scanare STRICT de la entry_idx+1 până la granița ZILEI ──
+    # ── S1 pe bara de INTRARE (D1) — la TOATE tranzacțiile, nu doar cele podite ──
+    entry_bar_hitS = (low[ei] <= exec_stop_price) if d > 0 else (high[ei] >= exec_stop_price)
+    if entry_bar_hitS:
+        if floored:                             # (1) gap prin stopul PODIT la intrare (îngust, doar podite)
+            return _mk(True, ExitReason.INVALID_EXECUTION, ei, exec_stop_price, "gap_through_floored_stop_at_entry")
+        return _mk(True, ExitReason.STOP, ei, exec_stop_price, "stop_at_entry_bar")   # D1: stop REAL, nepodit
+
+    # ── S1 + S3: scanare STRICT de la entry_idx+1 până la termenul-limită ──
     for j in range(scan_start, scan_end + 1):
         hitS = (low[j] <= exec_stop_price) if d > 0 else (high[j] >= exec_stop_price)
         hitT = (high[j] >= sig.target_price) if d > 0 else (low[j] <= sig.target_price)
@@ -155,11 +184,11 @@ def simulate_demo_trade(
             return _mk(True, ExitReason.STOP, j, exec_stop_price, order)
         if boundary:
             order = "time_stop_over_target" if hitT else "time_stop"
-            return _mk(True, ExitReason.TIME_STOP, j, float(close[j]), order)   # ieșire la close-ul zilei
+            return _mk(True, ExitReason.TIME_STOP, j, float(close[j]), order)   # ieșire la close-ul termenului
         if hitT:
             return _mk(True, ExitReason.TARGET, j, sig.target_price, "target")
 
-    # ziua se termină pe/înainte de bara de intrare (entry pe ultima bară a zilei) → time-stop la close
+    # termenul se termină pe/înainte de bara de intrare (entry == time_stop_idx) → time-stop la close
     return _mk(True, ExitReason.TIME_STOP, scan_end, float(close[scan_end]), "time_stop")
 
 
