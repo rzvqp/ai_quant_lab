@@ -901,4 +901,71 @@
                  method. Nothing outside red_team/ (queue annotation only).
                STATE: OPERATIONAL. Next entry [28], prev_hash E27.
   entry_hash:  E27
+
+[28] 2026-07-27
+  prev_hash:   E27
+  event:       VERDICT               # OPERATIONAL MODE — Phase A+B, CAND-0006 reformulated (PWH/PWL v2, Route 3)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on CAND-0006 reformulated @ policy commit b636f29,
+               POLICY_WEEKLY_LEVELS_v2.md. v1 was NOT_CURRENTLY_TESTABLE; Statistician v2.7.40 (e68e0cd)
+               proved the block was THESIS not detector (572 weekly → 275 touched/48.1% healthy → 6
+               bias-aligned/2.2% collapse). v2.0 = Route 3: remove the bias stage, direction from level
+               kind (WEEKLY_HIGH→short, WEEKLY_LOW→long); population back to 275. Deliverable:
+               policy_reviews/RT-OPS-AB-0006_weekly_levels_v2.md. No data run; policy not modified; no remedy.
+               GROUNDING: institutional_levels.py @ bf02dd2 = c284fa2c (MATCH; identical at 0000225).
+                 Weekly uses derive_week_index (17:00-NY day_ordinal + weekend gap), NOT session_of — the
+                 session feed-alignment warning does not transfer verbatim (day-boundary family, feed-robust).
+               T3 COMPOSED TOUCH: composition CORRECT, lookahead-free. Verified detect_level_touches SKIPS
+                 weekly (`if kind not in (PDH,PDL): continue`, same-day window). Alpha composed penetration
+                 (high[j]>=price / low[j]<=price) + D7 consume-once over the derive_week_index week window
+                 [available_idx, end of current week]. compute_prior_week_levels: level=max/min over PRIOR
+                 week weeks[k-1], available_idx=weeks[k][0] (current week first bar) → known before use, no
+                 lookahead; range(1,len(weeks)) → first week per block UNCLASSIFIED (D3_bis). Faithful mirror.
+               T4 PARTIAL WEEKS: COMPLETE-only gate VERIFIED via the ratified flag (completeness="COMPLETE"
+                 if n_days>=5, computed INSIDE compute_prior_week_levels on source-week distinct day_index;
+                 policy only gates; no invented threshold; no lookahead — source week fully past). Exclusion
+                 is a LEGITIMATE population definition (structural, pre-data), NOT a performance bias — but
+                 NOT frequency-neutral: partial (holiday) weeks have narrower range → closer to price →
+                 touched MORE, so excluding shifts to wider/less-touched levels ⇒ DISCLOSE the conditioning
+                 (edge measured on COMPLETE subpopulation only); optional robustness = measure partials
+                 separately. Not a defect.
+               T5 HORIZON: week boundary (last bar of current week, week_index) — live-valid, weekly analog
+                 of the PDH/PDL day-boundary time-stop. NOT the 460-bar survey window (that was a measurement,
+                 not a trade rule — correctly unused). No Finding H' (week boundary live-valid, unlike the
+                 persistent-B stale source session).
+               T2 DIRECTION FROM KIND: fade is an ASSUMPTION, not measured. The CAND-0028 inverse-test
+                 requirement APPLIES and is DECISIVE here. Difference from 0028: a weekly HIGH/LOW is a
+                 real S/R (fade = the screening-POSITIVE level-fade grammar of CAND-0001/0027) ⇒ a transfer
+                 test, not a coin-flip. Amplifier: the anti-correlation that collapsed the bias version (high
+                 reached by rallying up, shorted) is a reason to doubt fade transfers to weekly, where a
+                 bigger level may more often be reached by CONTINUING momentum. Test WEEKLY_HIGH→short vs
+                 →long (Route 2, the declined alternative = the null).
+               T1 WHAT BIAS-REMOVAL LOSES (+ remove-or-move): bias did two things — (a) contradicted the
+                 geometry (correctly deleted), (b) MIGHT have filtered break-through touches, value UNKNOWN
+                 (n=6 never measurable). Route 3 SIDESTEPS (b) by adopting the family no-filter default. So
+                 the reformulation REMOVES the bias-collapse MECHANISM but MOVES the underlying anti-
+                 correlation into the fade DIRECTION, where it is measurable not blocking. Progress
+                 (untestable→testable), but the direction assumption now carries the whole bet.
+               CROSS-BATCH: does not ESCAPE the weekly-structure problem, RELOCATES it — consistent with my
+                 period-length prediction (session mild, daily moderate, persistent-B WORST; weekly between
+                 daily and persistent). The policy's session cross-check is CORRECT for the bias-collapse
+                 MECHANISM (0026-0031 have no bias stage) but that is distinct from the anti-correlation,
+                 which is family-wide (I flagged it milder-at-session RT-OPS-AB-0004, worst persistent-B
+                 RT-OPS-AB-0005); weekly severity intermediate.
+               STANDARD/PART B: lookahead PASS; circularity PASS; NOT a subset (weekly period population
+                 disjoint from daily 0001 / session 0027 — distinct primitive; no W-incr; Statistician MAY
+                 group {0001,0027,0006} as one level-fade FDR family); falsifiability INTACT without a
+                 density filter (275 sparse, far below Primitive-B saturation). S1 → DEMO convention. S2
+                 exposed (touch-bar-extreme stop) → bind min_executable_risk floor. Hidden-opt PASS (no
+                 tunable params; completeness>=5 is the ratified D-WEEK flag; Route choice = pre-registered
+                 thesis before results, not numeric tuning).
+               VERDICT: SURVIVED_RED_TEAM_A — Part B CONDITIONAL (existing DEMO gate). Reformulation correct
+                 and disciplined; makes the problem TESTABLE, does NOT solve it; direction assumption (T2) is
+                 the decisive open item.
+               HANDOFF: Statistician — protocol + DEMO criteria; carry the inverse-direction test (decisive),
+                 the COMPLETE-only conditioning disclosure, the {0001,0027,0006} FDR family option, the
+                 intermediate weekly-structure severity, the S2 floor. Red Team modified no policy, ran no
+                 data, proposed no risk method. Nothing outside red_team/ (queue annotation only).
+               STATE: OPERATIONAL. Next entry [29], prev_hash E28.
+  entry_hash:  E28
 ```
