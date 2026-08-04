@@ -13,11 +13,13 @@ reachable from this local clone's history -- content identity is what W10 actual
 literal commit object.
 
 **`vendor/alpha_automation_demo_gate`** (already pinned, same commit CAND-0001 uses,
-`86304e7578ff461fcf23826c07f0295272b1fbc5`): the SAME frozen `demo_gate_engine/pdh_pdl_demo_engine.py`
--- `simulate_demo_trade`/`DemoSignal`/`min_executable_risk` are policy-agnostic (confirmed by reading:
-`DemoSignal` takes only `entry_idx, direction, stop, target, atr, effective_spread, cost, day_end_idx`,
-nothing PDH/PDL-specific), so ONE import here serves all four policies -- never duplicated, never
-reimplemented, exactly the CEO's own constraint.
+`06e4e00b6222904f1aca5bedb5f39142fa08dcc5` -- moved up from `86304e7` on 2026-08-04, RT-CODE-A-0005-fixed
+and re-verified by Red Team RT-CODE-A-0010, PASS_WITH_LIMITATIONS): the SAME
+`demo_gate_engine/pdh_pdl_demo_engine.py` -- `simulate_demo_trade`/`DemoSignal`/`min_executable_risk` are
+policy-agnostic (confirmed by reading: `DemoSignal` takes only `entry_idx, direction, stop, target, atr,
+effective_spread, cost, time_stop_idx` -- renamed from `day_end_idx` by the fix, one meaning now: last
+scan bar = force-close limit -- nothing PDH/PDL-specific), so ONE import here serves all four policies --
+never duplicated, never reimplemented, exactly the CEO's own constraint.
 
 Never modified -- this package only reads from both submodules, same discipline as
 `pdh_pdl_demo/vendor_bridge.py`."""

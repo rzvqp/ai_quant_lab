@@ -8,15 +8,20 @@ grounding confirmed byte-identical to `POLICY_PDH_PDL_v2.md`'s own cited commit 
 between the two commits for this file is empty) and `market_state.atr14` (the `atr` field
 `DemoSignal`/S2 need -- reused, not recalculated, per Part B's own "no new calculation invented" rule).
 
-**`vendor/alpha_automation_demo_gate`** (NEW submodule, this step): pins
-`ai_quant_lab-alpha-automation`'s `alpha-automation-v1` branch at the EXACT commit the CEO cited,
-`86304e7578ff461fcf23826c07f0295272b1fbc5` -- `demo_gate_engine/pdh_pdl_demo_engine.py`, the frozen,
-CEO-authorized DEMO gate-enforcement engine (13/13 tests, mypy clean, per the CEO's own citation).
-Self-contained (only `dataclasses`/`enum`/`typing` -- confirmed by reading the file before bridging),
-so this pin needs no further dependency resolution. **Never modified -- this package only reads from
-it.** `simulate_demo_trade`/`simulate_demo_trades` are called ONLY post-hoc, after a position has
-already closed, per the CEO's own confirmation ("Motorul se cheama o data, dupa inchidere") -- never as
-a live decision input.
+**`vendor/alpha_automation_demo_gate`** (`alpha-automation-v1` branch): pinned at
+`06e4e00b6222904f1aca5bedb5f39142fa08dcc5` -- `demo_gate_engine/pdh_pdl_demo_engine.py`, the DEMO
+gate-enforcement engine, RT-CODE-A-0005-fixed and independently re-verified by Red Team's re-attack
+(RT-CODE-A-0010, `c806cbe` in THIS repo's own history -- not the submodule's -- verdict
+PASS_WITH_LIMITATIONS). **Moved up from the prior pin (`86304e7`, pre-fix)** on 2026-08-04 once the CEO
+confirmed the re-attack verdict; the prior pin's `DemoSignal.day_end_idx` field was renamed to
+`time_stop_idx` by this fix (one meaning: last scan bar = force-close limit) -- this package's own
+`orchestration.py` was updated to pass `time_stop_idx=` at the same time, still with the SAME live-valid
+value (the real calendar day boundary, `PendingPdhPdlTrade.day_end_idx` -- an internal name, unrelated
+to the renamed field, kept as-is). Self-contained (only `dataclasses`/`enum`/`typing`), so this pin needs
+no further dependency resolution. **Never modified -- this package only reads from it.**
+`simulate_demo_trade`/`simulate_demo_trades` are called ONLY post-hoc, after a position has already
+closed, per the CEO's own confirmation ("Motorul se cheama o data, dupa inchidere") -- never as a live
+decision input.
 """
 
 from __future__ import annotations

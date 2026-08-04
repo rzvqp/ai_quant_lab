@@ -180,6 +180,23 @@ def test_audit_example_stop(tmp_path: Path) -> None:
     assert isinstance(net_r, float) and net_r < 0
 
 
+def test_audit_example_stop_on_the_entry_bar_itself(tmp_path: Path) -> None:
+    """RT-CODE-A-0005 D1 regression, exercised through THIS package's own PolicyOrchestrator (the
+    demo_gate_engine's own D1 fix is already Red-Team-verified in isolation -- this proves the shared
+    orchestrator, used by CAND-0007/CAND-0009/CAND-0019, triggers it correctly too). SHORT, entry bar's
+    own HIGH breaches the executable stop before any later bar is ever scanned."""
+    n = 20
+    open_ = [100.0] * n; high = [100.5] * n; low = [99.5] * n; close = [100.0] * n
+    open_[14] = 108.0; high[14] = 112.0; low[14] = 107.5; close[14] = 108.0  # entry bar itself breaches
+    pending = _pending_trade(direction=-1, entry_idx=14, stop=111.0, target=90.0, day_end_idx=19)
+    orch, journal = _audit(tmp_path, pending, open_, high, low, close)
+    result = [e for e in journal.entries if e.kind is PdhPdlAuditKind.AUDIT_RESULT][0]
+    net_r = result.detail["net_R"]
+    assert result.detail["exit_reason"] == "stop"
+    assert result.detail["exit_idx"] == 14  # the entry bar itself, not a later scan bar
+    assert isinstance(net_r, float) and net_r < 0  # a real loss, never a false TARGET/win
+
+
 def test_audit_example_target(tmp_path: Path) -> None:
     n = 20
     open_ = [100.0] * n; high = [100.5] * n; low = [99.5] * n; close = [100.0] * n

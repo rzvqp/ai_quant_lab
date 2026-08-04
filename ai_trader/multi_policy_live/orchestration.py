@@ -211,7 +211,7 @@ class PolicyOrchestrator:
             entry_idx=self._pending.entry_idx, direction=self._pending.direction,
             strategy_stop_price=self._pending.strategy_stop_price, target_price=target_price,
             atr=self._pending.atr_at_touch, effective_spread=self._pending.effective_spread,
-            cost=realized_cost, day_end_idx=self._pending.day_end_idx,
+            cost=realized_cost, time_stop_idx=self._pending.day_end_idx,
         )
         result = simulate_demo_trade(signal, open_, high, low, close, self._tick_size)
         self._audit.record(PdhPdlAuditEntry(
