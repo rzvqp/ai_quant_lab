@@ -108,4 +108,4 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 - a **session-structure** primitive (session high/low/open — `sessions()` only labels) → session mechanisms;
 - any ratified **structural stop/exit** primitive → completes Part B for the non-pilot candidates.
 
-Auto-resumes the moment any of the above is ratified, or on CEO request to enumerate the remaining pairwise confluences.
+Auto-resumes the moment any of the above is ratified, or on CEO request to enumerate the remaining pairwise confluences. **Flagged imminent (CEO, 2026-08-04): session levels are being specified — when ratified they unlock a session-structure class (session high/low/open reactions + confluences). Not waited on.**
