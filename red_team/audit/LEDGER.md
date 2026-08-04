@@ -841,4 +841,64 @@
                  method. Nothing outside red_team/ (queue annotation only).
                STATE: OPERATIONAL. Next entry [27], prev_hash E26.
   entry_hash:  E26
+
+[27] 2026-07-26
+  prev_hash:   E26
+  event:       VERDICT               # OPERATIONAL MODE — Phase A+B, Primitive-B candidates CAND-0032..0036
+  reviewer:    Red Team
+  detail:      CEO tasked Phase A + Phase B in one pass on the five PERSISTENT (Primitive-B) session
+               candidates CAND-0032..0036 @ policy commit ac9f4ab. Primitive B was FORBIDDEN by my
+               RT-CODE-A-0004 without a filter bounding active levels; first B use, gated on the
+               Statistician's composed ATR-proximity filter. Deliverable:
+               policy_reviews/RT-OPS-AB-0005_persistent_session_batch.md. No data run; policies not
+               modified; no remedy.
+               GROUNDING (recomputed, all MATCH): session_levels 2af2b9e6 @ bf02dd2, market_state 823cf66a,
+                 institutional_levels c284fa2c, interactions dafb4804, imbalance_mechanics 45f8937e,
+                 order_flow 728fa557.
+               T1 FILTER |level.price − close[j−1]| ≤ k·atr14[j−1]: COMPOSITION CORRECT, LOOKAHEAD-FREE.
+                 Verified at market_state.py@bf02dd2 — atr14[i]=rolling-14 mean of tr[i−13..i], strictly
+                 causal ⇒ atr14[j−1] complete before bar j; close[j−1] complete; level.price from a closed
+                 prior session. Precedent-bar denominator matches the ratified `expansion` convention
+                 verbatim. RT-CODE-A-0004 SATURATION CONDITION FORMALLY MET (188→6 active, median 0, 83.6%
+                 empty, falsifiability restored) — the unfalsifiable-by-saturation defect is CURED.
+               T2 OWN SELECTIVITY (real vs decorative): 0032 sweep=REAL (close-back-inside ⊂ touch);
+                 0034/0035/0036 confluence=REAL (second independent reference); 0033 Mid containment =
+                 THINNEST, claim "materially rarer than 8,833" is ASSERTED-not-measured — for a filter-
+                 eligible directionless line a straddling bar ≈ a plain touch ⇒ 0033 is the candidate most
+                 exposed to volume-dilution (DZ×FVG pattern); containment-count report is decisive. Not a
+                 rejection (falsifiable, fail-closed).
+               T3 HORIZON 20-bar GROUP_A_HORIZON: live-valid (fixed bar count, not stale-session-dependent);
+                 shared constant (uniform across S01/S09/S11/... + queue), NOT per-candidate tuning; 0034
+                 uses the day boundary. FLAG: 20 is a fresh-setup Group-A constant, its fit for an aged-level
+                 family is unmeasured (spec question, not a defect).
+               T4 HELD plain-touch-B: refusal CORRECT, hides nothing — plain touch on aged B carries only
+                 the filter ⇒ the pure ≈8,833/4-per-day dilution loser; its only standalone selectivity IS
+                 the sweep (=0032). Consequence: the confluences rest ENTIRELY on the confluence (no sweep);
+                 no standalone plain-B-touch arm ⇒ W-incr vs the other constituent or 0032.
+               T5 0032 ⊂ 0027? NO. Different primitives (B persistent vs A prior); level sets overlap only
+                 at the youngest session-level during A's brief life; triggers differ (sweep ⊂ touch) on a
+                 DIFFERENT population; largely DISJOINT. 0032 must NOT be scored as an increment over 0027;
+                 disjointness keeps BH-FDR valid.
+               FINDING H': ABSENT — all time-stops live-valid (20-bar horizon / day boundary); Alpha
+                 correctly rejected the stale source-session boundary.
+               PART B: lookahead/circularity PASS; hidden-opt PASS with condition (k=1.0 primary chosen on
+                 the level-count distribution not returns; k=0.5/2.0 pre-declared sensitivities MUST be run).
+                 S1 → existing DEMO worst-case convention. S2: 0032/0033/0034 exposed→bind min_executable_risk
+                 floor; 0035/0036 protected (min/max stops).
+               WEEKLY-STRUCTURE SIGNAL — WORST HERE: 0032/0034/0035/0036 fade SESSION_HIGH/LOW; a level
+                 untouched for MONTHS is the longest-period extreme ⇒ touched-vs-short anti-correlation is
+                 MAXIMAL (inverts my earlier session<daily prediction for the aged population). The
+                 persistence that makes B attractive maximizes the pathology. 0033 (Mid) EXEMPT.
+               CENTRAL QUESTION: the filter condition is FORMALLY MET (saturation cured); "4/day too much"
+                 is a DIFFERENT, MEASURABLE failure mode (volume-dilution), per-candidate, not a Red Team
+                 defect — Red Team does not reject on it; 0033 most at risk.
+               VERDICTS: 5 processed, 5 SURVIVED_RED_TEAM_A, 0 REJECTED — all Part B CONDITIONAL on the
+                 existing DEMO gate (S1 worst-case + min_executable_risk floor) + the trigger-count report.
+               HANDOFF: Statistician — protocol + DEMO criteria; carry the trigger-count gate (decisive for
+                 0033), the k=0.5/2.0 sensitivities, the WORST-here weekly signal, W-incr (no plain-B-touch
+                 arm; 0032 disjoint from 0027), the 0033 approach-side assumption, the unmeasured-horizon
+                 flag, the feed-alignment warning. Red Team modified no policy, ran no data, proposed no risk
+                 method. Nothing outside red_team/ (queue annotation only).
+               STATE: OPERATIONAL. Next entry [28], prev_hash E27.
+  entry_hash:  E27
 ```
