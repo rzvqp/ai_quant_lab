@@ -1352,4 +1352,58 @@
                  labels change). Red Team designed no remedy, ran no data, modified nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [35], prev_hash E34.
   entry_hash:  E34
+
+[35] 2026-08-03
+  prev_hash:   E34
+  event:       VERDICT               # CODE RE-ATTACK — demo_gate_engine repair (D1/D2/R1/R2), gates live wiring
+  reviewer:    Red Team
+  detail:      CEO tasked a re-attack on demo_gate_engine @ 06e4e00 (the D1/D2/R1/R2 fixes from RT-CODE-A-0005).
+               Gates live wiring (4 policies waiting). Checklist + NUMERIC re-verification on synthetic bars incl.
+               the exact fixture that exposed D1. Deliverable: policy_reviews/RT-CODE-A-0010_demo_gate_engine_
+               repair.md. No data run; nothing modified; no remedy.
+               VERDICT: PASS_WITH_LIMITATIONS. All four defects genuinely fixed and independently re-verified;
+               residual limitations are CALLER-CONTRACT preconditions the pure function cannot enforce.
+               D1 (entry-bar S1 at ALL trades): FIXED, VERIFIED, SYMMETRIC. Re-ran the exposing fixture (long,
+                 stop 99 non-floored, entry-bar low 98.9, next high 105): now STOP exit_idx=1 px 99.0 net_R
+                 -1.000 stop_at_entry_bar = LOSS (was TARGET/win). Long/short symmetry (CEO target): PASS -- both
+                 STOP@1 net_R -1, identical order; boundary-inclusive (low==exec_stop -> stop). No false stop on
+                 a non-breaching entry bar (proceeds to scan). Entry-bar target still ignored (S3, conservative).
+                 New-defect hunt: none -- fill at exec_stop (wick, not gap; gap pre-empted by NO_TRADE/floored-
+                 INVALID); check order worst-case on every branch.
+               D2 (day_end_idx -> time_stop_idx): naming separation COMPLETE. One meaning (force-close limit,
+                 caller decides representation); both engines consistent; grep -> NO stale day_end_idx consumer
+                 (comments only). BUT the rename fixes the NAME collision, not the VALUE's live-validity: a
+                 block-boundary time_stop_idx re-introduces Finding H' (never fires live) -- CRITICAL for
+                 CAND-0002; the caller must pass a live-valid horizon. Engine honest, not enforcing (DR-L1).
+               R1 (third INVALID condition): DECLARED SUBSUMED, argument VALID. The literal clause-(3) guard
+                 (entry <= exec_stop) is TAUTOLOGICALLY FALSE (exec_stop derived from entry, dist>0) = fail-
+                 closed no-op. The real same-bar ambiguous case is RESOLVED WORST-CASE by D1 (entry-bar stop-
+                 first) + S3 (ignore entry-bar target): same-bar stop -> STOP (loss), target never credited.
+                 Worst-case resolution is >= as conservative as marking INVALID; no unresolved same-bar
+                 ambiguity. (Minor: dead clause-(3) misleadingly labeled 'ambiguous_same_bar_fill', DR-U2.)
+               R2 (F3 precondition): FIXED, VERIFIED. 0<=entry_idx<=time_stop_idx<=n-1 raises ValueError in BOTH
+                 engines (verified all 3 bad cases raise). Closes the dynamic open_[j+1] risk (RT-CODE-A-0005
+                 R7): boundary branch returns before opposing -> opposing only at j<scan_end -> j+1<=time_stop_
+                 idx<=n-1, bounds-guaranteed by the assert (verified in bounds).
+               CORRECTED FIXTURE: now asserts the CORRECT result -- STOP, exit_idx=1, px 99.0, net_R<0 (loss),
+                 stop_at_entry_bar -- not just '!= INVALID'; explicitly notes the old test 'codifica eroarea D1'.
+                 Plus new dedicated D1 tests (unfloored-STOP, short-symmetry, no-breach-proceeds). Masking removed.
+               CHECKLIST: lookahead PASS (reads only [ei, time_stop_idx]; open first tick; scan ei+1; F3 caps
+                 n-1); leakage PASS (pure per-trade); circularity N/A; ambiguity minor (dead clause-3 label);
+                 overfitting N/A; hidden-params one carried (K_SPREAD/K_TICK/K_ATR hardcoded copies of prereg =
+                 DR-U1; tick is correctly a PARAMETER but caller must pass 0.01 not 0.1 = DR-L2); reproducible
+                 PASS (29 tests 22+7 pass, mypy clean, numeric checks reproduce).
+               LIMITATIONS (all caller-contract, none an engine bug): DR-L1 time_stop_idx live-validity
+                 unenforced (block boundary -> Finding H', critical CAND-0002); DR-L2 tick_size correctness
+                 unenforced (must be 0.01 per RT-CODE-A-0007 or S2 floor 10x off); DR-U1 hardcoded prereg
+                 constants; DR-U2 dead clause-(3).
+               VERDICT: PASS_WITH_LIMITATIONS -- the four RT-CODE-A-0005 defects are closed and verified; live
+                 wiring may proceed PROVIDED the caller honors a live-valid time_stop_idx (not a block boundary)
+                 and tick_size=0.01. With those, S1 (entry bar + all collisions), S2, S3, the three INVALID
+                 conditions, and F3 are all correct; the masking fixture is repaired.
+               HANDOFF: CEO (unblock decision) -- confirm CAND-0002's caller passes a live-valid time_stop_idx
+                 (DR-L1) and all callers pass tick 0.01 (DR-L2); collapse the hardcoded constants; then the gate
+                 is safe to wire. Red Team designed no remedy, ran no data, modified nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [36], prev_hash E35.
+  entry_hash:  E35
 ```
