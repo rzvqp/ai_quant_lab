@@ -119,4 +119,4 @@ B filtrat     8.833 atingeri     ← pool BRUT, înainte de orice direcție/bias
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.41 (commit `537e495`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
