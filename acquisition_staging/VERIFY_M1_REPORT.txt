@@ -1,0 +1,81 @@
+==============================================================================
+VERIFICATION — OANDA:XAUUSD M1   *** UNFIT FOR VALIDATION ***
+  single regime (bull only, ~1yr), prohibitive cost/R -- execution/confirmation layer ONLY,
+  never a backtest/edge-validation base. Not segmented, no HTF derived (per mandate).
+==============================================================================
+
+[INTEGRITY + BAR-ACCOUNTING INVARIANT]
+  sha256         : 8387296e06839938c8c130e8b946701c1a9d9bd9d82c3ad13ba55672a08c10d1
+  bars           : 354177
+  distinct times : 354177   (duplicates: 0)
+  strictly increasing (sorted, unique) : True
+  first bar      : 1754266140  2025-08-04 00:09:00Z
+  last  bar      : 1785848220  2026-08-04 12:57:00Z
+  span           : 365.5 days (1.00 yr)
+  invariant      : present 354177 + missing_slots 172192 == nominal grid 526369  -> True
+
+[REAL COVERAGE — gaps > one bar; weekends separate]
+  floor (deepest bar) : 2025-08-04 00:09:00Z   (live-measured by the walk)
+  weekend gaps        : 63
+  intra-week gaps>1bar: 225
+  continuity          : 354177 present / 526369 nominal = 67.3% (gaps are weekends + the 21:00Z OANDA maintenance window; NOT smoothed)
+  longest 10 intra-week gaps:
+     2025-12-24 18:44:00Z -> 2025-12-25 23:04:00Z   1700 min (1700 bars)
+     2025-12-31 21:59:00Z -> 2026-01-01 23:04:00Z   1505 min (1505 bars)
+     2025-09-01 18:29:00Z -> 2025-09-01 22:04:00Z   215 min (215 bars)
+     2026-01-19 19:29:00Z -> 2026-01-19 23:04:00Z   215 min (215 bars)
+     2026-02-16 19:29:00Z -> 2026-02-16 23:04:00Z   215 min (215 bars)
+     2026-05-25 18:29:00Z -> 2026-05-25 22:04:00Z   215 min (215 bars)
+     2026-01-06 21:58:00Z -> 2026-01-06 23:04:00Z   66 min (66 bars)
+     2025-08-04 20:59:00Z -> 2025-08-04 22:04:00Z   65 min (65 bars)
+     2025-08-05 20:59:00Z -> 2025-08-05 22:04:00Z   65 min (65 bars)
+     2025-08-06 20:59:00Z -> 2025-08-06 22:04:00Z   65 min (65 bars)
+
+[COVERAGE MAP — bars per UTC hour]
+  00:00 UTC    15531  #######################################
+  01:00 UTC    15540  ########################################
+  02:00 UTC    15540  ########################################
+  03:00 UTC    15539  #######################################
+  04:00 UTC    15540  ########################################
+  05:00 UTC    15540  ########################################
+  06:00 UTC    15540  ########################################
+  07:00 UTC    15540  ########################################
+  08:00 UTC    15501  #######################################
+  09:00 UTC    15531  #######################################
+  10:00 UTC    15540  ########################################
+  11:00 UTC    15540  ########################################
+  12:00 UTC    15538  #######################################
+  13:00 UTC    15480  #######################################
+  14:00 UTC    15480  #######################################
+  15:00 UTC    15480  #######################################
+  16:00 UTC    15466  #######################################
+  17:00 UTC    15355  #######################################
+  18:00 UTC    15284  #######################################
+  19:00 UTC    15095  ######################################
+  20:00 UTC    14982  ######################################
+  21:00 UTC     4984  ############  <-- maintenance gap
+  22:00 UTC     9518  ########################
+  23:00 UTC    15093  ######################################
+
+[CONSISTENCY — aggregate M1 to 5-min vs existing M5 (overlap)]
+  complete 5-min buckets compared : 69179
+  incomplete buckets skipped      : 282
+  OHLC mismatches (EXACT)         : 0
+  volume mismatches               : 6
+  >>> CONSISTENCY VERDICT (OHLC) : PASS <<<
+
+[BAR AMPLITUDE (high-low) + COST/R -- the reason M1 is UNFIT FOR VALIDATION]
+  session          n     median         IQR(25-75)
+  asia        124310      1.745   [  1.115,  2.740]
+  london       77650      1.675   [  1.095,  2.615]
+  ny          122622      2.000   [  1.190,  3.305]
+  late         29595      1.340   [  0.740,  2.420]
+  ALL median high-low = 1.775 pts  (p25 1.100, p75 2.880)
+  cost/R @ stop=1x median range, spread $0.20/oz : 11%
+  cost/R @ stop=1x median range, spread $0.30/oz : 17%
+  cost/R @ stop=1x median range, spread $0.50/oz : 28%
+  (vs ~3% on M15 -- confirms the CEO's ~40% order of magnitude; kills asymmetric-RR edges)
+
+==============================================================================
+END — M1 delivered UNFIT FOR VALIDATION. Not segmented, no HTF. Statistician decides structure.
+==============================================================================
