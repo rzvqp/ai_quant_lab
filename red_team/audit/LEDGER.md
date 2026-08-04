@@ -968,4 +968,79 @@
                  data, proposed no risk method. Nothing outside red_team/ (queue annotation only).
                STATE: OPERATIONAL. Next entry [29], prev_hash E28.
   entry_hash:  E28
+
+[29] 2026-07-28
+  prev_hash:   E28
+  event:       AUDIT                 # END-TO-END CHAIN AUDIT (pipeline, not a candidate)
+  reviewer:    Red Team
+  detail:      CEO tasked a first-ever end-to-end chain audit: find assumptions that propagated from Alpha
+               to the DEMO order unattacked. Deliverable: policy_reviews/RT-AUDIT-CHAIN-0001_end_to_end.md.
+               Method: six parallel evidence sweeps + Red Team re-read every code claim at source. No data
+               run; nothing modified; no remedy.
+               HEADLINE (result-invalidating check): NOTHING promoted/validated ⇒ almost nothing to
+                 invalidate, and the chain FAIL-CLOSED before live. Task premise CORRECTED: no CAND-xxxx has
+                 ever placed a live DEMO order — VE BLOCKED CAND-0001 ("NU tranzacționează pe DEMO", mstrat
+                 couldn't be shown to enforce S1/S2/S3); the gate worked. Only real DEMO order = BTCUSD from
+                 a different pilot (AI-Trader line). All assumption-carrying candidates still SCREENING.
+                 Two result-shaped items already void + on record: DC-0004 (holdout consumed), ALPHA_REGISTRY
+                 passed_stat (invalid analytic p, stamped stale). One OPEN latent invalidator: W9 matched-null
+                 two-state (RESOLVED flow-c-foundation / OPEN statistician-foundation; VE rebuilt a less-
+                 complete F6 without drift-beta) — no promoted result rests on it yet.
+               DEFECT C-D1: dynamic_exit_engine.py:6-7,37,67 sets time-stop = BLOCK boundary = un-remediated
+                 Finding H' (CAND-0002 class); never remediated at policy level (session/persistent were);
+                 DEMO exit not live-faithful. Same DemoSignal.day_end_idx = day boundary in pdh_pdl engine
+                 vs block boundary here. Pre-live. Red-Team-verified at source.
+               RISK C-R1: demo_gate_engine/ (enforces S1/S2 made hard by 6 verdicts) built AFTER ledger
+                 closed [28], NEVER independently attacked — VE self-verifies its own gate (self-verification
+                 loop). pdh_pdl engine spot-read CLEAN (day-boundary live-valid, S1/S2/S3 present) but not
+                 deeply attacked. Highest structural gap.
+               RISK C-R2: statistical stack (matched_null/mn_*/pilot_pvalue/scoped_fdr/synth_price/wp5) zero
+                 code attack; W9 HIGH defect still OPEN on official line; every batch defers to "BH-FDR valid"
+                 unaudited.
+               RISK C-R3: mstrat.py::simulate produced EVERY candidate metric, enforces no gates, never
+                 attacked ⇒ all SCREENING numbers are pre-gate.
+               RISK C-R4: data/context derivation (resample_ny 17:00-NY anchor, build_gc_bars, M15_v2 context,
+                 Block CONSTRUCTION) never audited; every lookahead proof assumes it; VERIFY_M15_v1_DEFECTIVE
+                 history exists.
+               RISK C-R5: 6 of 9 ratified primitives hash-pinned only; the deeply-attacked 7th
+                 (market_structure) yielded W11+W12 ⇒ symmetric unexamined surfaces; institutional_levels
+                 underpins CAND-0001 (DEMO pilot), market_state.atr14 underpins every S2 floor + ATR filter.
+               RISK C-R6: trading_strategies.py never attacked despite my own [24] "verify first-reference
+                 stability before relying on timing-only."
+               RISK C-R7: dynamic_exit_engine.py:71 open_[j+1] on undeclared precondition day_end_idx<=n-1
+                 (F3-class), no internal assertion; safe under contract, latent. (Verified; the parallel
+                 "dropped target guard" claim checked and REJECTED — dynamic-event exit has no target price.)
+               RISK C-R8: feed-alignment ~3h magnitude unmeasurable in-repo (no MT5 data; not authorized) —
+                 irreducible transferability assumption, correctly disclosed.
+               UNDOCUMENTED C-U1: queue labels overstate readiness — DEMO_BASELINE on 0001/0002/0003/0007/0009
+                 reads live-ready but none live, 0001 BLOCKED, 0009 has label w/ NO DEMO-criteria doc;
+                 live-design doc names CAND-0019 in the live set but it's SCREENING-only w/ no policy artifact.
+               UNDOCUMENTED C-U2: DEMO-criteria coverage uneven (dedicated 0001; batch-inherited 0002/0003/
+                 0007; none 0009/0019); no roster.
+               UNDOCUMENTED C-U3: stale v1 policies (POLICY_OB_MITIGATION_v1) keep the inert block-boundary
+                 time-stop on disk beside the v3 fix.
+               UNDOCUMENTED C-U4: namespace collisions — Q4/Q5/Q6 differ MK-04 vs MK-03 (only Q5 aligns);
+                 day_end_idx day-vs-block; ATR_WINDOW=14 defined twice independently.
+               UNDOCUMENTED C-U5: horizon convention not single-valued (session-level = session-boundary in A,
+                 20-bar in B; CAND-0009 = 14).
+               UNDOCUMENTED C-U6: D2/F1 vs equal-high liquidity carried unresolved; KB strategy S21 trades
+                 exactly what the ratified D2 pipeline is blind to.
+               UNDOCUMENTED C-U7: legacy-428 ZERO_ALPHA_BASE_RATE conflates insufficient-n with measured-
+                 negative under one REJECTED label (disclosed descriptive/non-final).
+               UNDOCUMENTED C-U8: RED_TEAM_STATE.md resume doc 15 entries stale (says next [13], is [28]).
+               CLEAN (verified): MK triage negative/insufficient separation + CAND-0023 rescue; invalid
+                 analytic p not load-bearing; C5 premise mis-stated, context path ratified discovery-safe,
+                 holdout never touched, inert for DEMO candidates; S2 formula + Q4 semantics consistent;
+                 pdh_pdl demo engine gate code clean; chain fail-closed before live.
+               VERDICT: no validated result invalidated (none exists; fail-closed held). Accumulated-
+                 unverified mass concentrated at the two ends Red Team never saw — the ENFORCEMENT code
+                 (demo_gate_engine) and the VALIDATION code (matched_null/pilot_pvalue/scoped_fdr); one
+                 re-embeds an open finding (C-D1/H'), the other carries an open defect (W9). Priority: attack
+                 the gate engine before live wiring; resolve W9 + attack the stat stack before any validation;
+                 then mstrat/data-derivation/6 primitives; then fix the overstating labels.
+               HANDOFF: Statistician, for protocol/prioritisation. Red Team designed no remedy, ran no data,
+                 modified nothing outside red_team/ (no queue annotation — this targets the chain, not a
+                 candidate).
+               STATE: OPERATIONAL. Next entry [30], prev_hash E29.
+  entry_hash:  E29
 ```
