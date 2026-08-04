@@ -1166,4 +1166,69 @@
                  outside red_team/.
                STATE: OPERATIONAL. Next entry [32], prev_hash E31.
   entry_hash:  E31
+
+[32] 2026-07-31
+  prev_hash:   E31
+  event:       VERDICT               # CODE ATTACK — mstrat.simulate (C-R3, the last unattacked end)
+  reviewer:    Red Team
+  detail:      CEO tasked the last unattacked end from RT-AUDIT-CHAIN-0001 (C-R3): mstrat.simulate, which
+               produced EVERY screening number (34 candidates + 1972 legacy + 40 edges), enforces no gate,
+               never attacked, inherited by the whole statistical stack (S-R5). Deliverable:
+               policy_reviews/RT-CODE-A-0007_mstrat_simulate.md. Full source read + TICK/constant git
+               archaeology. No data run; nothing modified; no remedy.
+               HEADLINE: execution LOGIC is worst-case-correct (better than the demo engine); the defect is a
+                 CONSTANT — TICK=0.1 is 10x the true tick (0.01), documented-wrong 2026-07-29, never fixed.
+                 The tick moves every RAW screening/triage number (conservatively) but CANCELS in the matched-
+                 null p-values. Nothing falsely promoted.
+               T1 INTRABAR: CORRECT and more complete than the demo engine. Exit loop scans from j=ei (entry
+                 bar INCLUDED); target_first defaults False = STOP-FIRST worst-case (target_first=True is a
+                 measurement-only toggle, bracket_69.py:18-20, no production path sets it); floored trade
+                 resolving on its own entry bar -> INVALID/excluded (:80), implementing the prereg clause the
+                 demo engine OMITTED (RT-CODE-A-0005 R1). NO D1, NO R1. The demo engine REGRESSED from mstrat.
+               T4 LOOKAHEAD: clean where checked. or_high/or_low broadcast (:20, no shift) is GATED SAFE by
+                 s5_setups:283 bar_in_sess>=4 (after OR forms); features use shift/running/merge_asof-on-avail.
+                 (Full 20-family causal audit not run this pass; shared engine + S5/S6 verified.)
+               T3 HORIZON: sound. Pure structural exits + hard 48-bar timeout cap on every trade (to=48
+                 default), timeout->close, non-overlap via last=xi cursor. 48 + 1.5xATR trailing are hardcoded.
+               T2+T6 TICK (DEFECT): git-verified mstrat.py:10 = TICK=0.1 on ALL 7 branches, introduced
+                 8585723 (Jul 13), NEVER changed. True tick = 0.01 (instrument spec, confirmed vs CEO's live
+                 account 4033.84/4033.89; 10x error confirmed by STATISTICIAN_COST_CONSTANT_CORRECTION Jul 29).
+                 The correction is PROSE ONLY ("verified at the instrument-spec source, NOT the code";
+                 "Nimic re-rulat"). simulate uses module TICK not CFG['tick'] (:45,53,82); two independent
+                 cost engines (mstrat TICK vs alpha_lab/families CFG['tick']) that would diverge on a partial
+                 fix; live-execution repo already at 0.01 while research at 0.1. $0.40 = 2*cost at line 82,
+                 not the lines the CEO cited (2*0.1 = 0.20, doubling is line 82). Impact: cost 2x too high
+                 universally (0.40 vs corrected 0.20, because spread_ticks re-scales 1->5); 5*TICK floor 10x
+                 too large but usually dominated by 0.10*ATR so binds only at low ATR (inflating INVALID
+                 exclusions). Direction CONSERVATIVE -> correcting RAISES every expectancy -> cannot have
+                 inflated anything.
+               T5 PIVOTAL (cancel or bias?): the tick CANCELS in the matched-null p-value. matched_null routes
+                 BOTH observed and null through MS.simulate -> identical cost/floor -> a uniform cost shift
+                 subtracts equally from both sides -> p invariant. Floor bites on matched risk profiles ->
+                 largely cancels. So matched-null calibration + scoped-FDR verdict ROBUST to the tick (unlike
+                 the demo D1, an entry-timing optimism that would NOT cancel; mstrat has no timing-dependent
+                 optimism). What does NOT cancel: the RAW screening/triage stats (absolute, not differences).
+               WHAT MOVES: every raw screening/triage number (all 34 + 1972 + 40), UPWARD, when the tick is
+                 fixed (~+0.01-0.08R/trade cost + low-ATR floor); the archival negative/insufficient
+                 classifications + "none crossed zero at +0.075R" rest on an ESTIMATE never re-run through a
+                 corrected engine and excluding the floor effect -> must be re-verified; 0022(-0.157)/
+                 0024(-0.138) closest to zero, ranking not guaranteed stable. WHAT DOESN'T MOVE: matched-null
+                 p-values + the scoped-FDR survivor-fails-OOS verdict (cost cancels).
+               SEVERITY: M-D1 (defect: TICK 10x wrong, documented, unfixed, every number under it). M-R1
+                 (risk: two divergent cost constants; research!=live tick). M-U1 (hardcoded 48/1.5/2500 magic).
+                 M-U2 (invalidated analytic_p still in the live path).
+               SURVIVES: worst-case intrabar order (no D1/R1); lookahead clean where checked; horizon sound;
+                 matched-null robust to the tick; the demo D1 is a regression FROM this engine.
+               VERDICT: mstrat.simulate SURVIVES on execution logic (more correct than the enforcement engine);
+                 FAILS on a constant. Every raw screening/triage stat is conservatively biased and never re-run
+                 corrected; matched-null verdicts shielded (cost cancels). Nothing falsely promoted; the
+                 archival ledger must be re-verified under a corrected-engine re-run (which does not exist).
+                 Closes the three unattacked ends (enforce/validate/produce).
+               HANDOFF: Statistician then CEO — patch TICK + reconcile CFG['tick']+spread_ticks, re-run the
+                 full campaign corrected; collapse the two cost constants; matched-null needs no tick re-run
+                 (cancels) but keeps RT-CODE-A-0006 out-of-domain caveats; source/retire the magic numbers +
+                 the invalidated analytic_p. Red Team designed no remedy, ran no data, modified nothing outside
+                 red_team/.
+               STATE: OPERATIONAL. Next entry [33], prev_hash E32.
+  entry_hash:  E32
 ```
