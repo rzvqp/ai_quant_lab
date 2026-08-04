@@ -135,4 +135,4 @@ Nu am implementat nimic. **Nu am re-încadrat CAND-0006** — am arătat că tre
 
 ---
 
-**Publicat pe `statistician-foundation`; manifestul se incrementează.**
+**Publicat pe `statistician-foundation`. Manifestul incrementat la v2.7.40 (commit `74a8d50`, `alpha-automation-v1`) — mypy --strict curat, content_hash reverificat independent (blank-and-rehash), pytest 139/143 trecute (aceleași 4 eșecuri pre-existente).**
