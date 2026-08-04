@@ -1,7 +1,27 @@
-# Raport: Cablare Politici Multiple — construit, testat, NEPORNIT
+# Raport: Cablare Politici Multiple — construit, testat, ACTIVAT (CAND-0007, CAND-0019)
 
 **Data:** 2026-08-04
-**Status:** Construit și verificat conform designului (`9f6f08d`). **Nimic pornit.** Aștept confirmarea ta.
+**Status:** ACTIV. CAND-0007 și CAND-0019 pornite, PID 13268, confirmat viu. CAND-0009 rămâne
+inactiv (construit, așteaptă re-screening cu orizontul de 14 bare). CAND-0001 (PID 29888)
+neîntrerupt pe tot parcursul.
+
+## Activare (după confirmarea ta)
+
+1. Flag-uri de pauză setate în store-ul partajat: `CAND-0007=True`, `CAND-0019=True`,
+   `CAND-0009` neatins (implicit `False`).
+2. `entrypoint.py` lansat ca proces detașat (`Start-Process -WindowStyle Hidden`), PID **13268**,
+   log de pornire curat, fără nimic in stderr, confirmat viu după warmup:
+   `multi_policy_live: starting -- symbol=XAUUSD mt5_timeframe=15 bar_seconds=900
+   poll_interval_seconds=30.0 policies=CAND-0007,CAND-0019(active) CAND-0009(built,inactive)`.
+3. CAND-0001 (PID 29888) verificat viu înainte și după lansare — neatins.
+
+## Ce raportez de-acum, per tranzacție închisă, per politică
+
+Tichet, prețuri cerute/fill la ambele capete, spread observat, volum și risc efectiv,
+câmpurile de audit ale motorului, rezoluția, costul realizat round-trip.
+
+**Săptămânal, cumulativ, per politică ȘI agregat**, plus un contor separat pentru câte semnale
+regula de excludere a blocat (deocamdată zero posibil, cât timp CAND-0009 rămâne inactiv).
 
 ## Ce am construit
 
