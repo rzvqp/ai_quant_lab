@@ -1,0 +1,2 @@
+as_of_utc,iso_year,iso_week,capture_dir,json_sha256,csv_sha256,xml_sha256,n_events_json,server_last_modified,etag,http_ok
+2026-08-10T125009Z,2026,33,captures/2026-08-10T125009Z,feb90412874a222bd1c09da401f1a8bbcb5ae9084e010f311002224888e9c5c3,849429162060d0314ad4e05e729c77cbb7d8b0192f7ec1f88f42b759406c1cb9,02387c5f476bb6f27c2f88703cdf01ea314844f51d81a21cdf26486e205e4d5f,74,"Mon, 10 Aug 2026 12:42:18 GMT","W/""6a79c72a-270f""",True
