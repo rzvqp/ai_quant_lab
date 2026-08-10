@@ -1656,4 +1656,64 @@
                  data, modified nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [40], prev_hash E39.
   entry_hash:  E39
+
+[40] 2026-08-08
+  prev_hash:   E39
+  event:       VERDICT               # CODE ATTACK — level-3 M15 operational zone map (zone_map.py)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on code/zone_map.py @ 11ae360, spec STAT-LEVEL2-CONDITION-AND-LEVEL3-ZONE-
+               MAP-SPEC-v1.0 a595cc5 / manifest v2.7.52 Part 3. Level 3, step 3. UNWEIGHTED counter (not a
+               weighted score): 4 ratified features in a 1xATR band (pdh_pdl/fvg/liquidity/discount), k 0..4,
+               threshold k>=4 = total confluence. Checklist + NUMERIC verification on synthetic M15 (module +
+               all detector deps read-only). Deliverable: policy_reviews/RT-CODE-A-0015_zone_map_m15.md. No
+               real-data run; nothing modified.
+               VERDICT: PASS_WITH_LIMITATIONS.
+               LOOKAHEAD: PASS, PROVEN. All features filter to available_idx/confirmed_idx <= i-1; ref=
+                 close[i-1], atr[i-1]. Numeric: scrambling the LAST bar leaves counter_k/status/reason/
+                 reference IDENTICAL -> reads only <= i-1, doesn't even read the current bar.
+               T1 threshold k>=4: DERIVED from falsifiability (1xATR band saturates -- 3/4 coincide 94.87%;
+                 k<=3 leaves 0.07/0.38/5.13% empty; only k>=4 leaves 57.18% complement = falsifiable). Genuine
+                 derivation, not arbitrary -- BUT forced BY the band collinearity.
+               T2 total confluence = map or FILTER? A binary FILTER -- THRESHOLD_K=4 with 4 features emits a
+                 zone only when all 4 coincide; k=1/2/3 gradient discarded (ranked_by_k trivially (4,) or ()).
+                 Hands level 6 a present/absent, not a gradient. 'Map' overstates it.
+               T3 band 1xATR (4th time): reused ratified constant (v2.7.41), consistent -- BUT a PROXIMITY band
+                 reused as a CONFLUENCE band imports the collinearity (94.87% coincidence), the source of the
+                 saturation that forces k>=4. Anchor by reuse, arguably mis-scoped for confluence.
+               CEO SATURATION Q (resolve or move up a level?): MOVES it up. Joint (band,k) RESTORES
+                 falsifiability (k<=3 ~99% saturated -> k=4 57% complement) but does NOT resolve the band
+                 collinearity: total confluence still fires 42.82% (common coarse state); my RANDOM-WALK
+                 synthetic saturated to k=4 with no real structure. Problem moves from 'unfalsifiable counter'
+                 to 'falsifiable coarse binary'; value of all-4-vs-not unquantified -> pushed to level 6. (ZM-L1.)
+               OWN discount/SESSION_MID + other edges: REDUNDANT_WITH is a HAND-MAINTAINED dict (17 edges),
+                 REGRESSION from level 2's mechanical static inspection; docstring says 'doua tiere -- L-R1' but
+                 does NOT implement it. Manual list CAN be incomplete (CEO's undisclosed-edges concern). Verified
+                 SESSION_MID->0028/0033 complete, but completeness NOT guaranteed by construction. (ZM-L2a.)
+               OWN zero independent features: TRUE (all 4 map to candidate triggers; NEWS absent).
+               OWN fail-closed UNAVAILABLE vs EMPTY SET: distinguished at the classifier (UNAVAILABLE ->
+                 status=UNAVAILABLE; empty-set -> status=AVAILABLE + reason=empty_set_below_threshold) BUT both
+                 zones=() -> level 6 must check status AND len(zones)>0; if status alone, the valid empty-set
+                 (status=AVAILABLE) is silently consumed as 'map exists'. Same class as level-4 Z4-L1. (ZM-U1.)
+               OWN cascade level1/2->3: by IF on caller BOOLEANS (regime_available/bias_available), NOT type-
+                 propagated. If the caller mis-derives them, cascade silently fails. Weaker than type. (ZM-L2b.)
+               CHECKLIST: leakage PASS; overfitting PASS (k derived, band reused, no fit); hidden-params PASS
+                 (band+k jointly in schema_hash; M15 units correct); reproducible PASS; circularity = disclosed
+                 redundancy by construction (all 4 candidate-triggered).
+               SEVERITY: ZM-L1 (saturation moved not resolved -- coarse binary filter, band mis-scoped, value
+                 unquantified). ZM-L2 (manual redundancy dict + if-cascade, both weaker than type-safe). ZM-U1
+                 (empty-set silent-consumption).
+               SURVIVES: lookahead-free (proven); unweighted counter the right structural choice; k>=4
+                 legitimately derived; UNAVAILABLE/empty-set distinguished; zero independent features disclosed;
+                 band/k jointly hashed.
+               VERDICT: PASS_WITH_LIMITATIONS -- map causally sound, counter/threshold honestly derived; the
+                 joint (band,k) derivation RELOCATES the saturation into a coarse falsifiable-binary rather than
+                 resolving the band collinearity (ZM-L1), and redundancy/cascade/empty-set rely on manual/if/
+                 status-alone mechanisms weaker than the type-safe alternatives (ZM-L2/U1). None a defect in this
+                 file; all to be honored/strengthened at integration.
+               HANDOFF: CEO/Statistician -- measure all-4-vs-not (ZM-L1) + consider narrower confluence band;
+                 replace manual REDUNDANT_WITH with level-2 mechanical inspection + propagate cascade by type
+                 (ZM-L2); level 6 NO_TRADE on status==UNAVAILABLE OR len(zones)==0 (ZM-U1). Classification
+                 verified clean. Red Team designed no remedy, ran no data, modified nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [41], prev_hash E40.
+  entry_hash:  E40
 ```
