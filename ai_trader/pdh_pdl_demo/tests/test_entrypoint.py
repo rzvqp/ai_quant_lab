@@ -209,6 +209,10 @@ def test_build_loop_wires_real_components_and_ticks_cleanly_with_fakes(tmp_path:
 
     class _FakeOrderGateway(FakeMT5DemoGateway):
         def copy_rates_from(self, symbol: str, timeframe: int, date_from: int, count: int) -> Any:
+            # `make_broker_offset`'s own M1 probe needs at least one bar to compute an offset from --
+            # unrelated to this test's own "zero M15 bars, wiring only" intent, so only M1 gets one.
+            if timeframe == 1:
+                return ({"time": AS_OF, "open": 1.0, "high": 1.0, "low": 1.0, "close": 1.0, "tick_volume": 1},)
             return ()
 
     class _FakeHistoryGateway:

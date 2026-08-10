@@ -40,14 +40,45 @@ lookback, same as today), and the resulting `GapRecord.backfill_capped=True` mak
 rather than silent. Still exactly one gap detection pass either way -- backfilling only changes how many
 of the missing bars get recovered, never whether the gap itself is reported.
 
-**Clock fix, 2026-08-11** (CEO, priority maxima, after the "blocked feed" diagnostic turned out to be a
-false alarm): MT5 reports every timestamp -- ticks and historical bars alike -- in the broker/terminal's
-own server time, not true UTC. Every one of the 5 live entrypoints constructed `LiveBarFeed` without an
-explicit `clock=`, so all of them fell back to `_default_clock` (true system UTC) -- meaning `poll()`'s
-"still-forming" filter compared a broker-labeled `ts_close` against a system-labeled `now`, holding back
-every genuinely closed bar for a full offset period (measured at +3h against XAUUSD/FusionMarkets, same
-across M1/M5/M15, same on EURUSD -- a terminal-wide convention, not a feed or symbol issue). See
-`make_broker_clock` below for the fix and why it re-reads every call rather than memoizing an offset.
+**Clock fix, 2026-08-11, take 1 (superseded below)**: MT5 reports every timestamp -- ticks and
+historical bars alike -- in the broker/terminal's own server time, not true UTC. The first fix injected
+a `clock=` that read broker time directly (`make_broker_clock`, now removed) -- correct for `poll()`'s
+own forming-bar check, but it left every DOWNSTREAM consumer (`day_boundary_start_utc`, `session_of`,
+`gap_classification`'s `_is_maintenance_window`) still silently assuming its input epoch was true UTC,
+which it wasn't -- broker time reached them unconverted.
+
+**Clock fix, take 2, translate at the source (CEO decision, "Optiunea A")**: `LiveBarFeed` now converts
+every raw MT5 timestamp it reads into true UTC BEFORE constructing a `Bar` -- so `Bar.ts_open`/`ts_close`
+(and everything derived from them: `GapRecord.gap_start`/`gap_end`, `day_boundary_start_utc`,
+`session_of`) are true UTC, unconditionally, for every consumer, with zero changes needed anywhere
+downstream. The alternative (fixing every consumer individually) was rejected: more call sites, more
+chances to miss one.
+
+`clock=` goes back to meaning true system UTC (`_default_clock`) -- that's `poll()`'s own "now" again,
+unchanged from before the broker-time detour. `broker_offset=` (new, see `make_broker_offset`) supplies
+`broker_epoch - true_utc_epoch`, read fresh every `poll()` call, never memoized -- broker server time
+shifts with DST twice a year, so the only correct answer is asking the terminal every time. Every raw
+`rate["time"]` read from MT5 has `- offset` applied before it becomes a `Bar.ts_open`; every OUTGOING
+query timestamp this file sends back to MT5 (`copy_rates_from`/`copy_rates_range`'s `date_from`/`date_to`
+arguments) has `+ offset` applied first, since MT5's own API still expects broker-epoch inputs -- the
+translation is a boundary shim around this file, not a claim that MT5 itself changed.
+
+Backward compatible by construction: `broker_offset=None` (the default) makes `offset` a plain `0` for
+every poll -- byte-for-byte the pre-broker-clock behavior, so no existing test needed to know about any
+of this.
+
+**Old observations stay, but get a marker, not a rewrite** (CEO: "Cele inregistrate sub decalaj au
+etichete gresite... NU le sterge. Marcheaza-le cu un flag"): rather than adding a per-record boolean to
+every downstream type that carries a clock-derived label (`GapRecord.classification`,
+`SpreadObservation.session`/`day_boundary_label`, `structural_observer`'s REGIME `session`,
+`zone_observer`'s `session_label`) -- four separate packages, each needing its own schema/serialization
+change -- `poll()` persists ONE watermark per `(symbol, mt5_timeframe)`, the true-UTC `now` at the moment
+`broker_offset` was first successfully used for this feed (written once, never overwritten). Any record
+whose own timestamp predates that watermark was computed while the raw epoch was still being fed to
+UTC-assuming label logic unconverted -- session/day-boundary/MAINTENANCE labels on it may be wrong. Any
+record at or after it is correct. Raw timestamps on old records are NOT wrong (a constant offset cancels
+in bar-to-bar duration math) -- only labels derived by treating one single epoch as an absolute
+UTC-hour-of-day are; they can be recomputed later against the same raw timestamp if it's ever worth it.
 """
 
 from __future__ import annotations
@@ -68,46 +99,10 @@ umple." A gap longer than this is reported via the normal `GapRecord` mechanism 
 
 
 def _default_clock() -> int:
-    """True system UTC. NOT what any of the 5 live entrypoints should actually use in production --
-    see `make_broker_clock` below. Kept as the parameter default only so every existing test/fake that
-    never cared about wall-clock alignment (constructing a `LiveBarFeed` with an injected `clock=`
-    lambda of its own) keeps working unchanged."""
+    """True system UTC -- `poll()`'s own "now", used for the forming-bar check. Correct as-is; the
+    broker/UTC mismatch this file corrects for lives entirely in `broker_offset` (see
+    `make_broker_offset` below), not here."""
     return int(time.time())
-
-
-def make_broker_clock(gateway: MT5Gateway, symbol: str) -> Callable[[], int]:
-    """CEO instruction, 2026-08-11: MT5 reports every timestamp it returns -- ticks AND historical
-    bars alike -- in the broker/terminal's OWN server time, not true UTC. Measured directly against
-    XAUUSD/FusionMarkets as a constant +3h offset (consistent with EEST), confirmed identically across
-    M1/M5/M15 and on a second, unrelated symbol (EURUSD) -- a terminal-wide clock convention, not a
-    feed-specific anomaly.
-
-    `LiveBarFeed`'s prior default (`_default_clock`, true system UTC) meant `poll()`'s own
-    "still-forming" filter (`ts_close > now`) compared a broker-labeled `ts_close` against a
-    system-labeled `now` -- so every genuinely closed bar was held back and reported as "not yet
-    closed" for a full offset period after it actually closed. Not a feed outage; a clock mismatch,
-    present since this system's very first bar (self-consistent and invisible until directly comparing
-    `symbol_info_tick().time` against system `time.time()`, which is what surfaced it).
-
-    Returns a clock function that reads `symbol_info_tick(symbol).time` FRESH on every single call --
-    never memoizes an offset, never reads it once at construction. This is deliberate, not just
-    simplicity: broker server time shifts with DST twice a year, so a live run spanning a DST
-    transition would silently be wrong again if the offset were computed once and added as a constant
-    thereafter. The only correct answer is to ask the terminal what time it is, every time.
-
-    Fail-closed: raises `BarFeedError` if the terminal can't produce a tick right now, rather than
-    falling back to system time -- a silent fallback would quietly reintroduce the exact bug this
-    fixes."""
-
-    def clock() -> int:
-        tick = gateway.symbol_info_tick(symbol)
-        if tick is None:
-            raise BarFeedError(
-                f"make_broker_clock({symbol!r}): symbol_info_tick returned None -- cannot read broker time"
-            )
-        return int(tick.time)
-
-    return clock
 
 
 def _read_field(rate: object, name: str) -> int | float | None:
@@ -146,11 +141,84 @@ def _read_field(rate: object, name: str) -> int | float | None:
     return None
 
 
+_OFFSET_PROBE_MT5_TIMEFRAME = 1
+"""MT5's M1 timeframe constant -- equals 1 by the same "M1-M30 constant == minute count" convention
+this codebase already relies on for `MT5_TIMEFRAME_M15 = 15` in every entrypoint. Used only by
+`make_broker_offset`'s own probe, independent of whatever timeframe the `LiveBarFeed` this offset feeds
+is actually tracking."""
+_OFFSET_PROBE_BAR_SECONDS = 60
+_OFFSET_PROBE_FUTURE_MARGIN_SECONDS = 24 * 3600
+"""Generously larger than any plausible real broker/UTC offset -- guarantees the probe query lands
+after whatever the broker's actual current epoch is, so MT5 returns its own genuinely most recent
+CLOSED M1 bar, not an artifact of this file not yet knowing what the offset is."""
+
+
+def make_broker_offset(
+    gateway: MT5Gateway, symbol: str, system_clock: Callable[[], int] = _default_clock,
+) -> Callable[[], int]:
+    """Returns a function computing `broker_epoch - true_utc_epoch` (positive when the broker is ahead),
+    read fresh -- never cached -- on every single call.
+
+    **Not measured via `symbol_info_tick(...).time`** (the first version of this function, reverted):
+    discovered empirically (2026-08-11) that a tick's `.time` is the timestamp of the LAST PRICE TICK,
+    not a live server clock -- during a quiet stretch it can lag the terminal's actual current time by
+    tens of minutes, observed directly (offset estimates swinging by over 2500 seconds within the same
+    session, with no real broker/UTC relationship changing that fast). A per-poll offset that noisy
+    would make consecutive polls disagree about the SAME bar's own corrected timestamp, and could make
+    a perfectly continuous bar sequence look like it had a gap that never happened.
+
+    **Measured via a dedicated M1 probe instead**: `copy_rates_from(symbol, M1, system_clock() + 24h,
+    1)` -- querying deliberately far in the future (relative to true UTC, before the offset is even
+    known) forces MT5 to return its own genuinely most recent CLOSED M1 bar, whatever timeframe this
+    feed itself tracks. Since M1 bars close every 60 real seconds during active trading, the returned
+    bar's own `ts_open` pins down the broker's current epoch to within about one minute -- `+ 60` steps
+    forward to the currently-forming bar's own boundary, which is the working offset estimate. Far
+    tighter and far more stable than tick staleness ever demonstrated.
+
+    Re-reading fresh every call also means DST transitions (or, per this session's own finding, whatever
+    slower continuous drift produced the swing above -- worth separate investigation on the
+    terminal/broker side, not something this function can diagnose) are absorbed automatically: whatever
+    the terminal's own clock says right now is what gets used, never a value computed once and reused.
+
+    Fail-closed only against an EMPTY probe: raises `BarFeedError` if `copy_rates_from` returns nothing
+    at all, rather than falling back to a zero offset -- a silent fallback would quietly reintroduce the
+    broker/UTC mismatch this exists to eliminate.
+
+    **NOT fail-closed against a STALE probe** (CEO's own question, 2026-08-11: "ce se intampla cand
+    piata e inchisa"): when the market is genuinely closed -- weekend, holiday -- MT5 still has SOME M1
+    history (Friday's last bar), so the query above still returns a non-empty result; this function has
+    no staleness check and will silently compute an offset from however old that bar actually is,
+    without raising. During an ordinary MAINTENANCE-length gap (up to ~75 minutes) this is close enough
+    to be harmless for hour-granularity classification; across a full weekend it would not be. Disclosed
+    as an open question, not fixed here -- the right policy (raise for the whole closure, matching this
+    project's existing "a single tick raising propagates uncaught, no retry" convention in
+    `live_loop.py`; or something else) is a decision this function shouldn't make unilaterally."""
+
+    def offset() -> int:
+        system_now = system_clock()
+        rates = gateway.copy_rates_from(
+            symbol, _OFFSET_PROBE_MT5_TIMEFRAME, system_now + _OFFSET_PROBE_FUTURE_MARGIN_SECONDS, 1,
+        )
+        if rates is None or len(rates) == 0:
+            raise BarFeedError(
+                f"make_broker_offset({symbol!r}): M1 probe returned no bars -- cannot determine offset"
+            )
+        latest_closed_ts_open = _read_field(rates[0], "time")
+        if latest_closed_ts_open is None:
+            raise BarFeedError(
+                f"make_broker_offset({symbol!r}): M1 probe rate is missing its own time field"
+            )
+        return int(latest_closed_ts_open) + _OFFSET_PROBE_BAR_SECONDS - system_now
+
+    return offset
+
+
 class LiveBarFeed:
     def __init__(
         self, gateway: MT5Gateway, symbol: str, mt5_timeframe: int, bar_seconds: int,
         lookback_count: int = 10, clock: Callable[[], int] = _default_clock,
         state_store: SqliteStateStore | None = None,
+        broker_offset: Callable[[], int] | None = None,
     ) -> None:
         if bar_seconds <= 0:
             raise ValueError(f"LiveBarFeed: bar_seconds must be > 0, got {bar_seconds!r}")
@@ -162,8 +230,14 @@ class LiveBarFeed:
         self._bar_seconds = bar_seconds
         self._lookback_count = lookback_count
         self._clock = clock
+        self._broker_offset = broker_offset
+        """`None` (the default) means every raw MT5 timestamp is already true UTC as far as this feed
+        is concerned -- `offset` is treated as `0` every poll, byte-for-byte the pre-broker-clock-fix
+        behavior. Set via `make_broker_offset(gateway, symbol)` in production, where MT5 timestamps are
+        actually broker-server time."""
         self._state_store = state_store
         self._watermark_key = f"live_signal_source.bar_feed:{symbol}:{mt5_timeframe}"
+        self._clock_corrected_since_key = f"{self._watermark_key}.clock_corrected_since"
         self._last_emitted_ts_open: int | None = (
             None if state_store is None else self._load_persisted_watermark(state_store)
         )
@@ -178,33 +252,55 @@ class LiveBarFeed:
         journal, via `CandidateSignalProducer`, is responsible for retaining that)."""
         return self._last_gaps
 
-    def _fetch_rates(self, now: int) -> tuple[bool, bool, Any]:
+    def _fetch_rates(self, now: int, offset: int) -> tuple[bool, bool, Any]:
         """Decides which of `copy_rates_from` (small fixed lookback, the steady-state case) or
         `copy_rates_range` (the full missing window, the backfill case) to call. Returns
         `(is_backfill, backfill_capped, rates)` -- `is_backfill` is `True` only when a range fetch for
         the missing window was actually issued; `backfill_capped` is `True` only when the gap was too
-        large to backfill (>`MAX_BACKFILL_SECONDS`) and the normal small lookback was used instead."""
+        large to backfill (>`MAX_BACKFILL_SECONDS`) and the normal small lookback was used instead.
+
+        `now` and the watermark-derived `next_expected` are true UTC; MT5's own API still expects
+        broker-epoch query timestamps, so `+ offset` is applied only on the way OUT here -- the raw
+        rates that come back are converted `- offset` by the caller (`poll()`), not here."""
         if self._last_emitted_ts_open is not None:
             next_expected = self._last_emitted_ts_open + self._bar_seconds
             missing_seconds = now - next_expected
             if missing_seconds > self._lookback_count * self._bar_seconds:
                 if missing_seconds > MAX_BACKFILL_SECONDS:
                     return False, True, self._gateway.copy_rates_from(
-                        self._symbol, self._mt5_timeframe, now, self._lookback_count,
+                        self._symbol, self._mt5_timeframe, now + offset, self._lookback_count,
                     )
                 return True, False, self._gateway.copy_rates_range(
-                    self._symbol, self._mt5_timeframe, next_expected, now,
+                    self._symbol, self._mt5_timeframe, next_expected + offset, now + offset,
                 )
         return False, False, self._gateway.copy_rates_from(
-            self._symbol, self._mt5_timeframe, now, self._lookback_count,
+            self._symbol, self._mt5_timeframe, now + offset, self._lookback_count,
         )
 
+    def _offset_now(self) -> int:
+        if self._broker_offset is None:
+            return 0
+        return self._broker_offset()
+
+    def _record_clock_correction_watermark(self, now: int) -> None:
+        """Persists, once, the true-UTC `now` at which this feed first ran with a real
+        `broker_offset`. Never overwritten once set -- it marks the point after which every record
+        this feed's own downstream journals produced can be trusted to carry correctly-converted
+        timestamps; anything before it was computed while the raw epoch was broker time, unconverted."""
+        if self._broker_offset is None or self._state_store is None:
+            return
+        if self._state_store.get_value(self._clock_corrected_since_key) is None:
+            self._state_store.set_value(self._clock_corrected_since_key, float(now))
+
     def poll(self) -> tuple[Bar, ...]:
-        """Returns every newly CLOSED bar since the previous `poll()` call, oldest first. Never returns
-        the currently-forming bar. Raises `BarFeedError` on a genuine gateway failure -- never returns a
-        stale/partial result silently."""
+        """Returns every newly CLOSED bar since the previous `poll()` call, oldest first, with
+        `ts_open`/`ts_close` in true UTC regardless of what convention MT5 itself uses internally (see
+        `broker_offset` on `__init__`). Never returns the currently-forming bar. Raises `BarFeedError`
+        on a genuine gateway failure -- never returns a stale/partial result silently."""
         now = self._clock()
-        is_backfill, backfill_capped, rates = self._fetch_rates(now)
+        offset = self._offset_now()
+        self._record_clock_correction_watermark(now)
+        is_backfill, backfill_capped, rates = self._fetch_rates(now, offset)
         if rates is None:
             raise BarFeedError(f"copy_rates_from/copy_rates_range({self._symbol!r}) returned None")
 
@@ -221,7 +317,7 @@ class LiveBarFeed:
                     f"copy_rates_from/copy_rates_range({self._symbol!r}) returned a rate missing an OHLC field"
                 )
 
-            ts_open = int(ts_open)
+            ts_open = int(ts_open) - offset  # broker epoch -> true UTC, before anything else touches it
             ts_close = ts_open + self._bar_seconds
             if ts_close > now:
                 continue  # still forming -- never emitted; not an error

@@ -18,12 +18,16 @@ NOW = 1_700_000_000
 
 
 def _closed_bar_gateway(*ts_opens: int) -> FakeMT5Gateway:
-    """`tick_time` set to `NOW + M15_SECONDS` -- `build_loop` now wires `make_broker_clock`, which reads
-    this instead of the real wall clock, so even the latest bar this file ever constructs (`ts_open ==
-    NOW`, `ts_close == NOW + M15_SECONDS`) reads as genuinely closed, not still forming."""
+    """`m1_probe_rates` backs `build_loop`'s own `make_broker_offset(gateway, symbol)` (default
+    `system_clock`, i.e. the REAL wall clock at test-run time) -- set so the derived offset shifts every
+    bar's corrected `ts_open` to just-behind real "now", regardless of how far in the past the fixed
+    `NOW` constant itself is: `offset = (NOW + M15_SECONDS - 60) + 60 - real_now`, so
+    `corrected_ts_open = raw_ts_open - offset = (raw_ts_open - NOW - M15_SECONDS) + real_now` -- always a
+    few thousand seconds behind real "now", exactly like this file's bars were before broker-time ever
+    entered the picture."""
     return FakeMT5Gateway(
         rates=[RawRate(time=ts, open=2000.0, high=2001.0, low=1999.0, close=2000.5) for ts in ts_opens],
-        tick_time=NOW + M15_SECONDS,
+        m1_probe_rates=[RawRate(time=NOW + M15_SECONDS - 60, open=1.0, high=1.0, low=1.0, close=1.0)],
     )
 
 

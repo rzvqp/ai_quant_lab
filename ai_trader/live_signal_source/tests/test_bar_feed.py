@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_clock
-from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, FakeTick, RawRate
+from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_offset
+from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
 from ai_trader.live_signal_source.types import BarFeedError, GapClassification
 from ai_trader.persistent_state.store import SqliteStateStore
 
@@ -504,57 +504,163 @@ def test_a_gap_beyond_the_30_day_cap_falls_back_to_normal_lookback_uncapped() ->
     assert gaps[0].classification == GapClassification.EXTENDED_PAUSE  # 40 days, spans many Saturdays
 
 
-# -- Broker clock fix, 2026-08-11 (CEO, priority maxima): MT5 reports every timestamp in the
-# broker/terminal's own server time, not true UTC. `_default_clock` (true system UTC) caused poll()'s
-# own forming-bar filter to hold back every genuinely closed bar for a full offset period, since it
-# compared a broker-labeled `ts_close` against a system-labeled `now`. `make_broker_clock` fixes this by
-# reading `symbol_info_tick(symbol).time` fresh on every call instead. --
+# -- Broker-to-UTC translation at the source, 2026-08-11, take 2 (CEO decision, "Optiunea A"): MT5
+# reports every timestamp in the broker/terminal's own server time, not true UTC. Rather than injecting
+# a broker-aware `clock=` (take 1, reverted -- it left every downstream consumer of `Bar.ts_open` still
+# assuming true UTC), `LiveBarFeed` now converts every raw MT5 timestamp to true UTC itself, via
+# `broker_offset=make_broker_offset(...)` -- `clock=` goes back to meaning true system UTC.
+#
+# `make_broker_offset` measures via a dedicated M1 probe (`copy_rates_from(symbol, M1, ...)`), NOT
+# `symbol_info_tick` (take 1 of THIS fix, also reverted -- discovered empirically that a tick's `.time`
+# is the time of the last PRICE TICK, not a live clock, and drifts by tens of minutes during quiet
+# periods). `_m1_probe_rate(offset_seconds, system_now)` below builds exactly the raw M1 rate that makes
+# `make_broker_offset`'s own arithmetic (`latest_ts_open + 60 - system_now`) land on a given offset. --
 
 
-def test_make_broker_clock_reads_the_tick_time_not_system_time() -> None:
-    gateway = FakeMT5Gateway(tick_time=NOW + 10_800)  # 3h offset, matching the measured real case
-    clock = make_broker_clock(gateway, SYMBOL)
-
-    assert clock() == NOW + 10_800
+def _m1_probe_rate(offset_seconds: int, system_now: int) -> list[RawRate]:
+    latest_closed_ts_open = system_now + offset_seconds - 60
+    return [RawRate(time=latest_closed_ts_open, open=1.0, high=1.0, low=1.0, close=1.0)]
 
 
-def test_make_broker_clock_reads_fresh_on_every_call_not_memoized() -> None:
-    """The DST question the CEO raised directly: the offset can shift twice a year, so the clock must
-    re-read the terminal every time, never compute an offset once and reuse it."""
-    gateway = FakeMT5Gateway(tick_time=NOW)
-    clock = make_broker_clock(gateway, SYMBOL)
-    assert clock() == NOW
+def test_make_broker_offset_computes_broker_minus_system() -> None:
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(10_800, NOW))  # 3h offset
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW)
 
-    gateway.tick_time = NOW + 3_600  # simulates the terminal's own clock having moved on
-    assert clock() == NOW + 3_600
+    assert offset() == 10_800
 
 
-def test_make_broker_clock_raises_when_the_terminal_has_no_tick() -> None:
-    """Fail-closed, matching this project's own established convention -- a silent fallback to system
-    time would quietly reintroduce the exact bug this fixes."""
-    gateway = FakeMT5Gateway(tick_time=None)
-    clock = make_broker_clock(gateway, SYMBOL)
+def test_make_broker_offset_reads_fresh_on_every_call_not_memoized() -> None:
+    """The DST question the CEO raised directly: the offset can shift twice a year, so it must be
+    recomputed from the terminal every time, never cached after the first read."""
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW)
+    assert offset() == 0
+
+    gateway.m1_probe_rates = _m1_probe_rate(3_600, NOW)  # simulates the terminal's clock having moved
+    assert offset() == 3_600
+
+
+def test_make_broker_offset_raises_when_the_probe_returns_nothing() -> None:
+    """Fail-closed, matching this project's own established convention -- a silent fallback to a zero
+    or stale offset would quietly reintroduce the broker/UTC mismatch this exists to eliminate."""
+    gateway = FakeMT5Gateway(m1_probe_rates=None)
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW)
 
     with pytest.raises(BarFeedError):
-        clock()
+        offset()
 
 
-def test_broker_clock_wired_into_live_bar_feed_emits_a_bar_the_system_clock_would_have_held_back() -> None:
-    """The exact production bug, reproduced end to end: a bar whose `ts_close` is BEHIND the broker's
-    own current time but AHEAD of the (irrelevant, no-longer-consulted) system clock must still be
-    emitted -- `LiveBarFeed` never even touches `time.time()` once a broker clock is injected."""
-    broker_now = NOW + 10_800  # 3h ahead of "system now" in this scenario
-    closed_open = broker_now - 1_000  # closed relative to broker time
+def test_make_broker_offset_queries_m1_far_in_the_future_to_get_the_true_latest_bar() -> None:
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(10_800, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW)
+
+    offset()
+
+    assert len(gateway.copy_rates_from_calls) == 1
+    symbol, timeframe, date_from, count = gateway.copy_rates_from_calls[0]
+    assert timeframe == 1  # M1, independent of whatever timeframe the feed itself tracks
+    assert date_from > NOW  # deliberately in the future relative to true "now"
+    assert count == 1
+
+
+def test_broker_offset_wired_into_live_bar_feed_converts_raw_timestamps_to_true_utc() -> None:
+    """The exact production fix, reproduced end to end: a raw MT5 rate carrying a broker-shifted
+    timestamp must be emitted as a `Bar` with a TRUE UTC `ts_open` -- not the raw broker value."""
+    offset_seconds = 10_800  # 3h, matching the measured real case
+    broker_ts_open = NOW - 1_000 + offset_seconds  # broker-labeled raw value MT5 actually returns
     gateway = FakeMT5Gateway(
-        rates=[RawRate(time=closed_open, open=1.0, high=2.0, low=0.5, close=1.5)],
-        tick_time=broker_now,
+        rates=[RawRate(time=broker_ts_open, open=1.0, high=2.0, low=0.5, close=1.5)],
+        m1_probe_rates=_m1_probe_rate(offset_seconds, NOW),
     )
     feed = LiveBarFeed(
-        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
-        clock=make_broker_clock(gateway, SYMBOL),
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW),
     )
 
     bars = feed.poll()
 
     assert len(bars) == 1
+    assert bars[0].ts_open == NOW - 1_000  # true UTC -- the offset has been removed
+
+
+def test_broker_offset_none_leaves_timestamps_unconverted() -> None:
+    """Backward compatible by construction: no `broker_offset=` at all means every existing caller
+    (every test in this file above this section, every caller that never knew about broker time) keeps
+    working byte-for-byte unchanged."""
+    closed_open = NOW - 1_000
+    gateway = FakeMT5Gateway(rates=[RawRate(time=closed_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+
+    bars = feed.poll()
+
+    assert len(bars) == 1
     assert bars[0].ts_open == closed_open
+
+
+def test_broker_offset_applied_to_outgoing_mt5_query_timestamps_too() -> None:
+    """MT5's own API still expects broker-epoch `date_from`/`date_to` -- the translation only happens
+    at this file's own boundary, on the way in (raw rate -> `Bar`) and on the way out (true-UTC `now` ->
+    the query MT5 actually receives)."""
+    offset_seconds = 10_800
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(offset_seconds, NOW))
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW),
+    )
+
+    feed.poll()
+
+    m15_calls = [c for c in gateway.copy_rates_from_calls if c[1] == 15]
+    assert len(m15_calls) == 1
+    assert m15_calls[0][2] == NOW + offset_seconds  # date_from, broker-shifted
+
+
+def test_clock_corrected_since_watermark_is_recorded_once(tmp_path: Path) -> None:
+    store = SqliteStateStore(tmp_path / "state.db")
+    offset_seconds = 10_800
+    gateway = FakeMT5Gateway(
+        rates=[RawRate(time=NOW - 1_000 + offset_seconds, open=1.0, high=2.0, low=0.5, close=1.5)],
+        m1_probe_rates=_m1_probe_rate(offset_seconds, NOW),
+    )
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW, state_store=store,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW),
+    )
+
+    feed.poll()
+
+    key = "live_signal_source.bar_feed:XAUUSD:15.clock_corrected_since"
+    assert store.get_value(key) == float(NOW)
+
+
+def test_clock_corrected_since_watermark_is_never_overwritten(tmp_path: Path) -> None:
+    store = SqliteStateStore(tmp_path / "state.db")
+    key = "live_signal_source.bar_feed:XAUUSD:15.clock_corrected_since"
+    offset_seconds = 10_800
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(rates=[], m1_probe_rates=_m1_probe_rate(offset_seconds, NOW))
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock, state_store=store,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+    feed.poll()
+    assert store.get_value(key) == float(NOW)
+
+    clock.now = NOW + 3_600
+    gateway.m1_probe_rates = _m1_probe_rate(offset_seconds, NOW + 3_600)
+    feed.poll()
+
+    assert store.get_value(key) == float(NOW)  # unchanged -- the FIRST correction time, not the latest
+
+
+def test_without_broker_offset_no_watermark_is_recorded(tmp_path: Path) -> None:
+    store = SqliteStateStore(tmp_path / "state.db")
+    gateway = FakeMT5Gateway(rates=[RawRate(time=NOW - 1_000, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW, state_store=store,
+    )
+
+    feed.poll()
+
+    key = "live_signal_source.bar_feed:XAUUSD:15.clock_corrected_since"
+    assert store.get_value(key) is None

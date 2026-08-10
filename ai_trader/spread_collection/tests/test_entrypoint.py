@@ -23,6 +23,14 @@ class _FakeGateway:
         self._rate = {
             "time": AS_OF, "open": 100.0, "high": 100.5, "low": 99.5, "close": 100.0, "tick_volume": 10,
         }
+        # Backs `make_broker_offset`'s own M1 probe (`copy_rates_from(..., timeframe=1, ...)`), kept
+        # separate from `self._rate` (M15) since a real gateway would never conflate the two. Set so the
+        # derived offset (against `make_broker_offset`'s default REAL wall-clock `system_clock`) shifts
+        # the M15 bar's corrected `ts_open` comfortably behind real "now" -- see
+        # `live_observation/tests/test_entrypoint.py::_closed_bar_gateway` for the same derivation.
+        self._m1_probe_rate = {
+            "time": AS_OF + 1_740, "open": 1.0, "high": 1.0, "low": 1.0, "close": 1.0, "tick_volume": 1,
+        }
         self._tick = _FakeTick()
 
     def initialize(
@@ -56,6 +64,8 @@ class _FakeGateway:
         return self._tick
 
     def copy_rates_from(self, symbol: str, timeframe: int, date_from: int, count: int) -> Any:
+        if timeframe == 1:
+            return [self._m1_probe_rate]
         return [self._rate]
 
     def copy_rates_range(self, symbol: str, timeframe: int, date_from: int, date_to: int) -> Any:
