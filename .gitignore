@@ -15,3 +15,8 @@ research_log/ALPHA_AUTOMATION.pid
 research_log/ALPHA_AUTOMATION.stop
 research_log/ALPHA_AUTOMATION.session_id
 acquisition_staging/calendar/capture_runs.log
+acquisition_staging/news/NEWS_LEDGER.csv
+acquisition_staging/news/announced_ids.txt
+acquisition_staging/news/cookies.txt
+acquisition_staging/news/monitor_state.json
+acquisition_staging/news/news_monitor.log
