@@ -1,0 +1,33 @@
+{
+  "candidate": "CAND-0005",
+  "family": "balanced_price_range_reaction",
+  "data": {
+    "rows": 130491,
+    "range": [
+      "2011-07-26",
+      "2021-09-03"
+    ],
+    "segments": 3,
+    "blocks": 15
+  },
+  "detector": "detect_bpr_reactions @5443077 (over detect_fvgs)",
+  "n_fvgs": 26552,
+  "n_bpr_reactions": 3806,
+  "n_with_rejection": 3665,
+  "n_trades_simulated": 3665,
+  "metrics": {
+    "n": 3665,
+    "win_rate": 0.1593,
+    "total_R": 380.08,
+    "avg_R": 0.1037,
+    "median_R": -1.0,
+    "profit_factor": 1.125,
+    "best": 131.67,
+    "worst": -1.0,
+    "exit_mix": {
+      "stop": 3028,
+      "time": 637
+    }
+  },
+  "SCREEN_VERDICT": "BORDERLINE \u2014 weak positive gross (avg_R=0.1037, PF=1.125); costs likely decisive \u2192 hold/deprioritize"
+}
