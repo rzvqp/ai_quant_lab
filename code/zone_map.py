@@ -1,37 +1,27 @@
-"""HARTA OPERAȚIONALĂ PE M15 — nivelul 3 (STAT-LEVEL2-CONDITION-AND-LEVEL3-ZONE-MAP-SPEC-v1.0, a595cc5,
-manifest v2.7.52, Partea 3). Funcție PURĂ pe bare M15. Fără MT5, fără date reale.
+"""HARTA OPERAȚIONALĂ PE M15 — nivelul 3, RE-ANCORATĂ (STAT-SPEC1-N3-ZONE-MAP-CORRECTION-v1.0, 404b6c8, v2.7.61).
+Înlocuiește ancorarea pe preț (`ref=close[i-1]`) a versiunii @11ae360. Funcție PURĂ pe bare M15. Fără MT5.
 
-NU E UN SCOR PONDERAT — E UN CONTOR NEPONDERAT. Ponderile NU se pot deriva la nivelul 3: a le deriva = a le
-potrivi pe un REZULTAT = a ESTIMA = nivelul 6 (al doilea estimator + problemă de selecție, respins deja la
-nivelul 2). Formatul CEO conținea răspunsul: „5/6" e un contor neponderat. Nivelul 3 emite SETUL DE TRĂSĂTURI +
-CONTORUL + ordonarea; „confidence" vine de la nivelul 6, condiționat pe celula de confluență. Un singur estimator.
+CAUZA RĂDĂCINĂ reparată: ancora pe PREȚ întreba „câte trăsături sunt lângă PREȚ" (răspuns mereu „toate") și
+producea O SINGURĂ zonă/bară (nimic de ordonat). AMBELE defecte = unul. **Ancora se mută pe GRUPUL DE TRĂSĂTURI:
+prețul ajunge la zonă; zona NU urmărește prețul.**
 
-CELE PATRU TRĂSĂTURI RATIFICATE (proximitate 1×ATR), din primitive (redundanță dezvăluită, două tiere — L-R1):
-  pdh_pdl    ← institutional_levels (PDH/PDL)            declanșatori: CAND-0001/0007/0019/0029/0034 ...
-  fvg        ← imbalance_mechanics (FVG)                 declanșatori: CAND-0003/0007/0010/0030/0035
-  liquidity  ← build_pools ← swings                      declanșatori: CAND-0020/0024/0025/0026/0032
-  discount   ← session_levels (SESSION_MID, DEFINIT)     declanșatori: CAND-0028/0033
-ZERO trăsături complet independente (ca la nivelul 2); ȘTIRILE rămân singura axă independentă.
+BANDĂ 0,25×ATR — aleasă pe TRACTABILITATE ȘI VARIABILITATE (19 zone/bară; `k` variază între zone în 91,8%), NU pe
+informativitate: contorul NU discriminează față de nul la NICIO bandă (+0,15…+1,02p), a treia oară. `k` = DESCRIPTOR
+etichetat „ne-discriminant vs nul", NU un scor, NU o poartă.
 
-PRAGUL, DERIVAT: k>=4 (confluență TOTALĂ). La 1×ATR harta e SATURATĂ (măsurat: 3/4 trăsături coincid pe 94,87%
-din bare; k=4 42,82%). Doar cerința TOTALĂ lasă un complement material (57,18% bare fără zonă calificată >=50%,
-falsificabil). **Derivarea e COMUNĂ pe (BANDĂ, k)** — banda saturează contorul înainte ca pragul să conteze; banda
-intră în `schema_hash` alături de k. A PATRA oară aceeași saturație (primitiva B, bazinele nivel 2, confluența M15).
+PATRU FAMILII NECOLINIARE (coliniaritatea dovedită în cod, `redundancy_by_static_inspection` reutilizat din bias_h1):
+    level  PDH/PDL                    compute_prior_day_levels
+    fvg    FVG ∪ IFVG                 detect_fvgs, detect_inverse_fvgs        (IFVG = același FVG inversat)
+    pool   lichiditate                build_pools                              (bazine externe)
+    ob     OB ∪ DemandZone ∪ Breaker  detect_order_blocks, detect_demand_zones, track_breaker
+                                        (DemandZone ITEREAZĂ peste OB; Breaker = corp OB inversat → aceeași familie)
+ATRIBUTE (NU numără în k): discount/premium (din SESSION_MID), tip, vechime, distanță. `discount` IESE din contor
+(nu e locație). Familia `ob` INTRĂ (era absentă). Mulțimea nu crește, dar se SCHIMBĂ. PWH/PWL exclus (CEO). BPR
+exclus (n-are localizator → ar fi primitivă nouă). ORDONARE `(distance_atr ASC, age_bars DESC, k DESC)` — arhitecturală
+(proximitate=acționabilitate, vechime=persistență netestată, contor=cel mai slab), pre-înregistrată în schema_hash,
+NEACORDABILĂ pe rezultate. Cheia zonei = STAT-OPPORTUNITY-IDENTITY (ancoră+bandă înghețate). CONTRACT: LevelOutput.
 
-DISCOUNT/PREMIUM (§3.4): DEFINIT din `SESSION_MID` ratificat, FĂRĂ primitivă nouă (aritmetică preț-vs-Mid):
-  DISCOUNT  close[i-1] < Mid(sesiunii anterioare, neexpirat)   PREMIUM  close[i-1] > Mid
-  niciun Mid viu ⇒ trăsătura UNAVAILABLE, NU FALSE.
-⚠ INTERPRETARE VE (semnalată Red Team): trăsătura CONTRIBUIE la contor când e DEFINITĂ (Mid viu — discount SAU
-premium); direcția (discount/premium) e un atribut dezvăluit, nu schimbă prezența. `SESSION_MID` e primitiva pe
-care declanșează CAND-0028/0033 ⇒ pentru ei, discount NU e context independent.
-
-GRANIȚA (non-lookahead): trăsăturile la bara `i` citesc DOAR bare <= i-1 (referință = close[i-1]; structuri cu
-`available_idx <= i-1`). Test prin perturbare. CONSTANTE: doar unități M15 (ZI 92 / SĂPTĂMÂNĂ 460 SUNT corecte pe
-M15 — 460 a fost transplant pe H4, NU aici). NU emite „confidence".
-
-FAIL-CLOSED: fereastră incompletă / ATR nefinit → UNAVAILABLE (NU k=0); Mid absent → discount UNAVAILABLE (NU
-FALSE); nivel 1 sau 2 UNAVAILABLE → cascadă UNAVAILABLE; nicio zonă peste prag → MULȚIME VIDĂ (rezultat valid).
-∀ bară cu ZoneMap UNAVAILABLE sau mulțime vidă ⇒ nivelul 6 == NO_TRADE.
+Non-lookahead: instanțe cu `available_idx <= i-1`, `close[i-1]` referință de distanță. Fail-closed → Unavailable.
 """
 
 from __future__ import annotations
@@ -48,64 +38,70 @@ import pandas as pd  # type: ignore[import-untyped]
 from market_state import atr14
 from market_structure import Block, detect_swings, label_structure
 from institutional_levels import compute_prior_day_levels
-from imbalance_mechanics import detect_fvgs
+from imbalance_mechanics import detect_fvgs, detect_inverse_fvgs
 from liquidity_mechanics import PoolTier, build_pools
+from order_flow import detect_demand_zones, detect_order_blocks, track_breaker
 from session_levels import (SessionLevelKind, compute_prior_session_levels, derive_session_index,
                             session_labels)
+from level_output import LevelOutput, Ok, Unavailable
 
-BAND_ATR_MULT: float = 1.0       # banda de proximitate; JOINT cu k în schema_hash (banda saturează contorul)
-THRESHOLD_K: int = 4             # confluență TOTALĂ (derivat: singurul care satisface falsificabilitatea)
-FEATURE_NAMES: tuple[str, ...] = ("pdh_pdl", "fvg", "liquidity", "discount")
-REDUNDANT_WITH: dict[str, tuple[str, ...]] = {   # dezvăluire cu două tiere (L-R1): candidați care declanșează pe fiecare
-    "pdh_pdl": ("CAND-0001", "CAND-0007", "CAND-0019", "CAND-0029", "CAND-0034"),
+BAND_ATR_MULT: float = 0.25       # banda de confluență (TRACTABILITATE+VARIABILITATE, NU informativitate)
+SORT_KEY: str = "(distance_atr ASC, age_bars DESC, k DESC)"   # ordonare ARHITECTURALĂ, în schema_hash
+
+
+class Family(Enum):
+    LEVEL = "level"
+    FVG = "fvg"
+    POOL = "pool"
+    OB = "ob"
+
+
+REDUNDANT_WITH: dict[str, tuple[str, ...]] = {   # dezvăluire cu două tiere: candidați care declanșează pe familie
+    "level": ("CAND-0001", "CAND-0007", "CAND-0019", "CAND-0029", "CAND-0034"),
     "fvg": ("CAND-0003", "CAND-0007", "CAND-0010", "CAND-0030", "CAND-0035"),
-    "liquidity": ("CAND-0020", "CAND-0024", "CAND-0025", "CAND-0026", "CAND-0032"),
-    "discount": ("CAND-0028", "CAND-0033"),
+    "pool": ("CAND-0020", "CAND-0024", "CAND-0026", "CAND-0032"),
+    "ob": ("CAND-0011", "CAND-0012", "CAND-0014", "CAND-0031", "CAND-0036"),
 }
 
 
-class Status(Enum):
-    AVAILABLE = "available"
-    UNAVAILABLE = "unavailable"
+@dataclass(frozen=True)
+class _Instance:
+    family: Family
+    price: float
+    available_idx: int
 
 
 @dataclass(frozen=True)
 class Zone:
-    zone_id: str
-    features: tuple[str, ...]              # trăsăturile PREZENTE (contorizate)
-    k: int                                 # contorul de confluență (neponderat)
-    feature_status: tuple[tuple[str, str], ...]   # (nume, AVAILABLE/UNAVAILABLE) pentru toate cele 4
-    redundant_with: tuple[str, ...]        # candidați care declanșează pe trăsăturile prezente
-    direction: str | None                  # discount/premium (atribut dezvăluit), None dacă discount absent/UNAVAILABLE
+    zone_id: str                          # cheie surogat (opportunity-identity), NU „zone@bară"
+    price_anchor: float                   # media prețurilor instanțelor din grup (ancora, NU prețul curent)
+    band: float                           # banda × ATR la creare, ÎNGHEȚATĂ
+    composition: tuple[tuple[str, int], ...]   # tipurile prezente + număr de instanțe per tip
+    k: int                                # DESCRIPTOR, etichetat „ne-discriminant vs nul"
+    distance_atr: float                   # |price_anchor − close[j-1]| / ATR  — axă de ordonare
+    age_bars: int                         # j − max(available_idx din grup)     — axă de ordonare
+    attribute: str                        # discount / premium / unavailable (din SESSION_MID)
+    relative_rank: int                    # poziția în ordonarea la bara j (1 = primul)
+    evidence_available: bool              # dacă N4 a atașat descriptor (SPEC 2) — False aici (pre-N4)
 
 
 @dataclass(frozen=True)
 class ZoneMap:
-    zones: tuple[Zone, ...]                # peste prag, ordonate descrescător după k (mulțime vidă = rezultat valid)
-    ranked_by_k: tuple[int, ...]
-    counter_k: int | None                  # contorul la referință (înainte de prag)
-    threshold_k: int
+    zones: tuple[Zone, ...]               # TOATE grupurile, ORDONATE (mulțime vidă = Ok cu zones=())
     band_atr: float
-    reference_price: float | None
+    reference_price: float
     as_of_index: int
-    status: str
-    reason: str
-    schema_hash: str
+    k_label: str                          # „descriptor, ne-discriminant vs nul"
+    sort_key: str
 
 
 _SCHEMA_HASH: str = hashlib.sha256(json.dumps({
-    "features_ordered": list(FEATURE_NAMES),
-    "primitives": {"pdh_pdl": "institutional_levels", "fvg": "imbalance_mechanics",
-                   "liquidity": "build_pools<-swings", "discount": "session_levels.SESSION_MID"},
-    "band_atr_mult": BAND_ATR_MULT, "threshold_k": THRESHOLD_K,   # JOINT (bandă, k)
-    "units": "M15", "code_version": "level3-v1.0",
+    "families_ordered": [f.value for f in Family],
+    "primitives": {"level": "institutional_levels", "fvg": "detect_fvgs+detect_inverse_fvgs",
+                   "pool": "build_pools", "ob": "detect_order_blocks+detect_demand_zones+track_breaker"},
+    "band_atr_mult": BAND_ATR_MULT, "sort_key": SORT_KEY, "k_role": "descriptor_non_discriminant",
+    "discount": "attribute_not_counter", "units": "M15", "code_version": "level3-v2.0-reanchored",
 }, sort_keys=True).encode("utf-8")).hexdigest()[:16]
-
-
-def _fail(reason: str, as_of: int) -> ZoneMap:
-    return ZoneMap(zones=(), ranked_by_k=(), counter_k=None, threshold_k=THRESHOLD_K, band_atr=BAND_ATR_MULT,
-                   reference_price=None, as_of_index=as_of, status=Status.UNAVAILABLE.value, reason=reason,
-                   schema_hash=_SCHEMA_HASH)
 
 
 def _finite(x: float) -> bool:
@@ -119,75 +115,108 @@ def _day_index(time: Sequence[int]) -> np.ndarray:
     return np.asarray(d, dtype=np.int64)
 
 
-def _assemble(present: dict[str, bool], status: dict[str, str], direction: str | None,
-              reference: float, as_of: int) -> ZoneMap:
-    """Pur: din prezența/statusul celor 4 trăsături → ZoneMap. Contor NEPONDERAT; prag = confluență totală."""
-    counter_k = sum(1 for nm in FEATURE_NAMES if present.get(nm, False))
-    fstatus = tuple((nm, status.get(nm, Status.AVAILABLE.value)) for nm in FEATURE_NAMES)
-    if counter_k >= THRESHOLD_K:
-        feats = tuple(nm for nm in FEATURE_NAMES if present.get(nm, False))
-        red: tuple[str, ...] = tuple(sorted({c for nm in feats for c in REDUNDANT_WITH.get(nm, ())}))
-        zone = Zone(zone_id=f"zone@{as_of}", features=feats, k=counter_k, feature_status=fstatus,
-                    redundant_with=red, direction=direction)
-        return ZoneMap(zones=(zone,), ranked_by_k=(counter_k,), counter_k=counter_k, threshold_k=THRESHOLD_K,
-                       band_atr=BAND_ATR_MULT, reference_price=reference, as_of_index=as_of,
-                       status=Status.AVAILABLE.value, reason="mapped", schema_hash=_SCHEMA_HASH)
-    return ZoneMap(zones=(), ranked_by_k=(), counter_k=counter_k, threshold_k=THRESHOLD_K, band_atr=BAND_ATR_MULT,
-                   reference_price=reference, as_of_index=as_of, status=Status.AVAILABLE.value,
-                   reason="empty_set_below_threshold", schema_hash=_SCHEMA_HASH)
-
-
-def _near_level(prices: Sequence[float], avail: Sequence[int], ref: float, band: float, i_prev: int) -> bool:
-    return any(av <= i_prev and abs(p - ref) <= band for p, av in zip(prices, avail))
-
-
-def build_zone_map(
-    high: Sequence[float], low: Sequence[float], close: Sequence[float], time: Sequence[int],
-    *, atr: Sequence[float] | None = None, band_mult: float = BAND_ATR_MULT, threshold_k: int = THRESHOLD_K,
-    regime_available: bool = True, bias_available: bool = True,
-) -> ZoneMap:
-    """Harta de confluență la bara CURENTĂ (ultima). Enumeră trăsăturile active, numără coincidențele (contor
-    neponderat), emite lista ordonată peste pragul de confluență totală. PURĂ, cauzală (citește bare <= i-1)."""
-    n = len(close)
-    i = n - 1
-    if n < 2:
-        return _fail("incomplete_window", i)                    # nevoie de close[i-1]
-    if not (regime_available and bias_available):
-        return _fail("cascade_level1_or_level2_unavailable", i)  # nivel 1/2 UNAVAILABLE → cascadă
-    ref = float(close[i - 1])
-    a = float(atr[i - 1]) if atr is not None else atr14(high, low, close)[i - 1]
-    if not _finite(a) or a <= 0.0:
-        return _fail("atr_unavailable", i)
-    band = band_mult * a
-    ip = i - 1                                                  # ultima bară citibilă (non-lookahead)
-    blk = [Block(0, n)]
-
-    # ── trăsătura 1: PDH/PDL în bandă ──
+def _instances(high: Sequence[float], low: Sequence[float], close: Sequence[float], open_: Sequence[float],
+               time: Sequence[int], n: int, ip: int, blk: list[Block]) -> list[_Instance]:
+    """Instanțe active (available_idx <= i-1) per FAMILIE, cu prețul lor. Reutilizează primitivele ratificate."""
+    out: list[_Instance] = []
+    # level ─ PDH/PDL
     day = _day_index(time)
-    levels = compute_prior_day_levels(high, low, day.tolist(), blk)
-    present_pdh = _near_level([lv.price for lv in levels], [lv.available_idx for lv in levels], ref, band, ip)
-
-    # ── trăsătura 2: FVG în bandă (confirmat <= i-1, zona atinge [ref-band, ref+band]) ──
+    for lv in compute_prior_day_levels(high, low, day.tolist(), blk):
+        if lv.available_idx <= ip:
+            out.append(_Instance(Family.LEVEL, float(lv.price), lv.available_idx))
+    # fvg ─ FVG ∪ IFVG (o familie: IFVG e același FVG inversat)
     fvgs = detect_fvgs(high, low, blk)
-    present_fvg = any(f.confirmed_idx <= ip and f.lower <= ref + band and f.upper >= ref - band for f in fvgs)
-
-    # ── trăsătura 3: lichiditate (bazin) în bandă ──
+    for f in list(fvgs) + list(detect_inverse_fvgs(high, low, close, fvgs, blk)):
+        if f.confirmed_idx <= ip:
+            out.append(_Instance(Family.FVG, float(f.ce_50), f.confirmed_idx))
+    # pool ─ lichiditate externă
     swings = label_structure(detect_swings(high, low, blk, k=2))
-    pools = build_pools(swings, PoolTier.EXTERNAL)
-    present_liq = _near_level([p.price for p in pools], [p.available_idx for p in pools], ref, band, ip)
+    for p in build_pools(swings, PoolTier.EXTERNAL):
+        if p.available_idx <= ip:
+            out.append(_Instance(Family.POOL, float(p.price), p.available_idx))
+    # ob ─ OB ∪ DemandZone ∪ Breaker (o familie: DemandZone iterează OB; Breaker = corp OB inversat)
+    obs = detect_order_blocks(open_, high, low, close, n)
+    for ob in obs:
+        if ob.formation_idx <= ip:
+            out.append(_Instance(Family.OB, 0.5 * (ob.zone_lower + ob.zone_upper), ob.formation_idx))
+        br = track_breaker(ob, high, low, close, n)
+        if br is not None and br.breaker_idx <= ip:            # bara de flip = disponibilitate breaker
+            out.append(_Instance(Family.OB, 0.5 * (br.zone_lower + br.zone_upper), br.breaker_idx))
+    for dz in detect_demand_zones(open_, high, low, close, n):
+        if dz.formation_idx <= ip:
+            out.append(_Instance(Family.OB, 0.5 * (dz.zone_lower + dz.zone_upper), dz.formation_idx))
+    return out
 
-    # ── trăsătura 4: discount/premium DEFINIT din SESSION_MID viu ──
+
+def _cluster(instances: list[_Instance], band: float) -> list[list[_Instance]]:
+    """Grupare geometrică single-linkage: instanțe la <= band una de alta intră în același grup. Ancora = grupul."""
+    if not instances:
+        return []
+    ordered = sorted(instances, key=lambda x: x.price)
+    groups: list[list[_Instance]] = [[ordered[0]]]
+    for inst in ordered[1:]:
+        if inst.price - groups[-1][-1].price <= band:          # prag de legătură = banda de confluență
+            groups[-1].append(inst)
+        else:
+            groups.append([inst])
+    return groups
+
+
+def _attribute(price_anchor: float, high: Sequence[float], low: Sequence[float], time: Sequence[int],
+               ip: int, n: int, blk: list[Block]) -> str:
+    """discount/premium al zonei față de SESSION_MID viu; UNAVAILABLE dacă niciun Mid viu (NU FALSE)."""
     sidx = derive_session_index([int(t) for t in time]); slab = session_labels([int(t) for t in time])
     mids = [lv for lv in compute_prior_session_levels(high, low, sidx, slab, blk)
             if lv.kind is SessionLevelKind.SESSION_MID and lv.available_idx <= ip <= lv.expiry_idx]
     if not mids:
-        present_disc, disc_status, direction = False, Status.UNAVAILABLE.value, None   # niciun Mid viu → UNAVAILABLE
-    else:
-        mid = max(mids, key=lambda lv: lv.available_idx)        # cel mai recent Mid viu (sesiunea anterioară)
-        present_disc, disc_status = True, Status.AVAILABLE.value
-        direction = "discount" if ref < mid.price else "premium"
+        return "unavailable"
+    mid = max(mids, key=lambda lv: lv.available_idx)
+    return "discount" if price_anchor < mid.price else "premium"
 
-    present = {"pdh_pdl": present_pdh, "fvg": present_fvg, "liquidity": present_liq, "discount": present_disc}
-    status = {"pdh_pdl": Status.AVAILABLE.value, "fvg": Status.AVAILABLE.value,
-              "liquidity": Status.AVAILABLE.value, "discount": disc_status}
-    return _assemble(present, status, direction, ref, i)
+
+def build_zone_map(
+    high: Sequence[float], low: Sequence[float], close: Sequence[float], open_: Sequence[float],
+    time: Sequence[int], *, atr: Sequence[float] | None = None, band_mult: float = BAND_ATR_MULT,
+    regime_available: bool = True, bias_available: bool = True,
+) -> LevelOutput[ZoneMap]:
+    """Harta RE-ANCORATĂ la bara curentă: enumeră instanțe → grupează geometric → ordonează. CONTRACT LevelOutput.
+    `Ok(ZoneMap(zones=()))` (nicio zonă) e un REZULTAT; `Unavailable` = n-am putut calcula (fail-closed)."""
+    n = len(close)
+    i = n - 1
+    if n < 2:
+        return Unavailable(reason="incomplete_window", as_of=i)
+    if not (regime_available and bias_available):
+        return Unavailable(reason="cascade_level1_or_level2_unavailable", as_of=i)   # nivel 1/2 în mulțimea necesară
+    ref = float(close[i - 1])
+    a = float(atr[i - 1]) if atr is not None else atr14(high, low, close)[i - 1]
+    if not _finite(a) or a <= 0.0:
+        return Unavailable(reason="atr_unavailable", as_of=i)
+    band = band_mult * a
+    ip = i - 1
+    blk = [Block(0, n)]
+
+    groups = _cluster(_instances(high, low, close, open_, time, n, ip, blk), band)
+    zones_unranked: list[Zone] = []
+    for gi, g in enumerate(groups):
+        prices = [inst.price for inst in g]
+        anchor = float(sum(prices) / len(prices))
+        fams: dict[Family, int] = {}
+        for inst in g:
+            fams[inst.family] = fams.get(inst.family, 0) + 1
+        comp = tuple((f.value, fams[f]) for f in Family if f in fams)
+        k = len(fams)                                          # familii DISTINCTE (descriptor)
+        age = i - max(inst.available_idx for inst in g)
+        zones_unranked.append(Zone(
+            zone_id=f"grp{gi}@anchor{anchor:.5f}", price_anchor=anchor, band=band, composition=comp, k=k,
+            distance_atr=abs(anchor - ref) / a, age_bars=age,
+            attribute=_attribute(anchor, high, low, time, ip, n, blk), relative_rank=0, evidence_available=False))
+
+    ranked = sorted(zones_unranked, key=lambda z: (z.distance_atr, -z.age_bars, -z.k))   # (dist ASC, age DESC, k DESC)
+    zones = tuple(
+        Zone(zone_id=z.zone_id, price_anchor=z.price_anchor, band=z.band, composition=z.composition, k=z.k,
+             distance_atr=round(z.distance_atr, 6), age_bars=z.age_bars, attribute=z.attribute,
+             relative_rank=r + 1, evidence_available=z.evidence_available)
+        for r, z in enumerate(ranked))
+    zmap = ZoneMap(zones=zones, band_atr=band_mult, reference_price=ref, as_of_index=i,
+                   k_label="descriptor_non_discriminant_vs_null", sort_key=SORT_KEY)
+    return Ok(value=zmap, as_of=i, valid_until=i + 1, schema_hash=_SCHEMA_HASH)
