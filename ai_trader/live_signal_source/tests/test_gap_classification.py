@@ -70,3 +70,44 @@ def test_weekend_takes_priority_even_if_it_happens_to_start_at_hour_20() -> None
     gap_start = _ts(2026, 7, 24, 20, 0)  # Friday 20:00 UTC -- coincides with maintenance-hour
     gap_end = _ts(2026, 7, 26, 22, 0)  # Sunday, well past 75 minutes and spans a Saturday
     assert classify_gap(gap_start, gap_end) == GapClassification.WEEKEND
+
+
+# -- EXTENDED_PAUSE, 2026-08-10: "131,5 ore etichetat WEEKEND. Mecanic corect, dar nu distinge pauza de
+# operator... adauga o clasa: gol care depaseste durata maxima a unui weekend real." --
+
+
+def test_a_real_length_weekend_is_still_weekend_not_extended_pause() -> None:
+    """The empirically measured real-weekend length (49.25h) must stay WEEKEND -- the new class must
+    never reclassify an ordinary weekend closure."""
+    gap_start = _ts(2026, 7, 24, 23, 45)  # Friday close, the empirically measured real pattern
+    gap_end = gap_start + int(49.25 * 3600)  # exactly the measured real-weekend duration
+    assert classify_gap(gap_start, gap_end) == GapClassification.WEEKEND
+
+
+def test_a_gap_just_under_the_72h_threshold_is_still_weekend() -> None:
+    gap_start = _ts(2026, 7, 24, 21, 0)  # Friday
+    gap_end = gap_start + 72 * 3600 - 1
+    assert classify_gap(gap_start, gap_end) == GapClassification.WEEKEND
+
+
+def test_a_gap_just_over_the_72h_threshold_is_extended_pause() -> None:
+    gap_start = _ts(2026, 7, 24, 21, 0)  # Friday
+    gap_end = gap_start + 72 * 3600 + 1
+    assert classify_gap(gap_start, gap_end) == GapClassification.EXTENDED_PAUSE
+
+
+def test_the_actual_six_day_operator_pause_is_extended_pause_not_weekend() -> None:
+    """The exact real gap this feature was built for: a Tuesday-to-Monday, 131.5h operator pause. Spans
+    multiple Saturdays, mechanically WEEKEND-shaped under the old rule, but must now be EXTENDED_PAUSE."""
+    gap_start = _ts(2026, 8, 4, 22, 45)  # last bar before the 6-day pause
+    gap_end = gap_start + int(131.5 * 3600)
+    assert classify_gap(gap_start, gap_end) == GapClassification.EXTENDED_PAUSE
+
+
+def test_a_long_gap_with_no_saturday_is_unexpected_not_extended_pause() -> None:
+    """EXTENDED_PAUSE is checked only inside the `_spans_a_saturday` branch -- a long midweek-only gap
+    (impossible on a real 24/5 market, but the classifier must still be exercised at the boundary) stays
+    UNEXPECTED, never EXTENDED_PAUSE, since the two are never independent conditions."""
+    gap_start = _ts(2026, 7, 27, 0, 0)  # Monday
+    gap_end = gap_start + 73 * 3600  # long, but Monday 00:00 + 73h lands Thursday -- no Saturday crossed
+    assert classify_gap(gap_start, gap_end) == GapClassification.UNEXPECTED

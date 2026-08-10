@@ -44,7 +44,10 @@ def _serialize_entry(entry: LiveSignalJournalEntry) -> str:
             "entry": c.entry, "stop": c.stop, "target": c.target, "session": c.session,
             "magic_number": c.magic_number, "comment": c.comment, "as_of": c.as_of,
         }
-    return json.dumps({"symbol": entry.symbol, "as_of": entry.as_of, "candidate": candidate_payload})
+    return json.dumps({
+        "symbol": entry.symbol, "as_of": entry.as_of, "candidate": candidate_payload,
+        "is_backfilled": entry.is_backfilled,
+    })
 
 
 def _deserialize_entry(payload: str) -> LiveSignalJournalEntry:
@@ -59,13 +62,17 @@ def _deserialize_entry(payload: str) -> LiveSignalJournalEntry:
             session=raw_candidate["session"], magic_number=raw_candidate["magic_number"],
             comment=raw_candidate["comment"], as_of=raw_candidate["as_of"],
         )
-    return LiveSignalJournalEntry(symbol=data["symbol"], as_of=data["as_of"], candidate=candidate)
+    return LiveSignalJournalEntry(
+        symbol=data["symbol"], as_of=data["as_of"], candidate=candidate,
+        is_backfilled=data.get("is_backfilled", False),
+    )
 
 
 def _serialize_gap(gap: GapRecord) -> str:
     return json.dumps({
         "symbol": gap.symbol, "gap_start": gap.gap_start, "gap_end": gap.gap_end,
         "duration_seconds": gap.duration_seconds, "classification": gap.classification.value,
+        "bars_backfilled": gap.bars_backfilled, "backfill_capped": gap.backfill_capped,
     })
 
 
@@ -75,6 +82,7 @@ def _deserialize_gap(payload: str) -> GapRecord:
         symbol=data["symbol"], gap_start=data["gap_start"], gap_end=data["gap_end"],
         duration_seconds=data["duration_seconds"],
         classification=GapClassification(data["classification"]),
+        bars_backfilled=data.get("bars_backfilled", 0), backfill_capped=data.get("backfill_capped", False),
     )
 
 

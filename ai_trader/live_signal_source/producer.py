@@ -32,7 +32,10 @@ class CandidateSignalProducer:
         for bar in self._feed.poll():
             candidate = self._rule.evaluate(bar)
             self._journal.record(
-                LiveSignalJournalEntry(symbol=bar.symbol, as_of=bar.ts_close, candidate=candidate)
+                LiveSignalJournalEntry(
+                    symbol=bar.symbol, as_of=bar.ts_close, candidate=candidate,
+                    is_backfilled=bar.is_backfilled,
+                )
             )
             if candidate is not None:
                 candidates.append(candidate)

@@ -26,18 +26,36 @@ reported as a `GapRecord` (classified via `gap_classification.classify_gap`) -- 
 interpolated, never estimated. `last_gaps()` returns whatever gaps were found during the MOST RECENT
 `poll()` call only (empty before the first `poll()`, and reset to empty on any `poll()` that finds no
 new gap).
+
+**Backfill, added 2026-08-10** (CEO, after a 6-day operator pause left every live process's own history
+cold: "Barele istorice se pot trage retroactiv din MT5... la reconectare, fiecare proces trage barele
+lipsa din watermark pana la prezent"): when the persisted watermark is stale by more than what a normal
+`lookback_count`-sized fetch would cover, `poll()` switches to `copy_rates_range` for the ENTIRE missing
+window instead of `copy_rates_from`'s small fixed lookback -- fetching the REAL history MT5 already has,
+never inventing a value (this is not the "imputation"/"interpolation" `GapRecord`'s own docstring rules
+out; it's the opposite -- reading genuine past data that was simply never asked for yet). Every bar
+recovered this way carries `Bar.is_backfilled=True`. Capped at `MAX_BACKFILL_SECONDS` (30 days, CEO's
+own limit) -- beyond that, `poll()` deliberately does NOT backfill (falls back to the normal small
+lookback, same as today), and the resulting `GapRecord.backfill_capped=True` makes that omission visible
+rather than silent. Still exactly one gap detection pass either way -- backfilling only changes how many
+of the missing bars get recovered, never whether the gap itself is reported.
 """
 
 from __future__ import annotations
 
 import numbers
 import time
-from typing import Callable
+from typing import Any, Callable
 
 from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway
 from ai_trader.live_signal_source.gap_classification import classify_gap
 from ai_trader.live_signal_source.types import Bar, BarFeedError, GapRecord
 from ai_trader.persistent_state.store import SqliteStateStore
+
+MAX_BACKFILL_SECONDS = 30 * 86_400
+"""30 days, CEO's own explicit limit (2026-08-10): "maxim 30 de zile inapoi. Peste, raporteaza si nu
+umple." A gap longer than this is reported via the normal `GapRecord` mechanism (with
+`backfill_capped=True`) but its bars are never fetched."""
 
 
 def _default_clock() -> int:
@@ -112,14 +130,35 @@ class LiveBarFeed:
         journal, via `CandidateSignalProducer`, is responsible for retaining that)."""
         return self._last_gaps
 
+    def _fetch_rates(self, now: int) -> tuple[bool, bool, Any]:
+        """Decides which of `copy_rates_from` (small fixed lookback, the steady-state case) or
+        `copy_rates_range` (the full missing window, the backfill case) to call. Returns
+        `(is_backfill, backfill_capped, rates)` -- `is_backfill` is `True` only when a range fetch for
+        the missing window was actually issued; `backfill_capped` is `True` only when the gap was too
+        large to backfill (>`MAX_BACKFILL_SECONDS`) and the normal small lookback was used instead."""
+        if self._last_emitted_ts_open is not None:
+            next_expected = self._last_emitted_ts_open + self._bar_seconds
+            missing_seconds = now - next_expected
+            if missing_seconds > self._lookback_count * self._bar_seconds:
+                if missing_seconds > MAX_BACKFILL_SECONDS:
+                    return False, True, self._gateway.copy_rates_from(
+                        self._symbol, self._mt5_timeframe, now, self._lookback_count,
+                    )
+                return True, False, self._gateway.copy_rates_range(
+                    self._symbol, self._mt5_timeframe, next_expected, now,
+                )
+        return False, False, self._gateway.copy_rates_from(
+            self._symbol, self._mt5_timeframe, now, self._lookback_count,
+        )
+
     def poll(self) -> tuple[Bar, ...]:
         """Returns every newly CLOSED bar since the previous `poll()` call, oldest first. Never returns
         the currently-forming bar. Raises `BarFeedError` on a genuine gateway failure -- never returns a
         stale/partial result silently."""
         now = self._clock()
-        rates = self._gateway.copy_rates_from(self._symbol, self._mt5_timeframe, now, self._lookback_count)
+        is_backfill, backfill_capped, rates = self._fetch_rates(now)
         if rates is None:
-            raise BarFeedError(f"copy_rates_from({self._symbol!r}) returned None")
+            raise BarFeedError(f"copy_rates_from/copy_rates_range({self._symbol!r}) returned None")
 
         closed_bars: list[Bar] = []
         for rate in rates:
@@ -131,7 +170,7 @@ class LiveBarFeed:
             volume = _read_field(rate, "tick_volume")
             if ts_open is None or open_ is None or high is None or low is None or close is None:
                 raise BarFeedError(
-                    f"copy_rates_from({self._symbol!r}) returned a rate missing an OHLC field"
+                    f"copy_rates_from/copy_rates_range({self._symbol!r}) returned a rate missing an OHLC field"
                 )
 
             ts_open = int(ts_open)
@@ -145,9 +184,12 @@ class LiveBarFeed:
                 symbol=self._symbol, ts_open=ts_open, ts_close=ts_close,
                 open=float(open_), high=float(high), low=float(low), close=float(close),
                 volume=float(volume) if volume is not None else None,
+                is_backfilled=is_backfill,
             ))
 
         closed_bars.sort(key=lambda b: b.ts_open)
+
+        bars_backfilled = sum(1 for b in closed_bars if b.is_backfilled)
 
         gaps: list[GapRecord] = []
         previous_ts_open = self._last_emitted_ts_open
@@ -157,6 +199,7 @@ class LiveBarFeed:
                     symbol=self._symbol, gap_start=previous_ts_open, gap_end=bar.ts_open,
                     duration_seconds=bar.ts_open - previous_ts_open,
                     classification=classify_gap(previous_ts_open, bar.ts_open),
+                    bars_backfilled=bars_backfilled, backfill_capped=backfill_capped,
                 ))
             previous_ts_open = bar.ts_open
         self._last_gaps = tuple(gaps)

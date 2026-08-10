@@ -25,8 +25,11 @@ class _FakeTickReader:
         return self._tick
 
 
-def _bar(ts_open: int, o: float, h: float, l: float, c: float) -> Bar:
-    return Bar(symbol=SYMBOL, ts_open=ts_open, ts_close=ts_open + BAR_SECONDS, open=o, high=h, low=l, close=c, volume=100.0)
+def _bar(ts_open: int, o: float, h: float, l: float, c: float, is_backfilled: bool = False) -> Bar:
+    return Bar(
+        symbol=SYMBOL, ts_open=ts_open, ts_close=ts_open + BAR_SECONDS, open=o, high=h, low=l, close=c,
+        volume=100.0, is_backfilled=is_backfilled,
+    )
 
 
 def _day0_warmup_bars(pdh: float, pdl: float, n: int = 16) -> list[Bar]:
@@ -116,6 +119,47 @@ def test_bar_without_a_touch_is_marked_false() -> None:
     assert last is not None
     assert last.is_level_touch is False
     assert last.touch_level_kind is None
+
+
+def test_a_backfilled_bar_produces_no_observation_even_with_a_live_tick() -> None:
+    """CEO instruction, 2026-08-10: "Spread-ul NU se backfilleaza -- nu exista retroactiv" -- a bar
+    recovered by `LiveBarFeed`'s gap-catch-up must never produce a spread observation, regardless of
+    whether a live tick happens to be readable right now (it would be the WRONG tick -- read hours or
+    days after the bar actually closed)."""
+    tick = LiveTick(bid=107.9, ask=108.1, as_of=DAY1_START)
+    journal = SpreadObservationLog()
+    collector = SpreadCollector(SYMBOL, _FakeTickReader(tick), journal)
+
+    bar = _bar(DAY1_START, 100.0, 100.5, 99.5, 100.0, is_backfilled=True)
+    observation = collector.collect(bar)
+
+    assert observation is None
+    assert journal.entries == ()
+
+
+def test_a_backfilled_bar_still_accumulates_into_level_touch_continuity() -> None:
+    """The OHLC path itself IS real, recoverable history -- only the spread reading is irrecoverable.
+    A later, non-backfilled bar's level-touch detection must still see the backfilled bar's own
+    high/low, exactly as if it had been observed live."""
+    pdh, pdl = 110.0, 90.0
+    day0 = _day0_warmup_bars(pdh, pdl)
+    backfilled_bar = _bar(DAY1_START, 100.0, 100.5, 99.5, 100.0, is_backfilled=True)
+    live_touch_bar = _bar(DAY1_START + BAR_SECONDS, 105.0, 111.0, 104.0, 108.0)  # PDH touch
+
+    tick = LiveTick(bid=107.9, ask=108.1, as_of=live_touch_bar.ts_close)
+    journal = SpreadObservationLog()
+    collector = SpreadCollector(SYMBOL, _FakeTickReader(tick), journal)
+
+    for b in day0:
+        collector.collect(b)
+    assert collector.collect(backfilled_bar) is None
+    assert collector.current_bar_count == len(day0) + 1
+
+    result = collector.collect(live_touch_bar)
+
+    assert result is not None
+    assert result.is_level_touch is True
+    assert result.touch_level_kind == "pdh"
 
 
 def test_current_bar_count_tracks_bars_processed() -> None:

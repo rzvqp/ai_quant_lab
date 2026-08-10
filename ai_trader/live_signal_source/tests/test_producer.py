@@ -103,6 +103,36 @@ def test_a_gap_detected_by_the_feed_is_journaled_by_the_producer() -> None:
     assert journal.gaps[0].gap_end == second_open
 
 
+class _MutableClock:
+    def __init__(self, now: int) -> None:
+        self.now = now
+
+    def __call__(self) -> int:
+        return self.now
+
+
+def test_a_backfilled_bar_is_journaled_with_is_backfilled_true() -> None:
+    """Backfill, 2026-08-10: the journal entry must carry through whatever `Bar.is_backfilled` the feed
+    marked the bar with -- this is the producer's own propagation responsibility, not the feed's."""
+    first_open = NOW - 10 * M15_SECONDS
+    clock = _MutableClock(first_open + M15_SECONDS)
+    gateway = _closed_bar_gateway(first_open)
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock)
+    journal = LiveSignalJournal()
+    producer = CandidateSignalProducer(feed, NullRecognitionRule(), journal)
+    producer.run_once()
+    assert journal.entries[0].is_backfilled is False  # ordinary steady-state fetch, not a backfill
+
+    second_open = first_open + 5 * 60 * 60  # well beyond the 2.5h normal lookback -- triggers backfill
+    clock.now = second_open + M15_SECONDS
+    gateway.range_rates = [RawRate(time=second_open, open=2000.0, high=2001.0, low=1999.0, close=2000.5)]
+    gateway.rates = []
+
+    producer.run_once()
+
+    assert journal.entries[1].is_backfilled is True
+
+
 def test_no_gap_is_journaled_when_bars_are_contiguous() -> None:
     first_open = NOW - 2 * M15_SECONDS
     gateway = _closed_bar_gateway(first_open, first_open + M15_SECONDS)

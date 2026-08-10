@@ -44,6 +44,15 @@ class Bar:
     low: float
     close: float
     volume: float | None
+    is_backfilled: bool = False
+    """CEO instruction, 2026-08-10: distinguishes a bar recovered from `LiveBarFeed`'s own gap-catch-up
+    history query from one seen through normal steady-state polling. NOT "imputed" or "interpolated" --
+    the OHLC values are the same real MT5 history either way (`GapRecord`'s own "gol se raporteaza, nu
+    se umple" principle is about never FABRICATING a value, and backfill fetches real data, so it
+    doesn't conflict with that rule); this flag only records HOW a genuine bar was learned about, which
+    matters downstream for anything that depends on being present AT THE TIME the bar closed (a spread
+    sample has no meaning read hours or days late -- see `spread_collection.observer.SpreadCollector`).
+    Defaults to `False` so every existing call site constructing a `Bar` (tests, fakes) is unaffected."""
 
     def __post_init__(self) -> None:
         if not self.symbol:
@@ -139,6 +148,9 @@ class LiveSignalJournalEntry:
     symbol: str
     as_of: int
     candidate: LiveCandidate | None
+    is_backfilled: bool = False
+    """Mirrors the `Bar.is_backfilled` this entry's own bar carried -- see that field's docstring.
+    Defaults to `False`, matching `Bar`'s own default, for the same backward-compatibility reason."""
 
     def __post_init__(self) -> None:
         if not self.symbol:
@@ -148,10 +160,18 @@ class LiveSignalJournalEntry:
 class GapClassification(str, Enum):
     """CEO instruction, 2026-07-27: three categories, all visible, only one a problem -- "un consumator
     care citeste jurnalul peste sase luni nu poate distinge un shadow sanatos de unul cu pierderi" fara
-    toate trei."""
+    toate trei.
+
+    **`EXTENDED_PAUSE`, added 2026-08-10** (CEO: "adauga o clasa: gol care depaseste durata maxima a
+    unui weekend real"): a gap that spans a Saturday (so it would otherwise match `WEEKEND`) but whose
+    duration exceeds what a real weekend closure has ever measured on this broker -- see
+    `gap_classification.MAX_REAL_WEEKEND_SECONDS` for the empirical basis. Checked BEFORE `WEEKEND`, so
+    it is the more specific classification for the same underlying condition, not a fourth independent
+    category -- a gap can never be both."""
 
     MAINTENANCE = "MAINTENANCE"
     WEEKEND = "WEEKEND"
+    EXTENDED_PAUSE = "EXTENDED_PAUSE"
     UNEXPECTED = "UNEXPECTED"
 
 
@@ -162,13 +182,23 @@ class GapRecord:
     known-good bar's own `ts_open` (matching `code/gapfind.py`'s own `t0`, reused verbatim for
     classification -- see `gap_classification.py`); `gap_end` is the first bar seen after the gap
     (`t1`). `duration_seconds` is their literal difference, matching that script's own `mins` basis
-    exactly (open-to-open, not close-to-open)."""
+    exactly (open-to-open, not close-to-open).
+
+    **`bars_backfilled`/`backfill_capped`, added 2026-08-10**: this is still "the gap is reported, never
+    filled" in the ORIGINAL sense -- nothing about the gap's own existence is ever hidden or estimated.
+    What changed is a SEPARATE capability: `LiveBarFeed` can now fetch the real, already-existing MT5
+    history for the missing window (not invent one), reported here as HOW MANY bars that recovered.
+    `backfill_capped=True` means the gap exceeded `bar_feed.MAX_BACKFILL_SECONDS` (30 days) and was
+    deliberately left unfilled -- reported, not filled, exactly per the original rule, for the specific
+    case the CEO drew the line at."""
 
     symbol: str
     gap_start: int
     gap_end: int
     duration_seconds: int
     classification: GapClassification
+    bars_backfilled: int = 0
+    backfill_capped: bool = False
 
     def __post_init__(self) -> None:
         if not self.symbol:

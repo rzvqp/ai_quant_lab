@@ -6,7 +6,14 @@ has no concept of direction, sizing, or a "policy."
 
 **Fail-closed on a missing tick**: if the live tick can't be read for a bar, that bar produces NO
 observation (never a fabricated bid/ask) -- `collect(bar)` returns `None`, matching this project's own
-established "never invent a value that couldn't actually be read" convention."""
+established "never invent a value that couldn't actually be read" convention.
+
+**Backfilled bars, added 2026-08-10** (CEO: "Spread-ul NU se backfilleaza -- nu exista retroactiv"): a
+bar recovered by `LiveBarFeed`'s gap-catch-up range fetch (`Bar.is_backfilled=True`) still gets its OHLC
+folded into the running arrays -- level-touch/ATR continuity needs the real price path, and that part
+CAN be reconstructed from history -- but `collect()` never attempts a tick read or records a
+`SpreadObservation` for it, the same fail-closed `None` return as a missing tick, since a spread read
+hours or days late has no meaning."""
 
 from __future__ import annotations
 
@@ -48,6 +55,9 @@ class SpreadCollector:
         self._lows.append(bar.low)
         self._closes.append(bar.close)
         self._day_index.append(day_boundary_start_utc(bar.ts_open))
+
+        if bar.is_backfilled:
+            return None
 
         tick = self._tick_reader.read(self._symbol)
         if tick is None:

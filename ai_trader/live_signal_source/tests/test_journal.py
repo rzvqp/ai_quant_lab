@@ -190,3 +190,59 @@ def test_gaps_has_no_remove_or_clear_method() -> None:
     journal = LiveSignalJournal()
     assert not hasattr(journal, "remove_gap")
     assert not hasattr(journal, "clear_gaps")
+
+
+# -- Backfill, 2026-08-10: is_backfilled/bars_backfilled/backfill_capped must round-trip --
+
+
+def test_is_backfilled_entry_round_trips_through_persistence() -> None:
+    store = SqliteStateStore(":memory:")
+    journal_before_restart = LiveSignalJournal(state_store=store)
+    journal_before_restart.record(
+        LiveSignalJournalEntry(symbol="XAUUSD", as_of=100, candidate=None, is_backfilled=True)
+    )
+
+    journal_after_restart = LiveSignalJournal(state_store=store)
+
+    assert journal_after_restart.entries[0].is_backfilled is True
+
+
+def test_entry_is_backfilled_defaults_to_false_for_a_pre_feature_persisted_payload() -> None:
+    """A row written before this field existed has no `is_backfilled` key at all -- deserializing it
+    must default to `False`, not raise a `KeyError`."""
+    store = SqliteStateStore(":memory:")
+    store.append_log_entry(
+        "live_signal_source.journal", '{"symbol": "XAUUSD", "as_of": 100, "candidate": null}',
+    )
+
+    journal = LiveSignalJournal(state_store=store)
+
+    assert journal.entries[0].is_backfilled is False
+
+
+def test_gap_backfill_fields_round_trip_through_persistence() -> None:
+    store = SqliteStateStore(":memory:")
+    journal_before_restart = LiveSignalJournal(state_store=store)
+    gap = GapRecord(
+        symbol="XAUUSD", gap_start=100, gap_end=20_000, duration_seconds=19_900,
+        classification=GapClassification.UNEXPECTED, bars_backfilled=5, backfill_capped=False,
+    )
+    journal_before_restart.record_gap(gap)
+
+    journal_after_restart = LiveSignalJournal(state_store=store)
+
+    assert journal_after_restart.gaps[0] == gap
+
+
+def test_gap_backfill_fields_default_for_a_pre_feature_persisted_payload() -> None:
+    store = SqliteStateStore(":memory:")
+    store.append_log_entry(
+        "live_signal_source.journal.gaps",
+        '{"symbol": "XAUUSD", "gap_start": 100, "gap_end": 200, "duration_seconds": 100, '
+        '"classification": "UNEXPECTED"}',
+    )
+
+    journal = LiveSignalJournal(state_store=store)
+
+    assert journal.gaps[0].bars_backfilled == 0
+    assert journal.gaps[0].backfill_capped is False

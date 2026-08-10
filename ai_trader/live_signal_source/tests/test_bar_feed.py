@@ -265,6 +265,9 @@ class _MutableClock:
 
 
 def test_gap_detected_across_two_separate_poll_calls() -> None:
+    """Backfill note, 2026-08-10: a 3h gap exceeds the 2.5h normal-lookback threshold, so the second
+    `poll()` now goes through `copy_rates_range` (the backfill path), not `copy_rates_from` -- `rates`
+    is mirrored into `range_rates` so this pre-backfill test still exercises the same scenario."""
     first_open = _ts(2026, 7, 28, 10, 0)
     clock = _MutableClock(first_open + M15_SECONDS)
     gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
@@ -274,6 +277,7 @@ def test_gap_detected_across_two_separate_poll_calls() -> None:
 
     second_open = first_open + 3 * 60 * 60
     gateway.rates = [RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0)]
+    gateway.range_rates = gateway.rates
     clock.now = second_open + M15_SECONDS
     feed.poll()
 
@@ -335,7 +339,11 @@ def test_weekend_gap_is_classified_correctly() -> None:
 def test_gap_detection_uses_the_persisted_watermark_after_a_simulated_restart(tmp_path: Path) -> None:
     """A gap that occurred WHILE the process was down must still be detected after restart -- the
     watermark loaded from `SqliteStateStore` (Mandate 2) is exactly what continuity is checked
-    against, no special-casing needed."""
+    against, no special-casing needed.
+
+    Backfill note, 2026-08-10: the 5h outage gap exceeds the 2.5h normal-lookback threshold, so the
+    post-restart `poll()` now goes through `copy_rates_range` (the backfill path) -- `range_rates` is
+    populated to match, same as `test_gap_detected_across_two_separate_poll_calls`."""
     store = SqliteStateStore(tmp_path / "state.db")
     first_open = _ts(2026, 7, 28, 10, 0)
     gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
@@ -347,6 +355,7 @@ def test_gap_detection_uses_the_persisted_watermark_after_a_simulated_restart(tm
 
     second_open = first_open + 5 * 60 * 60  # a gap that happened during the "outage"
     gateway.rates = [RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0)]
+    gateway.range_rates = gateway.rates
     feed_after_restart = LiveBarFeed(
         gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
         clock=lambda: second_open + M15_SECONDS, state_store=store,
@@ -358,3 +367,138 @@ def test_gap_detection_uses_the_persisted_watermark_after_a_simulated_restart(tm
     assert gaps[0].gap_start == first_open
     assert gaps[0].gap_end == second_open
     assert gaps[0].classification == GapClassification.UNEXPECTED
+
+
+# -- Backfill, 2026-08-10: "la reconectare, fiecare proces trage barele lipsa din watermark pana la
+# prezent... maxim 30 de zile inapoi. Peste, raporteaza si nu umple." --
+
+
+def test_first_ever_poll_uses_the_normal_lookback_fetch_not_backfill() -> None:
+    """No prior watermark -- there is nothing to be "behind" on, so this must be the ordinary
+    `copy_rates_from` steady-state path, never `copy_rates_range`."""
+    first_open = _ts(2026, 7, 28, 10, 0)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: first_open + M15_SECONDS,
+    )
+    bars = feed.poll()
+
+    assert len(bars) == 1
+    assert bars[0].is_backfilled is False
+    assert len(gateway.copy_rates_range_calls) == 0
+    assert len(gateway.copy_rates_from_calls) == 1
+
+
+def test_a_small_gap_within_normal_lookback_does_not_trigger_backfill() -> None:
+    """`lookback_count=10` at M15 covers 2.5h -- a gap smaller than that is still handled by the
+    ordinary `copy_rates_from` fetch, exactly as before this feature existed."""
+    first_open = _ts(2026, 7, 28, 10, 0)
+    clock = _MutableClock(first_open + M15_SECONDS)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock)
+    feed.poll()
+
+    second_open = first_open + 3 * M15_SECONDS  # 45 minutes later -- well within the 2.5h lookback
+    gateway.rates = [RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0)]
+    clock.now = second_open + M15_SECONDS
+    bars = feed.poll()
+
+    assert len(bars) == 1
+    assert bars[0].is_backfilled is False
+    assert len(gateway.copy_rates_range_calls) == 0
+
+
+def test_a_gap_beyond_normal_lookback_triggers_a_full_range_backfill() -> None:
+    """The exact scenario the CEO named: `lookback_count=10` only recovers 9-10 bars regardless of gap
+    size via `copy_rates_from` -- a gap larger than that must switch to `copy_rates_range` for the ENTIRE
+    missing window, and every recovered bar must be marked `is_backfilled=True`. This scenario has MT5
+    history for every single missing 15-minute bar (an ordinary intra-day, non-weekend outage) -- once
+    backfilled, the recovered sequence is perfectly contiguous, so there is genuinely no gap left to
+    report: the market never actually stopped, only this process's own observation did."""
+    first_open = _ts(2026, 7, 28, 10, 0)
+    clock = _MutableClock(first_open + M15_SECONDS)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock)
+    feed.poll()
+
+    next_expected = first_open + M15_SECONDS
+    second_open = first_open + 5 * 60 * 60  # 5 hours later -- well beyond the 2.5h normal lookback
+    now = second_open + M15_SECONDS
+    clock.now = now
+    gateway.range_rates = [
+        RawRate(time=next_expected + i * M15_SECONDS, open=1.0, high=2.0, low=0.5, close=1.5)
+        for i in range((second_open - next_expected) // M15_SECONDS)
+    ] + [RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0)]
+    gateway.rates = []  # copy_rates_from must NOT be the source of these bars
+
+    bars = feed.poll()
+
+    assert len(gateway.copy_rates_range_calls) == 1
+    assert gateway.copy_rates_range_calls[0] == (SYMBOL, 15, next_expected, now)
+    assert len(bars) > 1
+    assert all(b.is_backfilled for b in bars)
+    assert feed.last_gaps() == ()  # fully contiguous recovery -- nothing left to report
+
+
+def test_backfill_recovers_bars_across_a_real_internal_weekend_gap() -> None:
+    """The realistic shape of the CEO's own restart scenario: MT5's own history has NO bars for the
+    actual weekend closure (the market itself was shut, not just this process), so even a fully
+    successful backfill still surfaces that one genuine internal gap -- classified normally, and now
+    carrying `bars_backfilled`/`backfill_capped` so a restart's recovery is visible, not just the gap's
+    own existence."""
+    first_open = _ts(2026, 7, 24, 20, 45)  # Friday, just before the broker's Friday close
+    clock = _MutableClock(first_open + M15_SECONDS)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock)
+    feed.poll()
+
+    weekend_reopen = _ts(2026, 7, 26, 21, 0)  # Sunday reopen -- MT5 has no bars in between
+    now = weekend_reopen + 2 * M15_SECONDS
+    clock.now = now
+    gateway.range_rates = [
+        RawRate(time=weekend_reopen, open=1.5, high=2.5, low=1.0, close=2.0),
+        RawRate(time=weekend_reopen + M15_SECONDS, open=2.0, high=2.5, low=1.5, close=2.2),
+    ]
+    gateway.rates = []
+
+    bars = feed.poll()
+
+    assert len(bars) == 2
+    assert all(b.is_backfilled for b in bars)
+
+    gaps = feed.last_gaps()
+    assert len(gaps) == 1
+    assert gaps[0].gap_start == first_open
+    assert gaps[0].gap_end == weekend_reopen
+    assert gaps[0].classification == GapClassification.WEEKEND
+    assert gaps[0].backfill_capped is False
+    assert gaps[0].bars_backfilled == 2
+
+
+def test_a_gap_beyond_the_30_day_cap_falls_back_to_normal_lookback_uncapped() -> None:
+    """CEO's own explicit limit: "maxim 30 de zile inapoi. Peste, raporteaza si nu umple." -- beyond the
+    cap, `poll()` must NOT attempt a range backfill; it falls back to the ordinary small lookback fetch,
+    the bars it does return are NOT marked backfilled, and the gap's own `backfill_capped` flag makes the
+    omission visible rather than silent."""
+    first_open = _ts(2026, 6, 1, 10, 0)
+    clock = _MutableClock(first_open + M15_SECONDS)
+    gateway = FakeMT5Gateway(rates=[RawRate(time=first_open, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock)
+    feed.poll()
+
+    second_open = first_open + 40 * 86_400  # 40 days later -- beyond MAX_BACKFILL_SECONDS (30 days)
+    now = second_open + M15_SECONDS
+    clock.now = now
+    gateway.rates = [RawRate(time=second_open, open=1.5, high=2.5, low=1.0, close=2.0)]
+
+    bars = feed.poll()
+
+    assert len(gateway.copy_rates_range_calls) == 0  # never attempted -- the cap is respected
+    assert len(bars) == 1
+    assert bars[0].is_backfilled is False
+
+    gaps = feed.last_gaps()
+    assert len(gaps) == 1
+    assert gaps[0].backfill_capped is True
+    assert gaps[0].bars_backfilled == 0
+    assert gaps[0].classification == GapClassification.EXTENDED_PAUSE  # 40 days, spans many Saturdays

@@ -23,9 +23,14 @@ class RawRate:
 
 
 class FakeMT5Gateway:
-    def __init__(self, rates: Any = _UNSET) -> None:
+    def __init__(self, rates: Any = _UNSET, range_rates: Any = _UNSET) -> None:
         self.rates: Any = [] if rates is _UNSET else rates
+        """Returned by `copy_rates_from` (the steady-state, small-lookback path)."""
+        self.range_rates: Any = [] if range_rates is _UNSET else range_rates
+        """Returned by `copy_rates_range` (the backfill, full-missing-window path) -- separate from
+        `rates` so a test can assert exactly which fetch path `LiveBarFeed` chose."""
         self.copy_rates_from_calls: list[tuple[str, int, int, int]] = []
+        self.copy_rates_range_calls: list[tuple[str, int, int, int]] = []
 
     def copy_rates_from(self, symbol: str, timeframe: int, date_from: int, count: int) -> Any | None:
         self.copy_rates_from_calls.append((symbol, timeframe, date_from, count))
@@ -63,7 +68,10 @@ class FakeMT5Gateway:
         return None
 
     def copy_rates_range(self, symbol: str, timeframe: int, date_from: int, date_to: int) -> Any | None:
-        return None
+        self.copy_rates_range_calls.append((symbol, timeframe, date_from, date_to))
+        if self.range_rates is None:
+            return None
+        return tuple(self.range_rates)
 
     def copy_ticks_from(self, symbol: str, date_from: int, count: int, flags: int) -> Any | None:
         return None
