@@ -18,20 +18,19 @@ NOW = 1_700_000_000
 
 
 def _closed_bar_gateway(*ts_opens: int) -> FakeMT5Gateway:
-    return FakeMT5Gateway(rates=[
-        RawRate(time=ts, open=2000.0, high=2001.0, low=1999.0, close=2000.5) for ts in ts_opens
-    ])
+    """`tick_time` set to `NOW + M15_SECONDS` -- `build_loop` now wires `make_broker_clock`, which reads
+    this instead of the real wall clock, so even the latest bar this file ever constructs (`ts_open ==
+    NOW`, `ts_close == NOW + M15_SECONDS`) reads as genuinely closed, not still forming."""
+    return FakeMT5Gateway(
+        rates=[RawRate(time=ts, open=2000.0, high=2001.0, low=1999.0, close=2000.5) for ts in ts_opens],
+        tick_time=NOW + M15_SECONDS,
+    )
 
 
 def test_build_loop_produces_zero_candidates_and_records_structural_facts(tmp_path: Path) -> None:
     gateway = _closed_bar_gateway(NOW - 2_000, NOW - 1_000)
-    gateway_clock_now = NOW  # LiveBarFeed's default clock reads real time; override via a fixed clock below
     state_store = SqliteStateStore(tmp_path / "state.db")
     loop = build_loop(gateway, state_store, symbol=SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS)
-    # LiveBarFeed inside build_loop uses the real wall clock by default -- for a deterministic test,
-    # rebuild the feed's clock via the same composition instead of monkeypatching internals: bars in the
-    # past relative to the real clock are always "closed", so no override is actually needed here.
-    del gateway_clock_now
 
     ran = loop.tick()
 

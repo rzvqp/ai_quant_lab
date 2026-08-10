@@ -80,7 +80,7 @@ class _FakeGateway:
 class _FakeTick:
     bid = 99.9
     ask = 100.1
-    time = AS_OF
+    time = AS_OF + 900  # at or after the bar's own ts_close -- make_broker_clock reads this as "now"
 
 
 def test_build_loop_wires_a_working_loop_that_records_an_observation(tmp_path: Path) -> None:

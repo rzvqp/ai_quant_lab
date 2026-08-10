@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from ai_trader.live_signal_source.bar_feed import LiveBarFeed
-from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
+from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_clock
+from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, FakeTick, RawRate
 from ai_trader.live_signal_source.types import BarFeedError, GapClassification
 from ai_trader.persistent_state.store import SqliteStateStore
 
@@ -502,3 +502,59 @@ def test_a_gap_beyond_the_30_day_cap_falls_back_to_normal_lookback_uncapped() ->
     assert gaps[0].backfill_capped is True
     assert gaps[0].bars_backfilled == 0
     assert gaps[0].classification == GapClassification.EXTENDED_PAUSE  # 40 days, spans many Saturdays
+
+
+# -- Broker clock fix, 2026-08-11 (CEO, priority maxima): MT5 reports every timestamp in the
+# broker/terminal's own server time, not true UTC. `_default_clock` (true system UTC) caused poll()'s
+# own forming-bar filter to hold back every genuinely closed bar for a full offset period, since it
+# compared a broker-labeled `ts_close` against a system-labeled `now`. `make_broker_clock` fixes this by
+# reading `symbol_info_tick(symbol).time` fresh on every call instead. --
+
+
+def test_make_broker_clock_reads_the_tick_time_not_system_time() -> None:
+    gateway = FakeMT5Gateway(tick_time=NOW + 10_800)  # 3h offset, matching the measured real case
+    clock = make_broker_clock(gateway, SYMBOL)
+
+    assert clock() == NOW + 10_800
+
+
+def test_make_broker_clock_reads_fresh_on_every_call_not_memoized() -> None:
+    """The DST question the CEO raised directly: the offset can shift twice a year, so the clock must
+    re-read the terminal every time, never compute an offset once and reuse it."""
+    gateway = FakeMT5Gateway(tick_time=NOW)
+    clock = make_broker_clock(gateway, SYMBOL)
+    assert clock() == NOW
+
+    gateway.tick_time = NOW + 3_600  # simulates the terminal's own clock having moved on
+    assert clock() == NOW + 3_600
+
+
+def test_make_broker_clock_raises_when_the_terminal_has_no_tick() -> None:
+    """Fail-closed, matching this project's own established convention -- a silent fallback to system
+    time would quietly reintroduce the exact bug this fixes."""
+    gateway = FakeMT5Gateway(tick_time=None)
+    clock = make_broker_clock(gateway, SYMBOL)
+
+    with pytest.raises(BarFeedError):
+        clock()
+
+
+def test_broker_clock_wired_into_live_bar_feed_emits_a_bar_the_system_clock_would_have_held_back() -> None:
+    """The exact production bug, reproduced end to end: a bar whose `ts_close` is BEHIND the broker's
+    own current time but AHEAD of the (irrelevant, no-longer-consulted) system clock must still be
+    emitted -- `LiveBarFeed` never even touches `time.time()` once a broker clock is injected."""
+    broker_now = NOW + 10_800  # 3h ahead of "system now" in this scenario
+    closed_open = broker_now - 1_000  # closed relative to broker time
+    gateway = FakeMT5Gateway(
+        rates=[RawRate(time=closed_open, open=1.0, high=2.0, low=0.5, close=1.5)],
+        tick_time=broker_now,
+    )
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS,
+        clock=make_broker_clock(gateway, SYMBOL),
+    )
+
+    bars = feed.poll()
+
+    assert len(bars) == 1
+    assert bars[0].ts_open == closed_open

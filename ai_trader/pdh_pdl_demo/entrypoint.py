@@ -24,7 +24,7 @@ import time
 from pathlib import Path
 from typing import Callable
 
-from ai_trader.live_signal_source.bar_feed import LiveBarFeed
+from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_clock
 from ai_trader.live_signal_source.journal import LiveSignalJournal
 from ai_trader.live_signal_source.types import LiveSignalJournalEntry
 from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
@@ -140,7 +140,10 @@ def build_loop(
     order_gateway: RealMT5DemoGateway, history_gateway: RealMT5HistoryGateway,
     demo_adapter: MT5DemoBrokerAdapter, state_store: SqliteStateStore, state_dir: Path = DEFAULT_STATE_DIR,
 ) -> PdhPdlLiveLoop:
-    feed = LiveBarFeed(order_gateway, SYMBOL, MT5_TIMEFRAME_M15, BAR_SECONDS_M15, state_store=state_store)
+    feed = LiveBarFeed(
+        order_gateway, SYMBOL, MT5_TIMEFRAME_M15, BAR_SECONDS_M15, state_store=state_store,
+        clock=make_broker_clock(order_gateway, SYMBOL),
+    )
     signal_journal = LiveSignalJournal(state_store)
     audit_journal = PdhPdlAuditJournal(state_store)
     tick_reader = LiveMT5TickReader(order_gateway)

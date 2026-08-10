@@ -33,7 +33,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Protocol
 
-from ai_trader.live_signal_source.bar_feed import LiveBarFeed
+from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_clock
 from ai_trader.live_signal_source.journal import LiveSignalJournal
 from ai_trader.live_signal_source.types import Bar, LiveCandidate, LiveSignalJournalEntry
 from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
@@ -276,7 +276,10 @@ def build_loop(
     demo_adapter: MT5DemoBrokerAdapter, shared_state_store: SqliteStateStore,
     state_dir: Path = DEFAULT_STATE_DIR, cand0001_db_path: Path = CAND0001_DB_PATH,
 ) -> MultiPolicyLiveLoop:
-    feed = LiveBarFeed(order_gateway, SYMBOL, MT5_TIMEFRAME_M15, BAR_SECONDS_M15, state_store=shared_state_store)
+    feed = LiveBarFeed(
+        order_gateway, SYMBOL, MT5_TIMEFRAME_M15, BAR_SECONDS_M15, state_store=shared_state_store,
+        clock=make_broker_clock(order_gateway, SYMBOL),
+    )
     signal_journal = LiveSignalJournal(shared_state_store)
     risk_snapshot_builder = LiveRiskSnapshotBuilder()
     tick_reader = LiveMT5TickReader(order_gateway)

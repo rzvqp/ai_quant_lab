@@ -39,6 +39,15 @@ own limit) -- beyond that, `poll()` deliberately does NOT backfill (falls back t
 lookback, same as today), and the resulting `GapRecord.backfill_capped=True` makes that omission visible
 rather than silent. Still exactly one gap detection pass either way -- backfilling only changes how many
 of the missing bars get recovered, never whether the gap itself is reported.
+
+**Clock fix, 2026-08-11** (CEO, priority maxima, after the "blocked feed" diagnostic turned out to be a
+false alarm): MT5 reports every timestamp -- ticks and historical bars alike -- in the broker/terminal's
+own server time, not true UTC. Every one of the 5 live entrypoints constructed `LiveBarFeed` without an
+explicit `clock=`, so all of them fell back to `_default_clock` (true system UTC) -- meaning `poll()`'s
+"still-forming" filter compared a broker-labeled `ts_close` against a system-labeled `now`, holding back
+every genuinely closed bar for a full offset period (measured at +3h against XAUUSD/FusionMarkets, same
+across M1/M5/M15, same on EURUSD -- a terminal-wide convention, not a feed or symbol issue). See
+`make_broker_clock` below for the fix and why it re-reads every call rather than memoizing an offset.
 """
 
 from __future__ import annotations
@@ -59,7 +68,46 @@ umple." A gap longer than this is reported via the normal `GapRecord` mechanism 
 
 
 def _default_clock() -> int:
+    """True system UTC. NOT what any of the 5 live entrypoints should actually use in production --
+    see `make_broker_clock` below. Kept as the parameter default only so every existing test/fake that
+    never cared about wall-clock alignment (constructing a `LiveBarFeed` with an injected `clock=`
+    lambda of its own) keeps working unchanged."""
     return int(time.time())
+
+
+def make_broker_clock(gateway: MT5Gateway, symbol: str) -> Callable[[], int]:
+    """CEO instruction, 2026-08-11: MT5 reports every timestamp it returns -- ticks AND historical
+    bars alike -- in the broker/terminal's OWN server time, not true UTC. Measured directly against
+    XAUUSD/FusionMarkets as a constant +3h offset (consistent with EEST), confirmed identically across
+    M1/M5/M15 and on a second, unrelated symbol (EURUSD) -- a terminal-wide clock convention, not a
+    feed-specific anomaly.
+
+    `LiveBarFeed`'s prior default (`_default_clock`, true system UTC) meant `poll()`'s own
+    "still-forming" filter (`ts_close > now`) compared a broker-labeled `ts_close` against a
+    system-labeled `now` -- so every genuinely closed bar was held back and reported as "not yet
+    closed" for a full offset period after it actually closed. Not a feed outage; a clock mismatch,
+    present since this system's very first bar (self-consistent and invisible until directly comparing
+    `symbol_info_tick().time` against system `time.time()`, which is what surfaced it).
+
+    Returns a clock function that reads `symbol_info_tick(symbol).time` FRESH on every single call --
+    never memoizes an offset, never reads it once at construction. This is deliberate, not just
+    simplicity: broker server time shifts with DST twice a year, so a live run spanning a DST
+    transition would silently be wrong again if the offset were computed once and added as a constant
+    thereafter. The only correct answer is to ask the terminal what time it is, every time.
+
+    Fail-closed: raises `BarFeedError` if the terminal can't produce a tick right now, rather than
+    falling back to system time -- a silent fallback would quietly reintroduce the exact bug this
+    fixes."""
+
+    def clock() -> int:
+        tick = gateway.symbol_info_tick(symbol)
+        if tick is None:
+            raise BarFeedError(
+                f"make_broker_clock({symbol!r}): symbol_info_tick returned None -- cannot read broker time"
+            )
+        return int(tick.time)
+
+    return clock
 
 
 def _read_field(rate: object, name: str) -> int | float | None:

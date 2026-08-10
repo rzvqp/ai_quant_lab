@@ -19,7 +19,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway, RealMT5Gateway
-from ai_trader.live_signal_source.bar_feed import LiveBarFeed
+from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_clock
 from ai_trader.live_signal_source.journal import LiveSignalJournal
 from ai_trader.live_signal_source.producer import CandidateSignalProducer
 from ai_trader.live_loop.loop import LiveSignalLoop
@@ -41,7 +41,10 @@ def build_loop(
     mt5_timeframe: int = MT5_TIMEFRAME_M15, bar_seconds: int = BAR_SECONDS_M15,
     poll_interval_seconds: float = POLL_INTERVAL_SECONDS,
 ) -> LiveSignalLoop:
-    feed = LiveBarFeed(gateway, symbol, mt5_timeframe, bar_seconds, state_store=state_store)
+    feed = LiveBarFeed(
+        gateway, symbol, mt5_timeframe, bar_seconds, state_store=state_store,
+        clock=make_broker_clock(gateway, symbol),
+    )
     signal_journal = LiveSignalJournal(state_store)
     zone_journal = ZoneObservationLog(state_store)
     observer = ZoneObserver(symbol, zone_journal)

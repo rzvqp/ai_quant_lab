@@ -23,6 +23,7 @@ class _FakeGateway:
         self._rate = {
             "time": AS_OF, "open": 100.0, "high": 100.5, "low": 99.5, "close": 100.0, "tick_volume": 10,
         }
+        self._tick = _FakeTick()
 
     def initialize(
         self,
@@ -52,7 +53,7 @@ class _FakeGateway:
         return True
 
     def symbol_info_tick(self, symbol: str) -> Any:
-        return None
+        return self._tick
 
     def copy_rates_from(self, symbol: str, timeframe: int, date_from: int, count: int) -> Any:
         return [self._rate]
@@ -74,6 +75,12 @@ class _FakeGateway:
 
     def last_error(self) -> tuple[int, str]:
         return (0, "Success")
+
+
+class _FakeTick:
+    bid = 0.0
+    ask = 0.0
+    time = AS_OF + 900  # at or after the bar's own ts_close -- make_broker_clock reads this as "now"
 
 
 def test_build_loop_wires_a_working_loop_that_accumulates_a_bar(tmp_path: Path) -> None:

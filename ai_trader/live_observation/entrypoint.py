@@ -20,7 +20,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway, RealMT5Gateway
-from ai_trader.live_signal_source.bar_feed import LiveBarFeed
+from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_clock
 from ai_trader.live_signal_source.journal import LiveSignalJournal
 from ai_trader.live_signal_source.producer import CandidateSignalProducer
 from ai_trader.live_loop.loop import LiveSignalLoop
@@ -48,6 +48,7 @@ def build_loop(
     ever produced by this rule; the producer's own contract with a genuinely null rule is unchanged."""
     feed = LiveBarFeed(
         gateway, symbol, mt5_timeframe, bar_seconds, state_store=state_store,
+        clock=make_broker_clock(gateway, symbol),
     )
     signal_journal = LiveSignalJournal(state_store)
     structural_journal = StructuralObservationLog(state_store)
