@@ -24,10 +24,18 @@
     "profit_factor": 1.125,
     "best": 131.67,
     "worst": -1.0,
+    "best_share_of_total": 0.346,
+    "top5_share_of_total": 1.33,
+    "trimmed_top1pct": {
+      "removed": 36,
+      "avg_R": -0.2529,
+      "profit_factor": 0.699,
+      "total_R": -917.86
+    },
     "exit_mix": {
       "stop": 3028,
       "time": 637
     }
   },
-  "SCREEN_VERDICT": "BORDERLINE \u2014 weak positive gross (avg_R=0.1037, PF=1.125); costs likely decisive \u2192 hold/deprioritize"
+  "SCREEN_VERDICT": "BORDERLINE \u2014 FAT-TAIL (best trade = 0.346 of total R; top-1%-trimmed avg_R=-0.2529, PF=0.699). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
 }

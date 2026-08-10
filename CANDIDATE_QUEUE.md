@@ -103,9 +103,22 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 **Flow B kickoff (2026-08):** built the reusable quick-screen harness (`edge_research/_screen.py`) + verified it end-to-end. First economic screens on the three detectors ratified @ `5443077` (`detect_void_reactions`, `detect_bpr_reactions`, `detect_weekly_level_touches`):
 - **CAND-0004 (void-reaction): 🔴 ELIMINATED** — 29 signals / 10 yr (untradeable) + avg_R −0.64, PF 0.18. Killed cheaply.
 - **CAND-0005 (BPR-reaction): 🟠 BORDERLINE → deprioritized** — gross avg_R +0.10 / PF 1.125 but median −1R, tiny-stop fat-tail (best +131R); costs + min-risk floor likely erase it.
-- **CAND-0006 (weekly, Route 3): PENDING quick screen** — needs the 17:00-NY `day_index`/`week_index` anchor wired into the harness (next iteration); the detector `detect_weekly_level_touches` exists and mirrors PDH/PDL.
+- **CAND-0006 (weekly level-FADE, Route 3): 🔴 ELIMINATED** — anchor wired (17:00-NY `day_index` verbatim + `derive_week_index`); 254 COMPLETE touches (matches the Statistician's ~275 → geometry/anchor validated) but the FADE loses: avg_R −0.089, PF 0.90, 8% win, 4/249 reach target.
 
-Neither newly-unblocked base family is promising → the reaction-primitive bottleneck did NOT hide a strong edge. Next: wire the weekly anchor + screen CAND-0006, then screen the strongest EXISTING SCREENING_BASELINE candidates (the level-fade class — CAND-0001/0027 siblings) economically, and produce new CAND-0037+ ideas that REUSE ratified primitives. Prior primitive-space coverage stands (below).
+### ⚠ MAJOR FLOW-B FINDING — the level-FADE class has NO robust economic edge (fat-tail mirage), incl. the DEMO pilot
+Screened the level-fade class the CEO flagged as "the only positive class" (CAND-0001 PDH/PDL, CAND-0027 session). Raw totals look positive, **but the fat-tail check inverts all of them** (parameter-free: single-best-trade share + top-1%-trimmed avg_R):
+
+| candidate | n | raw avg_R / PF | best-trade share | **top-1%-trimmed avg_R** | verdict |
+|---|---|---|---|---|---|
+| **CAND-0001** PDH/PDL fade | 1299 | +1.37 / 2.65 | **78.1%** | **−0.15** | 🟠 FAT-TAIL |
+| **CAND-0027** session fade | 5262 | +0.29 / 1.37 | 21.7% | **−0.17** | 🟠 FAT-TAIL |
+| **CAND-0005** BPR reaction | 3665 | +0.10 / 1.13 | 34.6% | **−0.25** | 🟠 FAT-TAIL |
+
+**Every "positive" fade total is ~a handful of tiny-stop outliers** (touch-bar-extreme stop → microscopic 1R → the rare survivor that reaches a far opposite-level target prints a 100–1400R fluke). Median trade = −1R everywhere; win 8–21%. **Remove the top 1% and the edge inverts to negative in all three.** The "levels are the positive class" premise was a directional/RATE result, NOT a P&L fade edge. **This includes CAND-0001, a DEMO_BASELINE pilot** — its execution-safety DEMO criteria are unaffected, but the FADE has no tradeable gross edge under this risk structure.
+
+**Interpretation + next hypothesis:** the fade DIRECTION and/or the tight touch-extreme stop is the problem. The logical next test (new pre-registered variant, next iteration) is the OPPOSITE direction — **level BREAKOUT/continuation** (Route 2: close through the level → trade WITH the break) — and/or a structural (non-tiny) stop. Not forced now; flagged as the live lead.
+
+Next: test the level-continuation direction; screen new CAND-0037+ ideas on ratified primitives. Prior primitive-space coverage stands (below).
 
 ---
 

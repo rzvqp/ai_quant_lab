@@ -1,0 +1,36 @@
+{
+  "candidate": "CAND-0001",
+  "family": "pdh_pdl_level_fade",
+  "data": {
+    "rows": 130491,
+    "blocks": 15
+  },
+  "detector": "detect_level_touches @5443077 (17:00-NY day_index)",
+  "n_levels": 2810,
+  "n_touches": 1325,
+  "n_trades": 1325,
+  "metrics": {
+    "n": 1299,
+    "win_rate": 0.1609,
+    "total_R": 1783.74,
+    "avg_R": 1.3732,
+    "median_R": -1.0,
+    "profit_factor": 2.647,
+    "best": 1393.38,
+    "worst": -1.0,
+    "best_share_of_total": 0.781,
+    "top5_share_of_total": 0.962,
+    "trimmed_top1pct": {
+      "removed": 12,
+      "avg_R": -0.1527,
+      "profit_factor": 0.819,
+      "total_R": -196.5
+    },
+    "exit_mix": {
+      "stop": 1080,
+      "time": 155,
+      "target": 64
+    }
+  },
+  "SCREEN_VERDICT": "BORDERLINE \u2014 FAT-TAIL (best trade = 0.781 of total R; top-1%-trimmed avg_R=-0.1527, PF=0.819). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+}
