@@ -1530,4 +1530,69 @@
                  redundancy. Red Team designed no remedy, ran no data, modified nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [38], prev_hash E37.
   entry_hash:  E37
+
+[38] 2026-08-06
+  prev_hash:   E37
+  event:       VERDICT               # CODE ATTACK — validation precondition (3 verdict-blocking components)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on code/restante_validation.py @ c73d2d5 (statistician-foundation), spec
+               STAT-DOMAIN-MISMATCH-AND-RESIDUALS-v1.0 + RT-CODE-A-0006. IF THIS PASSES, the four pilots
+               (CAND-0001/0002/0003/0007) get the PROJECT'S FIRST FORMAL VERDICT. Checklist + numeric
+               verification of the statistical algorithm on synthetic distributions (pure-function copies, NO
+               real-data run -- Red Team does not backtest). Deliverable:
+               policy_reviews/RT-CODE-A-0013_restante_validation.md. Nothing modified; no remedy.
+               VERDICT: PASS_WITH_LIMITATIONS.
+               FPR REPAIR (own target) VERIFIED COMPLETE: bug = inner oracle null centered at global 0 not at
+                 the synthetic set's own mean; fix (calibrate_candidate:124 ss_c=ss-obs*sz) re-centers each
+                 synthetic set. Numeric proof (synthetic known-null): BUGGY FPR=0.0000 (reproduces the symptom
+                 exactly); FIXED FPR=0.045 normal / 0.034 skew / 0.063 heavy. No other mis-centering path
+                 (calendar_block_bootstrap centers dsum0 at candidate mean, tests raw observed -- standard
+                 correct bootstrap-of-mean). GATE WORKS: heavy-tailed FAILS (0.063, CI-upper 0.080>0.07) -> the
+                 per-candidate calibration is a FUNCTIONING check, not a formality; almost certainly why
+                 0013/0018/0022/0024 fail (heavy/skew net_R) while the pilots (smoother) pass.
+               SPEC TARGET A (day-block contains full TRADE dependence?): NO -- contains BAR (within-day)
+                 dependence, ASSUMES cross-day independence. Bootstrap resamples whole days -> within-day
+                 preserved (verified); two trades on DIFFERENT days keyed to the SAME structure (level/zone/
+                 regime) land in different blocks -> treated independent -> if edge concentrates on recurring
+                 structures, overstates effective sample -> anti-conservative p. Spec's 4xH bounds bar-horizon
+                 NOT structure-reuse. Severity candidate-dependent + UNMEASURED: day-keyed (0001 PDH/PDL, new
+                 level each day) low; persistent-structure (FVG/OB 0002/0003/0007) more exposed. THE one
+                 assumption that could invalidate a formal p-value -> Statistician must measure each pilot's
+                 cross-day trade autocorrelation. (RV-L1.)
+               SPEC TARGET B (centering preserves enough shape?): YES -- resampling whole day-sums preserves
+                 skew/tails (verified: shapes flow through, gate reacts); legitimate for a location-shift null
+                 of the mean. The residual is cross-day dependence (A), NOT the centering. Adequate.
+               OWN TARGET matrix scoping: RESOLVE_MONTHS=48 -> SE(r)~0.145 (matches code 0.14; 10mo->0.38
+                 matches reported 0.35). Reasonable not conservative (NEG_MATERIAL=-0.3 ~2*SE, boundary-weak).
+                 Gaps: n>=25 trades != >=48 months -> a verdict-eligible short-history candidate's PRDS is never
+                 verified yet goes on BH (RV-L3).
+               OWN TARGET partition pivot (all 3 negatives share CAND-0016): CANNOT confirm genuine -- possible
+                 resolvability-SELECTION artifact (0016 may be in all resolvable negatives only because it has
+                 the longest overlap). Code reports noise-excluded negatives as a COUNT not the PAIRS ->
+                 Statistician must inspect the noise pairs; if they also center on 0016 -> genuine, else
+                 artifact. Plausible but unverified. (RV-L2.)
+               OWN TARGET FPR gate 0.07: convenience threshold (1.4x nominal), IMMATERIAL to the pilots (they
+                 pass at 0.011/0.022/0.025/0.043, far below any of 0.06/0.07/0.075); at 0.075 three of the four
+                 FAILING non-pilots might flip. The gate value only decides non-pilots. (RV-U1.)
+               CHECKLIST: lookahead PASS (net_R keyed to entry day/month, bootstrap resamples observed
+                 outcomes); leakage PASS; circularity PASS (shape-calibration on the null shape is definitional
+                 not circular); ambiguity minor (partition reporting hides noise pairs); overfitting PASS;
+                 hidden-params PASS w/ note (0.07/48/-0.3 declared convenience); reproducible PASS w/ fragility
+                 note (seed = 7e6+ci*1000, enumeration-index-dependent). (RV-U2.)
+               SEVERITY: RV-L1 (day-block cross-day independence -- the only limitation that can invalidate a
+                 p-value; measure pilot cross-day autocorrelation). RV-L2 (partition pivot unverified). RV-L3
+                 (PRDS only checked for >=48-month pairs). RV-U1/U2 (convenience thresholds; seed fragility).
+               SURVIVES: FPR repair complete (buggy=0, fixed~0.05, gate rejects heavy tails); pilots calibrate
+                 ROBUSTLY (0.011-0.043); L=28 retracted correctly (block=day, immune to trade frequency);
+                 centering preserves shape; lookahead/leakage/circularity clean; gate is a functioning check.
+               VERDICT: PASS_WITH_LIMITATIONS -- machinery sound, pilots pass robustly. The four pilots MAY
+                 receive the project's first formal verdict, CONDITIONED on the Statistician (a) measuring
+                 cross-day trade autocorrelation per pilot (RV-L1, the only p-value-invalidating item) and (b)
+                 confirming the 0016 partition vs the noise-negative pairs (RV-L2). RV-L3/U1/U2 disclosures.
+               HANDOFF: Statistician then CEO -- close RV-L1 (cross-day autocorrelation) + RV-L2 (noise pairs)
+                 before the verdict; decide RV-L3 (short-history PRDS). Repair + pilots' calibration + block-day
+                 logic verified clean. Red Team designed no remedy, ran no data, modified nothing outside
+                 red_team/.
+               STATE: OPERATIONAL. Next entry [39], prev_hash E38.
+  entry_hash:  E38
 ```
