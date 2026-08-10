@@ -550,6 +550,84 @@ def test_make_broker_offset_raises_when_the_probe_returns_nothing() -> None:
         offset()
 
 
+def test_make_broker_offset_first_ever_call_is_never_validated_against_staleness() -> None:
+    """Nothing to compare against yet -- this project's own restart discipline only starts a process
+    when the market is already known to be open, so the very first probe is trusted unconditionally."""
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW)
+
+    assert offset() == 0  # no prior state to compare against -- never raises on the first call
+
+
+def test_make_broker_offset_does_not_raise_for_ordinary_polling_jitter() -> None:
+    """A normal, continuously-open market: consecutive polls a few seconds apart, the bar keeps
+    advancing roughly in step -- must never spuriously raise."""
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=clock)
+    offset()
+
+    clock.now = NOW + 30  # one ordinary poll interval later
+    gateway.m1_probe_rates = _m1_probe_rate(0, clock.now)  # market kept trading, bar advanced too
+
+    assert offset() == 0  # no exception
+
+
+def test_make_broker_offset_raises_when_the_probe_is_stale_relative_to_the_last_fresh_read() -> None:
+    """The market-closed scenario the CEO asked about directly: once the M1 bar stops advancing while
+    real time keeps moving, that's unambiguous evidence of a closure -- not measurement noise, per the
+    DERIVED (not chosen) `_OFFSET_PROBE_MAX_STALE_LAG_SECONDS` threshold."""
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=clock)
+    offset()  # first call, establishes the freshness reference
+
+    clock.now = NOW + 200  # real time advances well past the 60s threshold
+    # gateway.m1_probe_rates left UNCHANGED -- the bar never advanced
+
+    with pytest.raises(BarFeedError):
+        offset()
+
+
+def test_make_broker_offset_staleness_accumulates_across_many_quiet_polls() -> None:
+    """The exact bug caught during design: if the freshness reference refreshed on EVERY call, staleness
+    would never accumulate -- each individual poll would only ever compare against one poll interval
+    ago. It must only refresh when the bar genuinely moves, so staleness keeps growing across a closure
+    that spans many polls, not resetting every call."""
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=clock)
+    offset()
+
+    # Two consecutive "polls" 20s apart, bar never advances -- neither individually reaches the 60s
+    # threshold, but they must not silently reset the freshness reference either.
+    for _ in range(2):
+        clock.now += 20
+        offset()  # 20s, 40s of accumulated lag -- neither raises yet
+
+    clock.now += 20  # 60s of accumulated lag now -- the derived threshold itself
+    with pytest.raises(BarFeedError):
+        offset()
+
+
+def test_make_broker_offset_self_heals_once_the_market_reopens() -> None:
+    """After a stretch with no new bar, a genuinely fresh bar (reflecting the real gap) must be accepted
+    immediately -- the check compares elapsed real time against elapsed bar time, and once both jump
+    together (the market reopening), there is no more lag."""
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=clock)
+    offset()
+
+    clock.now = NOW + 2 * 86_400  # a 2-day closure -- gateway.m1_probe_rates still frozen
+    with pytest.raises(BarFeedError):
+        offset()
+
+    # Market reopens: a genuinely fresh bar appears, reflecting the real 2-day gap.
+    gateway.m1_probe_rates = _m1_probe_rate(0, clock.now)
+    assert offset() == 0  # accepted immediately, no exception
+
+
 def test_make_broker_offset_queries_m1_far_in_the_future_to_get_the_true_latest_bar() -> None:
     gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(10_800, NOW))
     offset = make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW)
@@ -581,6 +659,60 @@ def test_broker_offset_wired_into_live_bar_feed_converts_raw_timestamps_to_true_
 
     assert len(bars) == 1
     assert bars[0].ts_open == NOW - 1_000  # true UTC -- the offset has been removed
+
+
+def test_watermark_survives_a_stale_offset_and_backfills_correctly_once_fresh(tmp_path: Path) -> None:
+    """CEO's own "consecinta, de confirmat": if the process keeps running through a closure (or gets
+    restarted after one), `poll()` raising on every stale-offset attempt must NEVER corrupt the
+    persisted watermark -- and once the market genuinely reopens, the existing backfill mechanism
+    (2026-08-10) must correctly recover the whole missing window in one shot, exactly as it already does
+    for any other multi-day gap."""
+    store = SqliteStateStore(tmp_path / "state.db")
+    watermark_key = f"live_signal_source.bar_feed:{SYMBOL}:15"
+    clock = _MutableClock(NOW)
+    offset_seconds = 0
+    friday_close = NOW - 1_000
+    gateway = FakeMT5Gateway(
+        rates=[RawRate(time=friday_close, open=1.0, high=2.0, low=0.5, close=1.5)],
+        m1_probe_rates=_m1_probe_rate(offset_seconds, NOW),
+    )
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock, state_store=store,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+
+    # Friday: normal poll, succeeds, watermark saved.
+    bars = feed.poll()
+    assert len(bars) == 1
+    assert store.get_value(watermark_key) == float(friday_close)
+
+    # Weekend: the M1 probe never advances (market closed) -- every poll attempt raises, and the
+    # watermark must stay frozen at Friday's value across all of them.
+    for hours_elapsed in (1, 24, 49, 72):
+        clock.now = NOW + hours_elapsed * 3600
+        with pytest.raises(BarFeedError):
+            feed.poll()
+        assert store.get_value(watermark_key) == float(friday_close)  # never corrupted
+
+    # Monday: the market reopens -- a genuinely fresh M1 bar appears, reflecting the real gap.
+    monday_reopen_broker_now = NOW + 73 * 3600
+    clock.now = monday_reopen_broker_now
+    gateway.m1_probe_rates = _m1_probe_rate(offset_seconds, monday_reopen_broker_now)
+    monday_bar_open = monday_reopen_broker_now - 1_000  # closed -- ts_close is safely before "now"
+    gateway.rates = []
+    gateway.range_rates = [
+        RawRate(time=monday_bar_open, open=2.0, high=2.5, low=1.5, close=2.2),
+    ]
+
+    bars = feed.poll()  # backfill path: gap far exceeds lookback_count * bar_seconds
+
+    assert len(bars) == 1
+    assert bars[0].is_backfilled is True
+    gaps = feed.last_gaps()
+    assert len(gaps) == 1
+    assert gaps[0].gap_start == friday_close
+    assert gaps[0].gap_end == monday_bar_open
+    assert store.get_value(watermark_key) == float(monday_bar_open)  # resumed correctly
 
 
 def test_broker_offset_none_leaves_timestamps_unconverted() -> None:

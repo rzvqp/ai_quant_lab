@@ -151,6 +151,22 @@ _OFFSET_PROBE_FUTURE_MARGIN_SECONDS = 24 * 3600
 """Generously larger than any plausible real broker/UTC offset -- guarantees the probe query lands
 after whatever the broker's actual current epoch is, so MT5 returns its own genuinely most recent
 CLOSED M1 bar, not an artifact of this file not yet knowing what the offset is."""
+_OFFSET_PROBE_MAX_STALE_LAG_SECONDS = _OFFSET_PROBE_BAR_SECONDS
+"""Derived, not chosen (CEO instruction, 2026-08-11: "pragul il derivi, nu-l alegi"). At any probe call
+`i`, the latest CLOSED M1 bar's own "raw staleness" `r_i := true_broker_now_i - latest_ts_open_i`
+satisfies `r_i in [T, 2T)` where `T = _OFFSET_PROBE_BAR_SECONDS` -- the returned bar is the one BEFORE
+whichever bar is currently forming, so it closed at least one full period ago, and less than two (M1
+bars close on a fixed 60s TIME cadence during open market, not on price activity -- CEO's own framing).
+
+`lag` (elapsed real time minus elapsed bar-epoch time between two calls) reduces algebraically to
+`r_2 - r_1` when no bar was actually missed in between -- NOT `r_1 + r_2`, because both readings are
+biased in the SAME direction and the bias cancels in the subtraction, not adds. Since each `r_i in [T,
+2T)` independently, `r_2 - r_1 in (-T, T)`, so under continuous trading `|lag| < T` always, with `T - 1`
+the largest value integer seconds can actually produce. `lag >= T` is therefore never achievable while
+the market keeps producing bars -- it proves at least one bar period was skipped between the two calls,
+i.e. the market stopped trading. Not `2 * T`: that was this function's own first-draft derivation,
+caught as an over-count by a failing test (`test_make_broker_offset_staleness_accumulates_across_many_
+quiet_polls`) before it shipped -- summing each end's jitter instead of recognizing they subtract."""
 
 
 def make_broker_offset(
@@ -180,19 +196,35 @@ def make_broker_offset(
     terminal/broker side, not something this function can diagnose) are absorbed automatically: whatever
     the terminal's own clock says right now is what gets used, never a value computed once and reused.
 
-    Fail-closed only against an EMPTY probe: raises `BarFeedError` if `copy_rates_from` returns nothing
-    at all, rather than falling back to a zero offset -- a silent fallback would quietly reintroduce the
+    Fail-closed against an EMPTY probe: raises `BarFeedError` if `copy_rates_from` returns nothing at
+    all, rather than falling back to a zero offset -- a silent fallback would quietly reintroduce the
     broker/UTC mismatch this exists to eliminate.
 
-    **NOT fail-closed against a STALE probe** (CEO's own question, 2026-08-11: "ce se intampla cand
-    piata e inchisa"): when the market is genuinely closed -- weekend, holiday -- MT5 still has SOME M1
-    history (Friday's last bar), so the query above still returns a non-empty result; this function has
-    no staleness check and will silently compute an offset from however old that bar actually is,
-    without raising. During an ordinary MAINTENANCE-length gap (up to ~75 minutes) this is close enough
-    to be harmless for hour-granularity classification; across a full weekend it would not be. Disclosed
-    as an open question, not fixed here -- the right policy (raise for the whole closure, matching this
-    project's existing "a single tick raising propagates uncaught, no retry" convention in
-    `live_loop.py`; or something else) is a decision this function shouldn't make unilaterally."""
+    **Fail-closed against a STALE probe too, added 2026-08-11** (CEO's own question and decision: "ce se
+    intampla cand piata e inchisa... optiunea A, sonda ridica eroare daca bara e stale"): a genuine
+    market closure -- weekend, holiday -- still returns a NON-EMPTY M1 probe (MT5's own last bar before
+    the closure), so the empty-result check alone doesn't catch it; silently using that stale bar would
+    reintroduce the exact same bug this function exists to eliminate, on the timescale of a closure
+    instead of a single measurement.
+
+    Detected by comparing THIS call's real time and raw M1 timestamp against the last call where the M1
+    bar had genuinely advanced (small closure-local state -- NOT the offset itself, never reused as the
+    offset, purely a freshness reference updated only when a new bar actually appears, so staleness
+    correctly ACCUMULATES across many quiet polls rather than resetting every call). If real time has
+    outrun bar advancement by more than `_OFFSET_PROBE_MAX_STALE_LAG_SECONDS`, raises `BarFeedError`
+    instead of returning a wrong offset. The very FIRST call ever (nothing to compare against yet) is
+    accepted unvalidated -- this project's own restart discipline only starts a process when the CEO
+    already knows the market is open, so a fresh process's first probe should already be fresh; this
+    check's value is catching the TRANSITION into a closure on an ALREADY-RUNNING process (Friday
+    evening rolling into the weekend), not the cold start.
+
+    **Known limitation, disclosed not solved**: a DST "fall back" transition (broker wall-clock loses an
+    hour) can make ONE poll's raw M1 timestamp appear to move BACKWARD relative to the previous call,
+    which this check cannot distinguish from staleness -- it would raise for that single poll, then
+    self-heal on the next one once real bar advancement catches back up. Rare (once a year, one
+    transition direction only) and not something this function attempts to special-case."""
+
+    _last_fresh: dict[str, int] = {}
 
     def offset() -> int:
         system_now = system_clock()
@@ -208,7 +240,28 @@ def make_broker_offset(
             raise BarFeedError(
                 f"make_broker_offset({symbol!r}): M1 probe rate is missing its own time field"
             )
-        return int(latest_closed_ts_open) + _OFFSET_PROBE_BAR_SECONDS - system_now
+        latest_closed_ts_open = int(latest_closed_ts_open)
+
+        if "system_now" in _last_fresh:
+            elapsed_real = system_now - _last_fresh["system_now"]
+            bar_advance = latest_closed_ts_open - _last_fresh["ts_open"]
+            lag = elapsed_real - bar_advance
+            if lag >= _OFFSET_PROBE_MAX_STALE_LAG_SECONDS:
+                raise BarFeedError(
+                    f"make_broker_offset({symbol!r}): M1 probe is stale -- real time advanced "
+                    f"{elapsed_real}s since the last fresh bar but the latest M1 bar only advanced "
+                    f"{bar_advance}s (lag={lag}s >= {_OFFSET_PROBE_MAX_STALE_LAG_SECONDS}s) -- "
+                    f"market appears closed"
+                )
+
+        if latest_closed_ts_open != _last_fresh.get("ts_open"):
+            # Only refresh the freshness reference when the bar has genuinely moved forward -- if every
+            # call refreshed it, a multi-poll closure would never accumulate: each individual poll would
+            # only ever compare against ONE poll interval ago, never showing more than that much lag.
+            _last_fresh["system_now"] = system_now
+            _last_fresh["ts_open"] = latest_closed_ts_open
+
+        return latest_closed_ts_open + _OFFSET_PROBE_BAR_SECONDS - system_now
 
     return offset
 
