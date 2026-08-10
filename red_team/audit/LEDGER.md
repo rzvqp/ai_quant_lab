@@ -1595,4 +1595,65 @@
                  red_team/.
                STATE: OPERATIONAL. Next entry [39], prev_hash E38.
   entry_hash:  E38
+
+[39] 2026-08-07
+  prev_hash:   E38
+  event:       VERDICT               # CODE ATTACK — level-4 M5 zone confirmation (zone_confirmation.py)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on code/zone_confirmation.py @ ca683ff, spec STAT-LEVEL4-M5-CONFIRMATION-
+               SPEC-v1.0 d977446 / manifest v2.7.54. Level 4, step 3 (common validation w/ level 3 DEFERRED by
+               CEO -- M5/M15_v2 windows overlap ~40 days, one regime, seal intact). Checklist + NUMERIC
+               verification on synthetic M5 (module + market_state read-only). Deliverable:
+               policy_reviews/RT-CODE-A-0014_zone_confirmation_m5.md. No real-data run; nothing modified.
+               VERDICT: PASS_WITH_LIMITATIONS.
+               LOOKAHEAD: PASS, PROVEN. Descriptor reads only [hit+1, hit+W] (win_end=hit+W); entry at
+                 hit+W+1; ATR at hit (causal). Numeric: scrambling bars>win_end leaves confirmation/
+                 persistence/progress/encounters IDENTICAL -> descriptor is a function of bars <=hit+W.
+               T1 tertiles: legitimate equal-occupancy CONVENIENCE (binomial derivation FAILED -- 44.7% not
+                 5%, bars not independent -- honestly discarded, declared ALEGERI). Consistent w/ level 1;
+                 not a discovered boundary. Classification needs BOTH axes same tertile -> UNDETERMINED
+                 majority (conservative). PASS.
+               T2 time boundary: eliminates outcome-conditioning (no lookahead) but does NOT just move it --
+                 FORCES the confirmation to REPLACE the level-3 trade (entry W=60 M5 bars=5h later, different
+                 price/risk), not filter it. Hypothesis CHANGES from 'does the zone hold' (filter) to 'after
+                 5h resolution does momentum-entry pay' (new trade). Honest/acceptable given the constraint,
+                 but a level-4 result must NOT be read as validating a zone filter. (Z4-L2.)
+               T3 effort saturation an artifact of W=60? NO -- it's a RATE (~0.6-0.87 across W=20/40/60/80;
+                 real median 38/60=0.63); count scales with W, rate doesn't. Excluding encounters as a
+                 threshold is correct at any W. PASS.
+               W=60 (own): correct derivation -- 5h/5min=60 M5 bars; 5h calendar horizon (= H=20 M15) transfers
+                 across timeframes, bars don't. Same discipline that corrected L=28 + 460.
+               persistence/return (own): sum=1 BY CONSTRUCTION not empirical -- return=1-persistence (identity;
+                 closes partition beyond/not-beyond), and median(1-X)=1-median(X) always -> 0.517+0.483=1.000
+                 guaranteed. Using one is correct, return has ZERO independent info, won't diverge. Code
+                 computes only persistence. (Minor Z4-U1: identity framed as empirical.)
+               UNDETERMINED chain (own): NOT verifiable here (level-4->6 wiring absent, decision engine
+                 consumes counts not a ZoneConfirmation -- analog of RT-CODE-A-0009 L-U2). AND UNDETERMINED is
+                 encoded as ordinal value 0 at the arithmetic MIDPOINT of -2..+2 -> a value-consuming
+                 downstream reads 0 as NEUTRAL/proceed, NOT block. 'Sentinel by type' holds ONLY if level 6
+                 checks the enum member / status, never the value. MOST FRAGILE for the MAJORITY classified-
+                 UNDETERMINED case (status=AVAILABLE, only signal is ordinal 0). Fail-closed paths carry
+                 status=UNAVAILABLE (verified: zone_unavailable/invalid_side/incomplete_window) -- robust IF
+                 status is checked; classified-UNDETERMINED has no status sentinel. As encoded, silent
+                 consumption is the DEFAULT of a value-consuming level 6. (Z4-L1, sharpest.)
+               CHECKLIST: leakage PASS (pure per-interaction); circularity PASS/N-A; overfitting PASS (tertiles
+                 declared, binomial discarded not kept); hidden-params PASS (W derived+declared, tick_volume
+                 excluded/OHLC-only, schema_hash pre-registers); reproducible PASS (deterministic, hashed).
+               SEVERITY: Z4-L1 (UNDETERMINED silent-consumption -- ordinal-0-at-midpoint; block-by-type needs
+                 a level-6 enum/status check, unverified; majority case has only ordinal 0). Z4-L2 (replace-
+                 not-filter changes the tested hypothesis). Z4-U1 (identity framed as empirical, cosmetic).
+               SURVIVES: lookahead-free (proven); W=60 derived; persistence/return an identity; effort-
+                 saturation a rate; tertiles a legitimate convenience; absorption^acceptance inexpressible by
+                 type (right structural choice); all fail-closed -> UNDETERMINED+UNAVAILABLE.
+               VERDICT: PASS_WITH_LIMITATIONS -- classifier causally+structurally sound; both limitations live
+                 at the INTEGRATION boundary (Z4-L1 the ordinal-0 sentinel must be enforced by a type/status
+                 check at level 6 or the majority-undetermined interactions trade silently; Z4-L2 the
+                 confirmation replaces the level-3 trade, testing a different hypothesis). Neither a defect in
+                 this file; both must be honored downstream.
+               HANDOFF: CEO/Statistician -- level 6 must treat UNDETERMINED via enum member/status not the
+                 ordinal value (Z4-L1); record that level 4 validates a post-window momentum entry not a zone
+                 filter (Z4-L2). Classification itself verified clean. Red Team designed no remedy, ran no
+                 data, modified nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [40], prev_hash E39.
+  entry_hash:  E39
 ```
