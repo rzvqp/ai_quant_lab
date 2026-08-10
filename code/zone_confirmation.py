@@ -1,5 +1,14 @@
 """CONFIRMAREA ZONEI PE M5 — nivelul 4 (STAT-LEVEL4-M5-CONFIRMATION-SPEC-v1.0, d977446, manifest v2.7.54).
 
+**STARE: APPROVED_WITH_LIMITATIONS (decizie CEO, pasul 4/4, peste `ca683ff`). FREEZE v1.1.** Două limitări
+consemnate, ambele la granița de integrare (NEreparate aici — se tratează la cablare):
+  Z4-L1  UNDETERMINED se tratează prin MEMBRUL ENUM (`ZoneConfirmation.UNDETERMINED`) sau prin `status`,
+         NICIODATĂ prin valoarea ordinală 0. (Statisticianul specifică regula la cablarea nivelului 6; VE o
+         implementează atunci. Enum-ul păstrează valoarea 0 pentru ORDINEA cu semn, dar consumatorul NU o
+         testează ca `== 0`.)
+  Z4-L2  nivelul 4 validează o INTRARE PE MOMENTUM POST-FEREASTRĂ (la hit+W+1), nu un filtru de zonă —
+         confirmarea înlocuiește tranzacția de la nivelul 3, nu o filtrează. Consemnat, NU reparat.
+
 Funcție PURĂ pe bare M5. Fără MT5, fără date reale. **CEO: se construiește și se testează MECANIC acum; validarea
 împreună cu nivelul 3 se AMÂNĂ** — ferestrele de descoperire M5 și M15_v2 se suprapun ~40 zile, un singur regim;
 orice altceva rupe sigiliul. Desigilarea NU se face. Construcția/testele mecanice NU sunt blocate.
