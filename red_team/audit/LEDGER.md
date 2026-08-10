@@ -1470,4 +1470,64 @@
                  designed no remedy, ran no data, modified nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [37], prev_hash E36.
   entry_hash:  E36
+
+[37] 2026-08-05
+  prev_hash:   E36
+  event:       VERDICT               # CODE ATTACK — zone_observer (Level-3 entry, live, never attacked)
+  reviewer:    Red Team
+  detail:      CEO tasked an attack on ai_trader/zone_observer/ (branch ai-trader-implementation,
+               ai_quant_lab-research-main) — the Level-3 entry, records live: session levels A, demand zones,
+               IFVG, BPR, PWH/PWL, liquidity voids. Statistician confirmed pure observation (no score/weight/
+               threshold). Checklist + byte-verification of vendorization via git + cost scaling measured on
+               synthetic bars. Deliverable: policy_reviews/RT-CODE-A-0012_zone_observer.md. No data run on the
+               market; nothing modified; no remedy.
+               VERDICT: PASS_WITH_LIMITATIONS.
+               T1 VENDORIZATION: byte-verified CORRECT, zero drift. Detectors are a submodule pinned at
+                 61cbd58c; session_levels a separate vendored file. Verified: order_flow 23b0470 /
+                 imbalance_mechanics aa1c6d3 / order_block_void 2b0f3f3 / institutional_levels 23182f4 are
+                 IDENTICAL blobs across pin<->bf02dd2 (so pin import = bf02dd2 version); market_structure
+                 (52bb1eb vs d734ac9) + liquidity_mechanics (805b8cd vs 45a5219) genuinely DIFFER (reason the
+                 pin was NOT moved -- would change structural_observer's live detect_breaks); vendored
+                 session_levels blob = 95dc487b = bf02dd2's blob exactly, submodule clean; cross-version deps
+                 Block (dataclass) + session_of + _runs + whole market_state byte-IDENTICAL across pin<->bf02dd2
+                 (the cascade diff touched detect_breaks/label_structure, not these). zone_observer uses
+                 market_structure only for Block (identical) -> never touches the differing code -> no drift.
+               T2 OVERLAP: NONE, nothing double-recorded. structural records SWING/STRUCTURE_BREAK/FVG_FORMED/
+                 FVG_REACTION/REGIME/ORDER_BLOCK_* and imports detect_order_blocks/mitigations/rejections NOT
+                 detect_demand_zones; zone records SESSION/DEMAND/IFVG/BPR/WEEKLY/VOID. detect_demand_zones =
+                 zone's unique order_flow fn; detect_fvgs computed in BOTH but recorded only by structural
+                 (zone uses it as input to IFVG/BPR, records it nowhere) -> duplicate COMPUTATION (Z-U2), not
+                 observation.
+               T3 PRIMITIVE B: absent from every path. Only Primitive A imported; compute_persistent_session_
+                 levels called nowhere; 'persistent' appears only in the forbidding docstring + an unrelated
+                 persistent_state.store import.
+               T4 PWH/PWL: formation only. compute_prior_week_levels + derive_week_index imported; observer
+                 records WEEKLY_LEVEL_FORMED only; no detect_level_touches, no WEEKLY_LEVEL_TOUCH kind; docs
+                 state no weekly-touch detector invented (ratified detect_level_touches excludes weekly).
+               T5 COST (Z-U1): measured per-cycle scaling exponent k~1.13 (~LINEAR per cycle, each observe()
+                 rescans the whole array) -> total-to-N = O(N^2.1) QUADRATIC. Extrapolated per-cycle @14000 ~
+                 376 ms = ~2x AI Trader's <200ms projection (theirs is LINEAR-extrapolated from an 18-bar
+                 baseline too small to show scaling -- at 18 bars detectors do near-zero work). WHEN a problem:
+                 NEVER live (one H4 bar per 4h, sub-second cycle); YES on COLD REPLAY / restart re-accumulation
+                 (~41 min to replay 14000 bars) because history is in-memory (disclosed, doesn't survive
+                 restart) + recompute-from-scratch + no restart-persistence compound.
+               CHECKLIST: lookahead PASS (one CLOSED bar at a time, LiveBarFeed guarantees; as_of=ts_close;
+                 ratified causal detectors on [0,len]); leakage PASS (pure per-observer accumulation);
+                 circularity PASS/N-A (no score/weight/threshold/feedback); ambiguity minor (Z-U2 dup compute);
+                 overfitting PASS (BPR tolerances declared granularities, K_ATR unused); hidden-params PASS;
+                 reproducible PASS (deterministic + key dedup; journal persists across restart, in-memory re-
+                 accumulation deterministic = cost only).
+               SEVERITY: Z-U1 (cost: per-cycle linear/total quadratic; projection optimistic ~2x; restart/
+                 backfill cost). Z-U2 (detect_fvgs computed in both observers -- cost not duplicate observation).
+               SURVIVES: vendorization byte-verified zero-drift; no recorded-event overlap; Primitive B absent;
+                 PWH/PWL formation-only no invented touch; lookahead-free; no leakage/circularity/overfitting/
+                 hidden-params; reproducible. Correctly built as a pure-observation Level-3 entry.
+               VERDICT: PASS_WITH_LIMITATIONS -- correctness-relevant items all verified clean; the only
+                 limitation is the quadratic cold-replay/restart cost + the optimistic <200ms projection (live
+                 is never the bottleneck).
+               HANDOFF: CEO/Statistician -- treat <200ms@14000 as optimistic (fine live), budget the quadratic
+                 restart/backfill cost if fast recovery needed; the double detect_fvgs is a minor disclosed
+                 redundancy. Red Team designed no remedy, ran no data, modified nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [38], prev_hash E37.
+  entry_hash:  E37
 ```
