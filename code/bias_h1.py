@@ -13,12 +13,20 @@ CONSTANTE, RE-DERIVATE în unități H1 (moștenirea 1; eroarea 460 a demonstrat
     NIMIC transplantat din M15 (92/460) sau H4 (5,98/29,84).
     `h1_trend_up` NU se folosește: binar, fără magnitudine, fără status (spec §5).
 
-CEI PATRU FACTORI (spec §5):
-    structure_run_h1  run cu semn din `detect_breaks`, propagat bară cu bară (identic nivelului 1)
-    displacement_h1   `expansion` (E010) cu direcția corpului
-    liquidity_above   bazine ABOVE NECONSUMATE în interiorul pragului k×ATR14
-    momentum          ABSENT — nicio primitivă ratificată. Status UNAVAILABLE, valoare None.
-                      NU zero, NU „neutru" (spec §6).
+SEMANTICĂ DIRECȚIONALĂ (STAT-SPEC3-N2-DIRECTIONAL-SEMANTICS-v1.0, doc 404b6c8, manifest v2.7.61). Corecția
+defectului de ROL: N2 emitea numere brute cu semn (`structure_run_h1 = −7,0`), lăsând N6 să ghicească ce înseamnă
+semnul — semantica trăia doar în capul cititorului. ACUM fiecare factor emite `FactorDirection` cu un enum
+`Direction ∈ {LONG, SHORT, UNKNOWN}`, sub contract `LevelOutput`. `UNKNOWN` (măsurat, fără direcție) și `Unavailable`
+(necalculabil) rămân stări DIFERITE prin TIP — niciodată `0 = unknown`, niciodată `neutral = unavailable`.
+
+CEI PATRU FACTORI (spec §5 + SPEC3 §2) — se calculează EXACT ca înainte; se schimbă DOAR tipul de ieșire:
+    structure_run_h1  run cu semn (detect_breaks). >0→LONG, <0→SHORT, ==0→UNKNOWN. Semn INTRINSEC. MULȚIMEA NECESARĂ.
+    displacement_h1   expansion cu direcția corpului. +1→LONG, −1→SHORT, 0,0→UNKNOWN (0,0 e REZULTAT → Ok, nu absență).
+    liquidity_above   bazine ABOVE NECONSUMATE sub pragul k×ATR14. >0→SHORT prin POLARITATE DECLARATĂ (§3, o TEZĂ,
+                      nu o măsurătoare: `assumption=True`, `assumption_id=LIQ-ABOVE-POLARITY-v1`, în schema_hash),
+                      ==0→UNKNOWN; contor negativ→Unavailable. Marcajul nu rezolvă asumpția — o face ATACABILĂ.
+    momentum          ABSENT_NO_RATIFIED_PRIMITIVE → `Unavailable`, PERMANENT, ÎN AFARA mulțimii necesare — altfel
+                      N2 n-ar fi disponibil niciodată (fail-mort). NU zero, NU „neutru" (spec §6).
 
 SATURAȚIA, măsurată de Statistician înainte de propunere: 474 bazine ABOVE deasupra prețului la
 bara mediană, max 2.916, doar 5,1% dintre bare fără vreunul la 1×ATR ⇒ „există lichiditate
@@ -38,13 +46,16 @@ sistem rămâne ȘTIRILE (spec §4).
 from __future__ import annotations
 
 import ast
+import hashlib
+import json
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Sequence
 
 import numpy as np
 
+from level_output import LevelOutput, Ok, Unavailable
 from liquidity_mechanics import LiquidityPool, PoolSide, PoolTier, build_pools, detect_sweeps
 from market_state import atr14, expansion
 from market_structure import Block, BreakKind, detect_breaks, detect_swings, label_structure
@@ -68,25 +79,44 @@ class Status(Enum):
     UNAVAILABLE = "unavailable"
 
 
+class Direction(Enum):
+    """Direcția utilizabilă de N6 — enum, NU un număr cu semn. Semantica trăiește în TIP, nu în capul cititorului."""
+    LONG = "long"
+    SHORT = "short"
+    UNKNOWN = "unknown"        # MĂSURAT fără direcție (run nul / nicio expansiune) — distinct de Unavailable
+
+
+ASSUMPTION_LIQ_ABOVE: str = "LIQ-ABOVE-POLARITY-v1"   # polaritatea lui liquidity_above: TEZĂ, nu măsurătoare (§3)
+
+
 @dataclass(frozen=True)
-class Factor:
-    """Un factor observabil. `value` e None EXACT când status e UNAVAILABLE — niciodată o valoare presupusă."""
+class FactorDirection:
+    """Ce emite N2 per factor (SPEC3 §4). `direction` e DIRECȚIA (nu un număr brut); `raw` e valoarea sub contract,
+    pentru AUDIT, nu pentru decizie. `assumption=True` DOAR pentru liquidity_above (polaritate declarată, §3)."""
     name: str
-    value: float | None
-    status: str
+    direction: Direction
+    raw: LevelOutput[float]                  # valoarea, sub contract — audit, nu decizie
     primitive: str
-    redundant_with: tuple[str, ...] = field(default=())
+    assumption: bool                         # True doar pentru liquidity_above
+    assumption_id: str | None = None         # LIQ-ABOVE-POLARITY-v1 când assumption; intră în schema_hash
 
 
 @dataclass(frozen=True)
 class BiasState:
-    factors: tuple[Factor, ...]
-    direction_share_long: float | None      # DESCRIPTIV pe [i-WEEK_H1, i-1]; `share`, NU probabilitate
+    """Payload-ul din `Ok`. FĂRĂ `status` (constructorul Ok/Unavailable e sursa de adevăr). NU emite procent/scor/
+    agregare — aceea e a lui N6. Mulțimea necesară a lui N2 = {structure_run_h1}; displacement și liquidity sunt
+    opționale; momentum e OBLIGATORIU în afara ei (permanent Unavailable), altfel N2 e permanent indisponibil."""
+    factors: tuple[LevelOutput[FactorDirection], ...]   # ordonat: structure, displacement, liquidity, momentum
+    direction_share_long: float | None      # DESCRIPTIV pe [i-WEEK_H1, i-1]; `share`, NU o previziune
     direction_share_short: float | None
-    status: str
     as_of_index: int                        # bara pentru care e valabil; citește doar `<= as_of_index-1`
     n_closed_bars: int                      # câte bare ÎNCHISE au fost citite
     zero_eligible_fraction: float | None    # criteriul de falsificabilitate (§7.2), raportat nu ajustat
+
+
+def _direction_from_sign(x: float) -> Direction:
+    """Semnul → direcție. INTRINSEC primitivei pentru structură/displacement; 0 = UNKNOWN MĂSURAT (nu absență)."""
+    return Direction.LONG if x > 0.0 else Direction.SHORT if x < 0.0 else Direction.UNKNOWN
 
 
 def _run_series(close: Sequence[float], high: Sequence[float], low: Sequence[float], k: int) -> list[int]:
@@ -146,25 +176,25 @@ def compute_bias(
     open_: Sequence[float], high: Sequence[float], low: Sequence[float], close: Sequence[float],
     i: int, *, regime_axes_status: Sequence[str] | None = None,
     k: int = K_SWING_DEFAULT, k_atr: float = K_ATR,
-) -> BiasState:
-    """Factorii de bias VALABILI LA BARA `i`, calculați EXCLUSIV din bare `<= i-1`.
+) -> LevelOutput[BiasState]:
+    """Factorii de bias VALABILI LA BARA `i`, calculați EXCLUSIV din bare `<= i-1`. Ieșirea sub CONTRACT:
+    `Ok(BiasState)` când mulțimea necesară {structure_run_h1} e disponibilă; `Unavailable` la cascadă/fereastră.
 
     Seriile se taie intern la `[0, i)`, deci bara `i` nu poate fi citită nici accidental — non-lookahead
     prin construcție. PURĂ: fără I/O, fără stare globală, fără date reale.
 
     `regime_axes_status`: statusurile axelor `RegimeState` de la nivelul 1. Dacă TOATE sunt UNAVAILABLE,
-    regimul e indisponibil și `BiasState` devine UNAVAILABLE prin cascadă (spec §6). O axă indisponibilă
+    regimul e indisponibil și ieșirea devine `Unavailable` prin cascadă (spec §6). O axă indisponibilă
     izolată se EXCLUDE din cheie, nu invalidează starea.
     """
     n_avail = max(0, min(i, len(close)))
-    unavailable = BiasState((), None, None, Status.UNAVAILABLE.value, i, n_avail, None)
 
     if regime_axes_status is not None and len(regime_axes_status) > 0:
         if all(s == Status.UNAVAILABLE.value for s in regime_axes_status):
-            return unavailable                                    # cascadă de la nivelul 1
+            return Unavailable(reason="cascade_regime_all_axes_unavailable", as_of=i)   # cascadă de la nivelul 1
 
     if n_avail < N_MIN_BARS:
-        return unavailable                                        # fereastră incompletă → fail-closed
+        return Unavailable(reason="incomplete_window", as_of=i)   # fereastră incompletă → fail-closed
 
     o = list(open_[:n_avail])
     h = list(high[:n_avail])
@@ -172,29 +202,37 @@ def compute_bias(
     c = list(close[:n_avail])
     last = n_avail - 1                                            # ultima bară ÎNCHISĂ
 
-    # ── factor 1: structura ──
+    def _raw(x: float) -> Ok[float]:
+        return Ok(value=x, as_of=last, valid_until=last + 1, schema_hash=_SCHEMA_HASH)
+
+    def _ok_factor(fd: FactorDirection) -> Ok[FactorDirection]:
+        return Ok(value=fd, as_of=i, valid_until=i + 1, schema_hash=_SCHEMA_HASH)
+
+    # ── factor 1: structura (mulțimea necesară) — semnul e INTRINSEC ──
     runs = _run_series(c, h, lo, k)
     run_last = runs[last]
-    f_struct = Factor("structure_run_h1", float(run_last), Status.AVAILABLE.value, "market_structure.detect_breaks")
+    f_struct: LevelOutput[FactorDirection] = _ok_factor(FactorDirection(
+        "structure_run_h1", _direction_from_sign(float(run_last)), _raw(float(run_last)),
+        "market_structure.detect_breaks", assumption=False))
 
-    # ── factor 2: displacement ──
+    # ── factor 2: displacement — semn INTRINSEC; 0,0 e REZULTAT → Ok(UNKNOWN), NU Unavailable (Z4-L1) ──
     exp_series = expansion(o, h, lo, c)
-    if exp_series[last]:
-        disp: float | None = 1.0 if c[last] > o[last] else -1.0
-        disp_status = Status.AVAILABLE.value
-    else:
-        disp, disp_status = 0.0, Status.AVAILABLE.value
-    f_disp = Factor("displacement_h1", disp, disp_status, "market_state.expansion")
+    disp = (1.0 if c[last] > o[last] else -1.0) if exp_series[last] else 0.0
+    f_disp: LevelOutput[FactorDirection] = _ok_factor(FactorDirection(
+        "displacement_h1", _direction_from_sign(disp), _raw(disp), "market_state.expansion", assumption=False))
 
-    # ── factor 3: lichiditate deasupra (neconsumată, sub prag) ──
+    # ── factor 3: lichiditate deasupra (neconsumată, sub prag) — polaritate SHORT prin ASUMPȚIE DECLARATĂ (§3) ──
     atr = atr14(h, lo, c)
     pools = _unswept_above_pools(h, lo, c, k)
     n_elig = _eligible_above(pools, c[last], atr[last], last, k_atr)
-    if n_elig < 0:
-        f_liq = Factor("liquidity_above", None, Status.UNAVAILABLE.value, "liquidity_mechanics.build_pools")
+    f_liq: LevelOutput[FactorDirection]
+    if n_elig < 0:                                                # contor negativ → n-am-putut-măsura
+        f_liq = Unavailable(reason="liquidity_above_negative_counter", as_of=last)
     else:
-        f_liq = Factor("liquidity_above", float(n_elig), Status.AVAILABLE.value,
-                       "liquidity_mechanics.build_pools")
+        liq_dir = Direction.SHORT if n_elig > 0 else Direction.UNKNOWN   # ⚠ SHORT = TEZĂ, nu măsurătoare
+        f_liq = _ok_factor(FactorDirection(
+            "liquidity_above", liq_dir, _raw(float(n_elig)), "liquidity_mechanics.build_pools",
+            assumption=True, assumption_id=ASSUMPTION_LIQ_ABOVE))
 
     # falsificabilitate: fracția barelor din fereastra citită cu ZERO bazine eligibile (§7.2)
     zero_hits = 0
@@ -207,20 +245,20 @@ def compute_bias(
                 zero_hits += 1
     zero_frac = (zero_hits / counted) if counted > 0 else None
 
-    # ── factor 4: momentum — ABSENT, nu zero, nu neutru ──
-    f_mom = Factor("momentum", None, Status.UNAVAILABLE.value, "ABSENT_NO_RATIFIED_PRIMITIVE")
+    # ── factor 4: momentum — ABSENT, PERMANENT Unavailable, ÎN AFARA mulțimii necesare (altfel N2 = fail-mort) ──
+    f_mom: LevelOutput[FactorDirection] = Unavailable(reason="ABSENT_NO_RATIFIED_PRIMITIVE", as_of=i)
 
     # ── share-uri DESCRIPTIVE pe fereastra de o săptămână H1 (NU o previziune) ──
     window = runs[last - WEEK_H1 + 1:last + 1]
     long_share = float(np.mean([1.0 if r > 0 else 0.0 for r in window]))
     short_share = float(np.mean([1.0 if r < 0 else 0.0 for r in window]))
 
-    return BiasState(
+    state = BiasState(
         factors=(f_struct, f_disp, f_liq, f_mom),
         direction_share_long=long_share, direction_share_short=short_share,
-        status=Status.AVAILABLE.value, as_of_index=i, n_closed_bars=n_avail,
-        zero_eligible_fraction=zero_frac,
+        as_of_index=i, n_closed_bars=n_avail, zero_eligible_fraction=zero_frac,
     )
+    return Ok(value=state, as_of=i, valid_until=i + 1, schema_hash=_SCHEMA_HASH)
 
 
 # ── redundanță prin INSPECȚIE STATICĂ (spec §7.4) ────────────────────────────────────────────
@@ -328,19 +366,9 @@ def redundancy_by_static_inspection(
     return out
 
 
-def attach_redundancy(state: BiasState, mapping: dict[str, tuple[str, ...]]) -> BiasState:
-    """Completează `redundant_with` per factor din maparea obținută static. Nu modifică nicio valoare."""
-    def _for(primitive: str) -> tuple[str, ...]:
-        leaf = primitive.split(".")[-1]
-        return mapping.get(leaf, ())
-
-    return BiasState(
-        factors=tuple(Factor(f.name, f.value, f.status, f.primitive, _for(f.primitive)) for f in state.factors),
-        direction_share_long=state.direction_share_long,
-        direction_share_short=state.direction_share_short,
-        status=state.status, as_of_index=state.as_of_index, n_closed_bars=state.n_closed_bars,
-        zero_eligible_fraction=state.zero_eligible_fraction,
-    )
+# NOTĂ (SPEC3 §4): `FactorDirection` NU are câmp `redundant_with` — tipul de ieșire e exact cel din §4. Dezvăluirea
+# §7.4 rămâne DISPONIBILĂ mecanic prin `redundancy_by_static_inspection` (sursă, nu listă), ca interogare de sine
+# stătătoare; nu se mai ștampilează per instanță de factor. Fostul `attach_redundancy` s-a eliminat (nu mai are câmp).
 
 
 def schema_payload(k: int = K_SWING_DEFAULT, k_atr: float = K_ATR) -> dict[str, Any]:
@@ -354,13 +382,23 @@ def schema_payload(k: int = K_SWING_DEFAULT, k_atr: float = K_ATR) -> dict[str, 
             {"name": "structure_run_h1", "primitive": "market_structure.detect_breaks", "params": {"k": k}},
             {"name": "displacement_h1", "primitive": "market_state.expansion", "params": {}},
             {"name": "liquidity_above", "primitive": "liquidity_mechanics.build_pools",
-             "params": {"k_atr": k_atr, "unswept_only": True, "filter": "threshold_not_rank"}},
-            {"name": "momentum", "primitive": "ABSENT_NO_RATIFIED_PRIMITIVE", "params": {}},
+             "params": {"k_atr": k_atr, "unswept_only": True, "filter": "threshold_not_rank",
+                        "polarity": "SHORT", "assumption": True, "assumption_id": ASSUMPTION_LIQ_ABOVE}},
+            {"name": "momentum", "primitive": "ABSENT_NO_RATIFIED_PRIMITIVE", "params": {},
+             "in_required_set": False},
         ],
+        "required_set": ["structure_run_h1"],
+        "directional_semantics": {"enum": ["long", "short", "unknown"], "zero_is": "unknown_measured"},
         "windows_h1_units": {"day": DAY_H1, "week": WEEK_H1, "n_min_bars": N_MIN_BARS},
         "emits_probability": False,
         "ratified_modules": list(_RATIFIED_MODULES),
     }
+
+
+# schema_hash pre-înregistrat: include polaritatea DECLARATĂ a lui liquidity_above (assumption=True) — o face
+# ATACABILĂ (Red Team țintește eticheta), nu o rezolvă. Lazy la nivel de modul; folosit de `compute_bias`.
+_SCHEMA_HASH: str = hashlib.sha256(
+    json.dumps(schema_payload(), sort_keys=True).encode("utf-8")).hexdigest()[:16]
 
 
 def default_paths() -> tuple[str, str]:
