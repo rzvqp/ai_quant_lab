@@ -641,6 +641,95 @@ def test_make_broker_offset_queries_m1_far_in_the_future_to_get_the_true_latest_
     assert count == 1
 
 
+# -- Duplicate-bar fix, 2026-08-11 (CEO, urgent stop-and-repair order): the un-cached `make_broker_offset`
+# returned a strictly SMALLER offset on every successive poll within the same 60s M1 anchor window (the
+# raw formula decays as `system_now` advances past the anchor bar's true close), which gave the SAME real
+# M15 bar a strictly LARGER converted `ts_open` each time, defeated `LiveBarFeed`'s own dedup, and
+# re-emitted it as if new -- confirmed live on two independent processes, every M15 bar, every
+# `POLL_INTERVAL_SECONDS` (30s), for ~10 hours. The four tests below are the CEO's own explicit
+# "VERIFICA INAINTE DE REPORNIRE" checklist. --
+
+
+def test_make_broker_offset_returns_identical_value_for_consecutive_calls_within_the_same_anchor_bar() -> None:
+    """(a) CEO's own explicit requirement: "acelasi ts brut trebuie sa dea acelasi ts UTC, indiferent cand
+    il citesti." Two consecutive polls, one `POLL_INTERVAL_SECONDS` (30s) apart, landing within the SAME
+    M1 anchor window (the underlying M1 probe bar has not advanced) must return the IDENTICAL offset.
+    Before this fix, the second call would have returned `10_770` (30s smaller) -- this exact 30s decay,
+    applied to a bar's raw MT5 timestamp, is what silently defeated dedup in production."""
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(10_800, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=clock)
+
+    first = offset()
+    clock.now = NOW + 30  # one POLL_INTERVAL_SECONDS later; gateway.m1_probe_rates left UNCHANGED --
+    # the M1 anchor bar is still the most-recently-closed one, exactly the production scenario.
+    second = offset()
+
+    assert first == second == 10_800
+
+
+def test_broker_offset_caching_prevents_the_same_m15_bar_from_being_re_emitted_across_consecutive_polls() -> None:
+    """(b) Integration reproduction of the exact production bug, end to end through `LiveBarFeed`: the
+    SAME M15 rate is still present in MT5's own lookback window on the very next poll (ordinary MT5
+    behavior -- `copy_rates_from` always returns the last N bars, not just new ones since the last call).
+    Dedup must hold across two such polls even though `broker_offset` is called fresh both times."""
+    offset_seconds = 10_800
+    broker_ts_open = NOW - 1_000 + offset_seconds
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(
+        rates=[RawRate(time=broker_ts_open, open=1.0, high=2.0, low=0.5, close=1.5)],
+        m1_probe_rates=_m1_probe_rate(offset_seconds, NOW),
+    )
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+
+    first_poll = feed.poll()
+    clock.now = NOW + 30  # one POLL_INTERVAL_SECONDS later, same M1 anchor window
+    second_poll = feed.poll()
+
+    assert len(first_poll) == 1
+    assert first_poll[0].ts_open == NOW - 1_000
+    assert second_poll == ()  # deduped -- NOT re-emitted with a drifted, larger ts_open
+
+
+def test_make_broker_offset_does_not_raise_across_many_polls_of_realistic_continuous_trading() -> None:
+    """(c) Extends `test_make_broker_offset_does_not_raise_for_ordinary_polling_jitter` to many polls at
+    the REAL production cadence: `POLL_INTERVAL_SECONDS` (30s) is exactly half the M1 probe's own bar
+    period (60s), so the anchor bar genuinely advances on every OTHER poll, not every poll. Confirms the
+    caching fix does not disturb the staleness comparison (still computed from the raw anchor fields, per
+    that constant's own docstring) across a long, realistically-alternating stretch of open-market
+    trading -- must never spuriously raise."""
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=clock)
+    offset()  # establishes the first anchor at ts_open = NOW - 60
+
+    for poll_index in range(1, 41):  # 40 polls, 30s apart -- 20 minutes of continuous trading
+        clock.now = NOW + poll_index * 30
+        bars_advanced = poll_index // 2  # a new M1 bar closes every 60s -- every OTHER 30s poll
+        gateway.m1_probe_rates = _m1_probe_rate(0, NOW + bars_advanced * 60)
+        offset()  # must never raise across the whole stretch
+
+
+def test_make_broker_offset_tracks_a_genuine_offset_shift_within_one_bar_period() -> None:
+    """(d) DST -- the CEO's own explicit worry about caching ("reparatia nu are voie sa reintroduca
+    bug-ul de ieri -- offset memorat care nu urmareste DST"). A genuine change in the underlying
+    broker/UTC relationship must still be picked up promptly: since the cache refreshes whenever the M1
+    anchor bar itself advances (at least once every ~60s of active trading), a shift is reflected on the
+    very next anchor refresh -- identical responsiveness to the old "fresh every call" design, just
+    without the in-between decay."""
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    offset = make_broker_offset(gateway, SYMBOL, system_clock=clock)
+    assert offset() == 0
+
+    clock.now = NOW + 60  # one bar period later -- the DST transition takes effect on the terminal
+    gateway.m1_probe_rates = _m1_probe_rate(3_600, clock.now)  # broker clock jumped forward 1h
+    assert offset() == 3_600  # picked up immediately -- not suppressed by the cache
+
+
 def test_broker_offset_wired_into_live_bar_feed_converts_raw_timestamps_to_true_utc() -> None:
     """The exact production fix, reproduced end to end: a raw MT5 rate carrying a broker-shifted
     timestamp must be emitted as a `Bar` with a TRUE UTC `ts_open` -- not the raw broker value."""

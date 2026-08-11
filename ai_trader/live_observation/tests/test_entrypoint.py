@@ -4,6 +4,7 @@ consulted from the shared persisted store, watermark resume works through the co
 
 from __future__ import annotations
 
+import time as _time
 from pathlib import Path
 
 from ai_trader.live_observation.entrypoint import build_loop
@@ -17,17 +18,42 @@ M15_SECONDS = 15 * 60
 NOW = 1_700_000_000
 
 
+_TEST_OFFSET_SAFETY_MARGIN_SECONDS = 300
+"""Comfortably larger than both the +/-30s rounding noise `make_broker_offset` (2026-08-11 duplicate-bar
+fix) can introduce AND any realistic real-clock drift between `_closed_bar_gateway` constructing its M1
+probe rate and the moment `make_broker_offset` itself reads `time.time()` a little later -- see that
+function's own docstring below."""
+
+
 def _closed_bar_gateway(*ts_opens: int) -> FakeMT5Gateway:
     """`m1_probe_rates` backs `build_loop`'s own `make_broker_offset(gateway, symbol)` (default
     `system_clock`, i.e. the REAL wall clock at test-run time) -- set so the derived offset shifts every
-    bar's corrected `ts_open` to just-behind real "now", regardless of how far in the past the fixed
-    `NOW` constant itself is: `offset = (NOW + M15_SECONDS - 60) + 60 - real_now`, so
-    `corrected_ts_open = raw_ts_open - offset = (raw_ts_open - NOW - M15_SECONDS) + real_now` -- always a
-    few thousand seconds behind real "now", exactly like this file's bars were before broker-time ever
-    entered the picture."""
+    bar's corrected `ts_open` behind real "now" by `_TEST_OFFSET_SAFETY_MARGIN_SECONDS` plus one bar
+    period, regardless of how far in the past the fixed `NOW` constant itself is -- always safely,
+    unambiguously closed, exactly like this file's bars were before broker-time ever entered the picture.
+
+    **Rounded AND margined, 2026-08-11** (duplicate-bar fix): `make_broker_offset` now rounds every
+    measured offset to the nearest `_OFFSET_PROBE_BAR_SECONDS` (60) -- correct for a REAL broker offset
+    (always a whole number of minutes), but this fixture's own implied offset is an arbitrary, unrounded
+    number of seconds (`NOW` is a fixed 2023 epoch; `real_now` is whatever the wall clock reads at test
+    time). The ORIGINAL version of this fixture put the newest bar's corrected close EXACTLY at real
+    "now" (zero margin, relying only on the sub-millisecond gap between fixture construction and the
+    forming-bar check to keep it in the past) -- with unrounded offsets that gap alone was enough, but
+    the new ±30s rounding noise can push that marginal bar's close to appear up to 30s in the FUTURE,
+    intermittently failing the forming-bar filter (caught by a flaky failure, not by inspection: 8 of 30
+    repeated runs of `test_build_loop_resumes_from_the_persisted_watermark_after_restart` lost the newest
+    bar this way). `_TEST_OFFSET_SAFETY_MARGIN_SECONDS` (300, ten times the rounding noise) restores a
+    real margin. The target offset is pre-rounded here too, the same way `make_broker_offset` will round
+    it, so this fixture's own value is a no-op input to that rounding, not a second, independent source
+    of drift."""
+    real_now = int(_time.time())
+    target_offset = round(
+        (NOW + M15_SECONDS - 60 + _TEST_OFFSET_SAFETY_MARGIN_SECONDS - real_now) / 60
+    ) * 60
+    latest_closed_ts_open = real_now + target_offset - 60
     return FakeMT5Gateway(
         rates=[RawRate(time=ts, open=2000.0, high=2001.0, low=1999.0, close=2000.5) for ts in ts_opens],
-        m1_probe_rates=[RawRate(time=NOW + M15_SECONDS - 60, open=1.0, high=1.0, low=1.0, close=1.0)],
+        m1_probe_rates=[RawRate(time=latest_closed_ts_open, open=1.0, high=1.0, low=1.0, close=1.0)],
     )
 
 

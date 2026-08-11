@@ -79,6 +79,24 @@ UTC-assuming label logic unconverted -- session/day-boundary/MAINTENANCE labels 
 record at or after it is correct. Raw timestamps on old records are NOT wrong (a constant offset cancels
 in bar-to-bar duration math) -- only labels derived by treating one single epoch as an absolute
 UTC-hour-of-day are; they can be recomputed later against the same raw timestamp if it's ever worth it.
+
+**Duplicate-bar bug, 2026-08-11, found in production and fixed (CEO, urgent stop-and-repair order)**:
+"read fresh every call, never memoized" (the paragraph above) was itself the bug. `make_broker_offset`'s
+raw formula (`latest_closed_ts_open + 60 - system_now`) is only exactly correct at the INSTANT the anchor
+M1 bar closes -- it decays by up to 60s as real time elapses while that same bar remains "most recently
+closed". Reading it fresh every `poll()` meant the SAME real M15 bar got a strictly SMALLER broker_offset
+on each successive poll within one 60s window, hence a strictly LARGER converted `ts_open` -- which passed
+`poll()`'s own dedup check (`ts_open <= last_emitted_ts_open`) and was re-emitted as if new, every
+`POLL_INTERVAL_SECONDS` (30s), for as long as the process ran. Confirmed live on two independent
+processes: paired journal entries exactly 30s apart, every M15 bar, for ~10 hours.
+
+The two constraints the CEO posed as apparently opposed -- "the same raw timestamp must convert to the
+same UTC value no matter when it's read" vs. "must not reintroduce yesterday's bug of a memoized offset
+that stops tracking DST" -- are resolved together below: the offset is cached, but the cache key is the
+anchor M1 bar's own identity (`ts_open`), not wall-clock time. It is recomputed (and re-cached) only when
+that identity changes -- which still happens at least once per ~60s of active trading, every bit as fast
+as the old "fresh every call" DST responsiveness -- and returns the frozen, already-computed value for
+every call in between. See `make_broker_offset`'s own docstring for the caching and rounding design.
 """
 
 from __future__ import annotations
@@ -166,7 +184,11 @@ the largest value integer seconds can actually produce. `lag >= T` is therefore 
 the market keeps producing bars -- it proves at least one bar period was skipped between the two calls,
 i.e. the market stopped trading. Not `2 * T`: that was this function's own first-draft derivation,
 caught as an over-count by a failing test (`test_make_broker_offset_staleness_accumulates_across_many_
-quiet_polls`) before it shipped -- summing each end's jitter instead of recognizing they subtract."""
+quiet_polls`) before it shipped -- summing each end's jitter instead of recognizing they subtract.
+
+Left UNCHANGED by the 2026-08-11 duplicate-bar fix below: this comparison is computed from the RAW anchor
+fields (`system_now`, `ts_open` at the last genuine bar advance), never from the cached, rounded offset
+value -- caching the offset does not touch this derivation or its threshold."""
 
 
 def make_broker_offset(
@@ -222,9 +244,42 @@ def make_broker_offset(
     hour) can make ONE poll's raw M1 timestamp appear to move BACKWARD relative to the previous call,
     which this check cannot distinguish from staleness -- it would raise for that single poll, then
     self-heal on the next one once real bar advancement catches back up. Rare (once a year, one
-    transition direction only) and not something this function attempts to special-case."""
+    transition direction only) and not something this function attempts to special-case.
 
-    _last_fresh: dict[str, int] = {}
+    **Duplicate-bar fix, 2026-08-11: the offset is now CACHED per anchor bar, not recomputed fresh every
+    call.** The raw formula (`latest_closed_ts_open + 60 - system_now`) is exact only at the instant the
+    anchor bar closes, and decays by up to 60s across the rest of the window that bar remains "most
+    recently closed" -- reading it fresh on every `poll()` therefore gave the SAME real M15 bar a strictly
+    smaller offset (hence a strictly larger converted `ts_open`) on each successive 30s poll, silently
+    defeating `LiveBarFeed`'s own dedup check and re-emitting it as if new. Confirmed live in production
+    on two independent processes: every M15 bar re-emitted in a pair exactly `POLL_INTERVAL_SECONDS`
+    apart, for as long as the process ran.
+
+    The fix: the offset is computed, and CACHED, only at the moment this function first detects the
+    anchor bar has changed -- every subsequent call that still sees that SAME anchor bar returns the
+    frozen cached value, not a fresh recomputation. This directly satisfies "the same raw timestamp
+    converts to the same UTC value no matter when it's read" for any two calls within one anchor window
+    (the actual bug scenario). It does NOT reintroduce yesterday's memoized-offset-that-ignores-DST bug:
+    the cache still refreshes automatically whenever the anchor bar itself advances -- at least once
+    every ~60s of active trading, identical responsiveness to the old "fresh every call" design, just no
+    longer decaying in between.
+
+    **Rounded to the nearest `_OFFSET_PROBE_BAR_SECONDS` (60) on each refresh.** The value cached at
+    first-detection is `true_offset - detection_delay`, where `detection_delay` is however many seconds
+    elapsed between the anchor bar's TRUE close and the poll that first noticed it -- 0 up to just under
+    one polling interval, never negative (detection cannot happen before the bar closes). Real broker/UTC
+    offsets are always a whole number of minutes (every timezone offset in use today is a multiple of 15
+    minutes), so rounding to the nearest 60 snaps this one-sided latency noise back to the true, clean
+    value -- correct as long as `detection_delay` stays under 30s, true for any poll cadence at or below
+    the probe's own 60s bar period (every entrypoint in this codebase polls at 30s)."""
+
+    _anchor: dict[str, int] = {}
+    """Two roles in one dict, updated together: (1) the freshness reference for the staleness check above
+    (`system_now`/`ts_open` at the last genuine bar advance -- unchanged from before this fix); (2) the
+    cached, rounded offset value (`offset`) computed at that same moment. Both are refreshed ONLY when the
+    anchor bar's own `ts_open` genuinely changes -- never on every call -- so staleness keeps accumulating
+    across a multi-poll closure (the reason this design already existed) and the cached offset stays
+    frozen for every call that sees the same anchor bar (the reason it was extended, 2026-08-11)."""
 
     def offset() -> int:
         system_now = system_clock()
@@ -242,9 +297,9 @@ def make_broker_offset(
             )
         latest_closed_ts_open = int(latest_closed_ts_open)
 
-        if "system_now" in _last_fresh:
-            elapsed_real = system_now - _last_fresh["system_now"]
-            bar_advance = latest_closed_ts_open - _last_fresh["ts_open"]
+        if "system_now" in _anchor:
+            elapsed_real = system_now - _anchor["system_now"]
+            bar_advance = latest_closed_ts_open - _anchor["ts_open"]
             lag = elapsed_real - bar_advance
             if lag >= _OFFSET_PROBE_MAX_STALE_LAG_SECONDS:
                 raise BarFeedError(
@@ -254,16 +309,27 @@ def make_broker_offset(
                     f"market appears closed"
                 )
 
-        if latest_closed_ts_open != _last_fresh.get("ts_open"):
-            # Only refresh the freshness reference when the bar has genuinely moved forward -- if every
-            # call refreshed it, a multi-poll closure would never accumulate: each individual poll would
-            # only ever compare against ONE poll interval ago, never showing more than that much lag.
-            _last_fresh["system_now"] = system_now
-            _last_fresh["ts_open"] = latest_closed_ts_open
+        if latest_closed_ts_open != _anchor.get("ts_open"):
+            # Only refresh (freshness reference AND cached offset) when the bar has genuinely moved
+            # forward -- if every call refreshed it, a multi-poll closure would never accumulate staleness
+            # (Mandate: 2026-08-11 stale-probe fix), and the offset would decay within the window again
+            # (Mandate: 2026-08-11 duplicate-bar fix, this change).
+            raw_offset = latest_closed_ts_open + _OFFSET_PROBE_BAR_SECONDS - system_now
+            _anchor["system_now"] = system_now
+            _anchor["ts_open"] = latest_closed_ts_open
+            _anchor["offset"] = _round_to_nearest_probe_bar(raw_offset)
 
-        return latest_closed_ts_open + _OFFSET_PROBE_BAR_SECONDS - system_now
+        return _anchor["offset"]
 
     return offset
+
+
+def _round_to_nearest_probe_bar(raw_offset: int) -> int:
+    """Snaps a freshly-measured offset to the nearest multiple of `_OFFSET_PROBE_BAR_SECONDS` (60) --
+    see `make_broker_offset`'s own docstring, "Rounded to the nearest..." section, for the full
+    derivation of why this is correct (real broker/UTC offsets are always whole minutes; the raw
+    measurement's only error is one-sided detection latency bounded well under 30s)."""
+    return round(raw_offset / _OFFSET_PROBE_BAR_SECONDS) * _OFFSET_PROBE_BAR_SECONDS
 
 
 class LiveBarFeed:
