@@ -1,47 +1,51 @@
-"""CONFIRMAREA ZONEI PE M5 — nivelul 4 (STAT-LEVEL4-M5-CONFIRMATION-SPEC-v1.0, d977446, manifest v2.7.54).
+"""CONFIRMAREA ZONEI PE M5 — nivelul 4, v2.0 CEAS W=3 (STAT-SPEC2-N4-CONFIRMATION-CLOCK-v1.0, doc 404b6c8, manifest
+v2.7.61). Corecție funcțională peste v1.1 (`ca683ff`/`d977446`): **N4 NU mai e post-decizie — e parte OBLIGATORIE a
+deciziei, ÎNAINTE de N6.** Confirmare cauzală pre-decizie, cel mai scurt ceas valid, plus atriția pierdută explicită.
 
-**STARE: APPROVED_WITH_LIMITATIONS (decizie CEO, pasul 4/4, peste `ca683ff`). FREEZE v1.1.** Două limitări
-consemnate, ambele la granița de integrare (NEreparate aici — se tratează la cablare):
-  Z4-L1  UNDETERMINED se tratează prin MEMBRUL ENUM (`ZoneConfirmation.UNDETERMINED`) sau prin `status`,
-         NICIODATĂ prin valoarea ordinală 0. (Statisticianul specifică regula la cablarea nivelului 6; VE o
-         implementează atunci. Enum-ul păstrează valoarea 0 pentru ORDINEA cu semn, dar consumatorul NU o
-         testează ca `== 0`.)
-  Z4-L2  nivelul 4 validează o INTRARE PE MOMENTUM POST-FEREASTRĂ (la hit+W+1), nu un filtru de zonă —
-         confirmarea înlocuiește tranzacția de la nivelul 3, nu o filtrează. Consemnat, NU reparat.
+PRECONDIȚIE BLOCANTĂ (SPEC2 §1): re-ancorarea N3 (SPEC1, `5888978`). „Prețul intră în zonă" NU e definibil cât timp
+zona e ancorată pe preț (prețul e mereu în zonă). Constatare, nu dependență introdusă.
 
-Funcție PURĂ pe bare M5. Fără MT5, fără date reale. **CEO: se construiește și se testează MECANIC acum; validarea
-împreună cu nivelul 3 se AMÂNĂ** — ferestrele de descoperire M5 și M15_v2 se suprapun ~40 zile, un singur regim;
-orice altceva rupe sigiliul. Desigilarea NU se face. Construcția/testele mecanice NU sunt blocate.
+CEASUL — W=3 bare M5 = 15 min = exact O bară M15 (SPEC2 §4):
+  · NU un compromis: W=1 domină W=60 pe AMBELE axe (pierdute 57,88%→86,47%, calitate 65,81%→57,07%). O fereastră
+    mai lungă DILUEAZĂ dovada (persistența și progresul se acordă mai rar în același sens), nu o acumulează.
+  · De ce W=3 și nu W=1: la W≤2 axa de persistență colapsează la un bit ({0,1} la W=1; {0,½,1} la W=2), iar
+    clasificatorul cu DOUĂ condiții independente — cel RATIFICAT — degenerează într-o condiție-plus-un-bit. W=3 dă
+    persistence ∈ {0, ⅓, ⅔, 1} (4 valori) → terțile bine definite. W=3 = cel mai scurt ceas la care clasificatorul
+    ratificat RĂMÂNE cel ratificat (regula de scop interzice re-ratificarea cerută de W=1). Alinierea cu cadența M15
+    a lui N3 e o CONSECINȚĂ, nu un criteriu.
+  · MISSED_BEFORE_CONFIRMATION = atriție PRE-DECLARATĂ (~64% din interacțiuni la W=3): politica vede ~36%. Se
+    jurnalizează la fiecare rulare, NU se compensează, NU se salvează retroactiv (ar fi selecția interzisă la v2.7.59).
 
-CE MĂSOARĂ (cele patru măsurători sunt de fapt DOUĂ axe):
-  · PENETRAREA nu e o măsurătoare — e CRITERIUL DE SELECȚIE. Fără penetrare, interacțiunea nu intră în populație.
-  · PERSISTENȚA și REVENIREA sunt aceeași variabilă cu semn opus (median 0,517 vs 0,483, sumă ~1). Folosim persistența.
-  · PROGRESUL — singura axă independentă.
-  · EFORTUL (nr. de încercări) e SATURAT (median 38/60 penetrează) ⇒ NU e prag; intră doar prin raportul cu progresul.
+TERȚILE RE-DERIVATE LA W=3 (SPEC2 §6 MATERIAL — măsurate la implementare, NU transportate de la W=60: pragurile de
+la W=60 ar fi transplant de unitate). Măsurătoare pe M5 real (OANDA_XAUUSD_M5), evenimente = penetrări ale zonelor
+RE-ANCORATE N3 (patru familii), D7 prima atingere, N=3.508 evenimente:
+    progres măsurat contra benzii M15 (SPEC2 §3 autocorecție: NU ATR M5 — banda ratificată a zonei e 1×ATR M15).
+    distribuție rezultantă: ACCEPTANCE 29,30%  ABSORPTION 28,73%  UNDETERMINED 41,96% (deplasată față de 32,8/29,8
+    pe familia `level`-only, exact cum a prezis SPEC2 §6 pentru cele patru familii — „nivelurile se vor deplasa").
 
-IEȘIREA: o SINGURĂ variabilă ORDINALĂ (nu două steaguri) — două booleene ar PERMITE starea contradictorie
-(absorbție ȘI acceptare) pe care definiția o interzice; ordinala o face INEXPRIMABILĂ prin TIP. Scală cu semn −2..+2:
-  −2 ACCEPTANCE_BEARISH        penetrare în JOS ACCEPTATĂ (rămâne sub suport)      → bearish tare
-  −1 ABSORPTION_PROXY_BULLISH  penetrare în SUS ABSORBITĂ (bull respins)           → bearish slab
-   0 UNDETERMINED
-  +1 ABSORPTION_PROXY_BEARISH  penetrare în JOS ABSORBITĂ (bear respins)           → bullish slab
-  +2 ACCEPTANCE_BULLISH        penetrare în SUS ACCEPTATĂ (rămâne peste rezistență) → bullish tare
-(„PROXY_<X>" = direcția penetrării ABSORBITE; semnalul e reversul.) Nivelul 4 NU emite probabilitate — nivelul 6 o face.
+CONTRACT LevelOutput (v2.7.59, `995539a`): ieșirea e `LevelOutput[ZoneConfirmationResult]`.
+  · UNDETERMINED (ordinala 0) = REZULTAT MĂSURAT (Ok): am măsurat persistența și progresul, niciun capăt nu a
+    declanșat — 0 e neutru MĂSURAT, deci INFORMAȚIE.
+  · fail-closed (n-am-putut-măsura) = Unavailable: fereastră incompletă, ATR absent/nefinit, zonă absentă (cascadă
+    de la N3), latură invalidă, nicio penetrare (nu intră în populație). N6 le vede prin TIP → NO-TRADE.
+Ambele duc la NO-TRADE la N6, dar prin constructori diferiți: una e „neutru", cealaltă e „lipsă". Două surse de
+adevăr = niciuna → `status: str` s-a ȘTERS; statusul e CONSTRUCTORUL (Ok/Unavailable), nu un câmp.
 
-GRANIȚA DE TIMP (cea mai ușor de greșit): fereastra se ÎNCHIDE la `hit+W`; intrarea e permisă cel mai devreme la
-`hit+W+1`. Descriptorul citește DOAR bare ≤ hit+W. Altfel s-ar condiționa intrarea pe barele care determină și
-rezultatul = lookahead față de decizie. Consecință: tranzacția NU mai e cea de la nivelul 3 — confirmarea o
-ÎNLOCUIEȘTE (intrare cu W bare mai târziu, alt preț, alt risc), nu o filtrează.
+CE MĂSOARĂ (patru măsurători = DOUĂ axe): PENETRAREA = criteriul de SELECȚIE (fără ea, nu intri în populație);
+PERSISTENȚA și REVENIREA = aceeași variabilă cu semn opus (folosim persistența); PROGRESUL = singura axă
+independentă; EFORTUL (încercări) e SATURAT ⇒ informativ, NU prag.
 
-W=60: NU e transplant. E orizontul de dependență de 5 ORE (care a justificat H=20 pe M15) convertit în unități M5
-(zi M5 = 274,72 bare). Un orizont în TIMP CALENDARISTIC se transferă între timeframe-uri; unul în BARE nu.
+IEȘIREA (ZoneConfirmationResult.confirmation): o SINGURĂ ordinală cu semn −2..+2 — două booleene ar permite starea
+contradictorie (absorbție ȘI acceptare), inexprimabilă aici prin TIP:
+  −2 ACCEPTANCE_BEARISH  · −1 ABSORPTION_PROXY_BULLISH · 0 UNDETERMINED · +1 ABSORPTION_PROXY_BEARISH · +2 ACCEPTANCE_BULLISH
+(„PROXY_<X>" = direcția penetrării ABSORBITE; semnalul e reversul.) N4 NU emite probabilitate — N6 o face.
 
-`tick_volume` EXCLUS — proveniență neconfirmată; nu intră NICIODATĂ în clasificarea primară (structural: funcția ia
-doar OHLC). Praguri = ALEGERI cu ancoră de ocupanță egală (terțile), NU derivate (derivarea binomială a EȘUAT:
-sub nul ar trece 5%, trec 44,7% — barele nu sunt independente). Fiecare clasă ≤ ~1/3; UNDETERMINED majoritar.
+GRANIȚA DE TIMP: fereastra se ÎNCHIDE la `hit+W`; intrarea permisă cel mai devreme la `hit+W+1`. Descriptorul citește
+DOAR bare ≤ hit+W (altfel s-ar condiționa intrarea pe barele care determină rezultatul = lookahead). Consecință
+(Z4-L2, consemnat): confirmarea ÎNLOCUIEȘTE tranzacția de la N3 (intrare cu W bare mai târziu), nu o filtrează.
 
-FAIL-CLOSED → UNDETERMINED: fereastră incompletă (hit+W depășește seria), ATR absent/nefinit, zonă absentă/nefinită,
-nicio penetrare (nu intră în populație). UNDETERMINED ⇒ sentinel la nivelul 6 ⇒ NO-TRADE prin TIP.
+`tick_volume` EXCLUS structural (funcția ia doar OHLC). Praguri = ALEGERI cu ancoră de ocupanță egală (terțile) —
+derivarea binomială a EȘUAT (barele nu sunt independente: sub nul ar trece 5%, treceau 44,7%).
 """
 
 from __future__ import annotations
@@ -52,14 +56,16 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Sequence
 
+from level_output import LevelOutput, Ok, Unavailable
 from market_state import atr14
 
-# Praguri = ALEGERI (terțile, ocupanță egală), pre-înregistrate. NU derivate din structura fenomenului.
-W_DEFAULT = 60                   # orizont de 5h în unități M5 (timp calendaristic, NU bare transplantate)
-P33_PROGRESS = 2.53              # progres dincolo / ATR — terțila inferioară
-P67_PROGRESS = 5.99              # terțila superioară
-P33_PERSISTENCE = 0.22           # fracția închiderilor dincolo — terțila inferioară
-P67_PERSISTENCE = 0.80           # terțila superioară
+# Ceasul — W=3 bare M5 (15 min = o bară M15). Cel mai scurt ceas la care clasificatorul ratificat rămâne ratificat.
+W_DEFAULT = 3
+# Terțile RE-DERIVATE la W=3 (măsurate pe M5 real, 3.508 evenimente, progres contra benzii M15). ALEGERI, nu derivate.
+P33_PROGRESS = 0.2240            # progres dincolo / ATR-M15 — terțila inferioară @ W=3
+P67_PROGRESS = 0.8378            # terțila superioară @ W=3
+P33_PERSISTENCE = 0.0000        # fracția închiderilor dincolo — terțila inferioară @ W=3 (⇒ exact 0/3)
+P67_PERSISTENCE = 0.6667        # terțila superioară @ W=3 (⇒ ≥ 2/3)
 TICK_VOLUME_EXCLUDED = True      # proveniență neconfirmată; niciodată în clasificarea primară
 
 
@@ -72,39 +78,27 @@ class ZoneConfirmation(Enum):
     ACCEPTANCE_BULLISH = 2
 
 
-class Status(Enum):
-    AVAILABLE = "available"
-    UNAVAILABLE = "unavailable"
-
-
 @dataclass(frozen=True)
 class ZoneConfirmationResult:
-    """UN SINGUR câmp de clasificare (`confirmation`) — fără steaguri absorbție/acceptare separate."""
+    """Payload-ul din `Ok` — UN SINGUR câmp de clasificare (`confirmation`), fără steaguri separate. FĂRĂ `status`
+    (constructorul Ok/Unavailable e sursa de adevăr), FĂRĂ `reason`/`schema_hash` (trăiesc pe wrapper-ul LevelOutput).
+    Prezent DOAR când s-a măsurat: câmpurile nu sunt Optional — Ok garantează măsurarea."""
     confirmation: ZoneConfirmation
-    persistence: float | None            # fracția închiderilor dincolo (revenirea = 1 − aceasta)
-    progress_atr: float | None           # progres maxim dincolo / ATR
-    encounters: int | None               # bare care penetrează (INFORMATIV, saturat — NU un prag)
-    hit_idx: int | None
-    window_end_idx: int | None           # hit + W (fereastra se închide)
-    descriptor_available_idx: int | None  # hit + W + 1 (intrarea permisă cel mai devreme)
-    status: str
-    reason: str
-    schema_hash: str
+    persistence: float                    # fracția închiderilor dincolo (revenirea = 1 − aceasta)
+    progress_atr: float                   # progres maxim dincolo / ATR-M15
+    encounters: int                       # bare care penetrează (INFORMATIV, saturat — NU un prag)
+    hit_idx: int
+    window_end_idx: int                   # hit + W (fereastra se închide)
+    descriptor_available_idx: int         # hit + W + 1 (intrarea permisă cel mai devreme)
 
 
 _SCHEMA_HASH: str = hashlib.sha256(json.dumps({
     "descriptors_ordered": ["persistence", "progress_atr"],   # penetrare = selecție; efort = saturat (exclus ca prag)
     "W": W_DEFAULT, "progress_tertiles": [P33_PROGRESS, P67_PROGRESS],
     "persistence_tertiles": [P33_PERSISTENCE, P67_PERSISTENCE],
-    "tick_volume_excluded": TICK_VOLUME_EXCLUDED, "code_version": "level4-v1.0",
+    "progress_reference": "M15_band_1xATR",                   # autocorecția SPEC2 §3
+    "tick_volume_excluded": TICK_VOLUME_EXCLUDED, "code_version": "level4-v2.0-w3",
 }, sort_keys=True).encode("utf-8")).hexdigest()[:16]
-
-
-def _fail(reason: str) -> ZoneConfirmationResult:
-    return ZoneConfirmationResult(
-        confirmation=ZoneConfirmation.UNDETERMINED, persistence=None, progress_atr=None, encounters=None,
-        hit_idx=None, window_end_idx=None, descriptor_available_idx=None,
-        status=Status.UNAVAILABLE.value, reason=reason, schema_hash=_SCHEMA_HASH)
 
 
 def _outcome_label(side: int, acceptance: bool, absorption: bool) -> ZoneConfirmation:
@@ -119,14 +113,16 @@ def _outcome_label(side: int, acceptance: bool, absorption: bool) -> ZoneConfirm
 def classify_zone_confirmation(
     high: Sequence[float], low: Sequence[float], close: Sequence[float], level: float, side: int,
     *, w: int = W_DEFAULT, atr: Sequence[float] | None = None, search_start: int = 0,
-) -> ZoneConfirmationResult:
+) -> LevelOutput[ZoneConfirmationResult]:
     """Confirmarea unei zone (nivel M15) pe bare M5. `side`=+1 penetrare în SUS (dincolo=deasupra), −1 în JOS.
-    Găsește prima penetrare (selecție), măsoară fereastra [hit+1, hit+W], emite ordinala. PURĂ, cauzală."""
+    Găsește prima penetrare (selecție), măsoară fereastra [hit+1, hit+W], emite ordinala. PURĂ, cauzală.
+    Ok(ZoneConfirmationResult) incl. UNDETERMINED măsurat; Unavailable = n-am-putut-măsura (fail-closed)."""
     n = len(close)
+    last = n - 1
     if not (side == 1 or side == -1):
-        return _fail("invalid_side")
+        return Unavailable(reason="invalid_side", as_of=last)
     if not _finite(level):
-        return _fail("zone_unavailable")                        # zonă de la nivelul 3 absentă/UNAVAILABLE → cascadă
+        return Unavailable(reason="zone_unavailable", as_of=last)   # zonă de la N3 absentă/UNAVAILABLE → cascadă
 
     # ── PENETRARE = criteriul de SELECȚIE: prima bară care depășește nivelul în direcția `side` ──
     hit = -1
@@ -135,20 +131,20 @@ def classify_zone_confirmation(
             hit = j
             break
     if hit < 0:
-        return _fail("no_penetration")                          # nu intră în populație
+        return Unavailable(reason="no_penetration", as_of=last)     # nu intră în populație
 
     win_end = hit + w
-    if win_end > n - 1:                                         # fereastră incompletă → fail-closed
-        return _fail("incomplete_window")
+    if win_end > n - 1:                                            # fereastră incompletă → fail-closed
+        return Unavailable(reason="incomplete_window", as_of=last)
 
-    a = atr[hit] if atr is not None else atr14(high, low, close)[hit]   # ATR cauzal la hit
+    a = atr[hit] if atr is not None else atr14(high, low, close)[hit]   # ATR cauzal la hit (banda M15)
     if not _finite(a) or a <= 0.0:
-        return _fail("atr_unavailable")
+        return Unavailable(reason="atr_unavailable", as_of=hit)
 
     # ── fereastra [hit+1, hit+W] (se închide la hit+W; intrarea la hit+W+1) — DOAR bare ≤ hit+W ──
-    beyond = 0                                                  # închideri dincolo (persistență)
-    encounters = 0                                             # bare care penetrează (informativ, saturat)
-    prog = 0.0                                                 # progres maxim dincolo
+    beyond = 0                                                     # închideri dincolo (persistență)
+    encounters = 0                                                # bare care penetrează (informativ, saturat)
+    prog = 0.0                                                    # progres maxim dincolo
     for j in range(hit + 1, win_end + 1):
         if side > 0:
             if high[j] >= level:
@@ -162,18 +158,19 @@ def classify_zone_confirmation(
             if close[j] < level:
                 beyond += 1
             prog = max(prog, level - low[j])
-    wlen = win_end - hit                                       # = W bare
+    wlen = win_end - hit                                          # = W bare
     persistence = beyond / wlen
     progress_atr = prog / a
 
-    # ── clasificare: AMBELE condiții în ACELAȘI sens; altfel NEDETERMINAT (majoritar prin construcție) ──
+    # ── clasificare: AMBELE condiții în ACELAȘI sens; altfel NEDETERMINAT (0 măsurat = informație) ──
     acceptance = persistence >= P67_PERSISTENCE and progress_atr >= P67_PROGRESS
     absorption = persistence <= P33_PERSISTENCE and progress_atr <= P33_PROGRESS
     label = _outcome_label(side, acceptance, absorption)
-    return ZoneConfirmationResult(
+    result = ZoneConfirmationResult(
         confirmation=label, persistence=round(persistence, 6), progress_atr=round(progress_atr, 6),
-        encounters=encounters, hit_idx=hit, window_end_idx=win_end, descriptor_available_idx=win_end + 1,
-        status=Status.AVAILABLE.value, reason="classified", schema_hash=_SCHEMA_HASH)
+        encounters=encounters, hit_idx=hit, window_end_idx=win_end, descriptor_available_idx=win_end + 1)
+    # descriptorul e disponibil la hit+W+1 (as_of); dincolo de hit+W+2 nu se mai folosește (carry-forward = eroare)
+    return Ok(value=result, as_of=win_end + 1, valid_until=win_end + 2, schema_hash=_SCHEMA_HASH)
 
 
 def _finite(x: float) -> bool:
