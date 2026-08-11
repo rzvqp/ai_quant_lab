@@ -10,7 +10,8 @@ Construită STRICT după spec — NU reconstitui din mesaj. **Spec-ul REVIZUIEȘ
     AXA B — STRUCTURĂ + DIRECȚIE (din `detect_breaks` ratificat, cascadă v2.7.38): `run` = nr. de BOS consecutive
             de același semn de la ultimul CHoCH opus, CU SEMN. Persistență: RANGE(|run|=1) | WEAK(2-3) | STRONG(>=4).
             Direcția = SEMNUL lui run (nu EMA/ADX — ar fi a treia definiție de structură, RESPINSĂ de spec).
-    AXA C — ȘTIRI: value(bool) + status(AVAILABLE/UNAVAILABLE), două câmpuri.
+    AXA C — ȘTIRI: sub CONTRACT `LevelOutput[Axis]`, ÎN AFARA mulțimii necesare (permanent Unavailable până la
+            calendar). O axă permanent absentă în mulțimea necesară ar face fail-closed → fail-MORT (contract v2.7.59).
 
 **Divergență semnalată (spec vs mesaj), pentru CEO/Red Team:** mesajul rezumă DIRECTION ca „din EMA pe bare
 închise"; spec-ul autoritar o derivă din SEMNUL run-ului BOS (axa B), tocmai ca să NU introducă a treia definiție
@@ -39,12 +40,15 @@ e cauzal: ferestre [i-W+1, i], run din break-uri cu idx<=i. Programul de știri 
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, Sequence
 
 import numpy as np
 
+from level_output import LevelOutput, Ok, Unavailable
 from market_state import expansion
 from market_structure import Block, BreakKind, detect_breaks, detect_swings, label_structure
 
@@ -58,6 +62,17 @@ RUN_STRONG_MIN: int = 4          # STRONG = |run| >= 4
 K_SWING_DEFAULT: int = 2         # k pentru detect_swings (default de laborator)
 N_MIN_DEFAULT: int = 30          # sub acesta, DIRECȚIA = neutral (fail-closed)
 
+# schema pre-înregistrată; declară MULȚIMEA NECESARĂ (news ÎN AFARA ei). Intră în `schema_hash` pe fiecare Ok.
+REGIME_SCHEMA: dict[str, object] = {
+    "level": 1, "timeframe": "H4", "axes_ordered": ["volatility", "structure", "direction", "news"],
+    "required_set": ["volatility", "structure", "direction"], "news_in_required_set": False,
+    "windows": {"vol_week_h4": W_WEEK_H4, "n_min": N_MIN_DEFAULT},
+    "vol_percentiles": [PCTL_COMPRESSED, PCTL_LOW, PCTL_HIGH], "run_bands": [RUN_WEAK_MIN, RUN_STRONG_MIN],
+    "direction_source": "sign_of_run_not_ema", "code_version": "level1-v2.0-leveloutput",
+}
+_SCHEMA_HASH: str = hashlib.sha256(
+    json.dumps(REGIME_SCHEMA, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
 
 class VolBand(Enum):
     COMPRESSED = "compressed"
@@ -65,7 +80,7 @@ class VolBand(Enum):
     NORMAL = "normal"
     HIGH_CHOPPY = "high_choppy"
     HIGH_DIRECTIONAL = "high_directional"
-    UNAVAILABLE = "unavailable"
+    # NU mai există `UNAVAILABLE`: o volatilitate necalculabilă e `Unavailable` (constructorul), nu o bandă-etichetă.
 
 
 class StructBand(Enum):
@@ -90,19 +105,22 @@ class Status(Enum):
 
 @dataclass(frozen=True)
 class Axis:
-    """O axă: eticheta + distribuția MOALE (probabilități de bandă sub fragilitate) + confidence + status."""
+    """O axă disponibilă: eticheta + distribuția MOALE + confidence. FĂRĂ `status` — statusul e CONSTRUCTORUL
+    (Ok/Unavailable) al `LevelOutput[Axis]`. O axă indisponibilă nu are label/weights de citit greșit."""
     label: str
-    weights: tuple[tuple[str, float], ...]     # distribuție moale (etichetă→pondere), sumează ~1 când e disponibilă
+    weights: tuple[tuple[str, float], ...]     # distribuție moale (etichetă→pondere), sumează ~1
     confidence: float                          # [0,1]; 0 pe o graniță (ambiguu), 1 adânc în bandă
-    status: str                                # AVAILABLE / UNAVAILABLE
 
 
 @dataclass(frozen=True)
 class RegimeState:
-    volatility: Axis
-    structure: Axis
-    direction: Axis
-    news: Axis
+    """Payload-ul din `Ok`. Fiecare axă e sub CONTRACT. MULȚIMEA NECESARĂ = {volatility, structure, direction};
+    `news` e ÎN AFARA ei (permanent Unavailable până la calendar) — altfel o axă permanent absentă ar face
+    fail-closed → fail-MORT (contract v2.7.59, închiderea L-U2)."""
+    volatility: LevelOutput[Axis]
+    structure: LevelOutput[Axis]
+    direction: LevelOutput[Axis]
+    news: LevelOutput[Axis]                    # ÎN AFARA mulțimii necesare
     trend_long_share: float | None             # SHARE descriptiv pe [i-29,i], NU o probabilitate/previziune
     trend_short_share: float | None
     run: int | None                            # run cu semn la bara curentă
@@ -163,10 +181,11 @@ def _direction(run: int, enough: bool) -> Direction:
     return Direction.WEAK_DOWN if abs(run) < RUN_STRONG_MIN else Direction.DOWN
 
 
-def _volatility_axis(m: np.ndarray, i: int, is_expansion: bool) -> Axis:
-    """Banda de volatilitate a barei i cu atribuire MOALE. Fereastra CAUZALĂ [i-W+1, i] (inclusiv i, zero lookahead)."""
+def _volatility_axis(m: np.ndarray, i: int, is_expansion: bool) -> LevelOutput[Axis]:
+    """Banda de volatilitate a barei i cu atribuire MOALE. Fereastra CAUZALĂ [i-W+1, i] (inclusiv i, zero lookahead).
+    Fereastră incompletă (warmup) → `Unavailable`, NU o bandă presupusă."""
     if i < W_WEEK_H4 - 1:                                     # fereastră trailing incompletă → fail-closed
-        return Axis(VolBand.UNAVAILABLE.value, (), 0.0, Status.UNAVAILABLE.value)
+        return Unavailable(reason="vol_window_incomplete_warmup", as_of=i)
     w = m[i - W_WEEK_H4 + 1:i + 1]
     pcts = np.percentile(w, [PCTL_COMPRESSED, PCTL_LOW, PCTL_HIGH])
     p10, p33, p67 = float(pcts[0]), float(pcts[1]), float(pcts[2])
@@ -199,19 +218,23 @@ def _volatility_axis(m: np.ndarray, i: int, is_expansion: bool) -> Axis:
     weights = [(label_band, w_band)]
     if w_nb > 0.0:
         weights.append((_lbl(nb_idx), w_nb))
-    return Axis(label_band, tuple(weights), conf, Status.AVAILABLE.value)
+    return Ok(value=Axis(label_band, tuple(weights), conf), as_of=i, valid_until=i + 1, schema_hash=_SCHEMA_HASH)
 
 
 def classify_regime(
     open_: Sequence[float], high: Sequence[float], low: Sequence[float], close: Sequence[float],
     *, k: int = K_SWING_DEFAULT, n_min: int = N_MIN_DEFAULT, news_fn: NewsFn | None = None,
-) -> RegimeState:
-    """Clasifică bara CURENTĂ (ultima) din barele H4 de până la ea. Cele patru axe, cu ponderi/intervale. PURĂ, cauzală."""
+) -> LevelOutput[RegimeState]:
+    """Clasifică bara CURENTĂ (ultima) din barele H4 de până la ea. Cele patru axe sub CONTRACT. PURĂ, cauzală.
+    `Ok(RegimeState)` când CEL PUȚIN o axă din mulțimea necesară {vol,structure,direction} e disponibilă;
+    `Unavailable` când seria e vidă sau TOATE axele necesare sunt indisponibile (fail-closed, ca N2 în cascadă)."""
     n = len(close)
     i = n - 1
     if n == 0:
-        na = Axis(VolBand.UNAVAILABLE.value, (), 0.0, Status.UNAVAILABLE.value)
-        return RegimeState(na, na, na, na, None, None, None, as_of_index=-1, n_bars=0)
+        return Unavailable(reason="empty_series", as_of=-1)
+
+    def _ok_axis(ax: Axis) -> Ok[Axis]:
+        return Ok(value=ax, as_of=i, valid_until=i + 1, schema_hash=_SCHEMA_HASH)
 
     # ── AXA A: volatilitate ──
     h = np.asarray(high, dtype=float)
@@ -226,33 +249,41 @@ def classify_regime(
     sband = _struct_band(abs(run_i))
     enough = n >= n_min
     direction = _direction(run_i, enough)
-    struct_status = Status.AVAILABLE.value if sband is not StructBand.NONE else Status.UNAVAILABLE.value
-    structure = Axis(sband.value, ((sband.value, 1.0),), 1.0 if sband is not StructBand.NONE else 0.0, struct_status)
+    structure: LevelOutput[Axis] = (                          # StructBand.NONE (warmup/niciun break) → Unavailable
+        Unavailable(reason="no_structure", as_of=i) if sband is StructBand.NONE
+        else _ok_axis(Axis(sband.value, ((sband.value, 1.0),), 1.0)))
 
     # confidence direcțional = decisivitatea ferestrei (cât de unilateral e recentul); interval prin share-uri
     if enough and i >= W_WEEK_H4 - 1:
         wnd = run_series[i - W_WEEK_H4 + 1:i + 1]
-        long_share = float(np.mean([1.0 if r > 0 else 0.0 for r in wnd]))
-        short_share = float(np.mean([1.0 if r < 0 else 0.0 for r in wnd]))
-        dir_conf = abs(long_share - short_share)
-        dir_status = Status.AVAILABLE.value
+        long_share: float | None = float(np.mean([1.0 if r > 0 else 0.0 for r in wnd]))
+        short_share: float | None = float(np.mean([1.0 if r < 0 else 0.0 for r in wnd]))
+        dir_conf = abs((long_share or 0.0) - (short_share or 0.0))
     else:
-        long_share = short_share = None                      # type: ignore[assignment]
+        long_share = short_share = None
         dir_conf = 0.0
-        dir_status = Status.UNAVAILABLE.value if not enough else Status.AVAILABLE.value
-    direction_axis = Axis(direction.value, ((direction.value, 1.0),),
-                          dir_conf if direction is not Direction.NEUTRAL else 0.0, dir_status)
+    direction_axis: LevelOutput[Axis] = (                    # sub n_min → NEUTRAL indisponibilă (nu o presupunere)
+        Unavailable(reason="direction_below_n_min", as_of=i) if not enough
+        else _ok_axis(Axis(direction.value, ((direction.value, 1.0),),
+                           dir_conf if direction is not Direction.NEUTRAL else 0.0)))
 
-    # ── AXA C: știri (două câmpuri; value=FALSE + status=UNAVAILABLE până la calendar) ──
+    # ── AXA C: știri — ÎN AFARA mulțimii necesare; value=FALSE + UNAVAILABLE până la calendar (AMBIGUU ≠ INDISPONIBIL) ──
     if news_fn is None:
         news_val, news_status = False, Status.UNAVAILABLE
     else:
         news_val, news_status = news_fn(i)
-    news_label = "news_dominated" if news_val else "normal"
-    news = Axis(news_label, ((news_label, 1.0),),
-                1.0 if news_status is Status.AVAILABLE else 0.0, news_status.value)
+    if news_status is Status.AVAILABLE:
+        news_label = "news_dominated" if news_val else "normal"
+        news: LevelOutput[Axis] = _ok_axis(Axis(news_label, ((news_label, 1.0),), 1.0))
+    else:
+        news = Unavailable(reason="news_absent_no_calendar", as_of=i)   # permanent până la calendar; NU blochează
 
-    return RegimeState(
+    # mulțimea necesară = {vol, structure, direction}; dacă TOATE sunt indisponibile, nu există regim (fail-closed)
+    if isinstance(vol, Unavailable) and isinstance(structure, Unavailable) and isinstance(direction_axis, Unavailable):
+        return Unavailable(reason="all_required_axes_unavailable", as_of=i)
+
+    state = RegimeState(
         volatility=vol, structure=structure, direction=direction_axis, news=news,
         trend_long_share=long_share, trend_short_share=short_share, run=run_i,
         as_of_index=i, n_bars=n)
+    return Ok(value=state, as_of=i, valid_until=i + 1, schema_hash=_SCHEMA_HASH)
