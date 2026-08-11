@@ -78,6 +78,38 @@ class Trade:
     target: float | None = None
 
 
+def breakout_trades(levels_norm, high, low, close, period_index, blocks):
+    """Route-2 BREAKOUT builder (structural stop). levels_norm = list of dicts with keys:
+    price, is_high (bool), avail (first bar of the level's active period), opp (opposite-level price).
+    Signal = FIRST bar in the level's active period whose CLOSE closes THROUGH the level in the break
+    direction (is_high -> close>price -> LONG ; else close<price -> SHORT). Stop = the OPPOSITE level
+    (structural, non-microscopic — the far side of the broken range). Exit = period-boundary time-stop.
+    No fixed target. No lookahead (close-through and stop known at the signal bar)."""
+    def _be(idx):
+        for b in blocks:
+            if b.start <= idx < b.end:
+                return b.end
+        return len(close)
+    trades = []
+    n_broken = 0
+    for lv in levels_norm:
+        avail = lv["avail"]; bend = _be(avail)
+        wend = min(avail + bars_to_period_end(period_index, avail, bend), len(close))
+        sig = None; side = None
+        for j in range(avail, wend):
+            if lv["is_high"] and close[j] > lv["price"]:
+                sig, side = j, "long"; break
+            if (not lv["is_high"]) and close[j] < lv["price"]:
+                sig, side = j, "short"; break
+        if sig is None or lv["opp"] is None:
+            continue
+        n_broken += 1
+        tsb = bars_to_period_end(period_index, sig, _be(sig))
+        trades.append(Trade(signal_idx=sig, side=side, stop=float(lv["opp"]),
+                            time_stop_bars=tsb, target=None))
+    return trades, dict(n_levels=len(levels_norm), n_broken=n_broken)
+
+
 def simulate(o, h, l, c, trades, worst_case: bool = True):
     """Forward-simulate. Entry = open[signal_idx+1] (next-open, no lookahead). Scan to the time-stop:
     if a bar spans BOTH stop and target, WORST-CASE assigns the stop (fail-closed). R = signed
