@@ -1,0 +1,32 @@
+{
+  "candidate": "CAND-0004",
+  "family": "liquidity_void_reaction",
+  "data": {
+    "rows": 130491,
+    "range": [
+      "2011-07-26",
+      "2021-09-03"
+    ],
+    "segments": 3,
+    "blocks": 15
+  },
+  "detector": "detect_void_reactions @5443077",
+  "n_void_reactions": 29,
+  "n_with_rejection": 29,
+  "n_trades_simulated": 29,
+  "metrics": {
+    "n": 29,
+    "win_rate": 0.1724,
+    "total_R": -18.67,
+    "avg_R": -0.6437,
+    "median_R": -1.0,
+    "profit_factor": 0.176,
+    "best": 2.01,
+    "worst": -1.0,
+    "exit_mix": {
+      "time": 7,
+      "stop": 22
+    }
+  },
+  "SCREEN_VERDICT": "INSUFFICIENT_N (29 < 30) \u2014 cannot screen"
+}

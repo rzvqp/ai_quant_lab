@@ -1,0 +1,41 @@
+{
+  "candidate": "CAND-0005",
+  "family": "balanced_price_range_reaction",
+  "data": {
+    "rows": 130491,
+    "range": [
+      "2011-07-26",
+      "2021-09-03"
+    ],
+    "segments": 3,
+    "blocks": 15
+  },
+  "detector": "detect_bpr_reactions @5443077 (over detect_fvgs)",
+  "n_fvgs": 26552,
+  "n_bpr_reactions": 3806,
+  "n_with_rejection": 3665,
+  "n_trades_simulated": 3665,
+  "metrics": {
+    "n": 3665,
+    "win_rate": 0.1593,
+    "total_R": 380.08,
+    "avg_R": 0.1037,
+    "median_R": -1.0,
+    "profit_factor": 1.125,
+    "best": 131.67,
+    "worst": -1.0,
+    "best_share_of_total": 0.346,
+    "top5_share_of_total": 1.33,
+    "trimmed_top1pct": {
+      "removed": 36,
+      "avg_R": -0.2529,
+      "profit_factor": 0.699,
+      "total_R": -917.86
+    },
+    "exit_mix": {
+      "stop": 3028,
+      "time": 637
+    }
+  },
+  "SCREEN_VERDICT": "BORDERLINE \u2014 FAT-TAIL (best trade = 0.346 of total R; top-1%-trimmed avg_R=-0.2529, PF=0.699). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+}

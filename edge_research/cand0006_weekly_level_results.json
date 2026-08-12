@@ -1,0 +1,34 @@
+{
+  "candidate": "CAND-0006",
+  "family": "weekly_reference_levels_route3",
+  "data": {
+    "rows": 130491,
+    "range": [
+      "2011-07-26",
+      "2021-09-03"
+    ],
+    "segments": 3,
+    "blocks": 15
+  },
+  "detector": "detect_weekly_level_touches @5443077 (17:00-NY anchor verbatim)",
+  "n_weekly_levels": 548,
+  "n_touches": 263,
+  "n_complete_touches": 254,
+  "n_trades_simulated": 254,
+  "metrics": {
+    "n": 249,
+    "win_rate": 0.0803,
+    "total_R": -22.05,
+    "avg_R": -0.0886,
+    "median_R": -1.0,
+    "profit_factor": 0.903,
+    "best": 37.31,
+    "worst": -1.0,
+    "exit_mix": {
+      "stop": 228,
+      "time": 17,
+      "target": 4
+    }
+  },
+  "SCREEN_VERDICT": "ELIMINATE \u2014 non-positive expectancy (avg_R=-0.0886, total_R=-22.05, PF=0.903)"
+}
