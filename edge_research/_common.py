@@ -187,6 +187,36 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
         loader_version=LOADER_VERSION,
         timeframe=tf,
     )
+
+    # R9 CANONICAL MEASUREMENT CONTRACT (see edge_research/_contract.py): the ONLY legitimate
+    # population is the manifest discovery segmentation, expressed here as index ranges into the
+    # delivered df. Stamp it on both meta and df.attrs so any engine (e.g. _screen.derive_blocks)
+    # consumes the manifest EXCLUSIVELY and never re-derives blocks from temporal gaps that differ
+    # (divergence M-4). df length is stamped too, so a downstream reconciliation only enforces on an
+    # unmodified df (a filtered df falls back rather than raising spuriously).
+    t_arr = d["time"].to_numpy()
+    if plan is None:
+        official_blocks = [(0, int(len(d)))]  # context-derived: whole file is one discovery block
+    else:
+        official_blocks = []
+        for s_ep, e_ep in plan["discovery"]:
+            lo = int(np.searchsorted(t_arr, s_ep, side="left"))
+            hi = int(np.searchsorted(t_arr, e_ep, side="right"))
+            if hi > lo:
+                official_blocks.append((lo, hi))
+    dataset_identity = dict(
+        tf=tf, file_path=file_path, sha256=expected_sha,
+        manifest_version=manifest.get("version"), contract_version="v1.0",
+        n_discovery_segments=(len(plan["discovery"]) if plan is not None else 0),
+    )
+    meta["official_blocks"] = official_blocks
+    meta["dataset_identity"] = dataset_identity
+    try:
+        d.attrs["official_blocks"] = official_blocks
+        d.attrs["official_blocks_n"] = int(len(d))
+        d.attrs["dataset_identity"] = dataset_identity
+    except Exception:  # noqa: BLE001 -- attrs are best-effort; meta always carries the truth
+        pass
     return d, meta
 
 
