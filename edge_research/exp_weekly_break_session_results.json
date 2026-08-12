@@ -1,0 +1,46 @@
+{
+  "experiment": "weekly_breakout_x_session",
+  "n_all": 246,
+  "by_session": {
+    "london": {
+      "n": 68,
+      "win": 0.4706,
+      "avg_R": 0.0169,
+      "median": -0.0233,
+      "PF": 1.07,
+      "best_share": 1.717,
+      "trimmed_avg_R": -0.0123,
+      "verdict": "BORDERLINE \u2014 FAT-TAIL (best trade = 1.717 of total R; top-1%-trimmed avg_R=-0.0123, PF=0.949). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+    },
+    "late": {
+      "n": 31,
+      "win": 0.4839,
+      "avg_R": 0.0192,
+      "median": -0.0304,
+      "PF": 1.087,
+      "best_share": 1.608,
+      "trimmed_avg_R": -0.012,
+      "verdict": "BORDERLINE \u2014 FAT-TAIL (best trade = 1.608 of total R; top-1%-trimmed avg_R=-0.012, PF=0.947). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+    },
+    "asia": {
+      "n": 74,
+      "win": 0.473,
+      "avg_R": 0.0719,
+      "median": -0.0087,
+      "PF": 1.329,
+      "best_share": 0.501,
+      "trimmed_avg_R": 0.0363,
+      "verdict": "BORDERLINE \u2014 FAT-TAIL (best trade = 0.501 of total R; top-1%-trimmed avg_R=0.0363, PF=1.164). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+    },
+    "ny": {
+      "n": 73,
+      "win": 0.589,
+      "avg_R": 0.1133,
+      "median": 0.0603,
+      "PF": 1.723,
+      "best_share": 0.273,
+      "trimmed_avg_R": 0.0835,
+      "verdict": "PROMISING \u2014 positive gross edge ROBUST to top-1% trim (avg_R=0.1133->trim 0.0835, PF=1.723->trim 1.525, best_share=0.273, total_R=8.27) \u2192 formal pipeline"
+    }
+  }
+}

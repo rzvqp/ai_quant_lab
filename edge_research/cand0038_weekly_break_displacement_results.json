@@ -1,0 +1,68 @@
+{
+  "candidate": "CAND-0038",
+  "family": "weekly_breakout_x_displacement",
+  "data": {
+    "rows": 130491,
+    "blocks": 15
+  },
+  "detector": "compute_prior_week_levels + expansion @5443077",
+  "n_trades": 172,
+  "metrics": {
+    "n": 172,
+    "win_rate": 0.5,
+    "total_R": 9.07,
+    "avg_R": 0.0527,
+    "median_R": 0.0048,
+    "profit_factor": 1.255,
+    "best": 2.67,
+    "worst": -1.0,
+    "best_share_of_total": 0.294,
+    "top5_share_of_total": 1.053,
+    "trimmed_top1pct": {
+      "removed": 1,
+      "avg_R": 0.0374,
+      "profit_factor": 1.18,
+      "total_R": 6.4
+    },
+    "exit_mix": {
+      "time": 157,
+      "stop": 15
+    }
+  },
+  "year_stability": {
+    "2011": {
+      "n": 13,
+      "avg_R": 0.37
+    },
+    "2012": {
+      "n": 35,
+      "avg_R": 0.015
+    },
+    "2013": {
+      "n": 23,
+      "avg_R": 0.142
+    },
+    "2016": {
+      "n": 22,
+      "avg_R": -0.093
+    },
+    "2017": {
+      "n": 32,
+      "avg_R": 0.123
+    },
+    "2018": {
+      "n": 7,
+      "avg_R": -0.121
+    },
+    "2020": {
+      "n": 14,
+      "avg_R": -0.179
+    },
+    "2021": {
+      "n": 26,
+      "avg_R": 0.074
+    }
+  },
+  "years_positive": "5/8",
+  "SCREEN_VERDICT": "PROMISING \u2014 positive gross edge ROBUST to top-1% trim (avg_R=0.0527->trim 0.0374, PF=1.255->trim 1.18, best_share=0.294, total_R=9.07) \u2192 formal pipeline"
+}

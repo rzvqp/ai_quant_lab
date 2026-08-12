@@ -142,7 +142,11 @@ The CEO's confound test: CAND-0037 mixes weekly SIGNAL + weekly STOP + week HORI
 
 **Result: PERIOD, not stop amplitude.** A daily breakout given a weekly-sized stop (V2) — and even a weekly horizon (V3) — does NOT reach the edge; it stays flat/negative. Only the genuine weekly-level breakout (V4) works. The big stop DID remove the fat-tail (V2/V3 best-share undefined = no outlier), which is exactly why it reveals the daily-signal mechanism is fundamentally negative. **The edge is the significance of the prior-WEEK level as an event, not the wide stop.** This strengthens CAND-0037 (its edge is real, not a stop-sizing artifact) and closes the daily/session breakout direction.
 
-Next: deepen CAND-0037's own family (weekly × displacement confirmation, weekly × session-alignment) that REUSE ratified primitives. Prior primitive-space coverage stands (below).
+### CAND-0037 family explored (weekly × displacement, weekly × session)
+- **CAND-0038 weekly × DISPLACEMENT** (`cand0038_weekly_break_displacement.py`): PROMISING on its own (n=172, avg_R +0.053, trimmed +0.037) but **DOMINATED by CAND-0037** on every axis (avg_R +0.062, trimmed +0.043, 7/8 vs 5/8 years) while cutting 30% of signals. **Displacement confirmation does NOT improve the weekly breakout** — the level break alone is the edge. Not promoted (would be forcing a weaker sibling).
+- **CAND-0039 weekly × NY-SESSION** (`exp_weekly_break_session.py`): 🟢 **PROMISING sharpening** — restricting to weekly breaks during the NY session gives n=73, win 58.9%, avg_R +0.113, median +0.060, PF 1.723, **trimmed avg_R +0.084** (≈2× the all-session base). Plausible mechanism: NY = gold's highest-liquidity session → real conviction on the break. ⚠ **SELECTION CAVEAT: 1-of-4 sessions chosen post-hoc** (london/late trimmed-negative, asia +0.036) — the Statistician must apply the session multiplicity. Base **CAND-0037 (all-session) remains the robust, caveat-free anchor**; CAND-0039 is a candidate refinement pending multiplicity.
+
+Family conclusion: **CAND-0037 (all-session weekly breakout) is the robust base edge; NY-session is a promising sharpening (with a selection caveat); displacement does not add.** Next: new families on ratified primitives (the breakout mechanism generalized to other ratified level types), quietly, per the loop. Prior primitive-space coverage stands (below).
 
 ---
 
