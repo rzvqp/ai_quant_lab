@@ -1,0 +1,77 @@
+{
+  "profiler": "stop_size_by_family",
+  "days": 3692,
+  "price_median": 1563.1,
+  "measured_spread": {
+    "median": 0.05,
+    "p75": 0.08,
+    "max": 0.16
+  },
+  "note": "keep families with median stop >~$5 (spread<2% risk); need per_day toward 3-4",
+  "families": {
+    "prior_DAY_range": {
+      "n": 1405,
+      "per_day": 0.381,
+      "median": 18.85,
+      "p25": 13.28,
+      "p75": 27.4,
+      "spread8c_pct_of_median": 0.4
+    },
+    "prior_WEEK_range (CAND-0037 stop)": {
+      "n": 274,
+      "per_day": 0.074,
+      "median": 43.34,
+      "p25": 31.18,
+      "p75": 65.59,
+      "spread8c_pct_of_median": 0.2
+    },
+    "prior_SESSION_range_all": {
+      "n": 5654,
+      "per_day": 1.531,
+      "median": 7.99,
+      "p25": 4.56,
+      "p75": 13.08,
+      "spread8c_pct_of_median": 1.0
+    },
+    "prior_NY_session_range": {
+      "n": 1409,
+      "per_day": 0.382,
+      "median": 12.95,
+      "p25": 9.02,
+      "p75": 19.14,
+      "spread8c_pct_of_median": 0.6
+    },
+    "H4_range_rolling16": {
+      "n": 130475,
+      "per_day": 35.34,
+      "median": 6.71,
+      "p25": 4.36,
+      "p75": 10.73,
+      "spread8c_pct_of_median": 1.2
+    },
+    "OB_height_all": {
+      "n": 5560,
+      "per_day": 1.506,
+      "median": 0.56,
+      "p25": 0.24,
+      "p75": 1.11,
+      "spread8c_pct_of_median": 14.2
+    },
+    "OB_height_large_top25pct": {
+      "n": 1390,
+      "per_day": 0.376,
+      "median": 1.7,
+      "p25": 1.34,
+      "p75": 2.32,
+      "spread8c_pct_of_median": 4.7
+    },
+    "compression_accumulated_range": {
+      "n": 5380,
+      "per_day": 1.457,
+      "median": 5.09,
+      "p25": 3.49,
+      "p75": 7.5,
+      "spread8c_pct_of_median": 1.6
+    }
+  }
+}

@@ -110,10 +110,12 @@ def breakout_trades(levels_norm, high, low, close, period_index, blocks):
     return trades, dict(n_levels=len(levels_norm), n_broken=n_broken)
 
 
-def simulate(o, h, l, c, trades, worst_case: bool = True):
+def simulate(o, h, l, c, trades, worst_case: bool = True, cost: float = 0.0):
     """Forward-simulate. Entry = open[signal_idx+1] (next-open, no lookahead). Scan to the time-stop:
     if a bar spans BOTH stop and target, WORST-CASE assigns the stop (fail-closed). R = signed
-    (exit-entry)/|entry-stop|. Returns per-trade dicts."""
+    (exit-entry − cost)/|entry-stop|. `cost` = round-trip transaction cost in PRICE units (spread+slip);
+    for XAUUSD the measured live spread is ~0.05 (median) to 0.08 (p75), so cost≈0.08 is realistic (0.0 =
+    gross). Each trade dict also carries `risk` (the stop distance in price) for stop-size profiling."""
     n = len(c)
     res = []
     for t in trades:
@@ -147,8 +149,9 @@ def simulate(o, h, l, c, trades, worst_case: bool = True):
                 exit_price, reason = tgt, "target"; break
         if exit_price is None:
             exit_price, reason = float(c[end]), "time"
-        r = (exit_price - entry) / risk if side == "long" else (entry - exit_price) / risk
-        res.append(dict(r=r, reason=reason, entry=entry, exit=exit_price, side=side, signal_idx=si))
+        move = (exit_price - entry) if side == "long" else (entry - exit_price)
+        r = (move - cost) / risk
+        res.append(dict(r=r, reason=reason, entry=entry, exit=exit_price, side=side, signal_idx=si, risk=risk))
     return res
 
 
@@ -164,6 +167,7 @@ def metrics(res) -> dict:
     reasons = Counter(x["reason"] for x in res)
     tot = sum(rs)
     srt = sorted(rs, reverse=True)
+    risks = sorted(x.get("risk", float("nan")) for x in res if x.get("risk") is not None)
     # FAT-TAIL robustness (parameter-free): single-best share + top-1%-trimmed re-computation.
     k = max(1, int(n * 0.01))
     trimmed = srt[k:]
@@ -178,6 +182,9 @@ def metrics(res) -> dict:
         median_R=round(sorted(rs)[n // 2], 4),
         profit_factor=round(gross_win / gross_loss, 3) if gross_loss > 0 else float("inf"),
         best=round(max(rs), 2), worst=round(min(rs), 2),
+        median_stop=round(risks[len(risks) // 2], 2) if risks else None,
+        stop_p25=round(risks[len(risks) // 4], 2) if risks else None,
+        stop_p75=round(risks[3 * len(risks) // 4], 2) if risks else None,
         best_share_of_total=round(srt[0] / tot, 3) if tot > 0 else None,
         top5_share_of_total=round(sum(srt[:5]) / tot, 3) if tot > 0 else None,
         trimmed_top1pct=dict(removed=k, avg_R=round(t_avg, 4), profit_factor=round(t_pf, 3),

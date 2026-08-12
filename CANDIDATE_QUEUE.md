@@ -101,6 +101,23 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ## STATE: `FLOW_B_ECONOMIC_SCREENING` — quick-backtest harness live; screening the unblocked base families
 
+### 🔎 LARGE-STOP + BETTER-FREQUENCY SEARCH (CEO direction) — no new survivor; the significance↔rarity tradeoff looks fundamental
+Goal: a structure with a wide anchor (spread ≪ risk) AND frequency toward 3–4/day AND a *significant* event (my isolation test: period/significance matters, not stop size alone). Used the measured live XAUUSD spread (median 0.05, **p75 0.08**), not mstrat's 1c. **Stop-size profiler run FIRST** (`edge_research/stop_profiler.py`) to filter before screening:
+
+| structure | /day | median stop | spread%risk | screen (net 0.08) |
+|---|---|---|---|---|
+| **CAND-0037 weekly** | 0.07 | $43.34 | 0.2% | **+0.060R, 7/8yr — PROMISING (cost-robust)** |
+| prior-day range | 0.38 | $18.85 | 0.4% | +0.0004R flat (fat-tail) |
+| NY-session range | 0.38 | $12.95 | 0.6% | (session breaks flat — not significant) |
+| session range (all) | 1.53 | $7.99 | 1.0% | −0.008R ELIMINATE |
+| **compression→expansion** | 0.73 | $4.77 | 1.6% | **−0.030R, 3/8yr — ELIMINATE** (63% win but RR<1 + no year-stability) |
+| OB height (large top-25%) | 0.38 | $1.70 | 4.7% | ❌ killed by profiler (near S3 death zone) |
+| OB height (all) | 1.5 | $0.56 | 14.2% | ❌ killed by profiler (S3 death zone) |
+
+**Result: no NEW family clears BOTH bars.** Order blocks are too small on gold (profiler killed them before a screen — saved runs). Compression→expansion has the right size + frequency + is a real event, but **no robust directional edge** (eliminated at realistic spread). Session/daily breakouts have large-enough stops but are **flat** — confirming (again) that a big stop is not enough; the event must be significant.
+
+**Structural insight (discovery):** the only structure that is BOTH large-anchor AND significant-enough-to-have-edge is the **weekly level** — and that is precisely because **significance and rarity are linked**: a significant reference is rare *by construction*. Frequent structures (sessions, compressions, OBs) are individually less significant, so their breakouts don't continue. The frequency↔significance tradeoff the CEO posed appears **fundamental**, not a gap to fill by finding the right structure. CAND-0037 (0.12/day) may be near the ceiling of "significant + executable" on this instrument/timeframe; raising frequency likely needs a *different instrument/timeframe* or a *portfolio of several rare-but-real edges*, not one higher-frequency structure. Reported as the exhaustion reason for this batch.
+
 ### 🔬 S3 FAMILY VERDICT (CEO priority, independent verification) — REAL PATTERN, but THEORETICAL (not executable)
 The TICK correction (`38e7165`, 0.1→0.01) revived 7 S3 hypotheses (PF 1.33–1.45). Verified INDEPENDENTLY (`edge_research/cand_s3_verify.py` + `cand_s3_execution.py`): reproduced the S3 mechanism on holdout-sealed data with the corrected engine + my fat-tail check.
 
