@@ -14,20 +14,23 @@
       "n_trades": 1204,
       "metrics": {
         "n": 1204,
-        "win_rate": 0.4635,
-        "total_R": 6.17,
-        "avg_R": 0.0051,
-        "median_R": -0.0424,
-        "profit_factor": 1.021,
-        "best": 3.81,
-        "worst": -1.0,
-        "best_share_of_total": 0.616,
-        "top5_share_of_total": 2.666,
+        "win_rate": 0.4593,
+        "total_R": 0.47,
+        "avg_R": 0.0004,
+        "median_R": -0.0477,
+        "profit_factor": 1.002,
+        "best": 3.8,
+        "worst": -1.02,
+        "median_stop": 18.92,
+        "stop_p25": 13.25,
+        "stop_p75": 27.23,
+        "best_share_of_total": 8.149,
+        "top5_share_of_total": 35.218,
         "trimmed_top1pct": {
           "removed": 12,
-          "avg_R": -0.0234,
-          "profit_factor": 0.907,
-          "total_R": -27.84
+          "avg_R": -0.0281,
+          "profit_factor": 0.889,
+          "total_R": -33.44
         },
         "exit_mix": {
           "stop": 141,
@@ -37,39 +40,39 @@
       "year_stability": {
         "2011": {
           "n": 103,
-          "avg_R": 0.027
+          "avg_R": 0.025
         },
         "2012": {
           "n": 219,
-          "avg_R": 0.026
+          "avg_R": 0.022
         },
         "2013": {
           "n": 150,
-          "avg_R": 0.076
+          "avg_R": 0.072
         },
         "2016": {
           "n": 211,
-          "avg_R": 0.031
+          "avg_R": 0.025
         },
         "2017": {
           "n": 228,
-          "avg_R": -0.038
+          "avg_R": -0.045
         },
         "2018": {
           "n": 56,
-          "avg_R": -0.046
+          "avg_R": -0.052
         },
         "2020": {
           "n": 88,
-          "avg_R": 0.011
+          "avg_R": 0.008
         },
         "2021": {
           "n": 149,
-          "avg_R": -0.067
+          "avg_R": -0.071
         }
       },
       "years_positive": "5/8",
-      "SCREEN_VERDICT": "BORDERLINE \u2014 FAT-TAIL (best trade = 0.616 of total R; top-1%-trimmed avg_R=-0.0234, PF=0.907). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+      "SCREEN_VERDICT": "BORDERLINE \u2014 FAT-TAIL (best trade = 8.149 of total R; top-1%-trimmed avg_R=-0.0281, PF=0.889). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
     },
     "session_break": {
       "diag": {
@@ -79,20 +82,23 @@
       "n_trades": 4543,
       "metrics": {
         "n": 4543,
-        "win_rate": 0.4435,
-        "total_R": 33.47,
-        "avg_R": 0.0074,
-        "median_R": -0.0743,
-        "profit_factor": 1.022,
-        "best": 7.37,
-        "worst": -1.0,
-        "best_share_of_total": 0.22,
-        "top5_share_of_total": 0.981,
+        "win_rate": 0.4369,
+        "total_R": -35.4,
+        "avg_R": -0.0078,
+        "median_R": -0.0835,
+        "profit_factor": 0.978,
+        "best": 7.35,
+        "worst": -1.08,
+        "median_stop": 6.86,
+        "stop_p25": 3.96,
+        "stop_p75": 11.52,
+        "best_share_of_total": null,
+        "top5_share_of_total": null,
         "trimmed_top1pct": {
           "removed": 45,
-          "avg_R": -0.0386,
-          "profit_factor": 0.887,
-          "total_R": -173.58
+          "avg_R": -0.0536,
+          "profit_factor": 0.847,
+          "total_R": -241.03
         },
         "exit_mix": {
           "time": 3395,
@@ -102,39 +108,39 @@
       "year_stability": {
         "2011": {
           "n": 379,
-          "avg_R": -0.013
+          "avg_R": -0.02
         },
         "2012": {
           "n": 829,
-          "avg_R": 0.03
+          "avg_R": 0.015
         },
         "2013": {
           "n": 618,
-          "avg_R": -0.04
+          "avg_R": -0.053
         },
         "2016": {
           "n": 783,
-          "avg_R": 0.023
+          "avg_R": 0.007
         },
         "2017": {
           "n": 816,
-          "avg_R": 0.028
+          "avg_R": 0.007
         },
         "2018": {
           "n": 207,
-          "avg_R": 0.119
+          "avg_R": 0.101
         },
         "2020": {
           "n": 328,
-          "avg_R": -0.0
+          "avg_R": -0.011
         },
         "2021": {
           "n": 583,
-          "avg_R": -0.047
+          "avg_R": -0.061
         }
       },
       "years_positive": "4/8",
-      "SCREEN_VERDICT": "BORDERLINE \u2014 FAT-TAIL (best trade = 0.22 of total R; top-1%-trimmed avg_R=-0.0386, PF=0.887). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+      "SCREEN_VERDICT": "ELIMINATE \u2014 non-positive expectancy (avg_R=-0.0078, total_R=-35.4, PF=0.978)"
     },
     "weekly_break": {
       "diag": {
@@ -145,19 +151,22 @@
       "metrics": {
         "n": 246,
         "win_rate": 0.5081,
-        "total_R": 15.33,
-        "avg_R": 0.0623,
-        "median_R": 0.0126,
-        "profit_factor": 1.302,
-        "best": 2.67,
+        "total_R": 14.85,
+        "avg_R": 0.0604,
+        "median_R": 0.0115,
+        "profit_factor": 1.291,
+        "best": 2.66,
         "worst": -1.0,
-        "best_share_of_total": 0.174,
-        "top5_share_of_total": 0.714,
+        "median_stop": 43.85,
+        "stop_p25": 31.23,
+        "stop_p75": 61.52,
+        "best_share_of_total": 0.179,
+        "top5_share_of_total": 0.736,
         "trimmed_top1pct": {
           "removed": 2,
-          "avg_R": 0.0426,
-          "profit_factor": 1.205,
-          "total_R": 10.41
+          "avg_R": 0.0407,
+          "profit_factor": 1.195,
+          "total_R": 9.92
         },
         "exit_mix": {
           "time": 226,
@@ -167,39 +176,39 @@
       "year_stability": {
         "2011": {
           "n": 20,
-          "avg_R": 0.172
+          "avg_R": 0.171
         },
         "2012": {
           "n": 47,
-          "avg_R": 0.022
+          "avg_R": 0.02
         },
         "2013": {
           "n": 30,
-          "avg_R": 0.167
+          "avg_R": 0.165
         },
         "2016": {
           "n": 43,
-          "avg_R": 0.052
+          "avg_R": 0.05
         },
         "2017": {
           "n": 49,
-          "avg_R": 0.075
+          "avg_R": 0.072
         },
         "2018": {
           "n": 10,
-          "avg_R": 0.004
+          "avg_R": 0.001
         },
         "2020": {
           "n": 18,
-          "avg_R": -0.112
+          "avg_R": -0.113
         },
         "2021": {
           "n": 29,
-          "avg_R": 0.067
+          "avg_R": 0.065
         }
       },
       "years_positive": "7/8",
-      "SCREEN_VERDICT": "PROMISING \u2014 positive gross edge ROBUST to top-1% trim (avg_R=0.0623->trim 0.0426, PF=1.302->trim 1.205, best_share=0.174, total_R=15.33) \u2192 formal pipeline"
+      "SCREEN_VERDICT": "PROMISING \u2014 positive gross edge ROBUST to top-1% trim (avg_R=0.0604->trim 0.0407, PF=1.291->trim 1.195, best_share=0.179, total_R=14.85) \u2192 formal pipeline"
     }
   }
 }

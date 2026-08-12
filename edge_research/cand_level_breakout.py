@@ -76,7 +76,7 @@ def main():
     allout = {}
     for name, (lv_norm, pidx) in cases.items():
         trades, diag = breakout_trades(lv_norm, h, l, c, pidx, blocks)
-        res = simulate(o, h, l, c, trades)
+        res = simulate(o, h, l, c, trades, cost=0.08)   # realistic measured XAUUSD spread (p75)
         m = metrics(res)
         # per-year stability (avg_R, n) — is the edge spread across years or concentrated?
         by_year = {}

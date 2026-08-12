@@ -88,7 +88,7 @@ Statistician as a specification request. This is a risk-layer gap, **not** a mar
 | **CAND-0034** | PERSISTENT-SESSION-PDHPDL | persistent_session_at_daylevel_confluence (MK-04 sess × MK-04 PDH/PDL via Mod.7, **Primitive B**) | `POLICY_PERSISTENT_SESSION_PDHPDL_v1.md` | DEFINED (3-primitive; aged session level coincident w/ PDH/PDL) · **FILTER k=1.0 + own-sel=day confluence** | **COMPLETED — SCREENING** (structural: stop=touch-bar extreme, exit=opposite prior-DAY level + day time-stop; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — Primitive-B batch (`bf02dd2`) · own-selectivity = PDH/PDL confluence · **W-incr ⊂ better of {session-touch, CAND-0001}** · trigger count = HARD pre-performance report · ⚠ FEED-ALIGNMENT → Red Team · **SURVIVED_RED_TEAM_A (RT-OPS-AB-0005, Phase A+B) — Part B CONDITIONAL (DEMO S1+S2)**; own-sel=day confluence REAL; **W-incr ⊂ {session-touch, 0001} — no plain-B-touch arm exists (held)**; day-boundary horizon live-valid; **WEEKLY-STRUCTURE SIGNAL WORST** → Statistician |
 | **CAND-0035** | PERSISTENT-SESSION-FVG | persistent_session_imbalance_confluence (MK-04 sess × MK-03 via Mod.7, **Primitive B**) | `POLICY_PERSISTENT_SESSION_FVG_v1.md` | DEFINED (3-primitive; aged session level × FVG polarity-matched) · **FILTER k=1.0 + own-sel=FVG confluence** | **COMPLETED — SCREENING** (structural: stop=deeper of touch extreme/FVG far edge, exit=FVG near edge OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — Primitive-B batch (`bf02dd2`) · own-selectivity = FVG confluence · **W-incr ⊂ better of {session-touch, CAND-0003}** · trigger count = HARD pre-performance report · ⚠ FEED-ALIGNMENT → Red Team · **SURVIVED_RED_TEAM_A (RT-OPS-AB-0005, Phase A+B) — Part B CONDITIONAL (DEMO S1; S2 protected, min/max stop)**; own-sel=FVG confluence REAL; **W-incr ⊂ {session-touch, 0003}**; 20-bar horizon live-valid; **WEEKLY-STRUCTURE SIGNAL WORST** → Statistician |
 | **CAND-0036** | PERSISTENT-SESSION-OB | persistent_session_at_orderblock_confluence (MK-04 sess × Mod.5 via Mod.7, **Primitive B**) | `POLICY_PERSISTENT_SESSION_OB_v1.md` | DEFINED (3-primitive; aged session level into OB, polarity-matched) · **FILTER k=1.0 + own-sel=OB confluence** | **COMPLETED — SCREENING** (structural: stop=min(Low_OB,touch extreme) deeper floor, exit=OB body far edge OR 20-bar GROUP_A_HORIZON; mgmt absent; 1R) | **DEFINED (SCREENING_BASELINE)** | NEW — Primitive-B batch (`bf02dd2`) · own-selectivity = OB confluence · **W-incr ⊂ better of {session-touch, CAND-0011}** · trigger count = HARD pre-performance report · ⚠ FEED-ALIGNMENT → Red Team · **SURVIVED_RED_TEAM_A (RT-OPS-AB-0005, Phase A+B) — Part B CONDITIONAL (DEMO S1; S2 protected, min/max stop)**; own-sel=OB confluence REAL; **W-incr ⊂ {session-touch, 0011}**; 20-bar horizon live-valid; **WEEKLY-STRUCTURE SIGNAL WORST** → Statistician |
-| **CAND-0037** | WEEKLY-LEVEL-BREAKOUT | weekly_level_breakout_continuation (MK-04, Route 2) | `POLICY_WEEKLY_BREAKOUT_v1.md` · run `edge_research/cand_level_breakout.py` (weekly_break) | DEFINED (close THROUGH prior-week level, trade WITH the break; no lookahead) | **COMPLETED (structural stop=OPPOSITE prior-week level = full-range, non-microscopic; exit=week-boundary time-stop; 1R)** | **🟢 PROMISING — survives fat-tail + year-stable** | **FIRST ROBUST-EDGE CANDIDATE.** Flow-B screen (M15_v2, holdout sealed): n=246, win 50.8%, avg_R +0.062, median +0.013, PF 1.302, best-share 17%, **top-1%-trimmed avg_R +0.043 (SURVIVES)**, **7/8 years positive**, cost-robust (full-range stop ≫ spread). Edge specific to WEEKLY (daily/session breaks flat). W10 @ `5443077`. → **Red Team / Statistician / formal validation** |
+| **CAND-0037** | WEEKLY-LEVEL-BREAKOUT | weekly_level_breakout_continuation (MK-04, Route 2) | `POLICY_WEEKLY_BREAKOUT_v1.md` · run `edge_research/cand_level_breakout.py` (weekly_break) | DEFINED (close THROUGH prior-week level, trade WITH the break; no lookahead) | **COMPLETED (structural stop=OPPOSITE prior-week level = full-range, non-microscopic; exit=week-boundary time-stop; 1R)** | **🟢 PROMISING — survives fat-tail + year-stable** | **FIRST ROBUST-EDGE CANDIDATE.** Flow-B screen (M15_v2, holdout sealed): n=246, win 50.8%, avg_R +0.062, median +0.013, PF 1.302, best-share 17%, **top-1%-trimmed avg_R +0.043 (SURVIVES)**, **7/8 years positive**, cost-robust (full-range stop ≫ spread). Edge specific to WEEKLY (daily/session breaks flat). W10 @ `5443077`. → **Red Team / Statistician / formal validation** · **✅ RE-EVALUATED ON CANONICAL EVALUATOR (Step 6, `cand0037_canonical.py`): NET avg_R +0.063, PF 1.30, median +0.012, trimmed +0.042, 7/8yr — SURVIVES (large stop → canonical cost negligible). The only Flow-B result confirmed on the canonical basis.** |
 
 **Reaction-primitive bottleneck (surfaced by production):** ratified DETECTION primitives exist for many
 objects (voids, BPRs, weekly levels), but ratified REACTION/interaction primitives exist only for PDH/PDL
@@ -99,7 +99,51 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `FLOW_B_ECONOMIC_SCREENING` — quick-backtest harness live; screening the unblocked base families
+## STATE: `FLOW_B_CANONICAL_EVALUATOR` — Step 6: local gross evaluator ELIMINATED, canonical evaluator wired
+
+> # ⚠ HISTORICAL — NON-COMPARABLE — REQUIRES RECOMPUTATION
+> **Every Flow-B economic number below this line was produced by the local `_screen.simulate`, which read
+> GROSS R (no cost) — Red Team confirmed it diverged from the lab evaluator on the FIRST trade (screen
+> +1.00 gross vs mstrat +0.80 NET).** Affected: the level-fade / void / BPR / CAND-0009 eliminations, the
+> CAND-0037 and CAND-0039 promotions, and the S3 verification. These are NOT deleted and NOT presented as
+> validated strategies — they are pending recomputation on the canonical basis.
+>
+> **Step 6 done (2026-08):** the local gross evaluator is ELIMINATED. `_screen.simulate` now RAISES;
+> `_screen.canonical_evaluate(d, trades)` is the ONLY evaluation path — it delegates to **`mstrat.simulate`**,
+> the ONE lab evaluator (NET of CFG cost, floored stop, no-overlap, worst-case). Flow A does NOT invent
+> cost or choose its own convention (CFG: tick=0.01, spread=slip=1 tick). Signal logic UNCHANGED
+> (`breakout_trades` etc.); only execution+metrics become canonical, via `trades_to_setups`.
+>
+> **What survives logically (re-expressed, not re-litigated):** (a) the **GROSS-NEGATIVE eliminations**
+> — void, BPR, CAND-0009, compression→expansion, session/daily breakouts — gross-negative ⇒ net-negative,
+> so the ELIMINATE verdicts stand (numbers still to be restated canonically). (b) **level-fade = fat-tail**
+> — a distributional property (best-trade share, trimmed avg_R) independent of cost/floor/tick; stands.
+>
+> **First canonical re-evaluation done — CAND-0037 (`cand0037_canonical.py`):** NET on `mstrat.simulate` =
+> **avg_R +0.063, median +0.012, PF 1.30, best-share 0.18, trimmed +0.042, 7/8 years → PROMISING.**
+> Essentially identical to its prior gross (+0.062) — its ~$43 stop makes the canonical cost negligible, so
+> CAND-0037 SURVIVES the canonical basis. (The screen-vs-mstrat divergence bit TIGHT-stop strategies like
+> S3, not CAND-0037.) Remaining strategies to re-evaluate canonically: the borderline/promising ones whose
+> stops are NOT large (where cost changes the verdict) — queued.
+
+### (historical) `FLOW_B_ECONOMIC_SCREENING` — quick-backtest harness; screening the unblocked base families
+
+### 🔎 LARGE-STOP + BETTER-FREQUENCY SEARCH (CEO direction) — no new survivor; the significance↔rarity tradeoff looks fundamental
+Goal: a structure with a wide anchor (spread ≪ risk) AND frequency toward 3–4/day AND a *significant* event (my isolation test: period/significance matters, not stop size alone). Used the measured live XAUUSD spread (median 0.05, **p75 0.08**), not mstrat's 1c. **Stop-size profiler run FIRST** (`edge_research/stop_profiler.py`) to filter before screening:
+
+| structure | /day | median stop | spread%risk | screen (net 0.08) |
+|---|---|---|---|---|
+| **CAND-0037 weekly** | 0.07 | $43.34 | 0.2% | **+0.060R, 7/8yr — PROMISING (cost-robust)** |
+| prior-day range | 0.38 | $18.85 | 0.4% | +0.0004R flat (fat-tail) |
+| NY-session range | 0.38 | $12.95 | 0.6% | (session breaks flat — not significant) |
+| session range (all) | 1.53 | $7.99 | 1.0% | −0.008R ELIMINATE |
+| **compression→expansion** | 0.73 | $4.77 | 1.6% | **−0.030R, 3/8yr — ELIMINATE** (63% win but RR<1 + no year-stability) |
+| OB height (large top-25%) | 0.38 | $1.70 | 4.7% | ❌ killed by profiler (near S3 death zone) |
+| OB height (all) | 1.5 | $0.56 | 14.2% | ❌ killed by profiler (S3 death zone) |
+
+**Result: no NEW family clears BOTH bars.** Order blocks are too small on gold (profiler killed them before a screen — saved runs). Compression→expansion has the right size + frequency + is a real event, but **no robust directional edge** (eliminated at realistic spread). Session/daily breakouts have large-enough stops but are **flat** — confirming (again) that a big stop is not enough; the event must be significant.
+
+**Structural insight (discovery):** the only structure that is BOTH large-anchor AND significant-enough-to-have-edge is the **weekly level** — and that is precisely because **significance and rarity are linked**: a significant reference is rare *by construction*. Frequent structures (sessions, compressions, OBs) are individually less significant, so their breakouts don't continue. The frequency↔significance tradeoff the CEO posed appears **fundamental**, not a gap to fill by finding the right structure. CAND-0037 (0.12/day) may be near the ceiling of "significant + executable" on this instrument/timeframe; raising frequency likely needs a *different instrument/timeframe* or a *portfolio of several rare-but-real edges*, not one higher-frequency structure. Reported as the exhaustion reason for this batch.
 
 ### 🔬 S3 FAMILY VERDICT (CEO priority, independent verification) — REAL PATTERN, but THEORETICAL (not executable)
 The TICK correction (`38e7165`, 0.1→0.01) revived 7 S3 hypotheses (PF 1.33–1.45). Verified INDEPENDENTLY (`edge_research/cand_s3_verify.py` + `cand_s3_execution.py`): reproduced the S3 mechanism on holdout-sealed data with the corrected engine + my fat-tail check.

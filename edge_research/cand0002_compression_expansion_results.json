@@ -1,0 +1,70 @@
+{
+  "candidate": "CAND-0002",
+  "family": "compression_expansion_breakout",
+  "spread_used": 0.08,
+  "n_trades": 2700,
+  "per_day": 0.731,
+  "metrics": {
+    "n": 2460,
+    "win_rate": 0.6289,
+    "total_R": -73.57,
+    "avg_R": -0.0299,
+    "median_R": 0.2527,
+    "profit_factor": 0.914,
+    "best": 0.99,
+    "worst": -1.09,
+    "median_stop": 4.77,
+    "stop_p25": 3.2,
+    "stop_p75": 7.12,
+    "best_share_of_total": null,
+    "top5_share_of_total": null,
+    "trimmed_top1pct": {
+      "removed": 24,
+      "avg_R": -0.0398,
+      "profit_factor": 0.887,
+      "total_R": -96.84
+    },
+    "exit_mix": {
+      "stop": 798,
+      "target": 1521,
+      "time": 135,
+      "stop_wc": 6
+    }
+  },
+  "year_stability": {
+    "2011": {
+      "n": 219,
+      "avg_R": -0.053
+    },
+    "2012": {
+      "n": 483,
+      "avg_R": -0.07
+    },
+    "2013": {
+      "n": 330,
+      "avg_R": -0.043
+    },
+    "2016": {
+      "n": 409,
+      "avg_R": 0.001
+    },
+    "2017": {
+      "n": 426,
+      "avg_R": -0.061
+    },
+    "2018": {
+      "n": 117,
+      "avg_R": -0.006
+    },
+    "2020": {
+      "n": 177,
+      "avg_R": 0.032
+    },
+    "2021": {
+      "n": 299,
+      "avg_R": 0.021
+    }
+  },
+  "years_positive": "3/8",
+  "SCREEN_VERDICT": "ELIMINATE \u2014 non-positive expectancy (avg_R=-0.0299, total_R=-73.57, PF=0.914)"
+}
