@@ -1885,4 +1885,50 @@
                  red_team/.
                STATE: OPERATIONAL. Next entry [44], prev_hash E43.
   entry_hash:  E43
+
+[44] 2026-08-13
+  prev_hash:   E43
+  event:       AUDIT                 # MEASUREMENT CONFORMANCE SUITE — the 17 canonical tests (step 5)
+  reviewer:    Red Team
+  detail:      CEO step 5: build the 17 canonical conformance tests, known-outcome synthetic trades vs EACH
+               engine (SCREEN/MSTRAT/DEMO); all must produce the same register + net. Test 12 (tick<->USD)
+               decisive; actively hunt a 6th divergence; BLOCK ratification on unexplained differences.
+               Deliverable: policy_reviews/RT-AUDIT-MEAS-0002_conformance_17.md. Engines run as verbatim
+               behavioral replicas. No engine modified; no repair.
+               VERDICT: FAIL -- RATIFICATION BLOCKED. No engine implements the canonical semantics; diverge on
+               >=6 axes; every difference explained but NONE reconciled.
+               17-TEST RESULTS (per engine): T1 entry@N+1 CONVERGES (all next-open, cost diverges). T2 stop<min
+                 -- FLOOR FLIPS OUTCOME: SCREEN no floor -> noise stop -1.0 vs MSTRAT/DEMO floor -> survive +0.1
+                 (loss<->win, not just magnitude); SCREEN non-canonical. T3 SL entry bar: all catch, cost
+                 diverges. T4 TP entry bar = ***SIXTH DIVERGENCE***: SCREEN/MSTRAT COUNT (win +1.0/+0.8), DEMO
+                 S3 IGNORES -> time-exit -0.2 (same trade win vs loss; invisible to the screen-vs-mstrat
+                 comparison, surfaces only with DEMO). T5 SL&TP same bar: precedence CONVERGES (stop-first),
+                 cost diverges. T6/T7 last-window-bar hit: SCREEN inclusive target vs MSTRAT/DEMO exclusive time
+                 (window off-by-one). T8 dataset-end time-exit: ALL THREE clip to n-1 and time-exit at the
+                 dataset boundary -> ALL violate the canonical (horizon must be live-valid). T9/T10 17:00-NY +
+                 DST: anchor CONVERGES (pandas tz_convert), not in simulate. T11 manifest: gap-blocks vs
+                 manifest -> different populations. T14 net calc diverges (gross vs net). T15/T16 fat-tail:
+                 _screen has best_share+trimmed_top1pct, mstrat has none -> asymmetric. T17 cross-config
+                 rejection: NO engine tags verdicts with config provenance -> canonical clause 11 unmet.
+               TEST 12 (MOST IMPORTANT) -- cost tick<->USD DIVERGES on TWO axes: (a) formula 2*(spread+slip)*
+                 tick applies SPREAD TWICE = 0.60 USD vs canonical (spread once + slip per fill) 0.35 USD --
+                 the tick<->USD CONVERSION is fine (25 ticks*0.01=0.25) but the STRUCTURE double-counts spread;
+                 (b) USD-as-ticks unit bug = 2*(0.25+0.05)*0.01 = 0.006 USD ~ 58-100x too small (the CEO's
+                 0.0005 failure). Third hazard: spread full-vs-half undocumented (2* only correct if half).
+                 Cost triply unsafe: wrong tick + USD-as-ticks + spread-once-vs-twice.
+               CONSOLIDATED (8): 1 cost gross-vs-net; 2 floor present/absent (FLIPS outcomes); 3 window off-by-
+                 one; 4 block population; 5 TICK ecosystem; 6 ***entry-bar target (new)***; 7 cost formula spread
+                 double-count; 8 shared violations (T8 dataset-boundary, T17 no-provenance, T15/16 asymmetric
+                 metrics).
+               MEANS: no engine is the reference (SCREEN violates floor+window+lacks cost; MSTRAT/DEMO carry
+                 tick+floor+cost-structure; DEMO drops entry-bar targets; all violate dataset-boundary +
+                 provenance). Ratification BLOCKED -- differences explained, none reconciled; same strategy ->
+                 different registers. Freeze stands: no leaderboard/elimination definitive until all engines
+                 pass the 17 against the canonical semantics.
+               HANDOFF: CEO/Statistician -- adopt the canonical contract + SPECIFY entry-bar-target precedence
+                 (T4) and spread half/full (T12/13, both under-specified even in RT-AUDIT-MEAS-0001 §6); make
+                 the 17 tests the ratification gate; fix the shared violations; keep the freeze. Red Team
+                 modified no engine, ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [45], prev_hash E44.
+  entry_hash:  E44
 ```
