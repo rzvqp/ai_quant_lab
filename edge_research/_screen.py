@@ -1,36 +1,44 @@
-"""Flow B — QUICK ECONOMIC SCREENER (reusable).
+"""Flow B — SIGNAL BUILDERS + delegation to the CANONICAL EVALUATOR (Step 6, 2026-08 CEO mandate).
 
-CEO progress criterion (2026): ECONOMIC OUTPUT, not infrastructure. Flow per candidate is
-IDEA -> POLICY -> QUICK BACKTEST -> ECONOMIC SCREENING; obviously-unprofitable candidates are
-eliminated immediately, only promising ones consume the expensive formal pipeline.
+⚠ THE LOCAL GROSS EVALUATOR HAS BEEN ELIMINATED. Red Team confirmed the local `simulate` diverged
+from the lab's evaluator on the FIRST trade (screen +1.00 gross vs mstrat +0.80 NET). There is now
+ONE evaluator in the whole lab: **`mstrat.simulate`** (the shared production backtester — entry@next-open,
+stop/target/timeout/trailing, floored executable stop, NET of CFG cost, no-overlap). This module NO
+LONGER computes gross R. It provides:
+  * SIGNAL BUILDERS (unchanged logic, NOT evaluation): derive_blocks, day_index_ny17,
+    bars_to_period_end, breakout_trades, Trade
+  * canonical_evaluate(d, trades) -- converts Trades -> mstrat setups and calls mstrat.simulate,
+    returning the NET-of-cost ledger. THE ONLY evaluation path.
+  * metrics / screen_verdict -- summary + fat-tail check, now computed on the CANONICAL NET R.
+  * simulate(...) -- DEPRECATED: raises. Do not compute gross R locally.
 
-This module is the shared measurement apparatus (NOT a representation of any phenomenon — the
-phenomena come from the RATIFIED detectors, imported, never reimplemented). It provides:
-  * derive_blocks(df)  -- the contiguity segments the ratified detectors require, from time-gaps
-  * simulate(...)      -- forward trade simulation with WORST-CASE intrabar resolution
-                          (stop-before-target when a bar spans both — the ratified DEMO convention)
-  * metrics(...)       -- economic summary (n, win%, total R, expectancy, profit factor)
-  * screen_verdict(...)-- ELIMINATE / PROMISING / BORDERLINE
-
-Data is loaded ONLY via edge_research._common.load (holdout sealed). Blocks are derived from the
-delivered df's own time-contiguity (a gap > gap_hours between consecutive bars = a segment
-boundary), which keeps weekends inside a block (like the manifest discovery segments) but never
-lets a detector window cross a real data gap. This is the QUICK-screen block model; a promoted
-candidate's FORMAL run uses the manifest's exact discovery segments.
-
-NO LOOKAHEAD: entry is next-open after the signal bar; every stop/target is known at entry.
-Costs are NOT modeled here (quick screen reads GROSS R) — an obviously-unprofitable gross result
-needs no cost model; a promising gross result is where costs get measured, downstream.
+Cost/convention are the canonical evaluator's (CFG: tick=0.01, spread_ticks=slip_ticks=1.0). Flow A does
+NOT invent cost or choose its own convention — if the canonical spread assumption changes, that is VE's/
+CEO's call, applied once at the source. Data is loaded ONLY via _common.load (holdout sealed). NO LOOKAHEAD.
 """
 from __future__ import annotations
 import sys, os
 from dataclasses import dataclass
 
-# ratified code snapshot (commit 5443077) — imported, never reimplemented
+# ratified detector snapshot — imported, never reimplemented
 _SNAP = os.environ.get("RATIFIED_CODE_DIR")
 if _SNAP and _SNAP not in sys.path:
     sys.path.insert(0, _SNAP)
 from market_structure import Block  # noqa: E402
+
+# CANONICAL EVALUATOR snapshot (mstrat.simulate + alpha_lab.CFG) — the ONE lab evaluator
+_CANON = os.environ.get("CANONICAL_CODE_DIR",
+                        r"C:\Users\MEDION~1\AppData\Local\Temp\claude\C--Users-MEDION-GAMING-tradingview-mcp\44ba92ba-04ad-40f2-a48e-0ee6a8aca893\scratchpad\canonical_code\code")
+
+
+def _canonical():
+    """Import the canonical evaluator lazily (mstrat.simulate + CFG). Raises if unavailable — we do
+    NOT silently fall back to a local gross computation."""
+    if _CANON and _CANON not in sys.path:
+        sys.path.insert(0, _CANON)
+    from mstrat import simulate as _sim   # noqa: E402
+    from alpha_lab import CFG              # noqa: E402
+    return _sim, CFG
 
 
 def derive_blocks(df, gap_hours: float = 72.0) -> list[Block]:
@@ -110,49 +118,42 @@ def breakout_trades(levels_norm, high, low, close, period_index, blocks):
     return trades, dict(n_levels=len(levels_norm), n_broken=n_broken)
 
 
-def simulate(o, h, l, c, trades, worst_case: bool = True, cost: float = 0.0):
-    """Forward-simulate. Entry = open[signal_idx+1] (next-open, no lookahead). Scan to the time-stop:
-    if a bar spans BOTH stop and target, WORST-CASE assigns the stop (fail-closed). R = signed
-    (exit-entry − cost)/|entry-stop|. `cost` = round-trip transaction cost in PRICE units (spread+slip);
-    for XAUUSD the measured live spread is ~0.05 (median) to 0.08 (p75), so cost≈0.08 is realistic (0.0 =
-    gross). Each trade dict also carries `risk` (the stop distance in price) for stop-size profiling."""
-    n = len(c)
-    res = []
+def simulate(*a, **k):
+    """DEPRECATED (Step 6): the local GROSS evaluator is eliminated. Red Team found it diverged from
+    the lab evaluator on the first trade. Use `canonical_evaluate(d, trades)` — the ONE lab evaluator."""
+    raise RuntimeError(
+        "_screen.simulate is ELIMINATED (Step 6). Local gross evaluation is forbidden — there is ONE "
+        "evaluator in the lab: mstrat.simulate. Call canonical_evaluate(d, trades) instead.")
+
+
+def trades_to_setups(trades):
+    """Convert Flow-A Trade signals into canonical mstrat setups WITHOUT changing signal logic.
+    mstrat entry = o[ei]; my entry = open[signal_idx+1] -> ei = signal_idx+1, si = signal_idx.
+    Exit is expressed in the canonical menu: a price target -> ('opp_liq', price) (fixed-price exit,
+    with mstrat's own 48-bar backstop); no target -> ('time', time_stop_bars). Stop is the price."""
+    setups = []
     for t in trades:
-        si = t.signal_idx
-        ei = si + 1
-        if ei >= n:
-            continue
-        entry = float(o[ei]); stop = float(t.stop); side = t.side; tgt = t.target
-        risk = abs(entry - stop)
-        if risk <= 0:
-            continue
-        # validity guard: refuse if entry already beyond stop or already beyond target
-        if side == "long" and entry <= stop:
-            continue
-        if side == "short" and entry >= stop:
-            continue
-        if tgt is not None and ((side == "long" and entry >= tgt) or (side == "short" and entry <= tgt)):
-            continue
-        end = min(ei + t.time_stop_bars, n - 1)
-        exit_price = None; reason = None
-        for j in range(ei, end + 1):
-            hi = float(h[j]); lo = float(l[j])
-            hit_stop = (lo <= stop) if side == "long" else (hi >= stop)
-            hit_tgt = tgt is not None and ((hi >= tgt) if side == "long" else (lo <= tgt))
-            if hit_stop and hit_tgt:
-                exit_price, reason = stop, "stop_wc"  # worst-case: stop first
-                break
-            if hit_stop:
-                exit_price, reason = stop, "stop"; break
-            if hit_tgt:
-                exit_price, reason = tgt, "target"; break
-        if exit_price is None:
-            exit_price, reason = float(c[end]), "time"
-        move = (exit_price - entry) if side == "long" else (entry - exit_price)
-        r = (move - cost) / risk
-        res.append(dict(r=r, reason=reason, entry=entry, exit=exit_price, side=side, signal_idx=si, risk=risk))
-    return res
+        dirn = 1 if t.side == "long" else -1
+        if t.target is not None:
+            ek, ep = "opp_liq", float(t.target)
+        else:
+            ek, ep = "time", int(t.time_stop_bars)
+        setups.append(dict(si=int(t.signal_idx), ei=int(t.signal_idx) + 1, dir=dirn,
+                           stop=float(t.stop), exit_kind=ek, exit_param=ep))
+    return setups
+
+
+def canonical_evaluate(d, trades):
+    """THE ONLY evaluation path. Delegates to the canonical evaluator mstrat.simulate (NET of CFG cost,
+    floored stop, no-overlap, worst-case). `d` = the _common.load DataFrame; m_atr is set from atr14
+    (the ratified ATR-14, identical formula). Returns a res list [{r(net), signal_idx}] for metrics()."""
+    sim, CFG = _canonical()
+    dd = d.copy()
+    if "m_atr" not in dd.columns:
+        dd["m_atr"] = dd["atr14"]
+    setups = trades_to_setups(trades)
+    led = sim(dd, setups, CFG)   # DataFrame: R (net), si, ei
+    return [dict(r=float(r), signal_idx=int(si)) for r, si in zip(led["R"].to_numpy(), led["si"].to_numpy())]
 
 
 def metrics(res) -> dict:
@@ -164,7 +165,7 @@ def metrics(res) -> dict:
     losses = [x for x in rs if x <= 0]
     gross_win = sum(wins); gross_loss = -sum(losses)
     from collections import Counter
-    reasons = Counter(x["reason"] for x in res)
+    reasons = Counter(x.get("reason", "canonical") for x in res)
     tot = sum(rs)
     srt = sorted(rs, reverse=True)
     risks = sorted(x.get("risk", float("nan")) for x in res if x.get("risk") is not None)
@@ -194,9 +195,10 @@ def metrics(res) -> dict:
 
 
 def screen_verdict(m: dict, min_n: int = 30) -> str:
-    """Quick economic screen. GROSS R (no costs). Conservative — KILL obvious losers, and NEVER call a
-    fat-tail 'PROMISING'. A positive total built on a few tiny-stop outliers is not edge (CEO rule):
-    downgrade if the single best trade is >30% of total R, or the top-1%-trimmed avg_R is non-positive."""
+    """Screen on the CANONICAL NET R (from canonical_evaluate/mstrat.simulate). Conservative — KILL
+    obvious losers, and NEVER call a fat-tail 'PROMISING'. A positive total built on a few tiny-stop
+    outliers is not edge: downgrade if the single best trade is >30% of total R, or the top-1%-trimmed
+    avg_R is non-positive."""
     if m.get("n", 0) < min_n:
         return f"INSUFFICIENT_N ({m.get('n',0)} < {min_n}) — cannot screen"
     exp = m["avg_R"]; pf = m["profit_factor"]; tot = m["total_R"]
@@ -209,6 +211,6 @@ def screen_verdict(m: dict, min_n: int = 30) -> str:
         return (f"BORDERLINE — FAT-TAIL (best trade = {bs} of total R; top-1%-trimmed avg_R={t_avg}, "
                 f"PF={t_pf}). Positive total is a few tiny-stop outliers, NOT edge → deprioritize.")
     if exp > 0.05 and pf >= 1.20 and t_avg > 0 and t_pf >= 1.15:
-        return (f"PROMISING — positive gross edge ROBUST to top-1% trim (avg_R={exp}->trim {t_avg}, "
+        return (f"PROMISING — positive NET edge ROBUST to top-1% trim (avg_R={exp}->trim {t_avg}, "
                 f"PF={pf}->trim {t_pf}, best_share={bs}, total_R={tot}) → formal pipeline")
-    return f"BORDERLINE — weak positive gross (avg_R={exp}, PF={pf}); costs likely decisive → hold/deprioritize"
+    return f"BORDERLINE — weak positive NET (avg_R={exp}, PF={pf}); marginal → hold/deprioritize"
