@@ -17,7 +17,7 @@ NOT invent cost or choose its own convention — if the canonical spread assumpt
 CEO's call, applied once at the source. Data is loaded ONLY via _common.load (holdout sealed). NO LOOKAHEAD.
 """
 from __future__ import annotations
-import sys, os
+import sys, os, warnings
 from dataclasses import dataclass
 
 # ratified detector snapshot — imported, never reimplemented
@@ -42,9 +42,20 @@ def _canonical():
 
 
 def derive_blocks(df, gap_hours: float = 72.0) -> list[Block]:
-    """Contiguity segments from the delivered df's time column. A gap > gap_hours (default 3 days)
-    between consecutive bars starts a new block — separates the manifest discovery segments (weeks
-    of quarantine) while keeping ordinary weekend gaps (~2 days) inside a block."""
+    """R9 CANONICAL POPULATION (measurement contract v1.0, edge_research/_contract.py). The ONLY
+    legitimate population is the MANIFEST discovery segmentation. When `df` comes from
+    `_common.load` it carries the official manifest blocks in `df.attrs['official_blocks']`; this
+    function returns THOSE, exclusively — never a >72h gap-based reconstruction that differs
+    (divergence M-4: the gap split fragments the population on ~3-day HOLIDAY closures
+    (Christmas/New Year/Easter), producing e.g. 15 blocks where the manifest defines 3 discovery
+    segments — different populations, incomparable numbers vs mstrat which uses the manifest).
+
+    The legacy >72h gap split is retained ONLY as a fallback for a df that did NOT come from the
+    manifest loader (an ad-hoc/synthetic frame), and it warns loudly that the result is NOT
+    manifest-verified. Holiday gaps are treated like the ordinary weekend gaps already kept inside
+    a block (bar-count windows tolerate them), so using the manifest blocks introduces no new
+    window-across-gap behavior.
+    """
     t = df["time"].to_numpy()
     bounds = [0]
     thr = gap_hours * 3600.0
@@ -52,7 +63,31 @@ def derive_blocks(df, gap_hours: float = 72.0) -> list[Block]:
         if (t[i] - t[i - 1]) > thr:
             bounds.append(i)
     bounds.append(len(t))
-    return [Block(bounds[k], bounds[k + 1]) for k in range(len(bounds) - 1) if bounds[k + 1] > bounds[k]]
+    gap_blocks = [(bounds[k], bounds[k + 1]) for k in range(len(bounds) - 1) if bounds[k + 1] > bounds[k]]
+
+    attrs = getattr(df, "attrs", {}) or {}
+    official = attrs.get("official_blocks")
+    official_n = attrs.get("official_blocks_n")
+    if official is not None and official_n == len(df):
+        official = [(int(s), int(e)) for s, e in official]
+        if gap_blocks != official:
+            warnings.warn(
+                f"derive_blocks: R9 contract override — manifest defines {len(official)} discovery "
+                f"block(s); the legacy >72h gap split produced {len(gap_blocks)} (extra boundaries are "
+                f"holiday closures, not data holes). Using the MANIFEST population EXCLUSIVELY "
+                f"(divergence M-4 resolved).", RuntimeWarning, stacklevel=2)
+        return [Block(s, e) for s, e in official]
+    if official is not None:  # present but df length changed since load -> cannot safely map indices
+        warnings.warn(
+            "derive_blocks: df carries manifest official_blocks but its length changed since load; "
+            "R9 cannot be enforced on a modified frame — falling back to gap blocks (quick-screen only).",
+            RuntimeWarning, stacklevel=2)
+    else:
+        warnings.warn(
+            "derive_blocks: df has no manifest official_blocks (not from _common.load) — using "
+            "gap-derived blocks, quick-screen ONLY, NOT manifest-verified (R9).",
+            RuntimeWarning, stacklevel=2)
+    return [Block(s, e) for s, e in gap_blocks]
 
 
 def day_index_ny17(time) -> "list[int]":
