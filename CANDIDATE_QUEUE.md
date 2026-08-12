@@ -101,6 +101,21 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ## STATE: `FLOW_B_ECONOMIC_SCREENING` — quick-backtest harness live; screening the unblocked base families
 
+### 🔬 S3 FAMILY VERDICT (CEO priority, independent verification) — REAL PATTERN, but THEORETICAL (not executable)
+The TICK correction (`38e7165`, 0.1→0.01) revived 7 S3 hypotheses (PF 1.33–1.45). Verified INDEPENDENTLY (`edge_research/cand_s3_verify.py` + `cand_s3_execution.py`): reproduced the S3 mechanism on holdout-sealed data with the corrected engine + my fat-tail check.
+
+**S3 = "breakout-retest continuation" — the SAME mechanism as CAND-0037** (independently rediscovered by the legacy campaign). The pattern is genuinely robust:
+- 3 named hashes (my numbers): 4fb5dffe +0.271R, e06421b7 +0.266R, 47df1185 +0.248R; **median +0.85R**, **best-trade share ~0.5%** (NOT a fat-tail), **trimmed ≈ raw**, **8/8 years**. Confirms VE's direction + rough magnitude independently. ~4× CAND-0037's expectancy.
+
+**BUT NOT EXECUTABLE (CEO's warning confirmed):** the beyond-level stop floors to ~**60 cents** (`0.10·atr` binds; the 0.05 term never binds — the sub-spread-floor concern does NOT materialize). The real problem is the **cost model**: mstrat assumes **spread = 1 cent**, ~10–30× too optimistic for XAUUSD. Spread sensitivity: 1c → +0.27R 🟢; **10c → −0.09R 🔴; 20c → −0.36R; 30c → −0.50R.** At any realistic gold spread the edge inverts to negative. The +0.27R edge is smaller than real transaction cost on a ~60c stop.
+
+**Root insight (ties to CAND-0037):** breakout-retest continuation is a REAL edge, but executability is decided by STOP SIZE. S3's tight ~60c stop → killed by spread. **CAND-0037's full-week-range stop (many dollars) → cost-in-R negligible → survives realistic spread.** The executable version of this mechanism is the LARGE-structural-stop one (CAND-0037), not tight-stop S3.
+
+**⚠ SYSTEMIC CAVEAT for VE/CEO:** the "44 revived candidates / 529 flipped-positive" from `38e7165` are likely the SAME cost-illusion — if they share S3's tight-stop profile, they are profitable ONLY under the 1-cent-spread assumption and negative at realistic spread. **Recommend VE re-run the revival screen with a realistic XAUUSD spread (≥10–15 ticks) before treating any as edges.** The TICK/floor fix is correct but does not address the unrealistic spread in the cost model.
+
+---
+
+
 **Flow B kickoff (2026-08):** built the reusable quick-screen harness (`edge_research/_screen.py`) + verified it end-to-end. First economic screens on the three detectors ratified @ `5443077` (`detect_void_reactions`, `detect_bpr_reactions`, `detect_weekly_level_touches`):
 - **CAND-0004 (void-reaction): 🔴 ELIMINATED** — 29 signals / 10 yr (untradeable) + avg_R −0.64, PF 0.18. Killed cheaply.
 - **CAND-0005 (BPR-reaction): 🟠 BORDERLINE → deprioritized** — gross avg_R +0.10 / PF 1.125 but median −1R, tiny-stop fat-tail (best +131R); costs + min-risk floor likely erase it.

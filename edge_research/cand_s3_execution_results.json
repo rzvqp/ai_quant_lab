@@ -1,0 +1,141 @@
+{
+  "experiment": "S3_executability",
+  "note": "mstrat spread=1c is optimistic; real XAUUSD ~15-30c",
+  "configs": {
+    "4fb5dffe": {
+      "config": "swing/50/4/rr3/down",
+      "risk_profile": {
+        "median_risk_price": 0.661,
+        "median_risk_cents": 66.1,
+        "p10_risk": 0.173,
+        "floor_bound_frac": 0.18,
+        "floor_bind_005_frac": 0.0,
+        "floor_bind_010atr_frac": 1.0
+      },
+      "spread_sensitivity": {
+        "spread_1c": {
+          "n": 2152,
+          "avg_R": 0.2708,
+          "median": 0.8714,
+          "PF": 1.55,
+          "trimmed": 0.244,
+          "verdict": "PROMISING"
+        },
+        "spread_10c": {
+          "n": 2152,
+          "avg_R": -0.0929,
+          "median": 0.3741,
+          "PF": 0.868,
+          "trimmed": -0.1229,
+          "verdict": "ELIMINATE"
+        },
+        "spread_20c": {
+          "n": 2148,
+          "avg_R": -0.3439,
+          "median": -0.006,
+          "PF": 0.61,
+          "trimmed": -0.376,
+          "verdict": "ELIMINATE"
+        },
+        "spread_30c": {
+          "n": 2124,
+          "avg_R": -0.4935,
+          "median": -1.2873,
+          "PF": 0.506,
+          "trimmed": -0.527,
+          "verdict": "ELIMINATE"
+        }
+      }
+    },
+    "e06421b7": {
+      "config": "swing/50/8/rr3/down",
+      "risk_profile": {
+        "median_risk_price": 0.653,
+        "median_risk_cents": 65.3,
+        "p10_risk": 0.171,
+        "floor_bound_frac": 0.182,
+        "floor_bind_005_frac": 0.0,
+        "floor_bind_010atr_frac": 1.0
+      },
+      "spread_sensitivity": {
+        "spread_1c": {
+          "n": 2357,
+          "avg_R": 0.2657,
+          "median": 0.8582,
+          "PF": 1.532,
+          "trimmed": 0.2388,
+          "verdict": "PROMISING"
+        },
+        "spread_10c": {
+          "n": 2357,
+          "avg_R": -0.1033,
+          "median": 0.2994,
+          "PF": 0.856,
+          "trimmed": -0.1333,
+          "verdict": "ELIMINATE"
+        },
+        "spread_20c": {
+          "n": 2353,
+          "avg_R": -0.3565,
+          "median": -1.0908,
+          "PF": 0.603,
+          "trimmed": -0.3886,
+          "verdict": "ELIMINATE"
+        },
+        "spread_30c": {
+          "n": 2328,
+          "avg_R": -0.5021,
+          "median": -1.3214,
+          "PF": 0.504,
+          "trimmed": -0.5355,
+          "verdict": "ELIMINATE"
+        }
+      }
+    },
+    "47df1185": {
+      "config": "swing/20/4/rr3/down",
+      "risk_profile": {
+        "median_risk_price": 0.586,
+        "median_risk_cents": 58.6,
+        "p10_risk": 0.152,
+        "floor_bound_frac": 0.169,
+        "floor_bind_005_frac": 0.005,
+        "floor_bind_010atr_frac": 0.995
+      },
+      "spread_sensitivity": {
+        "spread_1c": {
+          "n": 3751,
+          "avg_R": 0.2484,
+          "median": 0.8416,
+          "PF": 1.492,
+          "trimmed": 0.2211,
+          "verdict": "PROMISING"
+        },
+        "spread_10c": {
+          "n": 3751,
+          "avg_R": -0.1558,
+          "median": 0.2466,
+          "PF": 0.791,
+          "trimmed": -0.1867,
+          "verdict": "ELIMINATE"
+        },
+        "spread_20c": {
+          "n": 3733,
+          "avg_R": -0.3956,
+          "median": -1.1386,
+          "PF": 0.571,
+          "trimmed": -0.4285,
+          "verdict": "ELIMINATE"
+        },
+        "spread_30c": {
+          "n": 3657,
+          "avg_R": -0.5366,
+          "median": -1.3777,
+          "PF": 0.486,
+          "trimmed": -0.5701,
+          "verdict": "ELIMINATE"
+        }
+      }
+    }
+  }
+}
