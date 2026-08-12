@@ -8,7 +8,7 @@ import numpy as np, pandas as pd, itertools, hashlib, json
 
 # ----------------------------- CONFIG (immutable per run) -----------------------------
 CFG = dict(
-    tick=0.1, spread_ticks=1.0, slip_ticks=1.0,      # costs
+    tick=0.01, spread_ticks=1.0, slip_ticks=1.0,     # costs (XAUUSD tick = 0,01; era 0,1 = de 10x prea mare, RT-CODE-A-0007)
     atr_len=14, vol_len=20, vol_rank_win=80, trend_len=20,
     split=(0.65,0.15,0.20),                          # research / validation / holdout
     MINTR=25, PF_MIN=1.15, DD_MAX_R=12.0, EXP_MIN=0.0,

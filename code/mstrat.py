@@ -7,7 +7,7 @@ stop, exit_price, R, dir. Global-FDR over the WHOLE campaign universe."""
 import numpy as np, pandas as pd, itertools, hashlib, math
 from alpha_lab import CFG
 import s1 as _s1
-TICK=0.1
+TICK=CFG['tick']   # RECONCILIAT la sursa unică (era 0,1 hardcodat, divergent de CFG; XAUUSD tick=0,01) — RT-CODE-A-0007
 
 # ---------------- shared features ----------------
 def load():
