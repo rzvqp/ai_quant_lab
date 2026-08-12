@@ -248,10 +248,32 @@ class StrategyReport:
     base_mean_R: float | None          # performanță EXCLUSIV pe tranzacțiile executabile
     stress_mean_R: float | None
     base_minus_stress: float | None    # diferența explicită
+    # T15/T16: metrici de fat-tail SIMETRICE (aceeași definiție în ambele scenarii — nu asimetrice ca SCREEN vs MSTRAT)
+    base_best_share_of_total: float | None    # T15: concentrarea unei singure tranzacții (max R / Σ R)
+    stress_best_share_of_total: float | None
+    base_trimmed_top1pct_R: float | None      # T16: media după eliminarea celui mai bun 1%
+    stress_trimmed_top1pct_R: float | None
 
 
 def _mean(xs: list[float]) -> float | None:
     return (sum(xs) / len(xs)) if xs else None
+
+
+def _best_share_of_total(xs: list[float]) -> float | None:
+    """T15: fracția din net_R total adusă de SINGURA cea mai bună tranzacție (concentrare fat-tail)."""
+    if not xs:
+        return None
+    total = sum(xs)
+    return (max(xs) / total) if total != 0.0 else None
+
+
+def _trimmed_top1pct(xs: list[float]) -> float | None:
+    """T16: media net_R după eliminarea celui mai bun 1% (rezistență la fat-tail). Simetric pt. orice scenariu."""
+    if not xs:
+        return None
+    k = max(1, int(len(xs) * 0.01))
+    kept = sorted(xs)[: len(xs) - k]
+    return (sum(kept) / len(kept)) if kept else None
 
 
 def evaluate_strategy(
@@ -287,5 +309,7 @@ def evaluate_strategy(
         rejection_reasons=tuple(sorted(reasons.items())), no_entry=len(noent),
         still_open_at_end=len(still_open),
         base_mean_R=bm, stress_mean_R=sm,
-        base_minus_stress=(bm - sm) if (bm is not None and sm is not None) else None)
+        base_minus_stress=(bm - sm) if (bm is not None and sm is not None) else None,
+        base_best_share_of_total=_best_share_of_total(base), stress_best_share_of_total=_best_share_of_total(stress),
+        base_trimmed_top1pct_R=_trimmed_top1pct(base), stress_trimmed_top1pct_R=_trimmed_top1pct(stress))
     return report, outcomes
