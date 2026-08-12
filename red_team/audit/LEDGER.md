@@ -1931,4 +1931,56 @@
                  modified no engine, ran no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [45], prev_hash E44.
   entry_hash:  E44
+
+[45] 2026-08-13
+  prev_hash:   E44
+  event:       VERDICT
+  dc_id:       DC-CANONICAL-EVALUATOR
+  freeze_hash: 82acad9 (code/canonical_evaluator.py, v1.0-DRAFT NOT RATIFIED)
+  battery_ver: RT-AUDIT-MEAS-0003
+  reviewer:    Red Team
+  detail:      ATTACK ON THE CANONICAL EVALUATOR @ 82acad9, run against the 17. VERDICT =
+               PASS_WITH_LIMITATIONS as a SPEC; NOT YET the ratification gate. First artifact to
+               implement ONE coherent semantics: R1 tick 0.01 single-source, R2 next-open, R3
+               reject-not-widen (risk un-extended, no fictional P&L), R4 spread-ONCE (BASE 0.05 /
+               STRESS 0.24), R5 entry-bar SL+TP inclusive + SL-primacy, R6 explicit window [ei,ei+H-1],
+               R7 still-open-not-time-exit. CLOSES 7 of 8 divergences on the normal path; VE's 14 tests
+               all pass (re-run 14/14); my 17 axes pass on the normal path.
+               ***NINTH DIVERGENCE (actively hunted, found) MEAS-9***: the evaluator DROPS SCREEN's
+               gap-open guard (`entry<=stop`/`entry>=tgt: continue`). Entry gapped THROUGH the stop
+               (long, entry 97 stop 98) -> immediate 'stop' exit at 98 -> BASE net_R = +0.95, a WIN
+               booked from a gapped-through stop (economic defect). Entry gapped THROUGH the target
+               (entry 105 tgt 102) -> forced loss -0.436. SCREEN skips both. Same signal+config ->
+               no-trade (SCREEN) vs win/forced-loss (evaluator). Untested by VE's 14 and by the first 17.
+               SHARED VIOLATIONS repair-or-inherit: T8 dataset-boundary -> REPAIRED (R7 still_open /
+               NoEntry). T15/T16 fat-tail -> NOT repaired, DROPPED: StrategyReport has NO best_share /
+               trimmed_top1pct / any concentration metric (regression from _screen); CEO fat-tail guard
+               UNCOMPUTABLE from canonical output. T17 config provenance -> HALF: config_id PRODUCED +
+               immutable (16-hex sha256 over rules+scenarios+code_version -- the tagging VE claims IS
+               real) BUT (a) NOT ENFORCED (no function refuses mismatched-config comparison; VE's own
+               R11 test asserts only inequality + a 'NON-COMPARABLE' COMMENT) and (b) DATA-BLIND (payload
+               omits symbol/date-range/block-manifest -> two runs on DIFFERENT instruments share ONE
+               config_id -> falsely comparable; CEO T17 asks for 'block' provenance, absent).
+               S3 +0.395 BASE: cost arithmetic verified -- old mstrat 2*(1+1)*0.1=0.40 (doubled) vs
+               canonical BASE 0.05 (8x smaller), STRESS 0.24. DIRECTION right, engine now correct on cost;
+               VE did NOT swap one engine error for another. BUT +0.395 is NOT a usable verdict:
+               (1) BASE = most-optimistic + explicitly UNCALIBRATED, R4 requires BOTH scenarios;
+               (2) R3 reject-not-widen CHANGED the eligible population vs the widen-era set;
+               (3) comparing +0.395 to prior -0.39 is itself an R11 violation (NON-COMPARABLE config+
+               population). Under the freeze S3 is NOT a final positive verdict.
+               SUB-SPECS (CEO task 1): T4 entry-bar-target -> R5 CLOSES the normal case but MOVES a
+               boundary case open (feeds MEAS-9). T12/13 spread full-vs-half -> R4 CLOSES it (no 2x
+               factor; spread once).
+               SEVERITY: MEAS-9 gap-open guard (RED, blocks gate); MEAS-10 fat-tail metrics dropped
+               (RED, blocks gate); MEAS-11 config_id produced-not-enforced + data-blind (ORANGE);
+               MEAS-12 population-shift disclosure (YELLOW).
+               HANDOFF: adopt R1-R7/R11 + make all 3 engines CONSUME it; close MEAS-9 (add gap guard =
+               test 18) + MEAS-10 (restore best_share/trimmed_top1pct) [both blocking]; close MEAS-11
+               (comparison-guard + extend config_id to symbol/period/block); publish S3 BASE+STRESS,
+               UNCALIBRATED, no -0.39 comparison. FREEZE HOLDS -- no leaderboard/elimination, and NO S3
+               flip, definitive until every engine (incl. this evaluator) passes the expanded suite with
+               matching provenance. Any single number presented as final is flagged. Red Team modified no
+               engine, ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [46], prev_hash E45.
+  entry_hash:  E45
 ```
