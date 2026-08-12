@@ -1,0 +1,54 @@
+{
+  "experiment": "stop_amplitude_vs_period",
+  "data": {
+    "rows": 130491,
+    "blocks": 15
+  },
+  "n_daily_break_signals": 1204,
+  "variants": {
+    "V1_daily_dailyStop_dayHz": {
+      "n": 1204,
+      "win": 0.4635,
+      "avg_R": 0.0051,
+      "median": -0.0424,
+      "PF": 1.021,
+      "best_share": 0.616,
+      "trimmed_avg_R": -0.0234,
+      "years_pos": "5/8",
+      "verdict": "BORDERLINE \u2014 FAT-TAIL (best trade = 0.616 of total R; top-1%-trimmed avg_R=-0.0234, PF=0.907). Positive total is a few tiny-stop outliers, NOT edge \u2192 deprioritize."
+    },
+    "V2_daily_weeklyStop_dayHz": {
+      "n": 1106,
+      "win": 0.4638,
+      "avg_R": -0.0212,
+      "median": -0.0247,
+      "PF": 0.88,
+      "best_share": null,
+      "trimmed_avg_R": -0.0465,
+      "years_pos": "4/8",
+      "verdict": "ELIMINATE \u2014 non-positive expectancy (avg_R=-0.0212, total_R=-23.4, PF=0.88)"
+    },
+    "V3_daily_weeklyStop_weekHz": {
+      "n": 1106,
+      "win": 0.453,
+      "avg_R": -0.0034,
+      "median": -0.0547,
+      "PF": 0.989,
+      "best_share": null,
+      "trimmed_avg_R": -0.041,
+      "years_pos": "5/8",
+      "verdict": "ELIMINATE \u2014 non-positive expectancy (avg_R=-0.0034, total_R=-3.75, PF=0.989)"
+    },
+    "V4_weekly_reference": {
+      "n": 246,
+      "win": 0.5081,
+      "avg_R": 0.0623,
+      "median": 0.0126,
+      "PF": 1.302,
+      "best_share": 0.174,
+      "trimmed_avg_R": 0.0426,
+      "years_pos": "7/8",
+      "verdict": "PROMISING \u2014 positive gross edge ROBUST to top-1% trim (avg_R=0.0623->trim 0.0426, PF=1.302->trim 1.205, best_share=0.174, total_R=15.33) \u2192 formal pipeline"
+    }
+  }
+}

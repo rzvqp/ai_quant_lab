@@ -130,7 +130,19 @@ Tested the opposite direction on the SAME populations, pre-registered: signal = 
 
 **CAND-0009 (level break + displacement, CEO-named): 🔴 ELIMINATED** — avg_R −0.084, PF 0.88, 3/8 years, trims to −0.26. Its pre-repair +146R was an engine artifact. **Root difference vs CAND-0037: the STOP** — CAND-0009 stops at the broken level (small → fat-tail/negative); CAND-0037 stops at the opposite level (structural → robust). Confirms the CEO's thesis that the structural stop is decisive.
 
-Next: deepen CAND-0037 (regime split, MFE/hold analysis) if the pipeline asks; screen new CAND-0038+ breakout-family ideas (weekly × displacement, weekly × session-alignment) that REUSE ratified primitives. Prior primitive-space coverage stands (below).
+### 🔬 DISCOVERY (not a candidate) — the weekly-breakout edge is the PERIOD, not the stop amplitude
+The CEO's confound test: CAND-0037 mixes weekly SIGNAL + weekly STOP + week HORIZON. Isolated by holding the daily breakout SIGNAL fixed and swapping in a weekly-range stop (`edge_research/exp_stop_vs_period.py`, same 1204 daily signals):
+
+| variant | signal | stop | horizon | avg_R | trimmed avg_R | years+ | verdict |
+|---|---|---|---|---|---|---|---|
+| V1 | daily | daily | day | +0.005 | −0.023 | 5/8 | flat |
+| V2 | daily | **WEEKLY** | day | **−0.021** | −0.047 | 4/8 | ELIMINATE |
+| V3 | daily | **WEEKLY** | week | **−0.003** | −0.041 | 5/8 | ELIMINATE |
+| V4 | **weekly** | weekly | week | **+0.062** | **+0.043** | **7/8** | PROMISING |
+
+**Result: PERIOD, not stop amplitude.** A daily breakout given a weekly-sized stop (V2) — and even a weekly horizon (V3) — does NOT reach the edge; it stays flat/negative. Only the genuine weekly-level breakout (V4) works. The big stop DID remove the fat-tail (V2/V3 best-share undefined = no outlier), which is exactly why it reveals the daily-signal mechanism is fundamentally negative. **The edge is the significance of the prior-WEEK level as an event, not the wide stop.** This strengthens CAND-0037 (its edge is real, not a stop-sizing artifact) and closes the daily/session breakout direction.
+
+Next: deepen CAND-0037's own family (weekly × displacement confirmation, weekly × session-alignment) that REUSE ratified primitives. Prior primitive-space coverage stands (below).
 
 ---
 
