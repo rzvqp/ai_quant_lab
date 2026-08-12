@@ -250,16 +250,19 @@ def test_ratified_context_keys_load_and_verify(key: str) -> None:
     assert meta["manifest_hash"] == MAN["content_hash"]["value"]
 
 
-def test_h1_from_m15_v2_awaits_path_reconciliation() -> None:
-    # CTO hotfix moved the derived H1 to data/market/OANDA_XAUUSD_H1_from_M15_v2.csv, but manifest v2.4.1
-    # still registers it at the old acquisition_staging path -> fail-closed (file not found) until the
-    # Statistician updates file_path. Documents the pending reconciliation; the file itself is present.
+def test_h1_from_m15_v2_path_reconciled() -> None:
+    # Was `..._awaits_path_reconciliation`, asserting the registered path did NOT exist while the manifest
+    # still pointed at the old acquisition_staging location. The reconciliation has since landed, so the
+    # original assertion inverted and the test went stale (Data Acquisition, M-4). It is CONVERTED rather
+    # than deleted: the guard it provided -- that the registered path is the canonical one and actually
+    # loads -- is exactly what must not silently regress.
     h1 = CTX["entries"]["H1_from_M15_v2"]
     assert h1["status"] == "CONTEXT_DERIVED_VALIDATED"
-    assert not os.path.isfile(os.path.join(_ROOT, h1["file_path"]))  # stale staging path
-    assert os.path.isfile(os.path.join(_ROOT, "data/market/OANDA_XAUUSD_H1_from_M15_v2.csv"))
-    with pytest.raises(C.HoldoutConfigError):
-        C.load("H1_from_M15_v2", data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+    assert h1["file_path"] == "data/market/OANDA_XAUUSD_H1_from_M15_v2.csv"   # canonical, not staging
+    assert "acquisition_staging" not in h1["file_path"]
+    assert os.path.isfile(os.path.join(_ROOT, h1["file_path"]))
+    d, _ = C.load("H1_from_M15_v2", data_split_id=SPLIT, cutoff=PERMISSIVE_CUTOFF)
+    assert len(d) > 0
 
 
 @pytest.mark.parametrize("key", ["H4_from_M15_v2", "D1_from_M15_v2"])
