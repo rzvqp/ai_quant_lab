@@ -1836,4 +1836,53 @@
                  designed no remedy, ran no data, modified nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [43], prev_hash E42.
   entry_hash:  E42
+
+[43] 2026-08-13
+  prev_hash:   E42
+  event:       AUDIT                 # MEASUREMENT AUDIT — the two economic-verdict simulators (trade-by-trade)
+  reviewer:    Red Team
+  detail:      CEO (max priority) tasked auditing the INSTRUMENTS: edge_research/_screen.py (Alpha) vs
+               code/mstrat.py (historical) -- do they give the same numbers on the same strategy/data?
+               Mandatory addendum: TRADE-BY-TRADE with full fields, a 7-case synthetic fixture with known
+               outcomes, an explicit convention matrix, a CANONICAL_TRADE_SIMULATION_CONTRACT, per-defect
+               blocks. Deliverable: policy_reviews/RT-AUDIT-MEAS-0001_two_simulators.md. Both simulate loops
+               replicated verbatim + run on one fixture. No engine modified; no repair; no market data.
+               VERDICT: FAIL -- they diverge on the FIRST trade and on FIVE conventions.
+               TRADE-BY-TRADE (fixture, known outcomes): FIRST DIVERGENCE = T1 (first trade) on COST (screen
+                 GROSS +1.00 vs mstrat NET +0.80). Every trade diverges on cost. T5 (small stop) diverges 50x:
+                 screen stop 99.9 gross +5.00 net +5.00 vs mstrat stop FLOORED to 99.0 gross +0.50 net +0.10.
+                 Boundary test: a target hit ONLY on the last window bar = screen TARGET +1.00 vs mstrat TIME
+                 -0.20 (off-by-one window). Same-bar SL+TP (T3) AGREE (both stop-first WC). Time-exit (T4)
+                 AGREE. Long/short (T1/T6,T2/T7) symmetric AGREE.
+               FIVE DIVERGENCES (DEFECT->COMPONENT->CAUSE->HISTORY->SUSPECT->RERUN in the report):
+                 M-1 cost: _screen GROSS, mstrat NET(2*cost), demo_gate parametric -- 3 unreconciled; every
+                   trade differs by 2*cost/risk.
+                 M-2 risk floor: _screen NONE, mstrat floors max(2*spread*tick,5*tick,0.10*ATR); at ATR<5 the
+                   binder is 5*tick=0.5 (10x wrong). Crushes small-stop/low-ATR (T5 50x). The eliminated
+                   families are all small-stop. CEO evidence: TICK fix flipped 529 neg->pos, S3 -0.39->+0.23.
+                 M-3 window off-by-one: _screen [ei,ei+tsb] inclusive vs mstrat [ei,ei+to) exclusive -- a
+                   boundary-bar hit = target (screen) vs time (mstrat). NEW finding the aggregate missed.
+                 M-4 blocks: _screen >72h gaps vs mstrat manifest segments -> different populations.
+                 M-5 TICK=0.1 contamination: entire mstrat ecosystem (mstrat/s1/mtf/synth_price/trading_
+                   strategies/task2/lm001/alpha_lab.CFG) carries the 10x error; _screen is TICK-independent.
+               CONVENTION MATRIX (all requested): DIVERGE on tick/spread/slippage/risk-floor/window/blocks;
+                 AGREE on same-bar precedence/entry/long-short/timezone-anchor(17:00 NY); NOT MODELED by
+                 either (agree): point_size/contract_size/commission-line/tick-rounding.
+               INVALIDATED/HOLDS: logically robust = Alpha's _screen GROSS-NEGATIVE eliminations (gross-neg =>
+                 net-neg) + the level-fade=fat-tail finding (floor/cost/tick-independent), within _screen's own
+                 basis. Suspect = mstrat small-stop/low-ATR leaderboard (M-2/M-5) + ALL cross-engine
+                 comparisons (M-1/M-3/M-4). PROCEDURAL (CEO directive, overrides): until the audit closes with
+                 ONE canonical semantics adopted + both engines re-run against it, NO leaderboard and NO
+                 economic elimination is definitive.
+               DELIVERED: CANONICAL_TRADE_SIMULATION_CONTRACT (11 clauses -- tick 0.01, next-open, floor
+                 max(2*spread,5*tick,0.10*ATR) with tick 0.01 => 5*tick=0.05 required, NET cost 2*(spread+
+                 slip)*tick, stop-first WC from entry-bar inclusive, single window convention, live-valid time-
+                 stop not block boundary, 17:00-NY, manifest blocks for formal verdicts, fat-tail reporting,
+                 provenance-tagged so two numbers compare only when tick/cost/floor/window/blocks match).
+               HANDOFF: CEO/Statistician -- FREEZE all leaderboards+eliminations as non-definitive; reconcile
+                 _screen/mstrat/demo_gate to the canonical semantics; re-run the mstrat 1972-campaign corrected
+                 (529-flip is a lower bound). Red Team modified no engine, ran no data, changed nothing outside
+                 red_team/.
+               STATE: OPERATIONAL. Next entry [44], prev_hash E43.
+  entry_hash:  E43
 ```
