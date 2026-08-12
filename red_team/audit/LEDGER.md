@@ -1716,4 +1716,70 @@
                  verified clean. Red Team designed no remedy, ran no data, modified nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [41], prev_hash E40.
   entry_hash:  E40
+
+[41] 2026-08-09
+  prev_hash:   E40
+  event:       AUDIT                 # END-TO-END CHAIN AUDIT #2 — wp5b level tower + bus (DoD d782401)
+  reviewer:    Red Team
+  detail:      CEO tasked the end-to-end chain attack on the wp5b tower N1->N2->N3->opportunity_id->N4->
+               PolicyMatcher->N6 + bus (MarketState/PolicyMatcher/Provenance), branch discovery-mk-matrix-v1,
+               DoD d782401. Seven targets: lookahead/leakage/opportunity-identity/cross-tf-alignment/decision-
+               clock/TRADE-NO-TRADE-integrity/audit-trail. Deliverable: policy_reviews/RT-AUDIT-CHAIN-0002_
+               wp5b_end_to_end.md. Verified on synthetic + source. No real-data run; nothing modified.
+               VERDICT: PASS_WITH_LIMITATIONS.
+               SILENT-CONSUMPTION CLOSED (verified): LevelOutput=Ok[T]|Unavailable closes L-U2/Z4-L1/ZM-U1 --
+                 Unavailable has NO .value (verified) so payload can't be read without narrowing; mypy --strict
+                 + assert_never enforce; classified-UNDETERMINED handled by enum-member check in recognizers
+                 (conf is UNDETERMINED -> WAITING), not consumed as neutral. A real structural fix.
+               TRADE/NO-TRADE integrity: cascade fail-closed with reason -- decide() isinstance(regime,
+                 Unavailable) -> NO_TRADE reason=regime_unavailable:<r> propagated (verified); N1 Unavail
+                 cascades N2(axes_status)/N3(regime_available=False)/N4(skipped) by isinstance narrowing.
+               DECISION CLOCK (sharpest, E2E-L1): opportunity_id.py CORRECTLY implements the CEO discipline --
+                 DecisionRecord(decided_at=i0=zone_hit, inputs N1/N2/N3) + EvidenceRecord(attached_at=i0+W+1,
+                 N4) linked ONLY by opportunity_id, N4 can't modify decision (point 6, by TYPE). BUT the bus
+                 decide() does NOT use it -- it builds its own DecisionRecord from PolicyMatcher matches whose
+                 recognizers READ N4 (_first_confirmation->state.confirmations, verified) -> bus decision
+                 DEPENDS on N4 (observable only at hit+W+1) -> effective clock hit+W+1, entry moved, the
+                 Statistician's forbidden 'clock depends on observed evidence'. DORMANT now (MATCH from N4 but
+                 outcome NO_TRADE from edge=False) -> ACTIVATES at Shadow when a policy has validated edge
+                 (MATCH-via-N4 -> TRADE at hit+W+1). Fix before Shadow: recognizers key on N1/N2/N3 at
+                 zone_hit, N4 evidence-only.
+               CROSS-TF ALIGNMENT: as-of correct + auditable -- each level runs on its own tf, provenance
+                 records that tf's last-CLOSED-bar timestamp (t4/t1/t15/t5[-1]); a 12:00 H4 regime at a 15:55
+                 M5 decision is correct (last closed H4) and visible in provenance (4h age auditable). BUT
+                 valid_until is CARRIED (Ok.valid_until, 'carry-forward=type error') but UNENFORCED by the bus
+                 -- trusts the caller to cut bars <= as_of per tf; a stale level would be silently used. (E2E-L2.)
+               OPPORTUNITY IDENTITY: sound. Geometry-anchored (frozen anchor+band, not bar index -- zone@{bar}
+                 named ~5.23 ids/zone). Two clocks: economic band_exit only MARKED (id survives), identity
+                 clock i0+W+1 always closes -> identity SURVIVES band-exit (only ~4.77% reach i0+W+1). Re-arm:
+                 in-band -> refresh same id (D7, no re-decide); beyond-W -> new opportunity counted, no
+                 cooldown. Band frozen (a live band chases price -> fail-dead).
+               AUDIT TRAIL: complete. Provenance(who/timeframe/as_of/detector/version) per contribution; full
+                 chain in DecisionRecord.provenance; traceable to detector+schema+tf+timestamp; version=
+                 'unavailable' for an Unavailable level (no schema_hash, correct).
+               LOOKAHEAD/LEAKAGE: causal (each level <= its last closed bar per RT-CODE-A-0008..0015;
+                 OpportunityTracker reads j-1; N4 ATR ref = current M15 atr[-1] broadcast, causal). Provided
+                 the caller cuts bars <= as_of (ties to E2E-L2).
+               T6 VE discrepancies: generalized S1/S16 faithful as RECOGNIZERS (sweep-absorbed->
+                 ABSORPTION_PROXY_BEARISH; breakout->ACCEPTANCE_BULLISH) but ordinal proxies not full evaluator
+                 logic; S2 (reclaim) NAMED in docstring but ABSENT from default_policies (2 of 3, verified). The
+                 minimal edge gate (has_validated_edge bool, all False) vs full EV_LCB engine (bdd15e5): STRICTLY
+                 CONSERVATIVE (can't false-trade), always NO_TRADE, but not the real N6. (E2E-U1.)
+               SEVERITY: E2E-L1 (decision clock -- bus recognizers key on N4, dormant/activates at Shadow, FIX
+                 before Shadow). E2E-L2 (valid_until carried but unenforced). E2E-U1 (S2 unwired, recognizer/
+                 edge-gate proxies).
+               SURVIVES: LevelOutput closes L-U2/Z4-L1/ZM-U1 (verified); cascade->NO_TRADE with reason; complete
+                 audit trail; opportunity identity survives band-exit + re-arm + D7 + geometry anchor; as-of
+                 correct+auditable; causal chain; minimal edge gate conservative. DoD auditable NO_TRADE correct.
+               VERDICT: PASS_WITH_LIMITATIONS -- tower-under-one-contract a real structural achievement (silent-
+                 consumption closed by type; cascade/identity/audit sound). Blocking for Shadow = E2E-L1 (move
+                 the bus decision off N4 back to the zone_hit clock; opportunity_id already defines how) + close
+                 E2E-L2 (enforce valid_until). E2E-U1 = disclosure (wire S2, full EV before trading).
+               HANDOFF: CEO/Statistician before Shadow -- re-point recognizers/decide() to the opportunity_id
+                 decision-clock records (E2E-L1, blocking); enforce valid_until>=as_of at the bus (E2E-L2); wire
+                 S2 + replace the boolean edge gate with the full EV (E2E-U1). Contract closure/cascade/identity/
+                 audit verified clean; the DoD holds. Red Team designed no remedy, ran no data, modified nothing
+                 outside red_team/.
+               STATE: OPERATIONAL. Next entry [42], prev_hash E41.
+  entry_hash:  E41
 ```
