@@ -217,6 +217,14 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
         d.attrs["dataset_identity"] = dataset_identity
     except Exception:  # noqa: BLE001 -- attrs are best-effort; meta always carries the truth
         pass
+
+    # R9 FAIL-CLOSED TRIPWIRE (measurement contract): actually INVOKE the population check on EVERY
+    # load (a tripwire that is defined but never called is not fail-closed). Verifies the delivered
+    # population equals the manifest discovery segmentation and tiles the frame with no gap/overlap/
+    # leak. For context-derived keys (whole discovery-safe file) the single block must tile the frame.
+    from edge_research._contract import assert_population_matches_manifest
+    _disc_ep = plan["discovery"] if plan is not None else [(int(t_arr[0]), int(t_arr[-1]) + 1)]
+    assert_population_matches_manifest(d, candidate_blocks=official_blocks, discovery_segments=_disc_ep)
     return d, meta
 
 

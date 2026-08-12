@@ -64,19 +64,47 @@ def trading_day_start_utc(time: Any) -> np.ndarray:
 
 # ----------------------------------- R9: POPULATION -----------------------------------
 def dataset_identity(tf: str, *, manifest: Optional[dict[str, Any]] = None) -> dict[str, Any]:
-    """Verifiable identity+version for `tf`: file_path, sha256, manifest version, discovery
-    segmentation. Any engine can call this to PROVE it measured the same dataset (R9)."""
+    """Verifiable identity+version for `tf` -- the COMPLETE data-side provenance block (R11 dims that
+    Data Acquisition owns). file_path, sha256, manifest version, symbol/source/timeframe/bar_seconds,
+    and the discovery segmentation. Any engine can call this to PROVE it measured the same dataset."""
     m = manifest or load_manifest()
-    kind, _ = resolve(m, tf)
+    kind, entry = resolve(m, tf)
     fp, sha = entry_file(m, tf)
     disc: list[tuple[int, int]] = []
     if kind == "timeframe":
         disc = segmentation_plan(m, tf)["discovery"]
+    base = fp.rsplit("/", 1)[-1]
+    source = base.split("_", 1)[0] if "_" in base else None            # e.g. OANDA
+    symbol = base.split("_")[1] if base.count("_") >= 1 else None       # e.g. XAUUSD
     return {
         "tf": tf, "kind": kind, "file_path": fp, "sha256": sha,
+        "source": source, "symbol": symbol, "bar_seconds": entry.get("bar_seconds"),
         "manifest_version": m.get("version"), "contract_version": CONTRACT_VERSION,
         "discovery_segments": disc, "n_discovery_segments": len(disc),
     }
+
+
+# R11 PROVENANCE — the 13 measurement-provenance dimensions a result needs to be reproducible AND
+# comparable. Red Team's Test 17 fails everywhere because engines label none. This schema names each
+# dimension, its OWNER, and whether Data Acquisition already supplies it via dataset_identity/loader
+# meta. Data Acquisition owns the DATA-SIDE block (1-4); the CONVENTION block (5-10) is the
+# Statistician/VE's; the ENGINE-RUN block (11-13) is the Research-Lab engine/harness's. Any single
+# result stamp must concatenate all three blocks -- today only 1-4 exist.
+PROVENANCE_R11: tuple[dict[str, str], ...] = (
+    {"dim": "dataset_identity", "owner": "DataAcq", "status": "SUPPLIED (dataset_identity: file_path+sha256)"},
+    {"dim": "dataset_version", "owner": "DataAcq", "status": "SUPPLIED (manifest_version + contract_version)"},
+    {"dim": "instrument_source_tf", "owner": "DataAcq", "status": "SUPPLIED (symbol+source+tf+bar_seconds)"},
+    {"dim": "population_segmentation", "owner": "DataAcq", "status": "SUPPLIED (official_blocks + split_id + cutoff + holdout flag)"},
+    {"dim": "trading_day_timezone", "owner": "Statistician/VE (delimiter provided by DataAcq)", "status": "MISSING label (R8 delimiter=trading_day_index; engines must STAMP which convention they used)"},
+    {"dim": "cost_model", "owner": "Statistician/VE", "status": "MISSING (spread/slippage/commission; CFG in canonical evaluator)"},
+    {"dim": "execution_convention", "owner": "Statistician/VE", "status": "MISSING (entry@next-open, intrabar stop-before-target, no-overlap, floored stop)"},
+    {"dim": "evaluator_identity", "owner": "Statistician/VE", "status": "MISSING (which evaluator+version; now mstrat.simulate canonical)"},
+    {"dim": "metric_definitions", "owner": "Statistician/VE", "status": "MISSING (R10: net-vs-gross, censoring, best_trade_share field)"},
+    {"dim": "random_seed", "owner": "Statistician/VE", "status": "MISSING (CFG['seed'] for null pools / subsampling)"},
+    {"dim": "strategy_hypothesis_id", "owner": "Engine (Research Lab)", "status": "PARTIAL (families compute a canonical hid; not emitted in a provenance stamp)"},
+    {"dim": "code_commit", "owner": "Engine (Research Lab)", "status": "MISSING (git commit / RATIFIED_CODE_DIR snapshot that produced the result)"},
+    {"dim": "run_env_timestamp", "owner": "Engine (Research Lab)", "status": "MISSING (run timestamp + pandas/numpy/python versions + platform)"},
+)
 
 
 def official_blocks(
@@ -125,5 +153,25 @@ def assert_population_matches_manifest(
             f"R9 population divergence"
             f"{f' for {tf}' if tf else ''}: candidate blocks {cand} != manifest official {official}. "
             f"Gap-based reconstruction that differs from the manifest is forbidden (contract {CONTRACT_VERSION})."
+        )
+    # TILING invariant: the official blocks must partition [0, len(df)) contiguously -- no gap, no
+    # overlap, every delivered bar inside exactly one manifest discovery segment. A violation means a
+    # non-discovery bar leaked into the delivered population (or the loader's block map drifted).
+    n = len(df)
+    prev_end = 0
+    covered = 0
+    for s, e in official:
+        if e <= s or s != prev_end:
+            raise PopulationContractError(
+                f"R9 tiling violation{f' for {tf}' if tf else ''}: block {(s, e)} does not abut the "
+                f"previous block end {prev_end} (gap/overlap in the delivered population)."
+            )
+        prev_end = e
+        covered += e - s
+    if prev_end != n or covered != n:
+        raise PopulationContractError(
+            f"R9 coverage violation{f' for {tf}' if tf else ''}: official blocks cover {covered} bars "
+            f"up to index {prev_end}, but the delivered frame has {n} -- a bar falls outside the "
+            f"manifest discovery segmentation (leak) or the plan under-covers the frame."
         )
     return official
