@@ -1782,4 +1782,58 @@
                  outside red_team/.
                STATE: OPERATIONAL. Next entry [42], prev_hash E41.
   entry_hash:  E41
+
+[42] 2026-08-10
+  prev_hash:   E41
+  event:       VERDICT               # TARGETED RE-ATTACK — wp5b bus fixes (E2E-L1/L2/U1), diff d782401->ad8b586
+  reviewer:    Red Team
+  detail:      CEO tasked a targeted re-attack on ONLY the three RT-AUDIT-CHAIN-0002 fixes (diff d782401 ->
+               ad8b586, wp5b discovery-mk-matrix-v1); contract/cascade/identity/audit/lookahead already clean,
+               not re-run. Deliverable: policy_reviews/RT-CODE-A-0016_wp5b_fixes_reattack.md. Verified on
+               synthetic + the repo's own tests + a monkey-patched N4 reintroduction. No real-data run.
+               VERDICT: PASS_WITH_LIMITATIONS (nothing blocks Shadow).
+               T1 E2E-L1 completely closed? YES, every path checked. All 3 recognizers (pdl_sweep_reversal,
+                 pdl_failed_break_fade, pd_close_breakout) read ONLY N1/N2/N3 via _nearest_zone(N3)+
+                 _bias_direction(N2) -- grep-verified none touches confirmations/_first_confirmation (deleted).
+                 _inputs_hash_n1n2n3 references regime+bias+zones, NOT N4 (verified). decide() computes outcome
+                 from matches+edge, packs N4 into EvidenceRecord only. Numeric: same N1/N2/N3 + N4 in
+                 {ACCEPTANCE,UNDETERMINED,Unavailable} -> 1 distinct decision + 1 distinct inputs_hash;
+                 decided_at=5(zone_hit), attached_at=9(i0+W+1). No path from N4 to the decision.
+               T5 (matters most) regression test that FAILS on N4 reintroduction? YES, PROVEN. test_e2e_l1_
+                 decision_and_inputs_hash_exclude_n4 + ..._validated_edge_trade_is_also_independent_of_n4 assert
+                 decision+inputs_hash invariant to N4 (incl. TRADE path). MONKEY-PATCHED _inputs_hash_n1n2n3 to
+                 reintroduce N4 -> the guard test FAILED with AssertionError (unpatched passes). REAL guard,
+                 not decorative -> the defect cannot be silently reintroduced. Closes the CEO's central concern.
+               T2 did zone_hit move introduce a defect? No. Recognizers now key on zone.attribute(discount/
+                 premium, N3)+bias direction(N2) -- FORCED by the fix (N4 not observable at zone_hit). S1=
+                 discount+LONG (reversal), S16=premium+LONG (breakout), coherent; no double-match (bias single-
+                 valued). Semantic SHIFT confirmed->predicted, but that's the required direction. Coverage gap
+                 (not a defect): premium+SHORT quadrant has no policy -> always NO_TRADE.
+               T4 S2 recognizer faithful or filler? FILLER with a mismatched label (CEO's suspicion CORRECT).
+                 policy_pdl_failed_break_fade = discount+SHORT; classic S2 reclaim of falsely-broken SUPPORT is
+                 BULLISH (long, = S1). discount+SHORT is the leftover quadrant, occupied to reach 3/3, with a
+                 'fade the failed break short' rationale that doesn't match a support reclaim. State coherent
+                 (bearish continuation) but the S2-reclaim LABEL inaccurate. Low severity (edge=False; reads
+                 only N1/N2/N3). (E2E-U1.)
+               T3 _assert_cut/_require_valid on all paths or the main one? Fire on the PRODUCTION path,
+                 procedural not structural. _assert_cut called for all 4 tf in build_market_state, RAISES on a
+                 future bar (999>5, verified). _require_valid called for N1/N2/N3, RAISES on stale (valid_until
+                 3<as_of 5, verified); NOT applied to N4 (evidence-only). BYPASS: both live in build_market_
+                 state, NOT in the MarketState constructor -> direct construction (as the unit tests do)
+                 bypasses them. Guards protect the intended entry but aren't type-enforced. (E2E-L2 residual.)
+               SEVERITY: E2E-U1 (S2 filler/mislabel, low). E2E-L2 residual (guards procedural/bypassable via
+                 direct construction; N4 window unchecked). Coverage (premium+short no policy).
+               SURVIVES: E2E-L1 fully closed (recognizers+inputs_hash+decide exclude N4; invariant; guard
+                 PROVEN to fail on reintroduction); E2E-L2 _assert_cut+_require_valid raise (verified); E2E-U1
+                 S2 wired 3/3; 89-test suite + 5 targeted regression tests pass.
+               VERDICT: PASS_WITH_LIMITATIONS -- the three fixes achieve their purpose; the blocking E2E-L1 is
+                 fully closed with a WORKING PROVEN regression guard (defect can't be silently reintroduced) ->
+                 NOTHING BLOCKS SHADOW. Minor disclosures: S2 filler/mislabel, procedural E2E-L2 guards,
+                 premium+short coverage gap.
+               HANDOFF: CEO/Statistician -- proceed to Shadow (E2E-L1 closed+guarded); relabel/replace S2
+                 (discount+short is continuation not reclaim) + note premium+short gap; optionally move
+                 _assert_cut/_require_valid into MarketState construction for structural enforcement. Red Team
+                 designed no remedy, ran no data, modified nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [43], prev_hash E42.
+  entry_hash:  E42
 ```
