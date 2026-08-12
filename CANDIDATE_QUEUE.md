@@ -126,6 +126,21 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 > S3, not CAND-0037.) Remaining strategies to re-evaluate canonically: the borderline/promising ones whose
 > stops are NOT large (where cost changes the verdict) — queued.
 
+### ⚠ M-4 POPULATION CHANGE (15→3 blocks) — exposure list (structural, NO re-evaluation; awaiting canonical gate)
+Data Acquisition imposed the manifest as the single source: the delivered df has **3 discovery segments**, but `_screen.derive_blocks` (>72h gaps) produced **15 blocks**. The 14 gaps decompose as **2 manifest-segment quarantine gaps** (835d @ 2013-09→2016-01, 857d @ 2018-04→2020-08) + **12 spurious HOLIDAY closures** (~3 days each) that must NOT be block boundaries:
+
+`2011-12-30·2013-03-28·2016-03-24·2016-12-23·2016-12-30·2017-04-13·2017-12-22·2017-12-29·2018-03-29·2020-12-24·2020-12-31·2021-04-01` (Christmas / New-Year / Easter).
+
+Under 15 blocks the detectors D3_bis-**reset** at each holiday (post-holiday period = UNCLASSIFIED, no window crossed the gap); under the correct 3 blocks those resets vanish → structures span the holidays and new post-holiday signals appear. **Every Flow-B candidate was windowed on 15 blocks → population shifts.** Exposure (reasoned, not re-run — most exposed = long window ≈ holiday spacing + rare signals + trades near the 12 dates):
+
+| exposure | candidates | why |
+|---|---|---|
+| **HIGH** | **CAND-0037** (weekly breakout, promoted), **CAND-0039** (NY weekly subset), **CAND-0006** (weekly fade) | window = 1 week; the ~12 holiday weeks were split → weekly level truncated / post-holiday week UNCLASSIFIED. ~12/246 ≈ 5% of the rare weekly signals sit exactly at holiday boundaries. **CAND-0037 direction holds (CEO); exact number shifts.** |
+| **MODERATE** | **S3 (7 hyps)**, **CAND-0001** (PDH/PDL), **CAND-0027** (session) | S3 swing windows (lb 20/50 = ≤12h) don't SPAN a 3-day gap, but the reset-removal adds post-holiday swings; PDH/PDL & session gain a prior-level on the ~12 first-days/sessions after each holiday. Large n → small relative shift. |
+| **LOW / verdict-stable** | CAND-0004 (void), CAND-0005 (BPR), CAND-0009, compression→expansion, all level-fade | already GROSS-NEGATIVE / fat-tail → the population shift cannot flip an eliminate to promising; fat-tail is distributional (not at holidays). Numbers restate; verdicts stand. |
+
+Awaiting the canonical evaluator to pass its 17 tests (Red Team FAIL on all 3 engines; mstrat Test-12 **double-counts spread** — `−2*cost`). Then re-evaluate everything on 3 blocks + the corrected evaluator. **No re-run before ratification.**
+
 ### (historical) `FLOW_B_ECONOMIC_SCREENING` — quick-backtest harness; screening the unblocked base families
 
 ### 🔎 LARGE-STOP + BETTER-FREQUENCY SEARCH (CEO direction) — no new survivor; the significance↔rarity tradeoff looks fundamental
