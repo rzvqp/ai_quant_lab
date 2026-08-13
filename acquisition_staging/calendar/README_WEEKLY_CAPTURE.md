@@ -24,7 +24,7 @@ la sursă. Înghețând bytes-ii bruți cu timestamp-ul de captură, putem recon
 - `capture_runs.log` — log de rulare (gitignored).
 
 ## Programare (Windows Task Scheduler)
-- Task: **`AIQuantLab_CalendarWeeklyCapture`** — Weekly, **luni 07:00 local**, la logon (fără parolă stocată), limită 15 min.
+- Task: **`AIQuantLab_CalendarWeeklyCapture`** — Weekly, **luni 07:00 local**, rulează **`pythonw.exe capture_calendar.py`** DIRECT (nu prin `.cmd`), fără parolă stocată, limită 15 min. `pythonw` = zero fereastră de consolă (fix CEO 2026-08-13, la fel ca news monitor); scriptul redirectează `stdout/stderr` în `capture_runs.log` sub host windowless (garda din capul fișierului). `capture_calendar.cmd` rămâne doar pentru debug manual.
 - Verificare: `Get-ScheduledTask -TaskName AIQuantLab_CalendarWeeklyCapture`
 - Rulare manuală imediată: `Start-ScheduledTask -TaskName AIQuantLab_CalendarWeeklyCapture`
 - Prima captură de setup (manuală): as-of `2026-08-10T125009Z` (W33).

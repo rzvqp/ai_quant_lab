@@ -83,6 +83,21 @@ LEDGER_COLS = ["id", "title", "source", "impact", "impact_first", "deduced_ts_ut
                "read_ts_utc", "relative_raw", "url", "announced", "last_seen_utc"]
 _REG_VARS = ("TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID_PRIMARY", "TELEGRAM_CHAT_ID")
 
+# --- pythonw.exe / windowless-host safety -------------------------------------------------------
+# The scheduled task runs pythonw.exe (no console -> no black window, no freeze). Under a windowless
+# host sys.stdout/sys.stderr are None, so any print() would raise AttributeError and crash the cycle.
+# Redirect BOTH to the log file: this (a) keeps the process alive, and (b) PRESERVES every diagnostic
+# line ([cycle]/[telegram]/[fetch] + canary/challenge state) that the old .cmd used to capture via
+# `>> news_monitor.log 2>&1`. The ALERTS (PARSER RUPT / ACCES BLOCAT / NEWS HIGH) travel over the
+# network via Telegram, NOT stdout, so they are unaffected by this. When run from a real console
+# (manual --dry-run/--once) stdout stays the console, so interactive debugging is unchanged.
+if sys.stdout is None or sys.stderr is None:
+    _log_fh = open(HERE / "news_monitor.log", "a", encoding="utf-8", buffering=1)
+    if sys.stdout is None:
+        sys.stdout = _log_fh
+    if sys.stderr is None:
+        sys.stderr = _log_fh
+
 
 # ----------------------------- credentials + telegram -----------------------------
 def _read_credentials() -> tuple[Optional[str], Optional[str]]:

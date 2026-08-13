@@ -33,6 +33,16 @@ CAL = REPO / "acquisition_staging" / "calendar"
 CAPTURES = CAL / "captures"
 LEDGER = CAL / "CAPTURE_LEDGER.csv"
 NOTIFY = Path(r"C:\Users\MEDION GAMING\tools\notify.py")
+
+# pythonw.exe / windowless-host safety: the scheduled task runs pythonw.exe (no console window, no
+# freeze). Under a windowless host sys.stdout/sys.stderr are None and any print() would crash the
+# run; redirect both to the log file, preserving every diagnostic line the .cmd used to capture.
+if sys.stdout is None or sys.stderr is None:
+    _cap_log = open(CAL / "capture_runs.log", "a", encoding="utf-8", buffering=1)
+    if sys.stdout is None:
+        sys.stdout = _cap_log
+    if sys.stderr is None:
+        sys.stderr = _cap_log
 BASE = "https://nfs.faireconomy.media/ff_calendar_thisweek"
 FORMATS = ("json", "csv", "xml")
 UA = "Mozilla/5.0 (ai_quant_lab DATA ACQUISITION; weekly economic-calendar as-of capture)"
