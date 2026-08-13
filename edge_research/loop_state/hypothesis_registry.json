@@ -77,7 +77,8 @@
       }
     },
     "estimand": "RECENT_PRIMARY (2022-12\u21922025-10)",
-    "MARK": "PROVISIONAL \u00b7 NON-COMPARABLE \u00b7 REQUIRES CANONICAL RERUN"
+    "MARK": "PROVISIONAL \u00b7 NON-COMPARABLE \u00b7 REQUIRES CANONICAL RERUN",
+    "freeze": "HIGHEST_PRIORITY_PROVISIONAL_CANDIDATE \u2014 FROZEN by CEO pause; do not modify/rerun/vary"
   },
   {
     "candidate_id": "CAND-T06",

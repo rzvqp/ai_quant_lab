@@ -1,5 +1,5 @@
 {
-  "loop_state": "FAMILY_QUEUE_EXHAUSTED",
+  "loop_state": "ALPHA_PAUSED_BY_CEO",
   "queue": [],
   "completed_ids": [
     "CAND-T05",
@@ -29,5 +29,10 @@
     "RANGE \u00d7 level fade",
     "RANGE \u00d7 boundary fade",
     "RANGE \u00d7 center reversion"
-  ]
+  ],
+  "paused_by": "CEO",
+  "resume_condition": "MANDATE_2_PASS",
+  "pause_reason": "PRIORITY_1=COMPLETE_AI_TRADER; ALPHA_DISCOVERY paused; resume EXACTLY from this checkpoint",
+  "frozen_highest_priority_provisional_candidate": "CAND-T05",
+  "resume_instruction": "Architect auto-resumes from THIS checkpoint after MANDATE_2_PASS. No registry/m reset. Do not modify/rerun/vary T05."
 }

@@ -99,7 +99,11 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `ALPHA_LOOP_ACTIVE` — persistent continuous-loop service; RECENT-market primary; RANGE blocked; promotion blocked
+## STATE: `ALPHA_PAUSED_BY_CEO` — controlled stop (PRIORITY_1 = COMPLETE_AI_TRADER); resume_condition = MANDATE_2_PASS
+
+> **⏸ CONTROLLED STOP (CEO).** ALPHA_DISCOVERY paused so AI Trader can be completed first — this overrides ALPHA_LOOP_ACTIVE. Stopped ONLY after a safe atomic checkpoint: the persistent runner had already reached `FAMILY_QUEUE_EXHAUSTED` (no job mid-write, no runner process active). **Everything preserved, nothing reset:** m_total=6, hypothesis registry (6), candidate queue, canonical_rerun_queue=[T05,T06], OOS access log (empty), checkpoint + watchdog state. **T05 FROZEN = `HIGHEST_PRIORITY_PROVISIONAL_CANDIDATE`** — not modified, not rerun, no new variants. **Resume:** after `MANDATE_2_PASS` the Architect auto-resumes EXACTLY from this checkpoint — no registry/m reset, no fresh request needed. The first robust recent edge (T05) is frozen, not lost.
+
+### (paused) `ALPHA_LOOP_ACTIVE` — persistent continuous-loop service; RECENT-market primary; RANGE blocked; promotion blocked
 
 **Persistent service delivered** (`edge_research/alpha_loop.py` + `flowb_strategies.py` + `regime.py`): the 9 deliverables — persistent runner, initial queue, checkpoint after every candidate (atomic), watchdog (heartbeat/restart_count; caught a candidate error and CONTINUED — did not halt the lab), per-family budgets, hypothesis registry (`loop_state/hypothesis_registry.json`), reporting-without-stopping, **restart-with-correct-resume PROVEN** (a run interrupted at m=3 resumed to m=4→6 without re-running finalized candidates), OOS access log **empty** (holdout sealed). `ALPHA_LOOP_ACTIVE`.
 
