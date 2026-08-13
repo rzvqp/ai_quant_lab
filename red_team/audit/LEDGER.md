@@ -2227,4 +2227,35 @@
                changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [52], prev_hash E51.
   entry_hash:  E51
+
+[52] 2026-08-13
+  prev_hash:   E51
+  event:       CEO_DELIVERY
+  dc_id:       DC-VE-BRAIN-HANDOFF
+  freeze_hash: n/a (verdict-rule fixation + pre-registration; no new commit delivered)
+  battery_ver: RT-HANDOFF-0003
+  reviewer:    Red Team
+  detail:      CEO fixes the HANDOFF VERDICT RULE (pre-registered, applies from the NEXT revalidation).
+               RULE_RECEIVED: reproducible defect that can affect the DECISION PATH -> FAIL; documentary
+               limitation with no path impact -> CONDITIONAL (justified); all criteria pass + no reproducible
+               bypass -> PASS. Do NOT invent defects; do NOT extend criteria post-hoc without demonstrating a
+               MATERIAL risk; if no reproducible violation -> emit PASS. Objective = a REAL VE_HANDOFF_PASS,
+               not an open-ended audit. CEO credited my prior discipline (didn't fabricate a 10th divergence;
+               closed point 7 by ABSENCE after verifying VE's claim, not FAIL-for-missing-wire).
+               RECLASSIFICATION: under the new rule the outstanding forged-eligibility hole (RT-HANDOFF-0002)
+               is a reproducible DECISION-PATH defect (range strat -> TRADE via matching-id forged
+               EligibilityDecision) -> maps to FAIL, not CONDITIONAL; rule applies from next revalidation so
+               the prior CONDITIONAL stands as issued.
+               PRE-REGISTERED next-revalidation test plan (fixed BEFORE VE's commit, no drift): (1) forged-
+               eligibility fixture must yield NO_TRADE/TRUE_RANGE_NOT_IDENTIFIABLE with a BOUND requires_true_
+               range on the candidate checked independently of the eligibility object; (2) the 8 points; (3)
+               complete path N1 RawAxes->Router->EligibilityDecision->EV->N6 with explicit break attempts; (4)
+               public-export inventory of every hand-buildable candidate/eligibility path to EV/N6; (5) all
+               manual-construction attempts; (6) the 12 deliverables verified present+consistent. On PASS,
+               Mandate 2 distributes AUTOMATICALLY (no new CEO approval).
+               STATE: standing by for VE's corrective commit; nothing to attack until then. A2 + canonical
+               contract remain an INDEPENDENT track. Red Team modified no engine, ran no data, changed nothing
+               outside red_team/.
+               STATE: OPERATIONAL. Next entry [53], prev_hash E52.
+  entry_hash:  E52
 ```
