@@ -2114,4 +2114,36 @@
                NON-COMPARABLE. Red Team modified no engine, ran no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [49], prev_hash E48.
   entry_hash:  E48
+
+[49] 2026-08-13
+  prev_hash:   E48
+  event:       CEO_DELIVERY
+  dc_id:       DC-CANONICAL-EVALUATOR
+  freeze_hash: n/a (range decision + handoff extension; artifact not yet built)
+  battery_ver: RT-AUDIT-MEAS-0007
+  reviewer:    Red Team
+  detail:      CEO RANGE DECISION received: BLOCK RANGE, continue the rest. Range-requiring strategies ->
+               eligibility=FALSE + reason_code=TRUE_RANGE_NOT_IDENTIFIABLE, never reach EV. Rest continues:
+               N1-N6, EV, Risk Manager, LIVE_SHADOW + routing for TREND_UP/TREND_DOWN/MOMENTUM/COMPRESSION/
+               BREAKOUT_TRANSITION. Handoff verification EXTENDED 12 -> 17: (13) range strategies fail-closed;
+               (14) StructBand.RANGE + Direction.NEUTRAL cannot activate them; (15) reason_code PERSISTED not
+               just returned; (16) other families work; (17) NO fallback/implicit routing to range = the
+               adversarial priority (bypassable-guard pattern: hunt the indirect path to range eligibility --
+               else-arm, enum coercion, direct construction, no-match->range).
+               ROUTER FORM = MULTI-AXIAL, no global precedence (CEO): COMPRESSED+UP+STRONG must activate trend
+               AND compression strategies SIMULTANEOUSLY; a hidden precedence = disguised selection (Statistician-
+               flagged). ★ CONCRETE LEAD: market_intelligence/expansion.py::_state_for collapses the volatility
+               axis into a single mutually-exclusive ExpansionState with an INTERNAL precedence ('EXPANDING
+               takes priority over COMPRESSED when both true') -> if VE's router keys on .state, compression
+               strategies never fire when displacement co-occurs = implicit partition. Mitigant: the raw
+               is_compressed/is_displacement flags survive on the reading -> correct router reads RAW axes, not
+               .state. Handoff check: confirm VE routes on raw per-axis flags, never a precedence-collapsed label.
+               STATE unchanged: VE_HANDOFF = FAIL. A2 (strict geometry) + A5 (T17 five-identity incl STRATEGY +
+               require_comparable enforcement) still OPEN; 17 conditions unverified (artifact not delivered).
+               PASS forbidden until amendment fully applied. Attack CORRECTED evaluator not 3344bff; Test 18A
+               rewritten -> target-gap expects INVALID_EXECUTION + two boundary cases. FREEZE HOLDS/WIDENS:
+               asymmetric-variant results incl S3 -0.17 PROVISIONAL/NON-COMPARABLE. Red Team modified no engine,
+               ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [50], prev_hash E49.
+  entry_hash:  E49
 ```
