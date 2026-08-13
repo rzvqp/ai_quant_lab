@@ -53,10 +53,10 @@ instruction 2026-08-14 ("construieste codul, NU comuta inca")** -- `new_brain_br
 .DecisionAuthority`, persisted the same way `PolicyControl` already is; `pdh_pdl_demo`'s/
 `multi_policy_live`'s own `submit_candidate` methods gained an optional `authority_check` parameter,
 default `None`, byte-for-byte unchanged behavior. `set_authority()` is never called anywhere -- the 5 live
-processes' real behavior is untouched. 20 of the 25 CEO-owned end-to-end tests are now real (5 stay
-genuinely blocked, each naming a concept this codebase still doesn't build -- see
-`tests/test_e2e_readiness.py`'s own updated module docstring). Remaining: the CEO's explicit 15-item
-property checklist (section 8) and the final `READY_FOR_LIVE_SHADOW_REVIEW` report. The CEO checkpoint
+processes' real behavior is untouched. 22 of the 25 CEO-owned end-to-end tests are now real (4 stay
+`BLOCKED_ON_TOWER_HANDOFF`, owner VE, each with a test -> owner -> remedy -> dovada -> verdict entry --
+see `tests/test_e2e_readiness.py`'s own updated module docstring). Remaining: the CEO's explicit 15-item
+property checklist (section 8, delivered) and the final `READY_FOR_LIVE_SHADOW_REVIEW` report. The CEO checkpoint
 remains required only before `LIVE_SHADOW` itself; `BROKER_ORDER_SUBMISSION` stays `DISABLED` throughout."""
 
 from __future__ import annotations

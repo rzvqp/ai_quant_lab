@@ -5,15 +5,24 @@ a concept that did not exist yet.
 
 **Mandate 2 continuation, 2026-08-14 ("ARTEFACTUL, predat fizic" then "construieste codul, NU comuta
 inca"): `ve_brain` is installed, `new_brain_bridge/` (N1-Router-EV-N6, provenance-gated Risk Manager,
-shadow execution, telemetry) is built and tested. Twenty of the 25 are now real** -- the original six
-(8, 11, 12, 13, 19, 20) PLUS fourteen more (1, 2, 3, 6, 7, 14, 15, 16, 17, 18, 21, 23, 24, 25) converted
-below, using the REAL installed `ve_brain` and `new_brain_bridge` code, never a fixture standing in for
-either. **Five remain genuinely blocked** (4, 5, 9, 10, 20b) -- each still names something this codebase
-does not build yet (day-boundary/session labels feeding N1's own axes, gap-visibility inside N1's input,
-a decision-snapshot staleness bound distinct from ATR/level availability, a "conflicting recognition
-sources" merge model that does not match this architecture's per-strategy-independent design, and the
-real artifact's own inter-node failure contract) -- writing a fake implementation for any of these would
-risk passing for reasons unrelated to the real property; each stays `pytest.skip`'d with its own reason.
+shadow execution, telemetry) is built and tested. Twenty-two of the 25 are now real** -- the original
+six (8, 11, 12, 13, 19, 20) PLUS sixteen more (1, 2, 3, 6, 7, 10, 14, 15, 16, 17, 18, 21, 22, 23, 24, 25)
+converted below, using the REAL installed `ve_brain` and `new_brain_bridge` code, never a fixture
+standing in for either.
+
+**Red Team verdict, `MANDATE_2_REVIEW_CONDITIONAL`/`INTEGRATION_BLOCKED` (2026-08-14): Risk Manager,
+broker gate, and the authority mechanism are all VERIFIED CORRECT. The block is that N3/N4 do not exist
+in the artifact yet** -- VE is building them, Mandat A. **Four of the original five remaining tests are
+genuinely `BLOCKED_ON_TOWER_HANDOFF`, owner VE** (4, 5, 9, 20b) -- each names something that only becomes
+buildable once N3 (market map/levels) and N4 (confirmation) exist as real, distinct artifact components;
+each test's own docstring below is now structured test -> owner -> remedy -> dovada -> verdict, per the
+CEO's own explicit format. **Test 10 was NOT blocked on the artifact at all** -- its original premise (a
+cross-strategy merge producing ONE N6 resolution per bar) does not match this codebase's actual, shipped
+per-strategy-independent design, so it was RESCOPED (not left waiting) to the real property that name
+still deserves: multiple recognition sources matching one bar each get their own independent,
+non-conflicting resolution -- now real and passing. **Test 22 was also NOT blocked on the artifact** --
+it needed only a gate-enable journal (`BrokerGateJournal`/`construct_enabled_gate` in `broker_gate.py`),
+built and tested here, independent of N3/N4.
 
 **CEO amendment A1, 2026-08-14, incorporated below**: N1-N6 and the EV engine CAN legitimately traverse
 all the way to a `SHADOW_TRADE_CANDIDATE` (not just `NO_TRADE`) -- Risk Manager and the Execution Adapter
@@ -296,13 +305,23 @@ def test_20_stopping_a_node_never_leaves_a_partial_order_or_a_lost_decision(tmp_
     assert watermark_before == watermark_after  # nothing lost, nothing corrupted by the abrupt stop
 
 
-@pytest.mark.skip(reason="INTEGRATION_BLOCKED -- requires the real N1-N6/EV artifact's own inter-node contract")
+@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE (N3/N4 must exist as distinct, separately"
+                         " failable nodes before a single-node failure has any meaning to test)")
 def test_20b_a_single_node_failing_mid_pipeline_degrades_that_decision_to_no_trade() -> None:
-    """The STRONGER form of test 20 the amendment's own SHADOW_ELIGIBLE framing implies: if N3 (say)
+    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
+    TEST: the STRONGER form of test 20 the amendment's own SHADOW_ELIGIBLE framing implies -- if N3
     raises or times out while N4 is waiting for its output, the pipeline must degrade to NO_TRADE for
     THAT decision cycle, not hang, not guess, not propagate the exception and kill the whole process
     (mirroring `multi_policy_live`'s own existing per-policy try/except isolation, extended to per-node).
-    Cannot be written before the artifact defines what "a node" and "its output" concretely are."""
+    OWNER: VE (Mandat A) -- must deliver N3/N4 as the real artifact defines "a node" and "its output"
+    concretely; this test cannot be written correctly before that shape exists, and guessing at it would
+    risk testing a shape VE never actually ships.
+    REMEDIU: once TOWER_HANDOFF_PASS lands, wrap the real per-node calls (N3, N4 specifically) the same
+    way `fail_safe.safe_evaluate_bar` already wraps the WHOLE `evaluate_bar` call -- this codebase's own
+    existing pattern (`test_25`, already real and passing) is the template, just applied one level
+    deeper, per-node instead of per-bar.
+    DOVADA: none yet -- correctly absent, not fabricated.
+    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close."""
 
 
 # ============================================================================
@@ -376,22 +395,35 @@ def test_03_a_malformed_bar_never_reaches_n1() -> None:
     assert builder.bars_observed == 0
 
 
-@pytest.mark.skip(reason=_BLOCKED + " (day-boundary/session labels feeding N1's own axes -- RawAxesBuilder "
-                                    "consumes only OHLC, not session/day-boundary context; that mapping "
-                                    "does not exist)")
+@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE (N3's real market-map construction is the "
+                         "natural place session/day-boundary context enters N1's inputs)")
 def test_04_session_and_day_boundary_labels_n1_consumes_match_true_utc() -> None:
-    """The clock-translation correctness already proven at the `LiveBarFeed` boundary (2026-08-11 fix)
-    must reach N1's own inputs unchanged. Not applicable to THIS N1 (`RawAxesBuilder`) as built -- it has
-    no session/day-boundary input at all (see `bridge.py`'s own disclosed gap 2, `market_map_available`).
-    Would become real if/when a level-tower-style session context is wired into N1's own axes."""
+    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
+    TEST: the clock-translation correctness already proven at the `LiveBarFeed` boundary (2026-08-11
+    fix) must reach N1's own inputs unchanged.
+    OWNER: VE (Mandat A) -- `RawAxesBuilder` as built consumes only raw OHLC, no session/day-boundary
+    context at all; PDH/PDL-style level towers are inherently day-boundary-anchored, so N3's real
+    market-map construction is the natural, honest place this context would first enter the pipeline.
+    REMEDIU: once N3 is delivered and step 2 of the original mandate (replacing `market_map_available
+    =False` with N3's real per-event output) is done, build the session/day-boundary check against
+    whatever real timestamp labels N3's own market-map construction actually carries.
+    DOVADA: none yet -- correctly absent, not fabricated.
+    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close."""
 
 
-@pytest.mark.skip(reason=_BLOCKED + " (gap-visibility inside N1's own market-context input -- "
-                                    "RawAxesBuilder has no market-context input at all, only raw OHLC)")
+@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE (same reasoning as test 04: no "
+                         "market-context object exists in N1 until N3's real construction does)")
 def test_05_a_detected_gap_is_visible_in_whatever_context_n1_consumes() -> None:
-    """MAINTENANCE/WEEKEND/EXTENDED_PAUSE/UNEXPECTED, and the stale-probe-outage `GapRecord`
-    (2026-08-14) -- none silently absorbed before reaching N1's own market-context input. Not applicable
-    to THIS N1 as built (no market-context object at all); would become real once/if N1 grows one."""
+    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
+    TEST: MAINTENANCE/WEEKEND/EXTENDED_PAUSE/UNEXPECTED, and the stale-probe-outage `GapRecord`
+    (2026-08-14) -- none silently absorbed before reaching N1's own market-context input.
+    OWNER: VE (Mandat A) -- `RawAxesBuilder` has no market-context input at all today, only raw OHLC
+    arrays; a gap-visibility check needs a real context OBJECT to check gap-visibility WITHIN, which
+    only exists once N3's real market-map construction (step 2 of the original mandate) is built.
+    REMEDIU: thread the existing `GapRecord`/`GapClassification` types (already real, already used by
+    `LiveBarFeed`) into whatever market-map input N3's real construction consumes, once built.
+    DOVADA: none yet -- correctly absent, not fabricated.
+    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close."""
 
 
 def test_06_a_malformed_n1_n6_decision_output_is_rejected_not_guessed_at() -> None:
@@ -448,23 +480,57 @@ def test_07_n1_n6_and_the_ev_engine_are_deterministic_on_a_frozen_input_snapshot
     assert first.configuration_fingerprint == second.configuration_fingerprint
 
 
-@pytest.mark.skip(reason=_BLOCKED + " (a decision-snapshot staleness bound distinct from N6's own "
-                                    "ATR/level-availability checks -- no such freshness concept exists "
-                                    "in new_brain_bridge yet)")
+@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE+AI Trader jointly (a staleness bound is "
+                         "only meaningful once N3 produces a real, timestamped snapshot object to check "
+                         "the age of)")
 def test_09_a_decision_citing_a_stale_snapshot_is_rejected_before_reaching_n6() -> None:
-    """Distinct from test 13 (no bar at all): a decision built from a snapshot that WAS available but has
-    since gone stale relative to N6's own freshness bound. Not applicable as built -- `evaluate_bar` has
-    no snapshot-age concept separate from "the bar just observed"; would become real if/when a decision
-    can be built from an older snapshot than the current bar."""
+    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
+    TEST: distinct from test 13 (no bar at all) -- a decision built from a snapshot that WAS available
+    but has since gone stale relative to N6's own freshness bound.
+    OWNER: VE (Mandat A, delivers N3's real market-map snapshot object) + AI Trader (builds the
+    freshness check against it once it exists) -- jointly, not solely VE's.
+    REMEDIU: `evaluate_bar` today has no snapshot-age concept distinct from "the bar just observed"
+    because there is no separate snapshot object at all yet -- once N3 produces one (step 2 of the
+    original mandate), add an explicit `snapshot_as_of` vs. `bar.ts_close` freshness check in
+    `bridge.py`, mirroring `execution_orchestrator.orchestrate()`'s own existing `max_staleness_seconds`
+    pattern rather than inventing a new one.
+    DOVADA: none yet -- correctly absent, not fabricated.
+    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close alone."""
 
 
-@pytest.mark.skip(reason=_ARCHITECTURE_MISMATCH)
-def test_10_two_conflicting_recognition_sources_on_one_bar_produce_one_deterministic_n6_resolution() -> None:
-    """Assumes a MERGE step across multiple recognition sources producing ONE N6 resolution per bar.
-    This codebase's actual design (`bridge.evaluate_bar`) is per-strategy-INDEPENDENT: every catalog
-    strategy gets its OWN `DecisionRequest`/`decide_n6` call for the same bar, each with its own outcome
-    -- there is no merge, and therefore no conflict to resolve. Re-scope or retire once VE/CEO confirm
-    whether a cross-strategy merge is actually intended."""
+def test_10_two_recognition_sources_matching_one_bar_each_get_their_own_independent_n6_resolution() -> None:
+    """RESCOPED (Mandate B point 5, CEO 2026-08-14: "restul le inchizi" -- closed for real, not left
+    waiting on anything). The original premise assumed a MERGE step across multiple recognition sources
+    producing ONE N6 resolution per bar -- this codebase's actual, shipped design (`bridge.evaluate_bar`)
+    is per-strategy-INDEPENDENT: every catalog strategy gets its OWN `DecisionRequest`/`decide_n6` call
+    for the same bar, so there is no merge and therefore no conflict to silently resolve. The REAL
+    property that name still deserves -- "no silent overwrite, no double count" when multiple sources
+    match the same bar -- is proven here instead: on a TREND_UP-routed bar, THREE catalog strategies
+    (`trend_pullback`, `trend_shadow`, `trend_experimental`) all match the SAME regime simultaneously,
+    each producing its OWN distinct, correctly-isolated outcome -- none silently dropped, none merged
+    into another's result."""
+    builder = RawAxesBuilder(SYMBOL)
+    bars = trend_up_regime_bars(SYMBOL)
+    for bar in bars[:-1]:
+        builder.observe(bar)
+    outcomes = evaluate_bar(bars[-1], timeframe="M15", axes_builder=builder)
+
+    matched = {o.strategy_id: o for o in outcomes if o.strategy_id in
+               ("trend_pullback", "trend_shadow", "trend_experimental")}
+    assert set(matched) == {"trend_pullback", "trend_shadow", "trend_experimental"}  # all three present
+    assert len({o.event_identity.trace_id for o in matched.values()}) == 3  # each with its OWN trace_id
+
+    trend_pullback, trend_shadow = matched["trend_pullback"], matched["trend_shadow"]
+    experimental = matched["trend_experimental"]
+    assert trend_pullback.decision is not None and trend_shadow.decision is not None
+    assert experimental.decision is not None
+    # trend_pullback (RATIFIED) and trend_shadow (SHADOW_ELIGIBLE) both reach the same real gap
+    # (MISSING_LEVEL_INPUT) -- but as two DISTINCT records, never collapsed into one.
+    assert trend_pullback.decision.reason_codes == (ve_brain.ReasonCode.MISSING_LEVEL_INPUT.value,)
+    assert trend_shadow.decision.reason_codes == (ve_brain.ReasonCode.MISSING_LEVEL_INPUT.value,)
+    # trend_experimental is blocked one check EARLIER (NO_ELIGIBLE_STRATEGY) -- a genuinely different
+    # reason, proving the three outcomes are independently computed, not copied from one another.
+    assert experimental.decision.reason_codes == (ve_brain.ReasonCode.NO_ELIGIBLE_STRATEGY.value,)
 
 
 def test_14_an_already_recorded_shadow_trade_candidate_is_never_re_recorded_for_the_same_event() -> None:
@@ -629,13 +695,38 @@ def test_21_zero_broker_calls_for_any_shadow_trade_candidate_however_confident_s
     assert not violations, f"forbidden broker call(s) found in new_brain_bridge: {violations}"
 
 
-@pytest.mark.skip(reason=_BLOCKED + " (no gate-enable journal exists yet -- BrokerOrderSubmissionGate's "
-                                    "own construction is source-visible/grep-able but not itself durably "
-                                    "journaled anywhere)")
-def test_22_enabling_the_gate_is_itself_journaled_with_who_when_and_why() -> None:
-    """The gate's own `frozen=True`/no-setter design (`broker_gate.py`) makes every enabling a fresh,
-    source-visible construction -- this test would prove THAT construction site is itself durably
-    journaled once such a journal exists. Not built -- disclosed, not guessed at."""
+def test_22_enabling_the_gate_is_itself_journaled_with_who_when_and_why(tmp_path: Path) -> None:
+    """CLOSED for real (Mandate B point 5, CEO 2026-08-14) -- this test does not depend on N3/N4 at all,
+    so it is not left waiting on TOWER_HANDOFF. The gate's own `frozen=True`/no-setter design
+    (`broker_gate.py`) already made every enabling a fresh, source-visible construction;
+    `construct_enabled_gate` now additionally journals it (who/when/why), durably, surviving a
+    restart -- the SAME `SqliteStateStore` persistence every other journal in this codebase uses."""
+    from ai_trader.mandate2_readiness.broker_gate import BrokerGateJournal, construct_enabled_gate
+
+    store_path = tmp_path / "gate_journal.db"
+    store = SqliteStateStore(store_path)
+    try:
+        journal = BrokerGateJournal(store)
+        gate = construct_enabled_gate(
+            reason="test-only fault injection, per this test's own docstring", who="mandate-b-e2e-test",
+            when=NOW, journal=journal,
+        )
+        assert gate.enabled is True
+        assert len(journal.entries) == 1
+        assert journal.entries[0].who == "mandate-b-e2e-test"
+        assert journal.entries[0].when == NOW
+        assert "fault injection" in journal.entries[0].why
+    finally:
+        store.close()
+
+    # restart: a brand-new journal instance, same persisted store -- the enabling event survives.
+    store_reopened = SqliteStateStore(store_path)
+    try:
+        reopened_journal = BrokerGateJournal(store_reopened)
+        assert len(reopened_journal.entries) == 1
+        assert reopened_journal.entries[0].who == "mandate-b-e2e-test"
+    finally:
+        store_reopened.close()
 
 
 def test_23_every_decision_including_no_trade_is_journaled_with_enough_detail_to_reconstruct_why() -> None:

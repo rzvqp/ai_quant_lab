@@ -69,3 +69,37 @@ def test_two_independently_constructed_default_gates_are_equal() -> None:
     different ones a caller could confuse -- `enabled=False` with the default reason is the whole
     universe of "disabled"."""
     assert BrokerOrderSubmissionGate() == BrokerOrderSubmissionGate()
+
+
+# -- Mandate B point 5 (CEO, 2026-08-14): gate-enable journal. `BrokerGateJournal`/`construct_enabled_gate`
+# -- closing test 22 in `tests/test_e2e_readiness.py` for real, independent of N3/N4. --
+
+def test_construct_enabled_gate_journals_who_when_and_why() -> None:
+    from ai_trader.mandate2_readiness.broker_gate import BrokerGateJournal, construct_enabled_gate
+
+    journal = BrokerGateJournal()
+    gate = construct_enabled_gate(reason="unit test", who="tester", when=1_700_000_000, journal=journal)
+
+    assert gate.enabled is True
+    assert gate.reason == "unit test"
+    assert len(journal.entries) == 1
+    assert journal.entries[0].who == "tester"
+    assert journal.entries[0].when == 1_700_000_000
+    assert journal.entries[0].why == "unit test"
+
+
+def test_construct_enabled_gate_still_produces_a_real_functioning_gate() -> None:
+    """The journal is an ADDITION, not a replacement -- the returned gate still authorizes exactly like
+    any other `enabled=True` gate."""
+    from ai_trader.mandate2_readiness.broker_gate import BrokerGateJournal, construct_enabled_gate
+
+    gate = construct_enabled_gate(reason="unit test", who="tester", when=1_700_000_000, journal=BrokerGateJournal())
+    gate.authorize()  # does not raise
+
+
+def test_broker_gate_journal_without_a_store_is_in_memory_only() -> None:
+    from ai_trader.mandate2_readiness.broker_gate import BrokerGateJournal, GateEnableRecord
+
+    journal = BrokerGateJournal()
+    journal.record(GateEnableRecord(who="a", when=1, why="b"))
+    assert len(journal.entries) == 1

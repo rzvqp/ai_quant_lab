@@ -23,7 +23,12 @@ where it is `git blame`-able and grep-able forever.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+
+from ai_trader.persistent_state.store import SqliteStateStore
+
+_GATE_ENABLE_LOG = "mandate2_readiness.broker_gate.enable_events"
 
 
 class BrokerOrderSubmissionDisabledError(Exception):
@@ -61,3 +66,63 @@ class BrokerOrderSubmissionGate:
             raise BrokerOrderSubmissionDisabledError(
                 f"BrokerOrderSubmissionGate: order submission is DISABLED -- {self.reason}"
             )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class GateEnableRecord:
+    """Who/when/why for one enabling event -- test 22's own requirement (2026-08-14 Mandate B point 5:
+    "restul le inchizi" -- this one is closed for real, not left waiting on TOWER_HANDOFF, since it
+    depends on nothing from N3/N4)."""
+
+    who: str
+    when: int
+    why: str
+
+
+def _serialize(record: GateEnableRecord) -> str:
+    return json.dumps({"who": record.who, "when": record.when, "why": record.why})
+
+
+def _deserialize(payload: str) -> GateEnableRecord:
+    data = json.loads(payload)
+    return GateEnableRecord(who=data["who"], when=data["when"], why=data["why"])
+
+
+class BrokerGateJournal:
+    """Same `SqliteStateStore` append-only convention every other journal in this codebase already uses
+    (`StructuralObservationLog`, `LiveSignalJournal`, `NewBrainTelemetryLog`) -- no new persistence
+    mechanism."""
+
+    def __init__(
+        self, state_store: SqliteStateStore | None = None, log_name: str = _GATE_ENABLE_LOG,
+    ) -> None:
+        self._state_store = state_store
+        self._log_name = log_name
+        if state_store is None:
+            self._entries: list[GateEnableRecord] = []
+        else:
+            self._entries = [_deserialize(payload) for payload in state_store.read_log_entries(log_name)]
+
+    def record(self, entry: GateEnableRecord) -> None:
+        self._entries.append(entry)
+        if self._state_store is not None:
+            self._state_store.append_log_entry(self._log_name, _serialize(entry))
+
+    @property
+    def entries(self) -> tuple[GateEnableRecord, ...]:
+        return tuple(self._entries)
+
+
+def construct_enabled_gate(
+    *, reason: str, who: str, when: int, journal: BrokerGateJournal,
+) -> BrokerOrderSubmissionGate:
+    """The ONE sanctioned way to construct an ENABLED gate for a real deployment -- journals the
+    enabling event (who/when/why) BEFORE returning the gate, so a real activation is durably recorded,
+    not merely grep-able in source (that guarantee -- `BrokerOrderSubmissionGate(enabled=True, ...)`
+    being the only way to enable one at all -- is unchanged and still enforced by the class itself;
+    this function adds a journal on top of it, it doesn't replace it). Raw construction
+    (`BrokerOrderSubmissionGate(enabled=True, reason=...)`) remains possible -- this function is a
+    convention for real deployments to follow, not a technical lock; the class's own `kw_only=True`
+    fail-closed guarantee is the actual enforcement mechanism, journaling is the audit trail on top."""
+    journal.record(GateEnableRecord(who=who, when=when, why=reason))
+    return BrokerOrderSubmissionGate(enabled=True, reason=reason)
