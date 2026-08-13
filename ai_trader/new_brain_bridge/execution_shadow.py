@@ -16,12 +16,15 @@ every call still observes the same default-`False` state, by construction, not b
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 
 from ai_trader.mandate2_readiness.broker_gate import BrokerOrderSubmissionDisabledError, BrokerOrderSubmissionGate
+from ai_trader.mandate2_readiness.event_identity import NodeTrace
 from ai_trader.risk_manager_live.types import LiveRiskDecision
 
 RISK_MANAGER_DENIED = "RISK_MANAGER_DENIED"
+_COMPONENT_VERSION = "broker_gate_v1"
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -56,3 +59,18 @@ def attempt_shadow_execution(
     # constructed `gate=BrokerOrderSubmissionGate(enabled=True, reason=...)` -- a visible, grep-able,
     # deliberate act, never a silent flip.
     return ShadowExecutionResult(reached_broker_gate=True, blocked=False, reason="AUTHORIZED")
+
+
+def build_execution_adapter_trace(trace_id: str, result: ShadowExecutionResult) -> NodeTrace:
+    """A `NodeTrace(node_name="ExecutionAdapter")` for `telemetry.NewBrainTelemetryLog.record_outcome`'s
+    `extra_traces` -- kept separate from `attempt_shadow_execution` itself so that function's own return
+    type never changes."""
+    input_fp = hashlib.sha256(trace_id.encode("utf-8")).hexdigest()[:16]
+    output_fp = hashlib.sha256(
+        f"{result.reached_broker_gate}|{result.blocked}".encode("utf-8")
+    ).hexdigest()[:16]
+    reason_codes = () if result.blocked is False else (result.reason,)
+    return NodeTrace(
+        trace_id=trace_id, node_name="ExecutionAdapter", input_fingerprint=input_fp, output=output_fp,
+        reason_codes=reason_codes, latency_seconds=0.0, component_version=_COMPONENT_VERSION,
+    )

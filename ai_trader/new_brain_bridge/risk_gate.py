@@ -23,13 +23,18 @@ code -- never a silent skip, never a fallback to any other decision source."""
 
 from __future__ import annotations
 
+import hashlib
+
 from ai_trader.mandate2_readiness.decision_provenance import UntrustedDecisionSourceError, verify_decision_provenance
+from ai_trader.mandate2_readiness.event_identity import NodeTrace
 from ai_trader.new_brain_bridge.bridge import NewBrainOutcome
 from ai_trader.risk_manager.config import RiskConfig
 from ai_trader.risk_manager.types import PortfolioState, RiskContext
 from ai_trader.risk_manager_live.engine import evaluate_trade_proposal
 from ai_trader.risk_manager_live.types import AccountState, InstrumentSpecification, LiveRiskDecision, TradeProposal
 from ai_trader.signal_engine.types import Direction
+
+_ENGINE_VERSION = "risk_manager_live"
 
 NO_ACTIONABLE_N6_DECISION = "NO_ACTIONABLE_N6_DECISION"
 MISSING_DECISION_PROVENANCE = "MISSING_DECISION_PROVENANCE"
@@ -84,3 +89,21 @@ def submit_new_brain_candidate(
         as_of=outcome.event_identity.market_timestamp, confidence_quality=None,
     )
     return evaluate_trade_proposal(proposal, account, portfolio, instrument, risk_context, risk_config)
+
+
+def build_risk_manager_trace(outcome: NewBrainOutcome, risk_decision: LiveRiskDecision) -> NodeTrace:
+    """A `NodeTrace(node_name="RiskManager")` for `outcome`'s own `trace_id`, for
+    `telemetry.NewBrainTelemetryLog.record_outcome`'s `extra_traces`. Kept SEPARATE from
+    `submit_new_brain_candidate` itself so that function's own return type never changes -- callers who
+    don't need telemetry are unaffected."""
+    input_fp = hashlib.sha256(
+        f"{outcome.event_identity.trace_id}|{outcome.entry_price}|{outcome.stop_price}".encode("utf-8")
+    ).hexdigest()[:16]
+    output_fp = hashlib.sha256(
+        f"{risk_decision.approved}|{risk_decision.calculated_volume}".encode("utf-8")
+    ).hexdigest()[:16]
+    return NodeTrace(
+        trace_id=outcome.event_identity.trace_id, node_name="RiskManager", input_fingerprint=input_fp,
+        output=output_fp, reason_codes=risk_decision.reason_codes, latency_seconds=0.0,
+        component_version=_ENGINE_VERSION,
+    )
