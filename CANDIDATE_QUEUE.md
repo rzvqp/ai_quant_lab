@@ -126,6 +126,23 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 > S3, not CAND-0037.) Remaining strategies to re-evaluate canonically: the borderline/promising ones whose
 > stops are NOT large (where cost changes the verdict) — queued.
 
+### 🧭 REGIME × FAMILY CARTOGRAPHY (CEO amendment) — mapping only, NO re-evaluation
+Each strategy becomes a regime×family pair; the regime condition is PART of the strategy, declared BEFORE results. This IS the "portfolio of rare edges organized by regime" my finding implied (significance↔rarity linked → no single frequent structure; a portfolio of rare, regime-scoped edges instead). Mapping of my Flow-B candidates onto the five pairs:
+
+| pair | my candidates / mechanisms | arming_regime | trigger_transition | dir | status |
+|---|---|---|---|---|---|
+| **BREAKOUT_TRANSITION × breakout confirmation** | **CAND-0037 weekly breakout** (survivor), CAND-0039 (NY subset), CAND-0009 (break+displacement) | RANGE/COMPRESSION (prior-week range PWH-PWL contains price) | close THROUGH the weekly level = RANGE→BREAKOUT | both (break side) | 0037 the clean example |
+| **COMPRESSION × breakout preparation** | compression→expansion (CAND-0002), S3 setup phase | COMPRESSION (low ATR, accumulated range) | expansion bar breaks the accumulated range | both | 0002 elim (re-scope) |
+| **RANGE × mean reversion** | **level-fade (CAND-0001/0027/0006)**, void/BPR/OB reactions (0004/0005/OB) | RANGE only (N3 map = oscillating, contained) | touch of a range boundary → reversion; **EXIT on RANGE→BREAKOUT** | both (fade the edge) | **elim as fat-tail — but see below** |
+| **TREND × pullback continuation** | S3 breakout-retest (retest = the pullback), BOS+retest (CAND-0021) | TREND established (post-break) | pullback to the broken level → continuation | trend dir | S3 theoretical (tight stop) |
+| **TREND_DOWN × momentum continuation** | S3 (all 3 named are side=DOWN), CHoCH (CAND-0022) | TREND_DOWN | momentum break down + continuation | short | S3 theoretical |
+
+**The two the CEO named:**
+- **CAND-0037 → BREAKOUT_TRANSITION × breakout confirmation.** `arming_regimes` = RANGE/COMPRESSION (the prior week's PWH-PWL is the range that contains price). `trigger_transition` = **close through the weekly level** (the RANGE→BREAKOUT transition). `allowed_directions` = both (break side). `required_N3_map` = YES — the weekly level IS the structural map. `required_N4_confirmation` = the **close-confirmed** break (body beyond, not a wick). `required_N2_bias` = aligned-optional, NOT gated (my isolation test: the weekly level's significance is the edge; a hard bias gate risks the weekly-fade bias-collapse). `exit_on_regime_change` = price closes back INSIDE the week range (failed breakout → revert to RANGE). **This is the SURVIVING edge → the amendment's cleanest validated example.**
+- **Level-fade → RANGE × mean reversion.** It was eliminated as a **fat-tail — and the amendment explains WHY and may rescue it.** The tiny-stop blow-ups (best-trade 20–78% of total) came from evaluating the fade **across ALL regimes**: in TREND episodes the touched level BREAKS and the microscopic stop is run over (the rare 100–1400R outlier). Scoping to **RANGE only** + `exit_on_regime_change` (exit when RANGE→BREAKOUT) **removes exactly those trend trades** — i.e. removes the fat-tail's source. So level-fade deserves **re-evaluation as a regime-scoped pair, NOT permanent elimination** (flagged for re-test post-ratification).
+
+**Portfolio insight:** the amendment RESCUES the eliminated MEAN-REVERSION families (level-fade, zone reactions) by scoping them to RANGE, and VALIDATES CAND-0037 as a breakout-transition pair. **Gap in my current candidates: the TREND × pullback and TREND × momentum pairs are under-populated** — I mostly built level/breakout/mean-reversion mechanisms. When building resumes, the trend-continuation pairs (armed by an established N2-directional TREND, triggered by a pullback-complete) are the space to fill for a balanced regime portfolio. All numbers remain PROVISIONAL / NON-COMPARABLE until the contract is ratified + full re-run on 3 blocks + the corrected evaluator.
+
 ### ⚠ M-4 POPULATION CHANGE (15→3 blocks) — exposure list (structural, NO re-evaluation; awaiting canonical gate)
 Data Acquisition imposed the manifest as the single source: the delivered df has **3 discovery segments**, but `_screen.derive_blocks` (>72h gaps) produced **15 blocks**. The 14 gaps decompose as **2 manifest-segment quarantine gaps** (835d @ 2013-09→2016-01, 857d @ 2018-04→2020-08) + **12 spurious HOLIDAY closures** (~3 days each) that must NOT be block boundaries:
 
