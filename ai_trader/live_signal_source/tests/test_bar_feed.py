@@ -9,8 +9,9 @@ from types import SimpleNamespace
 import pytest
 
 from ai_trader.live_signal_source.bar_feed import LiveBarFeed, make_broker_offset
+from ai_trader.live_signal_source.gap_classification import MAX_REAL_WEEKEND_SECONDS
 from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
-from ai_trader.live_signal_source.types import BarFeedError, GapClassification
+from ai_trader.live_signal_source.types import BarFeedError, GapClassification, StaleProbeError
 from ai_trader.persistent_state.store import SqliteStateStore
 
 SYMBOL = "XAUUSD"
@@ -752,10 +753,10 @@ def test_broker_offset_wired_into_live_bar_feed_converts_raw_timestamps_to_true_
 
 def test_watermark_survives_a_stale_offset_and_backfills_correctly_once_fresh(tmp_path: Path) -> None:
     """CEO's own "consecinta, de confirmat": if the process keeps running through a closure (or gets
-    restarted after one), `poll()` raising on every stale-offset attempt must NEVER corrupt the
-    persisted watermark -- and once the market genuinely reopens, the existing backfill mechanism
-    (2026-08-10) must correctly recover the whole missing window in one shot, exactly as it already does
-    for any other multi-day gap."""
+    restarted after one), `poll()` WAITING (not raising, since the 2026-08-14 auto-recovery fix) on
+    every stale-offset attempt must NEVER corrupt the persisted watermark -- and once the market
+    genuinely reopens, the existing backfill mechanism (2026-08-10) must correctly recover the whole
+    missing window in one shot, exactly as it already does for any other multi-day gap."""
     store = SqliteStateStore(tmp_path / "state.db")
     watermark_key = f"live_signal_source.bar_feed:{SYMBOL}:15"
     clock = _MutableClock(NOW)
@@ -775,12 +776,13 @@ def test_watermark_survives_a_stale_offset_and_backfills_correctly_once_fresh(tm
     assert len(bars) == 1
     assert store.get_value(watermark_key) == float(friday_close)
 
-    # Weekend: the M1 probe never advances (market closed) -- every poll attempt raises, and the
-    # watermark must stay frozen at Friday's value across all of them.
+    # Weekend: the M1 probe never advances (market closed) -- every poll attempt WAITS (returns no
+    # bars, does not raise), and the watermark must stay frozen at Friday's value across all of them.
     for hours_elapsed in (1, 24, 49, 72):
         clock.now = NOW + hours_elapsed * 3600
-        with pytest.raises(BarFeedError):
-            feed.poll()
+        bars = feed.poll()
+        assert bars == ()
+        assert feed.probe_blocked_since is not None
         assert store.get_value(watermark_key) == float(friday_close)  # never corrupted
 
     # Monday: the market reopens -- a genuinely fresh M1 bar appears, reflecting the real gap.
@@ -797,11 +799,168 @@ def test_watermark_survives_a_stale_offset_and_backfills_correctly_once_fresh(tm
 
     assert len(bars) == 1
     assert bars[0].is_backfilled is True
+    assert feed.probe_blocked_since is None  # unblocked
+    gaps = feed.last_gaps()
+    # TWO gaps this poll: the probe-outage window (wall-clock, first detected at NOW+3600s) AND the
+    # bar-continuity gap (friday_close's bar -> monday_bar_open's bar) -- two different instruments
+    # observing the same real event, both reported, per this fix's own disclosed design.
+    assert len(gaps) == 2
+    assert gaps[0].gap_start == NOW + 3600  # first stale-probe detection
+    assert gaps[0].gap_end == monday_reopen_broker_now
+    assert gaps[1].gap_start == friday_close
+    assert gaps[1].gap_end == monday_bar_open
+    assert store.get_value(watermark_key) == float(monday_bar_open)  # resumed correctly
+
+
+# -- Stale-probe auto-recovery, 2026-08-14 (CEO, after this exact condition killed all 5 live processes
+# on a genuine 62-minute MT5 data gap): `poll()` now WAITS (returns no bars, retries next poll) instead
+# of dying when the probe is stale -- but a genuinely broken gateway (empty probe, missing field) must
+# still crash exactly as before. --
+
+
+def test_poll_returns_no_bars_and_leaves_the_watermark_untouched_while_probe_is_stale() -> None:
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(
+        rates=[RawRate(time=NOW - 1_000, open=1.0, high=2.0, low=0.5, close=1.5)],
+        m1_probe_rates=_m1_probe_rate(0, NOW),
+    )
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+    first = feed.poll()
+    assert len(first) == 1  # establishes a real watermark to prove it survives untouched below
+
+    clock.now = NOW + 3_600  # 1h later, M1 probe never advanced -- stale
+    # gateway.rates deliberately left with a NEW bar that would otherwise be emittable, to prove poll()
+    # never even reaches the point of converting/emitting it while the probe itself is unusable.
+    gateway.rates = [RawRate(time=NOW + 2_000, open=1.0, high=2.0, low=0.5, close=1.5)]
+
+    second = feed.poll()
+
+    assert second == ()
+    assert gateway.copy_rates_from_calls[-1][1] == 1  # only the M1 probe was queried, not the M15 feed
+
+
+def test_probe_blocked_since_tracks_the_current_block_and_clears_on_recovery() -> None:
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+    feed.poll()
+    assert feed.probe_blocked_since is None  # fresh, never blocked
+
+    clock.now = NOW + 200  # stale
+    feed.poll()
+    assert feed.probe_blocked_since == NOW + 200  # set at FIRST detection
+
+    clock.now = NOW + 260  # still stale, same block
+    feed.poll()
+    assert feed.probe_blocked_since == NOW + 200  # unchanged -- still the ORIGINAL detection moment
+
+    clock.now = NOW + 320  # fresh again
+    gateway.m1_probe_rates = _m1_probe_rate(0, clock.now)
+    feed.poll()
+    assert feed.probe_blocked_since is None  # cleared
+
+
+def test_recovery_writes_a_gap_record_for_the_outage_window_classified_via_the_shared_function() -> None:
+    """The window looks exactly like the real production incident: ~62 minutes, starting at hour 20
+    UTC -- `classify_gap` (the SAME function bar-continuity gaps already use) must classify it
+    MAINTENANCE, identically to how the bar-level detector already handles this real-world pattern."""
+    block_start = 1_723_665_600  # 2024-08-14 20:00:00 UTC (Wednesday, hour=20)
+    clock = _MutableClock(block_start)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, block_start))
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+    feed.poll()
+
+    clock.now = block_start + 3_600  # 1h later, still the same M1 bar -- stale
+    feed.poll()
+    assert feed.probe_blocked_since == block_start + 3_600
+
+    recovery_now = block_start + 3_600 + 62 * 60  # 62 minutes of blocking
+    clock.now = recovery_now
+    gateway.m1_probe_rates = _m1_probe_rate(0, recovery_now)
+    feed.poll()
+
     gaps = feed.last_gaps()
     assert len(gaps) == 1
-    assert gaps[0].gap_start == friday_close
-    assert gaps[0].gap_end == monday_bar_open
-    assert store.get_value(watermark_key) == float(monday_bar_open)  # resumed correctly
+    gap = gaps[0]
+    assert gap.gap_start == block_start + 3_600
+    assert gap.gap_end == recovery_now
+    assert gap.duration_seconds == 62 * 60
+    assert gap.classification == GapClassification.MAINTENANCE
+    assert gap.bars_backfilled == 0
+    assert gap.backfill_capped is False
+
+
+def test_recovery_message_flags_a_block_exceeding_the_72h_anomaly_threshold(capsys: pytest.CaptureFixture[str]) -> None:
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+    feed.poll()
+
+    clock.now = NOW + 200
+    feed.poll()  # block begins at NOW + 200
+
+    recovery_now = NOW + 200 + MAX_REAL_WEEKEND_SECONDS + 1  # exceeds the 72h threshold by 1s
+    clock.now = recovery_now
+    gateway.m1_probe_rates = _m1_probe_rate(0, recovery_now)
+    capsys.readouterr()  # discard prior output
+    feed.poll()
+
+    captured = capsys.readouterr()
+    assert "exceeds" in captured.out
+    assert "72h" in captured.out or str(MAX_REAL_WEEKEND_SECONDS) in captured.out
+
+
+def test_recovery_message_does_not_flag_an_ordinary_short_block(capsys: pytest.CaptureFixture[str]) -> None:
+    clock = _MutableClock(NOW)
+    gateway = FakeMT5Gateway(m1_probe_rates=_m1_probe_rate(0, NOW))
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=clock,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=clock),
+    )
+    feed.poll()
+
+    clock.now = NOW + 200
+    feed.poll()
+
+    recovery_now = NOW + 200 + 3_600  # 1h block -- ordinary
+    clock.now = recovery_now
+    gateway.m1_probe_rates = _m1_probe_rate(0, recovery_now)
+    capsys.readouterr()
+    feed.poll()
+
+    captured = capsys.readouterr()
+    assert "exceeds" not in captured.out
+
+
+def test_a_genuinely_empty_probe_still_raises_fatally_not_caught_as_a_wait() -> None:
+    """`StaleProbeError` is a DISTINCT subtype `poll()` catches -- the base `BarFeedError` (a genuinely
+    empty/malformed probe response, not merely an OLD one) must still propagate uncaught, exactly as
+    before this fix. A silent infinite wait on a genuinely broken gateway would hide a real problem."""
+    gateway = FakeMT5Gateway(m1_probe_rates=None)  # empty -- see make_broker_offset's own empty-probe check
+    feed = LiveBarFeed(
+        gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW,
+        broker_offset=make_broker_offset(gateway, SYMBOL, system_clock=lambda: NOW),
+    )
+
+    with pytest.raises(BarFeedError):
+        feed.poll()
+    assert feed.probe_blocked_since is None  # never entered the wait state -- this path is NOT staleness
+
+
+def test_stale_probe_error_is_a_bar_feed_error_subtype() -> None:
+    assert issubclass(StaleProbeError, BarFeedError)
 
 
 def test_broker_offset_none_leaves_timestamps_unconverted() -> None:

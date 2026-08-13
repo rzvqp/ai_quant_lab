@@ -97,6 +97,50 @@ anchor M1 bar's own identity (`ts_open`), not wall-clock time. It is recomputed 
 that identity changes -- which still happens at least once per ~60s of active trading, every bit as fast
 as the old "fresh every call" DST responsiveness -- and returns the frozen, already-computed value for
 every call in between. See `make_broker_offset`'s own docstring for the caching and rounding design.
+
+**Stale-probe auto-recovery, 2026-08-14 (CEO, after the fix above shipped)**: the stale-probe fail-closed
+check (`make_broker_offset`, added 2026-08-11) was correct to refuse a wrong offset -- but WRONG in HOW
+it refused. It raised the same generic `BarFeedError` a genuinely broken gateway raises, which propagates
+uncaught through `poll()` -> the entrypoint's own `tick()` -> `run_forever()`'s while loop, killing the
+whole process. Confirmed in production: all 5 live processes died simultaneously on a genuine 62-minute
+MT5 data gap (2026-08-12 20:58-22:00 UTC, a nightly pattern -- the SAME gap the bar-continuity gap
+detector already handles gracefully, classifying it MAINTENANCE and continuing). Two different reactions
+to the same phenomenon: the CEO's own words, "acelasi fenomen, doua reactii diferite."
+
+The fix keeps fail-closed exactly as approved -- `poll()` still refuses to emit any bar or compute any
+offset while the probe is stale, the watermark is never touched, nothing is ever guessed -- but changes
+what "refuse" means from "crash" to "return no bars this cycle and let the NEXT scheduled poll try
+again." Requires distinguishing STALE (an expected, eventually-self-healing condition -- see
+`StaleProbeError`, `live_signal_source/types.py`) from a genuinely broken gateway (empty probe, missing
+field -- still a bare `BarFeedError`, still fatal, unchanged): `poll()` catches only the former. The
+retry loop needed is already free -- the entrypoint's own existing poll cadence (`run_forever()`'s
+`sleep()`) becomes the retry, no new scheduler.
+
+**Visible, not silent**: `poll()` prints once when blocking begins and once on recovery (with the
+elapsed duration) -- proportionate (a multi-hour outage does not spam a line every 30s) but never the
+previous "nothing at all forever" silence. On recovery, a `GapRecord` for the exact outage window
+(`gap_start`=the moment blocking was first detected, `gap_end`=the moment the probe was fresh again) is
+added to `last_gaps()` -- the SAME channel every entrypoint already journals through (`record_gap`), so
+this needed zero changes to any of the 5 entrypoint files. Classified via the SAME `classify_gap` every
+bar-continuity gap already uses -- a nightly ~62-minute block during hour 20-21 UTC lands MAINTENANCE,
+identical to how the bar-level gap detector already classifies the same real-world event. This can
+produce a SECOND, separate `GapRecord` from the bar-continuity check in the same `poll()` (if the M15
+series itself also shows a discontinuity once backfill runs) -- disclosed, not suppressed: two different
+instruments (the offset probe, the bar sequence) observing the same real event is not a bug, and
+guessing when to merge them would be more error-prone than reporting both honestly.
+
+**The CEO's own design question, answered**: is there a threshold past which waiting becomes abnormal?
+Yes -- reused, not invented: `gap_classification.MAX_REAL_WEEKEND_SECONDS` (72h), the SAME
+empirically-derived threshold that already separates a real weekend (measured at exactly 49.25h, five
+times, zero variance) from an operator-caused `EXTENDED_PAUSE` (the 6-day pause measured 131.5h, 2.67x
+that line). Past 72h of continuous blocking, the recovery print's own wording flags it as exceeding any
+known real closure -- the process still WAITS (stopping would reintroduce the exact bug this fix closes;
+a pure read-only poller sitting idle costs nothing while genuinely waiting), it does not auto-stop and
+does not page anyone -- proactive alerting (Telegram, matching the news monitor's own HIGH-impact
+channel) is a separate, not-yet-requested capability, not built here. The eventual `GapRecord`, once
+recovery happens, classifies to `UNEXPECTED` on its own for any non-weekend block this long (`
+_is_maintenance_window` only accepts <=75 minutes) -- this project's own existing "only UNEXPECTED is a
+problem" signal already covers it, no new classification value needed.
 """
 
 from __future__ import annotations
@@ -106,8 +150,8 @@ import time
 from typing import Any, Callable
 
 from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway
-from ai_trader.live_signal_source.gap_classification import classify_gap
-from ai_trader.live_signal_source.types import Bar, BarFeedError, GapRecord
+from ai_trader.live_signal_source.gap_classification import MAX_REAL_WEEKEND_SECONDS, classify_gap
+from ai_trader.live_signal_source.types import Bar, BarFeedError, GapRecord, StaleProbeError
 from ai_trader.persistent_state.store import SqliteStateStore
 
 MAX_BACKFILL_SECONDS = 30 * 86_400
@@ -302,7 +346,7 @@ def make_broker_offset(
             bar_advance = latest_closed_ts_open - _anchor["ts_open"]
             lag = elapsed_real - bar_advance
             if lag >= _OFFSET_PROBE_MAX_STALE_LAG_SECONDS:
-                raise BarFeedError(
+                raise StaleProbeError(
                     f"make_broker_offset({symbol!r}): M1 probe is stale -- real time advanced "
                     f"{elapsed_real}s since the last fresh bar but the latest M1 bar only advanced "
                     f"{bar_advance}s (lag={lag}s >= {_OFFSET_PROBE_MAX_STALE_LAG_SECONDS}s) -- "
@@ -361,6 +405,9 @@ class LiveBarFeed:
             None if state_store is None else self._load_persisted_watermark(state_store)
         )
         self._last_gaps: tuple[GapRecord, ...] = ()
+        self._probe_blocked_since: int | None = None
+        """True-UTC `now` at the poll where a `StaleProbeError` was FIRST seen, `None` when not
+        currently blocked -- see this module's own "Stale-probe auto-recovery" docstring section."""
 
     def _load_persisted_watermark(self, state_store: SqliteStateStore) -> int | None:
         persisted = state_store.get_value(self._watermark_key)
@@ -411,13 +458,56 @@ class LiveBarFeed:
         if self._state_store.get_value(self._clock_corrected_since_key) is None:
             self._state_store.set_value(self._clock_corrected_since_key, float(now))
 
+    @property
+    def probe_blocked_since(self) -> int | None:
+        """True-UTC timestamp of the poll where the CURRENTLY ONGOING stale-probe block was first
+        detected, or `None` if not currently blocked -- lets a caller distinguish "polled, nothing new
+        yet" from "polled, refusing to emit because the offset probe is stale" without inspecting logs."""
+        return self._probe_blocked_since
+
     def poll(self) -> tuple[Bar, ...]:
         """Returns every newly CLOSED bar since the previous `poll()` call, oldest first, with
         `ts_open`/`ts_close` in true UTC regardless of what convention MT5 itself uses internally (see
-        `broker_offset` on `__init__`). Never returns the currently-forming bar. Raises `BarFeedError`
-        on a genuine gateway failure -- never returns a stale/partial result silently."""
+        `broker_offset` on `__init__`). Never returns the currently-forming bar.
+
+        While the broker-offset probe is stale (`StaleProbeError`), returns `()` -- no bars, no watermark
+        change, no offset computed -- and retries on the next scheduled poll instead of raising (see this
+        module's own "Stale-probe auto-recovery" docstring section). Still raises plain `BarFeedError` on
+        a genuine gateway failure -- never returns a stale/partial result silently for THAT case."""
         now = self._clock()
-        offset = self._offset_now()
+        try:
+            offset = self._offset_now()
+        except StaleProbeError as exc:
+            if self._probe_blocked_since is None:
+                self._probe_blocked_since = now
+                print(
+                    f"LiveBarFeed({self._symbol!r}): broker-offset probe is stale -- refusing to emit, "
+                    f"will retry every poll until fresh again ({exc})",
+                    flush=True,
+                )
+            self._last_gaps = ()
+            return ()
+
+        probe_recovery_gap: tuple[GapRecord, ...] = ()
+        if self._probe_blocked_since is not None:
+            blocked_duration = now - self._probe_blocked_since
+            recovery_gap = GapRecord(
+                symbol=self._symbol, gap_start=self._probe_blocked_since, gap_end=now,
+                duration_seconds=blocked_duration, classification=classify_gap(self._probe_blocked_since, now),
+                bars_backfilled=0, backfill_capped=False,
+            )
+            anomaly_note = (
+                f" -- exceeds {MAX_REAL_WEEKEND_SECONDS}s (72h), any known real closure duration"
+                if blocked_duration > MAX_REAL_WEEKEND_SECONDS else ""
+            )
+            print(
+                f"LiveBarFeed({self._symbol!r}): broker-offset probe fresh again after {blocked_duration}s "
+                f"blocked, classified {recovery_gap.classification.value}{anomaly_note}",
+                flush=True,
+            )
+            self._probe_blocked_since = None
+            probe_recovery_gap = (recovery_gap,)
+
         self._record_clock_correction_watermark(now)
         is_backfill, backfill_capped, rates = self._fetch_rates(now, offset)
         if rates is None:
@@ -465,7 +555,7 @@ class LiveBarFeed:
                     bars_backfilled=bars_backfilled, backfill_capped=backfill_capped,
                 ))
             previous_ts_open = bar.ts_open
-        self._last_gaps = tuple(gaps)
+        self._last_gaps = probe_recovery_gap + tuple(gaps)
 
         if closed_bars:
             self._last_emitted_ts_open = closed_bars[-1].ts_open

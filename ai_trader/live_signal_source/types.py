@@ -70,6 +70,17 @@ class BarFeedError(Exception):
     empty `poll()` result is the normal, expected outcome of polling mid-bar, not a failure."""
 
 
+class StaleProbeError(BarFeedError):
+    """Raised ONLY by `make_broker_offset`'s own staleness check (`_OFFSET_PROBE_MAX_STALE_LAG_SECONDS`)
+    -- a distinct subtype from the base `BarFeedError`, added 2026-08-14 (CEO, after this exact condition
+    killed all 5 live processes on a genuine 62-minute MT5 data gap): a stale probe means "the market
+    appears closed right now," a fundamentally different, EXPECTED-to-eventually-happen condition from a
+    genuinely broken gateway response (empty probe, missing field -- both still plain `BarFeedError`,
+    still fatal, unchanged). `LiveBarFeed.poll()` catches this specific subtype to wait and retry instead
+    of dying; it deliberately does NOT catch the base class, so a real gateway malfunction still crashes
+    the process exactly as before -- only "the market looks closed" gets a second chance."""
+
+
 @dataclass(frozen=True, slots=True)
 class LiveCandidate:
     """This package's own equivalent of `execution_orchestrator.types.CandidateSignal` -- see this
