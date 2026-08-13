@@ -99,7 +99,25 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `FLOW_B_CANONICAL_EVALUATOR` — Step 6: local gross evaluator ELIMINATED, canonical evaluator wired
+## STATE: `ACTIVE_CONTINUOUS_LOOP` — regime×family generation (RANGE blocked; economic promotion blocked until ratification)
+
+**Out of WAITING (CEO): research + candidate generation AUTHORIZED now.** Loop per candidate: pre-register (regime in identity) → implement (logic SEPARATE from evaluator) → deterministic checks → rapid falsification (≥5 episodes, gross>0, not single-trade) → PROVISIONAL regime-scoped screen → status → next. All numbers **PROVISIONAL · NON-COMPARABLE · REQUIRES CANONICAL RERUN** (4 blocks + corrected evaluator; mstrat still double-counts spread). Statuses allowed: HYPOTHESIS_REGISTERED / IMPLEMENTED_RESEARCH_ONLY / PROVISIONAL_SCREENED / STRUCTURALLY_FALSIFIED / ARCHIVE_INSUFFICIENT / QUEUED_FOR_CANONICAL_RERUN. FORBIDDEN: RATIFIED / PROMOTED / LIVE_ELIGIBLE.
+
+### 🔁 BATCH 1 — TREND pairs (the priority under-populated cells) · `edge_research/flowb_trend.py` + `regime.py`
+Causal regime predicate from ratified MK-01 swings (TREND_UP = HH+HL confirmed≤bar; TREND_DOWN = LH+LL — lookahead-safe; NOT the blocked RANGE axis). **Data = 4-block population (2011–2025, 197k bars — the loader now delivers the 4th block `2022-12→2025-10`).** Coverage: TREND_UP 59,857 bars / thousands of episodes, TREND_DOWN 56,325. 4 hypotheses pre-registered BEFORE results (regime in run-identity; unconditioned ≠ trend-conditioned = distinct hypotheses):
+
+| id | pair | dir | status | provisional (NET, mstrat) |
+|---|---|---|---|---|
+| CAND-T01 | trend_momentum_continuation × TREND_UP | long | **PROVISIONAL_SCREENED · ⚠fat-tail** | avg_R +0.053, PF 1.08, trimmed **−0.032** |
+| CAND-T02 | trend_momentum_continuation × TREND_DOWN | short | **STRUCTURALLY_FALSIFIED** | gross-negative (avg −0.005) |
+| CAND-T03 | trend_pullback_continuation × TREND_UP | long | **PROVISIONAL_SCREENED · ⚠fat-tail** | avg_R +0.127, PF 1.19, per-year mostly + (incl. 2022–25), trimmed **−0.011** |
+| CAND-T04 | trend_pullback_continuation × TREND_DOWN | short | **STRUCTURALLY_FALSIFIED** | single-trade (best_share 6.0) |
+
+**Batch verdict:** no CLEAN robust edge yet. 2 falsified (both SHORT — gold's long bias kills short trend-continuation). 2 LONG survive to PROVISIONAL but **fat-tail** (tight structural stop → same tiny-stop fragility as S3/level-fade; trimmed marginally negative). **T03 (trend-pullback LONG) is the most promising** (raw +0.127, per-year robust incl. the new block) but the tight stop must be widened structurally to escape the fat-tail — next iteration. All queued for canonical rerun; the corrected evaluator (mstrat double-counts spread → pessimistic) may lift the trimmed numbers. Registry: `flowb_trend_results.json`.
+
+**Next in loop:** widen the trend-continuation stop (structural, per the CAND-0037 lesson: large stop → cost/fat-tail robust) as NEW hypotheses (T05+); then BREAKOUT_TRANSITION × retest continuation (regime-conditioned CAND-0037 variant). Report per batch.
+
+### (historical) `FLOW_B_CANONICAL_EVALUATOR` — Step 6: local gross evaluator ELIMINATED, canonical evaluator wired
 
 > # ⚠ HISTORICAL — NON-COMPARABLE — REQUIRES RECOMPUTATION
 > **Every Flow-B economic number below this line was produced by the local `_screen.simulate`, which read
