@@ -38,17 +38,25 @@ AFTER `VE_HANDOFF_PASS`, plus more no-artifact-needed primitives)**:
 7. `wheel_verification.py` -- `verify_wheel_hash`, the pre-install SHA-256/size/filename gate ("VERIFICI
    SHA-256 INAINTE DE INSTALARE"). Standalone, no import of the wheel's contents -- read-and-hash only.
 
-**Mandate 2 status, 2026-08-14 (ARTIFACT_PIN_PASS)**: the `ve_brain-0.1.3-py3-none-any.whl` wheel has been
-physically delivered, SHA-256- and size-verified in three independent locations (this session's own
-scratchpad plus two other sessions' scratchpads, all matching), installed into a clean venv, and its own
-`artifact_manifest("a1d2a6d")` (called with a real `git rev-parse HEAD`-derived `delivery_commit`, never a
-placeholder) returns all ten fields matching `CURRENT_PIN` exactly -- `verify_artifact_pin(CURRENT_PIN)`
-genuinely PASSES against the real installed package, independently reproduced in this environment (not
-merely trusted from Red Team's `RT-PIN-0001_ve_brain_wheel_a1d2a6d_PASS.md`, which was cross-read and
-corroborates every detail). This closes steps 1-2 of the CEO's 12-step post-install list. Steps 3-12
-(functional `range_fade`/`trend_pullback` proofs, N1-Router-EV-N6 integration, Risk Manager, Execution
-Adapter in SHADOW, legacy isolation via the atomic authority switch, the 20 skeleton tests going real, the
-full 25-test run, and the final `READY_FOR_LIVE_SHADOW_REVIEW` report) have not started. The CEO checkpoint
+**Mandate 2 status, 2026-08-14 -- integration ACTIVE, prep phase over.** `ve_brain-0.1.3` is installed and
+independently verified (`verify_artifact_pin` genuinely PASSES against the real installed package). The
+real integration package is `ai_trader.new_brain_bridge` (N1-Router-EV-N6, a provenance-gated Risk
+Manager bridge, shadow execution, persisted telemetry) -- steps 1-8 of the CEO's 12-step list are done and
+tested there. **This package (`mandate2_readiness`) is consequently no longer "not wired into anything"**
+-- `new_brain_bridge` is its one and only legitimate importer (see `tests/test_import_independence.py
+::test_only_new_brain_bridge_imports_this_package`); nothing else in `ai_trader/` reaches it, and this
+package's own production code still imports nothing from `ve_brain`, `pdh_pdl_demo`, or
+`multi_policy_live` (still true, still enforced by this package's own static guards).
+
+**Legacy demotion + the atomic authority switch (steps 4-5) are built as CODE ONLY, per explicit CEO
+instruction 2026-08-14 ("construieste codul, NU comuta inca")** -- `new_brain_bridge.authority
+.DecisionAuthority`, persisted the same way `PolicyControl` already is; `pdh_pdl_demo`'s/
+`multi_policy_live`'s own `submit_candidate` methods gained an optional `authority_check` parameter,
+default `None`, byte-for-byte unchanged behavior. `set_authority()` is never called anywhere -- the 5 live
+processes' real behavior is untouched. 20 of the 25 CEO-owned end-to-end tests are now real (5 stay
+genuinely blocked, each naming a concept this codebase still doesn't build -- see
+`tests/test_e2e_readiness.py`'s own updated module docstring). Remaining: the CEO's explicit 15-item
+property checklist (section 8) and the final `READY_FOR_LIVE_SHADOW_REVIEW` report. The CEO checkpoint
 remains required only before `LIVE_SHADOW` itself; `BROKER_ORDER_SUBMISSION` stays `DISABLED` throughout."""
 
 from __future__ import annotations

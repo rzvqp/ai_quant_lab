@@ -61,19 +61,29 @@ def test_does_not_import_any_execution_capable_package() -> None:
     assert not violations, f"forbidden execution-capable import(s) found: {violations}"
 
 
-def test_nothing_outside_this_package_imports_it_yet() -> None:
-    """Confirms the "not wired into anything" claim in every docstring in this package is actually true
-    right now, not just asserted -- zero importers anywhere else in `ai_trader/` (excluding this
-    package's own files)."""
+def test_only_new_brain_bridge_imports_this_package() -> None:
+    """Mandate 2 continuation (CEO, 2026-08-14): prep is over, real integration is active --
+    `new_brain_bridge/` (the ONLY package that wires N1-N6 to the real feed, Risk Manager, and shadow
+    execution) now legitimately imports `broker_gate.py`/`decision_provenance.py`/`event_identity.py`
+    for real. This test's job is narrower now, not gone: confirm NO package OTHER than `new_brain_bridge`
+    imports `mandate2_readiness` -- the two legacy live processes (`pdh_pdl_demo`, `multi_policy_live`)
+    reach `new_brain_bridge.authority.DecisionAuthority` only (their own `test_import_independence.py`
+    files are the place that would catch a legacy package reaching into this one directly)."""
     repo_root = _PACKAGE_ROOT.parents[1]  # repo root
-    importers: list[str] = []
+    allowed_importer = "ai_trader\\new_brain_bridge" if "\\" in str(repo_root) else "ai_trader/new_brain_bridge"
+    unexpected_importers: list[str] = []
     for source_path in repo_root.glob("ai_trader/**/*.py"):
         if _PACKAGE_ROOT in source_path.parents or source_path.parent == _PACKAGE_ROOT:
             continue
+        relative = str(source_path.relative_to(repo_root))
+        if relative.startswith(allowed_importer):
+            continue
         text = source_path.read_text(encoding="utf-8")
         if "mandate2_readiness" in text:
-            importers.append(str(source_path.relative_to(repo_root)))
-    assert importers == [], f"unexpected importer(s) of mandate2_readiness found: {importers}"
+            unexpected_importers.append(relative)
+    assert unexpected_importers == [], (
+        f"unexpected importer(s) of mandate2_readiness found outside new_brain_bridge: {unexpected_importers}"
+    )
 
 
 def test_forbidden_call_list_only_appears_in_this_test_module_and_docstrings() -> None:

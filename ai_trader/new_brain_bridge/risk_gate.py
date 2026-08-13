@@ -29,9 +29,15 @@ from ai_trader.mandate2_readiness.decision_provenance import UntrustedDecisionSo
 from ai_trader.mandate2_readiness.event_identity import NodeTrace
 from ai_trader.new_brain_bridge.bridge import NewBrainOutcome
 from ai_trader.risk_manager.config import RiskConfig
-from ai_trader.risk_manager.types import PortfolioState, RiskContext
+from ai_trader.risk_manager.types import EngineState, PortfolioState, RiskContext
 from ai_trader.risk_manager_live.engine import evaluate_trade_proposal
-from ai_trader.risk_manager_live.types import AccountState, InstrumentSpecification, LiveRiskDecision, TradeProposal
+from ai_trader.risk_manager_live.types import (
+    AccountState,
+    InstrumentSpecification,
+    LiveRiskDecision,
+    TradeProposal,
+    TradingCircuitState,
+)
 from ai_trader.signal_engine.types import Direction
 
 _ENGINE_VERSION = "risk_manager_live"
@@ -41,6 +47,7 @@ MISSING_DECISION_PROVENANCE = "MISSING_DECISION_PROVENANCE"
 UNTRUSTED_DECISION_SOURCE = "UNTRUSTED_DECISION_SOURCE"
 PROVENANCE_EVENT_IDENTITY_MISMATCH = "PROVENANCE_EVENT_IDENTITY_MISMATCH"
 PROVENANCE_DECISION_FINGERPRINT_MISMATCH = "PROVENANCE_DECISION_FINGERPRINT_MISMATCH"
+CIRCUIT_BREAKER_ACTIVE = "CIRCUIT_BREAKER_ACTIVE"
 
 
 def _deny(reason_code: str) -> LiveRiskDecision:
@@ -54,10 +61,21 @@ def _deny(reason_code: str) -> LiveRiskDecision:
 def submit_new_brain_candidate(
     outcome: NewBrainOutcome, *, account: AccountState, portfolio: PortfolioState,
     instrument: InstrumentSpecification, risk_context: RiskContext, risk_config: RiskConfig | None = None,
+    circuit_state: TradingCircuitState | None = None,
 ) -> LiveRiskDecision:
     """The provenance-gated bridge from a `NewBrainOutcome` to the live Risk Manager. Approval here
     does NOT mean a trade executes -- it means Risk Manager's own sizing/limits/guards evaluation may
-    now run; `execution_shadow.py` still sits between any approval and the broker."""
+    now run; `execution_shadow.py` still sits between any approval and the broker.
+
+    `circuit_state`, if given, is the SAME account-wide `TradingCircuitState`
+    (`risk_manager_live.circuit_breaker`) every legacy policy already consults -- checked FIRST, before
+    provenance, since an active circuit breaker must deny EVERY candidate account-wide, brain-sourced or
+    not (test 17's own requirement: "no brain-specific bypass path"). `None` (the default) skips the
+    check entirely -- a caller not yet wiring the circuit breaker in gets today's behavior, not a
+    silent, always-open breaker masquerading as one."""
+    if circuit_state is not None and circuit_state.state is not EngineState.READY:
+        return _deny(CIRCUIT_BREAKER_ACTIVE)
+
     decision = outcome.decision
     if decision is None or decision.decision not in ("TRADE", "SHADOW_TRADE_CANDIDATE"):
         return _deny(NO_ACTIONABLE_N6_DECISION)

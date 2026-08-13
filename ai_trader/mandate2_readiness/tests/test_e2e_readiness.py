@@ -1,17 +1,19 @@
 """25 end-to-end tests for Mandate 2 (CEO, 2026-08-14: "PREGATIRE pentru Mandatul 2... scheletul celor 25
-de teste end-to-end, fara implementare"). These 25 are OWNED by this division, implemented fully in
-Mandate 2 itself, AFTER `VE_HANDOFF_PASS` from Red Team (CEO amendment A4, 2026-08-14) -- not to be
-confused with Red Team's own canonical-contract gate, a separate thing.
+de teste end-to-end, fara implementare"). These 25 are OWNED by this division. Original six were real,
+runnable against the pre-artifact architecture; the remaining nineteen were `pytest.skip`'d, each naming
+a concept that did not exist yet.
 
-**Six are real, runnable tests today** (CEO's own list of the ones that "nu depind de artefact"): 8, 11,
-12, 13, 19, 20. They prove a safety property already holds in THIS repo's current architecture, using
-only code that exists now (`LiveBarFeed`, `CandidateSignalProducer`, `PdhPdlOrchestrator`, the new
-`BrokerOrderSubmissionGate`) -- a regression floor Mandate 2's actual integration must not lower. **The
-other nineteen are documented skeletons** (`pytest.skip`): each names concepts that do not exist in this
-repo yet (N1-N6, the EV engine, `SHADOW_TRADE_CANDIDATE`, a confidence threshold) and genuinely cannot be
-implemented before the artifact arrives -- writing a fake implementation now would be worse than an
-honest skip, since a fake could pass for reasons that have nothing to do with the real artifact's own
-behavior.
+**Mandate 2 continuation, 2026-08-14 ("ARTEFACTUL, predat fizic" then "construieste codul, NU comuta
+inca"): `ve_brain` is installed, `new_brain_bridge/` (N1-Router-EV-N6, provenance-gated Risk Manager,
+shadow execution, telemetry) is built and tested. Twenty of the 25 are now real** -- the original six
+(8, 11, 12, 13, 19, 20) PLUS fourteen more (1, 2, 3, 6, 7, 14, 15, 16, 17, 18, 21, 23, 24, 25) converted
+below, using the REAL installed `ve_brain` and `new_brain_bridge` code, never a fixture standing in for
+either. **Five remain genuinely blocked** (4, 5, 9, 10, 20b) -- each still names something this codebase
+does not build yet (day-boundary/session labels feeding N1's own axes, gap-visibility inside N1's input,
+a decision-snapshot staleness bound distinct from ATR/level availability, a "conflicting recognition
+sources" merge model that does not match this architecture's per-strategy-independent design, and the
+real artifact's own inter-node failure contract) -- writing a fake implementation for any of these would
+risk passing for reasons unrelated to the real property; each stays `pytest.skip`'d with its own reason.
 
 **CEO amendment A1, 2026-08-14, incorporated below**: N1-N6 and the EV engine CAN legitimately traverse
 all the way to a `SHADOW_TRADE_CANDIDATE` (not just `NO_TRADE`) -- Risk Manager and the Execution Adapter
@@ -22,16 +24,20 @@ this stronger reading, not the weaker "NO_TRADE never orders" reading alone -- t
 covered before the amendment and would have been an easier, less useful test to pass.
 
 **Never modify N1-N6 or the EV engine internally, including once received** (CEO's own standing
-instruction). If a future artifact-dependent test in this file ever fails against the real artifact, the
-required response is `INTEGRATION_BLOCKED` -> a reproducible report to VE -> VE repairs -> Red Team
-revalidates. Local repair is explicitly forbidden ("Ar crea din nou doua versiuni ale creierului")."""
+instruction) -- every test below imports `ve_brain`'s own PUBLIC API only, and reads
+`new_brain_bridge`'s own outputs; none reaches into `ve_brain`'s private modules. If a future test in
+this file ever fails against the real artifact, the required response is `INTEGRATION_BLOCKED` -> a
+reproducible report to VE -> VE repairs -> Red Team revalidates. Local repair is explicitly forbidden
+("Ar crea din nou doua versiuni ale creierului")."""
 
 from __future__ import annotations
 
+import ast
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import ve_brain  # type: ignore[import-untyped]  # external VE artifact, no py.typed marker -- never modified
 
 from ai_trader.execution_engine.ledger import OrderLedger
 from ai_trader.execution_orchestrator.tests._fixtures import make_deps, make_market_context
@@ -39,17 +45,26 @@ from ai_trader.live_signal_source.bar_feed import LiveBarFeed
 from ai_trader.live_signal_source.journal import LiveSignalJournal
 from ai_trader.live_signal_source.producer import CandidateSignalProducer
 from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
-from ai_trader.live_signal_source.types import Bar, LiveCandidate
+from ai_trader.live_signal_source.types import Bar, BarFeedError, LiveCandidate
 from ai_trader.mandate2_readiness.broker_gate import BrokerOrderSubmissionDisabledError, BrokerOrderSubmissionGate
 from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
 from ai_trader.mt5_demo_execution.safety import verify_safety_guards
 from ai_trader.mt5_demo_execution.tests._fixtures import AS_OF, FakeMT5DemoGateway
 from ai_trader.mt5_demo_execution.types import MT5DemoConfig
+from ai_trader.new_brain_bridge.bridge import evaluate_bar
+from ai_trader.new_brain_bridge.fail_safe import BrainUnavailableOutcome, safe_evaluate_bar
+from ai_trader.new_brain_bridge.raw_axes_builder import RawAxesBuilder
+from ai_trader.new_brain_bridge.risk_gate import CIRCUIT_BREAKER_ACTIVE, submit_new_brain_candidate
+from ai_trader.new_brain_bridge.telemetry import NewBrainTelemetryLog
+from ai_trader.new_brain_bridge.tests.conftest import trend_up_regime_bars
 from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.orchestration import DemoDepsBundle, PdhPdlOrchestrator
 from ai_trader.pdh_pdl_demo.recognition_rule import MAGIC_NUMBER, STRATEGY_ID, PdhPdlTrigger
 from ai_trader.persistent_state.store import SqliteStateStore
+from ai_trader.risk_manager.types import EngineState
+from ai_trader.risk_manager_live.tests._fixtures import make_account, make_config, make_instrument, make_portfolio, make_risk_context
+from ai_trader.risk_manager_live.types import TradingCircuitState
 from ai_trader.signal_engine.types import Direction
 
 SYMBOL = "XAUUSD"
@@ -291,125 +306,416 @@ def test_20b_a_single_node_failing_mid_pipeline_degrades_that_decision_to_no_tra
 
 
 # ============================================================================
-# PART B -- nineteen skeletons. Each names a concept that does not exist in
-# this repo yet. `pytest.skip`, not a fake pass -- a fake implementation
-# would risk passing for reasons unrelated to the real artifact.
+# PART B -- fourteen of the original nineteen skeletons, now real (the real
+# ve_brain + new_brain_bridge exist). Five stay pytest.skip'd -- each still
+# names a concept this codebase genuinely does not build yet.
 # ============================================================================
 
-_BLOCKED = "INTEGRATION_BLOCKED -- requires the N1-N6/EV artifact, not received (VE_HANDOFF_PASS pending)"
+_BLOCKED = "INTEGRATION_BLOCKED -- this concept is not built in this codebase yet, see this test's own docstring"
+_ARCHITECTURE_MISMATCH = ("Doesn't match this codebase's per-strategy-independent N6 design -- see this "
+                          "test's own docstring")
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_01_each_real_bar_reaches_n1_exactly_once_end_to_end() -> None:
-    """Extends test 11's proven feed-level dedup all the way through N1's own ingestion boundary."""
+    """Extends test 11's proven feed-level dedup all the way through N1's own ingestion boundary
+    (`RawAxesBuilder.observe`) -- the same deduping `CandidateSignalProducer.run_once()` feeds a bar to
+    its recognition rule exactly once; N1 sits at that exact same call site in the real integration."""
+    gateway = FakeMT5Gateway(rates=[RawRate(time=NOW - 1_000, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+
+    call_count = 0
+    builder = RawAxesBuilder(SYMBOL)
+    real_observe = builder.observe
+
+    def counting_observe(bar: Bar) -> object:
+        nonlocal call_count
+        call_count += 1
+        return real_observe(bar)
+
+    builder.observe = counting_observe  # type: ignore[method-assign]
+
+    first_bars = feed.poll()
+    for bar in first_bars:
+        builder.observe(bar)
+    second_bars = feed.poll()  # SAME underlying event still in MT5's lookback -- feed dedupes it
+    for bar in second_bars:
+        builder.observe(bar)
+
+    assert len(first_bars) == 1
+    assert second_bars == ()
+    assert call_count == 1  # N1 itself was reached exactly once for the one real event
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_02_a_backfilled_bar_is_processed_identically_to_a_live_bar_by_n1() -> None:
-    """`Bar.is_backfilled=True` must never special-case N1's own evaluation -- a recovered bar is not a
-    lesser bar."""
+    """`Bar.is_backfilled=True` must never special-case N1's own evaluation -- `RawAxesBuilder.observe`
+    reads only `open`/`high`/`low`/`close`, never `is_backfilled`, confirmed here by feeding the
+    IDENTICAL OHLC through two separate builders, one via a backfilled bar and one via a live one."""
+    live_bar = Bar(symbol=SYMBOL, ts_open=0, ts_close=900, open=2400.0, high=2401.0, low=2399.0,
+                    close=2400.5, volume=100.0, is_backfilled=False)
+    backfilled_bar = Bar(symbol=SYMBOL, ts_open=0, ts_close=900, open=2400.0, high=2401.0, low=2399.0,
+                          close=2400.5, volume=100.0, is_backfilled=True)
+
+    live_axes = RawAxesBuilder(SYMBOL).observe(live_bar)
+    backfilled_axes = RawAxesBuilder(SYMBOL).observe(backfilled_bar)
+
+    assert live_axes == backfilled_axes
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_03_a_malformed_bar_never_reaches_n1() -> None:
     """Fails closed at ingestion (already true today -- `BarFeedError` on a missing OHLC field) --
-    confirm N1 never receives a value that ingestion itself should have rejected."""
+    confirm N1 (`RawAxesBuilder`) is never even CONSTRUCTED-INTO when the feed itself refuses first."""
+    malformed_record = SimpleNamespace(time=NOW - 1_000, high=2.0, low=0.5, close=1.5)  # missing "open"
+    gateway = FakeMT5Gateway(rates=[malformed_record])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    builder = RawAxesBuilder(SYMBOL)
+
+    with pytest.raises(BarFeedError):
+        for bar in feed.poll():
+            builder.observe(bar)  # unreachable -- feed.poll() itself raises first
+
+    assert builder.bars_observed == 0
 
 
-@pytest.mark.skip(reason=_BLOCKED)
+@pytest.mark.skip(reason=_BLOCKED + " (day-boundary/session labels feeding N1's own axes -- RawAxesBuilder "
+                                    "consumes only OHLC, not session/day-boundary context; that mapping "
+                                    "does not exist)")
 def test_04_session_and_day_boundary_labels_n1_consumes_match_true_utc() -> None:
     """The clock-translation correctness already proven at the `LiveBarFeed` boundary (2026-08-11 fix)
-    must reach N1's own inputs unchanged."""
+    must reach N1's own inputs unchanged. Not applicable to THIS N1 (`RawAxesBuilder`) as built -- it has
+    no session/day-boundary input at all (see `bridge.py`'s own disclosed gap 2, `market_map_available`).
+    Would become real if/when a level-tower-style session context is wired into N1's own axes."""
 
 
-@pytest.mark.skip(reason=_BLOCKED)
+@pytest.mark.skip(reason=_BLOCKED + " (gap-visibility inside N1's own market-context input -- "
+                                    "RawAxesBuilder has no market-context input at all, only raw OHLC)")
 def test_05_a_detected_gap_is_visible_in_whatever_context_n1_consumes() -> None:
-    """MAINTENANCE/WEEKEND/EXTENDED_PAUSE/UNEXPECTED, and the new stale-probe-outage `GapRecord`
-    (2026-08-14) -- none silently absorbed before reaching N1's own market-context input."""
+    """MAINTENANCE/WEEKEND/EXTENDED_PAUSE/UNEXPECTED, and the stale-probe-outage `GapRecord`
+    (2026-08-14) -- none silently absorbed before reaching N1's own market-context input. Not applicable
+    to THIS N1 as built (no market-context object at all); would become real once/if N1 grows one."""
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_06_a_malformed_n1_n6_decision_output_is_rejected_not_guessed_at() -> None:
-    """Schema validation on the boundary this division reads, before any downstream consumer (journal,
-    Risk Manager shadow processing) touches it."""
+    """Schema validation on the boundary this division reads -- `ve_brain.decide_n6` itself runs
+    `validate_request` (step 1, before catalog/EV) and returns `SCHEMA_VALIDATION_FAILED`, never a
+    guess, for a malformed `DecisionRequest` (here: `contract_id` not matching `INPUT_CONTRACT_ID`)."""
+    canon = next(c for c in ve_brain.CANONICAL_STRATEGIES if c.strategy_id == "trend_pullback")
+    bad_request = ve_brain.DecisionRequest(
+        contract_id="wrong-contract-id",  # the one deliberately malformed field
+        strategy_id=canon.strategy_id, strategy_version=canon.strategy_version,
+        validation_status=canon.validation_status, strategy_family=canon.strategy_family,
+        strategy_policy_fingerprint=ve_brain.strategy_policy_fingerprint(canon),
+        market_event_id="evt", regime_fingerprint="fp", market_state_ref="ref", regime_label="TREND_UP",
+        bias_direction="LONG", market_map_available=False, levels_available=False,
+        confirmation_available=False, entry_price=2400.0, stop_price=2390.0, target_kind="rr",
+        target_param=2.0, holding_window=10, atr=10.0, probability_inputs=None, full_spread_price=0.10,
+        entry_slippage_price=0.05, exit_slippage_price=0.05, symbol=SYMBOL, timeframe="M15", block_start=0,
+        block_end=900, segment_id="test", manifest_hash="test", n1_contract_version=ve_brain.N1_CONTRACT_VERSION,
+        raw_axis_schema_version=ve_brain.RAW_AXIS_SCHEMA_VERSION, router_version=ve_brain.ROUTER_VERSION,
+        eligibility_policy_version="eligibility-v1",
+        measurement_contract_version=ve_brain.MEASUREMENT_CONTRACT_VERSION, configuration_fingerprint="cfg",
+    )
+    eligibility = ve_brain.EligibilityDecision(
+        strategy_id=canon.strategy_id, strategy_version=canon.strategy_version, market_event_id="evt",
+        regime_fingerprint="fp", router_version=ve_brain.ROUTER_VERSION, eligible=True,
+        mode=ve_brain.RoutingMode.NORMAL, matched_regimes=("TREND_UP",),
+        reason_codes=(ve_brain.ReasonCode.ROUTER_ELIGIBLE.value,),
+    )
+
+    response = ve_brain.decide_n6(bad_request, eligibility)
+
+    assert response.decision == "NO_TRADE"
+    assert response.reason_codes == (ve_brain.ReasonCode.SCHEMA_VALIDATION_FAILED.value,)
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_07_n1_n6_and_the_ev_engine_are_deterministic_on_a_frozen_input_snapshot() -> None:
-    """Same input, replayed twice, same decision -- required for test 12's own restart-safety property
-    to mean anything once real decision logic is involved."""
+    """Same input, replayed twice -- via TWO INDEPENDENT `RawAxesBuilder`/bar-history instances (never
+    the same mutable object, so this proves determinism of the PIPELINE, not object reuse) -- same
+    decision, same `expected_value_net`, same `configuration_fingerprint`. Required for test 12's own
+    restart-safety property to mean anything once real decision logic is involved."""
+    def _run() -> ve_brain.DecisionResponse | None:
+        builder = RawAxesBuilder(SYMBOL)
+        bars = trend_up_regime_bars(SYMBOL)
+        for bar in bars[:-1]:
+            builder.observe(bar)
+        outcomes = evaluate_bar(bars[-1], timeframe="M15", axes_builder=builder)
+        return next(o for o in outcomes if o.strategy_id == "trend_pullback").decision
+
+    first = _run()
+    second = _run()
+    assert first is not None and second is not None
+    assert first.decision == second.decision
+    assert first.expected_value_net == second.expected_value_net
+    assert first.configuration_fingerprint == second.configuration_fingerprint
 
 
-@pytest.mark.skip(reason=_BLOCKED)
+@pytest.mark.skip(reason=_BLOCKED + " (a decision-snapshot staleness bound distinct from N6's own "
+                                    "ATR/level-availability checks -- no such freshness concept exists "
+                                    "in new_brain_bridge yet)")
 def test_09_a_decision_citing_a_stale_snapshot_is_rejected_before_reaching_n6() -> None:
     """Distinct from test 13 (no bar at all): a decision built from a snapshot that WAS available but has
-    since gone stale relative to N6's own freshness bound."""
+    since gone stale relative to N6's own freshness bound. Not applicable as built -- `evaluate_bar` has
+    no snapshot-age concept separate from "the bar just observed"; would become real if/when a decision
+    can be built from an older snapshot than the current bar."""
 
 
-@pytest.mark.skip(reason=_BLOCKED)
+@pytest.mark.skip(reason=_ARCHITECTURE_MISMATCH)
 def test_10_two_conflicting_recognition_sources_on_one_bar_produce_one_deterministic_n6_resolution() -> None:
-    """No silent overwrite, no double count -- matching this project's own established tie-break
-    discipline (Portfolio Architect's round-robin precedent)."""
+    """Assumes a MERGE step across multiple recognition sources producing ONE N6 resolution per bar.
+    This codebase's actual design (`bridge.evaluate_bar`) is per-strategy-INDEPENDENT: every catalog
+    strategy gets its OWN `DecisionRequest`/`decide_n6` call for the same bar, each with its own outcome
+    -- there is no merge, and therefore no conflict to resolve. Re-scope or retire once VE/CEO confirm
+    whether a cross-strategy merge is actually intended."""
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_14_an_already_recorded_shadow_trade_candidate_is_never_re_recorded_for_the_same_event() -> None:
-    """Test 11's property, restated at the SHADOW_TRADE_CANDIDATE record layer specifically."""
+    """Test 11's property, restated at the telemetry layer: the SAME underlying bar, delivered twice by
+    a deduping feed, must produce exactly ONE persisted `NewBrainTelemetryLog` record for that event --
+    not because the log itself dedupes (it doesn't), but because the upstream feed never delivers it
+    twice, so `record_outcome` is only ever called once for it."""
+    gateway = FakeMT5Gateway(rates=[RawRate(time=NOW - 1_000, open=1.0, high=2.0, low=0.5, close=1.5)])
+    feed = LiveBarFeed(gateway, SYMBOL, mt5_timeframe=15, bar_seconds=M15_SECONDS, clock=lambda: NOW)
+    builder = RawAxesBuilder(SYMBOL)
+    log = NewBrainTelemetryLog()
+
+    for bar in feed.poll():  # first delivery -- real event
+        for outcome in evaluate_bar(bar, timeframe="M15", axes_builder=builder):
+            log.record_outcome(outcome)
+    for bar in feed.poll():  # SAME underlying event -- feed dedupes, yields nothing
+        for outcome in evaluate_bar(bar, timeframe="M15", axes_builder=builder):
+            log.record_outcome(outcome)
+
+    trace_ids = {r.event_identity.trace_id for r in log.entries}
+    market_event_ids = {r.event_identity.market_event_id for r in log.entries}
+    assert len(market_event_ids) == 1  # one underlying bar
+    assert len(log.entries) == len(ve_brain.CANONICAL_STRATEGIES)  # one record per strategy, not doubled
+    assert len(trace_ids) == len(ve_brain.CANONICAL_STRATEGIES)  # each strategy's own distinct trace_id
 
 
-@pytest.mark.skip(reason=_BLOCKED)
-def test_15_the_decision_journal_survives_a_restart_and_resumes_exactly_where_it_left_off() -> None:
-    """Test 12's property, restated for whatever N1-N6/shadow-processing journal Mandate 2 adds -- no
-    gap, no double-count in that journal specifically."""
+def test_15_the_decision_journal_survives_a_restart_and_resumes_exactly_where_it_left_off(tmp_path: Path) -> None:
+    """Test 12's property, restated for `NewBrainTelemetryLog` specifically -- a brand-new log instance
+    sharing only the persisted store (never the in-memory object) sees everything the prior instance
+    wrote, with no gap and no double-count."""
+    store_path = tmp_path / "telemetry.db"
+    builder = RawAxesBuilder(SYMBOL)
+    bars = trend_up_regime_bars(SYMBOL)
+    for bar in bars[:-1]:
+        builder.observe(bar)
+
+    store_before = SqliteStateStore(store_path)
+    log_before = NewBrainTelemetryLog(store_before)
+    outcomes = evaluate_bar(bars[-1], timeframe="M15", axes_builder=builder)
+    for outcome in outcomes:
+        log_before.record_outcome(outcome)
+    count_before = len(log_before.entries)
+    store_before.close()
+
+    # "Restart": entirely new log object, same persisted store.
+    store_after = SqliteStateStore(store_path)
+    log_after = NewBrainTelemetryLog(store_after)
+    store_after.close()
+
+    assert count_before == len(ve_brain.CANONICAL_STRATEGIES)
+    assert len(log_after.entries) == count_before  # nothing lost, nothing duplicated by the restart
+    assert {r.event_identity.trace_id for r in log_after.entries} == {
+        r.event_identity.trace_id for r in log_before.entries
+    }
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_16_a_shadow_trade_candidate_violating_a_hard_risk_constraint_is_rejected_in_shadow() -> None:
-    """Defense in depth alongside the gate (test 8/19): even if the gate were somehow bypassed, Risk
-    Manager's own hard constraints (size, direction-vs-stop, daily loss cap) still reject it."""
+    """Defense in depth alongside the gate (test 8/19): even a candidate that cleared EVERY provenance
+    check still hits the REAL, unmodified `risk_manager_live.engine.evaluate_trade_proposal` -- proven
+    here with an `InstrumentSpecification` for a DIFFERENT symbol than the proposal's own (Risk
+    Manager's own data-completeness check, step 1), which no provenance check could ever catch, since
+    provenance is about WHO produced the candidate, not whether its geometry/instrument data matches."""
+    from ai_trader.mandate2_readiness.decision_provenance import NEW_BRAIN_SOURCE, DecisionProvenance
+    from ai_trader.mandate2_readiness.event_identity import EventIdentity
+    from ai_trader.new_brain_bridge.bridge import NewBrainOutcome
+
+    event_identity = EventIdentity(
+        trace_id="t-risk-16", market_event_id="evt-16", symbol=SYMBOL, timeframe="M15", bar_id="bar-16",
+        market_timestamp=AS_OF, received_timestamp=AS_OF, brain_version=ve_brain.VE_BRAIN_VERSION,
+        catalog_hash=ve_brain.CANONICAL_CATALOG_HASH, configuration_fingerprint="cfg-16",
+    )
+    decision = ve_brain.DecisionResponse(
+        contract_id=ve_brain.OUTPUT_CONTRACT_ID, decision="TRADE", expected_value_net=0.5,
+        expected_reward=1.0, expected_loss=0.3, estimated_cost=0.02, probability_assumptions={},
+        strategy_id="trend_pullback", configuration_fingerprint="cfg-16",
+        reason_codes=(ve_brain.ReasonCode.TRADE_VALIDATED_EDGE.value,), engine_version=ve_brain.ENGINE_VERSION,
+    )
+    provenance = DecisionProvenance(source=NEW_BRAIN_SOURCE, trace_id="t-risk-16",
+                                     catalog_hash=ve_brain.CANONICAL_CATALOG_HASH,
+                                     configuration_fingerprint="cfg-16")
+    outcome = NewBrainOutcome(
+        event_identity=event_identity, strategy_id="trend_pullback", strategy_version="v1", node_traces=(),
+        decision=decision, provenance=provenance, entry_price=2000.0, stop_price=1990.0, target_price=2020.0,
+    )
+    mismatched_instrument = make_instrument(symbol="EURUSD")  # proposal.symbol is XAUUSD
+
+    result = submit_new_brain_candidate(
+        outcome, account=make_account(), portfolio=make_portfolio(), instrument=mismatched_instrument,
+        risk_context=make_risk_context(), risk_config=make_config(),
+    )
+
+    assert result.approved is False  # the real Risk Manager caught it -- not this division's own guess
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_17_the_circuit_breaker_blocks_brain_sourced_candidates_identically_to_legacy_policies() -> None:
     """One account-wide `TradingCircuitState` (already proven for CAND-0001/0007/0009/0019) -- no
-    brain-specific bypass path."""
+    brain-specific bypass path. `submit_new_brain_candidate`'s own `circuit_state` parameter checks this
+    BEFORE provenance, so an active breaker denies even an otherwise-perfect candidate."""
+    from ai_trader.mandate2_readiness.decision_provenance import NEW_BRAIN_SOURCE, DecisionProvenance
+    from ai_trader.mandate2_readiness.event_identity import EventIdentity
+    from ai_trader.new_brain_bridge.bridge import NewBrainOutcome
+
+    event_identity = EventIdentity(
+        trace_id="t-circuit-17", market_event_id="evt-17", symbol=SYMBOL, timeframe="M15", bar_id="bar-17",
+        market_timestamp=AS_OF, received_timestamp=AS_OF, brain_version=ve_brain.VE_BRAIN_VERSION,
+        catalog_hash=ve_brain.CANONICAL_CATALOG_HASH, configuration_fingerprint="cfg-17",
+    )
+    decision = ve_brain.DecisionResponse(
+        contract_id=ve_brain.OUTPUT_CONTRACT_ID, decision="TRADE", expected_value_net=0.5,
+        expected_reward=1.0, expected_loss=0.3, estimated_cost=0.02, probability_assumptions={},
+        strategy_id="trend_pullback", configuration_fingerprint="cfg-17",
+        reason_codes=(ve_brain.ReasonCode.TRADE_VALIDATED_EDGE.value,), engine_version=ve_brain.ENGINE_VERSION,
+    )
+    provenance = DecisionProvenance(source=NEW_BRAIN_SOURCE, trace_id="t-circuit-17",
+                                     catalog_hash=ve_brain.CANONICAL_CATALOG_HASH,
+                                     configuration_fingerprint="cfg-17")
+    outcome = NewBrainOutcome(
+        event_identity=event_identity, strategy_id="trend_pullback", strategy_version="v1", node_traces=(),
+        decision=decision, provenance=provenance, entry_price=2000.0, stop_price=1990.0, target_price=2020.0,
+    )
+    suspended = TradingCircuitState(state=EngineState.SUSPENDED, reason_code="TEST_SUSPENDED", since=AS_OF)
+
+    result = submit_new_brain_candidate(
+        outcome, account=make_account(), portfolio=make_portfolio(), instrument=make_instrument(),
+        risk_context=make_risk_context(), risk_config=make_config(), circuit_state=suspended,
+    )
+
+    assert result.approved is False
+    assert result.reason_codes == (CIRCUIT_BREAKER_ACTIVE,)
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_18_a_shadow_trade_candidate_from_an_unratified_strategy_id_is_rejected_by_n6() -> None:
     """N6's own eligibility check, not this division's -- confirmed from the OUTSIDE (this division reads
-    the audit record, never reaches into N6 to verify it internally, per the standing "never modify N1-N6"
-    instruction)."""
+    the audit record/response, never reaches into N6 to verify it internally). `trend_experimental`
+    (`ValidationStatus.EXPERIMENTAL`) is in `ve_brain`'s own canonical catalog specifically so
+    `can_reach_n6` can be exercised at both ends -- RATIFIED/SHADOW_ELIGIBLE pass, EXPERIMENTAL doesn't."""
+    builder = RawAxesBuilder(SYMBOL)
+    bars = trend_up_regime_bars(SYMBOL)
+    for bar in bars[:-1]:
+        builder.observe(bar)
+    outcomes = evaluate_bar(bars[-1], timeframe="M15", axes_builder=builder)
+
+    experimental = next(o for o in outcomes if o.strategy_id == "trend_experimental")
+    assert experimental.decision is not None
+    assert experimental.decision.decision == "NO_TRADE"
+    assert experimental.decision.reason_codes == (ve_brain.ReasonCode.NO_ELIGIBLE_STRATEGY.value,)
+    assert experimental.provenance is None  # never trusted as a decision source
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_21_zero_broker_calls_for_any_shadow_trade_candidate_however_confident_static_analysis() -> None:
     """Extends the `_FORBIDDEN_ORDER_CALLS` static-guard pattern (already proven across `pdh_pdl_demo`,
-    `multi_policy_live`, `spread_collection`, `zone_observer`) to whatever new package Mandate 2's
-    integration adds for N1-N6/shadow processing."""
+    `multi_policy_live`, `spread_collection`, `zone_observer`) to `new_brain_bridge` -- the package
+    Mandate 2's integration actually added for N1-N6/shadow processing."""
+    forbidden_calls = ("order_send", "order_check", "order_calc_margin", "order_calc_profit")
+    package_root = Path(__file__).resolve().parents[2] / "new_brain_bridge"
+    violations: dict[str, set[str]] = {}
+    for source_path in sorted(package_root.glob("*.py")):
+        text = source_path.read_text(encoding="utf-8")
+        hits = {tok for tok in forbidden_calls if tok in text}
+        if hits:
+            violations[source_path.name] = hits
+    assert not violations, f"forbidden broker call(s) found in new_brain_bridge: {violations}"
 
 
-@pytest.mark.skip(reason=_BLOCKED)
+@pytest.mark.skip(reason=_BLOCKED + " (no gate-enable journal exists yet -- BrokerOrderSubmissionGate's "
+                                    "own construction is source-visible/grep-able but not itself durably "
+                                    "journaled anywhere)")
 def test_22_enabling_the_gate_is_itself_journaled_with_who_when_and_why() -> None:
     """The gate's own `frozen=True`/no-setter design (`broker_gate.py`) makes every enabling a fresh,
-    source-visible construction -- this test proves THAT construction site is itself durably journaled
-    once real integration wiring exists, not just theoretically grep-able in source."""
+    source-visible construction -- this test would prove THAT construction site is itself durably
+    journaled once such a journal exists. Not built -- disclosed, not guessed at."""
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_23_every_decision_including_no_trade_is_journaled_with_enough_detail_to_reconstruct_why() -> None:
     """This project's own "un consumator peste sase luni" standard (`GapClassification`'s own docstring),
-    extended to `SHADOW_TRADE_CANDIDATE`/`NO_TRADE` records specifically."""
+    extended to `NewBrainTelemetryLog` -- `no_trade_causes()` reads the exact persisted reason back from
+    storage, for every NO_TRADE record, never recomputed or guessed."""
+    builder = RawAxesBuilder(SYMBOL)
+    bars = trend_up_regime_bars(SYMBOL)
+    for bar in bars[:-1]:
+        builder.observe(bar)
+    outcomes = evaluate_bar(bars[-1], timeframe="M15", axes_builder=builder)
+
+    log = NewBrainTelemetryLog()
+    for outcome in outcomes:
+        log.record_outcome(outcome)
+
+    causes = dict(log.no_trade_causes())
+    trend_pullback = next(o for o in outcomes if o.strategy_id == "trend_pullback")
+    assert trend_pullback.decision is not None
+    assert causes[trend_pullback.event_identity.trace_id] == trend_pullback.decision.reason_codes
+    assert all(len(reasons) >= 1 for reasons in causes.values())  # every NO_TRADE has a named cause
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_24_n1_n6_internal_state_is_captured_in_the_audit_record_without_this_division_touching_it() -> None:
-    """This division reads/journals the OUTPUT boundary only -- confirms the audit record carries enough
-    of N1-N6's own internal state (per-node outputs, EV engine result) for Red Team to review, without
-    this division's own code importing or reaching into those internals."""
+    """This division reads/journals the OUTPUT boundary only -- confirms (1) `new_brain_bridge`'s own
+    source never imports `ve_brain`'s PRIVATE modules (only its public, `__all__`-exported surface), and
+    (2) the persisted telemetry record still carries enough of N1-N6's own state (per-node `NodeTrace`,
+    the EV engine's `expected_value_net` via the decision summary) for Red Team to review."""
+    package_root = Path(__file__).resolve().parents[2] / "new_brain_bridge"
+    forbidden_private_modules = {
+        "ve_brain._canonical_catalog", "ve_brain._ev_core",
+    }
+    violations: dict[str, set[str]] = {}
+    for source_path in sorted(package_root.glob("*.py")):
+        tree = ast.parse(source_path.read_text(encoding="utf-8"), filename=str(source_path))
+        imported: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module is not None:
+                imported.add(node.module)
+            elif isinstance(node, ast.Import):
+                imported.update(alias.name for alias in node.names)
+        hits = imported & forbidden_private_modules
+        if hits:
+            violations[source_path.name] = hits
+    assert not violations, f"new_brain_bridge reaches into ve_brain's private modules: {violations}"
+
+    builder = RawAxesBuilder(SYMBOL)
+    bars = trend_up_regime_bars(SYMBOL)
+    for bar in bars[:-1]:
+        builder.observe(bar)
+    outcomes = evaluate_bar(bars[-1], timeframe="M15", axes_builder=builder)
+    log = NewBrainTelemetryLog()
+    for outcome in outcomes:
+        log.record_outcome(outcome)
+
+    record = next(r for r in log.entries if r.strategy_id == "trend_pullback")
+    node_names = [t.node_name for t in record.node_traces]
+    assert node_names == ["N1", "Router", "EV", "N6"]  # enough per-node structure for external review
+    assert record.decision_summary is not None
 
 
-@pytest.mark.skip(reason=_BLOCKED)
 def test_25_a_crash_anywhere_in_the_n1_n6_call_path_degrades_to_no_trade_and_the_loop_continues() -> None:
     """Mirrors `multi_policy_live.MultiPolicyLiveLoop._degrade`'s own existing per-policy try/except
-    isolation -- one broken node/policy must never kill the process for every other one."""
+    isolation -- `fail_safe.safe_evaluate_bar` catches ANY failure and returns `BrainUnavailableOutcome`;
+    a caller looping over several bars, one of which is malformed, must continue processing every OTHER
+    bar rather than dying on the first failure."""
+    builder = RawAxesBuilder(SYMBOL)
+    good_bar = Bar(symbol=SYMBOL, ts_open=0, ts_close=900, open=2400.0, high=2401.0, low=2399.0,
+                    close=2400.5, volume=100.0)
+    malformed_bar = Bar(symbol="WRONG_SYMBOL", ts_open=900, ts_close=1800, open=1.0, high=1.1, low=0.9,
+                         close=1.0, volume=None)
+    another_good_bar = Bar(symbol=SYMBOL, ts_open=1800, ts_close=2700, open=2400.5, high=2401.5,
+                            low=2399.5, close=2400.8, volume=100.0)
+
+    results = [
+        safe_evaluate_bar(bar, timeframe="M15", axes_builder=builder)
+        for bar in (good_bar, malformed_bar, another_good_bar)
+    ]
+
+    assert isinstance(results[0], tuple)  # first bar: processed normally
+    assert isinstance(results[1], BrainUnavailableOutcome)  # crash contained, not propagated
+    assert isinstance(results[2], tuple)  # loop CONTINUED -- the third bar was processed too
+    assert builder.bars_observed == 2  # the malformed bar never actually got appended to N1's history
