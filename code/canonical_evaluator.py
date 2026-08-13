@@ -1,105 +1,142 @@
-"""EVALUATORUL CANONIC UNIC (STAT-CANONICAL-EVALUATOR-CONTRACT-v1.0-DRAFT — NOT RATIFIED). UN SINGUR evaluator,
-importat de toate motoarele (_screen, mstrat, demo_gate_engine); ele îl CONSUMĂ, nu-și păstrează propria logică.
-Rezolvă divergențele care făceau aceeași tranzacție să iasă diferit la motoare diferite.
+"""EVALUATORUL CANONIC UNIC (STAT-CANONICAL-CONTRACT-v1.0, manifest v2.7.66, doc 9fc8b67 — NOT RATIFIED).
+UN SINGUR evaluator importat de toate motoarele; ele îl CONSUMĂ. Rezolvă divergențele care făceau aceeași
+tranzacție să iasă diferit la motoare diferite.
 
-REGULILE (D-1 și D-2 aprobate de CEO):
-  R1  tick_size = 0,01 USD. SURSĂ UNICĂ (`TICK_SIZE`), importată. Increment de PREȚ, nu costul unui tick.
-  R2  semnal pe bara ÎNCHISĂ i → intrare la `open[i+1]`. Retroactiv interzis.
-  R3  minimum_stop_distance = max(2×spread_price, 0,05 USD, 0,10×ATR). Toți trei termenii în USD de preț, FĂRĂ
-      înmulțire cu tick_size. D-2: dacă requested_stop_distance < minimum → SEMNALUL SE RESPINGE înainte de deschidere
-      (NU se extinde — extinderea ar modifica tacit riscul/R:R/logica/populația reală). Respins ⇒ registrul de
-      SEMNALE, fără P&L fictiv.
-  R4  D-1: total_cost_price = spread_price + entry_slippage_price + exit_slippage_price (toate USD). Spread-ul NU se
-      dublează; slippage-ul se aplică SEPARAT fiecărei execuții. BASE 0,05 / STRESS 0,24, ambele PROVISIONAL —
-      NOT EMPIRICALLY CALIBRATED. TOATE strategiile raportează în AMBELE scenarii.
-  R5  intrare la open; SL și TP verificate INCLUSIV pe bara de intrare; la coliziune intrabar SL PRIMEAZĂ; costurile
-      se aplică indiferent de motivul ieșirii. (Punctul doi = defectul D1: 4.160 pierderi raportate drept câștiguri.)
-  R6  max_holding_bars = bare EVALUATE, INCLUSIV bara de intrare (bara de intrare = bara 1). La H=10: barele 1..10,
-      time-exit la close-ul barei 10 ⇒ interval [ei, ei+H-1].
-  R7  time-exit executabil LIVE. Granița unui bloc/chunk/fișier/segment NU e semnal de piață: tranzacțiile rămase
-      deschise la acea graniță se raportează SEPARAT (still_open_at_end), NU time-exit la graniță.
-  R11 fiecare rezultat poartă configurația completă (`config_id` imuabil). Două rezultate se compară DOAR dacă toate
-      dimensiunile coincid; altfel NON-COMPARABLE.
+REGULI (R1-R7, R11) + corecțiile v2.7.66:
+  R1  tick_size = 0,01 USD, sursă unică (increment de preț).
+  R2  semnal pe bara ÎNCHISĂ i → intrare open[i+1].
+  R3  min_executable_risk = max(K_SPREAD×spread_HALF, K_TICK×tick, K_ATR×atr); K_SPREAD=2, K_TICK=5, K_ATR=0,10.
+      §1: spread_price e bid-ask COMPLET; podeaua ia o JUMĂTATE ⇒ 2×(full/2)=full. Factorul 2 nu dispare, se
+      ANULEAZĂ cu conversia. `SpreadFull`/`SpreadHalf` sunt NewType DISTINCTE — eroarea de unitate e NESCRIIBILĂ.
+      Semantica: REJECT-NOT-WIDEN. Respins ⇒ NUMĂRAT și raportat (niciodată `continue` tăcut), fără P&L.
+  R4  cost = spread_price + entry_slip + exit_slip (spread O DATĂ). BASE 0,05 / STRESS 0,24, PROVISIONAL.
+  R5  SL+TP inclusiv pe bara de intrare; SL PRIMEAZĂ la coliziune; cost indiferent de motiv.
+  R6  max_holding inclusiv, bara de intrare = bara 1 ⇒ [ei, ei+H-1].
+  R7  time-exit executabil LIVE; over-orizont la granița blocului = still_open, raportat SEPARAT.
+  R11 §3: `run_hash = sha256(config_hash ‖ sha256(data_identity))` — acoperă ȘI DATELE (simbol/timeframe/split/
+      manifest/n_blocks/holdout), nu doar costul. `compare()` RIDICĂ NonComparableError (nu comentează).
+
+  §5 GAP-GUARD ASIMETRIC (MEAS-9), aplicat ÎNAINTE de orice evaluare de ieșire:
+     (a) risc = dirn·(entry−stop) <= 0  (intrarea a trecut PRIN stop): NUMITORUL e distrus ⇒ INVALID_EXECUTION.
+         Exclus din populația de randamente, dar NUMĂRAT. NICIODATĂ un câștig. (long 97/stop 98 conta azi +0,95.)
+     (b) recompensă = dirn·(target−entry) <= 0 (intrarea a trecut PRIN țintă): numitorul INTACT, doar numărătorul
+         zero ⇒ ieșire LA PREȚUL DE INTRARE, R = 0 − costuri, `gap_through_target`. (entry 105/target 102 conta −0,436.)
+     Asimetria e PRINCIPIALĂ (structura fracției), nu preferință. Regula generală: nu se contabilizează NICIODATĂ o
+     execuție mai bună decât prețurile parcurse DUPĂ intrare.
+
+  §7 MEAS-10: `StrategyReport` poartă câmpurile de CONCENTRARE (best_trade_share, trimmed_top1, sum_R, ...) — altfel
+     garda fat-tail a CEO (R10) e NECALCULABILĂ din ieșirea oficială („o cerință necalculabilă e un text, nu o cerință").
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
-from typing import Sequence
+from typing import NewType, Sequence
 
-# ── R1: sursă UNICĂ pentru tick_size (increment de preț, USD). Zero TICK local în motoare. ──
+from level_output import LevelOutput, Ok, Unavailable
+
+# ── R1 + §1 unități ──
 TICK_SIZE: float = 0.01
-
-CODE_VERSION: str = "canonical-evaluator-v1.0-DRAFT"
+K_SPREAD: float = 2.0                # pe JUMĂTATE de spread (dus-întors)
+K_TICK: float = 5.0
+K_ATR: float = 0.10
+CODE_VERSION: str = "canonical-evaluator-v2.7.66"
 REASON_STOP_BELOW_MINIMUM: str = "STOP_BELOW_MINIMUM"
+REASON_INVALID_EXECUTION: str = "INVALID_EXECUTION"
+
+SpreadFull = NewType("SpreadFull", float)    # ask − bid (bid-ask COMPLET)
+SpreadHalf = NewType("SpreadHalf", float)    # (ask − bid) / 2
 
 
-# ── R4: scenarii de cost, în USD de preț. PROVISIONAL — NOT EMPIRICALLY CALIBRATED. ──
+def half_of(s: SpreadFull) -> SpreadHalf:
+    """Conversia scrisă O SINGURĂ DATĂ. mypy --strict respinge un SpreadFull acolo unde se cere SpreadHalf."""
+    return SpreadHalf(float(s) / 2.0)
+
+
+# ── R4: scenarii de cost (spread_price = FULL, folosit O DATĂ). PROVISIONAL — NOT EMPIRICALLY CALIBRATED. ──
 @dataclass(frozen=True)
 class CostScenario:
     name: str
-    spread_price: float
+    spread_price: SpreadFull
     entry_slippage_price: float
     exit_slippage_price: float
-    calibrated: bool = False           # PROVISIONAL ⇒ False (nu e calibrat empiric)
+    calibrated: bool = False
 
     @property
     def total_cost_price(self) -> float:
-        # spread-ul NU se dublează; slippage aplicat SEPARAT fiecărei execuții (intrare + ieșire)
-        return self.spread_price + self.entry_slippage_price + self.exit_slippage_price
+        return float(self.spread_price) + self.entry_slippage_price + self.exit_slippage_price
 
 
-BASE_PROVISIONAL = CostScenario("BASE_PROVISIONAL", 0.05, 0.00, 0.00)       # total 0,05
-STRESS_PROVISIONAL = CostScenario("STRESS_PROVISIONAL", 0.08, 0.08, 0.08)   # total 0,24
+BASE_PROVISIONAL = CostScenario("BASE_PROVISIONAL", SpreadFull(0.05), 0.00, 0.00)       # total 0,05 · R3 0,05
+STRESS_PROVISIONAL = CostScenario("STRESS_PROVISIONAL", SpreadFull(0.08), 0.08, 0.08)   # total 0,24 · R3 0,08
 DEFAULT_SCENARIOS: tuple[CostScenario, ...] = (BASE_PROVISIONAL, STRESS_PROVISIONAL)
 
 
 @dataclass(frozen=True)
 class Signal:
-    """Ce furnizează fiecare motor. Intrarea se derivă din `signal_bar` (R2), NU se dă direct — retroactiv interzis.
-    `spread_price`/`atr` sunt CONTEXTUL de la `signal_bar` (cauzal) pentru podeaua R3."""
     strategy_id: str
     signal_id: str
-    signal_bar: int                    # bara ÎNCHISĂ i (R2) — intrarea va fi open[i+1]
-    direction: int                     # +1 long / −1 short
-    requested_stop_price: float        # stopul INTENȚIONAT al strategiei (NU se extinde — R3/D-2)
+    signal_bar: int
+    direction: int
+    requested_stop_price: float
     target_kind: str                   # 'rr' | 'price' | 'none'
-    target_param: float | None         # R:R (dacă 'rr') sau prețul țintă (dacă 'price')
-    max_holding_bars: int              # R6, inclusiv bara de intrare (≥1)
-    spread_price: float                # spread de context la semnal (pentru podeaua R3, executabilitate)
-    atr: float                         # ATR la semnal (pentru podeaua R3)
+    target_param: float | None
+    max_holding_bars: int
+    spread_price: SpreadFull           # bid-ask COMPLET de context (podeaua R3 ia jumătatea)
+    atr: float
     timestamp: int
 
 
 @dataclass(frozen=True)
 class MinimumStop:
     minimum_stop_distance: float
-    dominant_component: str            # 'spread' | 'floor_0.05usd' | '0.10x_atr'
+    dominant_component: str            # 'spread' | 'tick_floor' | 'atr'
 
 
-def minimum_stop_distance(spread_price: float, atr: float) -> MinimumStop:
-    """R3: max(spread, 0,05 USD, 0,10×ATR). Toți termenii în USD. Raportează componenta DOMINANTĂ.
-    DECIZIA 1 (CEO): `spread_price` e bid-ask COMPLET ⇒ componenta e spread_price O DATĂ (nu 2×). BASE 0,05→0,05,
-    STRESS 0,08→0,08 (nu 0,10/0,16). Statisticianul a găsit contradicția: 0,05 nu poate fi și full în cost, și half în podea."""
-    terms = {"spread": spread_price, "floor_0.05usd": 0.05, "0.10x_atr": 0.10 * atr}
+def minimum_stop_distance(spread_half: SpreadHalf, atr: float) -> MinimumStop:
+    """R3 (§2): max(K_SPREAD×spread_HALF, K_TICK×tick, K_ATR×atr). K_SPREAD×half = 2×(full/2) = full."""
+    terms = {"spread": K_SPREAD * float(spread_half), "tick_floor": K_TICK * TICK_SIZE, "atr": K_ATR * atr}
     dom = max(terms, key=lambda k: terms[k])
     return MinimumStop(terms[dom], dom)
 
 
+# ── ieșiri posibile ──
 @dataclass(frozen=True)
 class Rejection:
-    """R3/D-2: semnal respins ÎNAINTE de deschidere. Rămâne în registrul de SEMNALE, fără P&L fictiv."""
+    """R3/D-2: respins ÎNAINTE de deschidere (stop sub podea). NUMĂRAT, fără P&L fictiv."""
     strategy_id: str
     signal_id: str
     timestamp: int
     requested_stop_distance: float
     minimum_stop_distance: float
-    spread_used: float
+    spread_used: SpreadFull
     atr_used: float
     dominant_component: str
     reason_code: str = REASON_STOP_BELOW_MINIMUM
+
+
+@dataclass(frozen=True)
+class InvalidExecution:
+    """§5(a): risc ≤ 0 (intrarea a trecut PRIN stop). NUMITORUL distrus ⇒ R NEDEFINIT. NUMĂRAT, exclus din
+    populația de randamente, NICIODATĂ un câștig. NU dispare tăcut."""
+    strategy_id: str
+    signal_id: str
+    timestamp: int
+    entry_price: float
+    stop_price: float
+    directional_risk: float            # dirn·(entry−stop) ≤ 0
+    reason_code: str = REASON_INVALID_EXECUTION
+
+
+@dataclass(frozen=True)
+class NoEntry:
+    strategy_id: str
+    signal_id: str
+    timestamp: int
+    reason_code: str = "NO_NEXT_OPEN_DATASET_END"
 
 
 @dataclass(frozen=True)
@@ -111,77 +148,80 @@ class ScenarioResult:
 
 
 @dataclass(frozen=True)
-class NoEntry:
-    """Semnal fără open[i+1] disponibil (granița datasetului la intrare). Registrul de SEMNALE, nu tranzacție."""
-    strategy_id: str
-    signal_id: str
-    timestamp: int
-    reason_code: str = "NO_NEXT_OPEN_DATASET_END"
-
-
-@dataclass(frozen=True)
 class ExecutedTrade:
     strategy_id: str
     signal_id: str
-    entry_bar: int                     # i+1 (R2)
+    entry_bar: int
     entry_price: float
     direction: int
     requested_stop_price: float
-    risk_price: float                  # |entry − requested_stop| (NEEXTINS — R3/D-2)
+    risk_price: float
     exit_bar: int
     exit_price: float
-    exit_reason: str                   # 'stop' | 'target' | 'time' | 'still_open_at_end'
-    still_open_at_end: bool            # R7: rămasă deschisă la granița tradeabilă → raportată SEPARAT
-    results: tuple[ScenarioResult, ...]  # R4: BASE + STRESS
-    config_id: str                     # R11
+    exit_reason: str                   # 'stop'|'target'|'time'|'still_open_at_end'|'gap_through_target'
+    still_open_at_end: bool
+    results: tuple[ScenarioResult, ...]
+    run_hash: str                      # R11 (§3)
 
 
-EvalOutcome = ExecutedTrade | Rejection | NoEntry
+EvalOutcome = ExecutedTrade | Rejection | InvalidExecution | NoEntry
 
 
+# ── R11 (§3): run_hash pe două niveluri, acoperind ȘI datele. compare() RIDICĂ. ──
 @dataclass(frozen=True)
 class RunContext:
-    """T17: dimensiunile RUN-SPECIFICE (simbol, interval de date, manifest de blocuri) pe care config_id-ul le omitea
-    — fără ele, două rulări pe INSTRUMENTE DIFERITE împărțeau același id. `block_manifest_id` codifică manifestul
-    (populația are PATRU blocuri; rezultatele pe 3 vs 4 vs 15 blocuri sunt NON-COMPARABLE)."""
+    """Identitatea DATELOR (§3). Fără ea, două rulări pe INSTRUMENTE DIFERITE ar împărți un hash."""
     symbol: str = "UNSPECIFIED"
-    data_id: str = "UNSPECIFIED"               # interval de date / sursa (ex. 'M15_v2:res[0,213417]')
-    block_manifest_id: str = "UNSPECIFIED"     # manifestul de blocuri (ex. 'four_blocks_v1')
+    timeframe: str = "UNSPECIFIED"
+    split_id: str = "UNSPECIFIED"
+    block_manifest_hash: str = "UNSPECIFIED"
+    n_blocks: int = 0
+    holdout_cutoff: str = "UNSPECIFIED"
 
 
 _DEFAULT_RUN = RunContext()
 
 
-def _config_id(scenarios: Sequence[CostScenario], run: RunContext) -> str:
-    """R11 — TREISPREZECE dimensiuni. Config_id-ul VECHI acoperea doar 1-9 + 13 (regulile + code_version); LIPSEAU
-    10 (simbol), 11 (interval date), 12 (manifest blocuri). Acum toate 13; comparabilitatea se IMPUNE, nu se comentează."""
-    payload = {
-        "d01_tick_size": TICK_SIZE,                                        # R1
-        "d02_entry": "open[i+1]",                                          # R2
-        "d03_min_stop": "max(spread,0.05usd,0.10xatr)_REJECT_not_extend",  # R3 + Decizia 1 (spread o dată)
-        "d04_cost": "spread_once+entry_slip+exit_slip",                    # R4
-        "d05_scenarios": [[s.name, s.spread_price, s.entry_slippage_price, s.exit_slippage_price] for s in scenarios],
-        "d06_sl_primacy_entrybar": True,                                   # R5
-        "d07_holding": "inclusive_entry_bar_is_1_[ei,ei+H-1]",            # R6
-        "d08_boundary": "still_open_not_time_exit",                       # R7
-        "d09_gap_open_guard": "exit_at_entry_price",                      # MEAS-9 (a 9-a divergență)
-        "d10_symbol": run.symbol,                                         # RUN-SPECIFIC
-        "d11_data_id": run.data_id,                                       # RUN-SPECIFIC (interval de date)
-        "d12_block_manifest": run.block_manifest_id,                      # RUN-SPECIFIC (manifest blocuri)
-        "d13_code_version": CODE_VERSION,
-    }
-    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
-
-
 class NonComparableError(ValueError):
-    """R11: se compară DOAR la config identică. GARDĂ (ridică), nu un comentariu."""
+    """R11: comparația trebuie să fie IMPOSIBILĂ, nu descurajată."""
 
 
-def require_comparable(*config_ids: str) -> None:
-    """Impune regula de comparație-pe-potrivire R11: ridică `NonComparableError` dacă config_id-urile diferă."""
-    uniq = set(config_ids)
-    if len(uniq) > 1:
-        raise NonComparableError(f"NON_COMPARABLE: config_id-uri diferite {sorted(uniq)} — dimensiuni necoincidente")
+def _config_hash(scenarios: Sequence[CostScenario]) -> str:
+    payload = {
+        "scenarios": [[s.name, float(s.spread_price), s.entry_slippage_price, s.exit_slippage_price,
+                       s.total_cost_price, "PROVISIONAL — NOT EMPIRICALLY CALIBRATED" if not s.calibrated else "CALIBRATED"]
+                      for s in scenarios],
+        "K_SPREAD": K_SPREAD, "K_TICK": K_TICK, "K_ATR": K_ATR, "tick_size": TICK_SIZE,
+        "code_version": CODE_VERSION,   # fixează semantica regulilor R1-R7 + gap-guard
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def _data_identity_hash(run: RunContext) -> str:
+    payload = {"symbol": run.symbol, "timeframe": run.timeframe, "split_id": run.split_id,
+               "block_manifest_hash": run.block_manifest_hash, "n_blocks": run.n_blocks,
+               "holdout_cutoff": run.holdout_cutoff}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def run_hash(scenarios: Sequence[CostScenario], run: RunContext) -> str:
+    """§3: run_hash = sha256(config_hash ‖ sha256(data_identity))."""
+    ch = _config_hash(scenarios)
+    dih = _data_identity_hash(run)
+    return hashlib.sha256((ch + dih).encode("utf-8")).hexdigest()[:16]
+
+
+def compare(a_run_hash: str, b_run_hash: str) -> None:
+    """§3: REFUZĂ, nu comentează. Ridică `NonComparableError` dacă run_hash-urile diferă."""
+    if a_run_hash != b_run_hash:
+        raise NonComparableError(f"NON_COMPARABLE: run_hash {a_run_hash} != {b_run_hash}")
+
+
+def require_comparable(*run_hashes: str) -> None:
+    """Impune comparația-pe-potrivire pe orice cale (ridică dacă vreo pereche diferă)."""
+    uniq = list(dict.fromkeys(run_hashes))
+    for i in range(1, len(uniq)):
+        compare(uniq[0], uniq[i])
 
 
 def _finite(x: float) -> bool:
@@ -193,33 +233,33 @@ def evaluate_signal(
     *, scenarios: Sequence[CostScenario] = DEFAULT_SCENARIOS, block_end: int | None = None,
     run: RunContext = _DEFAULT_RUN,
 ) -> EvalOutcome:
-    """Evaluează UN semnal sub contract. Întoarce ExecutedTrade | Rejection | NoEntry. PUR, cauzal.
-    `block_end` = ultima bară a blocului tradeabil (R7); implicit ultima bară a seriei."""
+    """Evaluează UN semnal sub contract. Întoarce ExecutedTrade | Rejection | InvalidExecution | NoEntry. PUR, cauzal."""
     n = len(close)
     be = (n - 1) if block_end is None else min(block_end, n - 1)
-    cfg = _config_id(scenarios, run)
-    ei = sig.signal_bar + 1                                     # R2: intrare la open[i+1]
+    rh = run_hash(scenarios, run)
+    ei = sig.signal_bar + 1                                     # R2
 
-    # R2/R7: fără bara următoare (sau dincolo de blocul tradeabil) ⇒ NU se intră (granița datasetului)
     if ei > be:
         return NoEntry(sig.strategy_id, sig.signal_id, sig.timestamp)
-
     entry = float(open_[ei])
     if not (_finite(entry) and _finite(sig.requested_stop_price) and _finite(sig.atr) and sig.atr > 0.0):
-        return NoEntry(sig.strategy_id, sig.signal_id, sig.timestamp)   # context invalid → nu se intră
+        return NoEntry(sig.strategy_id, sig.signal_id, sig.timestamp)
     dirn = 1 if sig.direction > 0 else -1
-    requested_stop_distance = abs(entry - sig.requested_stop_price)
-
-    # ── R3/D-2: RESPINGE dacă stopul cerut e sub minim (NU extinde) ──
-    ms = minimum_stop_distance(sig.spread_price, sig.atr)
-    if requested_stop_distance < ms.minimum_stop_distance:
-        return Rejection(
-            strategy_id=sig.strategy_id, signal_id=sig.signal_id, timestamp=sig.timestamp,
-            requested_stop_distance=requested_stop_distance, minimum_stop_distance=ms.minimum_stop_distance,
-            spread_used=sig.spread_price, atr_used=sig.atr, dominant_component=ms.dominant_component)
-
-    risk = requested_stop_distance                             # NEEXTINS
     stop_price = sig.requested_stop_price
+
+    # ── §5(a) GAP-GUARD: risc ≤ 0 (intrarea a trecut PRIN stop) → INVALID_EXECUTION (numitor distrus) ──
+    directional_risk = dirn * (entry - stop_price)
+    if directional_risk <= 0.0:
+        return InvalidExecution(sig.strategy_id, sig.signal_id, sig.timestamp, entry, stop_price, directional_risk)
+
+    risk = directional_risk                                    # = |entry − stop|, strict pozitiv aici
+
+    # ── R3/D-2: RESPINGE dacă stopul cerut e sub podea (spread pe JUMĂTATE) ──
+    ms = minimum_stop_distance(half_of(sig.spread_price), sig.atr)
+    if risk < ms.minimum_stop_distance:
+        return Rejection(sig.strategy_id, sig.signal_id, sig.timestamp, risk, ms.minimum_stop_distance,
+                         sig.spread_price, sig.atr, ms.dominant_component)
+
     if sig.target_kind == "rr" and sig.target_param is not None:
         tgt: float | None = entry + dirn * sig.target_param * risk
     elif sig.target_kind == "price" and sig.target_param is not None:
@@ -227,28 +267,18 @@ def evaluate_signal(
     else:
         tgt = None
 
-    # ── R6: barele 1..H inclusiv (bara de intrare = bara 1) ⇒ [ei, ei+H-1] ──
+    # ── §5(b) GAP-GUARD: recompensă ≤ 0 (intrarea a trecut PRIN țintă) → ieșire la PREȚUL DE INTRARE (numărător zero) ──
+    if tgt is not None and _finite(tgt) and dirn * (tgt - entry) <= 0.0:
+        res_gap = tuple(ScenarioResult(sc.name, (0.0 - sc.total_cost_price) / risk, 0.0, sc.total_cost_price)
+                        for sc in scenarios)
+        return ExecutedTrade(sig.strategy_id, sig.signal_id, ei, entry, dirn, stop_price, risk, ei, entry,
+                             "gap_through_target", False, res_gap, rh)
+
+    # ── R6: [ei, ei+H-1] ──
     last_hold = ei + sig.max_holding_bars - 1
-
-    # ── MEAS-9 (a 9-a divergență): GARDA GAP-OPEN. Dacă open-ul e DEJA dincolo de stop sau de țintă, ieșirea e la
-    #    PREȚUL DE INTRARE, niciodată la nivelul nominal (T4, spec Statistician). Fără asta: gap prin stop → win
-    #    fictiv +0,95R; gap prin țintă → pierdere forțată −0,436R (nivel nominal sub/peste intrare). ──
-    if dirn > 0:
-        gapped = (entry <= stop_price) or (tgt is not None and _finite(tgt) and entry >= tgt)
-    else:
-        gapped = (entry >= stop_price) or (tgt is not None and _finite(tgt) and entry <= tgt)
-    if gapped:
-        results0 = tuple(
-            ScenarioResult(sc.name, (dirn * (entry - entry) - sc.total_cost_price) / risk, 0.0, sc.total_cost_price)
-            for sc in scenarios)                               # gross = 0 (ieșire la intrare); doar costul
-        return ExecutedTrade(
-            strategy_id=sig.strategy_id, signal_id=sig.signal_id, entry_bar=ei, entry_price=entry, direction=dirn,
-            requested_stop_price=stop_price, risk_price=risk, exit_bar=ei, exit_price=entry,
-            exit_reason="gap_at_entry", still_open_at_end=False, results=results0, config_id=cfg)
-
-    # ── R5: scanează de la BARA DE INTRARE; SL PRIMEAZĂ la coliziune ──
+    # ── R5: scanează de la BARA DE INTRARE; SL PRIMEAZĂ ──
     exit_bar = -1; exit_price = float("nan"); exit_reason = ""
-    scan_last = min(last_hold, be)                             # nu scana dincolo de blocul tradeabil
+    scan_last = min(last_hold, be)
     for j in range(ei, scan_last + 1):
         if dirn > 0:
             hit_stop = low[j] <= stop_price
@@ -256,7 +286,7 @@ def evaluate_signal(
         else:
             hit_stop = high[j] >= stop_price
             hit_tgt = tgt is not None and _finite(tgt) and low[j] <= tgt
-        if hit_stop:                                           # SL PRIMEAZĂ (verificat înaintea TP)
+        if hit_stop:
             exit_bar, exit_price, exit_reason = j, stop_price, "stop"; break
         if hit_tgt and tgt is not None:
             exit_bar, exit_price, exit_reason = j, tgt, "target"; break
@@ -264,66 +294,70 @@ def evaluate_signal(
     still_open = False
     if exit_reason == "":
         if last_hold > be:
-            # R7: fereastra de holding depășește blocul tradeabil ⇒ RĂMASĂ DESCHISĂ (raportat separat), NU time-exit
             still_open = True
             exit_bar, exit_price, exit_reason = be, float(close[be]), "still_open_at_end"
         else:
-            # R6: time-exit la close-ul barei H
             exit_bar, exit_price, exit_reason = last_hold, float(close[last_hold]), "time"
 
-    # ── R4/R5: R per scenariu; costurile se aplică INDIFERENT de motivul ieșirii ──
     results = tuple(
         ScenarioResult(sc.name, (dirn * (exit_price - entry) - sc.total_cost_price) / risk,
                        dirn * (exit_price - entry), sc.total_cost_price)
         for sc in scenarios)
-
-    return ExecutedTrade(
-        strategy_id=sig.strategy_id, signal_id=sig.signal_id, entry_bar=ei, entry_price=entry, direction=dirn,
-        requested_stop_price=stop_price, risk_price=risk, exit_bar=exit_bar, exit_price=exit_price,
-        exit_reason=exit_reason, still_open_at_end=still_open, results=results, config_id=cfg)
+    return ExecutedTrade(sig.strategy_id, sig.signal_id, ei, entry, dirn, stop_price, risk, exit_bar, exit_price,
+                         exit_reason, still_open, results, rh)
 
 
-# ────────────────────────── raportarea per strategie (câmpurile obligatorii) ──────────────────────────
+# ────────────────────────── MEAS-10: concentrare + raportarea per strategie ──────────────────────────
+@dataclass(frozen=True)
+class Concentration:
+    """§7: câmpurile R10 pe ieșirea OFICIALĂ (altfel garda fat-tail e necalculabilă). Tăiere: (R DESC, entry ASC),
+    ceil-min-1; STRES ADVERSARIAL, nu estimator."""
+    best_trade_share: LevelOutput[float]   # Unavailable('net_non_positive') dacă sum_R ≤ 0
+    trimmed_top1_avg_R: float
+    n_trimmed: int
+    trimmed_fraction: float
+    sum_R: float
+    wo1_still_positive: bool
+
+
+def _concentration(pairs: list[tuple[float, int]]) -> Concentration | None:
+    """pairs = (net_R, entry_bar). None dacă populația e vidă."""
+    if not pairs:
+        return None
+    rs = [r for r, _ in pairs]
+    n = len(rs)
+    sum_R = sum(rs)
+    best: LevelOutput[float] = (Ok(max(rs) / sum_R, as_of=0, valid_until=1, schema_hash="concentration")
+                                if sum_R > 0.0 else Unavailable(reason="net_non_positive", as_of=0))
+    k = max(1, math.ceil(0.01 * n))                            # D-3 ceil-min-1
+    order = sorted(range(n), key=lambda i: (-pairs[i][0], pairs[i][1]))   # (R DESC, entry ASC)
+    removed = set(order[:k])
+    kept = [rs[i] for i in range(n) if i not in removed]
+    trimmed_avg = (sum(kept) / len(kept)) if kept else 0.0
+    return Concentration(best, trimmed_avg, k, k / n, sum_R, trimmed_avg > 0.0)
+
+
 @dataclass(frozen=True)
 class StrategyReport:
     strategy_id: str
-    config_id: str
+    run_hash: str
     total_signals: int
-    eligible_trades: int               # executate cu ieșire reală (exclude respinse, no-entry, still-open)
+    eligible_trades: int
     rejected: int
     rejected_pct: float
     rejection_reasons: tuple[tuple[str, int], ...]
+    invalid_executions: int            # §5(a) MEAS-9: gap prin stop, NUMĂRAT, exclus din randamente
     no_entry: int
-    still_open_at_end: int             # R7, raportate SEPARAT
-    base_mean_R: float | None          # performanță EXCLUSIV pe tranzacțiile executabile
+    still_open_at_end: int
+    base_mean_R: float | None
     stress_mean_R: float | None
-    base_minus_stress: float | None    # diferența explicită
-    # T15/T16: metrici de fat-tail SIMETRICE (aceeași definiție în ambele scenarii — nu asimetrice ca SCREEN vs MSTRAT)
-    base_best_share_of_total: float | None    # T15: concentrarea unei singure tranzacții (max R / Σ R)
-    stress_best_share_of_total: float | None
-    base_trimmed_top1pct_R: float | None      # T16: media după eliminarea celui mai bun 1%
-    stress_trimmed_top1pct_R: float | None
+    base_minus_stress: float | None
+    base_concentration: Concentration | None    # §7 MEAS-10
+    stress_concentration: Concentration | None
 
 
 def _mean(xs: list[float]) -> float | None:
     return (sum(xs) / len(xs)) if xs else None
-
-
-def _best_share_of_total(xs: list[float]) -> float | None:
-    """T15: fracția din net_R total adusă de SINGURA cea mai bună tranzacție (concentrare fat-tail)."""
-    if not xs:
-        return None
-    total = sum(xs)
-    return (max(xs) / total) if total != 0.0 else None
-
-
-def _trimmed_top1pct(xs: list[float]) -> float | None:
-    """T16: media net_R după eliminarea celui mai bun 1% (rezistență la fat-tail). Simetric pt. orice scenariu."""
-    if not xs:
-        return None
-    k = max(1, int(len(xs) * 0.01))
-    kept = sorted(xs)[: len(xs) - k]
-    return (sum(kept) / len(kept)) if kept else None
 
 
 def evaluate_strategy(
@@ -332,15 +366,15 @@ def evaluate_strategy(
     *, scenarios: Sequence[CostScenario] = DEFAULT_SCENARIOS, block_end: int | None = None,
     run: RunContext = _DEFAULT_RUN,
 ) -> tuple[StrategyReport, list[EvalOutcome]]:
-    """Rulează toate semnalele unei strategii prin evaluatorul canonic și agregă câmpurile obligatorii."""
     outcomes: list[EvalOutcome] = [
         evaluate_signal(s, open_, high, low, close, scenarios=scenarios, block_end=block_end, run=run)
         for s in signals]
-    cfg = _config_id(scenarios, run)
+    rh = run_hash(scenarios, run)
     execd = [o for o in outcomes if isinstance(o, ExecutedTrade)]
-    eligible = [o for o in execd if not o.still_open_at_end]    # executabile = ieșire reală
+    eligible = [o for o in execd if not o.still_open_at_end]
     still_open = [o for o in execd if o.still_open_at_end]
     rejs = [o for o in outcomes if isinstance(o, Rejection)]
+    invalids = [o for o in outcomes if isinstance(o, InvalidExecution)]
     noent = [o for o in outcomes if isinstance(o, NoEntry)]
 
     reasons: dict[str, int] = {}
@@ -350,18 +384,17 @@ def evaluate_strategy(
     def _scn(o: ExecutedTrade, name: str) -> float:
         return next(r.net_R for r in o.results if r.scenario == name)
 
-    base = [_scn(o, BASE_PROVISIONAL.name) for o in eligible]
-    stress = [_scn(o, STRESS_PROVISIONAL.name) for o in eligible]
+    base_pairs = [(_scn(o, BASE_PROVISIONAL.name), o.entry_bar) for o in eligible]
+    stress_pairs = [(_scn(o, STRESS_PROVISIONAL.name), o.entry_bar) for o in eligible]
+    base = [r for r, _ in base_pairs]; stress = [r for r, _ in stress_pairs]
     bm, sm = _mean(base), _mean(stress)
     total = len(signals)
     report = StrategyReport(
-        strategy_id=strategy_id, config_id=cfg, total_signals=total,
-        eligible_trades=len(eligible), rejected=len(rejs),
-        rejected_pct=(100.0 * len(rejs) / total) if total else 0.0,
-        rejection_reasons=tuple(sorted(reasons.items())), no_entry=len(noent),
-        still_open_at_end=len(still_open),
+        strategy_id=strategy_id, run_hash=rh, total_signals=total, eligible_trades=len(eligible),
+        rejected=len(rejs), rejected_pct=(100.0 * len(rejs) / total) if total else 0.0,
+        rejection_reasons=tuple(sorted(reasons.items())), invalid_executions=len(invalids),
+        no_entry=len(noent), still_open_at_end=len(still_open),
         base_mean_R=bm, stress_mean_R=sm,
         base_minus_stress=(bm - sm) if (bm is not None and sm is not None) else None,
-        base_best_share_of_total=_best_share_of_total(base), stress_best_share_of_total=_best_share_of_total(stress),
-        base_trimmed_top1pct_R=_trimmed_top1pct(base), stress_trimmed_top1pct_R=_trimmed_top1pct(stress))
+        base_concentration=_concentration(base_pairs), stress_concentration=_concentration(stress_pairs))
     return report, outcomes
