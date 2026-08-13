@@ -128,10 +128,26 @@ def test_t15_t16_symmetric_fat_tail_metrics() -> None:
     assert rep.base_trimmed_top1pct_R is not None and rep.stress_trimmed_top1pct_R is not None        # T16 simetric
 
 
-# T17 — config_id pe fiecare rezultat; compară doar la config identică
-def test_t17_provenance_config_id() -> None:
+# T17 — config_id acoperă 13 dimensiuni (incl. simbol/date/manifest) + GARDĂ de comparabilitate (nu comentariu)
+def test_t17_config_covers_run_dims_and_guard_enforces() -> None:
+    from canonical_evaluator import RunContext, require_comparable, NonComparableError
     n = 6; o, h, l, c = [100.0]*n, [100.2]*n, [99.8]*n, [100.0]*n
-    a = evaluate_signal(_sig(requested_stop_price=80.0, max_holding_bars=3), o, h, l, c)
-    b = evaluate_signal(_sig(requested_stop_price=80.0, max_holding_bars=3), o, h, l, c, scenarios=(BASE_PROVISIONAL,))
-    assert isinstance(a, ExecutedTrade) and isinstance(b, ExecutedTrade)
-    assert a.config_id and a.config_id != b.config_id   # provenance imuabilă; config diferit ⇒ NON-COMPARABLE
+    xau = evaluate_signal(_sig(requested_stop_price=80.0, max_holding_bars=3), o, h, l, c,
+                          run=RunContext("XAUUSD", "M15_v2", "four_blocks_v1"))
+    es = evaluate_signal(_sig(requested_stop_price=80.0, max_holding_bars=3), o, h, l, c,
+                         run=RunContext("ES", "M15_v2", "four_blocks_v1"))
+    assert isinstance(xau, ExecutedTrade) and isinstance(es, ExecutedTrade)
+    assert xau.config_id != es.config_id                 # instrumente DIFERITE ⇒ id-uri diferite (gap-ul a)
+    # GARDA impune comparația-pe-potrivire (ridică), nu doar un comentariu (gap-ul b)
+    require_comparable(xau.config_id, xau.config_id)      # aceeași config → OK
+    with pytest.raises(NonComparableError):
+        require_comparable(xau.config_id, es.config_id)   # config diferit → RIDICĂ
+
+
+# T18 — MEAS-9 gap-open: open dincolo de nivel ⇒ ieșire la PREȚUL DE INTRARE (spec Statistician T4)
+def test_t18_meas9_gap_open_guard() -> None:
+    n = 6; o = [100.0]*n; h = [100.2]*n; l = [99.8]*n; c = [100.0]*n
+    out = evaluate_signal(_sig(signal_bar=0, requested_stop_price=90.0, target_kind="price", target_param=99.5),
+                          o, h, l, c)
+    assert isinstance(out, ExecutedTrade) and out.exit_reason == "gap_at_entry"
+    assert all(r.gross_move_price == 0.0 for r in out.results)   # nu win/pierdere fictivă la nivel nominal

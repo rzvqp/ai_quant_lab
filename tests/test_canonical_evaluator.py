@@ -63,9 +63,24 @@ def test_r3_reject_when_below_minimum_no_widening() -> None:
 
 
 def test_r3_dominant_components() -> None:
-    assert minimum_stop_distance(1.0, 1.0).dominant_component == "2x_spread"      # 2,0
+    # DECIZIA 1: spread e bid-ask COMPLET, componenta e spread O DATĂ (nu 2×)
+    ms = minimum_stop_distance(1.0, 1.0)
+    assert ms.dominant_component == "spread" and abs(ms.minimum_stop_distance - 1.0) < 1e-9   # 1,0 (nu 2,0)
     assert minimum_stop_distance(0.001, 0.1).dominant_component == "floor_0.05usd"  # 0,05
     assert minimum_stop_distance(0.001, 5.0).dominant_component == "0.10x_atr"    # 0,50
+
+
+def test_meas9_gap_open_guard_exits_at_entry() -> None:
+    """A 9-a divergență: open DEJA dincolo de nivel ⇒ ieșire la PREȚUL DE INTRARE, nu win/pierdere fictivă."""
+    o, h, l, c = _flat(6); o[1] = 100.0
+    # gap PRIN țintă (long, țintă 99,5 sub intrarea 100) → gross 0, nu pierdere forțată la nominal
+    thr = evaluate_signal(_sig(signal_bar=0, requested_stop_price=90.0, target_kind="price", target_param=99.5),
+                          o, h, l, c)
+    assert isinstance(thr, ExecutedTrade) and thr.exit_reason == "gap_at_entry" and thr.exit_price == 100.0
+    assert all(r.gross_move_price == 0.0 for r in thr.results)   # gross 0 (doar costul), nu +0,95 / −0,436
+    # gap PRIN stop (long, stop 101 peste intrarea 100)
+    st = evaluate_signal(_sig(signal_bar=0, requested_stop_price=101.0), o, h, l, c)
+    assert isinstance(st, ExecutedTrade) and st.exit_reason == "gap_at_entry"
 
 
 def test_r3_rejection_has_no_pnl_stays_in_signals() -> None:
