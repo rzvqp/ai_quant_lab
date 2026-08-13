@@ -2030,4 +2030,52 @@
                FREEZE HOLDS. Red Team modified no engine, ran no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [47], prev_hash E46.
   entry_hash:  E46
+
+[47] 2026-08-13
+  prev_hash:   E46
+  event:       VERDICT
+  dc_id:       DC-CANONICAL-EVALUATOR
+  freeze_hash: 3344bff (code/canonical_evaluator.py v2.7.66, diff off 2403aad)
+  battery_ver: RT-AUDIT-MEAS-0005
+  reviewer:    Red Team
+  detail:      RE-ATTACK on canonical_evaluator v2.7.66 @3344bff with the extended 18. VE's own suites
+               re-run 23 passed / 2 skipped (T4 non-gap correctly BLOCAT). VERDICT =
+               PASS_WITH_LIMITATIONS: measurement semantics PASS; comparability/provenance enforcement NOT
+               yet structural.
+               FOUR CORRECTIONS VERIFIED CLOSED: (a) MEAS-9 ASYMMETRIC both branches -- §5(a) risk<=0 -> 
+               InvalidExecution (long 97/stop 98 -> dir_risk -1.0, NOT the old +0.95 win), COUNTED in report
+               (invalid_executions=1) + excluded from returns, silent continue gone; §5(b) reward<=0 ->
+               exit at ENTRY price, gap_through_target, R=-cost/risk (entry 105/tgt 102 -> -0.007 NOT -0.436).
+               (b) MEAS-10 in the OFFICIAL report: StrategyReport.base/stress_concentration, best_trade_share
+               as LevelOutput Unavailable('net_non_positive') when sum_R<=0 -- independently confirmed.
+               (e) T12/13 resolved by the half_of ARITHMETIC (R3 = K_SPREAD*half = 2*(full/2) = full once =
+               0.05/0.08; cost = full once); the NewTypes only GUARD it, they don't perform the fix.
+               run_hash = sha256(config_hash||sha256(data_identity)); compare() raises NonComparableError.
+               LIMITATIONS: (c) NewType is RUNTIME-ERASED -> 'unwritable' OVERCLAIMED; minimum_stop_distance
+               (SpreadFull(0.05) as half) returns 0.10 DOUBLE with NO runtime error; caught only by mypy
+               --strict, and NEITHER repo has ANY mypy config/CI/pre-commit (git-verified) -> guarantee
+               currently UNENFORCED. (d) compare()/require_comparable() NEVER invoked internally (zero call
+               sites beyond defs) -> opt-in, bypassable by direct comparison = same procedural pattern as
+               E2E-L2. (f) MEAS-14 (the TENTH) PERSISTS: R3 rejection decided once from sig.spread_price
+               before the scenario loop -> BASE/STRESS share ONE rejection population; per-scenario R3
+               (0.05/0.08) unreachable. ELEVENTH (new): run_hash OMITS block_end -> same RunContext,
+               block_end 5 vs 18 = identical run_hash but different results (still_open vs time) -> mismatched
+               cuts falsely comparable.
+               S3 51% INVALID: §5(a) is orientation-EXACT (dirn*(entry-stop)<=0), cannot false-positive a
+               correct signal -> 51% is UPSTREAM (real S3 property or adapter orientation bug), NEVER an
+               asymmetry artifact. Synthetic probe: stop AT the level the entry oscillates around -> tens-of-%
+               INVALID by construction -> 51% PLAUSIBLY REAL (= half of S3 never executable, the audit's most
+               consequential finding IF real). BUT no committed code computes it (S3->Signal adapter + run not
+               committed) -> NOT independently reproducible; recommend committing adapter+run under a run_hash.
+               S3 SAGA +0.23->+0.395->-0.13->-0.17 internally CONSISTENT: -0.17<-0.13 is EXPECTED because the
+               excluded 51% exited near-breakeven (~-cost, ABOVE the -0.13 mean); removing them lowers the
+               surviving mean. -0.17 = most-correct SO FAR for the executable 49% under BASE, NO new error
+               found, but NON-COMPARABLE across the saga (R11) + BASE-uncalibrated + strong selection effect;
+               must pair with STRESS. Decomposition spec-§4 NOT required for the gate (only to interpret the
+               saga). T4 non-gap stays at Statistician (code counts+SL-first but unratified).
+               RECO: ratify the contract's per-trade MEASUREMENT semantics now; WITHHOLD R11 comparability
+               ratification until (c)(d)+eleventh are structural and MEAS-14 resolved/accepted. FREEZE HOLDS.
+               Red Team modified no engine, ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [48], prev_hash E47.
+  entry_hash:  E47
 ```
