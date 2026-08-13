@@ -1,15 +1,26 @@
-# ve_brain — CONTRACTE PUBLICE (gate 3)
+# ve_brain — CONTRACTE PUBLICE (gate 3) — v0.1.1
 
-**Artefact:** `ve_brain` v0.1.0 · **Sursă:** `ai_quant_lab-wp5b @ discovery-mk-matrix-v1 @ 3344bff` (+ corectiv A2 `dc28e4a`)
+**Artefact:** `ve_brain` v0.1.0 · **Sursă:** `ai_quant_lab-wp5b @ discovery-mk-matrix-v1 @ dc28e4a` (geometrie strictă A2)
 **Contract de măsurare:** `canonical-evaluator-v2.7.66-A2` · **STATUT: v1.0-DRAFT — NOT RATIFIED** (Red Team ratifică în paralel).
 **BROKER_ORDER_SUBMISSION = DISABLED** — artefactul produce DECIZII, niciodată ordine reale.
 
+## Poarta N6 (FAIL-1): `decide_n6(candidate: DecisionRequest, eligibility: EligibilityDecision)`
+Ordinea OBLIGATORIE: `N1 RawAxes → StrategyRouter → EligibilityDecision → StrategyCandidate → EV → N6 → Risk Manager`.
+`eligibility` e OBLIGATORIE; N6 verifică `strategy_id/strategy_version/market_event_id/regime_fingerprint/router_version/
+is_eligible`; lipsă/nepotrivire ⇒ `MISSING_OR_INVALID_ELIGIBILITY`; range ⇒ `TRUE_RANGE_NOT_IDENTIFIABLE`.
+
+## Contract N1 ADITIV (FAIL-2): `RawAxes`
+`is_compressed`, `is_displacement` (INDEPENDENTE, ne-mutual-exclusive), `direction`, `structure`, `volatility_state`
+(rezumat — INTERZIS ca unică sursă), `n1_contract_version`, `raw_axis_schema_version`. Contract vechi ⇒ `INCOMPATIBLE_N1_CONTRACT`.
+
 ## Intrare — `DecisionRequest` (`ve.decision_request.v1`)
 Câmpuri validate la runtime (nepotrivire ⇒ `SCHEMA_VALIDATION_FAILED`):
-`contract_id, strategy_id, strategy_version, validation_status, market_state_ref, regime_label, bias_direction,
-market_map_available, levels_available, confirmation_available, entry_price, stop_price, target_kind∈{rr,price,none},
-target_param, holding_window≥1, atr>0, probability_inputs (ProbabilityInputs|None), full_spread_price,
-entry_slippage_price, exit_slippage_price, measurement_contract_version, configuration_fingerprint`.
+`contract_id, strategy_id, strategy_version, validation_status, market_event_id, regime_fingerprint, market_state_ref,
+regime_label, bias_direction, market_map_available, levels_available, confirmation_available, entry_price, stop_price,
+target_kind∈{rr,price,none}, target_param, holding_window≥1, atr>0, probability_inputs, full_spread_price,
+entry_slippage_price, exit_slippage_price, symbol, timeframe, block_start≤block_end, segment_id, manifest_hash,
+n1_contract_version, raw_axis_schema_version, router_version, eligibility_policy_version, measurement_contract_version,
+configuration_fingerprint`. Populația oficială = **4 blocuri**.
 
 `ProbabilityInputs` = ierarhie empiric-Bayes (`HierarchyLevel{cell:OutcomeCell, siblings}`,
 `OutcomeCell{n, n_target, n_horizon, sum_horizon_R}`) + `credibility∈(0,1)`. **Absentă ⇒ NO_TRADE** (nu se inventează).

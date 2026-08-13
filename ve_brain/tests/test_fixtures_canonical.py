@@ -1,5 +1,5 @@
-"""Fixture-uri CANONICE cu rezultate cunoscute (gate 7). Cazuri deterministe input→ieșire pentru motorul EV +
-poarta N6. Rezultatele sunt reproductibile din cod semințat (stdlib-only)."""
+"""Fixture-uri CANONICE cu rezultate cunoscute (gate 7), pe calea COMPLETĂ Router→EligibilityDecision→EV→N6.
+Deterministe, reproductibile din cod semințat."""
 
 from __future__ import annotations
 
@@ -11,48 +11,61 @@ if _PKG not in sys.path:
     sys.path.insert(0, _PKG)
 
 from ve_brain import (  # noqa: E402
-    DecisionRequest, HierarchyLevel, INPUT_CONTRACT_ID, OutcomeCell, ProbabilityInputs, ValidationStatus, decide_n6,
+    DecisionRequest, ELIGIBILITY_POLICY_VERSION, HierarchyLevel, INPUT_CONTRACT_ID, N1_CONTRACT_VERSION, OutcomeCell,
+    ProbabilityInputs, RAW_AXIS_SCHEMA_VERSION, ROUTER_VERSION, RawAxes, SemanticRegime, StrategyRouter,
+    ValidationStatus, decide_n6, regime_fingerprint,
 )
+from ve_brain.regime_routing import StrategyContract as SC  # noqa: E402
+
+MC = "canonical-evaluator-v2.7.66-A2"
+AXES = RawAxes(is_compressed=False, is_displacement=False, direction="up", structure="strong")   # {TREND_UP}
 
 
-def _req(*, rr: float, status: ValidationStatus, pt: int, ph: int, n: int, prob: bool = True,
-         confirmation: bool = True) -> DecisionRequest:
+def _sc(sid: str, status: ValidationStatus) -> SC:
+    return SC(strategy_id=sid, strategy_family="F", allowed_regimes=(SemanticRegime.TREND_UP,),
+              allowed_directions=("LONG",), arming_regimes=(), trigger_transition=None, minimum_regime_confidence=0.0,
+              required_N2_bias=None, required_N3_map=True, required_N4_confirmation=None, entry_rule="e",
+              invalidation_rule="i", exit_rule="x", holding_window=10, validation_status=status, strategy_version="v1",
+              measurement_contract_version=MC)
+
+
+def _cand(status: ValidationStatus, *, rr: float, prob: bool, confirmation: bool = True) -> DecisionRequest:
     pi = None
     if prob:
-        cell = OutcomeCell(n=n, n_target=pt, n_horizon=ph, sum_horizon_R=0.0)
+        cell = OutcomeCell(n=1000, n_target=500, n_horizon=200, sum_horizon_R=0.0)
         pi = ProbabilityInputs(hierarchy=(HierarchyLevel(cell=cell, siblings=(cell, cell)),), credibility=0.80)
     return DecisionRequest(
         contract_id=INPUT_CONTRACT_ID, strategy_id="fix", strategy_version="v1", validation_status=status,
-        market_state_ref="ms", regime_label="TREND_UP", bias_direction="LONG", market_map_available=True,
-        levels_available=True, confirmation_available=confirmation, entry_price=100.0, stop_price=99.0,
-        target_kind="rr", target_param=rr, holding_window=10, atr=1.0, probability_inputs=pi,
-        full_spread_price=0.05, entry_slippage_price=0.0, exit_slippage_price=0.0,
-        measurement_contract_version="canonical-evaluator-v2.7.66-A2", configuration_fingerprint="fp")
+        market_event_id="ev", regime_fingerprint=regime_fingerprint(AXES), market_state_ref="ms",
+        regime_label="TREND_UP", bias_direction="LONG", market_map_available=True, levels_available=True,
+        confirmation_available=confirmation, entry_price=100.0, stop_price=99.0, target_kind="rr", target_param=rr,
+        holding_window=10, atr=1.0, probability_inputs=pi, full_spread_price=0.05, entry_slippage_price=0.0,
+        exit_slippage_price=0.0, symbol="XAUUSD", timeframe="M15", block_start=0, block_end=100, segment_id="s",
+        manifest_hash="m", n1_contract_version=N1_CONTRACT_VERSION, raw_axis_schema_version=RAW_AXIS_SCHEMA_VERSION,
+        router_version=ROUTER_VERSION, eligibility_policy_version=ELIGIBILITY_POLICY_VERSION,
+        measurement_contract_version=MC, configuration_fingerprint="rh")
 
 
-# (descriere, request, decizie așteptată, reason așteptat)
+def _decide(status: ValidationStatus, *, rr: float, prob: bool, confirmation: bool = True) -> object:
+    elig = StrategyRouter((_sc("fix", status),)).eligible(AXES, "ev", "LONG", 1.0)[0]
+    return decide_n6(_cand(status, rr=rr, prob=prob, confirmation=confirmation), elig)
+
+
 CANONICAL_FIXTURES = [
-    ("edge_puternic_RR3_pt0.5 → TRADE",   _req(rr=3.0, status=ValidationStatus.RATIFIED, pt=500, ph=200, n=1000),
-     "TRADE", "TRADE_VALIDATED_EDGE"),
-    ("shadow_același_edge → SHADOW",       _req(rr=3.0, status=ValidationStatus.SHADOW_ELIGIBLE, pt=500, ph=200, n=1000),
+    ("edge RR3 pt0.5 → TRADE", ValidationStatus.RATIFIED, 3.0, True, True, "TRADE", "TRADE_VALIDATED_EDGE"),
+    ("shadow → SHADOW", ValidationStatus.SHADOW_ELIGIBLE, 3.0, True, True,
      "SHADOW_TRADE_CANDIDATE", "SHADOW_CANDIDATE_EV_POSITIVE"),
-    ("RR mic (feasibility) → NO_TRADE",    _req(rr=0.001, status=ValidationStatus.RATIFIED, pt=500, ph=200, n=1000),
-     "NO_TRADE", "NEGATIVE_EXPECTED_VALUE"),
-    ("fără probabilități → NO_TRADE",      _req(rr=3.0, status=ValidationStatus.RATIFIED, pt=0, ph=0, n=0, prob=False),
+    ("RR mic → NO_TRADE", ValidationStatus.RATIFIED, 0.001, True, True, "NO_TRADE", "NEGATIVE_EXPECTED_VALUE"),
+    ("fără probabilități → NO_TRADE", ValidationStatus.RATIFIED, 3.0, False, True,
      "NO_TRADE", "MISSING_PROBABILITY_INPUTS"),
-    ("experimental → NO_ELIGIBLE",         _req(rr=3.0, status=ValidationStatus.EXPERIMENTAL, pt=500, ph=200, n=1000),
+    ("experimental → NO_ELIGIBLE", ValidationStatus.EXPERIMENTAL, 3.0, True, True,
      "NO_TRADE", "NO_ELIGIBLE_STRATEGY"),
-    ("fără confirmare N4 → NO_TRADE",      _req(rr=3.0, status=ValidationStatus.RATIFIED, pt=500, ph=200, n=1000,
-                                               confirmation=False),
-     "NO_TRADE", "MISSING_CONFIRMATION"),
-    ("n=0 (probabilitate fabricată interzisă; EV fail-closed) → NO_TRADE",
-     _req(rr=3.0, status=ValidationStatus.RATIFIED, pt=0, ph=0, n=0),
-     "NO_TRADE", "MISSING_PROBABILITY_INPUTS"),   # motorul EV cade-închis la n<=0 → nu fabrică p̂=0.5
+    ("fără confirmare → NO_TRADE", ValidationStatus.RATIFIED, 3.0, True, False, "NO_TRADE", "MISSING_CONFIRMATION"),
 ]
 
 
 def test_canonical_fixtures_known_outcomes() -> None:
-    for desc, req, want_decision, want_reason in CANONICAL_FIXTURES:
-        resp = decide_n6(req)
-        assert resp.decision == want_decision, f"{desc}: decizie {resp.decision} != {want_decision}"
-        assert want_reason in resp.reason_codes, f"{desc}: reason {resp.reason_codes} nu conține {want_reason}"
+    for desc, status, rr, prob, conf, want_dec, want_reason in CANONICAL_FIXTURES:
+        resp = _decide(status, rr=rr, prob=prob, confirmation=conf)
+        assert resp.decision == want_dec, f"{desc}: {resp.decision} != {want_dec}"          # type: ignore[attr-defined]
+        assert want_reason in resp.reason_codes, f"{desc}: {resp.reason_codes}"              # type: ignore[attr-defined]

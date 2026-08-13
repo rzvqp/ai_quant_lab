@@ -40,6 +40,19 @@ strictă + routing per regim) sunt OBLIGATORII înainte de PASS — ambele aplic
 
 Router MULTI-AXIAL (fără regulă globală de precedență): `test_12_multiaxial_...` — COMPRESSION+TREND simultan.
 
+## Corecții VE_HANDOFF_FAIL (verdict Red Team ACCEPTAT)
+| defect | corecție | dovadă |
+|---|---|---|
+| **FAIL-1** router ocolibil (N6 fără eligibility → TRADE) | `decide_n6(candidate, eligibility)` — eligibility OBLIGATORIE; verifică strategy_id/version/market_event_id/regime_fingerprint/router_version/is_eligible; lipsă/nepotrivire → `MISSING_OR_INVALID_ELIGIBILITY`; range → `TRUE_RANGE_NOT_IDENTIFIABLE`. Fără semnătură legacy. | `test_f1_01..10` |
+| **FAIL-2** partiția mutată în stringul de volatilitate | contract N1 ADITIV: `RawAxes.is_compressed`/`is_displacement` INDEPENDENTE; `volatility_state` doar telemetrie; router citește axele brute; `INCOMPATIBLE_N1_CONTRACT` la contract vechi. | `test_f2_01..10` |
+| **A5** identitate + enforcement | `data_identity` (symbol/timeframe/block_start/end/segment_id/manifest_hash, 4 blocuri) în amprentă; amprenta acoperă date‖config‖strategie‖motor‖contract‖N1‖router; `compare_decisions` RIDICĂ. | `test_a5_*` |
+| **FAIL-4** re-pin | `SOURCE_COMMIT=dc28e4a`, `MEASUREMENT_CONTRACT_VERSION=…-A2` (NU asimetricul 3344bff). | `version.py` |
+
+**Inventarul căilor de comparație (A5):** în artefactul `ve_brain` NU există cod intern de leaderboard / selecție de
+candidați / agregare de rapoarte — pachetul PRODUCE decizii, nu le compară. UNICA cale de comparație e
+`compare_decisions()` (guard care RIDICĂ). Comparația directă a câmpurilor de amprentă e interzisă prin contract.
+Calea COMPLETĂ e demonstrată de `test_full_path_n1_router_eligibility_ev_n6` (nu componente izolate).
+
 ## DESCHIS — de ce VE nu poate cere PASS
 - Contractul de măsurare `canonical-evaluator-v2.7.66-A2` = **NOT RATIFIED** (Red Team, suită extinsă).
 - **BREAKOUT_TRANSITION** e proxy per-bară; versiunea strictă cere un detector de tranziție 2-stări peste N1

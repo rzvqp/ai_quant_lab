@@ -1,5 +1,14 @@
 # ve_brain — CHANGELOG & compatibilitate declarată (gate 12)
 
+## 0.1.1 — corectiv VE_HANDOFF_FAIL (FAIL-1, FAIL-2, A5, FAIL-4)
+- **FAIL-1:** `decide_n6(candidate, eligibility)` — Router = poartă OBLIGATORIE; fără semnătură legacy permisivă.
+- **FAIL-2:** contract N1 ADITIV `RawAxes` (is_compressed/is_displacement independente); `volatility_state` doar telemetrie.
+- **A5:** `data_identity` (4 blocuri) în amprentă; `compare_decisions` impus; inventar de comparație = doar `compare_decisions`.
+- **FAIL-4:** re-pin `SOURCE_COMMIT=dc28e4a`, contract `…-v2.7.66-A2`.
+- Reason codes noi: `MISSING_OR_INVALID_ELIGIBILITY`, `INCOMPATIBLE_N1_CONTRACT`. **Contractele I/O au versiune NOUĂ**
+  (câmpuri adăugate) — consumatorul vechi eșuează EXPLICIT (`SCHEMA_VALIDATION_FAILED` / `INCOMPATIBLE_N1_CONTRACT`).
+
+
 ## 0.1.0 — 2026-08-13 (predare inițială Mandat 1, pașii 1-4 + amendamente A1/A2/A5 + routing)
 Contracte: `ve.decision_request.v1` / `ve.decision_response.v1` / `ve.strategy.v1`.
 Contract de măsurare: `canonical-evaluator-v2.7.66-A2` — **v1.0-DRAFT, NOT RATIFIED**.

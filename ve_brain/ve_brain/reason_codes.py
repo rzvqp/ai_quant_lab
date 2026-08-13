@@ -22,8 +22,10 @@ class ReasonCode(Enum):
 
     # ── căderi de contract / incompatibilitate (eroare EXPLICITĂ, nu tăcere) ──
     INCOMPATIBLE_CONTRACT = "INCOMPATIBLE_CONTRACT"              # versiune/contract nesuportat
+    INCOMPATIBLE_N1_CONTRACT = "INCOMPATIBLE_N1_CONTRACT"       # FAIL-2: consumator care nu înțelege axele brute
     SCHEMA_VALIDATION_FAILED = "SCHEMA_VALIDATION_FAILED"        # input/output nu respectă schema
     CONFIG_FINGERPRINT_MISMATCH = "CONFIG_FINGERPRINT_MISMATCH"  # comparație non-comparabilă (run_hash diferit)
+    MISSING_OR_INVALID_ELIGIBILITY = "MISSING_OR_INVALID_ELIGIBILITY"  # FAIL-1: N6 fără EligibilityDecision validă
 
     # ── execuție invalidă (din evaluatorul canonic; A2 geometrie strictă) ──
     INVALID_EXECUTION = "INVALID_EXECUTION"                      # risc≤0 OR recompensă≤0 (gap/open pe stop sau target)

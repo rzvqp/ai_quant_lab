@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from .version import (
     VE_BRAIN_VERSION, SOURCE_COMMIT, SOURCE_BRANCH, MEASUREMENT_CONTRACT_VERSION, MEASUREMENT_CONTRACT_STATUS,
-    BROKER_ORDER_SUBMISSION, RANGE_STRATEGY_ROUTING, RANGE_BLOCKER, IncompatibleContractError, assert_compatible,
-    build_info,
+    BROKER_ORDER_SUBMISSION, RANGE_STRATEGY_ROUTING, RANGE_BLOCKER, N1_CONTRACT_VERSION, RAW_AXIS_SCHEMA_VERSION,
+    ROUTER_VERSION, ELIGIBILITY_POLICY_VERSION, IncompatibleContractError, assert_compatible, build_info,
 )
 from .reason_codes import ReasonCode
 from .contracts import (
@@ -21,11 +21,13 @@ from .contracts import (
 )
 from .strategy_contract import ValidationStatus, can_reach_n6, can_execute_real, TradeProposal
 from .regime_routing import (
-    SemanticRegime, applicable_regimes, StrategyContract, StrategyRegistry, StrategyRouter, RoutingMode,
-    EligibilityDecision, n4_triggers_breakout,
+    SemanticRegime, RawAxes, applicable_regimes, regime_fingerprint, StrategyContract, StrategyRegistry,
+    StrategyRouter, RoutingMode, EligibilityDecision, n4_triggers_breakout,
 )
 from .ev_engine import run_ev, ENGINE_VERSION, EV_ENGINE_SOURCE_COMMIT
-from .fingerprint import decision_fingerprint, require_comparable, compare_decisions, NonComparableDecisionError
+from .fingerprint import (
+    decision_fingerprint, data_identity, require_comparable, compare_decisions, NonComparableDecisionError,
+)
 from .n6 import decide_n6
 
 __version__ = VE_BRAIN_VERSION
@@ -36,7 +38,7 @@ __all__ = [
     "build_info", "ReasonCode", "DecisionRequest", "DecisionResponse", "ProbabilityInputs", "OutcomeCell",
     "HierarchyLevel", "validate_request", "validate_response", "SchemaValidationError", "INPUT_CONTRACT_ID",
     "OUTPUT_CONTRACT_ID", "ValidationStatus", "can_reach_n6", "can_execute_real", "TradeProposal",
-    "SemanticRegime", "applicable_regimes", "StrategyContract", "RANGE_STRATEGY_ROUTING", "RANGE_BLOCKER", "StrategyRegistry", "StrategyRouter", "RoutingMode",
+    "SemanticRegime", "RawAxes", "applicable_regimes", "regime_fingerprint", "data_identity", "N1_CONTRACT_VERSION", "ROUTER_VERSION", "RAW_AXIS_SCHEMA_VERSION", "ELIGIBILITY_POLICY_VERSION", "StrategyContract", "RANGE_STRATEGY_ROUTING", "RANGE_BLOCKER", "StrategyRegistry", "StrategyRouter", "RoutingMode",
     "EligibilityDecision", "n4_triggers_breakout", "run_ev", "ENGINE_VERSION", "EV_ENGINE_SOURCE_COMMIT",
     "decision_fingerprint", "require_comparable", "compare_decisions", "NonComparableDecisionError", "decide_n6",
 ]

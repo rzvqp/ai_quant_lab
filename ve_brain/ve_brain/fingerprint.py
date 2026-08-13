@@ -19,17 +19,29 @@ class NonComparableDecisionError(RuntimeError):
     """Comparația între decizii cu amprente diferite e IMPOSIBILĂ, nu descurajată."""
 
 
+def data_identity(*, symbol: str, timeframe: str, block_start: int, block_end: int, segment_id: str,
+                  manifest_hash: str) -> str:
+    """A5: identitatea COMPLETĂ a datelor. Populația oficială = 4 blocuri; `manifest_hash` le codifică."""
+    payload = {"symbol": symbol, "timeframe": timeframe, "block_start": block_start, "block_end": block_end,
+               "segment_id": segment_id, "manifest_hash": manifest_hash}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+
 def decision_fingerprint(
-    *, measurement_run_hash: str, strategy_id: str, strategy_version: str,
-    engine_version: str, measurement_contract_version: str,
+    *, measurement_run_hash: str, data_id: str, strategy_id: str, strategy_version: str,
+    engine_version: str, measurement_contract_version: str, n1_contract_version: str,
+    raw_axis_schema_version: str, router_version: str, eligibility_policy_version: str,
 ) -> str:
-    """Cele CINCI dimensiuni, într-un singur hash. `measurement_run_hash` = run_hash-ul canonic (date ‖ config)."""
+    """Amprenta de decizie: date ‖ config ‖ STRATEGIE ‖ MOTOR ‖ contract ‖ contractul N1 ‖ politicile de rutare."""
     payload = {
-        "d1_data_and_config": measurement_run_hash,                 # DATELE + CONFIGURAȚIA (canonical run_hash)
-        "d2_strategy": f"{strategy_id}@{strategy_version}",         # STRATEGIA
-        "d3_engine": engine_version,                               # MOTORUL EV
-        "d4_measurement_contract": measurement_contract_version,   # VERSIUNEA CONTRACTULUI de măsurare
-        "d5_ve_brain": VE_BRAIN_VERSION,                           # versiunea artefactului
+        "d1_measurement_run_hash": measurement_run_hash,           # config de măsurare (‖ date, canonical)
+        "d2_data_identity": data_id,                              # A5: symbol/timeframe/blocuri/manifest
+        "d3_strategy": f"{strategy_id}@{strategy_version}",
+        "d4_engine": engine_version,
+        "d5_measurement_contract": measurement_contract_version,
+        "d6_n1_contract": n1_contract_version, "d7_raw_axis_schema": raw_axis_schema_version,
+        "d8_router": router_version, "d9_eligibility_policy": eligibility_policy_version,
+        "d10_ve_brain": VE_BRAIN_VERSION,
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
 

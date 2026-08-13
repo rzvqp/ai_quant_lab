@@ -1,92 +1,95 @@
-"""REGIME-CONDITIONAL STRATEGY ROUTING (amendament CEO + DECIZIA CEO pe defectul de range). N1 Regime → Router →
-NUMAI strategiile compatibile. INTERZIS: toate strategiile evaluate permanent, apoi alegem retrospectiv ce a mers.
+"""REGIME-CONDITIONAL STRATEGY ROUTING — corectat pentru VE_HANDOFF_FAIL (FAIL-1 + FAIL-2).
 
-═══ MAPAREA (după DECIZIA CEO pe range) ═══
-NU redefinesc N1 (aprobat). Traduc cele PATRU axe N1 în stări semantice. **MULTI-AXIAL: nicio regulă globală de
-precedență** — o bară COMPRESSED ȘI UP ȘI STRONG poate activa SIMULTAN strategii de trend ȘI de compresie. `applicable_
-regimes` întoarce o MULȚIME, nu o etichetă unică (o etichetă unică ar fi o partiție implicită = selecție deghizată).
+FAIL-2: axa de volatilitate ca UN SINGUR STRING făcea COMPRESSION (vol==compressed) și BREAKOUT_TRANSITION
+(vol==high_directional) MUTUAL EXCLUSIVE — partiția s-a MUTAT din expansion.py în axa N1, nu a fost eliminată.
+CORECȚIA: contractul N1 expune ADITIV axe INDEPENDENTE — `is_compressed` (context acumulat) și `is_displacement`
+(eveniment curent), NEmutual-exclusive. `volatility_state` rămâne DOAR pentru compatibilitate/telemetrie; Routerul
+NU-l poate folosi ca unică sursă. Nu redefinesc sensurile istorice ale enumurilor.
 
-  axe N1: DIRECTION down|weak_down|neutral|weak_up|up · VOLATILITY compressed|low|normal|high_choppy|high_directional
-          STRUCTURE none|range(|run|=1 POST-FLIP)|weak(2-3)|strong(>=4) · NEWS permanent UNAVAILABLE
+Router citește axele INDEPENDENTE: is_compressed · is_displacement · direction · structure(strength/readiness).
+MULTI-AXIAL: mulțime, nu etichetă unică. RANGE rămâne RETRAS (decizie CEO): NICIODATĂ produs; strategiile care cer
+RANGE ⇒ fail-closed TRUE_RANGE_NOT_IDENTIFIABLE. BREAKOUT_TRANSITION cheiat pe `is_displacement` + flip proaspăt
+(structure==range) = INSTABILITATE, NU consolidare (utilizare semantic diferită de RANGE-ul interzis).
 
-  stări DERIVABILE SIGUR (rămân):
-    COMPRESSION          vol == compressed
-    TREND_UP             struct in {weak,strong} ȘI dir in {up,weak_up}
-    TREND_DOWN           struct in {weak,strong} ȘI dir in {down,weak_down}
-    BREAKOUT_TRANSITION  struct == range(|run|=1) ȘI vol == high_directional   (vezi justificarea de mai jos)
-    UNCERTAIN            orice axă necesară Unavailable
-
-  ⛔ RETRAS (DECIZIE CEO): RANGE = dir==neutral ȘI vol in {low,normal}. `Direction.NEUTRAL` e INTERZIS ca dovadă de
-     consolidare — conflatează PATRU situații (range real, lipsă de structură, WARMUP, fail-closed sub n_min). Maparea
-     ar fi rutat barele de WARMUP în range. RANGE devine NEIDENTIFICABIL și e SCOS din mapare. `SemanticRegime.RANGE`
-     rămâne ca VALOARE de enum (strategiile îl pot DECLARA), dar NU e produs NICIODATĂ de mapare.
-     MECANIC INTERZIS: StructBand.RANGE → strategie de range · Direction.NEUTRAL → range · warmup → range · lipsă → range.
-     Strategiile care cer RANGE ⇒ eligibility=FALSE, reason TRUE_RANGE_NOT_IDENTIFIABLE (fail-closed, persistat).
-
-⚠ BREAKOUT_TRANSITION — de ce interdicția RANGE NU se aplică aici (utilizare semantic DIFERITĂ, PĂSTRAT):
-  · `StructBand.RANGE` = |run|=1 = un run NOU tocmai a început (FLIP proaspăt). Cere un BREAK REAL — deci NU e artefact
-    de WARMUP (la warmup structura e Unavailable → UNCERTAIN, nu range) și NU e artefact de LIPSĂ de date.
-  · Folosesc |run|=1 ca dovadă de INSTABILITATE (flip proaspăt), NU ca dovadă de CONSOLIDARE — exact framing-ul CEO
-    („range de la STRUCTURE înseamnă POST-FLIP, nu piață laterală"). Combinat cu expansiune (high_directional), e
-    semnătura pe-o-bară a unei RUPTURI. Activează o strategie de BREAKOUT, nu una de range.
-  · LIMITARE (acceptată de CEO): e detecție PER-BARĂ, nu o tranziție verificată dintr-o COMPRESSION/RANGE anterioară.
-    Versiunea STRICTĂ cere un detector de tranziție cu 2 stări (regime[i-1], regime[i]) construit PESTE N1 — SEMNALAT,
-    NEINVENTAT (cere mandat).
+FAIL-1: `EligibilityDecision` poartă IDENTITATEA completă (strategy_id, strategy_version, market_event_id,
+regime_fingerprint, router_version, is_eligible). N6 o cere OBLIGATORIU și o verifică; fără ea = MISSING_OR_INVALID.
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from enum import Enum
 
 from .reason_codes import ReasonCode
 from .strategy_contract import ValidationStatus, can_reach_n6, can_execute_real
+from .version import N1_CONTRACT_VERSION, RAW_AXIS_SCHEMA_VERSION, ROUTER_VERSION
 
 
 class SemanticRegime(Enum):
     TREND_UP = "TREND_UP"
     TREND_DOWN = "TREND_DOWN"
-    RANGE = "RANGE"                  # NEIDENTIFICABIL — valoare de enum pt. declarații, NICIODATĂ produsă de mapare
+    RANGE = "RANGE"                  # NEIDENTIFICABIL — valoare de enum pt. declarații, NICIODATĂ produsă
     COMPRESSION = "COMPRESSION"
     BREAKOUT_TRANSITION = "BREAKOUT_TRANSITION"
     UNCERTAIN = "UNCERTAIN"
 
 
-_VOL_COMPRESSED = "compressed"
-_VOL_HIGH_DIRECTIONAL = "high_directional"
 _STRUCT_RANGE = "range"
 _STRUCT_TREND = frozenset({"weak", "strong"})
 _DIR_UP = frozenset({"up", "weak_up"})
 _DIR_DOWN = frozenset({"down", "weak_down"})
 
 
-def applicable_regimes(volatility: str | None, structure: str | None, direction: str | None) -> frozenset[SemanticRegime]:
-    """MULTI-AXIAL: MULȚIMEA stărilor semantice pe care le satisface bara curentă (fără precedență, fără partiție).
-    Orice axă necesară absentă ⇒ {UNCERTAIN}. NICIODATĂ RANGE (retras). Pură, per-bară, fără lookahead."""
-    if volatility is None or structure is None or direction is None:
+@dataclass(frozen=True)
+class RawAxes:
+    """Contractul N1 ADITIV, VERSIONAT (FAIL-2). Axe INDEPENDENTE — `is_compressed` și `is_displacement` NU sunt
+    mutual exclusive. `volatility_state` = rezumat pt. compat/telemetrie, INTERZIS ca unică sursă de eligibilitate."""
+    is_compressed: bool | None
+    is_displacement: bool | None
+    direction: str | None            # down|weak_down|neutral|weak_up|up
+    structure: str | None            # none|range(|run|=1)|weak|strong  (strength/readiness)
+    volatility_state: str = "unknown"   # rezumat (compressed|expanding|...) — NU pt. eligibilitate
+    n1_contract_version: str = N1_CONTRACT_VERSION
+    raw_axis_schema_version: str = RAW_AXIS_SCHEMA_VERSION
+
+
+def applicable_regimes(axes: RawAxes) -> frozenset[SemanticRegime]:
+    """MULTI-AXIAL din axele INDEPENDENTE (nu din stringul de volatilitate). NICIODATĂ RANGE. Pură, per-bară."""
+    if axes.is_compressed is None or axes.is_displacement is None or axes.direction is None or axes.structure is None:
         return frozenset({SemanticRegime.UNCERTAIN})
     out: set[SemanticRegime] = set()
-    if volatility == _VOL_COMPRESSED:
+    if axes.is_compressed:                                   # COMPRESSION din is_compressed, NU din vol==compressed
         out.add(SemanticRegime.COMPRESSION)
-    if structure == _STRUCT_RANGE and volatility == _VOL_HIGH_DIRECTIONAL:   # flip proaspăt + expansiune = ruptură
+    if axes.is_displacement and axes.structure == _STRUCT_RANGE:   # displacement event + flip proaspăt = ruptură
         out.add(SemanticRegime.BREAKOUT_TRANSITION)
-    if structure in _STRUCT_TREND:
-        if direction in _DIR_UP:
+    if axes.structure in _STRUCT_TREND:
+        if axes.direction in _DIR_UP:
             out.add(SemanticRegime.TREND_UP)
-        if direction in _DIR_DOWN:
+        if axes.direction in _DIR_DOWN:
             out.add(SemanticRegime.TREND_DOWN)
-    # NU există RANGE și NU există fallback către range: dacă nimic nu se potrivește curat ⇒ UNCERTAIN
     return frozenset(out) if out else frozenset({SemanticRegime.UNCERTAIN})
 
 
-# ── CONTRACTUL COMPLET al fiecărei strategii (obligatoriu, amendament routing) ──
+def regime_fingerprint(axes: RawAxes) -> str:
+    """Amprenta stării de regim a evenimentului curent (din axele brute + versiunile de contract)."""
+    payload = {
+        "is_compressed": axes.is_compressed, "is_displacement": axes.is_displacement,
+        "direction": axes.direction, "structure": axes.structure,
+        "n1_contract_version": axes.n1_contract_version, "raw_axis_schema_version": axes.raw_axis_schema_version,
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+
+# ── CONTRACTUL COMPLET al fiecărei strategii ──
 @dataclass(frozen=True)
 class StrategyContract:
     strategy_id: str
     strategy_family: str
     allowed_regimes: tuple[SemanticRegime, ...]
-    allowed_directions: tuple[str, ...]          # 'LONG' | 'SHORT'
-    arming_regimes: tuple[SemanticRegime, ...]   # pentru breakout (armare); RANGE aici e MORT (neproductibil)
+    allowed_directions: tuple[str, ...]
+    arming_regimes: tuple[SemanticRegime, ...]
     trigger_transition: SemanticRegime | None
     minimum_regime_confidence: float
     required_N2_bias: str | None
@@ -104,9 +107,6 @@ class StrategyContract:
 
 
 class StrategyRegistry:
-    """Registrul strategiilor. Adăugarea NU face executabilă — statutul o face (A1: shadow ajunge la EV; doar
-    RATIFIED/PROMOTED produc TRADE real)."""
-
     def __init__(self) -> None:
         self._by_id: dict[str, StrategyContract] = {}
 
@@ -131,10 +131,15 @@ class RoutingMode(Enum):
 
 @dataclass(frozen=True)
 class EligibilityDecision:
+    """IDENTITATEA completă (FAIL-1): N6 verifică fiecare câmp contra candidatului + starea curentă."""
     strategy_id: str
-    eligible: bool
+    strategy_version: str
+    market_event_id: str
+    regime_fingerprint: str
+    router_version: str
+    eligible: bool                   # is_eligible
     mode: RoutingMode
-    matched_regimes: tuple[str, ...]             # stările din applicable pe care strategia le folosește (multi-axial)
+    matched_regimes: tuple[str, ...]
     reason_codes: tuple[str, ...]
 
 
@@ -143,62 +148,54 @@ def _declares_range(c: StrategyContract) -> bool:
 
 
 class StrategyRouter:
-    """Eligibilitate MULTI-AXIALĂ per bară. O strategie NEELIGIBILĂ nu generează semnal, nu produce candidat, nu
-    ajunge la EV/N6, NU e numărată ca tranzacție pierdută, NU e „testată" în afara regimului ei."""
+    """Poarta OBLIGATORIE. O strategie NEELIGIBILĂ nu generează semnal, nu produce candidat, nu ajunge la EV/N6,
+    NU e numărată ca pierdută, NU e „testată" în afara regimului ei. Emite EligibilityDecision cu identitate completă."""
 
     def __init__(self, contracts: tuple[StrategyContract, ...]) -> None:
         self._contracts = contracts
 
-    def route_one(self, c: StrategyContract, applicable: frozenset[SemanticRegime], bias_direction: str | None,
-                  confidence: float) -> EligibilityDecision:
-        # potriviri PRODUCTIBILE (RANGE nu e NICIODATĂ în `applicable`)
+    def _decide(self, c: StrategyContract, applicable: frozenset[SemanticRegime], bias_direction: str | None,
+                confidence: float) -> tuple[bool, RoutingMode, tuple[str, ...], tuple[str, ...]]:
         normal_match = frozenset(c.allowed_regimes) & applicable
         arming_match = (frozenset(c.arming_regimes) & applicable) if c.trigger_transition is not None else frozenset()
         if not normal_match and not arming_match:
-            # nicio stare productibilă: dacă strategia DEPINDE de RANGE ⇒ fail-closed EXPLICIT (înaintea UNCERTAIN,
-            # ca reason-ul salient să fie range-ul, nu incertitudinea). Fără fallback/rutare implicită către range.
             if _declares_range(c):
-                return EligibilityDecision(c.strategy_id, False, RoutingMode.INELIGIBLE, (),
-                                           (ReasonCode.TRUE_RANGE_NOT_IDENTIFIABLE.value,))
+                return False, RoutingMode.INELIGIBLE, (), (ReasonCode.TRUE_RANGE_NOT_IDENTIFIABLE.value,)
             if applicable == frozenset({SemanticRegime.UNCERTAIN}):
-                return EligibilityDecision(c.strategy_id, False, RoutingMode.INELIGIBLE, (),
-                                           (ReasonCode.UNCERTAIN_REGIME.value,))
-            return EligibilityDecision(c.strategy_id, False, RoutingMode.INELIGIBLE, (),
-                                       (ReasonCode.INELIGIBLE_REGIME.value,))
-        if arming_match:  # BREAKOUT_WATCH — armat via o stare productibilă (COMPRESSION; RANGE e mort)
+                return False, RoutingMode.INELIGIBLE, (), (ReasonCode.UNCERTAIN_REGIME.value,)
+            return False, RoutingMode.INELIGIBLE, (), (ReasonCode.INELIGIBLE_REGIME.value,)
+        if arming_match:
             if confidence < c.minimum_regime_confidence:
-                return EligibilityDecision(c.strategy_id, False, RoutingMode.INELIGIBLE, (),
-                                           (ReasonCode.BELOW_MIN_REGIME_CONFIDENCE.value,))
-            return EligibilityDecision(c.strategy_id, True, RoutingMode.BREAKOUT_WATCH,
-                                       tuple(sorted(r.value for r in arming_match)),
-                                       (ReasonCode.ROUTER_BREAKOUT_ARMED.value,))
+                return False, RoutingMode.INELIGIBLE, (), (ReasonCode.BELOW_MIN_REGIME_CONFIDENCE.value,)
+            return True, RoutingMode.BREAKOUT_WATCH, tuple(sorted(r.value for r in arming_match)), \
+                (ReasonCode.ROUTER_BREAKOUT_ARMED.value,)
         if bias_direction is not None and c.allowed_directions and bias_direction not in c.allowed_directions:
-            return EligibilityDecision(c.strategy_id, False, RoutingMode.INELIGIBLE, (),
-                                       (ReasonCode.INELIGIBLE_DIRECTION.value,))
+            return False, RoutingMode.INELIGIBLE, (), (ReasonCode.INELIGIBLE_DIRECTION.value,)
         if confidence < c.minimum_regime_confidence:
-            return EligibilityDecision(c.strategy_id, False, RoutingMode.INELIGIBLE, (),
-                                       (ReasonCode.BELOW_MIN_REGIME_CONFIDENCE.value,))
-        return EligibilityDecision(c.strategy_id, True, RoutingMode.NORMAL,
-                                   tuple(sorted(r.value for r in normal_match)), (ReasonCode.ROUTER_ELIGIBLE.value,))
+            return False, RoutingMode.INELIGIBLE, (), (ReasonCode.BELOW_MIN_REGIME_CONFIDENCE.value,)
+        return True, RoutingMode.NORMAL, tuple(sorted(r.value for r in normal_match)), (ReasonCode.ROUTER_ELIGIBLE.value,)
 
-    def eligible(self, volatility: str | None, structure: str | None, direction_axis: str | None,
-                 bias_direction: str | None, confidence: float) -> tuple[EligibilityDecision, ...]:
-        """Rutare MULTI-AXIALĂ din cele patru axe N1. Doar deciziile `eligible=True` merg mai departe către
-        N2/N3/N4 → EV → N6. Range-dependente ⇒ TRUE_RANGE_NOT_IDENTIFIABLE (fail-closed)."""
-        applicable = applicable_regimes(volatility, structure, direction_axis)
-        return tuple(self.route_one(c, applicable, bias_direction, confidence) for c in self._contracts)
+    def eligible(self, axes: RawAxes, market_event_id: str, bias_direction: str | None,
+                 confidence: float) -> tuple[EligibilityDecision, ...]:
+        """Rutare MULTI-AXIALĂ din axele INDEPENDENTE. Fiecare decizie poartă amprenta de regim + identitatea."""
+        applicable = applicable_regimes(axes)
+        fp = regime_fingerprint(axes)
+        out: list[EligibilityDecision] = []
+        for c in self._contracts:
+            elig, mode, matched, reasons = self._decide(c, applicable, bias_direction, confidence)
+            out.append(EligibilityDecision(
+                strategy_id=c.strategy_id, strategy_version=c.strategy_version, market_event_id=market_event_id,
+                regime_fingerprint=fp, router_version=ROUTER_VERSION, eligible=elig, mode=mode,
+                matched_regimes=matched, reason_codes=reasons))
+        return tuple(out)
 
 
-# ── BREAKOUT_WATCH: declanșarea cere N4 (ieșire din limită + displacement + ACCEPTARE) ──
-# N4 ACCEPTANCE (±2) se atinge DOAR când persistence>=P67 ȘI progress_atr>=P67. `progress_atr` ESTE displacement-ul;
-# persistence e acceptarea. Deci „displacement PLUS acceptare" e DEJA conjuncție în ±2 — fără compunere nouă.
+# ── BREAKOUT_WATCH: declanșarea cere N4 (displacement + ACCEPTARE, deja conjuncție în ±2) ──
 _ACCEPTANCE_BULLISH = 2
 _ACCEPTANCE_BEARISH = -2
 
 
 def n4_triggers_breakout(confirmation_ordinal: int | None, direction: str) -> bool:
-    """Declanșarea breakout: N4 ACCEPTANCE în direcția ruperii. Sweep/wick fără acceptare (UNDETERMINED/
-    ABSORPTION_PROXY) ⇒ False (NO_BREAKOUT)."""
     if confirmation_ordinal is None:
         return False
     if direction == "LONG":

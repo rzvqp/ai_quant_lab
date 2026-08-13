@@ -8,7 +8,7 @@ Fără importuri din branch-ul de dezvoltare, fără căi locale.
 | Modul ve_brain | Sursă | Commit |
 |---|---|---|
 | `_ev_core.py` (motorul EV, byte-identic) | `decision_engine/decision_engine.py` @ `alpha-automation-v1` | `bdd15e5` |
-| contractul de măsurare (referit, nu vândut aici) | `code/canonical_evaluator.py` | `3344bff` + A2 `dc28e4a` |
+| contractul de măsurare (referit, nu vândut aici) | `code/canonical_evaluator.py` | `dc28e4a` (A2 geometrie strictă) |
 | taxonomia/nivelele (referite ca etichete) | `code/regime_classifier.py` (N1) | `62c447e` |
 
 ## Nivelele N1-N4 (turnul)

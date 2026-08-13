@@ -41,31 +41,44 @@ class ProbabilityInputs:
 # ── INPUT MINIM (cererea de decizie) ──
 @dataclass(frozen=True)
 class DecisionRequest:
+    """StrategyCandidate — construit DUPĂ Router (N1→Router→EligibilityDecision→StrategyCandidate). Poartă
+    market_event_id + regime_fingerprint pe care N6 le verifică contra EligibilityDecision."""
     contract_id: str
     strategy_id: str
     strategy_version: str
     validation_status: ValidationStatus
+    market_event_id: str                   # FAIL-1: identitatea evenimentului de piață (bara)
+    regime_fingerprint: str                # FAIL-1: amprenta regimului curent (din axele brute)
     # starea pieței + nivelele TURNULUI (rezumate; valorile brute rămân în market_state opac pentru audit)
-    market_state_ref: str                  # identificator al MarketState (audit)
-    regime_label: str | None               # N1 (None dacă Unavailable)
-    bias_direction: str | None             # N2 (None dacă Unavailable / UNKNOWN)
-    market_map_available: bool             # N3 zones Ok?
-    levels_available: bool                 # nivele prezente?
-    confirmation_available: bool           # N4 Ok?
+    market_state_ref: str
+    regime_label: str | None
+    bias_direction: str | None
+    market_map_available: bool
+    levels_available: bool
+    confirmation_available: bool
     # geometria tranzacției
     entry_price: float
     stop_price: float
-    target_kind: str                       # 'rr' | 'price' | 'none'
+    target_kind: str
     target_param: float | None
     holding_window: int
     atr: float
-    # intrări de probabilitate (motor EV)
     probability_inputs: ProbabilityInputs | None
-    # costuri canonice (USD de preț) — spread FULL o dată + slippage per execuție
     full_spread_price: float
     entry_slippage_price: float
     exit_slippage_price: float
-    # provenance
+    # identitatea DATELOR (A5) — populația oficială = 4 blocuri
+    symbol: str
+    timeframe: str
+    block_start: int
+    block_end: int
+    segment_id: str
+    manifest_hash: str
+    # versiuni de contract/politici (FAIL-2 + fingerprint)
+    n1_contract_version: str
+    raw_axis_schema_version: str
+    router_version: str
+    eligibility_policy_version: str
     measurement_contract_version: str
     configuration_fingerprint: str
 
@@ -110,6 +123,12 @@ def validate_request(req: DecisionRequest) -> None:
     _require(req.holding_window >= 1, "holding_window >= 1")
     _require(bool(req.measurement_contract_version) and bool(req.configuration_fingerprint),
              "measurement_contract_version / configuration_fingerprint goale")
+    _require(bool(req.market_event_id) and bool(req.regime_fingerprint), "market_event_id / regime_fingerprint goale")
+    _require(bool(req.symbol) and bool(req.timeframe) and bool(req.segment_id) and bool(req.manifest_hash),
+             "identitatea datelor incompletă (symbol/timeframe/segment_id/manifest_hash)")
+    _require(req.block_start <= req.block_end, "block_start > block_end")
+    _require(all((req.n1_contract_version, req.raw_axis_schema_version, req.router_version,
+                  req.eligibility_policy_version)), "versiuni de contract/politici goale")
     if req.probability_inputs is not None:
         pi = req.probability_inputs
         _require(len(pi.hierarchy) >= 1, "ierarhia de probabilitate e goală")

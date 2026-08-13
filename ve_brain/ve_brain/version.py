@@ -8,16 +8,22 @@ detectoarelor. Versiunea, commit-ul sursă și statutul contractului de măsurar
 from __future__ import annotations
 
 # ── versiunea pachetului (semver) ──
-VE_BRAIN_VERSION: str = "0.1.0"
+VE_BRAIN_VERSION: str = "0.1.1"
 
-# ── commit-ul sursă EXACT din care e construit artefactul (identificabil) ──
+# ── commit-ul sursă EXACT din care e construit artefactul (FAIL-4: RE-PIN pe evaluatorul cu geometrie strictă A2) ──
 SOURCE_REPO: str = "ai_quant_lab-wp5b"
 SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
-SOURCE_COMMIT: str = "3344bffcc12e2d66efd24e6a330938898eb6a561"
+SOURCE_COMMIT: str = "dc28e4a"          # corectivul A2 (geometrie strictă); NU 3344bff (asimetricul respins)
 
 # ── contractul de MĂSURARE canonic (evaluatorul) — versiune + STATUT declarat EXPLICIT ──
-MEASUREMENT_CONTRACT_VERSION: str = "canonical-evaluator-v2.7.66"
+MEASUREMENT_CONTRACT_VERSION: str = "canonical-evaluator-v2.7.66-A2"   # A2, NU asimetricul
 MEASUREMENT_CONTRACT_STATUS: str = "v1.0-DRAFT — NOT RATIFIED"   # Red Team continuă ratificarea în paralel
+
+# ── versiuni de contract/politici (intră în fingerprint; consumatorul care nu le înțelege eșuează EXPLICIT) ──
+N1_CONTRACT_VERSION: str = "n1-additive-raw-axes-v1"      # FAIL-2: is_compressed/is_displacement separate
+RAW_AXIS_SCHEMA_VERSION: str = "raw-axis-v1"
+ROUTER_VERSION: str = "router-v1"
+ELIGIBILITY_POLICY_VERSION: str = "eligibility-v1"
 
 # ── contractul TURNULUI (nivelurile N1-N4 + magistrala) ──
 LEVEL_CONTRACT_VERSION: str = "level-tower-leveloutput-v1"       # LevelOutput = Ok | Unavailable
