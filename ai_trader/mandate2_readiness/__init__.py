@@ -23,10 +23,11 @@ Original three deliverables, matching the CEO's own three sections:
 **CEO amendment, 2026-08-14 ("prevaleaza daca exista contradictie" -- the full integration spec for
 AFTER `VE_HANDOFF_PASS`, plus more no-artifact-needed primitives)**:
 4. `artifact_pin.py` -- `BrainArtifactPin`/`verify_artifact_pin`, the exact version/hash contract
-   (section 2, corrected 2026-08-14 from 8 to 10 fields once VE's own manifest delivery, commit
-   `296e3ac`, exposed that a single `source_commit` field can't mean both "the Red-Team-validated core"
-   AND "the package actually installed"). Nine of ten fields are pinned today; `manifest_schema_version`
-   stays `None` (deferred, not a wildcard) until a concrete value is supplied.
+   (section 2, corrected 2026-08-14 from 8 to 10 fields once VE's own manifest delivery first exposed
+   that a single `source_commit` field can't mean both "the Red-Team-validated core" AND "the package
+   actually installed"). All ten fields are now pinned (final `ARTIFACT_PIN_PASS`, delivered package
+   `source_commit="a1d2a6d"`, `manifest_schema_version="1.0"`) -- see that module's own docstring for
+   the full three-identity history.
 5. `event_identity.py` -- `EventIdentity`/`NodeTrace` (section 4), the minimum per-cycle and per-node
    trace fields, typed and validated ahead of any real wiring.
 6. `decision_provenance.py` -- `DecisionProvenance`/`verify_decision_provenance` (the `submit_candidate`
@@ -34,13 +35,20 @@ AFTER `VE_HANDOFF_PASS`, plus more no-artifact-needed primitives)**:
    `source == NEW_BRAIN_SOURCE` with a non-empty `trace_id`/`catalog_hash`/`configuration_fingerprint`
    passes -- a single-value allowlist, not a legacy blocklist, so every existing legacy candidate (none
    of which set this field) is rejected by construction, not by enumeration.
+7. `wheel_verification.py` -- `verify_wheel_hash`, the pre-install SHA-256/size/filename gate ("VERIFICI
+   SHA-256 INAINTE DE INSTALARE"). Standalone, no import of the wheel's contents -- read-and-hash only.
 
-**Mandate 2 status, 2026-08-14**: `VE_HANDOFF_PASS` has been issued by Red Team for `ve_brain 0.1.3`
-(`validated_core_commit=fbc0f20`, `source_commit=296e3ac`, Red Team report `46c462c`) -- the mandate is
-ACTIVE, no further CEO approval is needed to begin Phase A once the complete manifest arrives and
-`verify_artifact_pin` returns PASS. As of this writing, neither the `ve_brain` package nor its complete
-manifest has actually reached this environment (checked repeatedly: no package installed, no manifest
-file, no trace of any of the identity hashes above anywhere in this repo) -- Phase A has NOT started.
-The CEO checkpoint (`READY_FOR_LIVE_SHADOW_REVIEW`) remains required only before `LIVE_SHADOW` itself."""
+**Mandate 2 status, 2026-08-14 (ARTIFACT_PIN_PASS)**: the `ve_brain-0.1.3-py3-none-any.whl` wheel has been
+physically delivered, SHA-256- and size-verified in three independent locations (this session's own
+scratchpad plus two other sessions' scratchpads, all matching), installed into a clean venv, and its own
+`artifact_manifest("a1d2a6d")` (called with a real `git rev-parse HEAD`-derived `delivery_commit`, never a
+placeholder) returns all ten fields matching `CURRENT_PIN` exactly -- `verify_artifact_pin(CURRENT_PIN)`
+genuinely PASSES against the real installed package, independently reproduced in this environment (not
+merely trusted from Red Team's `RT-PIN-0001_ve_brain_wheel_a1d2a6d_PASS.md`, which was cross-read and
+corroborates every detail). This closes steps 1-2 of the CEO's 12-step post-install list. Steps 3-12
+(functional `range_fade`/`trend_pullback` proofs, N1-Router-EV-N6 integration, Risk Manager, Execution
+Adapter in SHADOW, legacy isolation via the atomic authority switch, the 20 skeleton tests going real, the
+full 25-test run, and the final `READY_FOR_LIVE_SHADOW_REVIEW` report) have not started. The CEO checkpoint
+remains required only before `LIVE_SHADOW` itself; `BROKER_ORDER_SUBMISSION` stays `DISABLED` throughout."""
 
 from __future__ import annotations

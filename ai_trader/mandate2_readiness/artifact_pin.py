@@ -1,29 +1,31 @@
-"""`BrainArtifactPin`/`verify_artifact_pin` -- CEO Mandate 2, pin correction 2026-08-14: "Schema se
-extinde de la opt la zece campuri." VE's own manifest delivery (commit `296e3ac`) exposed a real
-ambiguity in the original 8-field pin: a single `source_commit` field cannot mean BOTH "the core Red
-Team validated" AND "the package actually installed" -- VE's delivered package (`296e3ac`) legitimately
-differs from the validated core (`fbc0f20`) it contains. The schema now separates them explicitly.
+"""`BrainArtifactPin`/`verify_artifact_pin` -- CEO Mandate 2, 2026-08-14. Schema is ten fields (corrected
+from eight once VE's manifest delivery, first at commit `296e3ac`, exposed that a single `source_commit`
+field cannot mean BOTH "the core Red Team validated" AND "the package actually installed"). The
+FINAL, ratified delivered package is commit `a1d2a6d` (`296e3ac` and an intermediate `d7d8912` were both
+superseded -- `a1d2a6d` is the exact commit whose wheel Red Team's own `RT-PIN-0001_ve_brain_wheel
+_a1d2a6d_PASS.md` grants `ARTIFACT_PIN_PASS` for, independently re-verified in this environment: the
+wheel's SHA-256, `ai_quant_lab-wp5b`'s own `git rev-parse HEAD` at that commit, and the installed
+package's own `artifact_manifest("a1d2a6d")` all agree).
 
-**The three identities, not to be confused** (CEO's own framing): `validated_core_commit` (`fbc0f20`,
-what Red Team's `VE_HANDOFF_PASS`/`ARTIFACT_MANIFEST_PASS` actually validated), `source_commit`
-(`296e3ac`, the package this codebase actually installs, which CONTAINS `fbc0f20`'s changes), and a
-third, separate measurement-source identity (`dc28e4a`) that belongs to `measurement_contract_version`'s
-own provenance, not to this pin's ten fields directly.
+**The three identities, not to be confused** (CEO's own framing, corroborated by Red Team's own report):
+`validated_core_commit` (`fbc0f20`, what Red Team's `VE_HANDOFF_PASS` actually validated -- the decision
+core, byte-identical across every packaging revision), `source_commit` (`a1d2a6d`, the package this
+codebase actually installs -- packaging/manifest changes only, zero core-module diffs vs `fbc0f20`), and
+a third, separate measurement-source identity (`dc28e4a`, `version.SOURCE_COMMIT` inside the installed
+package) that belongs to `measurement_contract_version`'s own provenance, not to this pin's ten fields.
 
 **Every `observed` value here MUST come from calling the real, installed package's own
-`artifact_manifest()` function -- never copied into this codebase's source as a literal.** The ten
-`CURRENT_PIN` values below are the REFERENCE to compare against, supplied by the CEO; they are not
-stand-ins for what `artifact_manifest()` should return, and this module never calls that function itself
-(it doesn't exist here -- there is no `ve_brain` package installed in this environment as of this
-writing, confirmed by `pip list`, a repo-wide grep for every one of the identity hashes below, and a
-check for any `artifact_manifest` reference anywhere outside this package).
+`artifact_manifest(delivery_commit)` function -- never copied into this codebase's source as a literal.**
+`delivery_commit` is itself required, non-optional, and fail-closed (the installed package's own
+`DeliveryCommitRequiredError`, confirmed empirically: both `''` and `None` raise it, no placeholder) --
+supplied as the actual `git rev-parse HEAD` of the checkout the wheel was built from (`a1d2a6d`), never
+guessed. The ten `CURRENT_PIN` values below are the REFERENCE to compare `artifact_manifest()`'s return
+against; this module itself never calls that function (that happens at the actual installation site, not
+inside this pure-comparison module).
 
-**Nine of ten fields are now pinned** (`manifest_schema_version` is explicitly deferred -- the CEO's own
-wording, "valoarea verificata", names a concept without a concrete literal string; treated identically to
-every other not-yet-supplied field before it: `None`, fails closed, never a wildcard). Once a value is
-supplied, `CURRENT_PIN` gets it and that field starts actually discriminating; until then, every
-verification attempt still fails on that one field alone, which is correct -- an unstated expectation
-cannot be satisfied by any observed value, and cannot be treated as "one field doesn't matter"."""
+**All ten fields are now pinned.** `manifest_schema_version="1.0"` was the last one, supplied once the
+real installed package actually emitted it (previously deferred, correctly, per this module's own
+fail-closed discipline -- a concept named without a concrete literal never gets a guessed value)."""
 
 from __future__ import annotations
 
@@ -68,7 +70,7 @@ class BrainArtifactPin:
 
 CURRENT_PIN = BrainArtifactPin(
     package_version="0.1.3",
-    source_commit="296e3ac",
+    source_commit="a1d2a6d",
     validated_core_commit="fbc0f20",
     catalog_version="ve-canonical-catalog-v1",
     catalog_hash="37b95393df85dc2b",
@@ -76,11 +78,11 @@ CURRENT_PIN = BrainArtifactPin(
     n1_contract_version="n1-additive-raw-axes-v1",
     router_version="router-v1",
     ev_engine_version="ev-core@bdd15e5+ev-adapter-v1",
-    # manifest_schema_version left None -- see BrainArtifactPin.manifest_schema_version's own docstring.
+    manifest_schema_version="1.0",
 )
-"""Nine of ten fields pinned (CEO, 2026-08-14 correction). `manifest_schema_version` stays `None` --
-`verify_artifact_pin(CURRENT_PIN)` will refuse EVERY observed manifest on that one field alone until the
-CEO/VE supply a concrete value for it, by design."""
+"""All ten fields pinned (CEO, 2026-08-14, final ARTIFACT_PIN_PASS). Independently re-verified against
+the REAL installed package in this environment -- `verify_artifact_pin(CURRENT_PIN)` genuinely PASSES
+against `artifact_manifest("a1d2a6d")`'s actual return value, not merely against a hand-typed fixture."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
