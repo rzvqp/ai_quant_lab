@@ -47,6 +47,23 @@ Nu le ating (asertează semantică de manifest, a Statisticianului). Trebuie act
 BASE `spread_price` 0,05 → componenta R3 = **0,05**; STRESS 0,08 → **0,08**. NU 0,10/0,16.
 **Verificat: NU am stampat nicăieri componente duble (0,10/0,16).** `verify_m1.py` folosește 0,20/0,30/0,50 = ilustrație cost/R pe M1 (context diferit, nu componenta R3). În schema R11, `cost_model` e marcat owner Statistician/VE (fără valori stampate de mine). Nimic de corectat.
 
+## D-4 — se aplică separat la marginea dreaptă a FIECĂRUIA din cele patru
+
+Populația celor 4 blocuri expune **patru margini drepte distincte**, unde D-4 (censurarea trade-urilor deschise la graniță) se aplică separat, nu una singură la capătul global:
+
+| Bloc | index range | marginea dreaptă (ultima bară) |
+|---|---|---|
+| 1 (bear) | (0, 52403) | **2013-09-27** |
+| 2 (bull) | (52403, 105254) | **2018-04-06** |
+| 3 (correction) | (105254, 130491) | **2021-09-03** |
+| 4 (overlap discovery) | (130491, 197094) | **2025-10-12** |
+
+Contractul le expune ca 4 ranges în `official_blocks` → orice consumator (inclusiv logica D-4 a Statisticianului) vede 4 granițe drepte, nu una. *D-4 în sine (marcare CENSORED) e a Statisticianului; datoria mea e doar să expun corect cele 4 granițe — făcut.*
+
+## Confirmare transmitere test stale H1 → Statistician
+
+Testul `tests/test_loader_holdout_boundary.py::test_h1_from_m15_v2_awaits_path_reconciliation` (aserta că fișierul H1_from_M15_v2 NU există, dar a fost reconciliat la calea canonică în manifest v2.4.2/2.7.48) e **TRANSMIS** Statisticianului — semnalat în `edge_research/MEASUREMENT_CONTRACT_R8_R9.md` (commit `750bd58`, pushed) + acest raport. E al lui (asertează semantică de manifest); eu nu-l ating. Confirmat transmis.
+
 ## Reconfirmare mandate anterioare (neschimbate)
 - **Census motoare:** două motoare de decizie cu populație proprie divergentă (Flow A `mtf.load_mtf` whole-file; `relevance12m_perstrategy.py` scratch) → Statistician.
 - **Tripwire:** `assert_population_matches_manifest` apelat fail-closed pe FIECARE `_common.load` (acum verifică tiling-ul celor 4 blocuri).
