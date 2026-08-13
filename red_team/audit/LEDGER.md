@@ -2188,4 +2188,43 @@
                changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [51], prev_hash E50.
   entry_hash:  E50
+
+[51] 2026-08-13
+  prev_hash:   E50
+  event:       VERDICT
+  dc_id:       DC-VE-BRAIN-HANDOFF
+  freeze_hash: c111d82 (ve_brain v0.1.1 — FAIL-1/2/4 + A5 corrective)
+  battery_ver: RT-HANDOFF-0002
+  reviewer:    Red Team
+  detail:      VE HANDOFF RE-VALIDATION of ve_brain v0.1.1 @c111d82 (25 tests, mypy clean). VERDICT =
+               **VE_HANDOFF_CONDITIONAL** -> Mandate 2 still NOT authorized; PASS blocked on ONE fix.
+               7 of 8 points pass + the real N1->Router->EligibilityDecision->EV->N6 path is demonstrably
+               correct. GENUINELY FIXED: FAIL-1 real path (decide_n6 requires mandatory eligibility; None ->
+               MISSING_OR_INVALID_ELIGIBILITY; wrong-id forgeries f1_03-06 rejected; my test_f1_01 bug now
+               NO_TRADE); FAIL-2 (applicable_regimes(RawAxes) reads is_compressed & is_displacement
+               INDEPENDENTLY -> fixture is_compressed=T&is_displacement=T&structure=range -> {COMPRESSION,
+               BREAKOUT_TRANSITION} BOTH; volatility_state used NOWHERE for eligibility -> partition
+               eliminated not relocated); A5 (data_identity incl block_end -> same-strat/block_end 100!=200
+               differ; S1!=S3; engine/contract/n1/router/eligibility separate dims); POINT 7 closed BY
+               ABSENCE (no internal comparison/leaderboard/aggregation; only sorted=intra-decision regime
+               names, max/min=EV math, compare_decisions never called internally -> VE's claim TRUE); FAIL-4
+               re-pin acknowledged.
+               ★ ONE BLOCKING DEFECT (4th instance of the bypassable-guard pattern the CEO asked me to hunt):
+               N6's range block is NOT structural. n6.py::decide_n6 step 2 fires only on TRUE_RANGE_NOT_
+               IDENTIFIABLE in eligibility.reason_codes (forgeable), and _eligibility_valid checks only IDENTITY
+               consistency. DecisionRequest carries NO requires_true_range/strategy_family, so N6 cannot detect
+               range independently. FIXTURE: range strat + FORGED EligibilityDecision(matching ids, eligible=True,
+               reason_codes=('ROUTER_ELIGIBLE',)) -> decide_n6 -> decision=TRADE, TRADE_VALIDATED_EDGE. REQUIRED:
+               NO_TRADE/TRUE_RANGE_NOT_IDENTIFIABLE. VE's 25 tests miss it: every F1 eligibility comes from the
+               REAL router (never eligible=True for range); forgery tests use WRONG ids only. This is exactly the
+               CEO's named surface ('strategy_family/requires_true_range poate fi omis'). FIX: carry+bind
+               requires_true_range on the candidate; N6 fail-closed independent of the eligibility object; add the
+               matching-id forged-eligible test. Owner VE.
+               (e) TENTH DIVERGENCE: hunting THIS artifact surfaced the forged-eligibility STRUCTURAL hole, not a
+               new numeric measurement divergence (those live on the canonical_evaluator track); no tenth
+               manufactured. PASS requires all 8; point 2 (a RANGE strategy cannot TRADE) violable -> CONDITIONAL.
+               A2 + canonical contract remain independent. FREEZE HOLDS. Red Team modified no engine, ran no data,
+               changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [52], prev_hash E51.
+  entry_hash:  E51
 ```
