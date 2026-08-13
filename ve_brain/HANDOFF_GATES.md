@@ -87,6 +87,26 @@ candidați / agregare de rapoarte — pachetul PRODUCE decizii, nu le compară. 
 `compare_decisions()` (guard care RIDICĂ). Comparația directă a câmpurilor de amprentă e interzisă prin contract.
 Calea COMPLETĂ e demonstrată de `test_full_path_n1_router_eligibility_ev_n6` (nu componente izolate).
 
+## MANIFESTUL DE PIN (handoff tehnic — cele 8 câmpuri, machine-readable + imuabil)
+Emis DIRECT din constantele vii ale artefactului prin `ve_brain.artifact_manifest()`; livrat ca `ARTIFACT_MANIFEST.json`.
+AI Trader îl citește din pachetul INSTALAT (nu copiază din conversație, nu inventează placeholder-e, nu folosește None).
+
+| câmp | sursă | valoare (release fbc0f20) |
+|---|---|---|
+| package_version | `VE_BRAIN_VERSION` | `0.1.3` |
+| source_commit | identitatea git PASS-uită (raport RT 46c462c) | `fbc0f20` |
+| catalog_version | `CANONICAL_CATALOG_VERSION` | `ve-canonical-catalog-v1` |
+| catalog_hash | `CANONICAL_CATALOG_HASH` | `37b95393df85dc2b` |
+| measurement_contract_version | `MEASUREMENT_CONTRACT_VERSION` | `canonical-evaluator-v2.7.66-A2` |
+| n1_contract_version | `N1_CONTRACT_VERSION` | `n1-additive-raw-axes-v1` |
+| router_version | `ROUTER_VERSION` | `router-v1` |
+| ev_engine_version | `ENGINE_VERSION` | `ev-core@bdd15e5+ev-adapter-v1` |
+
+Comisul care adaugă emitentul NU modifică niciuna dintre cele 8 valori: `git diff fbc0f20` atinge doar
+`manifest.py` / `ARTIFACT_MANIFEST.json` / `tests/test_manifest.py` / exportul din `__init__.py` — value-source-urile
+(`version.py`, `_canonical_catalog.py`, `ev_engine.py`) sunt neatinse. `test_manifest.py` (3 teste) leagă JSON-ul de
+emitentul viu. Versiunea rămâne 0.1.3 tocmai ca manifestul să corespundă EXACT artefactului PASS-uit.
+
 ## DESCHIS — de ce VE nu poate cere PASS
 - Contractul de măsurare `canonical-evaluator-v2.7.66-A2` = **NOT RATIFIED** (Red Team, suită extinsă).
 - **BREAKOUT_TRANSITION** e proxy per-bară; versiunea strictă cere un detector de tranziție 2-stări peste N1
