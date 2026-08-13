@@ -36,9 +36,19 @@ cele sub varianta asimetrică (run_hash diferit prin CODE_VERSION).
   mai pot face o strategie de range să tranzacționeze. Proprietatea strategiei = `StrategyRegistry` CANONIC (cheie
   `(id,version)`, imuabil); N6 recalculează `strategy_policy_fingerprint` din registru și citește `requires_true_range`
   din registru → blocaj `TRUE_RANGE_NOT_IDENTIFIABLE` INDEPENDENT de reason_codes/is_eligible/EV.
-- **Auto-atac (addendum CEO) — registrul nu e injectabil:** `decide_n6` NU mai primește `registry` ca parametru;
-  sursa canonică e un singleton INTERN populat doar prin `register_canonical_strategy`. Un registru mincinos al
-  consumatorului nu are cale către N6. Fault → `STRATEGY_REGISTRY_UNAVAILABLE` fail-closed. Închis înainte de predare.
+- **Auto-atac 1 — registrul nu e injectabil ca parametru:** `decide_n6` NU primește `registry`; sursa canonică e
+  internă. (Istoric — vezi a 6-a suprafață, care mută sursa în catalogul sigilat încorporat.)
+
+### A 6-a suprafață închisă (verdict Red Team) — catalog CANONIC intern SIGILAT (0.1.3)
+- **Otrăvirea catalogului eliminată:** `register_canonical_strategy` era public + registru gol + primul câștigă →
+  consumatorul putea înregistra `range_fade` ca TREND ⇒ TRADE. Remediu: catalog ÎNCORPORAT (`_canonical_catalog.py`,
+  literali, fără sursă externă), SIGILAT la import, versionat + amprentă de integritate. N6 rezolvă proprietatea de
+  aici și REFUZĂ un catalog nesigilat (`CATALOG_NOT_SEALED`) sau cu versiune/amprentă nepotrivită
+  (`CATALOG_VERSION_MISMATCH`).
+- **Suprafața de producție curățată:** `register_canonical_strategy`/`reset_canonical_registry`/
+  `set_registry_available` ELIMINATE din `ve_brain`; hook-urile de fault izolate în `ve_brain.testing`, blocate până la
+  `unlock_for_tests(TOKEN)`, neimportate de producție. AI Trader poate CERE o strategie aprobată; nu poate defini
+  conținutul ei. `mypy --strict` clean (12 fișiere); 26 teste (c01–c21 + FAIL-2 + A5 + fixture-uri canonice).
 
 ### DESCHIS (blochează VE_HANDOFF_PASS)
 - Contractul de măsurare NOT RATIFIED (Red Team, suita extinsă). BREAKOUT_TRANSITION strict cere un detector de

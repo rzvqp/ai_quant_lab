@@ -30,6 +30,9 @@ class ReasonCode(Enum):
     UNKNOWN_STRATEGY = "UNKNOWN_STRATEGY"                       # (strategy_id, version) absent din registrul canonic
     STRATEGY_POLICY_MISMATCH = "STRATEGY_POLICY_MISMATCH"       # candidatul/eligibilitatea contrazic definiția canonică
     STRATEGY_REGISTRY_UNAVAILABLE = "STRATEGY_REGISTRY_UNAVAILABLE"  # registrul canonic indisponibil → fail-closed
+    # ── a 6-a suprafață: catalog CANONIC intern SIGILAT (consumatorul nu-i poate defini conținutul) ──
+    CATALOG_NOT_SEALED = "CATALOG_NOT_SEALED"                   # registru nesigilat → N6 refuză (fail-closed)
+    CATALOG_VERSION_MISMATCH = "CATALOG_VERSION_MISMATCH"       # versiune/amprentă de catalog nepotrivită cu cea aprobată
 
     # ── execuție invalidă (din evaluatorul canonic; A2 geometrie strictă) ──
     INVALID_EXECUTION = "INVALID_EXECUTION"                      # risc≤0 OR recompensă≤0 (gap/open pe stop sau target)

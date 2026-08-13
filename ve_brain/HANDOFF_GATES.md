@@ -11,7 +11,7 @@ strictă + routing per regim) sunt OBLIGATORII înainte de PASS — ambele aplic
 | 3 | documentul contractelor publice | ✅ | `CONTRACTS.md` |
 | 4 | schema fiecărui input/output | ✅ | `contracts.py` + `validate_request/response` |
 | 5 | adaptorul EV vechi → contract actual | ✅ | `ev_engine.py` (matricea de adaptare + adaptor) |
-| 6 | teste unitare + contractuale | ✅ | `tests/test_router_and_n6.py` (20: c01–c16 + FAIL-2 + A5) + evaluator (24) |
+| 6 | teste unitare + contractuale | ✅ | `tests/test_router_and_n6.py` (c01–c21 + FAIL-2 + A5) + evaluator (24) |
 | 7 | fixture-uri canonice cu rezultate cunoscute | ✅ | `tests/test_fixtures_canonical.py` (EV known-outcome, calea completă) |
 | 8 | lista dependențelor | ✅ | `DEPENDENCIES.md` (stdlib-only) |
 | 9 | instalare/upgrade/rollback | ✅ | `INSTALL.md` |
@@ -56,11 +56,31 @@ A patra instanță a tiparului: `EligibilityDecision` + candidatul pot fi constr
 |---|---|---|
 | proprietatea strategiei = sursă CANONICĂ, nu câmp al candidatului | `StrategyRegistry` (cheie `(id,version)`, imuabil per cheie); N6 rezolvă contractul din registru și recalculează `strategy_policy_fingerprint`; nepotrivire → `STRATEGY_POLICY_MISMATCH` | `test_c04/c05/c11/c13` |
 | `requires_true_range` citit DIN REGISTRU, blocaj INDEPENDENT de reason_codes/is_eligible/EV | `decide_n6` aplică `TRUE_RANGE_NOT_IDENTIFIABLE` înainte de eligibilitate/EV, pe baza `allowed_regimes` din registru | `test_c01/c02/c03/c12` (fixture DECISIV: range, matching IDs, is_eligible=TRUE, EV+ → NO_TRADE) |
-| **AUTO-ATAC: registrul însuși nu poate fi injectat de consumator** | `decide_n6(candidate, eligibility)` NU mai ia `registry` ca parametru; sursa canonică e un **singleton INTERN**, populat DOAR prin `register_canonical_strategy` (imuabil); amprenta de politică se RECALCULEAZĂ din registrul intern, nu se citește din obiectul primit; fault `set_registry_available(False)` → `STRATEGY_REGISTRY_UNAVAILABLE` fail-closed | `test_c16` (registru mincinos al consumatorului NU ajunge la N6 → `STRATEGY_POLICY_MISMATCH`) |
+| **AUTO-ATAC 1: registrul nu poate fi injectat ca parametru** | `decide_n6(candidate, eligibility)` NU ia `registry` ca parametru; sursa canonică e internă; amprenta de politică se RECALCULEAZĂ din ea, nu se citește din obiectul primit | (istoric — vezi mai jos) |
 
-Suprafața PUBLICĂ nu poate preda un registru fals. Monkeypatch-ul globalelor private e în afara contractului (orice
-bibliotecă e monkeypatch-abilă — consumatorul s-ar sabota singur, nu ocolește API-ul). Închis ÎNAINTE de predare, nu
-lăsat pentru Red Team.
+## A 6-A SUPRAFAȚĂ (verdict Red Team, închisă înainte de predare): consumatorul nu poate DEFINI conținutul catalogului
+Reproductibil: `register_canonical_strategy` era PUBLIC, registrul pornea GOL, primul care înregistra câștiga →
+consumatorul înregistra `range_fade` ca TREND ⇒ `requires_true_range=False`, candidatul oglindea politica otrăvită ⇒
+niciun `STRATEGY_POLICY_MISMATCH` ⇒ TRADE. `test_c16` prindea doar un candidat mincinos contra unui registru CORECT,
+nu otrăvirea registrului însuși.
+
+| închidere | mecanism | dovadă |
+|---|---|---|
+| **catalog CANONIC intern, versionat + SIGILAT** | `_canonical_catalog.py` — definiții APROBATE ca literali Python încorporați (fără fișier/mediu/rețea); `SealedRegistry.build()` sigilează + amprentă de integritate `content_hash`; N6 rezolvă proprietatea de aici | `test_c02/c03/c17`, `test_c21` (integritate) |
+| **N6 REFUZĂ catalog nesigilat / versiune nepotrivită** | `decide_n6` verifică `sealed` + `catalog_version`/`content_hash` contra constantelor APROBATE încorporate → `CATALOG_NOT_SEALED` / `CATALOG_VERSION_MISMATCH` | `test_c18`, `test_c19` |
+| **API-ul de definire arbitrară ELIMINAT din producție** | `register_canonical_strategy` / `reset_canonical_registry` / `set_registry_available` NU mai există pe `ve_brain`; hook-urile de fault sunt izolate în `ve_brain.testing`, blocate până la `unlock_for_tests(TOKEN)`; niciun modul de producție nu le importă | `test_c16` (absente din API + `decide_n6` are 2 params), `test_c20` (blocate fără unlock) |
+
+**Principiul:** AI Trader NU poate defini `strategy_family`·`allowed_regimes`·`requires_true_range`·`validation_status`·
+`strategy_policy_fingerprint` pentru o strategie canonică. Poate CERE încărcarea unei strategii aprobate; nu poate
+decide conținutul ei. Proces corect: Alpha propune → validare → SHADOW_ELIGIBLE/RATIFIED → catalog versionat → VE
+verifică → deployment controlat → catalog sigilat → N6 consumă.
+
+**Auto-atac pe catalogul sigilat (cele 4 întrebări):** sigiliul nu se poate rupe+re-aplica în producție (`build()`
+sigilat / `unsealed()` doar test-only gate-uit; un swap monkeypatch e prins de verificarea versiune+amprentă);
+versiunea aprobată = constante încorporate (forjarea = rescrierea modulului, în afara contractului); entrypoint-ul de
+test e izolat, gate-uit și neimportat de producție (`test_c20`); catalogul nu se încarcă din nicio sursă controlată de
+consumator (literali, verificat: fără open/env/rețea). Monkeypatch-ul globalelor private rămâne în afara contractului.
+Închis ÎNAINTE de predare, nu lăsat pentru Red Team.
 
 **Inventarul căilor de comparație (A5):** în artefactul `ve_brain` NU există cod intern de leaderboard / selecție de
 candidați / agregare de rapoarte — pachetul PRODUCE decizii, nu le compară. UNICA cale de comparație e

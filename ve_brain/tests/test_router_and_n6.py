@@ -1,7 +1,6 @@
-"""Testele post VE_HANDOFF_CONDITIONAL: registrul CANONIC e INTERN artefactului VE (nu parametru), proprietatea
-strategiei nu poate fi suprascrisă de obiectele consumatorului ȘI nici registrul nu poate fi injectat de consumator.
-FAIL-2 axe brute + A5 + calea COMPLETĂ. Testul component izolat e insuficient. (Cele 25 end-to-end rămân la AI Trader.)
-"""
+"""Teste post-CONDITIONAL: catalogul CANONIC e INTERN, ÎNCORPORAT și SIGILAT — consumatorul nu-i poate defini
+conținutul (a 6-a suprafață). Include fixture-ul DECISIV de otrăvire, refuzul pe catalog nesigilat/versiune greșită,
+izolarea entrypoint-ului de test, FAIL-2 axe brute și A5. (Cele 25 end-to-end rămân la AI Trader.)"""
 
 from __future__ import annotations
 
@@ -15,23 +14,31 @@ _PKG = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _PKG not in sys.path:
     sys.path.insert(0, _PKG)
 
+import ve_brain.testing as vt  # noqa: E402
 from ve_brain import (  # noqa: E402
-    DecisionRequest, DuplicateStrategyPolicyError, ELIGIBILITY_POLICY_VERSION, EligibilityDecision, HierarchyLevel,
-    INPUT_CONTRACT_ID, N1_CONTRACT_VERSION, NonComparableDecisionError, OutcomeCell, ProbabilityInputs,
-    RAW_AXIS_SCHEMA_VERSION, ROUTER_VERSION, RawAxes, RoutingMode, SemanticRegime, StrategyRegistry, StrategyRouter,
-    ValidationStatus, applicable_regimes, compare_decisions, decide_n6, regime_fingerprint,
-    register_canonical_strategy, reset_canonical_registry, set_registry_available, strategy_policy_fingerprint,
+    CANONICAL_CATALOG_HASH, CANONICAL_CATALOG_VERSION, CANONICAL_STRATEGIES, DecisionRequest,
+    DuplicateStrategyPolicyError, ELIGIBILITY_POLICY_VERSION, EligibilityDecision, HierarchyLevel, INPUT_CONTRACT_ID,
+    N1_CONTRACT_VERSION, NonComparableDecisionError, OutcomeCell, ProbabilityInputs, RAW_AXIS_SCHEMA_VERSION,
+    ROUTER_VERSION, RawAxes, RoutingMode, SealedRegistry, SemanticRegime, StrategyRouter, ValidationStatus,
+    applicable_regimes, catalog_hash, compare_decisions, decide_n6, regime_fingerprint, strategy_policy_fingerprint,
 )
 from ve_brain.regime_routing import StrategyContract as SC  # noqa: E402
 
 MC = "canonical-evaluator-v2.7.66-A2"
 AXES = RawAxes(is_compressed=False, is_displacement=False, direction="up", structure="strong")   # {TREND_UP}
 
+_CANON = {c.strategy_id: c for c in CANONICAL_STRATEGIES}
+TREND = _CANON["trend_pullback"]        # RATIFIED, TREND_UP
+RANGE = _CANON["range_fade"]            # RATIFIED, allowed=(RANGE,)  → requires_true_range
+SHADOW = _CANON["trend_shadow"]         # SHADOW_ELIGIBLE, TREND_UP
+EXPER = _CANON["trend_experimental"]    # EXPERIMENTAL, TREND_UP
+
 
 @pytest.fixture(autouse=True)
-def _clean_registry() -> None:
-    """Registrul canonic e INTERN + global → resetat înaintea FIECĂRUI test pentru izolare."""
-    reset_canonical_registry()
+def _canonical_catalog() -> None:
+    """Catalogul canonic e global → deblochează hook-urile de test și repune catalogul de PRODUCȚIE la fiecare test."""
+    vt.unlock_for_tests("VE-BRAIN-TEST-ONLY")
+    vt.restore_production_catalog()
 
 
 def _sc(sid: str, *, family: str, allowed: tuple[SemanticRegime, ...],
@@ -41,16 +48,6 @@ def _sc(sid: str, *, family: str, allowed: tuple[SemanticRegime, ...],
               required_N3_map=True, required_N4_confirmation=None, entry_rule="e", invalidation_rule="i",
               exit_rule="x", holding_window=10, validation_status=status, strategy_version="v1",
               measurement_contract_version=MC)
-
-
-TREND_SC = _sc("trend", family="TREND_PULLBACK", allowed=(SemanticRegime.TREND_UP,))
-RANGE_SC = _sc("range_fade", family="RANGE_MEAN_REVERSION", allowed=(SemanticRegime.RANGE,))
-
-
-def _register(*contracts: SC) -> None:
-    """Populează registrul CANONIC intern prin API-ul controlat (unica sursă pe care N6 o citește)."""
-    for c in contracts:
-        register_canonical_strategy(c)
 
 
 def _prob() -> ProbabilityInputs:
@@ -89,122 +86,143 @@ def _forged_elig(sid: str, *, event: str = "ev1", regime_fp: str | None = None) 
                                matched_regimes=("TREND_UP",), reason_codes=("ROUTER_ELIGIBLE",))
 
 
-# ═══ FIXTURE-UL DECISIV + testele de registru ═══
+# ═══ FIXTURE-UL DECISIV + testele de catalog canonic ═══
 def test_c02_range_forged_eligibility_matching_ids_no_trade() -> None:
-    # DECISIV: range strategy, TOATE ID-urile potrivite, is_eligible=TRUE, reason=ROUTER_ELIGIBLE, EV pozitiv
-    _register(RANGE_SC)
-    cand = _candidate(RANGE_SC)                                  # policy_fp POTRIVIT cu registrul
-    forged = _forged_elig("range_fade")
-    r = decide_n6(cand, forged)
+    # DECISIV: range strategy din CATALOGUL SIGILAT, TOATE ID-urile potrivite, is_eligible=TRUE, EV pozitiv
+    cand = _candidate(RANGE)                                     # policy_fp POTRIVIT cu catalogul
+    r = decide_n6(cand, _forged_elig("range_fade"))
     assert r.decision == "NO_TRADE" and r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
 
 
 def test_c01_range_real_eligibility_no_trade() -> None:
-    _register(RANGE_SC)
-    r = decide_n6(_candidate(RANGE_SC), _real_elig(RANGE_SC))
+    r = decide_n6(_candidate(RANGE), _real_elig(RANGE))
     assert r.decision == "NO_TRADE" and r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
 
 
-def test_c03_range_requires_false_ignored_reads_registry() -> None:
-    # N6 citește requires_true_range DIN REGISTRU (candidatul n-are cum să-l falsifice — nu e câmp autoritar)
-    _register(RANGE_SC)
-    r = decide_n6(_candidate(RANGE_SC), _forged_elig("range_fade"))
+def test_c03_range_block_reads_catalog_not_candidate() -> None:
+    r = decide_n6(_candidate(RANGE), _forged_elig("range_fade"))
     assert r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
 
 
 def test_c04_range_presented_as_trend_no_trade() -> None:
-    _register(RANGE_SC)
-    cand = _candidate(RANGE_SC, family="TREND_PULLBACK")         # familie FALSĂ
+    cand = _candidate(RANGE, family="TREND_PULLBACK")            # familie FALSĂ vs catalog
     r = decide_n6(cand, _forged_elig("range_fade"))
     assert r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
 
 
 def test_c05_forged_policy_fingerprint_no_trade() -> None:
-    _register(TREND_SC)
-    r = decide_n6(_candidate(TREND_SC, policy_fp="FORGED"), _real_elig(TREND_SC))
+    r = decide_n6(_candidate(TREND, policy_fp="FORGED"), _real_elig(TREND))
     assert r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
 
 
 def test_c06_unknown_strategy_no_trade() -> None:
-    _register(TREND_SC)                                          # range_fade absent
-    r = decide_n6(_candidate(RANGE_SC), _forged_elig("range_fade"))
+    ghost = _sc("ghost", family="F", allowed=(SemanticRegime.TREND_UP,))   # absent din catalog
+    r = decide_n6(_candidate(ghost), _forged_elig("ghost"))
     assert r.reason_codes == ("UNKNOWN_STRATEGY",)
 
 
 def test_c07_unknown_version_no_trade() -> None:
-    _register(TREND_SC)
-    r = decide_n6(_candidate(TREND_SC, version="v2"), _real_elig(TREND_SC))   # versiune inexistentă
+    r = decide_n6(_candidate(TREND, version="v2"), _real_elig(TREND))   # versiune inexistentă în catalog
     assert r.reason_codes == ("UNKNOWN_STRATEGY",)
 
 
-def test_c08_registry_unavailable_no_trade() -> None:
-    _register(TREND_SC)
-    set_registry_available(False)                               # fault: registry indisponibil → fail-closed
-    r = decide_n6(_candidate(TREND_SC), _real_elig(TREND_SC))
-    assert r.reason_codes == ("STRATEGY_REGISTRY_UNAVAILABLE",)
-
-
-def test_c09_trend_real_eligibility_positive_ev_trades() -> None:
-    _register(TREND_SC)
-    r = decide_n6(_candidate(TREND_SC), _real_elig(TREND_SC))
+def test_c08_trend_real_eligibility_positive_ev_trades() -> None:
+    r = decide_n6(_candidate(TREND), _real_elig(TREND))
     assert r.decision == "TRADE" and r.reason_codes == ("TRADE_VALIDATED_EDGE",)
 
 
+def test_c09_shadow_status_from_catalog_is_shadow_candidate() -> None:
+    r = decide_n6(_candidate(SHADOW), _real_elig(SHADOW))
+    assert r.decision == "SHADOW_TRADE_CANDIDATE" and r.reason_codes == ("SHADOW_CANDIDATE_EV_POSITIVE",)
+
+
 def test_c10_trend_eligibility_for_another_event_no_trade() -> None:
-    _register(TREND_SC)
-    r = decide_n6(_candidate(TREND_SC, event="ev1"), _real_elig(TREND_SC, event="ev2"))
+    r = decide_n6(_candidate(TREND, event="ev1"), _real_elig(TREND, event="ev2"))
     assert r.reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
 
 
-def test_c11_metadata_changed_after_router_no_trade() -> None:
-    exp = _sc("s", family="F", allowed=(SemanticRegime.TREND_UP,), status=ValidationStatus.EXPERIMENTAL)
-    _register(exp)
-    cand = _candidate(exp, status=ValidationStatus.RATIFIED)     # status FALSIFICAT în candidat
-    r = decide_n6(cand, _forged_elig("s"))
+def test_c11_status_falsified_in_candidate_no_trade() -> None:
+    cand = _candidate(EXPER, status=ValidationStatus.RATIFIED)   # status FALSIFICAT (catalog: EXPERIMENTAL)
+    r = decide_n6(cand, _forged_elig("trend_experimental"))
     assert r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
 
 
-def test_c12_direct_call_manual_objects_no_bypass() -> None:
-    _register(RANGE_SC)
-    r = decide_n6(_candidate(RANGE_SC), _forged_elig("range_fade"))   # obiecte construite manual
-    assert r.decision == "NO_TRADE" and r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
+def test_c12_experimental_status_from_catalog_no_eligible() -> None:
+    # candidat ONEST pentru experimental (status potrivit) → oprit de statutul CANONIC, nu de mismatch
+    r = decide_n6(_candidate(EXPER), _forged_elig("trend_experimental"))
+    assert r.reason_codes == ("NO_ELIGIBLE_STRATEGY",)
 
 
-def test_c13_same_id_version_cannot_have_two_policies() -> None:
-    reg = StrategyRegistry(); reg.register(TREND_SC)
+def test_c13_catalog_rejects_two_policies_same_key() -> None:
+    dup = (_sc("x", family="A", allowed=(SemanticRegime.TREND_UP,)),
+           _sc("x", family="B", allowed=(SemanticRegime.COMPRESSION,)))
     with pytest.raises(DuplicateStrategyPolicyError):
-        reg.register(_sc("trend", family="DIFFERENT", allowed=(SemanticRegime.COMPRESSION,)))
+        SealedRegistry.build(dup, "v")
 
 
 def test_c14_full_real_path_still_works() -> None:
-    _register(TREND_SC)
-    router = StrategyRouter((TREND_SC,))
+    router = StrategyRouter((TREND,))
     elig = router.eligible(AXES, "ev1", "LONG", 1.0)[0]
-    r = decide_n6(_candidate(TREND_SC, event="ev1"), elig)
+    r = decide_n6(_candidate(TREND, event="ev1"), elig)
     assert r.decision == "TRADE"
 
 
 def test_c15_old_consumer_fails_explicitly() -> None:
-    _register(TREND_SC)
-    r = decide_n6(_candidate(TREND_SC, n1v="n1-OLD"), _real_elig(TREND_SC))
+    r = decide_n6(_candidate(TREND, n1v="n1-OLD"), _real_elig(TREND))
     assert r.decision == "NO_TRADE" and r.reason_codes == ("INCOMPATIBLE_N1_CONTRACT",)
 
 
-def test_c16_consumer_cannot_inject_a_false_registry() -> None:
-    # AUTO-ATAC (addendum CEO): consumatorul construiește un registru MINCINOS (range declarat ca trend ⇒
-    # requires_true_range=False). Nu există CALE prin care acel registru ajunge la N6 — decide_n6 NU ia registry.
-    # Sursa canonică rămâne cea internă (range_fade e range), deci blocajul de range ține.
-    _register(RANGE_SC)                                          # adevărul canonic: range_fade E range
-    liar = StrategyRegistry()
-    liar.register(_sc("range_fade", family="TREND_PULLBACK", allowed=(SemanticRegime.TREND_UP,)))  # minte
-    # candidatul poartă amprenta registrului MINCINOS al consumatorului (încearcă să pară potrivit)
-    fake_c = liar.resolve("range_fade", "v1")
-    assert fake_c is not None
-    cand = _candidate(RANGE_SC, family=fake_c.strategy_family,
-                      policy_fp=strategy_policy_fingerprint(fake_c))
+# ═══ A 6-A SUPRAFAȚĂ: catalogul nu poate fi otrăvit / injectat / desigilat ═══
+def test_c16_no_arbitrary_definition_api_on_production_surface() -> None:
+    import ve_brain
+    # API-ul de definire arbitrară + resetarea + marcarea de indisponibilitate NU sunt pe suprafața de producție
+    for gone in ("register_canonical_strategy", "reset_canonical_registry", "set_registry_available"):
+        assert not hasattr(ve_brain, gone), f"{gone} nu trebuie exportat de ve_brain"
+    # decide_n6 NU ia registry ca parametru (2 argumente)
+    import inspect
+    assert list(inspect.signature(decide_n6).parameters) == ["candidate", "eligibility"]
+
+
+def test_c17_consumer_cannot_poison_range_as_trend() -> None:
+    # Atacul din verdict: încearcă să faci range_fade să treacă ca TREND. Nu există API de înregistrare, iar
+    # catalogul SIGILAT păstrează definiția adevărată (range_fade = RANGE). Un candidat care oglindește politica
+    # OTRĂVITĂ (fake trend) are altă amprentă decât cea canonică ⇒ mismatch; nu poate ajunge la TRADE.
+    poison = _sc("range_fade", family="TREND_PULLBACK", allowed=(SemanticRegime.TREND_UP,))  # definiție mincinoasă
+    cand = _candidate(RANGE, family=poison.strategy_family, policy_fp=strategy_policy_fingerprint(poison))
     r = decide_n6(cand, _forged_elig("range_fade"))
-    # amprenta consumatorului NU se potrivește cu cea canonică ⇒ mismatch (registrul fals nu poate ajunge la N6)
     assert r.decision == "NO_TRADE" and r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
+
+
+def test_c18_unsealed_catalog_is_refused() -> None:
+    vt.install_unsealed_catalog(CANONICAL_STRATEGIES, CANONICAL_CATALOG_VERSION)   # fault: nesigilat
+    r = decide_n6(_candidate(TREND), _real_elig(TREND))
+    assert r.decision == "NO_TRADE" and r.reason_codes == ("CATALOG_NOT_SEALED",)
+
+
+def test_c19_version_mismatch_is_refused() -> None:
+    vt.force_version_mismatch("some-other-version")               # fault: versiune aprobată nepotrivită
+    r = decide_n6(_candidate(TREND), _real_elig(TREND))
+    assert r.decision == "NO_TRADE" and r.reason_codes == ("CATALOG_VERSION_MISMATCH",)
+
+
+def test_c20_test_hooks_blocked_without_unlock() -> None:
+    # entrypoint-ul de test e blocat până la unlock explicit → importul accidental din producție nu mutează nimic
+    import importlib
+    import ve_brain.testing as t
+    importlib.reload(t)                                           # revine în starea BLOCATĂ (fără unlock)
+    with pytest.raises(RuntimeError):
+        t.install_unsealed_catalog(CANONICAL_STRATEGIES, "v")
+    with pytest.raises(RuntimeError):
+        t.unlock_for_tests("WRONG-TOKEN")
+
+
+def test_c21_embedded_catalog_integrity() -> None:
+    # amprenta încorporată = amprenta recalculată; N6 folosește exact versiunea/amprenta aprobată
+    import ve_brain.n6 as n6
+    assert CANONICAL_CATALOG_HASH == catalog_hash(CANONICAL_STRATEGIES)
+    assert n6._APPROVED_CATALOG_VERSION == CANONICAL_CATALOG_VERSION
+    assert n6._APPROVED_CATALOG_HASH == CANONICAL_CATALOG_HASH
+    assert n6._SEALED_CATALOG.sealed is True
 
 
 # ═══ FAIL-2 — axele brute independente ═══
@@ -232,9 +250,8 @@ def test_f2_multiaxial_compression_and_trend() -> None:
 
 # ═══ A5 — amprentă + comparabilitate ═══
 def test_a5_fingerprint_by_data_and_compare_raises() -> None:
-    _register(TREND_SC)
-    xau = decide_n6(_candidate(TREND_SC), _real_elig(TREND_SC))
-    es = decide_n6(dataclasses.replace(_candidate(TREND_SC), symbol="ES"), _real_elig(TREND_SC))
+    xau = decide_n6(_candidate(TREND), _real_elig(TREND))
+    es = decide_n6(dataclasses.replace(_candidate(TREND), symbol="ES"), _real_elig(TREND))
     assert xau.configuration_fingerprint != es.configuration_fingerprint
     with pytest.raises(NonComparableDecisionError):
         compare_decisions(xau.configuration_fingerprint, es.configuration_fingerprint)

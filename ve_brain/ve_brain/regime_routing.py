@@ -158,6 +158,53 @@ class StrategyRegistry:
         return tuple(c for c in self._by_key.values() if can_execute_real(c.validation_status))
 
 
+def catalog_hash(strategies: tuple[StrategyContract, ...]) -> str:
+    """Amprentă de INTEGRITATE peste conținutul catalogului (id, version, politică). Independentă de ordine."""
+    entries = sorted(
+        [c.strategy_id, c.strategy_version, strategy_policy_fingerprint(c)] for c in strategies)
+    return hashlib.sha256(json.dumps(entries, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+
+@dataclass(frozen=True)
+class SealedRegistry:
+    """Catalogul CANONIC — SIGILAT la construcție, IMUABIL, VERSIONAT, cu amprentă de integritate. NU are `register`:
+    conținutul e fixat de `build()`. N6 refuză un registru nesigilat sau cu versiune/amprentă nepotrivită.
+    Consumatorul (AI Trader) NU poate defini conținutul — poate doar CERE încărcarea catalogului aprobat."""
+
+    _by_key: dict[tuple[str, str], StrategyContract]
+    catalog_version: str
+    content_hash: str
+    sealed: bool = True
+
+    @classmethod
+    def build(cls, strategies: tuple[StrategyContract, ...], catalog_version: str) -> SealedRegistry:
+        by_key: dict[tuple[str, str], StrategyContract] = {}
+        for c in strategies:
+            key = (c.strategy_id, c.strategy_version)
+            existing = by_key.get(key)
+            if existing is not None and strategy_policy_fingerprint(existing) != strategy_policy_fingerprint(c):
+                raise DuplicateStrategyPolicyError(
+                    f"{key} are deja o politică diferită în catalog — o pereche (id, version) e unică")
+            by_key[key] = c
+        return cls(_by_key=dict(by_key), catalog_version=catalog_version, content_hash=catalog_hash(strategies),
+                   sealed=True)
+
+    @classmethod
+    def unsealed(cls, strategies: tuple[StrategyContract, ...], catalog_version: str) -> SealedRegistry:
+        """DOAR pentru fault-injection în teste: un registru marcat NESIGILAT (N6 îl refuză)."""
+        base = cls.build(strategies, catalog_version)
+        return cls(_by_key=base._by_key, catalog_version=catalog_version, content_hash=base.content_hash, sealed=False)
+
+    def resolve(self, strategy_id: str, strategy_version: str) -> StrategyContract | None:
+        return self._by_key.get((strategy_id, strategy_version))
+
+    def all(self) -> tuple[StrategyContract, ...]:
+        return tuple(self._by_key.values())
+
+    def n6_eligible(self) -> tuple[StrategyContract, ...]:
+        return tuple(c for c in self._by_key.values() if can_reach_n6(c.validation_status))
+
+
 class RoutingMode(Enum):
     NORMAL = "NORMAL"
     BREAKOUT_WATCH = "BREAKOUT_WATCH"

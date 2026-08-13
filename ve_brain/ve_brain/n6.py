@@ -1,14 +1,17 @@
-"""NODUL DE DECIZIE N6 — poarta finală. REVALIDEAZĂ contra REGISTRULUI CANONIC (VE_HANDOFF_CONDITIONAL).
+"""NODUL DE DECIZIE N6 — poarta finală. REVALIDEAZĂ contra CATALOGULUI CANONIC INTERN SIGILAT.
 
-Defectul închis (a 4-a instanță a tiparului): EligibilityDecision + StrategyCandidate pot fi construite MANUAL cu
-ID-uri POTRIVITE, is_eligible=TRUE, reason_codes=ROUTER_ELIGIBLE. Un bool `requires_true_range` ar fi la rândul lui
-falsificabil. Remediul: proprietatea strategiei se rezolvă din `StrategyRegistry` controlat de artefactul VE; N6
-citește `requires_true_range` DIN REGISTRU și aplică blocajul de range INDEPENDENT de reason_codes/is_eligible/EV.
-Câmpurile copiate în candidat/eligibilitate sunt pentru AUDIT, NU autoritative.
+Defectul închis (tiparul, a 4-a→6-a instanță): (4) EligibilityDecision + candidat construite manual cu ID-uri
+potrivite; (5) registrul pasat ca parametru injectabil; (6) registrul definit de consumator (register public + gol +
+primul câștigă) ⇒ range_fade înregistrat ca trend ⇒ requires_true_range=False ⇒ TRADE. Un bool ar fi falsificabil,
+un registru parametrizat ar fi injectabil, un registru populabil de consumator ar fi otrăvibil. Remediul final:
+catalogul canonic e ÎNCORPORAT în artefact (literali, fără sursă externă), SIGILAT la import, VERSIONAT + cu amprentă
+de integritate. N6 rezolvă proprietatea de aici, citește `requires_true_range` DIN CATALOG și aplică blocajul de range
+INDEPENDENT de reason_codes/is_eligible/EV; REFUZĂ un catalog nesigilat sau cu versiune/amprentă nepotrivită. Câmpurile
+copiate în candidat/eligibilitate sunt pentru AUDIT, NU autoritative.
 
-ORDINEA: StrategyRegistry (definiție canonică) → N1 → Router → EligibilityDecision → StrategyCandidate → EV → N6
-REVALIDEAZĂ contra registrului → Risk Manager. N6 NU tratează `eligibility.reason_codes` ca sursă de adevăr pentru
-dependența de range.
+ORDINEA: catalog SIGILAT (definiție canonică) → N1 → Router → EligibilityDecision → candidat → EV → N6 REVALIDEAZĂ
+contra catalogului → Risk Manager. Consumatorul poate CERE încărcarea unei strategii aprobate; nu poate defini
+conținutul ei.
 """
 
 from __future__ import annotations
@@ -19,7 +22,8 @@ from .contracts import (DecisionRequest, DecisionResponse, OUTPUT_CONTRACT_ID, S
 from .ev_engine import ENGINE_VERSION, run_ev
 from .fingerprint import data_identity, decision_fingerprint
 from .reason_codes import ReasonCode
-from .regime_routing import (EligibilityDecision, StrategyRegistry, requires_true_range,
+from ._canonical_catalog import CANONICAL_CATALOG_HASH, CANONICAL_CATALOG_VERSION, build_sealed_catalog
+from .regime_routing import (EligibilityDecision, SealedRegistry, requires_true_range,
                             strategy_policy_fingerprint)
 from .strategy_contract import can_execute_real, can_reach_n6
 from .version import N1_CONTRACT_VERSION, ROUTER_VERSION
@@ -59,38 +63,21 @@ def _eligibility_matches(candidate: DecisionRequest, elig: EligibilityDecision) 
             and elig.router_version == ROUTER_VERSION and elig.eligible is True)
 
 
-# ── REGISTRUL CANONIC e INTERN artefactului VE — NU un parametru al consumatorului. Auto-atac (a 4-a instanță a
-# tiparului + addendum CEO): dacă N6 ar primi `registry` ca parametru, consumatorul ar injecta UN REGISTRU FALS
-# (range înregistrat ca trend ⇒ requires_true_range=False ⇒ TRADE). Închis: `decide_n6` NU ia registrul; îl citește
-# din singleton-ul intern, populat DOAR prin API-ul controlat `register_canonical_strategy`. Suprafața PUBLICĂ nu
-# poate injecta un registru fals. (Monkeypatch-ul globalelor private e în afara contractului — orice bibliotecă e
-# monkeypatch-abilă; consumatorul s-ar sabota singur, nu ocolește API-ul.) ──
-_CANONICAL_REGISTRY: StrategyRegistry = StrategyRegistry()
-_REGISTRY_AVAILABLE: bool = True
-
-
-def register_canonical_strategy(contract: object) -> None:
-    """UNICA cale de populare a registrului canonic (controlată de VE). Imuabilă per (id, version)."""
-    from .regime_routing import StrategyContract as _SC
-    assert isinstance(contract, _SC)
-    _CANONICAL_REGISTRY.register(contract)
-
-
-def reset_canonical_registry() -> None:
-    """Doar pentru teste/reîncărcare controlată."""
-    global _CANONICAL_REGISTRY, _REGISTRY_AVAILABLE
-    _CANONICAL_REGISTRY = StrategyRegistry()
-    _REGISTRY_AVAILABLE = True
-
-
-def set_registry_available(flag: bool) -> None:
-    """Injectare de fault (registry indisponibil) — fail-closed."""
-    global _REGISTRY_AVAILABLE
-    _REGISTRY_AVAILABLE = flag
+# ── CATALOGUL CANONIC e INTERN, ÎNCORPORAT și SIGILAT — NU un parametru, NU populabil de consumator. Auto-atac (a
+# 6-a suprafață, verdict Red Team): dacă proprietatea se citește din registru dar CONȚINUTUL registrului e definit de
+# consumator (register public + registru gol + primul care înregistrează câștigă), atunci consumatorul înregistrează
+# range_fade ca TREND ⇒ requires_true_range=False, candidatul oglindește politica otrăvită ⇒ niciun mismatch ⇒ TRADE.
+# Închis: catalogul e ÎNCORPORAT (literali Python, fără sursă externă), construit și SIGILAT la import; N6 REFUZĂ un
+# registru nesigilat sau cu versiune/amprentă nepotrivită cu cea APROBATĂ. API-ul de definire arbitrară nu mai există
+# pe suprafața de producție — hook-urile de test sunt izolate în `ve_brain.testing`, blocate până la un unlock explicit.
+# (Monkeypatch-ul globalelor private rămâne în afara contractului — orice bibliotecă e monkeypatch-abilă.) ──
+_SEALED_CATALOG: SealedRegistry = build_sealed_catalog()
+_APPROVED_CATALOG_VERSION: str = CANONICAL_CATALOG_VERSION
+_APPROVED_CATALOG_HASH: str = CANONICAL_CATALOG_HASH
 
 
 def decide_n6(candidate: DecisionRequest, eligibility: EligibilityDecision | None) -> DecisionResponse:
-    """Poarta N6. Registrul canonic e INTERN (nu parametru). `eligibility` = OBLIGATORIE (de la Router). Determinist."""
+    """Poarta N6. Catalogul canonic e INTERN + SIGILAT (nu parametru, nu populabil). `eligibility` = OBLIGATORIE."""
     fp = _fingerprint(candidate)
 
     # 0) contractul N1 — consumatorul care nu înțelege axele brute eșuează EXPLICIT
@@ -103,11 +90,14 @@ def decide_n6(candidate: DecisionRequest, eligibility: EligibilityDecision | Non
     except SchemaValidationError:
         return _response(candidate, "NO_TRADE", ReasonCode.SCHEMA_VALIDATION_FAILED, fp)
 
-    # 2) REGISTRUL CANONIC INTERN — fail-closed dacă e indisponibil
-    if not _REGISTRY_AVAILABLE:
-        return _response(candidate, "NO_TRADE", ReasonCode.STRATEGY_REGISTRY_UNAVAILABLE, fp)
-    # 3) rezolvă strategia (id, version); absentă ⇒ UNKNOWN_STRATEGY
-    canon = _CANONICAL_REGISTRY.resolve(candidate.strategy_id, candidate.strategy_version)
+    # 2) CATALOGUL CANONIC — REFUZĂ un registru nesigilat sau cu versiune/amprentă nepotrivită (fail-closed)
+    if not _SEALED_CATALOG.sealed:
+        return _response(candidate, "NO_TRADE", ReasonCode.CATALOG_NOT_SEALED, fp)
+    if (_SEALED_CATALOG.catalog_version != _APPROVED_CATALOG_VERSION
+            or _SEALED_CATALOG.content_hash != _APPROVED_CATALOG_HASH):
+        return _response(candidate, "NO_TRADE", ReasonCode.CATALOG_VERSION_MISMATCH, fp)
+    # 3) rezolvă strategia (id, version) DIN CATALOGUL SIGILAT; absentă ⇒ UNKNOWN_STRATEGY
+    canon = _SEALED_CATALOG.resolve(candidate.strategy_id, candidate.strategy_version)
     if canon is None:
         return _response(candidate, "NO_TRADE", ReasonCode.UNKNOWN_STRATEGY, fp)
     # 4) recalculează + verifică amprenta de politică + metadatele; nepotrivire ⇒ STRATEGY_POLICY_MISMATCH
