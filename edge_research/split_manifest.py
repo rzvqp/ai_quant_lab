@@ -123,9 +123,16 @@ def segmentation_plan(manifest: dict[str, Any], tf: str) -> dict[str, list[tuple
     `discovery` is what the loader may deliver (the union of the per-segment discovery halves, or the
     single global discovery_range for M15). `quarantine` is the union of every embargo band -- per
     segment: the LEADING gap [segment_start, discovery_start), the intra_segment_embargo, and the
-    TRAILING gap [sealed_end, segment_end); or the single embargo_range for M15. Everything the caller
-    then finds outside both sets is SEALED by default (fully-sealed segments, the M15_v2 overlap and
-    post-M15 tail, an unlabeled recent tail, etc.) -- never delivered."""
+    TRAILING gap [sealed_end, segment_end); or the single embargo_range for M15.
+
+    An `overlap_with_<SRC>` entry is NOT sealed by default: its rule says it INHERITS <SRC>'s
+    discovery/embargo/sealed classification VERBATIM, so its portions are intersected against
+    <SRC>'s own ranges and contribute to `discovery` and `quarantine` accordingly. This function
+    previously sealed the whole overlap by omission, which CONTRADICTED that rule -- the manifest
+    then asserted two different classifications for one interval (Statistician, v2.7.70).
+
+    Everything the caller then finds outside both sets is SEALED by default (fully-sealed
+    segments, the post-M15 tail, an unlabeled recent tail, etc.) -- never delivered."""
     entry = _validated_entry(manifest, tf)
     discovery: list[tuple[int, int]] = []
     quarantine: list[tuple[int, int]] = []
@@ -153,6 +160,23 @@ def segmentation_plan(manifest: dict[str, Any], tf: str) -> dict[str, list[tuple
     else:
         raise ManifestError(
             f"{tf} is VALIDATED but has neither regime_segments nor a discovery_range -- fail-closed")
+
+    # ---- overlap_with_<SRC>: honour the INHERITANCE rule instead of sealing by omission ----
+    for key, ov in entry.items():
+        if not (isinstance(key, str) and key.startswith("overlap_with_") and isinstance(ov, dict)):
+            continue
+        src = key[len("overlap_with_"):]
+        ov_s, ov_e = _range(ov.get("range"), f"{tf} {key} range")
+        src_entry = _validated_entry(manifest, src)
+        for band, bucket in (("discovery_range", discovery), ("embargo_range", quarantine)):
+            r = src_entry.get(band)
+            if not isinstance(r, dict):
+                continue                      # source lacks this band -> that portion stays SEALED
+            b_s, b_e = _range(r, f"{src} {band}")
+            lo, hi = max(ov_s, b_s), min(ov_e, b_e)
+            if lo < hi:
+                bucket.append((lo, hi))       # the INTERSECTION only -- never the whole overlap
+
     return {"discovery": discovery, "quarantine": quarantine}
 
 
