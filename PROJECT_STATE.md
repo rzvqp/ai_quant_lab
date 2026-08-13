@@ -17,7 +17,9 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - SHA-256 `edd208ad6c2c943b17a11759ece1fdf5ab2a7025779b191764c383ecce987d11`.
   - `validated_core_commit fbc0f20` · `manifest_schema_version 1.0`.
 - **AI Trader** `f4859a5` steps 1–4 · `7d836b3` steps 5–12 partial, **20/25 tests**.
-- **ve_tower** `c22c876` — foundation, **13 modules vendored byte-identical**.
+- **ve_tower 0.1.0** — official N1–N4 phenomena provider, built from `2317cda`.
+  - Wheel `ve_tower-0.1.0-py3-none-any.whl`, SHA-256 `e5457561604c2bd70ddca98a56b9a4c9ed8a60af95d9048237c768cef08b2db5`.
+  - 13 modules vendored **byte-identical**; versioned N3/N4 contracts (`tower-n3/n4-request-v1`) + adapters; 23 tests; empty-venv install verified. Awaiting **TOWER_HANDOFF** (Red Team).
 
 ## CORRECTIONS (found during Mandate A inventory)
 - `zone_map` head is **`5888978`** (re-anchored), not `11ae360`.
@@ -31,9 +33,9 @@ This document is the Git-persisted snapshot of program status; the conversation 
 - **5 live processes untouched, zero trades**.
 
 ## NEXT
-- **VE**: N3/N4 contracts · full test matrix · the wheel (Mandate A steps 4–7).
-- **Red Team**: TOWER_HANDOFF, then PASS_FOR_LIVE_SHADOW.
-- **AI Trader**: the 5 tests · the 3,237 suite · `probability_inputs`.
+- **VE**: Mandate A steps 4–7 **DELIVERED** (ve_tower wheel `e5457561…`). Awaiting Red Team verdict.
+- **Red Team**: **TOWER_HANDOFF** on ve_tower, then PASS_FOR_LIVE_SHADOW.
+- **AI Trader**: wire ve_tower → N3/N4 flags · the 5 tests · the 3,237 suite · `probability_inputs`.
 
 ## GUARDS (standing)
 - **GARD 1** `GATED_BY_CTO=True` in `code/run_production_pipeline.py:57` — never commit it flipped.
