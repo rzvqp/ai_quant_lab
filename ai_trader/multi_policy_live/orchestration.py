@@ -39,6 +39,7 @@ from typing import Any, Callable
 from ai_trader.execution_orchestrator.types import CandidateSignal, OrchestratorConfig
 from ai_trader.live_signal_source.types import LiveCandidate
 from ai_trader.mt5_demo_execution.gating import GatedDemoOutcome, send_after_dry_run_gate
+from ai_trader.new_brain_bridge.authority import DecisionAuthority
 from ai_trader.multi_policy_live.vendor_bridge import DemoSignal, DemoTradeResult, simulate_demo_trade
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.orchestration import DemoDepsBundle, DemoDepsFactory, RealizedFillReader
@@ -84,6 +85,7 @@ class PolicyOrchestrator:
         mechanical_close: MechanicalCloseCheck = day_boundary_mechanical_close,
         target_price_for_audit: Callable[[PendingPdhPdlTrade, BarArrays], float] | None = None,
         slippage_log: SlippageLog | None = None,
+        authority_check: Callable[[], DecisionAuthority] | None = None,
     ) -> None:
         """`target_price_for_audit`, if given, OVERRIDES `pending.target_price` when building the
         post-hoc `DemoSignal` -- for a policy with no real price target (CAND-0009), this supplies a
@@ -92,7 +94,11 @@ class PolicyOrchestrator:
 
         `slippage_log=None` (the default) is byte-for-byte the pre-Mandate-8 behavior -- see
         `pdh_pdl_demo.orchestration.PdhPdlOrchestrator`'s own identical parameter for the full rationale;
-        this class's `submit_candidate`/`_close_pending` mirror that wiring exactly."""
+        this class's `submit_candidate`/`_close_pending` mirror that wiring exactly.
+
+        `authority_check=None` (the default) is likewise byte-for-byte the pre-Mandate-2 behavior -- see
+        `PdhPdlOrchestrator`'s own identical parameter for the full rationale. No entrypoint passes a
+        non-`None` value yet (CEO, 2026-08-14: "construieste codul, NU comuta inca")."""
         self._symbol = symbol
         self._tick_size = tick_size
         self._magic_number = magic_number
@@ -102,6 +108,7 @@ class PolicyOrchestrator:
         self._mechanical_close = mechanical_close
         self._target_price_for_audit = target_price_for_audit
         self._slippage_log = slippage_log
+        self._authority_check = authority_check
         self._pending: PendingPdhPdlTrade | None = None
 
     @property
@@ -115,6 +122,13 @@ class PolicyOrchestrator:
     def submit_candidate(
         self, candidate: LiveCandidate, trigger: PdhPdlTrigger, market_context: dict[str, Any],
     ) -> GatedDemoOutcome | None:
+        if self._authority_check is not None and self._authority_check() is DecisionAuthority.NEW_BRAIN:
+            self._audit.record(PdhPdlAuditEntry(
+                symbol=self._symbol, as_of=candidate.as_of, kind=PdhPdlAuditKind.LEGACY_SHADOW_TELEMETRY,
+                detail={"reason_code": "NEW_BRAIN_AUTHORITY_ACTIVE", "touch_idx": trigger.touch_idx},
+            ))
+            return None
+
         if self._pending is not None and not self._pending.closed:
             self._audit.record(PdhPdlAuditEntry(
                 symbol=self._symbol, as_of=candidate.as_of, kind=PdhPdlAuditKind.NO_TRADE,

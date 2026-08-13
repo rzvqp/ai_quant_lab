@@ -40,6 +40,7 @@ from ai_trader.execution_orchestrator.types import (
 )
 from ai_trader.live_signal_source.types import LiveCandidate
 from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
+from ai_trader.new_brain_bridge.authority import DecisionAuthority
 from ai_trader.mt5_demo_execution.gating import GatedDemoOutcome, send_after_dry_run_gate
 from ai_trader.mt5_demo_execution.types import SafetyGuardReport
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
@@ -81,17 +82,29 @@ class PdhPdlOrchestrator:
         self, symbol: str, tick_size: float, deps_factory: DemoDepsFactory,
         fill_reader: RealizedFillReader, audit_journal: PdhPdlAuditJournal,
         slippage_log: SlippageLog | None = None,
+        authority_check: Callable[[], DecisionAuthority] | None = None,
     ) -> None:
         """`slippage_log=None` (the default) is byte-for-byte the pre-Mandate-8 behavior -- no existing
         caller or test needs to know about it. When given, `submit_candidate`/`_close_pending` additionally
         persist each leg's REALIZED slippage (see `slippage.py`'s own module docstring); nothing about the
-        existing trading/audit behavior changes either way."""
+        existing trading/audit behavior changes either way.
+
+        `authority_check=None` (the default) is likewise byte-for-byte the pre-Mandate-2 behavior --
+        `submit_candidate` proceeds exactly as it always has, unconditionally. Mandate 2, section 4 (CEO,
+        2026-08-14): when given, `submit_candidate` calls it FRESH on every invocation (never cached) and,
+        if it returns `DecisionAuthority.NEW_BRAIN`, records `LEGACY_SHADOW_TELEMETRY` and returns `None`
+        WITHOUT ever calling `send_after_dry_run_gate` -- this orchestrator still recognizes and reports,
+        but no longer produces the authoritative decision, calls Risk Manager, calls the Execution
+        Adapter, or reaches the broker. No entrypoint passes a non-`None` value yet (CEO, 2026-08-14:
+        "construieste codul, NU comuta inca") -- this parameter existing changes nothing about the 5 live
+        processes' current behavior until an entrypoint is deliberately updated to pass one."""
         self._symbol = symbol
         self._tick_size = tick_size
         self._deps_factory = deps_factory
         self._fill_reader = fill_reader
         self._audit = audit_journal
         self._slippage_log = slippage_log
+        self._authority_check = authority_check
         self._pending: PendingPdhPdlTrade | None = None
 
     @property
@@ -101,6 +114,13 @@ class PdhPdlOrchestrator:
     def submit_candidate(
         self, candidate: LiveCandidate, trigger: PdhPdlTrigger, market_context: dict[str, Any],
     ) -> GatedDemoOutcome | None:
+        if self._authority_check is not None and self._authority_check() is DecisionAuthority.NEW_BRAIN:
+            self._audit.record(PdhPdlAuditEntry(
+                symbol=self._symbol, as_of=candidate.as_of, kind=PdhPdlAuditKind.LEGACY_SHADOW_TELEMETRY,
+                detail={"reason_code": "NEW_BRAIN_AUTHORITY_ACTIVE", "touch_idx": trigger.touch_idx},
+            ))
+            return None
+
         if self._pending is not None and not self._pending.closed:
             self._audit.record(PdhPdlAuditEntry(
                 symbol=self._symbol, as_of=candidate.as_of, kind=PdhPdlAuditKind.NO_TRADE,

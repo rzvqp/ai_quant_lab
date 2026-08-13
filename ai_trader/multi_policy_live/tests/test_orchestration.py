@@ -20,6 +20,7 @@ from ai_trader.mt5_demo_execution.safety import verify_safety_guards
 from ai_trader.mt5_demo_execution.tests._fixtures import AS_OF, FakeMT5DemoGateway
 from ai_trader.mt5_demo_execution.types import MT5DemoConfig
 from ai_trader.multi_policy_live.orchestration import BarArrays, DemoDepsBundle, PolicyOrchestrator, day_boundary_mechanical_close
+from ai_trader.new_brain_bridge.authority import DecisionAuthority
 from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.recognition_rule import PdhPdlTrigger
@@ -353,3 +354,44 @@ def test_target_price_for_audit_hook_overrides_and_flags_sentinel(tmp_path: Path
     assert len(calls) == 1
     result = [e for e in journal.entries if e.kind is PdhPdlAuditKind.AUDIT_RESULT][0]
     assert result.detail["target_price_is_sentinel"] is True
+
+
+# -- Mandate 2, section 4 (CEO, 2026-08-14): the LEGACY_SHADOW_TELEMETRY demotion hook -- same property
+# `pdh_pdl_demo/tests/test_orchestration.py` proves for `PdhPdlOrchestrator`, verified independently
+# here since `PolicyOrchestrator` is a separate class, not a byte-for-byte copy-paste trust. --
+
+def test_new_brain_authority_skips_the_gate_entirely_and_records_legacy_shadow_telemetry(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path, entry_fill_price=108.05)
+    orch = PolicyOrchestrator(
+        SYMBOL, TICK_SIZE, MAGIC_NUMBER, lambda c, t: bundle, fill_reader, journal,
+        authority_check=lambda: DecisionAuthority.NEW_BRAIN,
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    outcome = orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert outcome is None
+    assert orch.pending is None
+    kinds = [e.kind for e in journal.entries]
+    assert kinds == [PdhPdlAuditKind.LEGACY_SHADOW_TELEMETRY]
+    assert journal.entries[0].detail["reason_code"] == "NEW_BRAIN_AUTHORITY_ACTIVE"
+
+
+def test_legacy_authority_explicit_still_uses_the_real_gate_unchanged(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path, entry_fill_price=108.05)
+    orch = PolicyOrchestrator(
+        SYMBOL, TICK_SIZE, MAGIC_NUMBER, lambda c, t: bundle, fill_reader, journal,
+        authority_check=lambda: DecisionAuthority.LEGACY,
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    outcome = orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert outcome is not None and outcome.sent is True
+    assert orch.pending is not None

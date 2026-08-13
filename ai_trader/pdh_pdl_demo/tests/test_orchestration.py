@@ -16,6 +16,7 @@ from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
 from ai_trader.mt5_demo_execution.safety import verify_safety_guards
 from ai_trader.mt5_demo_execution.tests._fixtures import AS_OF, FakeMT5DemoGateway
 from ai_trader.mt5_demo_execution.types import MT5DemoConfig
+from ai_trader.new_brain_bridge.authority import DecisionAuthority
 from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.orchestration import DemoDepsBundle, PdhPdlOrchestrator
@@ -375,3 +376,75 @@ def test_audit_example_no_trade(tmp_path: Path) -> None:
     result = [e for e in journal.entries if e.kind is PdhPdlAuditKind.AUDIT_RESULT][0]
     assert result.detail["exit_reason"] == "no_trade"
     assert result.detail["net_R"] is None
+
+
+# -- Mandate 2, section 4 (CEO, 2026-08-14): the LEGACY_SHADOW_TELEMETRY demotion hook. `authority_check
+# =None` (every test above this section) is byte-for-byte the pre-Mandate-2 behavior; these tests prove
+# the NEW_BRAIN branch instead, using the exact same real demo-gate pipeline fixtures the ENTRY_SUBMITTED
+# test above already established as genuine (not a stub), so "the gate was never called" is a real,
+# checkable absence, not a mocked assumption. --
+
+def test_new_brain_authority_skips_the_gate_entirely_and_records_legacy_shadow_telemetry(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path, entry_fill_price=108.05)
+    orch = PdhPdlOrchestrator(
+        SYMBOL, TICK_SIZE, lambda c, t: bundle, fill_reader, journal,
+        authority_check=lambda: DecisionAuthority.NEW_BRAIN,
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    outcome = orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert outcome is None
+    assert orch.pending is None  # never entered a position -- never called the gate at all
+    kinds = [e.kind for e in journal.entries]
+    assert kinds == [PdhPdlAuditKind.LEGACY_SHADOW_TELEMETRY]
+    assert journal.entries[0].detail["reason_code"] == "NEW_BRAIN_AUTHORITY_ACTIVE"
+
+
+def test_legacy_authority_explicit_still_uses_the_real_gate_unchanged(tmp_path: Path) -> None:
+    """The `authority_check` callable itself returning `DecisionAuthority.LEGACY` (not just `None`) must
+    behave identically to `authority_check=None` -- proves the branch is genuinely conditional on the
+    VALUE returned, not merely on whether a callable was supplied."""
+    journal = PdhPdlAuditJournal()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path, entry_fill_price=108.05)
+    orch = PdhPdlOrchestrator(
+        SYMBOL, TICK_SIZE, lambda c, t: bundle, fill_reader, journal,
+        authority_check=lambda: DecisionAuthority.LEGACY,
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    outcome = orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert outcome is not None and outcome.sent is True
+    assert orch.pending is not None
+
+
+def test_authority_check_is_called_fresh_every_submit_not_cached(tmp_path: Path) -> None:
+    """Matches `PolicyControl`'s/the circuit breaker's own re-read-every-tick discipline -- a caller
+    whose authority flips between two submissions must see the flip immediately, never a stale value
+    cached from construction time."""
+    journal = PdhPdlAuditJournal()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path, entry_fill_price=108.05)
+    calls: list[DecisionAuthority] = [DecisionAuthority.LEGACY, DecisionAuthority.NEW_BRAIN]
+    orch = PdhPdlOrchestrator(
+        SYMBOL, TICK_SIZE, lambda c, t: bundle, fill_reader, journal, authority_check=lambda: calls.pop(0),
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger1 = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    first = orch.submit_candidate(candidate, trigger1, make_market_context())
+    assert first is not None and first.sent is True  # popped LEGACY first -- normal path
+
+    # already in a position, so the SECOND call would ordinarily hit ALREADY_IN_POSITION -- but the
+    # authority check must run BEFORE that check, per submit_candidate's own top-of-function ordering.
+    trigger2 = _trigger(direction=-1, touch_idx=25, stop=111.0, target=90.0, day_label=1_705_356_000)
+    second = orch.submit_candidate(candidate, trigger2, make_market_context())
+    assert second is None
+    kinds = [e.kind for e in journal.entries]
+    assert kinds[-1] == PdhPdlAuditKind.LEGACY_SHADOW_TELEMETRY

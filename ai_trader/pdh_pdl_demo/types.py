@@ -39,6 +39,11 @@ class PdhPdlAuditKind(str, Enum):
     ENTRY_REJECTED = "entry_rejected"
     POSITION_CLOSED = "position_closed"
     AUDIT_RESULT = "audit_result"
+    LEGACY_SHADOW_TELEMETRY = "legacy_shadow_telemetry"
+    """Mandate 2, section 4 (CEO, 2026-08-14): recorded instead of ever calling
+    `send_after_dry_run_gate` when `DecisionAuthority.NEW_BRAIN` is active -- this orchestrator still
+    recognizes and reports (telemetry), but no longer produces the authoritative decision, calls Risk
+    Manager, calls the Execution Adapter, or reaches the broker."""
 
 
 @dataclass(frozen=True, slots=True)
