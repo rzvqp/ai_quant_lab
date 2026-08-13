@@ -1,13 +1,18 @@
-"""MANIFESTUL ARTEFACTULUI — cele 8 câmpuri de PIN, machine-readable, emise DIRECT din artefact.
+"""MANIFESTUL ARTEFACTULUI — câmpurile de PIN, machine-readable, emise DIRECT din artefact, cu schemă VERSIONATĂ.
 
-AI Trader NU copiază valorile din conversație și NU inventează placeholder-e: apelează `artifact_manifest()` pe
-pachetul INSTALAT și obține cele 8 câmpuri din constantele vii ale artefactului. Verificarea de pin (`verify_artifact_pin`)
-compară manifestul cu artefactul căruia Red Team i-a acordat VE_HANDOFF_PASS.
+Cele TREI identități, care NU trebuie confundate într-un singur câmp:
+  measurement source        = dc28e4a   (sursa contractului de măsurare; `version.SOURCE_COMMIT`)
+  validated brain core       = fbc0f20   (nucleul verificat de Red Team, raport 46c462c)  → `validated_core_commit`
+  delivered package          = <HEAD>    (commitul EXACT din care AI Trader instalează pachetul) → `source_commit`
 
-`source_commit` = identitatea GIT a artefactului PASS-uit (raport Red Team 46c462c). Constantele de mai jos (7 câmpuri
-derivate) sunt citite din cod; commit-ul de release e înregistrat aici pentru că nu poate fi derivat din constante
-Python. Comisul care adaugă acest emitent NU modifică niciuna dintre cele 8 valori (verificabil: `git diff fbc0f20 HEAD`
-atinge doar fișiere de manifest) — deci manifestul corespunde EXACT release-ului fbc0f20.
+`validated_core_commit` e o constantă STABILĂ, cunoscută, încorporată. `source_commit` (pachetul livrat) NU poate fi un
+literal încorporat: un commit nu poate conține propriul hash. De aceea `artifact_manifest()` cere `delivery_commit`
+EXPLICIT — îl furnizează cel care instalează (AI Trader citește `git rev-parse HEAD` din checkout-ul din care instalează;
+nu îl inventează, îl citește din propria identitate git). Astfel `source_commit` e mereu EXACT commitul instalat, fără
+auto-referință și fără placeholder. Lipsa lui ⇒ fail-closed (nu None).
+
+`manifest_schema_version` fixează semantica acestor câmpuri ca IMUABILĂ și VERIFICABILĂ. Cele 8 valori derivate sunt
+byte-identice cu fbc0f20 (demonstrat: `git diff fbc0f20` atinge doar fișiere de manifest).
 """
 
 from __future__ import annotations
@@ -18,21 +23,35 @@ from .version import (
 )
 from ._canonical_catalog import CANONICAL_CATALOG_HASH, CANONICAL_CATALOG_VERSION
 
-# identitatea git a artefactului PASS-uit de Red Team (fbc0f20, raport 46c462c). NU alt commit.
-ARTIFACT_SOURCE_COMMIT: str = "fbc0f20"
+# versiunea schemei manifestului — pinează semantica celor 10 câmpuri (imuabilă + verificabilă)
+MANIFEST_SCHEMA_VERSION: str = "1.0"
 
-# ordinea + numele câmpurilor sunt contractul de pin cu AI Trader; toate 8 sunt OBLIGATORII, niciunul None.
+# nucleul brain VERIFICAT de Red Team (fbc0f20, raport 46c462c). Stabil, cunoscut, încorporat. ≠ pachetul livrat.
+VALIDATED_CORE_COMMIT: str = "fbc0f20"
+
+# ordinea + numele câmpurilor = contractul de pin cu AI Trader; toate 10 OBLIGATORII, niciunul None.
 MANIFEST_FIELDS: tuple[str, ...] = (
-    "package_version", "source_commit", "catalog_version", "catalog_hash",
-    "measurement_contract_version", "n1_contract_version", "router_version", "ev_engine_version",
+    "manifest_schema_version", "package_version", "source_commit", "validated_core_commit",
+    "catalog_version", "catalog_hash", "measurement_contract_version", "n1_contract_version",
+    "router_version", "ev_engine_version",
 )
 
 
-def artifact_manifest() -> dict[str, str]:
-    """Cele 8 câmpuri de pin, din constantele VII ale artefactului. Determinist, fără None, fără placeholder."""
+class DeliveryCommitRequiredError(ValueError):
+    """`source_commit` (pachetul livrat) trebuie furnizat EXPLICIT de instalator — fail-closed, niciun placeholder."""
+
+
+def artifact_manifest(delivery_commit: str) -> dict[str, str]:
+    """Cele 10 câmpuri de pin. `delivery_commit` = commitul EXACT din care se instalează pachetul (furnizat de
+    instalator, ex. `git rev-parse HEAD`). Restul din constantele VII ale artefactului. Determinist, fără None."""
+    if not isinstance(delivery_commit, str) or not delivery_commit.strip():
+        raise DeliveryCommitRequiredError(
+            "source_commit (delivery_commit) lipsă — furnizează commitul instalat; niciun placeholder/None")
     m: dict[str, str] = {
+        "manifest_schema_version": MANIFEST_SCHEMA_VERSION,
         "package_version": VE_BRAIN_VERSION,
-        "source_commit": ARTIFACT_SOURCE_COMMIT,
+        "source_commit": delivery_commit.strip(),
+        "validated_core_commit": VALIDATED_CORE_COMMIT,
         "catalog_version": CANONICAL_CATALOG_VERSION,
         "catalog_hash": CANONICAL_CATALOG_HASH,
         "measurement_contract_version": MEASUREMENT_CONTRACT_VERSION,
@@ -40,7 +59,6 @@ def artifact_manifest() -> dict[str, str]:
         "router_version": ROUTER_VERSION,
         "ev_engine_version": ENGINE_VERSION,
     }
-    # invariant: exact cele 8 câmpuri, toate ne-goale (fail-closed dacă o constantă ar lipsi)
     assert tuple(m.keys()) == MANIFEST_FIELDS, "manifest field set/order drift"
     assert all(isinstance(v, str) and v for v in m.values()), "manifest field gol/absent"
     return m

@@ -87,14 +87,23 @@ candidați / agregare de rapoarte — pachetul PRODUCE decizii, nu le compară. 
 `compare_decisions()` (guard care RIDICĂ). Comparația directă a câmpurilor de amprentă e interzisă prin contract.
 Calea COMPLETĂ e demonstrată de `test_full_path_n1_router_eligibility_ev_n6` (nu componente izolate).
 
-## MANIFESTUL DE PIN (handoff tehnic — cele 8 câmpuri, machine-readable + imuabil)
-Emis DIRECT din constantele vii ale artefactului prin `ve_brain.artifact_manifest()`; livrat ca `ARTIFACT_MANIFEST.json`.
-AI Trader îl citește din pachetul INSTALAT (nu copiază din conversație, nu inventează placeholder-e, nu folosește None).
+## MANIFESTUL DE PIN (handoff tehnic — schema v1.0, 10 câmpuri, machine-readable + imuabil)
+Emis DIRECT din constantele vii ale artefactului prin `ve_brain.artifact_manifest(delivery_commit)`; livrat ca
+`ARTIFACT_MANIFEST.json`. AI Trader îl obține din pachetul INSTALAT (nu copiază din conversație, nu inventează, nu None).
 
-| câmp | sursă | valoare (release fbc0f20) |
+**Cele TREI identități, SEPARATE (corecție de schemă — un câmp nu poate reprezenta două):**
+- `measurement source = dc28e4a` — sursa contractului de măsurare (`version.SOURCE_COMMIT`, câmp DIFERIT).
+- `validated_core_commit = fbc0f20` — nucleul brain verificat de Red Team (raport 46c462c). Constantă STABILĂ.
+- `source_commit = <delivery>` — commitul EXACT din care AI Trader instalează pachetul. Furnizat de instalator
+  (`git rev-parse HEAD` din propriul checkout) — un commit nu poate conține propriul hash, deci NU e literal încorporat;
+  `artifact_manifest()` îl cere EXPLICIT și eșuează închis dacă lipsește.
+
+| câmp | sursă | valoare |
 |---|---|---|
+| manifest_schema_version | `MANIFEST_SCHEMA_VERSION` | `1.0` |
 | package_version | `VE_BRAIN_VERSION` | `0.1.3` |
-| source_commit | identitatea git PASS-uită (raport RT 46c462c) | `fbc0f20` |
+| source_commit | `delivery_commit` (instalator) | commitul de livrare |
+| validated_core_commit | `VALIDATED_CORE_COMMIT` | `fbc0f20` |
 | catalog_version | `CANONICAL_CATALOG_VERSION` | `ve-canonical-catalog-v1` |
 | catalog_hash | `CANONICAL_CATALOG_HASH` | `37b95393df85dc2b` |
 | measurement_contract_version | `MEASUREMENT_CONTRACT_VERSION` | `canonical-evaluator-v2.7.66-A2` |
@@ -102,10 +111,11 @@ AI Trader îl citește din pachetul INSTALAT (nu copiază din conversație, nu i
 | router_version | `ROUTER_VERSION` | `router-v1` |
 | ev_engine_version | `ENGINE_VERSION` | `ev-core@bdd15e5+ev-adapter-v1` |
 
-Comisul care adaugă emitentul NU modifică niciuna dintre cele 8 valori: `git diff fbc0f20` atinge doar
-`manifest.py` / `ARTIFACT_MANIFEST.json` / `tests/test_manifest.py` / exportul din `__init__.py` — value-source-urile
-(`version.py`, `_canonical_catalog.py`, `ev_engine.py`) sunt neatinse. `test_manifest.py` (3 teste) leagă JSON-ul de
-emitentul viu. Versiunea rămâne 0.1.3 tocmai ca manifestul să corespundă EXACT artefactului PASS-uit.
+`manifest_schema_version` fixează semantica câmpurilor ca IMUABILĂ + VERIFICABILĂ. Cele 8 valori derivate rămân
+byte-identice cu fbc0f20: `git diff fbc0f20` atinge doar fișiere de manifest — `version.py`/`_canonical_catalog.py`/
+`ev_engine.py` neatinse. `test_manifest.py` (5 teste) demonstrează separarea celor 3 identități, fail-closed pe
+delivery_commit lipsă, și legarea JSON↔emitent. Versiunea rămâne 0.1.3 ca manifestul să corespundă EXACT nucleului
+PASS-uit.
 
 ## DESCHIS — de ce VE nu poate cere PASS
 - Contractul de măsurare `canonical-evaluator-v2.7.66-A2` = **NOT RATIFIED** (Red Team, suită extinsă).

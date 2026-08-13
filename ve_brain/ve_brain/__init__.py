@@ -33,7 +33,10 @@ from .fingerprint import (
     decision_fingerprint, data_identity, require_comparable, compare_decisions, NonComparableDecisionError,
 )
 from .n6 import decide_n6
-from .manifest import artifact_manifest, ARTIFACT_SOURCE_COMMIT, MANIFEST_FIELDS
+from .manifest import (
+    artifact_manifest, VALIDATED_CORE_COMMIT, MANIFEST_SCHEMA_VERSION, MANIFEST_FIELDS,
+    DeliveryCommitRequiredError,
+)
 
 __version__ = VE_BRAIN_VERSION
 
@@ -47,5 +50,6 @@ __all__ = [
     "EligibilityDecision", "n4_triggers_breakout", "run_ev", "ENGINE_VERSION", "EV_ENGINE_SOURCE_COMMIT",
     "requires_true_range", "strategy_policy_fingerprint", "DuplicateStrategyPolicyError", "decision_fingerprint", "require_comparable", "compare_decisions", "NonComparableDecisionError", "decide_n6",
     "CANONICAL_CATALOG_VERSION", "CANONICAL_CATALOG_HASH", "CANONICAL_STRATEGIES",
-    "artifact_manifest", "ARTIFACT_SOURCE_COMMIT", "MANIFEST_FIELDS",
+    "artifact_manifest", "VALIDATED_CORE_COMMIT", "MANIFEST_SCHEMA_VERSION", "MANIFEST_FIELDS",
+    "DeliveryCommitRequiredError",
 ]
