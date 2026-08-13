@@ -2078,4 +2078,40 @@
                Red Team modified no engine, ran no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [48], prev_hash E47.
   entry_hash:  E47
+
+[48] 2026-08-13
+  prev_hash:   E47
+  event:       CEO_DELIVERY
+  dc_id:       DC-CANONICAL-EVALUATOR
+  freeze_hash: 3344bff (superseded by pending VE strict-geometry correction)
+  battery_ver: RT-AUDIT-MEAS-0006
+  reviewer:    Red Team
+  detail:      CEO AMENDMENT received + acknowledged (AMENDMENT_RECEIVED). FOUR parts:
+               A2 — MEAS-9 ASYMMETRIC REJECTED. CEO ruling = STRICT GEOMETRY: LONG stop<entry_open<target,
+               SHORT target<entry_open<stop; risk<=0 OR reward<=0 -> INVALID_EXECUTION, boundaries (open
+               EXACTLY on stop/target) INCLUSIVE. I attack the CORRECTED version, NOT 3344bff. IMPACT: my
+               RT-AUDIT-MEAS-0005 'MEAS-9 closed both branches' is SUPERSEDED on the target branch (3344bff's
+               gap_through_target ExecutedTrade re-confirmed = the now-rejected asymmetric design). S3 -0.17
+               (asymmetric) is PROVISIONAL — NON-COMPARABLE; a fifth S3 figure expected. MEAS-10 + T12/13
+               remain CLOSED (orthogonal to A2).
+               A5 — T17 not closed by a hash without ENFORCEMENT. run_hash must jointly identify FIVE: data,
+               config, STRATEGY, engine, contract-version. VERIFIED on 3344bff: covers 3.5/5 — data PARTIAL
+               (block_end omitted), config YES, **STRATEGY MISSING** (S1 and S3 on identical data+config yield
+               the SAME run_hash efabefe3856205b1 -> compare() cannot refuse S1-vs-S3 -> T17 stays OPEN),
+               engine YES via code_version, contract YES via code_version (conflated with engine). compare()/
+               require_comparable() still NEVER invoked internally -> opt-in, bypassable. Existence != closure,
+               as CEO states.
+               A4 — TWO gates, kept distinct: (i) canonical-contract gate = MINE, whole suite + zero
+               unexplained divergences + final CEO approval; (ii) AI Trader's 25 e2e = Mandate 2. I also
+               attack the INTERFACE (VE tests <-> AI Trader tests).
+               NEW TASK — VE_HANDOFF verification: 12 handoff points -> VE_HANDOFF_PASS|FAIL; only PASS
+               authorizes Mandate 2. PASS is FORBIDDEN until the amendment is fully applied -> current state
+               = VE_HANDOFF_FAIL (blocked). 12-point checklist armed.
+               CURRENT-ATTACK CHANGES: hold for VE strict-geometry correction; rewrite Test 18 so 18A
+               (target-gap) ALSO expects INVALID_EXECUTION (was exit-at-entry) + add the two boundary cases;
+               build the VE<->AI-Trader interface attack; run the 12-point handoff. No PASS of anything until
+               the amendment is fully applied. FREEZE HOLDS/WIDENS: all asymmetric-variant results PROVISIONAL/
+               NON-COMPARABLE. Red Team modified no engine, ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [49], prev_hash E48.
+  entry_hash:  E48
 ```
