@@ -2335,4 +2335,38 @@
                ran no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [55], prev_hash E54.
   entry_hash:  E54
+
+[55] 2026-08-13
+  prev_hash:   E54
+  event:       VERDICT
+  dc_id:       DC-VE-BRAIN-HANDOFF
+  freeze_hash: 296e3ac (ve_brain artifact-pin manifest delivery)
+  battery_ver: RT-HANDOFF-0006
+  reviewer:    Red Team
+  detail:      DELTA VERIFICATION git diff fbc0f20..296e3ac (manifest emitter only; six PASS rounds NOT
+               re-run). VERDICT = **ARTIFACT_MANIFEST_PASS** · validated_core_commit=fbc0f20 ·
+               artifact_delivery_commit=296e3ac. Does NOT reopen VE_HANDOFF_PASS (stands).
+               SCOPE: exactly 5 additive files under ve_brain/ (+123/-0): manifest.py (emitter),
+               ARTIFACT_MANIFEST.json, tests/test_manifest.py, __init__.py (+2 read-only exports),
+               HANDOFF_GATES.md. Nothing outside ve_brain/.
+               CORE BYTE-IDENTICAL (VE's claim confirmed): git diff on all 11 core modules = 0 lines
+               (version.py, _canonical_catalog.py, ev_engine.py, n6.py, regime_routing.py, contracts.py,
+               fingerprint.py, strategy_contract.py, _ev_core.py, reason_codes.py, testing.py). N1/Router/EV/
+               N6/catalog/seal UNCHANGED. 8 manifest values read from live (byte-identical) constants;
+               delivered JSON == live emitter (True). Values: pkg 0.1.3, source_commit fbc0f20, catalog_version
+               ve-canonical-catalog-v1, catalog_hash 37b95393df85dc2b, meas canonical-evaluator-v2.7.66-A2,
+               n1 n1-additive-raw-axes-v1, router router-v1, ev ev-core@bdd15e5+ev-adapter-v1.
+               NEW EXPORT (6 props): no catalog-init change (catalog still sealed + range_fade blocked after
+               import); NO modification API (only artifact_manifest() pure read + 2 constants); no N1/Router/EV/
+               N6 change (byte-identical); no import side effects; cannot modify sealed catalog; reports
+               identities UNAMBIGUOUSLY = PARTIAL (single source_commit=fbc0f20 field). 29 tests pass (26+3
+               manifest) in correct layout.
+               IDENTITY SEPARATION PENDING: validated_core_commit / artifact_delivery_commit / manifest_schema_
+               version NOT in 296e3ac (it's the tip; single source_commit). CEO-scheduled follow-on ('verify the
+               separation when it delivers it') -> documentary, decision-path-irrelevant; NOT blocked here (per
+               'verify it, do not inflate it'); recorded the two identities + will verify the in-manifest
+               separation on delivery. A2 + canonical measurement contract remain an INDEPENDENT track. Red Team
+               modified no engine, ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [56], prev_hash E55.
+  entry_hash:  E55
 ```
