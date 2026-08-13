@@ -1,0 +1,84 @@
+{
+  "status": "ALPHA_LOOP_ACTIVE\u00b7QUEUE_EMPTY",
+  "m_total": 6,
+  "processed_this_run": 6,
+  "n_blocks": 4,
+  "queue_remaining": [],
+  "canonical_rerun_queue": [
+    "CAND-T05",
+    "CAND-T06"
+  ],
+  "completed": [
+    "CAND-T05",
+    "CAND-T06"
+  ],
+  "failed": [
+    "CAND-TD01",
+    "CAND-C01",
+    "CAND-BT01",
+    "CAND-BT02"
+  ],
+  "primary_estimand": "RECENT_PRIMARY 2022-12\u21922025-10",
+  "batch": [
+    {
+      "id": "CAND-T05",
+      "status": "PROVISIONAL_SCREENED",
+      "reason": "recent EV_net>0 & trim-robust; QUEUED_FOR_CANONICAL_RERUN",
+      "recent": 0.3894,
+      "recent_k_ep": 523,
+      "recent_DD": -25.88,
+      "recent_trimmed": 0.2021,
+      "historical": 0.1203
+    },
+    {
+      "id": "CAND-T06",
+      "status": "FAT_TAIL_DEPENDENT",
+      "reason": "recent EV+ but fat-tail (best_share=0.329, trimmed=0.013); QUEUED_FOR_CANONICAL_RERUN",
+      "recent": 0.2353,
+      "recent_k_ep": 666,
+      "recent_DD": -24.6,
+      "recent_trimmed": 0.013,
+      "historical": 0.0623
+    },
+    {
+      "id": "CAND-TD01",
+      "status": "STRUCTURALLY_FALSIFIED",
+      "reason": "recent EV_net<=0 (avg_R=-0.073)",
+      "recent": -0.073,
+      "recent_k_ep": 503,
+      "recent_DD": -58.95,
+      "recent_trimmed": -0.2245,
+      "historical": 0.0526
+    },
+    {
+      "id": "CAND-C01",
+      "status": "STRUCTURALLY_FALSIFIED",
+      "reason": "deterministic: signal OUTSIDE pre-registered regime",
+      "recent": null,
+      "recent_k_ep": null,
+      "recent_DD": null,
+      "recent_trimmed": null,
+      "historical": null
+    },
+    {
+      "id": "CAND-BT01",
+      "status": "STRUCTURALLY_FALSIFIED",
+      "reason": "recent single-trade dependence (best_share=0.878)",
+      "recent": 0.013,
+      "recent_k_ep": 4901,
+      "recent_DD": -58.99,
+      "recent_trimmed": -0.0759,
+      "historical": 0.0854
+    },
+    {
+      "id": "CAND-BT02",
+      "status": "STRUCTURALLY_FALSIFIED",
+      "reason": "error: 'StructureBreak' object has no attribute 'ref'",
+      "recent": null,
+      "recent_k_ep": null,
+      "recent_DD": null,
+      "recent_trimmed": null,
+      "historical": null
+    }
+  ]
+}

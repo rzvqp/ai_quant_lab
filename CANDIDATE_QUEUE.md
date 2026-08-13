@@ -99,7 +99,27 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `ACTIVE_CONTINUOUS_LOOP` — regime×family generation (RANGE blocked; economic promotion blocked until ratification)
+## STATE: `ALPHA_LOOP_ACTIVE` — persistent continuous-loop service; RECENT-market primary; RANGE blocked; promotion blocked
+
+**Persistent service delivered** (`edge_research/alpha_loop.py` + `flowb_strategies.py` + `regime.py`): the 9 deliverables — persistent runner, initial queue, checkpoint after every candidate (atomic), watchdog (heartbeat/restart_count; caught a candidate error and CONTINUED — did not halt the lab), per-family budgets, hypothesis registry (`loop_state/hypothesis_registry.json`), reporting-without-stopping, **restart-with-correct-resume PROVEN** (a run interrupted at m=3 resumed to m=4→6 without re-running finalized candidates), OOS access log **empty** (holdout sealed). `ALPHA_LOOP_ACTIVE`.
+
+### 🔁 BATCH 2 — RECENT-MARKET primary (`2022-12→2025-10`), regime×family. Data = 4-block population; per-window split reported.
+CEO directive: primary estimand = the RECENT window; target = **net EV**, not RR; report RECENT_PRIMARY / HISTORICAL_TRANSFER / COMBINED separately (no period-mixing). Regime = causal MK-01 (RANGE blocked). All **PROVISIONAL · NON-COMPARABLE · REQUIRES CANONICAL RERUN** (mstrat still double-counts spread).
+
+| id | cell | RECENT EV_net | trimmed | best-share | recent yrs (22/23/24/25) | DD_R | status |
+|---|---|---|---|---|---|---|---|
+| **CAND-T05** | TREND_UP × pullback LONG (WIDE swing-low stop) | **+0.389** | **+0.202** | 0.14 | **+0.64/+0.38/+0.34/+0.45 (4/4)** | −26 | **🟢 PROVISIONAL_SCREENED** |
+| CAND-T06 | TREND_UP × momentum LONG (wide stop) | +0.235 | +0.013 | 0.33 | +0.08/+0.11/+0.36/+0.23 | −25 | FAT_TAIL_DEPENDENT |
+| CAND-TD01 | TREND_DOWN × pullback SHORT | −0.073 | −0.22 | — | +0.75/+0.03/+0.05/−0.44 | −59 | STRUCTURALLY_FALSIFIED (recent) |
+| CAND-BT01 | BREAKOUT_TRANSITION × confirmation | +0.013 | −0.08 | 0.88 | −0.10/0/−0.03/+0.09 | — | STRUCTURALLY_FALSIFIED (single-trade) |
+| CAND-C01 | COMPRESSION × breakout prep | — | — | — | — | — | STRUCTURALLY_FALSIFIED (eligibility-def bug → next batch fix) |
+| CAND-BT02 | BREAKOUT_TRANSITION × retest | — | — | — | — | — | ERROR (`StructureBreak.ref` attr → next batch fix) |
+
+**★ CAND-T05 is the project's first robust RECENT-market edge that survives the fat-tail check.** RECENT EV_net **+0.389R**, PF 1.63, **trimmed +0.202** (top-1% trim does NOT invert it), best-share 0.14 (not single-trade), **all four recent years positive**, DD −26R; HISTORICAL_TRANSFER also positive (+0.120, larger DD −99R — old market OK, not catastrophic). **The WIDE structural swing-low stop fixed the fat-tail that killed T03** (trimmed +0.20 vs T03 −0.01) — exactly the CEO's hypothesis; it's a NEW id (T03 untouched). SHORT (TD01) works only in 2022's real downtrend (falsified on the recent net) — consistent with "test SHORT selectively in real downtrends," not a permanent long-bias claim.
+
+**Next batch (auto): fix C01 eligibility + BT02 `ref` attr (as fixes), then expand the promising TREND_UP × pullback LONG family** (T05 variants: holding/trailing/target as NEW ids, walk-forward WITHIN the recent window, purge/embargo) + BREAKOUT/SESSION causal families. m_total=6; queue for canonical rerun = [T05, T06]. Loop does NOT enter WAITING.
+
+### (historical) `ACTIVE_CONTINUOUS_LOOP` — regime×family generation
 
 **Out of WAITING (CEO): research + candidate generation AUTHORIZED now.** Loop per candidate: pre-register (regime in identity) → implement (logic SEPARATE from evaluator) → deterministic checks → rapid falsification (≥5 episodes, gross>0, not single-trade) → PROVISIONAL regime-scoped screen → status → next. All numbers **PROVISIONAL · NON-COMPARABLE · REQUIRES CANONICAL RERUN** (4 blocks + corrected evaluator; mstrat still double-counts spread). Statuses allowed: HYPOTHESIS_REGISTERED / IMPLEMENTED_RESEARCH_ONLY / PROVISIONAL_SCREENED / STRUCTURALLY_FALSIFIED / ARCHIVE_INSUFFICIENT / QUEUED_FOR_CANONICAL_RERUN. FORBIDDEN: RATIFIED / PROMOTED / LIVE_ELIGIBLE.
 
