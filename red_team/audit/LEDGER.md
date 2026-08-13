@@ -2296,4 +2296,43 @@
                data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [54], prev_hash E53.
   entry_hash:  E53
+
+[54] 2026-08-13
+  prev_hash:   E53
+  event:       VERDICT
+  dc_id:       DC-VE-BRAIN-HANDOFF
+  freeze_hash: fbc0f20 (ve_brain 0.1.3 — internal SEALED canonical catalog)
+  battery_ver: RT-HANDOFF-0005
+  reviewer:    Red Team
+  detail:      HANDOFF REVALIDATION of ve_brain 0.1.3 @fbc0f20 (26 tests, mypy clean). VERDICT =
+               ***VE_HANDOFF_PASS*** -> Mandate 2 distributes AUTOMATICALLY to AI Trader (no new CEO approval).
+               THE POISONING FIXTURE IS IMPOSSIBLE via the production surface: register_canonical_strategy /
+               reset_canonical_registry / set_registry_available REMOVED from ve_brain (absent + not in __all__).
+               range_fade baked in the sealed catalog with its TRUE def (allowed=RANGE) -> every consumer
+               attempt NO_TRADE: forged-as-TREND->STRATEGY_POLICY_MISMATCH; matching-true-canon->TRUE_RANGE_NOT_
+               IDENTIFIABLE; fabricated-id->UNKNOWN_STRATEGY; legit trend_pullback->TRADE (control). Catalog =
+               embedded Python literals (no file/env/network, grep-verified), sealed at import, version+hash
+               checked.
+               TEN CHECKS re-run: register API gone (1/2), not consumer-populable / no first-wins (3/4),
+               reset+set_registry_available removed from production/isolated in ve_brain.testing (5), status
+               from baked canon not candidate -> no self-granted RATIFIED (6; trend_shadow->SHADOW_TRADE_
+               CANDIDATE, trend_experimental->NO_ELIGIBLE_STRATEGY), immutable literals no restart drift (7),
+               deterministic + integrity-hash (8), SEALED at import (9), N6 refuses unsealed/mismatch (10).
+               SEAL guards VERIFIED FIRE (not decorative): unsealed->CATALOG_NOT_SEALED, version mismatch->
+               CATALOG_VERSION_MISMATCH, restore->trend TRADES; checked on the single decision path before
+               resolve/EV; no public setter to unseal/swap (SealedRegistry.unsealed only from gated testing).
+               ve_brain.testing ISOLATED: not imported by any production module (grep-verified), not in __all__,
+               every hook gated by unlock_for_tests(TOKEN) (install w/o unlock -> RuntimeError). TOKEN is a
+               plaintext constant 'VE-BRAIN-TEST-ONLY' (guessable) -> DOCUMENTARY note ONLY, NOT a decision-path
+               bypass: module is off the production surface + a deliberate importer could equally monkeypatch
+               n6 privates (out of contract); NO production-path impact -> does not lower the verdict (per rule:
+               no inventing defects, no criteria inflation). Optional non-blocking hardening: per-install random
+               token / conftest-only gate.
+               EIGHT POINTS + complete path pass with explicit break attempts; 12 deliverables present+consistent.
+               Monkeypatch/source-rewrite of the embedded catalog remains OUT OF CONTRACT (CEO-accepted). This
+               is the 6th instance of the bypassable-guard pattern HUNTED and found CLOSED. A2 + canonical
+               measurement contract remain an INDEPENDENT track (not this gate). Red Team modified no engine,
+               ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [55], prev_hash E54.
+  entry_hash:  E54
 ```
