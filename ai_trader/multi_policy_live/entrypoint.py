@@ -59,6 +59,7 @@ from ai_trader.pdh_pdl_demo.live_tick_reader import LiveMT5TickReader
 from ai_trader.pdh_pdl_demo.market_context import build_market_context
 from ai_trader.pdh_pdl_demo.recognition_rule import PdhPdlTrigger
 from ai_trader.pdh_pdl_demo.risk_snapshot import LiveRiskSnapshotBuilder
+from ai_trader.pdh_pdl_demo.slippage import SlippageLog
 from ai_trader.pdh_pdl_demo.types import PdhPdlAuditEntry, PdhPdlAuditKind, PendingPdhPdlTrade
 from ai_trader.persistent_state.store import SqliteStateStore
 from ai_trader.risk_manager.types import EngineState
@@ -282,6 +283,10 @@ def build_loop(
     )
     signal_journal = LiveSignalJournal(shared_state_store)
     risk_snapshot_builder = LiveRiskSnapshotBuilder()
+    slippage_log = SlippageLog(shared_state_store)
+    """ONE shared log for all three policies here (matching `signal_journal`'s own shared-per-process
+    convention) -- `SlippageObservation.magic_number` discriminates by policy, so a later consumer can
+    group/filter per policy without needing three separate log files."""
     tick_reader = LiveMT5TickReader(order_gateway)
     fill_reader = LiveMT5FillReader(history_gateway)
     policy_control = PolicyControl(shared_state_store)
@@ -308,6 +313,7 @@ def build_loop(
     )
     cand0007_orch = PolicyOrchestrator(
         SYMBOL, tick_size, 100_002, cand0007_deps, fill_reader, cand0007_audit,
+        slippage_log=slippage_log,
     )
 
     # CAND-0019 -- DZ x Level Confluence, day-boundary exit, no exclusion.
@@ -318,6 +324,7 @@ def build_loop(
     )
     cand0019_orch = PolicyOrchestrator(
         SYMBOL, tick_size, 100_004, cand0019_deps, fill_reader, cand0019_audit,
+        slippage_log=slippage_log,
     )
 
     # CAND-0009 -- Level-Break-Drive, its OWN mechanical close + sentinel-target audit hook, excluded
@@ -330,6 +337,7 @@ def build_loop(
     cand0009_orch = PolicyOrchestrator(
         SYMBOL, tick_size, 100_003, cand0009_deps, fill_reader, cand0009_audit,
         mechanical_close=opposing_expansion_or_time_stop_close, target_price_for_audit=sentinel_target_price,
+        slippage_log=slippage_log,
     )
 
     policies = [

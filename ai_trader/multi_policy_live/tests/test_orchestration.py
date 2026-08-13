@@ -5,9 +5,12 @@ a separate file, not a byte-for-byte copy-paste trust), PLUS the two NEW pluggab
 
 from __future__ import annotations
 
+from dataclasses import replace as dataclass_replace
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Callable
+
+import pytest
 
 from ai_trader.execution_engine.ledger import OrderLedger
 from ai_trader.execution_orchestrator.tests._fixtures import make_deps, make_market_context
@@ -20,6 +23,7 @@ from ai_trader.multi_policy_live.orchestration import BarArrays, DemoDepsBundle,
 from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.recognition_rule import PdhPdlTrigger
+from ai_trader.pdh_pdl_demo.slippage import SlippageLeg, SlippageLog
 from ai_trader.pdh_pdl_demo.types import PdhPdlAuditKind, PendingPdhPdlTrade
 from ai_trader.signal_engine.types import Direction
 
@@ -105,6 +109,95 @@ def test_a_second_candidate_while_one_is_open_is_refused(tmp_path: Path) -> None
     assert outcome2 is None
     reasons = [e.detail.get("reason_code") for e in journal.entries]
     assert "ALREADY_IN_POSITION" in reasons
+
+
+# -- Slippage collection wiring, CEO Mandate Step 8 (2026-08-13): mirrors `pdh_pdl_demo`'s own tests --
+# additive, `slippage_log=None` by default, discriminated by `magic_number` since this class serves
+# multiple policies sharing one process. --
+
+
+def test_submit_candidate_records_entry_slippage_with_this_policys_own_magic_number(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path, entry_fill_price=108.05)
+    orch = PolicyOrchestrator(
+        SYMBOL, TICK_SIZE, MAGIC_NUMBER, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log,
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert len(slippage_log.entries) == 1
+    obs = slippage_log.entries[0]
+    assert obs.leg is SlippageLeg.ENTRY
+    assert obs.magic_number == MAGIC_NUMBER
+    assert obs.requested_price == 108.0
+    assert obs.realized_price == 108.05
+    assert obs.signed_slippage == pytest.approx(0.05)
+
+
+def test_no_slippage_recorded_when_the_order_is_rejected(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path)
+    orch = PolicyOrchestrator(
+        SYMBOL, TICK_SIZE, MAGIC_NUMBER, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log,
+    )
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    candidate = dataclass_replace(candidate, as_of=AS_OF + 999_999)  # stale vs. make_market_context()
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+
+    outcome = orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert outcome is not None and outcome.sent is False
+    assert slippage_log.entries == ()
+
+
+def test_broker_side_close_records_exit_slippage_with_this_policys_own_magic_number(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[True, False], close_price=111.3)
+    bundle = _make_demo_deps_bundle(tmp_path)
+    orch = PolicyOrchestrator(
+        SYMBOL, TICK_SIZE, MAGIC_NUMBER, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log,
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    orch.submit_candidate(candidate, trigger, make_market_context())
+    orch.observe_bar(bar_idx=18, day_boundary_label=1_705_356_000, ts_close=AS_OF + 900)
+    orch.observe_bar(bar_idx=19, day_boundary_label=1_705_356_000, ts_close=AS_OF + 1800)
+
+    exit_obs = [e for e in slippage_log.entries if e.leg is SlippageLeg.EXIT]
+    assert len(exit_obs) == 1
+    obs = exit_obs[0]
+    assert obs.magic_number == MAGIC_NUMBER
+    assert obs.close_reason == "BROKER_SLTP"
+    assert obs.realized_price == 111.3
+    assert obs.requested_price == pytest.approx(111.5)  # nearer to executable_stop_price than target
+
+
+def test_time_stop_close_does_not_record_exit_slippage(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[True, True], close_price=105.0)
+    bundle = _make_demo_deps_bundle(tmp_path)
+    orch = PolicyOrchestrator(
+        SYMBOL, TICK_SIZE, MAGIC_NUMBER, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log,
+    )
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    orch.submit_candidate(candidate, trigger, make_market_context())
+    orch.observe_bar(bar_idx=18, day_boundary_label=1_705_356_000, ts_close=AS_OF + 900)
+    orch.observe_bar(bar_idx=0, day_boundary_label=1_705_442_400, ts_close=AS_OF + 1800)  # TIME_STOP
+
+    assert orch.pending is not None and orch.pending.close_reason == "TIME_STOP"
+    legs = [e.leg for e in slippage_log.entries]
+    assert legs == [SlippageLeg.ENTRY]
 
 
 def test_day_boundary_mechanical_close_matches_pdh_pdl_orchestrator_semantics() -> None:

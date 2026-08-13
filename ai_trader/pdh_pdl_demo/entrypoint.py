@@ -40,6 +40,7 @@ from ai_trader.pdh_pdl_demo.market_context import build_market_context
 from ai_trader.pdh_pdl_demo.orchestration import PdhPdlOrchestrator
 from ai_trader.pdh_pdl_demo.recognition_rule import PdhPdlRecognitionRule
 from ai_trader.pdh_pdl_demo.risk_snapshot import LiveRiskSnapshotBuilder
+from ai_trader.pdh_pdl_demo.slippage import SlippageLog
 from ai_trader.persistent_state.store import SqliteStateStore
 from ai_trader.risk_manager.types import EngineState
 from ai_trader.risk_manager_live.circuit_breaker import load_persisted_circuit_state
@@ -146,6 +147,7 @@ def build_loop(
     )
     signal_journal = LiveSignalJournal(state_store)
     audit_journal = PdhPdlAuditJournal(state_store)
+    slippage_log = SlippageLog(state_store)
     tick_reader = LiveMT5TickReader(order_gateway)
 
     raw_symbol_info = order_gateway.symbol_info(SYMBOL)
@@ -157,7 +159,9 @@ def build_loop(
     # so it gets the history-capable gateway leg, not the order-capable one.
     deps_factory = LivePdhPdlDepsFactory(SYMBOL, history_gateway, demo_adapter, risk_snapshot_builder, state_dir)
     fill_reader = LiveMT5FillReader(history_gateway)
-    orchestrator = PdhPdlOrchestrator(SYMBOL, tick_size, deps_factory, fill_reader, audit_journal)
+    orchestrator = PdhPdlOrchestrator(
+        SYMBOL, tick_size, deps_factory, fill_reader, audit_journal, slippage_log=slippage_log,
+    )
 
     return PdhPdlLiveLoop(feed, rule, orchestrator, signal_journal, risk_snapshot_builder, state_store, POLL_INTERVAL_SECONDS)
 

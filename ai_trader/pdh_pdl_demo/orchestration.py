@@ -44,6 +44,7 @@ from ai_trader.mt5_demo_execution.gating import GatedDemoOutcome, send_after_dry
 from ai_trader.mt5_demo_execution.types import SafetyGuardReport
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.recognition_rule import MAGIC_NUMBER, PdhPdlTrigger
+from ai_trader.pdh_pdl_demo.slippage import SlippageLeg, SlippageLog, SlippageObservation
 from ai_trader.pdh_pdl_demo.types import PdhPdlAuditEntry, PdhPdlAuditKind, PendingPdhPdlTrade
 from ai_trader.pdh_pdl_demo.vendor_bridge import DemoSignal, DemoTradeResult, simulate_demo_trade
 
@@ -79,12 +80,18 @@ class PdhPdlOrchestrator:
     def __init__(
         self, symbol: str, tick_size: float, deps_factory: DemoDepsFactory,
         fill_reader: RealizedFillReader, audit_journal: PdhPdlAuditJournal,
+        slippage_log: SlippageLog | None = None,
     ) -> None:
+        """`slippage_log=None` (the default) is byte-for-byte the pre-Mandate-8 behavior -- no existing
+        caller or test needs to know about it. When given, `submit_candidate`/`_close_pending` additionally
+        persist each leg's REALIZED slippage (see `slippage.py`'s own module docstring); nothing about the
+        existing trading/audit behavior changes either way."""
         self._symbol = symbol
         self._tick_size = tick_size
         self._deps_factory = deps_factory
         self._fill_reader = fill_reader
         self._audit = audit_journal
+        self._slippage_log = slippage_log
         self._pending: PendingPdhPdlTrade | None = None
 
     @property
@@ -138,6 +145,16 @@ class PdhPdlOrchestrator:
                 "effective_spread": trigger.effective_spread, "client_order_id": order_result.client_order_id,
             },
         ))
+        if self._slippage_log is not None and order_result.avg_price is not None:
+            # `avg_price` is `None` until the broker ack reports a fill price (same fail-closed guard
+            # `PendingPdhPdlTrade.entry_realized_price`'s own docstring already documents) -- nothing to
+            # record yet if so, not a fabricated zero.
+            self._slippage_log.record(SlippageObservation(
+                symbol=self._symbol, magic_number=MAGIC_NUMBER, client_order_id=order_result.client_order_id,
+                leg=SlippageLeg.ENTRY, as_of=candidate.as_of, direction=trigger.direction,
+                requested_price=candidate.entry, realized_price=order_result.avg_price,
+                signed_slippage=order_result.avg_price - candidate.entry, close_reason=None,
+            ))
         return outcome
 
     def observe_bar(self, bar_idx: int, day_boundary_label: int, ts_close: int) -> DemoTradeResult | None:
@@ -170,15 +187,30 @@ class PdhPdlOrchestrator:
 
     def _close_pending(self, reason: str, ts_close: int) -> None:
         assert self._pending is not None
-        exit_price = self._fill_reader.read_close_price(MAGIC_NUMBER, self._symbol, self._pending.entry_as_of)
-        self._pending = replace(self._pending, closed=True, close_realized_price=exit_price, close_reason=reason)
+        pending = self._pending
+        exit_price = self._fill_reader.read_close_price(MAGIC_NUMBER, self._symbol, pending.entry_as_of)
+        self._pending = replace(pending, closed=True, close_realized_price=exit_price, close_reason=reason)
         self._audit.record(PdhPdlAuditEntry(
             symbol=self._symbol, as_of=ts_close, kind=PdhPdlAuditKind.POSITION_CLOSED,
             detail={
                 "close_reason": reason, "close_realized_price": exit_price,
-                "client_order_id": self._pending.client_order_id,
+                "client_order_id": pending.client_order_id,
             },
         ))
+        if self._slippage_log is not None and reason == "BROKER_SLTP" and exit_price is not None:
+            # The ONE close reason with a genuine realized deal to read -- see `slippage.py`'s own
+            # module docstring for why every other reason (TIME_STOP included) is deliberately skipped.
+            reference = (
+                pending.executable_stop_price
+                if abs(exit_price - pending.executable_stop_price) < abs(exit_price - pending.target_price)
+                else pending.target_price
+            )
+            self._slippage_log.record(SlippageObservation(
+                symbol=self._symbol, magic_number=MAGIC_NUMBER, client_order_id=pending.client_order_id,
+                leg=SlippageLeg.EXIT, as_of=ts_close, direction=pending.direction,
+                requested_price=reference, realized_price=exit_price,
+                signed_slippage=exit_price - reference, close_reason=reason,
+            ))
 
     def run_post_hoc_audit(
         self, as_of: int, open_: list[float], high: list[float], low: list[float], close: list[float],

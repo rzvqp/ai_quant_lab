@@ -4,6 +4,7 @@ required pre-first-order deliverable, 2026-08-03: "cate un exemplu de audit per 
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,7 @@ from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.orchestration import DemoDepsBundle, PdhPdlOrchestrator
 from ai_trader.pdh_pdl_demo.recognition_rule import STRATEGY_ID, MAGIC_NUMBER, PdhPdlTrigger
+from ai_trader.pdh_pdl_demo.slippage import SlippageLeg, SlippageLog
 from ai_trader.pdh_pdl_demo.types import PdhPdlAuditKind, PendingPdhPdlTrade
 from ai_trader.signal_engine.types import Direction
 
@@ -100,6 +102,100 @@ def test_submit_candidate_sends_through_the_existing_demo_pipeline_and_tracks_th
     assert orch.pending.entry_realized_price == 108.05
     submitted = [e for e in journal.entries if e.kind is PdhPdlAuditKind.ENTRY_SUBMITTED]
     assert len(submitted) == 1
+
+
+# -- Slippage collection wiring, CEO Mandate Step 8 (2026-08-13): additive, `slippage_log=None` by
+# default (every test above this section never passes it -- proves backward compatibility by never
+# needing to know about it). --
+
+
+def test_submit_candidate_records_entry_slippage_when_a_slippage_log_is_given(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path, entry_fill_price=108.05)
+    orch = PdhPdlOrchestrator(SYMBOL, TICK_SIZE, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log)
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert len(slippage_log.entries) == 1
+    obs = slippage_log.entries[0]
+    assert obs.leg is SlippageLeg.ENTRY
+    assert obs.magic_number == MAGIC_NUMBER
+    assert obs.requested_price == 108.0
+    assert obs.realized_price == 108.05
+    assert obs.signed_slippage == pytest.approx(0.05)
+    assert obs.close_reason is None
+
+
+def test_no_slippage_recorded_when_the_order_is_rejected(tmp_path: Path) -> None:
+    """A rejected order has no `order_result` at all -- nothing was filled, nothing to measure. Rejection
+    reproduced exactly like `mt5_demo_execution/tests/test_gating.py::
+    test_demo_never_attempted_when_dry_run_fails` -- a candidate `as_of` stale vs. `market_context`'s own
+    `as_of` fails the dry-run gate before any order is ever sent."""
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[], close_price=None)
+    bundle = _make_demo_deps_bundle(tmp_path)
+    orch = PdhPdlOrchestrator(
+        SYMBOL, TICK_SIZE, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log,
+    )
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    candidate = replace(candidate, as_of=AS_OF + 999_999)  # stale vs. make_market_context()'s own as_of
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+
+    outcome = orch.submit_candidate(candidate, trigger, make_market_context())
+
+    assert outcome is not None and outcome.sent is False
+    assert "DRY_RUN_DID_NOT_PASS" in outcome.reason_codes
+    assert slippage_log.entries == ()
+
+
+def test_broker_side_close_records_exit_slippage(tmp_path: Path) -> None:
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[True, False], close_price=111.3)
+    bundle = _make_demo_deps_bundle(tmp_path)
+    orch = PdhPdlOrchestrator(SYMBOL, TICK_SIZE, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log)
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    orch.submit_candidate(candidate, trigger, make_market_context())
+    orch.observe_bar(bar_idx=18, day_boundary_label=1_705_356_000, ts_close=AS_OF + 900)
+    orch.observe_bar(bar_idx=19, day_boundary_label=1_705_356_000, ts_close=AS_OF + 1800)
+
+    exit_obs = [e for e in slippage_log.entries if e.leg is SlippageLeg.EXIT]
+    assert len(exit_obs) == 1
+    obs = exit_obs[0]
+    assert obs.close_reason == "BROKER_SLTP"
+    assert obs.realized_price == 111.3
+    # executable_stop_price = stop + 0.5 = 111.5 (SHORT convention, see `_trigger`); 111.3 is nearer to
+    # 111.5 than to target=90.0, so the reference is the executable stop.
+    assert obs.requested_price == pytest.approx(111.5)
+    assert obs.signed_slippage == pytest.approx(111.3 - 111.5)
+
+
+def test_time_stop_close_does_not_record_exit_slippage(tmp_path: Path) -> None:
+    """The disclosed limitation: no closing deal exists for a TIME_STOP close today (see `slippage.py`'s
+    own module docstring) -- recording a reference price for a fill that doesn't exist would misrepresent
+    it as measured. Entry slippage IS still recorded (that leg is unaffected)."""
+    journal = PdhPdlAuditJournal()
+    slippage_log = SlippageLog()
+    fill_reader = _FakeFillReader(is_open_sequence=[True, True], close_price=105.0)
+    bundle = _make_demo_deps_bundle(tmp_path)
+    orch = PdhPdlOrchestrator(SYMBOL, TICK_SIZE, lambda c, t: bundle, fill_reader, journal, slippage_log=slippage_log)
+
+    candidate = _candidate(Direction.SHORT, entry=108.0, stop=111.0, target=90.0)
+    trigger = _trigger(direction=-1, touch_idx=17, stop=111.0, target=90.0, day_label=1_705_356_000)
+    orch.submit_candidate(candidate, trigger, make_market_context())
+    orch.observe_bar(bar_idx=18, day_boundary_label=1_705_356_000, ts_close=AS_OF + 900)
+    orch.observe_bar(bar_idx=0, day_boundary_label=1_705_442_400, ts_close=AS_OF + 1800)  # TIME_STOP
+
+    assert orch.pending is not None and orch.pending.close_reason == "TIME_STOP"
+    legs = [e.leg for e in slippage_log.entries]
+    assert legs == [SlippageLeg.ENTRY]  # exactly one entry observation, zero exit observations
 
 
 def test_a_second_candidate_while_one_is_open_is_refused_and_journaled(tmp_path: Path) -> None:
