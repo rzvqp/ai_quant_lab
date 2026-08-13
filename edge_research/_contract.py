@@ -63,6 +63,25 @@ def trading_day_start_utc(time: Any) -> np.ndarray:
 
 
 # ----------------------------------- R9: POPULATION -----------------------------------
+def canonical_discovery_blocks(
+    manifest: dict[str, Any], tf: str
+) -> list[tuple[int, int]]:
+    """The CANONICAL discovery-block list (epoch ranges, half-open [start,end)) -- the ONLY population
+    authority. For M15_v2 this is `context_derived_htf.m15_v2_discovery_blocks` = **FOUR** blocks,
+    INCLUDING the 2022-12-16 -> 2025-10-12 block sourced from `overlap_with_M15` (M15's inherited
+    discovery classification). CEO decision 2026-08-13: the 4th block is MANDATORY -- it is the most
+    recent and largest; windowing on only the three `regime_segments.discovery_range` entries (what
+    `segmentation_plan` returns) would silently discard ~3 years (a second error, opposite to M-4).
+    The 4th REGIME_SEGMENT (bull_partial, too short) is sealed and correctly has no discovery_range;
+    that is a DIFFERENT entity from the 4th discovery BLOCK, which is full discovery. For any other tf
+    the segmentation_plan discovery ranges are canonical (no overlap block exists there)."""
+    cdh = manifest.get("context_derived_htf", {})
+    blks = cdh.get("m15_v2_discovery_blocks") if isinstance(cdh, dict) else None
+    if tf == "M15_v2" and blks:
+        return [(int(b["start_epoch"]), int(b["end_epoch"])) for b in blks]
+    return segmentation_plan(manifest, tf)["discovery"]
+
+
 def dataset_identity(tf: str, *, manifest: Optional[dict[str, Any]] = None) -> dict[str, Any]:
     """Verifiable identity+version for `tf` -- the COMPLETE data-side provenance block (R11 dims that
     Data Acquisition owns). file_path, sha256, manifest version, symbol/source/timeframe/bar_seconds,
@@ -72,7 +91,7 @@ def dataset_identity(tf: str, *, manifest: Optional[dict[str, Any]] = None) -> d
     fp, sha = entry_file(m, tf)
     disc: list[tuple[int, int]] = []
     if kind == "timeframe":
-        disc = segmentation_plan(m, tf)["discovery"]
+        disc = canonical_discovery_blocks(m, tf)  # FOUR for M15_v2 (incl. the overlap block)
     base = fp.rsplit("/", 1)[-1]
     source = base.split("_", 1)[0] if "_" in base else None            # e.g. OANDA
     symbol = base.split("_")[1] if base.count("_") >= 1 else None       # e.g. XAUUSD
@@ -117,7 +136,7 @@ def official_blocks(
     _common.load. Provide `tf` (reads the manifest) or `discovery_segments` directly."""
     if discovery_segments is None:
         m = manifest or load_manifest()
-        discovery_segments = segmentation_plan(m, tf)["discovery"]  # type: ignore[arg-type]
+        discovery_segments = canonical_discovery_blocks(m, tf)  # type: ignore[arg-type]  # FOUR for M15_v2
     t = df["time"].to_numpy()
     out: list[tuple[int, int]] = []
     for s_ep, e_ep in discovery_segments:

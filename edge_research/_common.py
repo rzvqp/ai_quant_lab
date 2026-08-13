@@ -137,8 +137,14 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
         # outside discovery and quarantine -- fully-sealed segments, the M15_v2 overlap and post-M15
         # tail, any unlabeled recent tail -- is sealed by default. Ranges are half-open
         # [start_epoch, end_epoch), verbatim from the manifest, applied BEFORE any indicator computation.
+        # CANONICAL DISCOVERY = the FOUR m15_v2_discovery_blocks (CEO 2026-08-13), NOT the three
+        # regime_segments.discovery_range entries that segmentation_plan returns. The 4th block
+        # (2022-12-16 -> 2025-10-12, from overlap_with_M15) is MANDATORY -- delivering only three
+        # would silently seal ~3 years (the largest, most recent block). Quarantine is unchanged.
+        from edge_research._contract import canonical_discovery_blocks
+        disc_blocks = canonical_discovery_blocks(manifest, tf)
         in_disc = pd.Series(False, index=raw.index)
-        for s_ep, e_ep in plan["discovery"]:
+        for s_ep, e_ep in disc_blocks:
             in_disc = in_disc | ((ep >= s_ep) & (ep < e_ep))
         in_quar = pd.Series(False, index=raw.index)
         for s_ep, e_ep in plan["quarantine"]:
@@ -199,7 +205,7 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
         official_blocks = [(0, int(len(d)))]  # context-derived: whole file is one discovery block
     else:
         official_blocks = []
-        for s_ep, e_ep in plan["discovery"]:
+        for s_ep, e_ep in disc_blocks:  # the FOUR canonical discovery blocks (M15_v2)
             lo = int(np.searchsorted(t_arr, s_ep, side="left"))
             hi = int(np.searchsorted(t_arr, e_ep, side="right"))
             if hi > lo:
@@ -207,7 +213,7 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
     dataset_identity = dict(
         tf=tf, file_path=file_path, sha256=expected_sha,
         manifest_version=manifest.get("version"), contract_version="v1.0",
-        n_discovery_segments=(len(plan["discovery"]) if plan is not None else 0),
+        n_discovery_segments=(len(official_blocks) if plan is not None else 0),
     )
     meta["official_blocks"] = official_blocks
     meta["dataset_identity"] = dataset_identity
@@ -223,7 +229,7 @@ def load(tf: str, *, data_split_id: str, cutoff: str) -> tuple[pd.DataFrame, dic
     # population equals the manifest discovery segmentation and tiles the frame with no gap/overlap/
     # leak. For context-derived keys (whole discovery-safe file) the single block must tile the frame.
     from edge_research._contract import assert_population_matches_manifest
-    _disc_ep = plan["discovery"] if plan is not None else [(int(t_arr[0]), int(t_arr[-1]) + 1)]
+    _disc_ep = disc_blocks if plan is not None else [(int(t_arr[0]), int(t_arr[-1]) + 1)]
     assert_population_matches_manifest(d, candidate_blocks=official_blocks, discovery_segments=_disc_ep)
     return d, meta
 
