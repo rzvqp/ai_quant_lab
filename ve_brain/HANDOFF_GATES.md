@@ -29,6 +29,17 @@ strictă + routing per regim) sunt OBLIGATORII înainte de PASS — ambele aplic
 | testele de cauzalitate | ✅ | test 09 (fără lookahead), fingerprint include N1+regulile |
 | cele 12 teste de router | ✅ | `test_01..test_12` |
 
+## Cele 5 condiții de range (DECIZIE CEO — VE_HANDOFF_PASS nu e blocat de absența range-ului dacă:)
+| # | condiție | statut | dovadă |
+|---|---|---|---|
+| 1 | strategiile de range sunt fail-closed | ✅ | `test_range_cond1_fail_closed` (orice piață) |
+| 2 | StructBand.RANGE și Direction.NEUTRAL NU le pot activa | ✅ | `test_range_cond2_...` (RANGE niciodată în applicable) |
+| 3 | reason code-ul e PERSISTAT | ✅ | `test_range_cond3_reason_persisted` = `TRUE_RANGE_NOT_IDENTIFIABLE` |
+| 4 | celelalte familii funcționează | ✅ | `test_range_cond4_other_families_work` (trend/compression/breakout) |
+| 5 | NU există fallback / rutare implicită către range | ✅ | `test_range_cond5_...` + `applicable_regimes` nu produce RANGE |
+
+Router MULTI-AXIAL (fără regulă globală de precedență): `test_12_multiaxial_...` — COMPRESSION+TREND simultan.
+
 ## DESCHIS — de ce VE nu poate cere PASS
 - Contractul de măsurare `canonical-evaluator-v2.7.66-A2` = **NOT RATIFIED** (Red Team, suită extinsă).
 - **BREAKOUT_TRANSITION** e proxy per-bară; versiunea strictă cere un detector de tranziție 2-stări peste N1

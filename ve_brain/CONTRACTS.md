@@ -31,12 +31,18 @@ exit_on_regime_change, exit_on_transition`.
 **Statuturi:** `EXPERIMENTAL` (research), `SHADOW_ELIGIBLE` (N1-N6+EV, produce SHADOW_TRADE_CANDIDATE, FĂRĂ ordin),
 `RATIFIED`/`PROMOTED` (TRADE real), `RETIRED`. Nicio strategie eligibilă nici pentru shadow ⇒ `NO_ELIGIBLE_STRATEGY`.
 
-## Taxonomia semantică (6 stări ← 4 axe N1)
+## Taxonomia semantică — MULTI-AXIALĂ (post-decizia CEO pe range)
+`applicable_regimes(vol, struct, dir)` întoarce o **MULȚIME** (fără precedență, fără partiție): o bară
+COMPRESSED+STRONG+UP e SIMULTAN `{COMPRESSION, TREND_UP}` ⇒ activează AMBELE familii.
 `COMPRESSION`←vol=compressed · `BREAKOUT_TRANSITION`←struct=range(flip)∧vol=high_directional ·
-`TREND_UP`←struct∈{weak,strong}∧dir∈{up,weak_up} · `TREND_DOWN`←…{down,weak_down} ·
-`RANGE`←dir=neutral∧vol∈{low,normal} · `UNCERTAIN`←axă absentă / fără potrivire.
-⚠ `BREAKOUT_TRANSITION` e proxy PER-BARĂ; versiunea strictă (din COMPRESSION/RANGE anterioară) cere un detector de
-tranziție cu 2 stări peste N1 — SEMNALAT, neinventat.
+`TREND_UP`←struct∈{weak,strong}∧dir∈{up,weak_up} · `TREND_DOWN`←…{down,weak_down} · `UNCERTAIN`←axă absentă / fără potrivire.
+- ⛔ **`RANGE` RETRAS** (DECIZIE CEO): `RANGE_STRATEGY_ROUTING=DISABLED`. `Direction.NEUTRAL` conflatează range real /
+  lipsă de structură / WARMUP / fail-closed → RANGE e NEIDENTIFICABIL, NICIODATĂ produs. Strategiile care cer RANGE ⇒
+  `eligible=FALSE`, `TRUE_RANGE_NOT_IDENTIFIABLE` (fail-closed, persistat). Dezambiguizarea = work item SEPARAT
+  (câmpuri aditive `data_readiness` / `consolidation_state`, cu spec cauzală + preînregistrare + Red Team + CEO).
+- ⚠ `BREAKOUT_TRANSITION` PĂSTRAT: folosește struct=range(|run|=1) ca dovadă de INSTABILITATE (flip proaspăt), NU de
+  consolidare (warmup→struct Unavailable→UNCERTAIN, deci fără range) — utilizare semantic DIFERITĂ de cea interzisă.
+  E proxy PER-BARĂ; versiunea strictă cere detectorul de tranziție 2-stări peste N1 — SEMNALAT, neinventat.
 
 ## Amprenta (T17/A5) — `configuration_fingerprint`
 `sha256(config_hash ‖ sha256(data_identity))` la nivel de măsurare, apoi `decision_fingerprint` peste

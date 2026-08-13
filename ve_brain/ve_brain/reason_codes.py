@@ -35,5 +35,6 @@ class ReasonCode(Enum):
     INELIGIBLE_REGIME = "INELIGIBLE_REGIME"                      # regimul curent nu e în allowed/arming
     INELIGIBLE_DIRECTION = "INELIGIBLE_DIRECTION"               # direcția N2 nu e în allowed_directions
     BELOW_MIN_REGIME_CONFIDENCE = "BELOW_MIN_REGIME_CONFIDENCE"  # confidence sub minimum_regime_confidence
-    UNCERTAIN_REGIME = "UNCERTAIN_REGIME"                        # regim UNCERTAIN/UNKNOWN → NO_TRADE
+    UNCERTAIN_REGIME = "UNCERTAIN_REGIME"                        # axă necesară Unavailable → NO_TRADE
     NO_BREAKOUT = "NO_BREAKOUT"                                  # sweep/wick fără displacement+acceptare (N4)
+    TRUE_RANGE_NOT_IDENTIFIABLE = "TRUE_RANGE_NOT_IDENTIFIABLE"  # DECIZIE CEO: range real neidentificabil (NEUTRAL conflatează 4 situații)

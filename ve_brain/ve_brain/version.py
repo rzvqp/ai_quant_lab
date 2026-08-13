@@ -36,6 +36,13 @@ SEMANTIC_MODES: tuple[str, ...] = ("research", "replay", "shadow", "live")
 # Dreptul de analiză prin N6 ≠ dreptul de execuție. Submisia de ordine la broker e DEZACTIVATĂ în artefact. ──
 BROKER_ORDER_SUBMISSION: str = "DISABLED"
 
+# ── DECIZIE CEO pe defectul de range: RANGE real e NEIDENTIFICABIL (Direction.NEUTRAL conflatează range real, lipsă
+# de structură, WARMUP și fail-closed sub n_min). Rutarea strategiilor de range e DEZACTIVATĂ mecanic. ──
+RANGE_STRATEGY_ROUTING: str = "DISABLED"
+RANGE_BLOCKER: str = "TRUE_RANGE_NOT_IDENTIFIABLE"
+# Dezambiguizarea range-ului = WORK ITEM SEPARAT (câmpuri ADITIVE data_readiness / consolidation_state), cu
+# specificație cauzală, preînregistrare, versiune nouă, run_hash, teste fără lookahead, validare Red Team + CEO.
+
 
 class IncompatibleContractError(RuntimeError):
     """Ridicată EXPLICIT când AI Trader cere un contract/versiune nesuportat de acest artefact."""
