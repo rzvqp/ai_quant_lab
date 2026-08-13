@@ -10,7 +10,9 @@ requires-python = ">=3.11"
 dependencies = []                     # stdlib-only; NU depinde de branch-ul de dezvoltare, NU reconstruiește detectoare
 
 [project.urls]
-source = "ai_quant_lab-wp5b @ discovery-mk-matrix-v1 @ dc28e4a"
+# branch discovery-mk-matrix-v1; measurement-source commit dc28e4a (vezi ve_brain.version.SOURCE_COMMIT);
+# validated core fbc0f20 (ve_brain.VALIDATED_CORE_COMMIT). URL valid (cerut de setuptools).
+Source = "https://github.com/rzvqp/ai_quant_lab-alpha-discovery"
 
 [tool.setuptools.packages.find]
 where = ["."]
