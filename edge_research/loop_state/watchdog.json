@@ -1,0 +1,8 @@
+{
+  "restart_count": 0,
+  "current_phase": "checkpointed",
+  "last_error": "'StructureBreak' object has no attribute 'ref'",
+  "heartbeat": 1786648045,
+  "current_candidate": "CAND-BT02",
+  "last_commit": null
+}

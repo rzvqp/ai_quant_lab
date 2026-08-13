@@ -71,6 +71,27 @@ def episodes(regime_arr, target):
     return out
 
 
+def last_swing_levels(high, low, blocks, k: int = 2):
+    """Per-bar (last_confirmed_swing_high_price, last_confirmed_swing_low_price). Lookahead-safe:
+    a swing is known only at confirmed_idx. Used for WIDE structural stops (a swing extreme, not the
+    immediate bar low) — the CAND-0037 lesson that a large stop is cost/fat-tail robust."""
+    n = len(high)
+    swings = detect_swings(high, low, blocks, k)
+    ev = sorted(((s.confirmed_idx, s.kind, s.price) for s in swings), key=lambda x: x[0])
+    hi_lvl = [float("nan")] * n; lo_lvl = [float("nan")] * n
+    lh = float("nan"); ll = float("nan"); ptr = 0
+    for j in range(n):
+        while ptr < len(ev) and ev[ptr][0] <= j:
+            _, kind, price = ev[ptr]
+            if kind is SwingKind.HIGH:
+                lh = price
+            else:
+                ll = price
+            ptr += 1
+        hi_lvl[j] = lh; lo_lvl[j] = ll
+    return hi_lvl, lo_lvl
+
+
 def compression_flags(atr14):
     """Causal COMPRESSION predicate: atr14 < 0.8 * rolling50(atr14)."""
     atr = np.asarray(atr14, float)

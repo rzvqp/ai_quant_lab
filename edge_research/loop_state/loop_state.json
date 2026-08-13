@@ -1,0 +1,33 @@
+{
+  "loop_state": "FAMILY_QUEUE_EXHAUSTED",
+  "queue": [],
+  "completed_ids": [
+    "CAND-T05",
+    "CAND-T06"
+  ],
+  "failed_ids": [
+    "CAND-TD01",
+    "CAND-C01",
+    "CAND-BT01",
+    "CAND-BT02"
+  ],
+  "canonical_rerun_queue": [
+    "CAND-T05",
+    "CAND-T06"
+  ],
+  "m_total": 6,
+  "family_budget": {
+    "max_candidates_per_cycle": 4,
+    "max_variants_per_hypothesis": 2,
+    "max_refine_depth": 1,
+    "abandon_after_consecutive_falsified": 6
+  },
+  "current_candidate": "CAND-BT02",
+  "last_checkpoint_ts": 1786648045,
+  "range_cells_skipped": [
+    "RANGE \u00d7 mean reversion",
+    "RANGE \u00d7 level fade",
+    "RANGE \u00d7 boundary fade",
+    "RANGE \u00d7 center reversion"
+  ]
+}
