@@ -2146,4 +2146,46 @@
                ran no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [50], prev_hash E49.
   entry_hash:  E49
+
+[50] 2026-08-13
+  prev_hash:   E49
+  event:       VERDICT
+  dc_id:       DC-VE-BRAIN-HANDOFF
+  freeze_hash: bd60c7a (ve_brain artifact, Mandate 1)
+  battery_ver: RT-HANDOFF-0001
+  reviewer:    Red Team
+  detail:      VE HANDOFF VERIFICATION of the delivered artifact ve_brain/ @bd60c7a (router multi-axial,
+               23 VE tests). VERDICT = **VE_HANDOFF_FAIL** -> Mandate 2 to AI Trader NOT authorized.
+               🔴 FAIL-1 ROUTER_BYPASS (Obj5, decisive): n6.py::decide_n6 never requires an EligibilityDecision,
+               never calls StrategyRouter/applicable_regimes/_declares_range; the range fail-closed lives ONLY
+               in StrategyRouter.route_one. FIXTURE: decide_n6(strategy_id=RANGE_STRAT, regime_label=RANGE,
+               RATIFIED, EV-positive) -> decision=TRADE, reason=TRADE_VALIDATED_EDGE (range strat gets a REAL
+               trade; TRUE_RANGE_NOT_IDENTIFIABLE never fires). = bypassable-guard pattern a 3rd time (after
+               E2E-L2, compare() un-wired). N6 must require route proof + re-assert range block.
+               🔴 FAIL-2 IMPLICIT_PARTITION_BY_EXPANSION_STATE (Obj2, .state lead NOT closed): regime_routing.py:63
+               applicable_regimes takes a SINGLE `volatility` string, not raw is_compressed/is_displacement.
+               COMPRESSION<-vol=='compressed' (:69), BREAKOUT_TRANSITION<-vol=='high_directional' (:71) = mutually
+               exclusive; exhaustive check: NO vol value yields {COMPRESSION,BREAKOUT_TRANSITION}. Fixture
+               is_compressed=T AND is_displacement=T: if N1 collapses ->high_directional, COMPRESSION ERASED
+               before the router. Partition just MOVED from market_intelligence/expansion.py::_state_for to N1's
+               volatility axis. Router must consume RAW axes (or a vol SET).
+               🟠 FAIL-3 A5 not imposed (Obj6): (a) block_end absent from fingerprint, delegated to
+               measurement_run_hash which OMITS it (my eleventh) -> same-strategy/diff-block_end fixture fails
+               at ve_brain; (b) require_comparable/compare_decisions NEVER called inside decide_n6/run_ev ->
+               opt-in, un-enforced. PASSES within A5: strategy_id+strategy_version in fingerprint (S1!=S3, v1!=v2);
+               engine vs contract SEPARATE (d3/d4/d5) -> my earlier 'conflated' finding FIXED.
+               🟠 FAIL-4: version.py pins SOURCE_COMMIT=3344bff + MEASUREMENT_CONTRACT_VERSION=canonical-evaluator-
+               v2.7.66 = the A2-REJECTED asymmetric evaluator (reason_codes declare strict-geometry INVALID_EXECUTION
+               but the pinned engine is asymmetric). Re-pin to corrected evaluator; A2 still open.
+               PASSES (so FAIL is precise): Obj4 simultaneity applicable_regimes('compressed','strong','up')=
+               {COMPRESSION,TREND_UP} both, set-union no if/elif, multiple eligible kept as SEPARATE decisions;
+               Obj1 at the router — RANGE never emitted (exhaustive False), no fallback/else:range, range-block
+               precedence before UNCERTAIN (cond17 ok) BUT voided end-to-end by FAIL-1; Obj3 BREAKOUT_TRANSITION —
+               |run|=1 alone/warmup(None)->UNCERTAIN, only range+high_directional->BREAKOUT, documented PER-BAR
+               PROXY. Reason codes present on every output but persistence/queryability (cond 9/10) DELEGATED
+               (ve_brain returns, has no store) = CONDITIONAL. 12 deliverables APPEAR present but do not cure the
+               four defects. VE_HANDOFF_PASS forbidden. FREEZE HOLDS. Red Team modified no engine, ran no data,
+               changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [51], prev_hash E50.
+  entry_hash:  E50
 ```
