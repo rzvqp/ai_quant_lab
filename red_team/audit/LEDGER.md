@@ -2258,4 +2258,42 @@
                outside red_team/.
                STATE: OPERATIONAL. Next entry [53], prev_hash E52.
   entry_hash:  E52
+
+[53] 2026-08-13
+  prev_hash:   E52
+  event:       VERDICT
+  dc_id:       DC-VE-BRAIN-HANDOFF
+  freeze_hash: 64cab29 (ve_brain 0.1.2 — registry-injection self-attack closed)
+  battery_ver: RT-HANDOFF-0004
+  reviewer:    Red Team
+  detail:      FINAL HANDOFF REVALIDATION of ve_brain 0.1.2 @64cab29 (21 tests, mypy clean). VERDICT =
+               **VE_HANDOFF_CONDITIONAL** (one remedy) -> Mandate 2 still NOT authorized.
+               DELIVERED REPAIR CREDITED: the prior forged-eligibility CONDITIONAL is CLOSED — N6 reads
+               requires_true_range FROM THE REGISTRY, independent of reason_codes/is_eligible/EV. VERIFIED:
+               forged eligible=True + a correctly-registered RANGE strategy -> NO_TRADE/TRUE_RANGE_NOT_
+               IDENTIFIABLE. VE also self-found+closed the registry-as-parameter forgery (registry now an
+               internal singleton, not a decide_n6 param).
+               ★ DECISIVE ATTACK REPRODUCIBLE (CEO's exact fixture): register_canonical_strategy(range_fade,
+               family=TREND, allowed_regimes=(TREND_UP,), RATIFIED) -> matching candidate+eligibility, EV+ ->
+               decide_n6 -> decision=TRADE (required NO_TRADE). N6 reads requires_true_range from the registry
+               (correct) BUT the REGISTRY ITSELF is consumer-defined: public register_canonical_strategy,
+               empty start, no approved catalog, no seal. Poisoning range_fade AS TREND -> requires_true_range
+               =False -> range block never fires. test_c16 catches candidate-lies-vs-correct-registry, NOT
+               poisoning-the-registry (candidate+registry consistent, both forged).
+               TEN CHECKS all support CONDITIONAL: (1) register_canonical_strategy PUBLIC yes; (3) registry
+               starts empty yes; (4) first-to-register-wins yes (register blocks only same id+DIFFERENT policy);
+               (5) reset_canonical_registry + set_registry_available PUBLIC in __all__ (not isolated); (6)
+               consumer self-grants RATIFIED (validation_status caller-set); (8) NO approved catalog (fp
+               recomputed from what consumer registered); (9) NO seal mechanism; (10) N6 has no seal/approved-
+               version check (only _REGISTRY_AVAILABLE fault flag).
+               Per CEO pre-registration for THIS test: reproducible -> CONDITIONAL with ONE remedy = internal
+               VERSIONED+SEALED catalog, seal before event processing, N6 refuses unsealed/version-mismatched,
+               NO public arbitrary-definition/reset/availability API in production (move to isolated test-only).
+               Principle: AI Trader cannot DEFINE a canonical strategy's family/allowed_regimes/requires_true_
+               range/validation_status/policy_fingerprint; authority must come from a controlled versioned VE
+               catalog. NO further defect invented (test closed per rule). On next PASS, Mandate 2 auto-
+               distributes. A2 + canonical contract remain independent. Red Team modified no engine, ran no
+               data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [54], prev_hash E53.
+  entry_hash:  E53
 ```
