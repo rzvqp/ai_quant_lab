@@ -69,13 +69,19 @@ def test_meas9_gap_through_stop_is_invalid_execution() -> None:
     assert out.directional_risk <= 0.0 and not hasattr(out, "results")   # niciun R, niciun câștig fictiv
 
 
-# ── §5(b) MEAS-9: recompensă ≤ 0 (gap PRIN țintă) → ieșire la PREȚUL DE INTRARE (gross 0) ──
-def test_meas9_gap_through_target_exits_at_entry() -> None:
+# ── A2 GEOMETRIE STRICTĂ: recompensă ≤ 0 (gap/open pe țintă) → INVALID_EXECUTION (nu ieșire-la-intrare) ──
+def test_a2_gap_through_target_is_invalid() -> None:
     o, h, l, c = _flat(6); o[1] = 100.0
     out = evaluate_signal(_sig(signal_bar=0, requested_stop_price=90.0, target_kind="price", target_param=99.5),
-                          o, h, l, c)
-    assert isinstance(out, ExecutedTrade) and out.exit_reason == "gap_through_target" and out.exit_price == 100.0
-    assert all(r.gross_move_price == 0.0 and r.net_R < 0 for r in out.results)   # 0 − costuri
+                          o, h, l, c)   # target 99,5 SUB intrarea 100 (long) → recompensă < 0
+    assert isinstance(out, InvalidExecution) and out.violation == "reward_nonpositive"
+    assert out.directional_reward is not None and out.directional_reward <= 0.0 and not hasattr(out, "results")
+
+
+def test_a2_open_exactly_on_stop_is_invalid() -> None:
+    o, h, l, c = _flat(6); o[1] = 100.0
+    out = evaluate_signal(_sig(signal_bar=0, requested_stop_price=100.0), o, h, l, c)   # open EXACT pe stop
+    assert isinstance(out, InvalidExecution) and out.violation == "risk_nonpositive"
 
 
 # ── R4 ──

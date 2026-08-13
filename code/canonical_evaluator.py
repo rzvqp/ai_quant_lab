@@ -16,13 +16,11 @@ REGULI (R1-R7, R11) + corecțiile v2.7.66:
   R11 §3: `run_hash = sha256(config_hash ‖ sha256(data_identity))` — acoperă ȘI DATELE (simbol/timeframe/split/
       manifest/n_blocks/holdout), nu doar costul. `compare()` RIDICĂ NonComparableError (nu comentează).
 
-  §5 GAP-GUARD ASIMETRIC (MEAS-9), aplicat ÎNAINTE de orice evaluare de ieșire:
-     (a) risc = dirn·(entry−stop) <= 0  (intrarea a trecut PRIN stop): NUMITORUL e distrus ⇒ INVALID_EXECUTION.
-         Exclus din populația de randamente, dar NUMĂRAT. NICIODATĂ un câștig. (long 97/stop 98 conta azi +0,95.)
-     (b) recompensă = dirn·(target−entry) <= 0 (intrarea a trecut PRIN țintă): numitorul INTACT, doar numărătorul
-         zero ⇒ ieșire LA PREȚUL DE INTRARE, R = 0 − costuri, `gap_through_target`. (entry 105/target 102 conta −0,436.)
-     Asimetria e PRINCIPIALĂ (structura fracției), nu preferință. Regula generală: nu se contabilizează NICIODATĂ o
-     execuție mai bună decât prețurile parcurse DUPĂ intrare.
+  §5 GEOMETRIE STRICTĂ la open (AMENDAMENT CEO A2 — prevalează asupra variantei asimetrice, care NU e aprobată),
+     aplicată ÎNAINTE de orice evaluare de ieșire. LONG: stop < entry < target; SHORT: target < entry < stop.
+     `risc = dirn·(entry−stop) <= 0  OR  recompensă = dirn·(target−entry) <= 0` ⇒ INVALID_EXECUTION.
+     Acoperă: gap prin stop, gap prin target, open EXACT pe stop, open EXACT pe target. Fără tranzacție, fără P&L,
+     NUMĂRAT. (Varianta asimetrică — reward≤0 → ieșire-la-intrare — a fost RETRASĂ de A2.)
 
   §7 MEAS-10: `StrategyReport` poartă câmpurile de CONCENTRARE (best_trade_share, trimmed_top1, sum_R, ...) — altfel
      garda fat-tail a CEO (R10) e NECALCULABILĂ din ieșirea oficială („o cerință necalculabilă e un text, nu o cerință").
@@ -43,7 +41,7 @@ TICK_SIZE: float = 0.01
 K_SPREAD: float = 2.0                # pe JUMĂTATE de spread (dus-întors)
 K_TICK: float = 5.0
 K_ATR: float = 0.10
-CODE_VERSION: str = "canonical-evaluator-v2.7.66"
+CODE_VERSION: str = "canonical-evaluator-v2.7.66-A2"   # A2: geometrie strictă (reward≤0 → INVALID) ⇒ NON-COMPARABIL cu asimetricul
 REASON_STOP_BELOW_MINIMUM: str = "STOP_BELOW_MINIMUM"
 REASON_INVALID_EXECUTION: str = "INVALID_EXECUTION"
 
@@ -120,14 +118,17 @@ class Rejection:
 
 @dataclass(frozen=True)
 class InvalidExecution:
-    """§5(a): risc ≤ 0 (intrarea a trecut PRIN stop). NUMITORUL distrus ⇒ R NEDEFINIT. NUMĂRAT, exclus din
-    populația de randamente, NICIODATĂ un câștig. NU dispare tăcut."""
+    """GEOMETRIE STRICTĂ la open (AMENDAMENT CEO A2, prevalează asupra variantei asimetrice). LONG: stop < entry <
+    target; SHORT: target < entry < stop. Orice încălcare (gap prin stop, gap prin target, open EXACT pe stop sau pe
+    target) ⇒ INVALID_EXECUTION: fără tranzacție, fără P&L, NUMĂRAT. `risc ≤ 0 OR recompensă ≤ 0`."""
     strategy_id: str
     signal_id: str
     timestamp: int
     entry_price: float
     stop_price: float
-    directional_risk: float            # dirn·(entry−stop) ≤ 0
+    directional_risk: float                    # dirn·(entry−stop); ≤ 0 = gap/open pe stop
+    violation: str                             # 'risk_nonpositive' | 'reward_nonpositive'
+    directional_reward: float | None = None    # dirn·(target−entry); ≤ 0 = gap/open pe target
     reason_code: str = REASON_INVALID_EXECUTION
 
 
@@ -247,18 +248,13 @@ def evaluate_signal(
     dirn = 1 if sig.direction > 0 else -1
     stop_price = sig.requested_stop_price
 
-    # ── §5(a) GAP-GUARD: risc ≤ 0 (intrarea a trecut PRIN stop) → INVALID_EXECUTION (numitor distrus) ──
+    # ── GEOMETRIE STRICTĂ la open (AMENDAMENT CEO A2): risc ≤ 0 (gap/open pe stop) → INVALID_EXECUTION ──
     directional_risk = dirn * (entry - stop_price)
     if directional_risk <= 0.0:
-        return InvalidExecution(sig.strategy_id, sig.signal_id, sig.timestamp, entry, stop_price, directional_risk)
+        return InvalidExecution(sig.strategy_id, sig.signal_id, sig.timestamp, entry, stop_price,
+                                directional_risk, "risk_nonpositive")
 
     risk = directional_risk                                    # = |entry − stop|, strict pozitiv aici
-
-    # ── R3/D-2: RESPINGE dacă stopul cerut e sub podea (spread pe JUMĂTATE) ──
-    ms = minimum_stop_distance(half_of(sig.spread_price), sig.atr)
-    if risk < ms.minimum_stop_distance:
-        return Rejection(sig.strategy_id, sig.signal_id, sig.timestamp, risk, ms.minimum_stop_distance,
-                         sig.spread_price, sig.atr, ms.dominant_component)
 
     if sig.target_kind == "rr" and sig.target_param is not None:
         tgt: float | None = entry + dirn * sig.target_param * risk
@@ -267,12 +263,18 @@ def evaluate_signal(
     else:
         tgt = None
 
-    # ── §5(b) GAP-GUARD: recompensă ≤ 0 (intrarea a trecut PRIN țintă) → ieșire la PREȚUL DE INTRARE (numărător zero) ──
-    if tgt is not None and _finite(tgt) and dirn * (tgt - entry) <= 0.0:
-        res_gap = tuple(ScenarioResult(sc.name, (0.0 - sc.total_cost_price) / risk, 0.0, sc.total_cost_price)
-                        for sc in scenarios)
-        return ExecutedTrade(sig.strategy_id, sig.signal_id, ei, entry, dirn, stop_price, risk, ei, entry,
-                             "gap_through_target", False, res_gap, rh)
+    # ── GEOMETRIE STRICTĂ (A2): recompensă ≤ 0 (gap/open pe target) → INVALID_EXECUTION (NU ieșire-la-intrare) ──
+    if tgt is not None and _finite(tgt):
+        directional_reward = dirn * (tgt - entry)
+        if directional_reward <= 0.0:
+            return InvalidExecution(sig.strategy_id, sig.signal_id, sig.timestamp, entry, stop_price,
+                                    directional_risk, "reward_nonpositive", directional_reward)
+
+    # ── R3/D-2: RESPINGE dacă stopul cerut e sub podea (spread pe JUMĂTATE) ──
+    ms = minimum_stop_distance(half_of(sig.spread_price), sig.atr)
+    if risk < ms.minimum_stop_distance:
+        return Rejection(sig.strategy_id, sig.signal_id, sig.timestamp, risk, ms.minimum_stop_distance,
+                         sig.spread_price, sig.atr, ms.dominant_component)
 
     # ── R6: [ei, ei+H-1] ──
     last_hold = ei + sig.max_holding_bars - 1

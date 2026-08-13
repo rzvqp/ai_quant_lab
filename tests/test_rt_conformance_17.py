@@ -116,12 +116,12 @@ def test_t17_run_hash_covers_data_and_compare_raises() -> None:
         compare(a.run_hash, b.run_hash)                       # RIDICĂ, nu comentează (T17b)
 
 
-def test_t18_meas9_asymmetric() -> None:
-    # §5(a) gap prin STOP → INVALID_EXECUTION (numitor distrus)
+def test_t18_meas9_strict_geometry_a2() -> None:
+    # AMENDAMENT A2 (geometrie strictă): risc ≤ 0 OR recompensă ≤ 0 → INVALID_EXECUTION (ambele)
     o, h, l, c = [100.0]*6, [100.2]*6, [99.8]*6, [100.0]*6
-    inv = evaluate_signal(_sig(requested_stop_price=101.0), o, h, l, c)   # stop 101 peste intrarea 100
-    assert isinstance(inv, InvalidExecution) and inv.directional_risk <= 0.0
-    # §5(b) gap prin ȚINTĂ → ieșire la PREȚUL DE INTRARE (numărător zero)
-    tgt = evaluate_signal(_sig(requested_stop_price=90.0, target_kind="price", target_param=99.5), o, h, l, c)
-    assert isinstance(tgt, ExecutedTrade) and tgt.exit_reason == "gap_through_target"
-    assert all(r.gross_move_price == 0.0 for r in tgt.results)
+    inv_stop = evaluate_signal(_sig(requested_stop_price=101.0), o, h, l, c)   # gap prin stop
+    assert isinstance(inv_stop, InvalidExecution) and inv_stop.violation == "risk_nonpositive"
+    inv_tgt = evaluate_signal(_sig(requested_stop_price=90.0, target_kind="price", target_param=99.5), o, h, l, c)
+    assert isinstance(inv_tgt, InvalidExecution) and inv_tgt.violation == "reward_nonpositive"   # gap prin target
+    exact = evaluate_signal(_sig(requested_stop_price=100.0), o, h, l, c)      # open EXACT pe stop
+    assert isinstance(exact, InvalidExecution)
