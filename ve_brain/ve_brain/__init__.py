@@ -22,13 +22,16 @@ from .contracts import (
 from .strategy_contract import ValidationStatus, can_reach_n6, can_execute_real, TradeProposal
 from .regime_routing import (
     SemanticRegime, RawAxes, applicable_regimes, regime_fingerprint, StrategyContract, StrategyRegistry,
-    StrategyRouter, RoutingMode, EligibilityDecision, n4_triggers_breakout,
+    StrategyRouter, RoutingMode, EligibilityDecision, n4_triggers_breakout, requires_true_range,
+    strategy_policy_fingerprint, DuplicateStrategyPolicyError,
 )
 from .ev_engine import run_ev, ENGINE_VERSION, EV_ENGINE_SOURCE_COMMIT
 from .fingerprint import (
     decision_fingerprint, data_identity, require_comparable, compare_decisions, NonComparableDecisionError,
 )
-from .n6 import decide_n6
+from .n6 import (
+    decide_n6, register_canonical_strategy, reset_canonical_registry, set_registry_available,
+)
 
 __version__ = VE_BRAIN_VERSION
 
@@ -40,5 +43,6 @@ __all__ = [
     "OUTPUT_CONTRACT_ID", "ValidationStatus", "can_reach_n6", "can_execute_real", "TradeProposal",
     "SemanticRegime", "RawAxes", "applicable_regimes", "regime_fingerprint", "data_identity", "N1_CONTRACT_VERSION", "ROUTER_VERSION", "RAW_AXIS_SCHEMA_VERSION", "ELIGIBILITY_POLICY_VERSION", "StrategyContract", "RANGE_STRATEGY_ROUTING", "RANGE_BLOCKER", "StrategyRegistry", "StrategyRouter", "RoutingMode",
     "EligibilityDecision", "n4_triggers_breakout", "run_ev", "ENGINE_VERSION", "EV_ENGINE_SOURCE_COMMIT",
-    "decision_fingerprint", "require_comparable", "compare_decisions", "NonComparableDecisionError", "decide_n6",
+    "requires_true_range", "strategy_policy_fingerprint", "DuplicateStrategyPolicyError", "decision_fingerprint", "require_comparable", "compare_decisions", "NonComparableDecisionError", "decide_n6",
+    "register_canonical_strategy", "reset_canonical_registry", "set_registry_available",
 ]

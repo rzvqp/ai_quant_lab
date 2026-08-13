@@ -10,12 +10,20 @@ _PKG = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _PKG not in sys.path:
     sys.path.insert(0, _PKG)
 
+import pytest
+
 from ve_brain import (  # noqa: E402
     DecisionRequest, ELIGIBILITY_POLICY_VERSION, HierarchyLevel, INPUT_CONTRACT_ID, N1_CONTRACT_VERSION, OutcomeCell,
     ProbabilityInputs, RAW_AXIS_SCHEMA_VERSION, ROUTER_VERSION, RawAxes, SemanticRegime, StrategyRouter,
-    ValidationStatus, decide_n6, regime_fingerprint,
+    ValidationStatus, decide_n6, regime_fingerprint, register_canonical_strategy, reset_canonical_registry,
+    strategy_policy_fingerprint,
 )
 from ve_brain.regime_routing import StrategyContract as SC  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _clean_registry() -> None:
+    reset_canonical_registry()
 
 MC = "canonical-evaluator-v2.7.66-A2"
 AXES = RawAxes(is_compressed=False, is_displacement=False, direction="up", structure="strong")   # {TREND_UP}
@@ -36,6 +44,7 @@ def _cand(status: ValidationStatus, *, rr: float, prob: bool, confirmation: bool
         pi = ProbabilityInputs(hierarchy=(HierarchyLevel(cell=cell, siblings=(cell, cell)),), credibility=0.80)
     return DecisionRequest(
         contract_id=INPUT_CONTRACT_ID, strategy_id="fix", strategy_version="v1", validation_status=status,
+        strategy_family="F", strategy_policy_fingerprint=strategy_policy_fingerprint(_sc("fix", status)),
         market_event_id="ev", regime_fingerprint=regime_fingerprint(AXES), market_state_ref="ms",
         regime_label="TREND_UP", bias_direction="LONG", market_map_available=True, levels_available=True,
         confirmation_available=confirmation, entry_price=100.0, stop_price=99.0, target_kind="rr", target_param=rr,
@@ -47,7 +56,10 @@ def _cand(status: ValidationStatus, *, rr: float, prob: bool, confirmation: bool
 
 
 def _decide(status: ValidationStatus, *, rr: float, prob: bool, confirmation: bool = True) -> object:
-    elig = StrategyRouter((_sc("fix", status),)).eligible(AXES, "ev", "LONG", 1.0)[0]
+    reset_canonical_registry()                                # fiecare fixture rescrie „fix” cu alt status
+    sc = _sc("fix", status)
+    register_canonical_strategy(sc)                            # populează registrul CANONIC intern
+    elig = StrategyRouter((sc,)).eligible(AXES, "ev", "LONG", 1.0)[0]
     return decide_n6(_cand(status, rr=rr, prob=prob, confirmation=confirmation), elig)
 
 

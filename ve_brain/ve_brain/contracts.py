@@ -46,7 +46,9 @@ class DecisionRequest:
     contract_id: str
     strategy_id: str
     strategy_version: str
-    validation_status: ValidationStatus
+    validation_status: ValidationStatus    # AUDIT — N6 folosește statutul din REGISTRUL CANONIC, nu acesta
+    strategy_family: str                    # AUDIT — verificat contra registrului
+    strategy_policy_fingerprint: str        # AUDIT — recalculat de N6 din registru; nepotrivire → STRATEGY_POLICY_MISMATCH
     market_event_id: str                   # FAIL-1: identitatea evenimentului de piață (bara)
     regime_fingerprint: str                # FAIL-1: amprenta regimului curent (din axele brute)
     # starea pieței + nivelele TURNULUI (rezumate; valorile brute rămân în market_state opac pentru audit)

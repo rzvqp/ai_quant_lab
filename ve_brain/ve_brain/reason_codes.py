@@ -26,6 +26,10 @@ class ReasonCode(Enum):
     SCHEMA_VALIDATION_FAILED = "SCHEMA_VALIDATION_FAILED"        # input/output nu respectă schema
     CONFIG_FINGERPRINT_MISMATCH = "CONFIG_FINGERPRINT_MISMATCH"  # comparație non-comparabilă (run_hash diferit)
     MISSING_OR_INVALID_ELIGIBILITY = "MISSING_OR_INVALID_ELIGIBILITY"  # FAIL-1: N6 fără EligibilityDecision validă
+    # ── CONDITIONAL: proprietatea strategiei se rezolvă din REGISTRUL CANONIC (nu din obiectele consumatorului) ──
+    UNKNOWN_STRATEGY = "UNKNOWN_STRATEGY"                       # (strategy_id, version) absent din registrul canonic
+    STRATEGY_POLICY_MISMATCH = "STRATEGY_POLICY_MISMATCH"       # candidatul/eligibilitatea contrazic definiția canonică
+    STRATEGY_REGISTRY_UNAVAILABLE = "STRATEGY_REGISTRY_UNAVAILABLE"  # registrul canonic indisponibil → fail-closed
 
     # ── execuție invalidă (din evaluatorul canonic; A2 geometrie strictă) ──
     INVALID_EXECUTION = "INVALID_EXECUTION"                      # risc≤0 OR recompensă≤0 (gap/open pe stop sau target)

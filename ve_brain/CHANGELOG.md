@@ -31,6 +31,15 @@ Contract de măsurare: `canonical-evaluator-v2.7.66-A2` — **v1.0-DRAFT, NOT RA
 Prima versiune — fără versiuni anterioare cu care să fie comparabilă. Rezultatele sub `-A2` sunt NON-COMPARABLE cu
 cele sub varianta asimetrică (run_hash diferit prin CODE_VERSION).
 
+### VE_HANDOFF_CONDITIONAL + AUTO-ATAC (o singură reparație de la PASS)
+- **A 4-a instanță a tiparului închisă:** `EligibilityDecision` + candidat construite manual cu ID-uri potrivite nu
+  mai pot face o strategie de range să tranzacționeze. Proprietatea strategiei = `StrategyRegistry` CANONIC (cheie
+  `(id,version)`, imuabil); N6 recalculează `strategy_policy_fingerprint` din registru și citește `requires_true_range`
+  din registru → blocaj `TRUE_RANGE_NOT_IDENTIFIABLE` INDEPENDENT de reason_codes/is_eligible/EV.
+- **Auto-atac (addendum CEO) — registrul nu e injectabil:** `decide_n6` NU mai primește `registry` ca parametru;
+  sursa canonică e un singleton INTERN populat doar prin `register_canonical_strategy`. Un registru mincinos al
+  consumatorului nu are cale către N6. Fault → `STRATEGY_REGISTRY_UNAVAILABLE` fail-closed. Închis înainte de predare.
+
 ### DESCHIS (blochează VE_HANDOFF_PASS)
 - Contractul de măsurare NOT RATIFIED (Red Team, suita extinsă). BREAKOUT_TRANSITION strict cere un detector de
   tranziție 2-stări (semnalat). Verdictul PASS/FAIL îl dă Red Team, nu VE.

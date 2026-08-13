@@ -8,7 +8,7 @@ detectoarelor. Versiunea, commit-ul sursă și statutul contractului de măsurar
 from __future__ import annotations
 
 # ── versiunea pachetului (semver) ──
-VE_BRAIN_VERSION: str = "0.1.1"
+VE_BRAIN_VERSION: str = "0.1.2"
 
 # ── commit-ul sursă EXACT din care e construit artefactul (FAIL-4: RE-PIN pe evaluatorul cu geometrie strictă A2) ──
 SOURCE_REPO: str = "ai_quant_lab-wp5b"

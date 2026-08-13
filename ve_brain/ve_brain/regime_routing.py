@@ -106,21 +106,56 @@ class StrategyContract:
     exit_on_transition: SemanticRegime | None = None
 
 
+def requires_true_range(c: StrategyContract) -> bool:
+    """Proprietate DERIVATĂ din definiția canonică: strategia depinde de RANGE real (neidentificabil)."""
+    return SemanticRegime.RANGE in c.allowed_regimes or SemanticRegime.RANGE in c.arming_regimes
+
+
+def strategy_policy_fingerprint(c: StrategyContract) -> str:
+    """Amprenta IMUABILĂ a politicii strategiei (recalculabilă de N6 din registru). O pereche (id, version) NU poate
+    avea două politici diferite."""
+    payload = {
+        "strategy_id": c.strategy_id, "strategy_version": c.strategy_version, "strategy_family": c.strategy_family,
+        "requires_true_range": requires_true_range(c),
+        "allowed_regimes": sorted(r.value for r in c.allowed_regimes),
+        "arming_regimes": sorted(r.value for r in c.arming_regimes),
+        "validation_status": c.validation_status.value, "measurement_contract_version": c.measurement_contract_version,
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+
+
+class DuplicateStrategyPolicyError(RuntimeError):
+    """Aceeași (strategy_id, strategy_version) nu poate avea două politici diferite."""
+
+
 class StrategyRegistry:
+    """SURSA CANONICĂ, controlată de artefactul VE. Definiția strategiei e IMUABILĂ per (strategy_id, version);
+    N6 rezolvă proprietatea de aici, NU din obiectele consumatorului. Câmpurile copiate în candidat/eligibilitate
+    sunt pentru AUDIT, NU autoritative."""
+
     def __init__(self) -> None:
-        self._by_id: dict[str, StrategyContract] = {}
+        self._by_key: dict[tuple[str, str], StrategyContract] = {}
 
     def register(self, c: StrategyContract) -> None:
-        self._by_id[c.strategy_id] = c
+        key = (c.strategy_id, c.strategy_version)
+        existing = self._by_key.get(key)
+        if existing is not None and strategy_policy_fingerprint(existing) != strategy_policy_fingerprint(c):
+            raise DuplicateStrategyPolicyError(
+                f"{key} are deja o politică diferită — o pereche (id, version) nu poate avea două politici")
+        self._by_key[key] = c
+
+    def resolve(self, strategy_id: str, strategy_version: str) -> StrategyContract | None:
+        """Definiția canonică pentru (id, version). None dacă absentă/versiune necunoscută."""
+        return self._by_key.get((strategy_id, strategy_version))
 
     def all(self) -> tuple[StrategyContract, ...]:
-        return tuple(self._by_id.values())
+        return tuple(self._by_key.values())
 
     def n6_eligible(self) -> tuple[StrategyContract, ...]:
-        return tuple(c for c in self._by_id.values() if can_reach_n6(c.validation_status))
+        return tuple(c for c in self._by_key.values() if can_reach_n6(c.validation_status))
 
     def real_execution(self) -> tuple[StrategyContract, ...]:
-        return tuple(c for c in self._by_id.values() if can_execute_real(c.validation_status))
+        return tuple(c for c in self._by_key.values() if can_execute_real(c.validation_status))
 
 
 class RoutingMode(Enum):

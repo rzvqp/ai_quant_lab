@@ -1,6 +1,7 @@
-"""Testele artefactului post VE_HANDOFF_FAIL: FAIL-1 (router = poartă obligatorie, 10) + FAIL-2 (axe brute în
-contract, 10) + A5 (identitate date + comparabilitate) + calea COMPLETĂ N1→Router→EligibilityDecision→EV→N6.
-Testul component izolat NU e suficient. (Cele 25 end-to-end rămân la AI Trader.)"""
+"""Testele post VE_HANDOFF_CONDITIONAL: registrul CANONIC e INTERN artefactului VE (nu parametru), proprietatea
+strategiei nu poate fi suprascrisă de obiectele consumatorului ȘI nici registrul nu poate fi injectat de consumator.
+FAIL-2 axe brute + A5 + calea COMPLETĂ. Testul component izolat e insuficient. (Cele 25 end-to-end rămân la AI Trader.)
+"""
 
 from __future__ import annotations
 
@@ -15,28 +16,41 @@ if _PKG not in sys.path:
     sys.path.insert(0, _PKG)
 
 from ve_brain import (  # noqa: E402
-    DecisionRequest, ELIGIBILITY_POLICY_VERSION, HierarchyLevel, INPUT_CONTRACT_ID, N1_CONTRACT_VERSION,
-    NonComparableDecisionError, OutcomeCell, ProbabilityInputs, RAW_AXIS_SCHEMA_VERSION, ROUTER_VERSION, RawAxes,
-    RoutingMode, SemanticRegime, StrategyRegistry, StrategyRouter, ValidationStatus, applicable_regimes,
-    compare_decisions, data_identity, decide_n6, regime_fingerprint,
+    DecisionRequest, DuplicateStrategyPolicyError, ELIGIBILITY_POLICY_VERSION, EligibilityDecision, HierarchyLevel,
+    INPUT_CONTRACT_ID, N1_CONTRACT_VERSION, NonComparableDecisionError, OutcomeCell, ProbabilityInputs,
+    RAW_AXIS_SCHEMA_VERSION, ROUTER_VERSION, RawAxes, RoutingMode, SemanticRegime, StrategyRegistry, StrategyRouter,
+    ValidationStatus, applicable_regimes, compare_decisions, decide_n6, regime_fingerprint,
+    register_canonical_strategy, reset_canonical_registry, set_registry_available, strategy_policy_fingerprint,
 )
 from ve_brain.regime_routing import StrategyContract as SC  # noqa: E402
 
 MC = "canonical-evaluator-v2.7.66-A2"
+AXES = RawAxes(is_compressed=False, is_displacement=False, direction="up", structure="strong")   # {TREND_UP}
 
 
-def _sc(sid: str, *, family: str = "F", allowed: tuple[SemanticRegime, ...] = (SemanticRegime.TREND_UP,),
-        directions: tuple[str, ...] = ("LONG",), arming: tuple[SemanticRegime, ...] = (),
-        trigger: SemanticRegime | None = None, status: ValidationStatus = ValidationStatus.RATIFIED) -> SC:
-    return SC(strategy_id=sid, strategy_family=family, allowed_regimes=allowed, allowed_directions=directions,
-              arming_regimes=arming, trigger_transition=trigger, minimum_regime_confidence=0.0, required_N2_bias=None,
+@pytest.fixture(autouse=True)
+def _clean_registry() -> None:
+    """Registrul canonic e INTERN + global → resetat înaintea FIECĂRUI test pentru izolare."""
+    reset_canonical_registry()
+
+
+def _sc(sid: str, *, family: str, allowed: tuple[SemanticRegime, ...],
+        status: ValidationStatus = ValidationStatus.RATIFIED) -> SC:
+    return SC(strategy_id=sid, strategy_family=family, allowed_regimes=allowed, allowed_directions=("LONG",),
+              arming_regimes=(), trigger_transition=None, minimum_regime_confidence=0.0, required_N2_bias=None,
               required_N3_map=True, required_N4_confirmation=None, entry_rule="e", invalidation_rule="i",
               exit_rule="x", holding_window=10, validation_status=status, strategy_version="v1",
               measurement_contract_version=MC)
 
 
-TREND_AXES = RawAxes(is_compressed=False, is_displacement=False, direction="up", structure="strong")
-COMPRESS_AXES = RawAxes(is_compressed=True, is_displacement=False, direction="neutral", structure="range")
+TREND_SC = _sc("trend", family="TREND_PULLBACK", allowed=(SemanticRegime.TREND_UP,))
+RANGE_SC = _sc("range_fade", family="RANGE_MEAN_REVERSION", allowed=(SemanticRegime.RANGE,))
+
+
+def _register(*contracts: SC) -> None:
+    """Populează registrul CANONIC intern prin API-ul controlat (unica sursă pe care N6 o citește)."""
+    for c in contracts:
+        register_canonical_strategy(c)
 
 
 def _prob() -> ProbabilityInputs:
@@ -44,197 +58,183 @@ def _prob() -> ProbabilityInputs:
     return ProbabilityInputs(hierarchy=(HierarchyLevel(cell=cell, siblings=(cell, cell)),), credibility=0.80)
 
 
-def _candidate(sid: str, status: ValidationStatus, *, enter: bool = True, event: str = "ev1", regime_fp: str = "rfp",
-               with_prob: bool = True, confirmation: bool = True, n1v: str = N1_CONTRACT_VERSION) -> DecisionRequest:
+def _candidate(c: SC, *, enter: bool = True, event: str = "ev1", regime_fp: str | None = None,
+               family: str | None = None, policy_fp: str | None = None, status: ValidationStatus | None = None,
+               n1v: str = N1_CONTRACT_VERSION, version: str = "v1") -> DecisionRequest:
     return DecisionRequest(
-        contract_id=INPUT_CONTRACT_ID, strategy_id=sid, strategy_version="v1", validation_status=status,
-        market_event_id=event, regime_fingerprint=regime_fp, market_state_ref="ms", regime_label="TREND_UP",
-        bias_direction="LONG", market_map_available=True, levels_available=True, confirmation_available=confirmation,
-        entry_price=100.0, stop_price=99.0, target_kind="rr", target_param=(3.0 if enter else 0.001),
-        holding_window=10, atr=1.0, probability_inputs=_prob() if with_prob else None, full_spread_price=0.05,
-        entry_slippage_price=0.0, exit_slippage_price=0.0, symbol="XAUUSD", timeframe="M15", block_start=0,
-        block_end=100, segment_id="seg1", manifest_hash="mh", n1_contract_version=n1v,
+        contract_id=INPUT_CONTRACT_ID, strategy_id=c.strategy_id, strategy_version=version,
+        validation_status=status if status is not None else c.validation_status,
+        strategy_family=family if family is not None else c.strategy_family,
+        strategy_policy_fingerprint=policy_fp if policy_fp is not None else strategy_policy_fingerprint(c),
+        market_event_id=event, regime_fingerprint=regime_fp if regime_fp is not None else regime_fingerprint(AXES),
+        market_state_ref="ms", regime_label="TREND_UP", bias_direction="LONG", market_map_available=True,
+        levels_available=True, confirmation_available=True, entry_price=100.0, stop_price=99.0, target_kind="rr",
+        target_param=(3.0 if enter else 0.001), holding_window=10, atr=1.0, probability_inputs=_prob(),
+        full_spread_price=0.05, entry_slippage_price=0.0, exit_slippage_price=0.0, symbol="XAUUSD", timeframe="M15",
+        block_start=0, block_end=100, segment_id="s", manifest_hash="m", n1_contract_version=n1v,
         raw_axis_schema_version=RAW_AXIS_SCHEMA_VERSION, router_version=ROUTER_VERSION,
         eligibility_policy_version=ELIGIBILITY_POLICY_VERSION, measurement_contract_version=MC,
-        configuration_fingerprint="runhash")
+        configuration_fingerprint="rh")
 
 
-def _elig(sc: SC, axes: RawAxes, event: str = "ev1", bias: str = "LONG"):
-    return StrategyRouter((sc,)).eligible(axes, event, bias, 1.0)[0]
+def _real_elig(c: SC, event: str = "ev1") -> EligibilityDecision:
+    return StrategyRouter((c,)).eligible(AXES, event, "LONG", 1.0)[0]
 
 
-# ═══ FAIL-1 — routerul e poartă obligatorie (10) ═══
-def test_f1_01_range_ratified_positive_ev_no_trade() -> None:
-    rng = _sc("range_fade", family="RANGE_MEAN_REVERSION", allowed=(SemanticRegime.RANGE,))
-    elig = _elig(rng, TREND_AXES)
-    cand = _candidate("range_fade", ValidationStatus.RATIFIED, regime_fp=regime_fingerprint(TREND_AXES))
-    r = decide_n6(cand, elig)
+def _forged_elig(sid: str, *, event: str = "ev1", regime_fp: str | None = None) -> EligibilityDecision:
+    """Eligibilitate FABRICATĂ manual cu ID-uri POTRIVITE, is_eligible=TRUE, reason=ROUTER_ELIGIBLE."""
+    return EligibilityDecision(strategy_id=sid, strategy_version="v1", market_event_id=event,
+                               regime_fingerprint=regime_fp if regime_fp is not None else regime_fingerprint(AXES),
+                               router_version=ROUTER_VERSION, eligible=True, mode=RoutingMode.NORMAL,
+                               matched_regimes=("TREND_UP",), reason_codes=("ROUTER_ELIGIBLE",))
+
+
+# ═══ FIXTURE-UL DECISIV + testele de registru ═══
+def test_c02_range_forged_eligibility_matching_ids_no_trade() -> None:
+    # DECISIV: range strategy, TOATE ID-urile potrivite, is_eligible=TRUE, reason=ROUTER_ELIGIBLE, EV pozitiv
+    _register(RANGE_SC)
+    cand = _candidate(RANGE_SC)                                  # policy_fp POTRIVIT cu registrul
+    forged = _forged_elig("range_fade")
+    r = decide_n6(cand, forged)
     assert r.decision == "NO_TRADE" and r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
 
 
-def test_f1_02_direct_call_no_eligibility() -> None:
-    r = decide_n6(_candidate("s", ValidationStatus.RATIFIED), None)   # fără router
-    assert r.decision == "NO_TRADE" and r.reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
+def test_c01_range_real_eligibility_no_trade() -> None:
+    _register(RANGE_SC)
+    r = decide_n6(_candidate(RANGE_SC), _real_elig(RANGE_SC))
+    assert r.decision == "NO_TRADE" and r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
 
 
-def test_f1_03_eligibility_for_another_strategy() -> None:
-    elig = _elig(_sc("other"), TREND_AXES)
-    cand = _candidate("target", ValidationStatus.RATIFIED, regime_fp=regime_fingerprint(TREND_AXES))
-    assert decide_n6(cand, elig).reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
+def test_c03_range_requires_false_ignored_reads_registry() -> None:
+    # N6 citește requires_true_range DIN REGISTRU (candidatul n-are cum să-l falsifice — nu e câmp autoritar)
+    _register(RANGE_SC)
+    r = decide_n6(_candidate(RANGE_SC), _forged_elig("range_fade"))
+    assert r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
 
 
-def test_f1_04_eligibility_for_another_event() -> None:
-    elig = _elig(_sc("s"), TREND_AXES, event="ev2")
-    cand = _candidate("s", ValidationStatus.RATIFIED, event="ev1", regime_fp=regime_fingerprint(TREND_AXES))
-    assert decide_n6(cand, elig).reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
+def test_c04_range_presented_as_trend_no_trade() -> None:
+    _register(RANGE_SC)
+    cand = _candidate(RANGE_SC, family="TREND_PULLBACK")         # familie FALSĂ
+    r = decide_n6(cand, _forged_elig("range_fade"))
+    assert r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
 
 
-def test_f1_05_stale_eligibility_old_regime() -> None:
-    elig = _elig(_sc("s"), TREND_AXES)                               # amprentă din regimul VECHI
-    cand = _candidate("s", ValidationStatus.RATIFIED, regime_fp=regime_fingerprint(COMPRESS_AXES))  # regim curent DIFERIT
-    assert decide_n6(cand, elig).reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
+def test_c05_forged_policy_fingerprint_no_trade() -> None:
+    _register(TREND_SC)
+    r = decide_n6(_candidate(TREND_SC, policy_fp="FORGED"), _real_elig(TREND_SC))
+    assert r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
 
 
-def test_f1_06_fingerprint_mismatch() -> None:
-    elig = _elig(_sc("s"), TREND_AXES)
-    cand = _candidate("s", ValidationStatus.RATIFIED, regime_fp="WRONG")
-    assert decide_n6(cand, elig).reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
+def test_c06_unknown_strategy_no_trade() -> None:
+    _register(TREND_SC)                                          # range_fade absent
+    r = decide_n6(_candidate(RANGE_SC), _forged_elig("range_fade"))
+    assert r.reason_codes == ("UNKNOWN_STRATEGY",)
 
 
-def test_f1_07_trend_eligible_positive_ev_trades() -> None:
-    elig = _elig(_sc("trend"), TREND_AXES)
-    assert elig.eligible
-    cand = _candidate("trend", ValidationStatus.RATIFIED, regime_fp=regime_fingerprint(TREND_AXES))
-    r = decide_n6(cand, elig)
+def test_c07_unknown_version_no_trade() -> None:
+    _register(TREND_SC)
+    r = decide_n6(_candidate(TREND_SC, version="v2"), _real_elig(TREND_SC))   # versiune inexistentă
+    assert r.reason_codes == ("UNKNOWN_STRATEGY",)
+
+
+def test_c08_registry_unavailable_no_trade() -> None:
+    _register(TREND_SC)
+    set_registry_available(False)                               # fault: registry indisponibil → fail-closed
+    r = decide_n6(_candidate(TREND_SC), _real_elig(TREND_SC))
+    assert r.reason_codes == ("STRATEGY_REGISTRY_UNAVAILABLE",)
+
+
+def test_c09_trend_real_eligibility_positive_ev_trades() -> None:
+    _register(TREND_SC)
+    r = decide_n6(_candidate(TREND_SC), _real_elig(TREND_SC))
     assert r.decision == "TRADE" and r.reason_codes == ("TRADE_VALIDATED_EDGE",)
 
 
-def test_f1_08_trend_ineligible_positive_ev_no_trade() -> None:
-    elig = _elig(_sc("trend"), COMPRESS_AXES)                        # trend neeligibil în compresie
-    assert not elig.eligible
-    cand = _candidate("trend", ValidationStatus.RATIFIED, regime_fp=regime_fingerprint(COMPRESS_AXES))
-    assert decide_n6(cand, elig).reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
+def test_c10_trend_eligibility_for_another_event_no_trade() -> None:
+    _register(TREND_SC)
+    r = decide_n6(_candidate(TREND_SC, event="ev1"), _real_elig(TREND_SC, event="ev2"))
+    assert r.reason_codes == ("MISSING_OR_INVALID_ELIGIBILITY",)
 
 
-def test_f1_09_direct_instantiation_cannot_bypass() -> None:
-    # nu există semnătură legacy permisivă: eligibility e parametru OBLIGATORIU; None ⇒ MISSING
-    import inspect
-    params = inspect.signature(decide_n6).parameters
-    assert "eligibility" in params and params["eligibility"].default is inspect.Parameter.empty
-    assert decide_n6(_candidate("s", ValidationStatus.RATIFIED), None).decision == "NO_TRADE"
+def test_c11_metadata_changed_after_router_no_trade() -> None:
+    exp = _sc("s", family="F", allowed=(SemanticRegime.TREND_UP,), status=ValidationStatus.EXPERIMENTAL)
+    _register(exp)
+    cand = _candidate(exp, status=ValidationStatus.RATIFIED)     # status FALSIFICAT în candidat
+    r = decide_n6(cand, _forged_elig("s"))
+    assert r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
 
 
-def test_f1_10_traceable_to_router_decision() -> None:
-    elig = _elig(_sc("trend"), TREND_AXES, event="evX")
-    cand = _candidate("trend", ValidationStatus.RATIFIED, event="evX", regime_fp=regime_fingerprint(TREND_AXES))
-    r = decide_n6(cand, elig)
+def test_c12_direct_call_manual_objects_no_bypass() -> None:
+    _register(RANGE_SC)
+    r = decide_n6(_candidate(RANGE_SC), _forged_elig("range_fade"))   # obiecte construite manual
+    assert r.decision == "NO_TRADE" and r.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
+
+
+def test_c13_same_id_version_cannot_have_two_policies() -> None:
+    reg = StrategyRegistry(); reg.register(TREND_SC)
+    with pytest.raises(DuplicateStrategyPolicyError):
+        reg.register(_sc("trend", family="DIFFERENT", allowed=(SemanticRegime.COMPRESSION,)))
+
+
+def test_c14_full_real_path_still_works() -> None:
+    _register(TREND_SC)
+    router = StrategyRouter((TREND_SC,))
+    elig = router.eligible(AXES, "ev1", "LONG", 1.0)[0]
+    r = decide_n6(_candidate(TREND_SC, event="ev1"), elig)
     assert r.decision == "TRADE"
-    assert elig.market_event_id == cand.market_event_id and elig.regime_fingerprint == cand.regime_fingerprint
-    assert elig.router_version == ROUTER_VERSION
 
 
-# ═══ FAIL-2 — axele brute independente (10) ═══
+def test_c15_old_consumer_fails_explicitly() -> None:
+    _register(TREND_SC)
+    r = decide_n6(_candidate(TREND_SC, n1v="n1-OLD"), _real_elig(TREND_SC))
+    assert r.decision == "NO_TRADE" and r.reason_codes == ("INCOMPATIBLE_N1_CONTRACT",)
+
+
+def test_c16_consumer_cannot_inject_a_false_registry() -> None:
+    # AUTO-ATAC (addendum CEO): consumatorul construiește un registru MINCINOS (range declarat ca trend ⇒
+    # requires_true_range=False). Nu există CALE prin care acel registru ajunge la N6 — decide_n6 NU ia registry.
+    # Sursa canonică rămâne cea internă (range_fade e range), deci blocajul de range ține.
+    _register(RANGE_SC)                                          # adevărul canonic: range_fade E range
+    liar = StrategyRegistry()
+    liar.register(_sc("range_fade", family="TREND_PULLBACK", allowed=(SemanticRegime.TREND_UP,)))  # minte
+    # candidatul poartă amprenta registrului MINCINOS al consumatorului (încearcă să pară potrivit)
+    fake_c = liar.resolve("range_fade", "v1")
+    assert fake_c is not None
+    cand = _candidate(RANGE_SC, family=fake_c.strategy_family,
+                      policy_fp=strategy_policy_fingerprint(fake_c))
+    r = decide_n6(cand, _forged_elig("range_fade"))
+    # amprenta consumatorului NU se potrivește cu cea canonică ⇒ mismatch (registrul fals nu poate ajunge la N6)
+    assert r.decision == "NO_TRADE" and r.reason_codes == ("STRATEGY_POLICY_MISMATCH",)
+
+
+# ═══ FAIL-2 — axele brute independente ═══
 def _ax(**kw: object) -> RawAxes:
     d: dict[str, object] = dict(is_compressed=False, is_displacement=False, direction="up", structure="strong")
     d.update(kw)
     return RawAxes(**d)  # type: ignore[arg-type]
 
 
-def test_f2_01_compressed_only() -> None:
-    assert applicable_regimes(_ax(is_compressed=True, structure="range", direction="neutral")) == \
-        frozenset({SemanticRegime.COMPRESSION})
-
-
-def test_f2_02_displacement_only_no_invented_compression() -> None:
-    a = applicable_regimes(_ax(is_displacement=True, structure="range", direction="neutral"))
-    assert SemanticRegime.COMPRESSION not in a and SemanticRegime.BREAKOUT_TRANSITION in a
-
-
-def test_f2_03_both_flags_survive() -> None:
+def test_f2_both_flags_survive_multiaxial() -> None:
     a = applicable_regimes(_ax(is_compressed=True, is_displacement=True, structure="range", direction="neutral"))
-    assert SemanticRegime.COMPRESSION in a and SemanticRegime.BREAKOUT_TRANSITION in a   # ambele fapte supraviețuiesc
+    assert SemanticRegime.COMPRESSION in a and SemanticRegime.BREAKOUT_TRANSITION in a
 
 
-def test_f2_04_expanding_state_does_not_erase_compressed() -> None:
-    a = _ax(is_compressed=True, is_displacement=True, volatility_state="expanding", structure="range", direction="neutral")
-    assert a.is_compressed is True and SemanticRegime.COMPRESSION in applicable_regimes(a)
-
-
-def test_f2_05_compressed_state_does_not_erase_displacement() -> None:
-    a = _ax(is_compressed=True, is_displacement=True, volatility_state="compressed", structure="range", direction="neutral")
-    assert a.is_displacement is True and SemanticRegime.BREAKOUT_TRANSITION in applicable_regimes(a)
-
-
-def test_f2_06_router_not_using_volatility_string() -> None:
-    # aceleași flaguri, string-uri de rezumat DIFERITE ⇒ aceeași mulțime (routerul nu citește stringul)
+def test_f2_volatility_string_not_used() -> None:
     base = dict(is_compressed=True, is_displacement=True, structure="range", direction="neutral")
     assert applicable_regimes(RawAxes(**base, volatility_state="expanding")) == \
         applicable_regimes(RawAxes(**base, volatility_state="compressed"))
 
 
-def test_f2_07_serialization_preserves_both_flags() -> None:
-    a = _ax(is_compressed=True, is_displacement=True)
-    d = dataclasses.asdict(a); a2 = RawAxes(**d)
-    assert a2.is_compressed is True and a2.is_displacement is True
+def test_f2_multiaxial_compression_and_trend() -> None:
+    assert applicable_regimes(_ax(is_compressed=True, structure="strong", direction="up")) == \
+        frozenset({SemanticRegime.COMPRESSION, SemanticRegime.TREND_UP})
 
 
-def test_f2_08_replay_and_live_same_structure() -> None:
-    a = _ax(is_compressed=True, is_displacement=True, structure="range", direction="neutral")
-    assert applicable_regimes(a) == applicable_regimes(a)            # determinist
-    assert regime_fingerprint(a) == regime_fingerprint(a)
-
-
-def test_f2_09_old_contract_refused_incompatible_n1() -> None:
-    cand = _candidate("s", ValidationStatus.RATIFIED, n1v="n1-OLD-single-string")
-    elig = _elig(_sc("s"), TREND_AXES)
-    r = decide_n6(cand, elig)
-    assert r.decision == "NO_TRADE" and r.reason_codes == ("INCOMPATIBLE_N1_CONTRACT",)
-
-
-def test_f2_10_multiaxial_reaches_eligibility() -> None:
-    # compressed + strong + up ⇒ {COMPRESSION, TREND_UP}: ambele familii eligibile din aceleași axe brute
-    multi = _ax(is_compressed=True, is_displacement=False, direction="up", structure="strong")
-    assert applicable_regimes(multi) == frozenset({SemanticRegime.COMPRESSION, SemanticRegime.TREND_UP})
-    r = StrategyRouter((_sc("t", allowed=(SemanticRegime.TREND_UP,)),
-                        _sc("c", allowed=(SemanticRegime.COMPRESSION,)))).eligible(multi, "ev", "LONG", 1.0)
-    assert all(d.eligible for d in r) and len(r) == 2
-
-
-# ═══ A5 — identitatea datelor + comparabilitatea impusă ═══
-def test_a5_data_identity_covers_blocks_and_symbol() -> None:
-    a = data_identity(symbol="XAUUSD", timeframe="M15", block_start=0, block_end=100, segment_id="s", manifest_hash="m")
-    b = data_identity(symbol="ES", timeframe="M15", block_start=0, block_end=100, segment_id="s", manifest_hash="m")
-    assert a != b                                                   # simbol diferit ⇒ identitate diferită
-
-
-def test_a5_fingerprint_differs_by_data_and_compare_raises() -> None:
-    elig = _elig(_sc("s"), TREND_AXES)
-    fp = regime_fingerprint(TREND_AXES)
-    xau = decide_n6(_candidate("s", ValidationStatus.RATIFIED, regime_fp=fp), elig)
-    es = decide_n6(dataclasses.replace(_candidate("s", ValidationStatus.RATIFIED, regime_fp=fp), symbol="ES"), elig)
-    assert xau.configuration_fingerprint != es.configuration_fingerprint   # datele intră în amprentă
-    compare_decisions(xau.configuration_fingerprint, xau.configuration_fingerprint)
+# ═══ A5 — amprentă + comparabilitate ═══
+def test_a5_fingerprint_by_data_and_compare_raises() -> None:
+    _register(TREND_SC)
+    xau = decide_n6(_candidate(TREND_SC), _real_elig(TREND_SC))
+    es = decide_n6(dataclasses.replace(_candidate(TREND_SC), symbol="ES"), _real_elig(TREND_SC))
+    assert xau.configuration_fingerprint != es.configuration_fingerprint
     with pytest.raises(NonComparableDecisionError):
         compare_decisions(xau.configuration_fingerprint, es.configuration_fingerprint)
-
-
-# ═══ CALEA COMPLETĂ N1 → Router → EligibilityDecision → EV → N6 ═══
-def test_full_path_n1_router_eligibility_ev_n6() -> None:
-    reg = StrategyRegistry(); reg.register(_sc("trend"))
-    axes = TREND_AXES                                              # N1 axe brute
-    router = StrategyRouter(reg.n6_eligible())                    # Router
-    elig = router.eligible(axes, "ev1", "LONG", 1.0)[0]           # EligibilityDecision
-    assert elig.eligible
-    cand = _candidate("trend", ValidationStatus.RATIFIED, event="ev1", regime_fp=regime_fingerprint(axes))
-    r = decide_n6(cand, elig)                                     # EV → N6
-    assert r.decision == "TRADE" and r.expected_value_net is not None
-
-
-# ═══ cele 5 condiții de range (rămân) ═══
-def test_range_conditions_fail_closed_and_persisted() -> None:
-    rng = _sc("range_fade", family="RANGE_MEAN_REVERSION", allowed=(SemanticRegime.RANGE,))
-    for axes in (TREND_AXES, COMPRESS_AXES, _ax(is_compressed=False, is_displacement=False, direction="neutral",
-                                                structure="range")):
-        d = _elig(rng, axes)
-        assert not d.eligible and d.reason_codes == ("TRUE_RANGE_NOT_IDENTIFIABLE",)
-        assert SemanticRegime.RANGE not in applicable_regimes(axes)     # nicidecum produs

@@ -11,8 +11,8 @@ strictă + routing per regim) sunt OBLIGATORII înainte de PASS — ambele aplic
 | 3 | documentul contractelor publice | ✅ | `CONTRACTS.md` |
 | 4 | schema fiecărui input/output | ✅ | `contracts.py` + `validate_request/response` |
 | 5 | adaptorul EV vechi → contract actual | ✅ | `ev_engine.py` (matricea de adaptare + adaptor) |
-| 6 | teste unitare + contractuale | ✅ | `tests/test_router_and_n6.py` (19) + evaluator (24) |
-| 7 | fixture-uri canonice cu rezultate cunoscute | ✅ | `tests/fixtures_canonical.py` (EV known-outcome) |
+| 6 | teste unitare + contractuale | ✅ | `tests/test_router_and_n6.py` (20: c01–c16 + FAIL-2 + A5) + evaluator (24) |
+| 7 | fixture-uri canonice cu rezultate cunoscute | ✅ | `tests/test_fixtures_canonical.py` (EV known-outcome, calea completă) |
 | 8 | lista dependențelor | ✅ | `DEPENDENCIES.md` (stdlib-only) |
 | 9 | instalare/upgrade/rollback | ✅ | `INSTALL.md` |
 | 10 | dovada că EV nu mai folosește nivelurile vechi | ✅ | `_ev_core` zero importuri proiect + byte-identic `bdd15e5` |
@@ -47,6 +47,20 @@ Router MULTI-AXIAL (fără regulă globală de precedență): `test_12_multiaxia
 | **FAIL-2** partiția mutată în stringul de volatilitate | contract N1 ADITIV: `RawAxes.is_compressed`/`is_displacement` INDEPENDENTE; `volatility_state` doar telemetrie; router citește axele brute; `INCOMPATIBLE_N1_CONTRACT` la contract vechi. | `test_f2_01..10` |
 | **A5** identitate + enforcement | `data_identity` (symbol/timeframe/block_start/end/segment_id/manifest_hash, 4 blocuri) în amprentă; amprenta acoperă date‖config‖strategie‖motor‖contract‖N1‖router; `compare_decisions` RIDICĂ. | `test_a5_*` |
 | **FAIL-4** re-pin | `SOURCE_COMMIT=dc28e4a`, `MEASUREMENT_CONTRACT_VERSION=…-A2` (NU asimetricul 3344bff). | `version.py` |
+
+## Corecția VE_HANDOFF_CONDITIONAL + AUTO-ATAC (o singură reparație de la PASS)
+A patra instanță a tiparului: `EligibilityDecision` + candidatul pot fi construite MANUAL cu ID-uri POTRIVITE
+(is_eligible=TRUE, reason=ROUTER_ELIGIBLE) → range strategy returna TRADE. Remediul NU e un bool (falsificabil).
+
+| închidere | mecanism | dovadă |
+|---|---|---|
+| proprietatea strategiei = sursă CANONICĂ, nu câmp al candidatului | `StrategyRegistry` (cheie `(id,version)`, imuabil per cheie); N6 rezolvă contractul din registru și recalculează `strategy_policy_fingerprint`; nepotrivire → `STRATEGY_POLICY_MISMATCH` | `test_c04/c05/c11/c13` |
+| `requires_true_range` citit DIN REGISTRU, blocaj INDEPENDENT de reason_codes/is_eligible/EV | `decide_n6` aplică `TRUE_RANGE_NOT_IDENTIFIABLE` înainte de eligibilitate/EV, pe baza `allowed_regimes` din registru | `test_c01/c02/c03/c12` (fixture DECISIV: range, matching IDs, is_eligible=TRUE, EV+ → NO_TRADE) |
+| **AUTO-ATAC: registrul însuși nu poate fi injectat de consumator** | `decide_n6(candidate, eligibility)` NU mai ia `registry` ca parametru; sursa canonică e un **singleton INTERN**, populat DOAR prin `register_canonical_strategy` (imuabil); amprenta de politică se RECALCULEAZĂ din registrul intern, nu se citește din obiectul primit; fault `set_registry_available(False)` → `STRATEGY_REGISTRY_UNAVAILABLE` fail-closed | `test_c16` (registru mincinos al consumatorului NU ajunge la N6 → `STRATEGY_POLICY_MISMATCH`) |
+
+Suprafața PUBLICĂ nu poate preda un registru fals. Monkeypatch-ul globalelor private e în afara contractului (orice
+bibliotecă e monkeypatch-abilă — consumatorul s-ar sabota singur, nu ocolește API-ul). Închis ÎNAINTE de predare, nu
+lăsat pentru Red Team.
 
 **Inventarul căilor de comparație (A5):** în artefactul `ve_brain` NU există cod intern de leaderboard / selecție de
 candidați / agregare de rapoarte — pachetul PRODUCE decizii, nu le compară. UNICA cale de comparație e

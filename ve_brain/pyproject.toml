@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ve_brain"
-version = "0.1.1"
+version = "0.1.2"
 description = "VE Brain — versioned installable decision-brain (N1-N6 contracts, adapted EV engine, regime routing) supplied by the Validation Engine to the AI Trader."
 requires-python = ">=3.11"
 dependencies = []                     # stdlib-only; NU depinde de branch-ul de dezvoltare, NU reconstruiește detectoare
