@@ -114,7 +114,12 @@ def test_a_bar_from_each_sealed_half_is_not_delivered(tf: str) -> None:
         assert bar not in delivered, f"{tf}: sealed-half bar {bar} was delivered"
 
 
-def test_m15_v2_three_fully_sealed_zones_never_appear() -> None:
+def test_m15_v2_fully_sealed_zones_never_appear() -> None:
+    # Was `..._three_fully_sealed_zones_...` and listed the WHOLE overlap_with_M15 range as fully
+    # sealed. That encoded a reading the manifest contradicts: the overlap's rule INHERITS M15's
+    # classification verbatim, and M15's discovery_range (2022-12-16 -> 2025-10-12) falls inside it,
+    # so the overlap is NOT fully sealed -- only its portion at or beyond M15's sealed_range is.
+    # Converted, not deleted: the guard (sealed bars are never delivered) is what must not regress.
     raw = _raw_epochs("M15_v2")
     delivered = _delivered_epochs("M15_v2")
     e = MAN["timeframes"]["M15_v2"]
@@ -122,11 +127,31 @@ def test_m15_v2_three_fully_sealed_zones_never_appear() -> None:
     for seg in e["regime_segments"]:
         if "discovery_range" not in seg:  # the pre-overlap TOO_SHORT_FULLY_SEALED sliver
             zones.append(("pre_overlap_sliver", seg["segment_range"]))
-    zones.append(("overlap_with_M15", e["overlap_with_M15"]["range"]))
+    ov = e["overlap_with_M15"]["range"]
+    src_sealed = MAN["timeframes"]["M15"]["sealed_range"]        # what the overlap INHERITS as sealed
+    lo = max(ov["start_epoch"], src_sealed["start_epoch"])
+    hi = min(ov["end_epoch"], src_sealed["end_epoch"])
+    assert lo < hi, "overlap and M15 sealed_range must intersect -- otherwise the rule is vacuous"
+    zones.append(("overlap_sealed_portion", {"start_epoch": lo, "end_epoch": hi}))
     zones.append(("post_M15_tail", e["post_M15_tail"]["range"]))
     for name, r in zones:
         bar = _first_bar_in(raw, r["start_epoch"], r["end_epoch"])
         assert bar not in delivered, f"M15_v2 fully-sealed zone {name} bar {bar} was delivered"
+
+
+def test_m15_v2_overlap_discovery_portion_IS_delivered() -> None:
+    # The positive counterpart, added with the fix: the overlap's DISCOVERY portion (M15's own
+    # discovery_range, 2022-12-16 -> 2025-10-12) must actually be delivered. Without this the
+    # regression could reappear as a silent omission and no test would notice.
+    raw = _raw_epochs("M15_v2")
+    delivered = _delivered_epochs("M15_v2")
+    ov = MAN["timeframes"]["M15_v2"]["overlap_with_M15"]["range"]
+    src_disc = MAN["timeframes"]["M15"]["discovery_range"]
+    lo = max(ov["start_epoch"], src_disc["start_epoch"])
+    hi = min(ov["end_epoch"], src_disc["end_epoch"])
+    assert lo < hi
+    bar = _first_bar_in(raw, lo, hi)
+    assert bar in delivered, f"overlap discovery portion bar {bar} was WITHHELD -- the 4th block is lost"
 
 
 # ---------- H1 sealed, identifiers, one-byte binding, fail-closed ----------
