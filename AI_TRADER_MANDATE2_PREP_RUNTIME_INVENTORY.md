@@ -145,6 +145,38 @@ the process outright. `mandate2_readiness/broker_gate.py`'s `BrokerOrderSubmissi
 single, explicit, default-closed primitive of this kind — see the Mandate 2 prep report for its design
 and tests.
 
+## 6. The five live processes — explicit inventory (CEO amendment, section 7, 2026-08-14)
+
+**"Orice proces care produce astazi semnal sau aprobare se reclasifica TELEMETRY_ONLY sau se
+deconecteaza de la calea de decizie."** Read literally, this is a requirement on the FUTURE Mandate 2
+integration step, not on today — three of the five already satisfy it structurally; two do not, and
+this must be stated plainly rather than smoothed over.
+
+| Process | Role | Input | Output | Consumer | Influences a decision today? | Can reach the broker today? |
+|---|---|---|---|---|---|---|
+| `pdh_pdl_demo` (CAND-0001) | Live PDH/PDL demo trading | `LiveBarFeed` M15 bars (XAUUSD) + live tick | `LiveCandidate` → order attempts + audit journal | `PdhPdlOrchestrator` → `send_after_dry_run_gate` → Risk Manager → Order Manager → `MT5DemoBrokerAdapter` | **DA** | **DA** — one of the exactly two real `order_send` call sites |
+| `multi_policy_live` (CAND-0007/0019 active, CAND-0009 wired-inactive) | Live multi-policy demo trading | Same shared `LiveBarFeed` + live tick; also reads CAND-0001's circuit-breaker file | `LiveCandidate` per policy → order attempts (0007/0019) + audit journals (all 3, incl. 0009) | `PolicyOrchestrator` ×3 → same gate/Risk-Manager/Order-Manager chain, own `MT5DemoBrokerAdapter` | **DA** for 0007/0019; **NU** for 0009 (recognized and journaled, but structurally blocked before `submit_candidate`, per `PolicyControl`) | **DA** for 0007/0019; **NU** for 0009 |
+| `live_observation` | Passive structural observer (swings/BOS/CHoCH/FVG/regime) | Same `LiveBarFeed` M15 bars, **read-only** gateway | `StructuralObservation` journal entries only | `StructuralObserver` → `StructuralObservationLog` (persisted, nothing live reads it back) | **NU** — `ObservingNullRecognitionRule` returns `None` unconditionally, own static test enforces "only the Null-recognition-rule family may ever be constructed" | **NU** — never constructs `MT5DemoBrokerAdapter`; own static guard |
+| `spread_collection` | Passive spread/ATR/session observation (feeds future cost calibration) | Same `LiveBarFeed` + live tick (bid/ask) | `SpreadObservation` journal + uptime reports | `SpreadCollector` → `SpreadObservationLog` | **NU** — `SpreadCollectingNullRecognitionRule` returns `None` unconditionally | **NU** — read-only gateway only |
+| `zone_observer` | Passive zone/level observation (session levels, demand zones, IFVG, BPR, liquidity voids, PWH/PWL) | Same `LiveBarFeed`, read-only gateway | `ZoneObservation` journal entries | `ZoneObserver` → `ZoneObservationLog` | **NU** — same null-rule pattern | **NU** — read-only gateway only |
+
+**The honest finding this table forces**: `live_observation`, `spread_collection`, `zone_observer` are
+ALREADY, structurally, `TELEMETRY_ONLY` today — nothing needs to change for them to satisfy section 7.
+**`pdh_pdl_demo` and `multi_policy_live` (CAND-0007/0019) are NOT** — they are the live legacy decision
+path itself, not telemetry alongside it. Section 3's own requirement ("Cele trei recognizere si
+market_intelligence pot rula NUMAI ca LEGACY_SHADOW_TELEMETRY... Verifica STRUCTURAL ca outputurile
+legacy nu pot ajunge la N6, Risk Manager, Execution Adapter sau broker gate") means that when Mandate 2
+actually integrates, these two processes' own recognition output must be DISCONNECTED from
+`send_after_dry_run_gate`/Risk Manager/the broker — demoted to the same passive-observation shape
+`live_observation` already has. **That disconnection is real, non-trivial integration work (rewiring or
+gating `PdhPdlOrchestrator.submit_candidate`/`PolicyOrchestrator.submit_candidate` so they stop calling
+the gate), not something achievable in prep** — there is nothing to reclassify them INTO yet, since
+N1-N6 doesn't exist to take over the decision role they currently hold. Today, unchanged, they remain
+exactly what they always were: the CEO-approved DEMO_BASELINE, continuing per section 7's own first
+sentence ("Pot continua neschimbate... spread, stiri, slippage, monitorizare, auto-recovery") — but NOT
+yet satisfying "NUMAI daca nu participa la decizia legacy," because they currently DO. Disclosed, not
+silently smoothed over.
+
 ## CEO amendment A1 (2026-08-14) cross-reference
 
 N1-N6/EV can legitimately reach `SHADOW_TRADE_CANDIDATE`, and Risk Manager/Execution Adapter can process
