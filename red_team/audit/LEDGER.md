@@ -2433,4 +2433,43 @@
                changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [58], prev_hash E57.
   entry_hash:  E57
+
+[58] 2026-08-14
+  prev_hash:   E57
+  event:       VERDICT
+  dc_id:       DC-AI-TRADER-MANDATE2
+  freeze_hash: 7d836b3 (report) / 8866876 (code, ai-trader-implementation)
+  battery_ver: RT-MANDATE2-0001
+  reviewer:    Red Team
+  detail:      MANDATE 2 RUNTIME REVIEW of AI Trader (real decision-path trace, not just written tests).
+               VERDICT = **MANDATE_2_REVIEW_CONDITIONAL · INTEGRATION_BLOCKED** -> PASS_FOR_LIVE_SHADOW NOT
+               granted; LIVE_SHADOW must NOT start.
+               ★ DECISIVE (point 2): new_brain_bridge/bridge.py:161 HARDCODES market_map_available=False,
+               levels_available=False, confirmation_available=False (grep-confirmed the ONLY construction, no
+               path sets True). These are N3/N4 TOWER outputs, owed for every event; the level-tower (N3) +
+               N4-confirmation are NOT wired into ai_trader (wp5b deliverable). Per CEO rule (permanently-False
+               tower inputs -> INTEGRATION_BLOCKED). Consequence: every real event -> NO_TRADE/MISSING_LEVEL_
+               INPUT (gap2 fires before EV/probability). New brain can produce NO shadow decision today.
+               CONDITIONAL not FAIL: AI Trader INVENTED NOTHING (fail-closes correctly) -> clean remediable gap,
+               not corruption.
+               MATRIX: market_map/levels->N3(hardcoded False)=BLOCKED; confirmation->N4(False)=BLOCKED;
+               probability_inputs->ratified outcome-count table (Alpha/Statistician), load_probability_inputs
+               returns None = OK-conditional (4 CEO conditions all met: interface exists, absence->deterministic
+               NO_TRADE, future ratified table plugs into one function w/o re-arch, source ratified not invented).
+               POINT 1 real path built + exercised in TESTS with real code (not fixtures) but NOT running live
+               (no process restarted; legacy still decides). N1=RawAxesBuilder OHLC+ATR14 only, no invented
+               detectors. POINT 6 authority switch SOUND + DOUBLY INACTIVE (set_authority exported never called;
+               authority_check defaults None, no entrypoint passes non-None; default LEGACY; NEW_BRAIN ->
+               LEGACY_SHADOW_TELEMETRY, returns None w/o send_after_dry_run_gate -> legacy can't reach Risk/Exec;
+               atomic = coordinated restart). fail_safe brain-down path must be exercised at activation. POINT 7
+               broker BLOCKED: approved candidate reaches gate.authorize() -> BrokerOrderSubmissionDisabledError;
+               gate genuinely called (not hardcoded); default enabled=False, kw_only; zero order_send in bridge.
+               OPEN ITEMS: point 5 full 3,237 suite has NO VERDICT + one un-diagnosed F ~33% ('runs long' != a
+               verdict); point 4 the 5 skipped tests (4/5 N1-tower spec, 9/20b VE artifact, 10 design-mismatch/
+               likely shadow-irrelevant) un-owned/not-closed -- none gates a trade.
+               PASS requires: N3/N4 wired (not stubbed), 3,237 verdict + F root-caused, 5 tests closed/owned,
+               switch+broker safe (they are, inactive). Alpha PAUSED, CAND-T05 frozen. Red Team modified no
+               engine, ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [59], prev_hash E58.
+  entry_hash:  E58
 ```
