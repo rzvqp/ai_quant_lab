@@ -1983,4 +1983,51 @@
                engine, ran no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [46], prev_hash E45.
   entry_hash:  E45
+
+[46] 2026-08-13
+  prev_hash:   E45
+  event:       VERDICT
+  dc_id:       DC-CANONICAL-EVALUATOR
+  freeze_hash: 82acad9 (code/canonical_evaluator.py) + split_manifest v2.7.65
+  battery_ver: RT-AUDIT-MEAS-0004
+  reviewer:    Red Team
+  detail:      SUITE EXTENDED TO 18 + RE-ATTACK PREP + FOUR-BLOCK COMPLETENESS. Re-attack proper waits
+               for VE's three fixes (MEAS-9, T17, four-block); this is the preparable verification.
+               CEO DECISIONS REGISTERED: (1) spread_price = FULL bid-ask (BASE 0.05 / STRESS 0.08) ->
+               CLOSES the T12/T13 full-vs-half contradiction I raised; Statistician proof COST=2xEFF_SPREAD
+               shows the old effective_spread was a HALF. (2) canonical population = FOUR blocks; 3 or 15
+               NON-COMPARABLE.
+               TEST 18 ADDED (red_team/policy_reviews/test_18_gap_open.py, canonical expectations, runs vs
+               any engine). Q: does the Statistician spec (open beyond TP -> exit at ENTRY price, never
+               nominal TP) CLOSE the gap or MOVE it? ANSWER = MOVES IT. 18A target-gap (open 105 > TP 102):
+               spec covers it (exit at entry, -cost); current evaluator books nominal-TP -0.436. 18B
+               stop-gap (open 97 < stop 98): spec is TP-ONLY, does NOT cover it; current evaluator books
+               +0.95 = a WIN from a gapped-through stop (MEAS-9 survives). Spec must be made SYMMETRIC
+               (open beyond ANY level -> cannot fill at that level).
+               TENTH DIVERGENCE (novel) MEAS-14: the R3 rejection is SCENARIO-INVARIANT -- floor computed
+               ONCE from sig.spread_price, Rejection returned BEFORE the scenario loop -> BASE and STRESS
+               share ONE rejection population. CEO's per-scenario R3 components (0.05 vs 0.08) require
+               DIFFERENT floors -> DIFFERENT populations, which the architecture cannot express. DISTINCT
+               from the R3 2x-spread magnitude, which the manifest ALREADY flags as MATERIAL ('~18% R3 rate
+               measured against DOUBLE thresholds') -- I record that as CORROBORATION of a known item, not
+               a new find.
+               FOUR-BLOCK CORRECTION = INCOMPLETE. Manifest DECLARES 4 (m15_v2_discovery_blocks; m4_block_count
+               finding), but the 4th (2022-12->2025-10) is overlap_with_M15-inherited, NOT a regime_segment
+               discovery_range. Verified 3 surviving paths: (a) split_manifest.py::segmentation_plan delivers
+               3 discovery ranges + docstring SEALS 'the M15_v2 overlap ... never delivered'; (b)
+               run_four_regime.py hardcoded 3 regimes (bear/bull/correction), expected bar-counts for 3,
+               leaderboard '3 regimes', line-80 assert rejects a 4th (named 'four_regime', computes three);
+               (c) _screen.derive_blocks gap-based (~15), manifest-blind. Enumerated regime_segments: bear
+               2011, bull 2016, correction 2020 (3 discovery_range) + bull_partial TOO_SHORT_FULLY_SEALED.
+               MANIFEST-INTERNAL CONTRADICTION (blocking): m4 provenance_of_the_fourth says the overlap IS
+               the 4th discovery block (inherits M15 classification VERBATIM); segmentation_plan's contract
+               says the overlap is 'never delivered'. Both cannot hold. CONSEQUENCE: CAND-0037's per-regime
+               persistence and every run_four_regime figure are on a THREE-block population discarding the
+               newest ~3 years -> non-comparable to four (correctly held non-final by the freeze).
+               RE-ATTACK CHECKLIST armed (verify not trust): MEAS-9 both sides + monkey-patch guard; T17
+               enforce-on-mismatch + config_id incl symbol/period/block; four-block delivered by ALL paths;
+               MEAS-14 + R3 1x per-scenario; suite=18 vs every engine with matching provenance.
+               FREEZE HOLDS. Red Team modified no engine, ran no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [47], prev_hash E46.
+  entry_hash:  E46
 ```
