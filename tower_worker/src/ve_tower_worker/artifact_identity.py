@@ -22,7 +22,7 @@ from ve_tower_worker.install_manifest import read_install_manifest
 from ve_tower_worker.protocol import PROTOCOL_VERSION, WorkerIdentity
 
 WORKER_PACKAGE_VERSION = "0.2.0"
-WORKER_BUILD_COMMIT = "PENDING_COMMIT_PIN"
+WORKER_BUILD_COMMIT = "88857ba5b4b47f294adc2a8a726abfee7a42e7f2"
 """Set to the exact commit hash of the AI Trader commit that produced THIS remediation, per the CEO's own
 instruction ("worker_build_commit = commitul NOU pe care AI Trader il va produce prin aceasta remediere").
 Necessarily a two-step process (the hash of a commit is unknowable before it exists): committed once with
