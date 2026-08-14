@@ -2620,4 +2620,44 @@
                nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [63], prev_hash E62.
   entry_hash:  E62
+
+[63] 2026-08-14
+  prev_hash:   E62
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: 744d5f5 (AI Trader tower pin closure) + 12f9241 (sidecar) + ve_tower 0.3.0 (6daf2aa)
+  battery_ver: RT-TOWER-0005
+  reviewer:    Red Team
+  detail:      PHASE-1 FINAL REVALIDATION. VERDICT = ***TOWER_ARTIFACT_PASS · STAGED_INSTALL_AUTHORIZED***
+               (automatic, no new CEO approval). All 5 checks pass; my RT-TOWER-0003 findings (fake-server
+               accepted, unbounded cache, loopback not enforced) FIXED + re-verified.
+               (1) Pin non-None fields == sidecar 12f9241 (ve_tower 0.3.0, package_build_commit 6daf2aa,
+               state_delivery_commit 0207ffa, wheel_sha256 0c2581c...20d2); 3 PENDING fields None, verify_pin
+               fails closed (correct). (2) RECOMPUTED the 3 values: vendored_source_identity=sha256:4c0dee...
+               69e1c (via documented algo from 13 git-rev-parse blobs), n3=tower-n3-request-v2, n4=tower-n4-
+               request-v2. (3) COMMIT MATRIX unambiguous: hardcoded WORKER_BUILD_COMMIT=88857ba DELETED;
+               worker_delivery_commit now installer-written (git rev-parse HEAD, refuses on uncommitted
+               tower_worker/); matrix disambiguates worker_validated_core_commit=88857ba (impl I reviewed) vs
+               prior 4d01fb2 (relabeled) vs installer-written going-forward; only 6daf2aa/0207ffa hardcoded
+               (ve_tower build/state, separated). No two commits share an identity name. (4) HANDSHAKE proof =
+               EXACT-match artifact identity (wheel_sha256+package_build_commit+ve_tower version+vendored_source_
+               identity+n3/n4 contract+worker_package_version+protocol) + HMAC-SHA256 session proof; worker_
+               delivery_commit PRESENCE-ONLY, NOT the proof. verify_pin checks all 9 fields. (5) RE-EXEC:
+               PROTOCOL_VERSION=2.0, launcher HMAC shared secret, per-response session check; codes HANDSHAKE_
+               HMAC_MISMATCH/IDENTITY_MISMATCH/SESSION_ID_MISMATCH/NOT_ESTABLISHED/STALE_SESSION/STALE_RESPONSE.
+               Fake server (no secret) -> HANDSHAKE_HMAC_MISMATCH (RT-TOWER-0003 gap CLOSED); old session ->
+               STALE_SESSION; port occupied -> startup fail; cache bound+TTL+request-id-reuse -> tower_cache.py;
+               non-loopback rejected; crash/restart fail-closed. Worker suite 32 passed + client tower suites
+               56 passed + isolation 8 passed (1 fail = MY partial-extraction artifact, missing ai_trader.
+               structural_observer, NOT a defect).
+               VALUES -> AI Trader pin (EXPECTED_*): vendored_source_identity=sha256:4c0dee...69e1c, n3=tower-n3-
+               request-v2, n4=tower-n4-request-v2 (worker install_manifest carries the same from sidecar 12f9241
+               so verify_pin matches). AUTHORIZES: record the 3 values + install EXACTLY ve_tower-0.3.0
+               (0c2581c...20d2) ONLY in the separate tower venv + begin N3/N4 wiring over loopback IPC.
+               STILL FORBIDDEN: LIVE_SHADOW start, authority activation (set_authority uncalled), Alpha PAUSED,
+               CAND-T05 frozen. Phase 2 (real IPC->worker->N3->N4->Router->EV->N6->Risk->broker BLOCKED) = next
+               separate review before READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2. Red Team modified no engine, ran
+               no data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [64], prev_hash E63.
+  entry_hash:  E63
 ```
