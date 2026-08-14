@@ -19,7 +19,7 @@ This document is the Git-persisted snapshot of program status; the conversation 
 - **AI Trader** `f4859a5` steps 1–4 · `7d836b3` steps 5–12 partial, **20/25 tests**.
 - **ve_tower** — official N1–N4 phenomena provider.
   - **0.1.0 REJECTED** (TOWER_HANDOFF_FAIL: no strict timeframe, no per-node data identity). Wheel SHA-256 `e5457561…f08b2db5` kept for audit.
-  - **0.2.0** (contract v2) — remediation: strict timeframe (N3=M15/N4=M5), two identities (common `event_fingerprint` + per-node `data_identity`+`node_input_fingerprint`), canonical hash with NaN/Inf refusal, N4↔N3 explicit link, git-blob byte-identity, hardened bootstrap. Awaiting Red Team re-run of the 5 attacks.
+  - **0.2.0** (contract v2, wheel from `bdbeeb6`) — remediation: strict timeframe (N3=M15/N4=M5), two identities (common `event_fingerprint` + per-node `data_identity`+`node_input_fingerprint`), canonical hash with NaN/Inf refusal, N4↔N3 explicit link, git-blob byte-identity, hardened bootstrap. Wheel `ve_tower-0.2.0-py3-none-any.whl` SHA-256 `3ea791bad054f9356bb82a35b59646a0ffa619132e39af601b975179cc2e91a8`; 31 tests; empty-venv verified. Awaiting Red Team re-run of the 5 attacks.
 
 ## CORRECTIONS (found during Mandate A inventory)
 - `zone_map` head is **`5888978`** (re-anchored), not `11ae360`.
