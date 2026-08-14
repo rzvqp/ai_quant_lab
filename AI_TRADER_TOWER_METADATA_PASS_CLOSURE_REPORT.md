@@ -62,7 +62,7 @@ actual pass.
 | `worker_validated_core_commit` | `88857ba5b4b47f294adc2a8a726abfee7a42e7f2` | The commit containing the handshake/cache/loopback IMPLEMENTATION — what Red Team substantively reviewed (`RT-TOWER-0003`). | Provenance record only, not in the wire protocol. | Red Team review. |
 | `worker_package_version` | `0.2.0` | `ve-tower-worker`'s own package version. | `WorkerIdentity.worker_package_version` — **security identity, exact-match pinned.** | `importlib.metadata.version()`, real read, `pyproject.toml`. |
 | `protocol_version` | `2.0` | IPC wire format version. | `WorkerIdentity.protocol_version` — **security identity, exact-match pinned.** | `protocol.py` constant, both sides. |
-| `worker_delivery_commit` | *(see below — resolved by the final installer run)* | Which AI Trader commit `install_tower_env.ps1` was run against when it wrote the current `worker_delivery_manifest.json`. | `WorkerIdentity.worker_delivery_commit` — **DOCUMENTARY ONLY. Never a security identity, never proof of correct code.** | `git rev-parse HEAD`, installer-emitted, presence-only checked. |
+| `worker_delivery_commit` | `7747c4b4fbdf71e0e435d5957ad2fa38d0e2f80f` | Which AI Trader commit `install_tower_env.ps1` was run against when it wrote the CURRENT `worker_delivery_manifest.json` — the exact commit this closure itself produced, pushed, then installed against. ONE value, never two. | `WorkerIdentity.worker_delivery_commit` — **DOCUMENTARY ONLY. Never a security identity, never proof of correct code.** | `git rev-parse HEAD`, installer-emitted, presence-only checked. |
 | `ve_tower_package_version` | `0.3.0` | VE's package version. | `WorkerIdentity` — **security identity, exact-match pinned.** | Sidecar, cross-checked against the prior delivery. |
 | `package_build_commit` | `6daf2aa` | Commit `ve_tower` 0.3.0 was built from. | `WorkerIdentity` — **security identity, exact-match pinned.** | Sidecar, `RT-TOWER-0004`. |
 | `state_delivery_commit` | `0207ffa` | Commit that delivered the underlying state — kept SEPARATE from the build commit. | `WorkerIdentity` — **security identity, exact-match pinned.** | Sidecar, `RT-TOWER-0004`. |
@@ -87,11 +87,23 @@ $ git diff 0839307 744d5f5 --stat
 
 `744d5f5` touched only the report markdown — zero code changes. `0839307`'s own
 `worker_delivery_manifest.json` (`worker_delivery_commit=08393070549518920a9f6b7d0cea9734af5e8eaf`) was
-never regenerated against `744d5f5`, so it never claimed to be. This report's own closure work adds real
-code changes on top of `744d5f5`; the installer is re-run one final time below, against the actual final
-commit this report itself produces — see that commit's hash in the notification, and the resulting
-manifest content quoted at the end of this section, so `worker_delivery_commit` never again names two
-different things.
+never regenerated against `744d5f5`, so it never claimed to be.
+
+This closure's own code changes landed at `7747c4b`, pushed, then `install_tower_env.ps1` was run one
+final time against that exact commit. The resulting `<tower_venv>\ve_tower_worker_delivery_manifest.json`:
+
+```json
+{
+  "delivered_at_utc": "2026-08-14T10:13:45Z",
+  "delivered_by": "DESKTOP-5H1K41D\\MEDION GAMING",
+  "protocol_version": "2.0",
+  "worker_delivery_commit": "7747c4b4fbdf71e0e435d5957ad2fa38d0e2f80f",
+  "worker_package_version": "0.2.0"
+}
+```
+
+`worker_delivery_commit` now names exactly ONE commit -- the same one this report itself was produced by.
+No other value calls itself `worker_delivery_commit` anywhere in this delivery.
 
 ## The 9 retests
 
