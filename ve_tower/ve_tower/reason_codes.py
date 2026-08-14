@@ -27,6 +27,12 @@ class ReasonCode(Enum):
     DATA_STALE = "data_stale"                                       # ultima bară mai veche decât max_staleness
     DATA_INCOMPLETE = "data_incomplete"                            # serii de lungimi inegale / prea scurte
     EVENT_IDENTITY_MISMATCH = "event_identity_mismatch"            # N4: event_id/fingerprint ≠ cele de la N3
+    # ── remediere TOWER_HANDOFF_FAIL: timeframe strict + dublă identitate + hash canonic ──
+    INVALID_TIMEFRAME = "invalid_timeframe"                        # N3≠M15 / N4≠M5 / valoare necunoscută
+    NON_FINITE_VALUE = "non_finite_value"                          # NaN/Inf în bare/vectori (politica = REFUZ)
+    SOURCE_IDENTITY_MISSING = "source_identity_missing"           # feed/source id absent
+    DATA_IDENTITY_INCONSISTENT = "data_identity_inconsistent"     # serii incoerente / identitate imposibil de construit
+    N3_LINK_MISMATCH = "n3_link_mismatch"                         # N4 legat de un răspuns N3 care nu se potrivește
 
 
 _RATIFIED_REASONS: frozenset[str] = frozenset({

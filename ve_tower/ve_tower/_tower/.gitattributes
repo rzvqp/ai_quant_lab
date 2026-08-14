@@ -1,0 +1,2 @@
+# vendored ratified modules: NO EOL conversion — byte-identity to the git blob must survive commit/checkout
+*.py -text

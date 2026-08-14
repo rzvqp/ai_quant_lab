@@ -7,7 +7,10 @@ din `code/` (verificat de `tests/test_vendor_integrity.py` contra comiturilor de
 
 from __future__ import annotations
 
-VE_TOWER_VERSION: str = "0.1.0"
+VE_TOWER_VERSION: str = "0.2.0"
+# 0.1.0 (contract v1, wheel SHA-256 e5457561604c2bd70ddca98a56b9a4c9ed8a60af95d9048237c768cef08b2db5) a fost
+# RESPINS de Red Team (TOWER_HANDOFF_FAIL): fără timeframe strict + fără identitate de date per nod. PĂSTRAT pentru
+# audit; 0.2.0 e o schimbare MATERIALĂ de contract (v1→v2), nu o suprascriere.
 
 SOURCE_REPO: str = "ai_quant_lab-wp5b"
 SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
@@ -29,29 +32,35 @@ VENDORED_SOURCE_COMMITS: dict[str, str] = {
     "order_block_void": "edca965fef3504997557160e8bf08d99cfd998be",
 }
 
-# amprenta de INTEGRITATE a fiecărui modul vendat (sha256 al conținutului) — gardă anti-tampering post-vendare
-VENDORED_CONTENT_SHA256: dict[str, str] = {
-    "regime_classifier": "f72e4c386c0e2f01f2423f4b9f29c919e98d9f1f19328d990fe1097950cf7df7",
-    "bias_h1": "8ab67aa6e7f4501b85a155effd8c09ad3ee13094cf189da84026268c5ca464c7",
-    "zone_map": "3e3e52178053df93148fe966fd8c4440c5698b3857efaabac81ea0b2e7c5277b",
-    "zone_confirmation": "273b28ff88ef42d6f4eeec59b51c14c4d39d945b7813f394cde781759f7ab6c3",
-    "level_output": "b72b36cf0d9c1cabe106c4c010af5bd0ce8a33a30dae97affa482c3e4913b03b",
-    "market_state": "823cf66a7baa21a6a1268a05706d31c9449d1e2c5c56e70cd5ace01a8840504f",
-    "market_structure": "629e662c4ce903e4d1e1d33f14e5234b6766bd18b8a469c40229adafb593e981",
-    "imbalance_mechanics": "aa676f59cdf23524d47a2c201550ffa9a4f8ca656f4b70fea5878cb8432d949e",
-    "liquidity_mechanics": "d5bdc1268815e010221d1c330016add27d4cd2fc0814aa699f14331b84f970e7",
-    "institutional_levels": "017536199ec21ecd1c4852f67709d9932b48b7b2be1a7da22d907d7b7a8e12fb",
-    "session_levels": "2af2b9e6b684676f0dee86992da18a2c595457c37639117052e25773c09858f0",
-    "order_flow": "c7e4f5a760828fab1a31b040fd58233ca206bb3c4c6c858268f33bb779645b0e",
-    "order_block_void": "6ec7adbfd3bbaab2d4c1e35f1ad6de2631875319bb5312e90fba572ded32b921",
+# GIT-BLOB SHA1 al fiecărui modul vendat — identitatea PE CARE RED TEAM O VERIFICĂ INDEPENDENT cu
+# `git rev-parse <source_commit>:code/<mod>.py`. Modulele sunt re-extrase DIRECT din blob (`git cat-file blob`), deci
+# byte-identice cu blob-ul (nu „content-identical după normalizare EOL"); `.gitattributes -text` păstrează asta la commit.
+VENDORED_BLOB_SHA1: dict[str, str] = {
+    "regime_classifier": "7a9f6991b649d4ce5439d97d01da12b97b40b137",
+    "bias_h1": "1638c7ddcc362d243b9bfc7d5a3912ca1237cfa9",
+    "zone_map": "0607e374af5fec78268bfa5e8f26ad2ad4039e61",
+    "zone_confirmation": "347674a7d9bd02cb836b43cce69ff82ea2e1b327",
+    "level_output": "8512647cc486be7888dd8497873d04e297a2143f",
+    "market_state": "3f88f8c88988d2b74caf70c199907cf0871c3019",
+    "market_structure": "d734ac9ae0d30444ace9078a70ca98e41208c3a0",
+    "imbalance_mechanics": "aa1c6d36d6395a1266b17848296a4c74631ab7c1",
+    "liquidity_mechanics": "45a5219cc8324105ff83622a83c2dc0b375a0310",
+    "institutional_levels": "23182f48276d1c3bec9bb01f030a829f3a52d4f0",
+    "session_levels": "95dc487b8cbe5c07d2436daeda31de3c840f655f",
+    "order_flow": "23b0470086efa24f7b50048e973ecc90fa4a8cb7",
+    "order_block_void": "2b0f3f37154c4df475e1e7ef0fa782d6f808de9b",
 }
 
 # freeze-ul lanțului N1→N6 (magistrala) — referință de context
 LEVEL_TOWER_FREEZE_COMMIT: str = "ad8b586"
 
-# versiuni contractuale (intră în fingerprint; consumatorul care nu le înțelege eșuează EXPLICIT)
-N3_CONTRACT_VERSION: str = "tower-n3-request-v1"
-N4_CONTRACT_VERSION: str = "tower-n4-request-v1"
+# versiuni contractuale (intră în amprente; consumatorul care nu le înțelege eșuează EXPLICIT). v2 = remedierea FAIL.
+N3_CONTRACT_VERSION: str = "tower-n3-request-v2"
+N4_CONTRACT_VERSION: str = "tower-n4-request-v2"
+
+# TIMEFRAME STRICT — verificat la RUNTIME. Orice altă valoare ⇒ unavailable/INVALID_TIMEFRAME (fail-closed).
+N3_EXPECTED_TIMEFRAME: str = "M15"
+N4_EXPECTED_TIMEFRAME: str = "M5"
 # code_version-urile INTERNE ale modulelor ratificate (din schema lor sigilată)
 N3_CODE_VERSION: str = "level3-v2.0-reanchored"
 N4_CODE_VERSION: str = "level4-v2.0-w3"

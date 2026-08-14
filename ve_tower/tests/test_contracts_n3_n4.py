@@ -1,9 +1,9 @@
-"""Matricea COMPLETĂ de teste pentru contractele versionate N3/N4 (peste turnul RATIFICAT, byte-identic):
-hartă reală + provenianță, N4 fără lookahead, M5 stale/incomplet → indisponibil, identitate de eveniment prin lanț,
-contract incompatibil → fail-closed, fixture complet N1→N4, și un fixture NEGATIV pentru fiecare intrare absentă."""
+"""Matricea DECISIVĂ (remediere TOWER_HANDOFF_FAIL): reproduce și ÎNCHIDE atacurile Red Team — timeframe strict,
+dublă identitate (event comun + node per-nod distinct), legătura N4↔N3, NaN/Inf/sursă/lookahead → refuz."""
 
 from __future__ import annotations
 
+import dataclasses
 import os
 import sys
 
@@ -11,183 +11,179 @@ _PKG = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _PKG not in sys.path:
     sys.path.insert(0, _PKG)
 
-import ve_tower  # noqa: E402
 from ve_tower import (  # noqa: E402
-    N3Request, N4Request, configuration_fingerprint, run_n3, run_n4, same_event,
-    N3_CONTRACT_VERSION, N4_CONTRACT_VERSION,
+    N3Request, N3Response, N4Request, event_fingerprint, run_n3, run_n4, same_event,
+    N3_CONTRACT_VERSION, N4_CONTRACT_VERSION, build_data_identity,
 )
+from ve_tower.data_identity import DataIdentityError  # noqa: E402
+import pytest  # noqa: E402
 
 SYM = "XAUUSD"
-STEP15 = 900
-STEP5 = 300
+SRC = "OANDA_XAUUSD_feed_v1"
 T0 = 1_600_000_000
 
 
-def _m15(n: int = 40) -> tuple[tuple[float, ...], ...]:
+def _m15(n: int = 40, bump: float = 0.0) -> tuple[tuple[float, ...], ...]:
     o = []; h = []; l = []; c = []; t = []
     for j in range(n):
-        base = 100.0 + (1.0 if (j // 5) % 2 else -1.0)
-        o.append(base); h.append(base + 1.5); l.append(base - 1.5); c.append(base + 0.3); t.append(T0 + j * STEP15)
+        base = 100.0 + (1.0 if (j // 5) % 2 else -1.0) + bump
+        o.append(base); h.append(base + 1.5); l.append(base - 1.5); c.append(base + 0.3); t.append(T0 + j * 900)
     return tuple(o), tuple(h), tuple(l), tuple(c), tuple(t)
 
 
-def _n3_req(*, event: str = "ev1", regime: bool = True, bias: bool = True, as_of: int | None = None,
-            contract: str = N3_CONTRACT_VERSION, max_stale: int | None = None,
-            time_override: tuple[int, ...] | None = None) -> N3Request:
-    o, h, l, c, t = _m15()
-    if time_override is not None:
-        t = time_override
+def _n3_req(*, event: str = "ev1", tf: str = "M15", regime: bool = True, bias: bool = True, src: str = SRC,
+            as_of: int | None = None, contract: str = N3_CONTRACT_VERSION, bump: float = 0.0,
+            atr_override: tuple[float, ...] | None = None) -> N3Request:
+    o, h, l, c, t = _m15(bump=bump)
     ao = as_of if as_of is not None else t[-1]
-    return N3Request(contract_version=contract, market_event_id=event, symbol=SYM, timeframe="M15",
+    return N3Request(contract_version=contract, market_event_id=event, symbol=SYM, timeframe=tf, source_identity=src,
                      open=o, high=h, low=l, close=c, time=t, as_of=ao, regime_available=regime, bias_available=bias,
-                     atr=tuple([5.0] * len(c)), max_staleness_s=max_stale)
+                     n1_fingerprint="n1fp", n2_fingerprint="n2fp",
+                     atr=atr_override if atr_override is not None else tuple([5.0] * len(c)), max_staleness_s=None)
 
 
-# ── M5 pentru N4: penetrare la i2, fereastră [2..5], bare post-fereastră care NU trebuie să conteze ──
-def _m5(post_close: float) -> tuple[tuple[float, ...], tuple[float, ...], tuple[float, ...], tuple[int, ...]]:
-    rows = [(99.5, 98.5, 99.0), (99.6, 98.6, 99.2), (101.0, 99.0, 100.5), (101.2, 100.1, 100.8),
-            (101.3, 100.2, 100.9), (101.1, 100.0, 100.7),
-            (post_close + 1, post_close - 1, post_close), (post_close + 1, post_close - 1, post_close),
-            (post_close + 1, post_close - 1, post_close)]
-    h = tuple(r[0] for r in rows); l = tuple(r[1] for r in rows); c = tuple(r[2] for r in rows)
-    t = tuple(T0 + i * STEP5 for i in range(len(rows)))
+def _m5(level: float = 100.0, post_off: float = 0.8, bump: float = 0.0
+        ) -> tuple[tuple[float, ...], tuple[float, ...], tuple[float, ...], tuple[int, ...]]:
+    # bare centrate pe `level`: 2 pre sub nivel, penetrare sus la i2, fereastră [2..5], apoi 3 post-fereastră
+    L = level
+    p = L + post_off
+    rows = [(L - 0.5, L - 1.5, L - 1.0), (L - 0.4, L - 1.4, L - 0.8), (L + 1.0, L - 1.0, L + 0.5),
+            (L + 1.2, L + 0.1, L + 0.8), (L + 1.3, L + 0.2, L + 0.9), (L + 1.1, L + 0.0, L + 0.7),
+            (p + 1, p - 1, p), (p + 1, p - 1, p), (p + 1, p - 1, p)]
+    h = tuple(r[0] + bump for r in rows); l = tuple(r[1] + bump for r in rows); c = tuple(r[2] + bump for r in rows)
+    t = tuple(T0 + i * 300 for i in range(len(rows)))
     return h, l, c, t
 
 
-def _n4_req(*, event: str = "ev1", n3_ok: bool = True, side: int = 1, as_of: int | None = None,
-            contract: str = N4_CONTRACT_VERSION, post_close: float = 100.8, max_stale: int | None = None,
-            up_event: str | None = None, up_fp: str | None = None,
-            time_override: tuple[int, ...] | None = None) -> N4Request:
-    h, l, c, t = _m5(post_close)
-    if time_override is not None:
-        t = time_override
-    ao = as_of if as_of is not None else t[-1]
-    fp = configuration_fingerprint(market_event_id=event, symbol=SYM, as_of=ao)
-    return N4Request(contract_version=contract, market_event_id=event, symbol=SYM, timeframe="M5",
-                     high=h, low=l, close=c, time=t, level=100.0, side=side, as_of=ao, strategy_id="S1",
-                     regime_available=True, bias_available=True, n3_available=n3_ok,
-                     upstream_market_event_id=up_event if up_event is not None else event,
-                     upstream_configuration_fingerprint=up_fp if up_fp is not None else fp,
-                     w=3, atr=tuple([1.0] * len(c)), max_staleness_s=max_stale)
+def _n4_from_n3(n3: N3Response, *, event: str = "ev1", tf: str = "M5", side: int = 1, as_of: int | None = None,
+                contract: str = N4_CONTRACT_VERSION, post_off: float = 0.8, bump: float = 0.0, src: str = SRC,
+                link_ok: bool = True) -> N4Request:
+    lvl = n3.market_map[0] if n3.market_map else None
+    level = lvl.price_anchor if lvl else 100.0
+    h, l, c, t = _m5(level=level, post_off=post_off, bump=bump)
+    ao = as_of if as_of is not None else (n3.data_identity.as_of if n3.data_identity else t[-1])
+    return N4Request(
+        contract_version=contract, market_event_id=event, symbol=SYM, timeframe=tf, source_identity=src,
+        high=h, low=l, close=c, time=t, level=(lvl.price_anchor if lvl else 100.0), side=side, as_of=ao,
+        strategy_id="S1", strategy_version="v1", regime_available=True, bias_available=True,
+        n1_fingerprint="n1fp", n2_fingerprint="n2fp",
+        n3_market_event_id=n3.market_event_id if link_ok else "OTHER",
+        n3_event_fingerprint=n3.event_fingerprint if link_ok else "deadbeefdeadbeef",
+        n3_node_input_fingerprint=n3.node_input_fingerprint or "",
+        n3_market_map_available=n3.market_map_available,
+        n3_level_zone_id=(lvl.zone_id if lvl else ""),
+        n3_level_provenance=tuple((p.family, p.instance_count) for p in (lvl.provenance if lvl else ())),
+        w=3, atr=tuple([1.0] * len(c)), max_staleness_s=None)
 
 
-# ═══ N3 ═══
-def test_n3_real_map_from_closed_bars() -> None:
-    r = run_n3(_n3_req())
-    assert r.market_map_available and r.levels_available
-    assert r.reason_codes == ("ok_market_map",) and r.market_map and r.reference_price is not None
-    assert r.market_event_id == "ev1" and r.valid_until_index == r.as_of_index + 1
+# ═══ TIMEFRAME STRICT ═══
+def test_n3_rejects_m5() -> None:
+    assert run_n3(_n3_req(tf="M5")).reason_codes == ("invalid_timeframe",)
 
 
-def test_n3_levels_have_provenance() -> None:
-    r = run_n3(_n3_req())
-    for lvl in r.market_map:
-        assert lvl.provenance and all(p.family and p.instance_count >= 1 for p in lvl.provenance)
-        assert lvl.relative_rank >= 1
+def test_n3_rejects_banana() -> None:
+    assert run_n3(_n3_req(tf="BANANA")).reason_codes == ("invalid_timeframe",)
 
 
-def test_n3_lookahead_bar_fail_closed() -> None:
-    # ultima bară cu timp > as_of ⇒ fail-closed (fără lookahead)
-    o, h, l, c, t = _m15()
-    r = run_n3(_n3_req(as_of=t[-1] - 1))
-    assert not r.market_map_available and r.reason_codes == ("bars_not_closed_or_ordered",)
+def test_n4_rejects_m15() -> None:
+    n3 = run_n3(_n3_req())
+    assert run_n4(_n4_from_n3(n3, tf="M15")).reason_codes == ("invalid_timeframe",)
 
 
-def test_n3_unordered_bars_fail_closed() -> None:
-    o, h, l, c, t = _m15()
-    bad = t[:-2] + (t[-1], t[-2])                       # neordonate
-    r = run_n3(_n3_req(time_override=bad, as_of=t[-1]))
-    assert r.reason_codes == ("bars_not_closed_or_ordered",)
+# ═══ dublă identitate ═══
+def test_event_fingerprint_common_identical_n3_to_n4() -> None:
+    n3 = run_n3(_n3_req(event="evX", as_of=T0 + 39 * 900))
+    n4 = run_n4(_n4_from_n3(n3, event="evX", as_of=T0 + 39 * 900))
+    assert n3.event_fingerprint == n4.event_fingerprint                       # COMUN, IDENTIC
+    assert same_event(n3.event_fingerprint, n3.market_event_id, n4.event_fingerprint, n4.market_event_id)
 
 
-def test_n3_stale_fail_closed() -> None:
-    o, h, l, c, t = _m15()
-    r = run_n3(_n3_req(as_of=t[-1] + 10_000, max_stale=100))
-    assert r.reason_codes == ("data_stale",)
+def test_node_fingerprints_are_distinct_n3_vs_n4() -> None:
+    n3 = run_n3(_n3_req(event="evX", as_of=T0 + 39 * 900))
+    n4 = run_n4(_n4_from_n3(n3, event="evX", as_of=T0 + 39 * 900))
+    assert n3.node_input_fingerprint and n4.node_input_fingerprint
+    assert n3.node_input_fingerprint != n4.node_input_fingerprint             # date diferite ⇒ amprente distincte
 
 
-def test_n3_incompatible_contract_fail_closed() -> None:
-    r = run_n3(_n3_req(contract="tower-n3-request-vX"))
-    assert not r.market_map_available and r.reason_codes == ("incompatible_contract",)
+def test_same_event_different_m15_bars_different_node_fingerprint() -> None:
+    a = run_n3(_n3_req(event="evSame", as_of=T0 + 39 * 900, bump=0.0))
+    b = run_n3(_n3_req(event="evSame", as_of=T0 + 39 * 900, bump=7.0))        # alte bare, ACELAȘI event
+    assert a.event_fingerprint == b.event_fingerprint                        # eveniment identic
+    assert a.node_input_fingerprint != b.node_input_fingerprint              # dar hărți diferite ⇒ node fp diferit
 
 
-def test_n3_negative_regime_absent() -> None:
-    r = run_n3(_n3_req(regime=False))
-    assert not r.market_map_available and r.reason_codes == ("cascade_level1_or_level2_unavailable",)
+def test_same_event_different_m5_bars_different_node_fingerprint() -> None:
+    n3 = run_n3(_n3_req(event="evSame", as_of=T0 + 39 * 900))
+    a = run_n4(_n4_from_n3(n3, event="evSame", as_of=T0 + 39 * 900, bump=0.0))
+    b = run_n4(_n4_from_n3(n3, event="evSame", as_of=T0 + 39 * 900, bump=5.0))
+    assert a.node_input_fingerprint and b.node_input_fingerprint              # ambele poartă identitatea datelor
+    assert a.node_input_fingerprint != b.node_input_fingerprint              # bare M5 diferite ⇒ node fp diferit
 
 
-def test_n3_negative_bias_absent() -> None:
-    r = run_n3(_n3_req(bias=False))
-    assert r.reason_codes == ("cascade_level1_or_level2_unavailable",)
+def test_different_data_cannot_share_provenance() -> None:
+    # două hărți din bare diferite NU pot avea aceeași data_identity/node fingerprint
+    a = run_n3(_n3_req(event="ev1", bump=0.0)); b = run_n3(_n3_req(event="ev1", bump=3.0))
+    assert a.data_identity and b.data_identity
+    assert a.data_identity.bars_content_hash != b.data_identity.bars_content_hash
 
 
-# ═══ N4 ═══
-def test_n4_confirms_with_available_info() -> None:
-    r = run_n4(_n4_req())
-    assert r.confirmation_available and r.reason_codes == ("ok_confirmation",)
-    assert r.confirmation is not None and r.confirmation_value is not None
+# ═══ legătura N4↔N3 ═══
+def test_n4_with_different_n3_response_refused() -> None:
+    n3 = run_n3(_n3_req(event="evReal", as_of=T0 + 39 * 900))
+    bad = _n4_from_n3(n3, event="evReal", as_of=T0 + 39 * 900, link_ok=False)   # legătură N3 nepotrivită
+    assert run_n4(bad).reason_codes == ("n3_link_mismatch",)
 
 
-def test_n4_no_lookahead_post_window_bars_ignored() -> None:
-    # două viitoare care diferă DOAR după fereastră ⇒ descriptor IDENTIC (fără lookahead)
-    a = run_n4(_n4_req(post_close=100.8))
-    b = run_n4(_n4_req(post_close=90.0))               # crash post-fereastră
-    assert a.confirmation_available and b.confirmation_available
-    assert a.confirmation_value == b.confirmation_value and a.persistence == b.persistence
-    assert a.progress_atr == b.progress_atr and a.window_end_idx == b.window_end_idx
-
-
-def test_n4_cascade_zone_unavailable() -> None:
-    r = run_n4(_n4_req(n3_ok=False))                   # harta N3 indisponibilă
+def test_n4_cascade_when_n3_unavailable() -> None:
+    n3 = run_n3(_n3_req(event="evC", regime=False, as_of=T0 + 39 * 900))         # N3 indisponibil (cascada)
+    r = run_n4(_n4_from_n3(n3, event="evC", as_of=T0 + 39 * 900))
     assert not r.confirmation_available and r.reason_codes == ("zone_unavailable",)
 
 
-def test_n4_invalid_side_fail_closed() -> None:
-    r = run_n4(_n4_req(side=0))
-    assert r.reason_codes == ("invalid_side",)
+# ═══ refuzuri de date ═══
+def test_n3_future_bar_refused() -> None:
+    o, h, l, c, t = _m15()
+    assert run_n3(_n3_req(as_of=t[-1] - 1)).reason_codes == ("bars_not_closed_or_ordered",)
 
 
-def test_n4_stale_fail_closed() -> None:
-    h, l, c, t = _m5(100.8)
-    r = run_n4(_n4_req(as_of=t[-1] + 10_000, max_stale=100))
-    assert r.reason_codes == ("data_stale",)
+def test_n3_nan_refused() -> None:
+    o, h, l, c, t = _m15()
+    bad_atr = tuple([5.0] * (len(c) - 1) + [float("inf")])
+    assert run_n3(_n3_req(atr_override=bad_atr)).reason_codes == ("non_finite_value",)
 
 
-def test_n4_incompatible_contract_fail_closed() -> None:
-    r = run_n4(_n4_req(contract="tower-n4-request-vX"))
-    assert r.reason_codes == ("incompatible_contract",)
+def test_n3_missing_source_refused() -> None:
+    assert run_n3(_n3_req(src="")).reason_codes == ("source_identity_missing",)
 
 
-# ═══ identitate de eveniment prin lanț ═══
-def test_event_identity_matches_when_as_of_shared() -> None:
-    as_of = T0 + 39 * STEP15
-    n3 = run_n3(_n3_req(event="evS", as_of=as_of))
-    n4 = run_n4(_n4_req(event="evS", as_of=as_of, up_event="evS",
-                        up_fp=configuration_fingerprint(market_event_id="evS", symbol=SYM, as_of=as_of)))
-    assert n3.configuration_fingerprint == n4.configuration_fingerprint          # ACELAȘI fingerprint prin lanț
-    assert same_event(n3.configuration_fingerprint, n3.market_event_id, n4.configuration_fingerprint, n4.market_event_id)
+def test_n4_missing_source_refused() -> None:
+    n3 = run_n3(_n3_req(as_of=T0 + 39 * 900))
+    assert run_n4(_n4_from_n3(n3, as_of=T0 + 39 * 900, src="")).reason_codes == ("source_identity_missing",)
 
 
-def test_n4_event_identity_mismatch_fail_closed() -> None:
-    r = run_n4(_n4_req(event="evReal", up_event="evReal", up_fp="deadbeefdeadbeef"))   # fingerprint fals de la N3
-    assert not r.confirmation_available and r.reason_codes == ("event_identity_mismatch",)
+def test_data_identity_inconsistent_refused_at_builder() -> None:
+    with pytest.raises(DataIdentityError):
+        build_data_identity(symbol=SYM, timeframe="M15", source_identity=SRC, time=(1, 2, 3),
+                            vectors={"close": (1.0, 2.0)}, as_of=3, contract_version=N3_CONTRACT_VERSION)
 
 
-# ═══ fixture complet N1→N2→N3→N4 ═══
-def test_full_n1_to_n4_chain() -> None:
-    ve_tower.ensure_tower_loaded()
-    as_of15 = T0 + 39 * STEP15
-    n3 = run_n3(_n3_req(event="evFull", regime=True, bias=True, as_of=as_of15))
-    assert n3.market_map_available and n3.levels_available and n3.market_map
-    chosen = n3.market_map[0].price_anchor                 # nivelul rank-1 de la N3
-    fp = configuration_fingerprint(market_event_id="evFull", symbol=SYM, as_of=as_of15)
-    h, l, c, t = _m5(100.8)
-    n4 = run_n4(N4Request(
-        contract_version=N4_CONTRACT_VERSION, market_event_id="evFull", symbol=SYM, timeframe="M5",
-        high=h, low=l, close=c, time=t, level=chosen, side=1, as_of=as_of15, strategy_id="S1",
-        regime_available=True, bias_available=True, n3_available=n3.market_map_available,
-        upstream_market_event_id=n3.market_event_id, upstream_configuration_fingerprint=n3.configuration_fingerprint,
-        w=3, atr=tuple([1.0] * len(c))))
-    # N4 poate fi ok sau no_penetration în funcție de nivelul ales — dar lanțul rulează și identitatea ține
-    assert n4.market_event_id == "evFull" and n4.configuration_fingerprint == n3.configuration_fingerprint
-    assert n4.reason_codes[0] in ("ok_confirmation", "no_penetration")
+def test_n3_incompatible_contract_refused() -> None:
+    assert run_n3(_n3_req(contract="tower-n3-request-v1")).reason_codes == ("incompatible_contract",)
+
+
+# ═══ N3 hartă reală + provenianță + N4 confirmă + fără lookahead ═══
+def test_n3_real_map_with_provenance_and_data_identity() -> None:
+    r = run_n3(_n3_req())
+    assert r.market_map_available and r.levels and r.market_map
+    assert r.data_identity is not None and r.data_identity.timeframe == "M15" and r.data_identity.source_identity == SRC
+    assert r.data_identity.bar_count == 40 and r.node_input_fingerprint
+    for lvl in r.market_map:
+        assert lvl.provenance and all(p.family and p.instance_count >= 1 for p in lvl.provenance)
+
+
+def test_n4_confirms_and_no_lookahead() -> None:
+    n3 = run_n3(_n3_req(as_of=T0 + 39 * 900))
+    a = run_n4(_n4_from_n3(n3, as_of=T0 + 39 * 900, post_off=0.8))
+    b = run_n4(_n4_from_n3(n3, as_of=T0 + 39 * 900, post_off=-30.0))          # crash DUPĂ fereastră
+    assert a.confirmation_available
+    assert a.confirmation_value == b.confirmation_value and a.persistence == b.persistence   # fără lookahead

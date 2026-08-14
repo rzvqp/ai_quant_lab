@@ -17,9 +17,9 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - SHA-256 `edd208ad6c2c943b17a11759ece1fdf5ab2a7025779b191764c383ecce987d11`.
   - `validated_core_commit fbc0f20` · `manifest_schema_version 1.0`.
 - **AI Trader** `f4859a5` steps 1–4 · `7d836b3` steps 5–12 partial, **20/25 tests**.
-- **ve_tower 0.1.0** — official N1–N4 phenomena provider, built from `2317cda`.
-  - Wheel `ve_tower-0.1.0-py3-none-any.whl`, SHA-256 `e5457561604c2bd70ddca98a56b9a4c9ed8a60af95d9048237c768cef08b2db5`.
-  - 13 modules vendored **byte-identical**; versioned N3/N4 contracts (`tower-n3/n4-request-v1`) + adapters; 23 tests; empty-venv install verified. Awaiting **TOWER_HANDOFF** (Red Team).
+- **ve_tower** — official N1–N4 phenomena provider.
+  - **0.1.0 REJECTED** (TOWER_HANDOFF_FAIL: no strict timeframe, no per-node data identity). Wheel SHA-256 `e5457561…f08b2db5` kept for audit.
+  - **0.2.0** (contract v2) — remediation: strict timeframe (N3=M15/N4=M5), two identities (common `event_fingerprint` + per-node `data_identity`+`node_input_fingerprint`), canonical hash with NaN/Inf refusal, N4↔N3 explicit link, git-blob byte-identity, hardened bootstrap. Awaiting Red Team re-run of the 5 attacks.
 
 ## CORRECTIONS (found during Mandate A inventory)
 - `zone_map` head is **`5888978`** (re-anchored), not `11ae360`.

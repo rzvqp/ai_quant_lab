@@ -19,10 +19,10 @@ def _artifact_identity() -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
 
 
-def configuration_fingerprint(*, market_event_id: str, symbol: str, as_of: int) -> str:
-    """Amprentă CONSTANTĂ prin lanț: identitatea artefactului ‖ identitatea evenimentului (id·symbol·as_of).
+def event_fingerprint(*, market_event_id: str, symbol: str, as_of: int) -> str:
+    """Amprenta de EVENIMENT — COMUNĂ N3/N4. Artefact ‖ identitatea evenimentului (id·symbol·as_of).
     NU include timeframe: N3 lucrează pe M15, N4 pe M5, dar evenimentul de decizie e ACELAȘI (același as_of) —
-    deci amprenta e IDENTICĂ la N3 și N4. Timeframe-ul e detaliu de nod, nu identitate de eveniment."""
+    deci e IDENTICĂ la N3 și N4. Este PRIMA din cele două identități; a doua (per nod) e node_input_fingerprint."""
     payload = {
         "artifact": _artifact_identity(),
         "market_event_id": market_event_id, "symbol": symbol, "as_of": as_of,
