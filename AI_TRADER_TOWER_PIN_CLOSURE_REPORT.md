@@ -83,13 +83,34 @@ CEO's own numbered-test format).
 - Main venv `pip freeze`: reconfirmed byte-identical to the pre-remediation snapshot, again, after this
   fix.
 
-## 5. This commit's own delivery manifest
+## 5. This commit's own delivery manifest -- proven live, including a real bug the mechanism itself caught
 
-Per §2's own mechanism: `install_tower_env.ps1` was run again immediately after this commit landed and
-pushed (a real commit must exist first) — the resulting `worker_delivery_commit` is that commit's own
-hash, recorded in `<tower_venv>/ve_tower_worker_delivery_manifest.json`, never hardcoded in source. See
-the commit hash in the notification and the `git rev-parse HEAD` output accompanying this report's own
-delivery.
+Ran `install_tower_env.ps1` against the pin-closure commit `aa04caf`. Step 5 (the new manifest writer)
+failed with a Python `SyntaxError` -- root cause: PowerShell's `&` call operator does not reliably pass a
+multi-line string as one argument to a native executable (`python -c "<multi-line>"`), silently mangling
+it. Fixed in a follow-up commit (`0839307`) by writing the manifest script to a real temp `.py` file and
+invoking `python file.py` instead -- verified directly first (a throwaway commit value, written, inspected,
+deleted) before relying on it for real.
+
+Re-ran the installer against the clean, pushed `0839307` state. Result, written to
+`<tower_venv>\ve_tower_worker_delivery_manifest.json`:
+
+```json
+{
+  "delivered_at_utc": "2026-08-14T09:56:25Z",
+  "delivered_by": "DESKTOP-5H1K41D\\MEDION GAMING",
+  "protocol_version": "2.0",
+  "worker_delivery_commit": "08393070549518920a9f6b7d0cea9734af5e8eaf",
+  "worker_package_version": "0.2.0"
+}
+```
+
+`worker_delivery_commit` is `0839307...` -- the exact commit the installer was run against, read via
+`git rev-parse HEAD` against an already-existing, already-pushed commit, never hardcoded. Full test suites
+(tower venv 32 passed, `mypy --strict` clean across 14 files) re-run once more with this REAL manifest now
+present on disk -- confirming the fail-closed pin correctly continues to refuse (the 3 still-PENDING
+`ve_tower` fields), while the previously-impossible `worker_delivery_commit` presence check now genuinely
+passes for the first time, using a real, disk-backed value.
 
 ## `ve_tower` 0.3.0 — still not installed anywhere
 
