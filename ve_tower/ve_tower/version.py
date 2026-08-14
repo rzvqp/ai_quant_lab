@@ -7,10 +7,12 @@ din `code/` (verificat de `tests/test_vendor_integrity.py` contra comiturilor de
 
 from __future__ import annotations
 
-VE_TOWER_VERSION: str = "0.2.0"
-# 0.1.0 (contract v1, wheel SHA-256 e5457561604c2bd70ddca98a56b9a4c9ed8a60af95d9048237c768cef08b2db5) a fost
-# RESPINS de Red Team (TOWER_HANDOFF_FAIL): fără timeframe strict + fără identitate de date per nod. PĂSTRAT pentru
-# audit; 0.2.0 e o schimbare MATERIALĂ de contract (v1→v2), nu o suprascriere.
+VE_TOWER_VERSION: str = "0.3.0"
+# Istoric (versiuni PĂSTRATE pentru audit, niciodată suprascrise):
+#   0.1.0 (contract v1, wheel SHA-256 e5457561…f08b2db5) — RESPINS TOWER_HANDOFF_FAIL (fără timeframe strict / identitate).
+#   0.2.0 (contract v2, wheel SHA-256 3ea791ba…cc2e91a8) — TOWER_HANDOFF_CONDITIONAL: încărcătorul lăsa module parțial
+#          încărcate la o tentativă eșuată (coliziune la al 2-lea modul → level_output rămânea în sys.modules).
+#   0.3.0 — încărcare TRANZACȚIONALĂ (rollback complet + excepția originală). Contractul rămâne v2 (nemodificat).
 
 SOURCE_REPO: str = "ai_quant_lab-wp5b"
 SOURCE_BRANCH: str = "discovery-mk-matrix-v1"

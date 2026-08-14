@@ -1,14 +1,11 @@
 """Gărzi de fundație: BYTE-IDENTITATE la git-blob a modulelor vendate (verificabilă independent cu
-`git rev-parse <commit>:code/<mod>.py`), independența de market_intelligence/ai_trader, și robustețea încărcătorului
-(coliziune fail-closed, import concurent sigur, cleanup complet la eroare la jumătatea încărcării)."""
+`git rev-parse <commit>:code/<mod>.py`), independența de market_intelligence/ai_trader, și că turnul rulează.
+(Robustețea încărcătorului — tranzacționalitate/coliziune/concurență — e în `test_bootstrap.py`.)"""
 
 from __future__ import annotations
 
 import os
 import sys
-import threading
-
-import pytest
 
 _PKG = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _PKG not in sys.path:
@@ -41,60 +38,6 @@ def test_no_market_intelligence_or_ai_trader_import() -> None:
     for m in _MODS:
         src = open(os.path.join(_TOWER_DIR, m + ".py"), encoding="utf-8").read()
         assert "market_intelligence" not in src and "ai_trader" not in src, f"{m}.py atinge un stack interzis"
-
-
-def test_collision_is_fail_closed() -> None:
-    import types
-    import ve_tower._bootstrap as b
-    ve_tower.ensure_tower_loaded()
-    saved = sys.modules.get("zone_map")
-    foreign = types.ModuleType("zone_map")             # fără marcaj _MARK
-    try:
-        sys.modules["zone_map"] = foreign
-        b._loaded = False
-        with pytest.raises(b.TowerLoadCollisionError):
-            b.ensure_tower_loaded()
-    finally:
-        if saved is not None:
-            sys.modules["zone_map"] = saved
-        b._loaded = True
-
-
-def test_concurrent_import_is_safe() -> None:
-    import ve_tower._bootstrap as b
-    with b._lock:                                       # forțează o reîncărcare reală, concurentă
-        for n in b._LOAD_ORDER:
-            sys.modules.pop(n, None)
-        b._loaded = False
-    errors: list[BaseException] = []
-    barrier = threading.Barrier(8)
-
-    def worker() -> None:
-        try:
-            barrier.wait()
-            b.ensure_tower_loaded()
-        except BaseException as e:                      # noqa: BLE001
-            errors.append(e)
-
-    threads = [threading.Thread(target=worker) for _ in range(8)]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
-    assert not errors, errors
-    assert all(n in sys.modules and getattr(sys.modules[n], b._MARK, False) for n in b._LOAD_ORDER)
-
-
-def test_mid_load_error_leaves_no_partial_module(tmp_path: object) -> None:
-    import ve_tower._bootstrap as b
-    broken = os.path.join(str(tmp_path), "ve_tower_broken_probe.py")
-    with open(broken, "w", encoding="utf-8") as f:
-        f.write("raise ImportError('boom mid-load')\n")
-    name = "ve_tower_broken_probe"
-    assert name not in sys.modules
-    with pytest.raises(ImportError):
-        b._load_module(name, broken)
-    assert name not in sys.modules                     # cleanup COMPLET — zero module parțial încărcate
 
 
 def test_tower_produces_real_map_and_confirmation() -> None:
