@@ -65,6 +65,10 @@ $DeliveryCommit = (git -C $RepoRoot rev-parse HEAD).Trim()
 $DeliveredAtUtc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $DeliveredBy = "$env:USERDOMAIN\$env:USERNAME"
 
+# Written to a temp .py file rather than passed via `python -c "<multi-line>"` -- PowerShell's `&` call
+# operator does not reliably preserve a multi-line string as a single argument to a native executable
+# (observed: silent argument mangling, a Python SyntaxError with no useful diagnostic). A real file avoids
+# the whole class of problem.
 $ManifestScript = @"
 import importlib.metadata
 from pathlib import Path
@@ -81,8 +85,13 @@ manifest = WorkerDeliveryManifest(
 write_worker_delivery_manifest(manifest, venv_root=Path(r"$TowerVenvPath"))
 print(f"Worker delivery manifest written: worker_delivery_commit={manifest.worker_delivery_commit}")
 "@
-
-& $TowerPython -c $ManifestScript
+$ManifestScriptPath = Join-Path $env:TEMP "write_worker_delivery_manifest_$([guid]::NewGuid().ToString('N')).py"
+Set-Content -Path $ManifestScriptPath -Value $ManifestScript -Encoding utf8
+try {
+    & $TowerPython $ManifestScriptPath
+} finally {
+    Remove-Item -Force $ManifestScriptPath -ErrorAction SilentlyContinue
+}
 
 Write-Host "=== Done. Verify with: & '$TowerVenvPath\Scripts\pip.exe' freeze ==="
 Write-Host "ve_tower itself is NOT installed -- see README.md for the post-TOWER_HANDOFF_PASS procedure."
