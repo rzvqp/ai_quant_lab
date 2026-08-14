@@ -2511,4 +2511,42 @@
                data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [60], prev_hash E59.
   entry_hash:  E59
+
+[60] 2026-08-14
+  prev_hash:   E59
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: bdbeeb6 (ve_tower-0.2.0 wheel; state 2bb8006)
+  battery_ver: RT-TOWER-0002
+  reviewer:    Red Team
+  detail:      TOWER HANDOFF re-validation of ve_tower-0.2.0. VERDICT = **TOWER_HANDOFF_CONDITIONAL** ->
+               Mandate B (install) NOT yet reactivated.
+               ALL PRIOR FAIL POINTS CLOSED: (point 13 data substitution) FIXED -- 14 attacks pass on the
+               installed wheel: N3 strict M15 / N4 strict M5 (M5/BANANA/M15 -> invalid_timeframe);
+               event_fingerprint shared N3<->N4 (timeframe excluded, correct); node_input_fingerprint per node
+               binds to data_identity.bars_content_hash -> same (id,symbol,as_of)+diff M15 bars -> same
+               event_fp but DIFFERENT node_fp (substitution DETECTABLE); identical->identical, 1-change->diff;
+               N4<->N3 link (n3_link_mismatch); NaN/Inf->non_finite_value; missing source->source_identity_
+               missing; future bar->refuse. (point 2/4 byte-identity) FIXED + EXTERNALLY verified: all 13
+               VENDORED_BLOB_SHA1 == git rev-parse <commit>:code/<mod>.py AND wheel _tower/*.py git-blob-hash to
+               the same -> byte-identical to ratified heads (EOL fixed via .gitattributes -text). canonical hash
+               sound (IEEE-754 hex, NaN/Inf refused, type tags). contracts/no-lookahead/unavailability/
+               independence OK. point1 SHA-256 3ea791ba...91a8 + 76,258 bytes exact.
+               ★ POINT 5 (decisive) production collision REPRODUCED (9 host bare names pre-imported, AI Trader
+               stack numpy 2.5.1/pandas 3.0.3/Python 3.14.6): import ve_tower is LAZY (safe); ensure_tower_loaded
+               -> TowerLoadCollisionError on market_state(#2), all 9 HOST modules INTACT -> FAIL-CLOSED HOLDS,
+               no silent shadow. BUT (a) ve_tower CANNOT run in the shared venv (fail-closes on run_n3 = non-
+               functional) -> same-venv integration UNSAFE; (b) CONTAMINATION RESIDUE: level_output (#1) loaded
+               before the #2 collision is LEFT in sys.modules -> cleanup INCOMPLETE (pops only exec-failed
+               module, not modules before a collision), contradicting the stated 'zero partial modules'; benign
+               TODAY (c40d338==HEAD level_output identical blob) but latent if host drifts. concurrency lock
+               (double-checked) OK. numpy/pandas/python versions compatible (only the collision is the issue).
+               POINT 6 integration forms: (1) separate venv + versioned IPC = SAFE/REQUIRED; (2) same venv =
+               UNSAFE/PROHIBITED (confirmed collision); (3) hybrid = safe ONLY as a separate OS process (=form1).
+               CONDITION for PASS: install in a SEPARATE venv/process (form 1) + fix mid-order bootstrap to roll
+               back ALL vendored modules on a collision. Only PASS reactivates Mandate B. point15 doc
+               reconciliation non-blocking. Alpha PAUSED, CAND-T05 frozen. Red Team modified no engine, ran no
+               data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [61], prev_hash E60.
+  entry_hash:  E60
 ```
