@@ -2549,4 +2549,44 @@
                data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [61], prev_hash E60.
   entry_hash:  E60
+
+[61] 2026-08-14
+  prev_hash:   E60
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: 6daf2aa (ve_tower-0.3.0) + ca8599e (AI Trader isolated worker)
+  battery_ver: RT-TOWER-0003
+  reviewer:    Red Team
+  detail:      COMBINED PHASE-1 revalidation (artifact + infrastructure). VERDICT = **TOWER_HANDOFF_
+               CONDITIONAL** (NOT the automatic STAGED_INSTALL_AUTHORIZED).
+               ARTIFACT ve_tower 0.3.0 = PASS: SHA-256 0c2581c...20d2 + 77,088 bytes exact; diff bdbeeb6..
+               6daf2aa touches ONLY bootstrap/versioning/docs -- n3/n4/contracts/canonical/data_identity/
+               fingerprint + 13 _tower modules 0-diff from the verified 0.2.0 (RT-TOWER-0002); wheel _tower
+               git-blobs still == ratified heads. TRANSACTIONAL BOOTSTRAP FIXED (reproduced from installed
+               wheel): collision at first/second(EXACT market_state)/mid/last -> FULL rollback, ZERO leftover,
+               host module identity intact, original exception preserved (pop(...,None) never masks), _loaded
+               stays False, clean retry loads all 13. The 0.2.0 level_output residue is GONE. 38 tests.
+               INFRA point3 venv isolation PASS: dedicated Python 3.12.10 outside repo, deps pinned+hash-locked
+               (--require-hashes numpy 2.5.1/pandas 3.0.3/...), non-editable console-script, -I/cleared
+               PYTHONPATH/CWD-outside, startup_audit (no repo path + 9 host names absent), verify_tower_wheel
+               fail-closed (PINNED=None). point6 main isolation PASS: no ve_tower import in ai_trader main;
+               main IPC pure stdlib; worker independent of ai_trader; worker/decision no broker/legacy/
+               market_intelligence. point4 IPC STRONG core: loopback default, length-prefix bounded BEFORE
+               alloc (send+recv), NO pickle, fail-closed validation, client response-identity + STALE_RESPONSE
+               checks, worker stateless.
+               ★ FINDINGS (block auto STAGED_INSTALL): point5 (CEO 'most valuable') NO WORKER-IDENTITY
+               HANDSHAKE -- client verifies only protocol_version + echoed request id; CONFIRMED reproducibly a
+               fake server (protocol 1.0, echoed identity, tower_version=WRONG-9.9.9, FABRICATED n3/n4) is
+               ACCEPTED as valid TowerN3N4Result -> wrong-connection AND wrong-version (old ve_tower/wheel/
+               contract) NOT detected (CEO required both detected). point4 IDEMPOTENCY CACHE UNBOUNDED
+               (TowerClient._cache grows per unique (request_id,event_fp), no evict/max -- confirmed 5000
+               accepted). minor: loopback not enforced (--host allows 0.0.0.0).
+               CONDITIONS for TOWER_ARTIFACT_PASS+STAGED_INSTALL_AUTHORIZED: (1) worker-identity handshake
+               (verify ve_tower version + wheel SHA/pin + contract versions + session id; reject wrong-artifact/
+               version/session) tested vs port-occupied/fake-server/old-worker/wrong-hash/reconnect; (2) bound
+               the cache; (3) enforce loopback bind. Then re-verify + Phase 2 (real IPC->worker->N3->N4->Router->
+               EV->N6->Risk->broker BLOCKED). Alpha PAUSED, CAND-T05 frozen. Red Team modified no engine, ran no
+               data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [62], prev_hash E61.
+  entry_hash:  E61
 ```
