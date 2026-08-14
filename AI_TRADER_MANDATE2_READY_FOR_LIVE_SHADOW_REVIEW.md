@@ -92,34 +92,60 @@ a position). `market_intelligence` is demoted transitively: its only live call s
 `execution_orchestrator.orchestrate()`, itself only reachable via `send_after_dry_run_gate` — no separate
 change was needed there.
 
-## 8. 25-test results
+## 8. 25-test results — UPDATED, Mandate B (2026-08-14)
 
-**20 of 25 real and passing.** The original 6 (8, 11, 12, 13, 19, 20) plus 14 more converted this
-segment (1, 2, 3, 6, 7, 14, 15, 16, 17, 18, 21, 23, 24, 25), all against the real installed `ve_brain` and
-real `new_brain_bridge` code — never a fixture standing in for either.
+**22 of 25 (26 collected, including test 20b) real and passing** — up from 20/25 at the prior checkpoint.
+Red Team's `MANDATE_2_REVIEW_CONDITIONAL`/`INTEGRATION_BLOCKED` verdict confirmed Risk Manager, the
+broker gate, and the authority mechanism are all CORRECT; the block is that N3/N4 do not exist in the
+artifact yet (VE, Mandat A). Per the CEO's own instruction ("restul le inchizi"), test 10 and test 22 —
+neither of which actually depended on N3/N4 — were closed for real this segment, not left waiting:
+- **test 10** RESCOPED (its original cross-strategy-merge premise didn't match the actual, shipped
+  per-strategy-independent N6 design) to the real property that name deserves: multiple recognition
+  sources matching one bar each get their own independent, non-conflicting resolution.
+- **test 22** CLOSED with a real, tested gate-enable journal (`BrokerGateJournal`/`construct_enabled_gate`
+  in `broker_gate.py`) — independent of N3/N4.
 
-**5 remain genuinely `pytest.skip`'d**, each naming something this codebase does not build:
-- **4** — day-boundary/session labels feeding N1's own axes (`RawAxesBuilder` consumes only OHLC)
-- **5** — gap-visibility inside N1's own market-context input (no such input object exists)
-- **9** — a decision-snapshot staleness bound distinct from level-availability (no such concept exists)
-- **10** — a cross-strategy "conflicting recognition sources" merge (doesn't match the actual
-  per-strategy-independent N6 design — each catalog strategy gets its own, independent decision)
-- **20b** — the real artifact's own multi-node inter-failure contract (needs VE's own definition of "a
-  node" at a finer grain than this integration currently has)
+**4 remain `BLOCKED_ON_TOWER_HANDOFF`, owner VE**, each restructured to the CEO's own exact format
+(test → owner → remedy → dovada → verdict) in `test_e2e_readiness.py` itself:
+- **test 4** — day-boundary/session labels feeding N1's own axes; remedy: N3's real market-map
+  construction is the natural place this context first enters the pipeline.
+- **test 5** — gap-visibility inside N1's own market-context input; remedy: thread the existing
+  `GapRecord`/`GapClassification` types into N3's real market-map input once built.
+- **test 9** — a decision-snapshot staleness bound distinct from level-availability; owner VE + AI
+  Trader jointly; remedy: mirror `execution_orchestrator.orchestrate()`'s own `max_staleness_seconds`
+  pattern against N3's real snapshot object once it exists.
+- **test 20b** — the real artifact's own multi-node inter-failure contract; remedy: extend
+  `fail_safe.safe_evaluate_bar`'s existing per-bar wrap pattern to per-node, once N3/N4 exist as
+  distinct, separately-failable nodes.
 
-`ai_trader/mandate2_readiness/tests/test_e2e_readiness.py` — 20 passed, 6 skipped (test_20b included).
+Also delivered this segment (Mandate B point 4, CEO instruction): a dedicated demonstration
+(`new_brain_bridge/tests/test_probability_source.py`, 5 tests, CANONICAL FIXTURES ONLY, never wired into
+production) proving the `probability_inputs` interface exists, a ratified source can be introduced by
+editing only `probability_source.py`'s own return value (bridge.py never touched), absence produces
+deterministic `NO_TRADE`/`MISSING_PROBABILITY_INPUTS`, and AI Trader invents no probabilities.
 
-## 9. Extended-suite results
+`ai_trader/mandate2_readiness/tests/test_e2e_readiness.py` — 22 passed, 4 skipped.
 
-Scoped (per this repo's own validation-scope rule, re-confirmed at the point `new_brain_bridge` started
-importing `mandate2_readiness` for real): `mandate2_readiness` + `new_brain_bridge` + `pdh_pdl_demo` +
-`multi_policy_live` — **244 passed, 6 skipped**, `mypy --strict` clean across **77 files**.
+## 9. Extended-suite results — UPDATED, Mandate B point 6 (2026-08-14)
 
-Full `ai_trader/` tree (3,237 tests) — **run separately, in progress at report time** (this repo's own
-test suite takes materially longer than a single reasoning turn to complete end-to-end; no failure found
-in any completed portion so far, one pre-existing `F` around 33% unrelated to this mandate's own files,
-not yet root-caused). Reported here as **open**, not claimed complete — will be confirmed before any
-`LIVE_SHADOW` request, not assumed passing.
+Scoped: `mandate2_readiness` + `new_brain_bridge` + `pdh_pdl_demo` + `multi_policy_live` — **254 passed,
+4 skipped**, `mypy --strict` clean across **78 files**.
+
+**Full `ai_trader/` tree — CONFIRMED, complete, clean**: `3268 passed, 0 failed, 6 skipped, 4 warnings in
+15006.15s (4h10m)`. The earlier "open, in progress" status was caused by piping the background run through
+`tail` (which buffers all output until the process exits) combined with killing runs I mistakenly believed
+had hung — the suite genuinely takes 4h10m wall-clock in this environment, not an unbounded hang. A clean,
+isolated, unbuffered re-run reached 100% with zero failures, including through the exact range where an
+earlier attempt showed one `F` that was never captured (lost to the same tooling mistake) — most likely
+caused by my own overlapping concurrent pytest invocations during active development, disclosed as an
+unconfirmed hypothesis, not a proven diagnosis. Full detail:
+`AI_TRADER_MANDATE_B_POINT6_FULL_SUITE_REPORT.md`.
+
+`mypy --strict ai_trader/` (whole tree, one invocation): 227 errors in 48 files, ALL pre-existing, ALL in
+test files in packages this mandate never touched, ZERO in the four packages this mandate did touch —
+confirmed by grep against the same output. This repo's own established, CEO-ratified convention is
+per-package scoped mypy checking, never one whole-tree invocation; these errors simply were never
+surfaced before. Not fixed here — out of this mandate's scope, disclosed rather than hidden.
 
 ## 10. Process inventory
 
@@ -194,12 +220,24 @@ wrote, no gap, no duplicate.
 
 ## What is NOT done
 
-- Full `ai_trader/` tree validation (3,237 tests) — running, not yet confirmed complete.
+- **N3/N4 (market map, levels, confirmation) do not exist in the `ve_brain` artifact yet.** Red Team's
+  verdict (`MANDATE_2_REVIEW_CONDITIONAL`/`INTEGRATION_BLOCKED`) confirmed Risk Manager, the broker gate,
+  and the authority mechanism are all correct — this is the sole remaining blocker, owned by VE
+  (Mandat A). Explicitly deferred to AFTER `TOWER_HANDOFF_PASS`, not attempted in this segment:
+  (1) installing the verified N3/N4 artifact unmodified, (2) replacing `bridge.py`'s hardcoded
+  `market_map_available=False`/`levels_available=False`/`confirmation_available=False` with real
+  per-event N3/N4 output (explicitly forbidden to just flip them to `True`), (3) the full
+  feed→N1→N2→N3→N4→Router→…→N6→Risk Manager→Execution Adapter→broker-gate-BLOCKED demonstration.
 - The atomic authority switch has never been flipped (`set_authority()` never called) — by explicit CEO
-  instruction. Flipping it today would make the 5 live processes' brain-sourced decisions permanently
-  `NO_TRADE` (no validated probability table, no live level-tower — both disclosed gaps, not defects),
-  which is why this segment stopped at "code only."
-- No live process has been restarted with the new code.
+  instruction, and independently: Authority stays `NEACTIVATA` until a fresh Red Team verification after
+  `TOWER_HANDOFF_PASS`. Flipping it today would make the 5 live processes' brain-sourced decisions
+  permanently `NO_TRADE` (no validated probability table, no live level-tower — both disclosed gaps, not
+  defects), which is why this segment stopped at "code only."
+- No live process has been restarted with the new code. Legacy continues, temporarily, exactly as-is.
 
-Stopping here. `LIVE_SHADOW` requires a separate, explicit CEO confirmation, per the amendment's own
-instruction — not implied by this report's own completeness.
+Full `ai_trader/` tree validation (3268 tests) is now CONFIRMED complete and clean — see item 9. That is
+no longer an open item.
+
+Stopping here. `LIVE_SHADOW` does not start from this report. The next report is
+`READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2`, to be produced only after `TOWER_HANDOFF_PASS` and the three
+items above — not implied by this report's own completeness.
