@@ -1,8 +1,9 @@
-"""`TowerClient` operational-safety tests (CEO mandate section 4) -- a minimal, hand-rolled fake TCP
-responder built directly from `tower_protocol`'s own framing functions, deliberately NOT importing
-`ve_tower_worker` (that package is only ever installed in the separate tower venv -- this main-venv test
-suite proves the CLIENT's own safety properties independent of the real worker's implementation; the real
-worker is exercised for real in `test_tower_isolation.py`)."""
+"""`TowerClient` operational-safety tests (CEO mandate section 4, extended 2026-08-14 with session
+binding) -- a minimal, hand-rolled fake TCP responder built directly from `tower_protocol`'s own framing
+functions, deliberately NOT importing `ve_tower_worker` (that package is only ever installed in the
+separate tower venv -- this main-venv test suite proves the CLIENT's own safety properties independent of
+the real worker's implementation; the real worker is exercised for real in `test_tower_isolation.py` and
+`test_tower_launcher.py`)."""
 
 from __future__ import annotations
 
@@ -16,15 +17,31 @@ from ai_trader.new_brain_bridge.tower_client import (
     TowerN3N4Result,
     TowerUnavailableResult,
 )
+from ai_trader.new_brain_bridge.tower_launcher import EstablishedSession
 from ai_trader.new_brain_bridge.tower_protocol import (
     CONNECTION_FAILED,
+    HANDSHAKE_NOT_ESTABLISHED,
     MALFORMED_RESPONSE,
     PROTOCOL_VERSION_MISMATCH,
+    REQUEST_ID_REUSE_MISMATCH,
     RESPONSE_IDENTITY_MISMATCH,
     STALE_RESPONSE,
+    STALE_SESSION,
     TowerRequest,
+    WorkerIdentity,
     pack_frame,
     unpack_length_prefix,
+)
+
+_FAKE_IDENTITY = WorkerIdentity(
+    worker_package_version="0.2.0", worker_build_commit="abc123", protocol_version="2.0",
+    ve_tower_package_version="0.3.0", package_build_commit="6daf2aa", state_delivery_commit="0207ffa",
+    wheel_sha256="deadbeef" * 8, vendored_source_identity="vendored-digest", n3_contract_version="1.0",
+    n4_contract_version="1.0",
+)
+_ESTABLISHED_SESSION = EstablishedSession(
+    session_id="sess-1", worker_identity=_FAKE_IDENTITY, worker_identity_fingerprint=_FAKE_IDENTITY.fingerprint(),
+    host="127.0.0.1", port=0, pid=1234, process_start_identity="start-token",
 )
 
 
@@ -92,18 +109,27 @@ class _FakeServer:
 
 def _response_json(**fields: object) -> bytes:
     base = {
-        "protocol_version": "1.0", "schema_version": "1.0", "request_id": "req-1",
+        "protocol_version": "2.0", "schema_version": "2.0", "request_id": "req-1",
         "market_event_id": "evt-1", "event_fingerprint": "fp-1", "tower_version": "0.1.0", "ok": True,
-        "n3_output": {"a": 1}, "n4_output": None, "reason_codes": [],
+        "n3_output": {"a": 1}, "n4_output": None,
+        "session_id": _ESTABLISHED_SESSION.session_id,
+        "worker_identity_fingerprint": _ESTABLISHED_SESSION.worker_identity_fingerprint,
+        "reason_codes": [],
     }
     base.update(fields)
     return json.dumps(base).encode("utf-8")
 
 
+def _client(server: _FakeServer, *, session: EstablishedSession | None = _ESTABLISHED_SESSION) -> TowerClient:
+    return TowerClient(
+        TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0), session=session,
+    )
+
+
 def test_successful_round_trip() -> None:
     server = _FakeServer(response_bytes=_response_json())
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0))
+        client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerN3N4Result)
         assert result.n3_output == {"a": 1}
@@ -111,8 +137,22 @@ def test_successful_round_trip() -> None:
         server.stop()
 
 
+def test_no_established_session_refuses_before_any_network_io() -> None:
+    server = _FakeServer(response_bytes=_response_json())
+    try:
+        client = _client(server, session=None)
+        result = client.request_n3_n4(_sample_request())
+        assert isinstance(result, TowerUnavailableResult)
+        assert result.reason == HANDSHAKE_NOT_ESTABLISHED
+        assert server.connection_count == 0
+    finally:
+        server.stop()
+
+
 def test_connection_refused_is_tower_unavailable() -> None:
-    client = TowerClient(TowerClientConfig(host="127.0.0.1", port=1, timeout_seconds=1.0))
+    client = TowerClient(
+        TowerClientConfig(host="127.0.0.1", port=1, timeout_seconds=1.0), session=_ESTABLISHED_SESSION,
+    )
     result = client.request_n3_n4(_sample_request())
     assert isinstance(result, TowerUnavailableResult)
     assert result.reason == CONNECTION_FAILED
@@ -121,7 +161,7 @@ def test_connection_refused_is_tower_unavailable() -> None:
 def test_hanging_worker_times_out_to_tower_unavailable() -> None:
     server = _FakeServer(hang=True)
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=0.3))
+        client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == CONNECTION_FAILED
@@ -132,7 +172,7 @@ def test_hanging_worker_times_out_to_tower_unavailable() -> None:
 def test_malformed_response_is_refused() -> None:
     server = _FakeServer(response_bytes=b"not json")
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0))
+        client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == MALFORMED_RESPONSE
@@ -143,7 +183,7 @@ def test_malformed_response_is_refused() -> None:
 def test_protocol_version_mismatch_is_refused() -> None:
     server = _FakeServer(response_bytes=_response_json(protocol_version="99.0"))
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0))
+        client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == PROTOCOL_VERSION_MISMATCH
@@ -154,7 +194,7 @@ def test_protocol_version_mismatch_is_refused() -> None:
 def test_response_identity_mismatch_is_refused() -> None:
     server = _FakeServer(response_bytes=_response_json(request_id="someone-elses-request"))
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0))
+        client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == RESPONSE_IDENTITY_MISMATCH
@@ -165,10 +205,11 @@ def test_response_identity_mismatch_is_refused() -> None:
 def test_stale_response_same_request_id_different_event_is_refused() -> None:
     """The specific 'rezultat TARDIV pentru alt eveniment' scenario: request_id reused, but the event
     it actually answers is a different one -- the client must not silently accept it as the answer to
-    THIS request."""
+    THIS request. This is #6 of the CEO's own 18-item checklist -- the defense is identical regardless of
+    whether the mismatch came from tampering, a bug, or genuine staleness."""
     server = _FakeServer(response_bytes=_response_json(event_fingerprint="a-different-event-fp"))
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0))
+        client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == STALE_RESPONSE
@@ -176,10 +217,34 @@ def test_stale_response_same_request_id_different_event_is_refused() -> None:
         server.stop()
 
 
+def test_response_from_a_different_session_is_refused() -> None:
+    """#5/#6 of the CEO's checklist: a response claiming a different session_id (an old/wrong worker, a
+    response from BEFORE a restart) must be refused even though every other field matches perfectly."""
+    server = _FakeServer(response_bytes=_response_json(session_id="a-different-session"))
+    try:
+        client = _client(server)
+        result = client.request_n3_n4(_sample_request())
+        assert isinstance(result, TowerUnavailableResult)
+        assert result.reason == STALE_SESSION
+    finally:
+        server.stop()
+
+
+def test_response_with_wrong_identity_fingerprint_is_refused() -> None:
+    server = _FakeServer(response_bytes=_response_json(worker_identity_fingerprint="wrong-fingerprint"))
+    try:
+        client = _client(server)
+        result = client.request_n3_n4(_sample_request())
+        assert isinstance(result, TowerUnavailableResult)
+        assert result.reason == STALE_SESSION
+    finally:
+        server.stop()
+
+
 def test_worker_own_refusal_reason_is_propagated() -> None:
     server = _FakeServer(response_bytes=_response_json(ok=False, reason_codes=["TOWER_UNAVAILABLE"]))
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0))
+        client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == "TOWER_UNAVAILABLE"
@@ -190,7 +255,7 @@ def test_worker_own_refusal_reason_is_propagated() -> None:
 def test_duplicate_request_is_idempotent_and_never_re_hits_the_network() -> None:
     server = _FakeServer(response_bytes=_response_json())
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=2.0))
+        client = _client(server)
         request = _sample_request()
         first = client.request_n3_n4(request)
         second = client.request_n3_n4(request)
@@ -200,15 +265,46 @@ def test_duplicate_request_is_idempotent_and_never_re_hits_the_network() -> None
         server.stop()
 
 
+def test_same_request_id_different_payload_is_refused_before_any_network_io() -> None:
+    """#13 of the CEO's checklist: request_id reuse with a DIFFERENT fingerprint must be refused
+    explicitly, distinct from a genuine retry (same id, same fingerprint, cached)."""
+    server = _FakeServer(response_bytes=_response_json(request_id="dup-id", event_fingerprint="fp-a"))
+    try:
+        client = _client(server)
+        first = client.request_n3_n4(_sample_request(request_id="dup-id", event_fingerprint="fp-a"))
+        assert isinstance(first, TowerN3N4Result)
+        second = client.request_n3_n4(_sample_request(request_id="dup-id", event_fingerprint="fp-b"))
+        assert isinstance(second, TowerUnavailableResult)
+        assert second.reason == REQUEST_ID_REUSE_MISMATCH
+        assert server.connection_count == 1  # the mismatched second call never touched the network
+    finally:
+        server.stop()
+
+
+def test_bind_session_clears_the_cache() -> None:
+    server = _FakeServer(response_bytes=_response_json())
+    try:
+        client = _client(server)
+        request = _sample_request()
+        client.request_n3_n4(request)
+        assert client.cache_metrics.size == 1
+        client.bind_session(_ESTABLISHED_SESSION)
+        assert client.cache_metrics.size == 0
+    finally:
+        server.stop()
+
+
 def test_health_check_true_when_listening() -> None:
     server = _FakeServer(response_bytes=_response_json())
     try:
-        client = TowerClient(TowerClientConfig(host=server.host, port=server.port, timeout_seconds=1.0))
+        client = _client(server)
         assert client.health_check() is True
     finally:
         server.stop()
 
 
 def test_health_check_false_when_nothing_listening() -> None:
-    client = TowerClient(TowerClientConfig(host="127.0.0.1", port=1, timeout_seconds=1.0))
+    client = TowerClient(
+        TowerClientConfig(host="127.0.0.1", port=1, timeout_seconds=1.0), session=_ESTABLISHED_SESSION,
+    )
     assert client.health_check() is False

@@ -1,5 +1,12 @@
 """Client for the isolated `ve_tower` worker (CEO mandate section 4, 2026-08-14: "Worker-ul produce NUMAI
-N3 si N4. Nu produce decizii. Nu trimite ordine.").
+N3 si N4. Nu produce decizii. Nu trimite ordine."), extended 2026-08-14 (Red Team remediation,
+`TOWER_HANDOFF_CONDITIONAL`) with session-handshake binding and a bounded cache.
+
+**Requires an `EstablishedSession`** (from `tower_launcher.TowerWorkerLauncher.launch_and_handshake`) --
+without one, every call refuses immediately with `HANDSHAKE_NOT_ESTABLISHED`, before any network I/O.
+Every response is checked against the session's own `session_id`/`worker_identity_fingerprint` -- a reply
+from a different session (a restarted worker, a stale connection, an impostor) is refused with
+`STALE_SESSION` even if it would otherwise look like a perfectly well-formed answer.
 
 **Not wired into `bridge.evaluate_bar`'s production path.** `bridge.py`'s `market_map_available=False,
 levels_available=False, confirmation_available=False` hardcodes remain exactly as they are -- explicitly
@@ -12,21 +19,27 @@ called by anything that runs against real events.
 there is no legacy or broker call anywhere in this module's body for a bug to accidentally reach, the same
 "absence, not a guard" discipline `fail_safe.py`'s own docstring establishes for the brain-unavailable
 path. A worker failure of any kind (connection refused, timeout, malformed reply, protocol mismatch,
-identity mismatch) becomes `TowerUnavailableResult` here -- callers translate that into `NO_TRADE` /
-`TOWER_UNAVAILABLE` exactly the way `fail_safe.safe_evaluate_bar` already does for a brain failure."""
+identity mismatch, stale session) becomes `TowerUnavailableResult` here -- callers translate that into
+`NO_TRADE` / `TOWER_UNAVAILABLE` exactly the way `fail_safe.safe_evaluate_bar` already does for a brain
+failure."""
 
 from __future__ import annotations
 
 import socket
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
+from ai_trader.new_brain_bridge.tower_cache import BoundedTowerCache, CacheMetrics
+from ai_trader.new_brain_bridge.tower_launcher import EstablishedSession
 from ai_trader.new_brain_bridge.tower_protocol import (
     CONNECTION_FAILED,
+    HANDSHAKE_NOT_ESTABLISHED,
     MALFORMED_RESPONSE,
     PROTOCOL_VERSION,
     PROTOCOL_VERSION_MISMATCH,
+    REQUEST_ID_REUSE_MISMATCH,
     RESPONSE_IDENTITY_MISMATCH,
     STALE_RESPONSE,
+    STALE_SESSION,
     TOWER_UNAVAILABLE,
     TowerProtocolError,
     TowerRequest,
@@ -38,8 +51,8 @@ from ai_trader.new_brain_bridge.tower_protocol import (
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class TowerN3N4Result:
-    """A successful, identity-verified reply. `n3_output`/`n4_output` are opaque dicts -- this client
-    does not interpret their contents, matching `mandate2_readiness.event_identity.NodeTrace`'s own
+    """A successful, session-and-identity-verified reply. `n3_output`/`n4_output` are opaque dicts -- this
+    client does not interpret their contents, matching `mandate2_readiness.event_identity.NodeTrace`'s own
     "record the boundary, never interpret what's inside it" convention."""
 
     request_id: str
@@ -53,9 +66,10 @@ class TowerN3N4Result:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class TowerUnavailableResult:
     """Every failure mode collapses to this one shape -- connection refused, timeout, malformed reply,
-    protocol-version mismatch, identity mismatch, stale response, or the worker's own honest
-    `TOWER_UNAVAILABLE` (no `ve_tower` installed yet). `reason` is always one of the protocol's own
-    reason-code constants, never a free-form string, so callers can branch on it without parsing `detail`."""
+    protocol-version mismatch, identity mismatch, stale response/session, no established handshake, a
+    reused request_id with a different payload, or the worker's own honest `TOWER_UNAVAILABLE` (no
+    `ve_tower` installed yet). `reason` is always one of the protocol's own reason-code constants, never a
+    free-form string, so callers can branch on it without parsing `detail`."""
 
     request_id: str
     market_event_id: str
@@ -69,8 +83,10 @@ TowerResult = TowerN3N4Result | TowerUnavailableResult
 @dataclass(frozen=True, slots=True, kw_only=True)
 class TowerClientConfig:
     host: str = "127.0.0.1"
-    port: int = 8765
+    port: int = 0
     timeout_seconds: float = 5.0
+    cache_max_entries: int = 1000
+    cache_ttl_seconds: float = 300.0
 
 
 def _recv_exact(sock: socket.socket, n: int) -> bytes:
@@ -86,22 +102,43 @@ def _recv_exact(sock: socket.socket, n: int) -> bytes:
 
 
 class TowerClient:
-    """One instance per caller. Holds an in-process cache keyed by `(request_id, event_fingerprint)` so a
-    genuine retry of the SAME request never re-hits the network and always returns the SAME result --
-    "cerere duplicata -> rezultat IDEMPOTENT" implemented as a real cache, not merely as "the worker
-    happens to be a pure function" (defense in depth against a future, less-pure worker implementation)."""
+    """One instance per established session. `session=None` means no handshake has ever been performed
+    (or the last one failed) -- every call refuses immediately, before touching the network."""
 
-    def __init__(self, config: TowerClientConfig | None = None) -> None:
+    def __init__(self, config: TowerClientConfig | None = None, *, session: EstablishedSession | None = None) -> None:
         self._config = config or TowerClientConfig()
-        self._cache: dict[tuple[str, str], TowerResult] = {}
+        self._session = session
+        self._cache: BoundedTowerCache[TowerResult] = BoundedTowerCache(
+            max_entries=self._config.cache_max_entries, ttl_seconds=self._config.cache_ttl_seconds,
+        )
+
+    @property
+    def cache_metrics(self) -> CacheMetrics:
+        return self._cache.metrics
+
+    def bind_session(self, session: EstablishedSession | None) -> None:
+        """Rebinding to a new (or no) session clears the cache -- a cached result belongs to the session
+        that produced it (CEO mandate: "stergere la schimbarea session_id, stergere la restart")."""
+        self._session = session
+        self._cache.clear()
 
     def request_n3_n4(self, request: TowerRequest) -> TowerResult:
-        cache_key = (request.request_id, request.event_fingerprint)
-        cached = self._cache.get(cache_key)
+        if self._session is None:
+            return TowerUnavailableResult(
+                request_id=request.request_id, market_event_id=request.market_event_id,
+                reason=HANDSHAKE_NOT_ESTABLISHED, detail="no established session -- handshake was never performed or failed",
+            )
+        if self._cache.check_reuse(request.request_id, request.event_fingerprint):
+            return TowerUnavailableResult(
+                request_id=request.request_id, market_event_id=request.market_event_id,
+                reason=REQUEST_ID_REUSE_MISMATCH,
+                detail=f"request_id {request.request_id!r} was already used with a different event_fingerprint",
+            )
+        cached = self._cache.get(request.request_id, request.event_fingerprint)
         if cached is not None:
             return cached
         result = self._do_request(request)
-        self._cache[cache_key] = result
+        self._cache.put(request.request_id, request.event_fingerprint, result)
         return result
 
     def health_check(self) -> bool:
@@ -116,6 +153,7 @@ class TowerClient:
             return False
 
     def _do_request(self, request: TowerRequest) -> TowerResult:
+        assert self._session is not None
         try:
             payload = pack_frame(request.to_json_bytes())
         except TowerProtocolError as exc:
@@ -153,10 +191,6 @@ class TowerClient:
             )
 
         if response.request_id == request.request_id and response.event_fingerprint != request.event_fingerprint:
-            # Same request_id, different event -- a stale/reused-identity reply, not a fresh answer to
-            # THIS request. Distinguished from the generic mismatch below because the specific failure
-            # mode (identity reuse across events) is diagnostically different from "answered the wrong
-            # request outright".
             return TowerUnavailableResult(
                 request_id=request.request_id, market_event_id=request.market_event_id,
                 reason=STALE_RESPONSE,
@@ -178,6 +212,20 @@ class TowerClient:
                     f"event_fingerprint={request.event_fingerprint}; received request_id="
                     f"{response.request_id} market_event_id={response.market_event_id} "
                     f"event_fingerprint={response.event_fingerprint}"
+                ),
+            )
+
+        if (
+            response.session_id != self._session.session_id
+            or response.worker_identity_fingerprint != self._session.worker_identity_fingerprint
+        ):
+            return TowerUnavailableResult(
+                request_id=request.request_id, market_event_id=request.market_event_id,
+                reason=STALE_SESSION,
+                detail=(
+                    f"expected session_id={self._session.session_id!r} "
+                    f"fingerprint={self._session.worker_identity_fingerprint!r}; received "
+                    f"session_id={response.session_id!r} fingerprint={response.worker_identity_fingerprint!r}"
                 ),
             )
 

@@ -44,9 +44,14 @@ def _imported_module_names(source_path: Path) -> set[str]:
     return names
 
 
+_TOWER_MODULE_FILENAMES = (
+    "tower_client.py", "tower_protocol.py", "tower_launcher.py", "tower_cache.py", "tower_identity_pin.py",
+)
+
+
 def test_tower_client_and_protocol_import_none_of_the_forbidden_modules() -> None:
     violations: dict[str, set[str]] = {}
-    for filename in ("tower_client.py", "tower_protocol.py"):
+    for filename in _TOWER_MODULE_FILENAMES:
         source_path = _NEW_BRAIN_BRIDGE_ROOT / filename
         imported = _imported_module_names(source_path)
         hits = {
@@ -76,7 +81,7 @@ def test_no_live_process_package_imports_the_tower_client_or_protocol() -> None:
             imported = _imported_module_names(source_path)
             hits = {
                 name for name in imported
-                if "tower_client" in name or "tower_protocol" in name
+                if any(marker in name for marker in ("tower_client", "tower_protocol", "tower_launcher", "tower_cache", "tower_identity_pin"))
             }
             if hits:
                 violations[str(source_path.relative_to(_REPO_ROOT))] = hits

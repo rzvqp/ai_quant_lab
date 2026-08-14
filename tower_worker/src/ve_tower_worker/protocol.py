@@ -1,8 +1,14 @@
 """Versioned local IPC contract between AI Trader (client) and the isolated tower worker (server).
 
-**Transport choice, and why**: a plain TCP socket on `127.0.0.1`, with a 4-byte big-endian length prefix
-followed by UTF-8 JSON bytes (`json.dumps(..., sort_keys=True)` for deterministic serialization). Considered
-and rejected:
+**v2, 2026-08-14 (Red Team remediation, `TOWER_HANDOFF_CONDITIONAL`)**: adds the session handshake
+(`HandshakeRequest`/`HandshakeResponse`/`WorkerIdentity`) and per-response session/identity binding
+(`TowerResponse.session_id`/`worker_identity_fingerprint`). A frame's `type` field discriminates
+handshake frames from N3/N4 request/response frames on the same wire -- see `FRAME_TYPE_*`.
+
+**Transport choice, and why**: a plain TCP socket on `127.0.0.1` ONLY (never `0.0.0.0`, never a
+non-loopback address -- enforced at the server's construction site, see `server.py`), with a 4-byte
+big-endian length prefix followed by UTF-8 JSON bytes (`json.dumps(..., sort_keys=True)` for deterministic
+serialization). Considered and rejected:
 - `multiprocessing.connection` (stdlib, would work on both venvs with zero extra dependency) -- rejected
   because its own `Connection.send()`/`recv()` convenience methods pickle by default; defending against
   someone later calling those instead of the raw `send_bytes()`/`recv_bytes()` methods is a standing footgun
@@ -16,6 +22,11 @@ and rejected:
 **No pickle. No `eval`/`exec` of transmitted data anywhere in this module.** Every field is a JSON
 primitive; every value is validated against an explicit type before use, on both ends, matching this
 codebase's own established fail-closed `assert isinstance(...)` convention (see `new_brain_bridge/telemetry.py`).
+
+**The session secret never appears in this module, on the wire, in any frame, in any log line, or in any
+exception message.** It is handed off out-of-band (worker's own stdin, at process launch -- see `cli.py`)
+and used only as an HMAC key, computed and compared locally on each side. Only the resulting `hmac_hex`
+crosses the wire.
 """
 
 from __future__ import annotations
@@ -23,9 +34,9 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-PROTOCOL_VERSION = "1.0"
+PROTOCOL_VERSION = "2.0"
 REQUEST_SCHEMA_VERSION = "1.0"
-RESPONSE_SCHEMA_VERSION = "1.0"
+RESPONSE_SCHEMA_VERSION = "2.0"
 
 MAX_PAYLOAD_BYTES = 4 * 1024 * 1024
 """Enforced on both the outgoing serialize (client and server refuse to send an oversized frame) and the
@@ -33,20 +44,134 @@ incoming length-prefix read (refuses to allocate a buffer for a length prefix th
 the connection instead) -- the second check is the one that actually matters for safety: it bounds memory
 allocation against a malformed or hostile length prefix before a single payload byte is read."""
 
+FRAME_TYPE_HANDSHAKE = "handshake"
+FRAME_TYPE_HANDSHAKE_RESPONSE = "handshake_response"
+FRAME_TYPE_N3N4_REQUEST = "n3n4_request"
+FRAME_TYPE_N3N4_RESPONSE = "n3n4_response"
+
 TOWER_UNAVAILABLE = "TOWER_UNAVAILABLE"
 PROTOCOL_VERSION_MISMATCH = "PROTOCOL_VERSION_MISMATCH"
 MALFORMED_REQUEST = "MALFORMED_REQUEST"
 PAYLOAD_TOO_LARGE = "PAYLOAD_TOO_LARGE"
 RESPONSE_IDENTITY_MISMATCH = "RESPONSE_IDENTITY_MISMATCH"
 STALE_RESPONSE = "STALE_RESPONSE"
+STALE_SESSION = "STALE_SESSION"
+REQUEST_ID_REUSE_MISMATCH = "REQUEST_ID_REUSE_MISMATCH"
+NON_LOOPBACK_BIND_FORBIDDEN = "NON_LOOPBACK_BIND_FORBIDDEN"
+HANDSHAKE_HMAC_MISMATCH = "HANDSHAKE_HMAC_MISMATCH"
+HANDSHAKE_IDENTITY_MISMATCH = "HANDSHAKE_IDENTITY_MISMATCH"
+HANDSHAKE_SESSION_ID_MISMATCH = "HANDSHAKE_SESSION_ID_MISMATCH"
+HANDSHAKE_NOT_ESTABLISHED = "HANDSHAKE_NOT_ESTABLISHED"
 
 
 class ProtocolValidationError(Exception):
-    """Fail-closed: raised by `validate_request`/`validate_response` on any missing field, wrong type, or
-    malformed shape. Never partially trust a parsed payload."""
+    """Fail-closed: raised by `parse_*` on any missing field, wrong type, or malformed shape. Never
+    partially trust a parsed payload."""
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
+class WorkerIdentity:
+    """Every field the CEO's own handshake spec names, with correctly SEPARATED identities (per the
+    CEO's own correction: `6daf2aa` is `package_build_commit`, never a stand-in for "source identity of
+    every ratified module"). Fields the worker cannot yet determine (because `ve_tower` is not installed,
+    or because VE's manifest has not yet supplied a value) are `None` -- honest absence, never a
+    fabricated placeholder."""
+
+    worker_package_version: str
+    worker_build_commit: str
+    protocol_version: str
+    ve_tower_package_version: str | None
+    package_build_commit: str | None
+    state_delivery_commit: str | None
+    wheel_sha256: str | None
+    vendored_source_identity: str | None
+    n3_contract_version: str | None
+    n4_contract_version: str | None
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "worker_package_version": self.worker_package_version,
+            "worker_build_commit": self.worker_build_commit,
+            "protocol_version": self.protocol_version,
+            "ve_tower_package_version": self.ve_tower_package_version,
+            "package_build_commit": self.package_build_commit,
+            "state_delivery_commit": self.state_delivery_commit,
+            "wheel_sha256": self.wheel_sha256,
+            "vendored_source_identity": self.vendored_source_identity,
+            "n3_contract_version": self.n3_contract_version,
+            "n4_contract_version": self.n4_contract_version,
+        }
+
+    def canonical_json(self) -> str:
+        """Deterministic (`sort_keys=True`) representation -- the exact bytes fed into the HMAC and hashed
+        for the response-binding fingerprint. Both sides must produce byte-identical output for the same
+        logical identity, or the handshake can never agree even when nothing is actually wrong."""
+        return json.dumps(self.as_dict(), sort_keys=True)
+
+    def fingerprint(self) -> str:
+        import hashlib
+
+        return hashlib.sha256(self.canonical_json().encode("utf-8")).hexdigest()
+
+
+def worker_identity_from_dict(obj: dict[str, object]) -> WorkerIdentity:
+    def _opt_str(key: str) -> str | None:
+        value = obj.get(key)
+        if value is None:
+            return None
+        if not isinstance(value, str):
+            raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' must be a string or null")
+        return value
+
+    return WorkerIdentity(
+        worker_package_version=_require_str(obj, "worker_package_version"),
+        worker_build_commit=_require_str(obj, "worker_build_commit"),
+        protocol_version=_require_str(obj, "protocol_version"),
+        ve_tower_package_version=_opt_str("ve_tower_package_version"),
+        package_build_commit=_opt_str("package_build_commit"),
+        state_delivery_commit=_opt_str("state_delivery_commit"),
+        wheel_sha256=_opt_str("wheel_sha256"),
+        vendored_source_identity=_opt_str("vendored_source_identity"),
+        n3_contract_version=_opt_str("n3_contract_version"),
+        n4_contract_version=_opt_str("n4_contract_version"),
+    )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class HandshakeRequest:
+    session_id: str
+    challenge_hex: str
+    type: str = FRAME_TYPE_HANDSHAKE
+
+    def to_json_bytes(self) -> bytes:
+        payload = {"type": self.type, "session_id": self.session_id, "challenge_hex": self.challenge_hex}
+        return json.dumps(payload, sort_keys=True).encode("utf-8")
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class HandshakeResponse:
+    session_id: str
+    hmac_hex: str
+    identity: WorkerIdentity
+    pid: int
+    process_start_identity: str
+    readiness_state: str
+    type: str = FRAME_TYPE_HANDSHAKE_RESPONSE
+
+    def to_json_bytes(self) -> bytes:
+        payload = {
+            "type": self.type,
+            "session_id": self.session_id,
+            "hmac_hex": self.hmac_hex,
+            "identity": self.identity.as_dict(),
+            "pid": self.pid,
+            "process_start_identity": self.process_start_identity,
+            "readiness_state": self.readiness_state,
+        }
+        return json.dumps(payload, sort_keys=True).encode("utf-8")
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class TowerRequest:
     protocol_version: str
     schema_version: str
@@ -63,9 +188,11 @@ class TowerRequest:
     m5_closed_bars: tuple[dict[str, object], ...]
     strategy_id: str
     strategy_version: str
+    type: str = FRAME_TYPE_N3N4_REQUEST
 
     def to_json_bytes(self) -> bytes:
         payload = {
+            "type": self.type,
             "protocol_version": self.protocol_version,
             "schema_version": self.schema_version,
             "request_id": self.request_id,
@@ -85,7 +212,7 @@ class TowerRequest:
         return json.dumps(payload, sort_keys=True).encode("utf-8")
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class TowerResponse:
     protocol_version: str
     schema_version: str
@@ -96,10 +223,14 @@ class TowerResponse:
     ok: bool
     n3_output: dict[str, object] | None
     n4_output: dict[str, object] | None
+    session_id: str
+    worker_identity_fingerprint: str
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
+    type: str = FRAME_TYPE_N3N4_RESPONSE
 
     def to_json_bytes(self) -> bytes:
         payload = {
+            "type": self.type,
             "protocol_version": self.protocol_version,
             "schema_version": self.schema_version,
             "request_id": self.request_id,
@@ -109,6 +240,8 @@ class TowerResponse:
             "ok": self.ok,
             "n3_output": self.n3_output,
             "n4_output": self.n4_output,
+            "session_id": self.session_id,
+            "worker_identity_fingerprint": self.worker_identity_fingerprint,
             "reason_codes": list(self.reason_codes),
         }
         return json.dumps(payload, sort_keys=True).encode("utf-8")
@@ -118,6 +251,13 @@ def _require_str(obj: dict[str, object], key: str) -> str:
     value = obj.get(key)
     if not isinstance(value, str):
         raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' missing or not a string")
+    return value
+
+
+def _require_int(obj: dict[str, object], key: str) -> int:
+    value = obj.get(key)
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' missing or not an int")
     return value
 
 
@@ -135,15 +275,50 @@ def _require_bar_list(obj: dict[str, object], key: str) -> tuple[dict[str, objec
     return tuple(value)
 
 
-def parse_request(raw: bytes) -> TowerRequest:
-    """Fail-closed: any missing/mistyped field raises `ProtocolValidationError` before a `TowerRequest`
-    is ever constructed -- the server never operates on a partially-trusted object."""
+def peek_frame_type(raw: bytes) -> str:
+    """Reads only the `type` discriminator, for routing before full parsing. Fail-closed: any non-object
+    JSON, invalid JSON, or missing/non-string `type` raises rather than defaulting to a guess."""
     try:
         obj = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ProtocolValidationError(f"MALFORMED_REQUEST: not valid JSON ({exc})") from exc
     if not isinstance(obj, dict):
         raise ProtocolValidationError("MALFORMED_REQUEST: top-level JSON value is not an object")
+    return _require_str(obj, "type")
+
+
+def parse_handshake_request(raw: bytes) -> HandshakeRequest:
+    obj = _parse_object(raw)
+    return HandshakeRequest(
+        session_id=_require_str(obj, "session_id"), challenge_hex=_require_str(obj, "challenge_hex"),
+    )
+
+
+def parse_handshake_response(raw: bytes) -> HandshakeResponse:
+    obj = _parse_object(raw)
+    identity_obj = _require_dict(obj, "identity")
+    return HandshakeResponse(
+        session_id=_require_str(obj, "session_id"), hmac_hex=_require_str(obj, "hmac_hex"),
+        identity=worker_identity_from_dict(identity_obj), pid=_require_int(obj, "pid"),
+        process_start_identity=_require_str(obj, "process_start_identity"),
+        readiness_state=_require_str(obj, "readiness_state"),
+    )
+
+
+def _parse_object(raw: bytes) -> dict[str, object]:
+    try:
+        obj = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ProtocolValidationError(f"MALFORMED_REQUEST: not valid JSON ({exc})") from exc
+    if not isinstance(obj, dict):
+        raise ProtocolValidationError("MALFORMED_REQUEST: top-level JSON value is not an object")
+    return obj
+
+
+def parse_request(raw: bytes) -> TowerRequest:
+    """Fail-closed: any missing/mistyped field raises `ProtocolValidationError` before a `TowerRequest`
+    is ever constructed -- the server never operates on a partially-trusted object."""
+    obj = _parse_object(raw)
     return TowerRequest(
         protocol_version=_require_str(obj, "protocol_version"),
         schema_version=_require_str(obj, "schema_version"),
@@ -166,12 +341,7 @@ def parse_request(raw: bytes) -> TowerRequest:
 def parse_response(raw: bytes) -> TowerResponse:
     """Fail-closed, mirroring `parse_request`. Called by the CLIENT on the worker's reply -- a malformed
     reply must never be silently treated as a valid (even if empty) N3/N4 output."""
-    try:
-        obj = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise ProtocolValidationError(f"MALFORMED_REQUEST: not valid JSON ({exc})") from exc
-    if not isinstance(obj, dict):
-        raise ProtocolValidationError("MALFORMED_REQUEST: top-level JSON value is not an object")
+    obj = _parse_object(raw)
     ok = obj.get("ok")
     if not isinstance(ok, bool):
         raise ProtocolValidationError("MALFORMED_REQUEST: field 'ok' missing or not a bool")
@@ -194,6 +364,8 @@ def parse_response(raw: bytes) -> TowerResponse:
         ok=ok,
         n3_output=n3_output,
         n4_output=n4_output,
+        session_id=_require_str(obj, "session_id"),
+        worker_identity_fingerprint=_require_str(obj, "worker_identity_fingerprint"),
         reason_codes=tuple(reason_codes_raw),
     )
 

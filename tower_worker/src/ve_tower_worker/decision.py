@@ -31,6 +31,8 @@ def real_decision(request: TowerRequest) -> TowerResponse:
             ok=False,
             n3_output=None,
             n4_output=None,
+            session_id="",  # overwritten unconditionally by server.py's own _stamp_session
+            worker_identity_fingerprint="",
             reason_codes=(TOWER_UNAVAILABLE,),
         )
     # Deliberately unreachable until ve_tower is actually installed in this venv. What goes here is

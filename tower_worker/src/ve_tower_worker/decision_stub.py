@@ -27,5 +27,7 @@ def fake_decision(request: TowerRequest) -> TowerResponse:
         ok=True,
         n3_output={"synthetic_fixture": True, "market_map_available": False, "levels_available": False},
         n4_output={"synthetic_fixture": True, "confirmation_available": False},
+        session_id="",  # overwritten unconditionally by server.py's own _stamp_session
+        worker_identity_fingerprint="",
         reason_codes=("STUB_FIXTURE_RESPONSE",),
     )

@@ -29,17 +29,18 @@ def _sample_request() -> TowerRequest:
 
 def test_request_serializes_with_default_protocol_and_schema_versions() -> None:
     request = _sample_request()
-    assert request.protocol_version == "1.0"
+    assert request.protocol_version == "2.0"
     assert request.schema_version == "1.0"
     raw = request.to_json_bytes()
-    assert b'"protocol_version": "1.0"' in raw
+    assert b'"protocol_version": "2.0"' in raw
+    assert b'"type": "n3n4_request"' in raw
 
 
 def test_parse_response_round_trip() -> None:
     response = TowerResponse(
-        protocol_version="1.0", schema_version="1.0", request_id="req-1", market_event_id="evt-1",
+        protocol_version="2.0", schema_version="2.0", request_id="req-1", market_event_id="evt-1",
         event_fingerprint="fp-1", tower_version="0.1.0", ok=True, n3_output={"a": 1}, n4_output=None,
-        reason_codes=("N3_OK",),
+        session_id="sess-1", worker_identity_fingerprint="fingerprint-1", reason_codes=("N3_OK",),
     )
     import json
 
@@ -49,6 +50,7 @@ def test_parse_response_round_trip() -> None:
             "request_id": response.request_id, "market_event_id": response.market_event_id,
             "event_fingerprint": response.event_fingerprint, "tower_version": response.tower_version,
             "ok": response.ok, "n3_output": response.n3_output, "n4_output": response.n4_output,
+            "session_id": response.session_id, "worker_identity_fingerprint": response.worker_identity_fingerprint,
             "reason_codes": list(response.reason_codes),
         }
     ).encode("utf-8")
@@ -58,7 +60,7 @@ def test_parse_response_round_trip() -> None:
 
 def test_parse_response_rejects_missing_ok_field() -> None:
     with pytest.raises(TowerProtocolError):
-        parse_response_bytes(b'{"protocol_version": "1.0"}')
+        parse_response_bytes(b'{"protocol_version": "2.0"}')
 
 
 def test_parse_response_rejects_non_json() -> None:
