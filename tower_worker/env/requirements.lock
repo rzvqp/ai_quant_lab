@@ -1,0 +1,20 @@
+# Pinned, hash-verified dependencies for the ISOLATED ve_tower worker venv.
+# NEVER installed into the AI Trader main venv (venv/) -- that venv's own pip freeze is captured,
+# byte-for-byte, in AI_TRADER_VE_TOWER_RUNTIME_INVENTORY.md and re-verified unchanged in
+# AI_TRADER_TOWER_WORKER_ISOLATION_REPORT.md.
+#
+# Generated 2026-08-14 via `pip install --dry-run --report ... numpy==2.5.1 pandas==3.0.3` against a
+# clean Python 3.12.10 venv (installed via `py install 3.12`, official python.org install manager,
+# signature-verified). Versions deliberately chosen to MATCH the main venv's already-proven pins
+# (numpy==2.5.1, pandas==3.0.3) to minimize behavioral divergence between the two venvs -- both resolved
+# identically under cp312 and cp314, confirming these specific versions ship wheels for both.
+#
+# Install with: pip install --require-hashes -r requirements.lock
+# (fails closed if any resolved package's hash doesn't match one of the ones listed below, or if any
+# dependency of these packages is missing its own hash)
+
+numpy==2.5.1 --hash=sha256:f7d60026c0bdb1380e83bfa7a0419c4577ee4b9a08880afcb6dadeb74c649fa2
+pandas==3.0.3 --hash=sha256:c7be265b62cef88e253a941e4698604973736dcfe242fdb5198f0f7bc473cdcc
+python-dateutil==2.9.0.post0 --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
+six==1.17.0 --hash=sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274
+tzdata==2026.3 --hash=sha256:dc096730c87af6cab1b171c9d532be840741ff5d459015e7f6947bd7d7e54931
