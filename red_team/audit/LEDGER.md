@@ -2660,4 +2660,44 @@
                no data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [64], prev_hash E63.
   entry_hash:  E63
+
+[64] 2026-08-14
+  prev_hash:   E63
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: d1a971a (AI Trader READY_FOR_TOWER_PHASE1_REVALIDATION_FINAL)
+  battery_ver: RT-TOWER-0006
+  reviewer:    Red Team
+  detail:      PHASE-1 FINAL REVALIDATION at d1a971a (pin now FILLED from the verified sidecar; new
+               sidecar_verification.py). VERDICT = ***TOWER_ARTIFACT_PASS · STAGED_INSTALL_AUTHORIZED***
+               (automatic, no new CEO approval). No reproducible decision-path violation.
+               (1) Pin EXPECTED_* no longer None: vendored_source_identity=sha256:4c0dee...69e1c, n3=tower-n3-
+               request-v2, n4=tower-n4-request-v2 (== my verified values). Git-anchored recompute (13 blobs via
+               git rev-parse + documented algo) == pinned value. verify_pin FAIL-CLOSED per field: flipping
+               vendored_source_identity/n3/n4/wheel_sha256/package_build_commit -> mismatch; worker_delivery_
+               commit presence-only (non-null passes, None fails).
+               (2) COMMIT MATRIX unambiguous, linear (d1a971a descends from 88857ba): 88857ba=worker_validated_
+               core_commit (impl reviewed), 4d01fb2=SUPERSEDED hardcoded approach, 0839307=installer fix,
+               744d5f5=pin report, 7747c4b=fill pin from sidecar (worker_delivery_commit captured by installer),
+               d1a971a=record matrix. artifact_identity.py has NO hardcoded commit (grep). worker_delivery_commit
+               DOCUMENTARY/presence-only; handshake proof = exact identities + HMAC, NOT worker_delivery_commit.
+               (3) sidecar_verification.py RECOMPUTES (not copies): ran against real sidecar -> SIDECAR_VERIFIED_
+               OK; changing ONLY the declared identity -> REFUSED; changing one blob (identity stale) -> REFUSED;
+               dropped blob (12!=13)/wrong schema/n3 req!=resp/missing field -> REFUSED. artifact_fingerprint
+               read-only, never compared/pinned. Git-anchor of the 13 blobs = Red Team's (done); pinned aggregate
+               = my git-anchored value.
+               (4) ATTACKS re-exec from REAL code (PROTOCOL_VERSION=2.0, HMAC secret, per-response session):
+               fake server -> HANDSHAKE_HMAC_MISMATCH; wrong wheel/vendored/n3/n4 -> verify_pin mismatch; old
+               session -> STALE_SESSION; port occupied -> startup fail; cache bound+TTL+request-id-reuse; non-
+               loopback rejected; crash/restart/missing/None fail-closed.
+               (5) Worker suite 32 + client tower+sidecar suites 74 pass. bridge.py still hardcodes market_map/
+               levels/confirmation=False (UNCONNECTED); set_authority never called (authority INACTIVE); ve_tower
+               UNINSTALLED in AI Trader env (my sandbox install is throwaway); LIVE_SHADOW not started.
+               AUTHORIZES (7 steps, automatic): install ve_tower 0.3.0 ONLY in the separate venv; verify install;
+               start real worker; wire N3/N4 via IPC; remove the 3 hardcoded False; close blocked tests; deliver
+               READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2. STILL FORBIDDEN: LIVE_SHADOW, authority activation;
+               Alpha PAUSED, CAND-T05 frozen. Phase 2 = next separate review. Red Team modified no engine, ran no
+               data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [65], prev_hash E64.
+  entry_hash:  E64
 ```
