@@ -55,7 +55,9 @@ def _matching_identity(**overrides: object) -> WorkerIdentity:
         "package_build_commit": tower_identity_pin.EXPECTED_PACKAGE_BUILD_COMMIT,
         "state_delivery_commit": tower_identity_pin.EXPECTED_STATE_DELIVERY_COMMIT,
         "wheel_sha256": tower_identity_pin.EXPECTED_WHEEL_SHA256,
-        "vendored_source_identity": "some-digest", "n3_contract_version": "1.0", "n4_contract_version": "1.0",
+        "vendored_source_identity": tower_identity_pin.EXPECTED_VENDORED_SOURCE_IDENTITY,
+        "n3_contract_version": tower_identity_pin.EXPECTED_N3_CONTRACT_VERSION,
+        "n4_contract_version": tower_identity_pin.EXPECTED_N4_CONTRACT_VERSION,
     }
     fields.update(overrides)
     return WorkerIdentity(**fields)  # type: ignore[arg-type]
@@ -109,12 +111,11 @@ def test_3_different_wheel_hash_is_refused() -> None:
     assert "wheel_sha256" in result.detail
 
 
-def test_4_different_n3_or_n4_contract_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Pending fields already fail closed by construction (test_tower_identity_pin.py's own
-    `test_pending_fields_always_fail_closed_today`); this test demonstrates the DIFFERENT-value case
-    specifically, once a concrete expectation exists -- monkeypatched here for exactly that reason."""
-    monkeypatch.setattr(tower_identity_pin, "EXPECTED_N3_CONTRACT_VERSION", "N3-CONTRACT-2.0")
-    identity = _matching_identity(n3_contract_version="N3-CONTRACT-1.0-OLD")
+def test_4_different_n3_or_n4_contract_is_refused() -> None:
+    """2026-08-14, `TOWER_METADATA_PASS`: the pin now carries a real, closed `EXPECTED_N3_CONTRACT_VERSION`
+    (`tower-n3-request-v2`) -- no monkeypatch needed anymore to demonstrate a genuinely different claimed
+    value being refused."""
+    identity = _matching_identity(n3_contract_version="tower-n3-request-v1-old")
     response = _signed_response(identity)
     result = verify_handshake_response(
         response, expected_session_id=_SESSION_ID, session_secret=_SESSION_SECRET, challenge_hex=_CHALLENGE_HEX,

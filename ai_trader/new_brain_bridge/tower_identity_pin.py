@@ -13,16 +13,20 @@ every ratified module; it is the commit `ve_tower 0.3.0` was BUILT from:
   gates the one-time INSTALL action; this pin gates every runtime CONNECTION -- two different mechanisms,
   deliberately not merged into one).
 
-**Fields not yet supplied are `None` -- PENDING, not fabricated.** `vendored_source_identity` (the
-digest of the 13 `VENDORED_BLOB_SHA1` values), `n3_contract_version`, and `n4_contract_version` were named
-as required handshake fields but no concrete value has been given for any of them yet. `verify_pin` fails
-closed on ANY `None` expected field -- a partial identity check is not a real check. This is a genuine,
-disclosed gap: even once `ve_tower` 0.3.0 is actually installed and reporting real values for these three
-fields, the handshake CANNOT pass here until VE's manifest supplies what this pin should expect them to
-equal. That is a blocker for Phase 2, not something this remediation can resolve on its own. Point 1 of
-the CEO's own pin-closure instruction: these three, plus `TOWER_METADATA_PASS`'s own artifact identity,
-get filled in EXCLUSIVELY with the exact values Red Team verifies and delivers -- never deduced, never
-copied from conversation. Not done here, since no such values have been supplied yet.
+**2026-08-14, `TOWER_METADATA_PASS` closure.** `vendored_source_identity`, `n3_contract_version`, and
+`n4_contract_version` are CLOSED -- sourced from `HANDOFF_MANIFEST-0.3.0.json` (committed at
+`ai_quant_lab-wp5b` commit `12f9241`), never from this conversation, never deduced. Verified by
+`tower_worker/env/sidecar_verification.py` BEFORE being written here: `vendored_source_identity` was
+INDEPENDENTLY RECOMPUTED from the sidecar's own 13 raw `(module_name, git_blob_sha1)` pairs using the
+manifest's own documented algorithm -- exact match, not merely copied from the manifest's own declared
+field. Red Team's own independent verification: `RT-TOWER-0004` (`ai_quant_lab` commit `ccb50c5`),
+verdict `TOWER_METADATA_PASS`. Both this repo's own recomputation and Red Team's are INDEPENDENT of each
+other and of the sidecar's own declared value -- three separate computations agreeing, not one claim
+trusted three times.
+
+**`artifact_fingerprint` is deliberately NOT a pin field.** Per Red Team's own `RT-TOWER-0004` finding:
+reproducible from the wheel's own code, but "**not** used in the pin/handshake verification
+(informational)." Consistent with that finding, this module never compares it to anything.
 
 **2026-08-14, pin-closure correction**: this module's own docstring PREVIOUSLY CLAIMED `verify_pin`
 compared `worker_package_version`/`worker_delivery_commit`/`protocol_version` too -- it did not; those
@@ -35,12 +39,14 @@ three fields were silently unchecked. Fixed here: `verify_pin` now genuinely che
   of this exact handshake: `ve_tower`'s own identity comes from VE/Red Team; `worker_package_version` and
   `protocol_version` are this repo's own static, compile-time facts (a package version string, a wire
   format version), not self-referential in the way a commit hash is.
-- **Presence only** (`worker_delivery_commit`) -- CANNOT be exact-matched against a hardcoded expected
-  value without recreating the exact self-reference bug this pin-closure fixes (the client's OWN pin
-  constant would need to already know a commit hash that doesn't exist until this file is committed).
-  The check that IS meaningful and non-circular: the field must not be `None` -- proving the worker's
-  claim is genuinely backed by a real `worker_delivery_manifest.json` written by the installer, not merely
-  absent."""
+- **Presence only, DOCUMENTARY** (`worker_delivery_commit`) -- CANNOT be exact-matched against a
+  hardcoded expected value without recreating the exact self-reference bug this pin-closure fixes (the
+  client's OWN pin constant would need to already know a commit hash that doesn't exist until this file
+  is committed). Per the CEO's own instruction (2026-08-14, `TOWER_METADATA_PASS`): "Un camp verificat
+  numai prin 'e prezent' NU e o identitate de securitate" -- this field is explicitly DOCUMENTARY, never
+  treated as proof the worker is running the correct code. The handshake's actual SECURITY identities are
+  the nine exact-match fields below, plus the HMAC session proof (`tower_launcher.py`) -- the same
+  distinction VE already drew correctly for `ve_brain`."""
 
 from __future__ import annotations
 
@@ -54,9 +60,12 @@ EXPECTED_VE_TOWER_PACKAGE_VERSION = "0.3.0"
 EXPECTED_PACKAGE_BUILD_COMMIT = "6daf2aa"
 EXPECTED_STATE_DELIVERY_COMMIT = "0207ffa"
 EXPECTED_WHEEL_SHA256 = "0c2581c068f3bd7d0c5beff1358af0aa906485d69ed74bf66c8a6d8d0c0120d2"
-EXPECTED_VENDORED_SOURCE_IDENTITY: str | None = None  # PENDING -- 13 VENDORED_BLOB_SHA1 digest not yet supplied
-EXPECTED_N3_CONTRACT_VERSION: str | None = None  # PENDING -- not yet supplied
-EXPECTED_N4_CONTRACT_VERSION: str | None = None  # PENDING -- not yet supplied
+EXPECTED_VENDORED_SOURCE_IDENTITY = "sha256:4c0deecbec7afc74b1fc7f61898ad10e54b63d3b7c5cad63b80ee8c647a69e1c"
+EXPECTED_N3_CONTRACT_VERSION = "tower-n3-request-v2"
+EXPECTED_N4_CONTRACT_VERSION = "tower-n4-request-v2"
+"""All three sourced from `HANDOFF_MANIFEST-0.3.0.json` (`ai_quant_lab-wp5b` @ `12f9241`), verified by
+`tower_worker/env/sidecar_verification.py` and independently corroborated by Red Team's `RT-TOWER-0004`
+(`ai_quant_lab` @ `ccb50c5`, verdict `TOWER_METADATA_PASS`) BEFORE being written here."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -83,8 +92,10 @@ def verify_pin(claimed: WorkerIdentity) -> tuple[PinMismatch, ...]:
     )
     mismatches = []
     for field_name, expected, actual in exact_match_checks:
-        # None expected -> PENDING -> can never be verified -> always a mismatch, deliberately, so the
-        # handshake fails closed until the real value is supplied, rather than silently skipping the check.
+        # No EXPECTED_* constant above is None anymore (TOWER_METADATA_PASS closed the pin) -- this check
+        # stays regardless, so a field that ever again became PENDING (e.g. a future new field with no
+        # value supplied yet) would fail closed by construction, the same way the three just-closed
+        # fields did throughout the period before their real values existed.
         if expected is None or expected != actual:
             mismatches.append(PinMismatch(field=field_name, expected=expected, actual=actual))
 
