@@ -61,7 +61,7 @@ def test_response_round_trip() -> None:
 
 def _sample_identity(**overrides: object) -> WorkerIdentity:
     fields: dict[str, object] = {
-        "worker_package_version": "0.2.0", "worker_build_commit": "abc123", "protocol_version": "2.0",
+        "worker_package_version": "0.2.0", "worker_delivery_commit": "abc123", "protocol_version": "2.0",
         "ve_tower_package_version": "0.3.0", "package_build_commit": "6daf2aa",
         "state_delivery_commit": "0207ffa", "wheel_sha256": "deadbeef" * 8,
         "vendored_source_identity": "vendored-digest", "n3_contract_version": "1.0",
@@ -95,6 +95,18 @@ def test_identity_with_pending_fields_round_trips_as_none() -> None:
     parsed = parse_handshake_response(response.to_json_bytes())
     assert parsed.identity.vendored_source_identity is None
     assert parsed.identity.n3_contract_version is None
+
+
+def test_identity_with_no_worker_delivery_manifest_round_trips_worker_delivery_commit_as_none() -> None:
+    """worker_delivery_commit is optional -- honestly `None` before any install-time manifest exists,
+    never a hardcoded self-referential constant (CEO correction, 2026-08-14)."""
+    identity = _sample_identity(worker_delivery_commit=None)
+    response = HandshakeResponse(
+        session_id="sess-1", hmac_hex="feedface", identity=identity, pid=1234,
+        process_start_identity="start-token", readiness_state="READY",
+    )
+    parsed = parse_handshake_response(response.to_json_bytes())
+    assert parsed.identity.worker_delivery_commit is None
 
 
 def test_peek_frame_type_routes_handshake_vs_n3n4_request() -> None:

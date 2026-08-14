@@ -11,7 +11,9 @@ from ai_trader.new_brain_bridge.tower_protocol import WorkerIdentity
 
 def _matching_identity(**overrides: object) -> WorkerIdentity:
     fields: dict[str, object] = {
-        "worker_package_version": "0.2.0", "worker_build_commit": "abc123", "protocol_version": "2.0",
+        "worker_package_version": tower_identity_pin.EXPECTED_WORKER_PACKAGE_VERSION,
+        "worker_delivery_commit": "some-real-manifest-backed-commit",
+        "protocol_version": tower_identity_pin.EXPECTED_PROTOCOL_VERSION,
         "ve_tower_package_version": tower_identity_pin.EXPECTED_VE_TOWER_PACKAGE_VERSION,
         "package_build_commit": tower_identity_pin.EXPECTED_PACKAGE_BUILD_COMMIT,
         "state_delivery_commit": tower_identity_pin.EXPECTED_STATE_DELIVERY_COMMIT,
@@ -70,3 +72,48 @@ def test_state_delivery_commit_is_checked_as_its_own_separate_field() -> None:
     assert any(m.field == "state_delivery_commit" for m in mismatches)
     # package_build_commit itself still matches -- proving the two are checked independently
     assert not any(m.field == "package_build_commit" for m in mismatches)
+
+
+def test_matching_identity_has_no_mismatches_beyond_the_disclosed_pending_fields() -> None:
+    """Not a claim that the pin can pass today -- it genuinely cannot, by design, until VE's manifest
+    supplies the 3 still-PENDING fields (see `test_pending_fields_always_fail_closed_today`). This proves
+    everything ELSE the pin-closure fix added (worker_package_version, protocol_version,
+    worker_delivery_commit presence) is satisfied by a genuinely correct identity, isolating exactly which
+    fields remain blocked rather than a blanket, uninformative failure."""
+    identity = _matching_identity()
+    mismatched_fields = {m.field for m in verify_pin(identity)}
+    assert mismatched_fields == {"vendored_source_identity", "n3_contract_version", "n4_contract_version"}
+
+
+def test_wrong_worker_package_version_is_a_mismatch() -> None:
+    """2026-08-14 pin-closure fix: this module's own docstring previously CLAIMED
+    worker_package_version was checked -- it was not. Now it genuinely is."""
+    identity = _matching_identity(worker_package_version="0.1.0-old")
+    mismatches = verify_pin(identity)
+    assert any(m.field == "worker_package_version" for m in mismatches)
+
+
+def test_wrong_protocol_version_is_a_mismatch() -> None:
+    """Same fix, for protocol_version -- an old worker still speaking protocol 1.0 must be refused."""
+    identity = _matching_identity(protocol_version="1.0")
+    mismatches = verify_pin(identity)
+    assert any(m.field == "protocol_version" for m in mismatches)
+
+
+def test_missing_worker_delivery_commit_is_a_mismatch() -> None:
+    """worker_delivery_commit can only ever be checked for PRESENCE, not exact match (checking exact
+    match would recreate the self-reference bug this pin-closure fixes) -- but presence absent must still
+    fail closed."""
+    identity = _matching_identity(worker_delivery_commit=None)
+    mismatches = verify_pin(identity)
+    assert any(m.field == "worker_delivery_commit" and m.actual is None for m in mismatches)
+
+
+def test_worker_delivery_commit_is_never_exact_matched_any_non_null_value_passes() -> None:
+    """Confirms the presence-only design explicitly: two DIFFERENT non-null worker_delivery_commit values
+    both pass this specific check (whatever other checks might independently fail is irrelevant here) --
+    proving this field is deliberately not pinned to one hardcoded expected commit."""
+    identity_a = _matching_identity(worker_delivery_commit="commit-aaaa")
+    identity_b = _matching_identity(worker_delivery_commit="commit-bbbb")
+    assert not any(m.field == "worker_delivery_commit" for m in verify_pin(identity_a))
+    assert not any(m.field == "worker_delivery_commit" for m in verify_pin(identity_b))

@@ -75,10 +75,17 @@ class WorkerIdentity:
     CEO's own correction: `6daf2aa` is `package_build_commit`, never a stand-in for "source identity of
     every ratified module"). Fields the worker cannot yet determine (because `ve_tower` is not installed,
     or because VE's manifest has not yet supplied a value) are `None` -- honest absence, never a
-    fabricated placeholder."""
+    fabricated placeholder.
+
+    `worker_delivery_commit` is likewise `None` unless a real `worker_delivery_manifest.json` exists in
+    the tower venv -- per the CEO's own second correction (2026-08-14, closing the pin): a commit cannot
+    contain its own hash, so this value is NEVER a constant hardcoded into this package's own source.
+    It comes from the installer, which runs AFTER a real commit already exists and can honestly record
+    `git rev-parse HEAD` at that point -- the exact precedent VE already established for `ve_brain`'s own
+    `artifact_manifest(delivery_commit)`."""
 
     worker_package_version: str
-    worker_build_commit: str
+    worker_delivery_commit: str | None
     protocol_version: str
     ve_tower_package_version: str | None
     package_build_commit: str | None
@@ -91,7 +98,7 @@ class WorkerIdentity:
     def as_dict(self) -> dict[str, object]:
         return {
             "worker_package_version": self.worker_package_version,
-            "worker_build_commit": self.worker_build_commit,
+            "worker_delivery_commit": self.worker_delivery_commit,
             "protocol_version": self.protocol_version,
             "ve_tower_package_version": self.ve_tower_package_version,
             "package_build_commit": self.package_build_commit,
@@ -125,7 +132,7 @@ def worker_identity_from_dict(obj: dict[str, object]) -> WorkerIdentity:
 
     return WorkerIdentity(
         worker_package_version=_require_str(obj, "worker_package_version"),
-        worker_build_commit=_require_str(obj, "worker_build_commit"),
+        worker_delivery_commit=_opt_str("worker_delivery_commit"),
         protocol_version=_require_str(obj, "protocol_version"),
         ve_tower_package_version=_opt_str("ve_tower_package_version"),
         package_build_commit=_opt_str("package_build_commit"),

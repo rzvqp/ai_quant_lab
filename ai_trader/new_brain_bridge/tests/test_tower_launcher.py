@@ -48,7 +48,9 @@ _CHALLENGE_HEX = "cafebabecafebabe"
 
 def _matching_identity(**overrides: object) -> WorkerIdentity:
     fields: dict[str, object] = {
-        "worker_package_version": "0.2.0", "worker_build_commit": "abc123", "protocol_version": "2.0",
+        "worker_package_version": tower_identity_pin.EXPECTED_WORKER_PACKAGE_VERSION,
+        "worker_delivery_commit": "some-real-manifest-backed-commit",
+        "protocol_version": tower_identity_pin.EXPECTED_PROTOCOL_VERSION,
         "ve_tower_package_version": tower_identity_pin.EXPECTED_VE_TOWER_PACKAGE_VERSION,
         "package_build_commit": tower_identity_pin.EXPECTED_PACKAGE_BUILD_COMMIT,
         "state_delivery_commit": tower_identity_pin.EXPECTED_STATE_DELIVERY_COMMIT,
@@ -130,6 +132,34 @@ def test_5_different_session_id_in_handshake_response_is_refused() -> None:
     )
     assert isinstance(result, HandshakeFailure)
     assert result.reason == HANDSHAKE_SESSION_ID_MISMATCH
+
+
+def test_old_worker_package_version_itself_is_refused() -> None:
+    """2026-08-14 pin-closure fix: distinct from test_2 (which exercises an old `ve_tower` version) --
+    this exercises the WORKER's own package version specifically, which `verify_pin` previously never
+    actually checked despite its own docstring claiming otherwise."""
+    identity = _matching_identity(worker_package_version="0.1.0-old-worker-build")
+    response = _signed_response(identity)
+    result = verify_handshake_response(
+        response, expected_session_id=_SESSION_ID, session_secret=_SESSION_SECRET, challenge_hex=_CHALLENGE_HEX,
+    )
+    assert isinstance(result, HandshakeFailure)
+    assert result.reason == HANDSHAKE_IDENTITY_MISMATCH
+    assert "worker_package_version" in result.detail
+
+
+def test_missing_worker_delivery_commit_is_refused_not_silently_accepted() -> None:
+    """A worker with no real `worker_delivery_manifest.json` backing (the honest, pre-install state)
+    must still be refused by the pin -- proving `worker_delivery_commit=None` is never treated as an
+    implicit pass just because it can't be exact-matched."""
+    identity = _matching_identity(worker_delivery_commit=None)
+    response = _signed_response(identity)
+    result = verify_handshake_response(
+        response, expected_session_id=_SESSION_ID, session_secret=_SESSION_SECRET, challenge_hex=_CHALLENGE_HEX,
+    )
+    assert isinstance(result, HandshakeFailure)
+    assert result.reason == HANDSHAKE_IDENTITY_MISMATCH
+    assert "worker_delivery_commit" in result.detail
 
 
 def test_9_response_claiming_empty_worker_identity_fields_is_refused() -> None:

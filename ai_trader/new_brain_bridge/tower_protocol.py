@@ -54,7 +54,7 @@ class TowerProtocolError(Exception):
 @dataclass(frozen=True, slots=True, kw_only=True)
 class WorkerIdentity:
     worker_package_version: str
-    worker_build_commit: str
+    worker_delivery_commit: str | None
     protocol_version: str
     ve_tower_package_version: str | None
     package_build_commit: str | None
@@ -67,7 +67,7 @@ class WorkerIdentity:
     def as_dict(self) -> dict[str, object]:
         return {
             "worker_package_version": self.worker_package_version,
-            "worker_build_commit": self.worker_build_commit,
+            "worker_delivery_commit": self.worker_delivery_commit,
             "protocol_version": self.protocol_version,
             "ve_tower_package_version": self.ve_tower_package_version,
             "package_build_commit": self.package_build_commit,
@@ -118,7 +118,7 @@ def _require_dict(obj: dict[str, object], key: str) -> dict[str, object]:
 def worker_identity_from_dict(obj: dict[str, object]) -> WorkerIdentity:
     return WorkerIdentity(
         worker_package_version=_require_str(obj, "worker_package_version"),
-        worker_build_commit=_require_str(obj, "worker_build_commit"),
+        worker_delivery_commit=_opt_str(obj, "worker_delivery_commit"),
         protocol_version=_require_str(obj, "protocol_version"),
         ve_tower_package_version=_opt_str(obj, "ve_tower_package_version"),
         package_build_commit=_opt_str(obj, "package_build_commit"),

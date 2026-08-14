@@ -34,7 +34,7 @@ from ai_trader.new_brain_bridge.tower_protocol import (
 )
 
 _FAKE_IDENTITY = WorkerIdentity(
-    worker_package_version="0.2.0", worker_build_commit="abc123", protocol_version="2.0",
+    worker_package_version="0.2.0", worker_delivery_commit="abc123", protocol_version="2.0",
     ve_tower_package_version="0.3.0", package_build_commit="6daf2aa", state_delivery_commit="0207ffa",
     wheel_sha256="deadbeef" * 8, vendored_source_identity="vendored-digest", n3_contract_version="1.0",
     n4_contract_version="1.0",
