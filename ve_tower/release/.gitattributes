@@ -1,0 +1,2 @@
+# release artifacts are BINARY — no EOL/text conversion (would corrupt the wheel)
+*.whl binary
