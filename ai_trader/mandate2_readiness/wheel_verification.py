@@ -21,15 +21,26 @@ class ArtifactHashMismatchError(Exception):
     """reason_code = ARTIFACT_HASH_MISMATCH."""
 
 
-def verify_wheel_hash(wheel_path: Path, expected_sha256: str = PINNED_WHEEL_SHA256) -> None:
+def verify_wheel_hash(
+    wheel_path: Path,
+    expected_sha256: str = PINNED_WHEEL_SHA256,
+    expected_size_bytes: int = PINNED_WHEEL_SIZE_BYTES,
+) -> None:
     """Raises `ArtifactHashMismatchError` if the file at `wheel_path` doesn't exist, isn't exactly
-    `PINNED_WHEEL_SIZE_BYTES`, or doesn't hash to `expected_sha256`. Silent on success."""
+    `expected_size_bytes`, or doesn't hash to `expected_sha256`. Silent on success.
+
+    2026-08-14: `expected_size_bytes` was hardcoded to `PINNED_WHEEL_SIZE_BYTES` (ve_brain's own 34,250)
+    until this fix -- reusing this function for any OTHER wheel (e.g. `ve_tower`'s, 77,088 bytes) would
+    have always failed on size alone, even with the exact right file. Caught before it could ever run
+    against a real tower wheel: `verify_tower_wheel.py` never actually invoked this path with a real file
+    until now. Both parameters default to ve_brain's own pins, so every existing call site
+    (`verify_wheel_hash(path)`) is unaffected."""
     if not wheel_path.is_file():
         raise ArtifactHashMismatchError(f"ARTIFACT_HASH_MISMATCH: {wheel_path} does not exist")
     actual_size = wheel_path.stat().st_size
-    if actual_size != PINNED_WHEEL_SIZE_BYTES:
+    if actual_size != expected_size_bytes:
         raise ArtifactHashMismatchError(
-            f"ARTIFACT_HASH_MISMATCH: size {actual_size} != expected {PINNED_WHEEL_SIZE_BYTES}"
+            f"ARTIFACT_HASH_MISMATCH: size {actual_size} != expected {expected_size_bytes}"
         )
     digest = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
     if digest != expected_sha256:

@@ -63,14 +63,19 @@ def test_tower_client_and_protocol_import_none_of_the_forbidden_modules() -> Non
     assert not violations, f"forbidden imports found: {violations}"
 
 
-def test_bridge_py_does_not_yet_call_the_tower_client() -> None:
-    """`bridge.py`'s hardcoded market_map_available=False/levels_available=False/confirmation_available=
-    False stay exactly as they are until TOWER_HANDOFF_PASS -- this asserts the infrastructure built this
-    segment has NOT been wired into the production evaluation path, matching the explicit CEO instruction
-    not to do that yet."""
+def test_bridge_py_calls_the_tower_client_only_when_explicitly_supplied() -> None:
+    """2026-08-14, CEO Phase 2 step 5 (`STAGED_INSTALL_AUTHORIZED`): `bridge.py` now DOES import
+    `tower_client` -- the prior version of this test asserted the OPPOSITE, correct for the period before
+    `ve_tower` was genuinely installed and verified. What must still hold, and what this asserts instead:
+    the tower call is OPT-IN via `evaluate_bar`'s own `tower: TowerDependencies | None = None` parameter
+    -- default `None` byte-for-byte reproduces the pre-Phase-2 `market_map_available=False,
+    levels_available=False, confirmation_available=False` behavior (see `test_bridge.py`'s own
+    `test_a_real_feed_event_reaches_n6_and_is_no_trade_missing_level_input`, which calls `evaluate_bar`
+    with no `tower=` argument and still asserts `MISSING_LEVEL_INPUT`) -- never unconditionally active."""
     bridge_source = (_NEW_BRAIN_BRIDGE_ROOT / "bridge.py").read_text(encoding="utf-8")
-    assert "tower_client" not in bridge_source
-    assert "TowerClient" not in bridge_source
+    assert "tower_client" in bridge_source
+    assert "TowerClient" in bridge_source
+    assert "tower: TowerDependencies | None = None" in bridge_source
 
 
 def test_no_live_process_package_imports_the_tower_client_or_protocol() -> None:

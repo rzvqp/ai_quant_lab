@@ -206,13 +206,33 @@ def test_stale_response_same_request_id_different_event_is_refused() -> None:
     """The specific 'rezultat TARDIV pentru alt eveniment' scenario: request_id reused, but the event
     it actually answers is a different one -- the client must not silently accept it as the answer to
     THIS request. This is #6 of the CEO's own 18-item checklist -- the defense is identical regardless of
-    whether the mismatch came from tampering, a bug, or genuine staleness."""
-    server = _FakeServer(response_bytes=_response_json(event_fingerprint="a-different-event-fp"))
+    whether the mismatch came from tampering, a bug, or genuine staleness.
+
+    2026-08-14 correction: the "different event" signal is `market_event_id` now, not `event_fingerprint`
+    -- see `tower_client.py`'s own docstring at the fix site. `market_event_id` is a real, both-sides-
+    honest-echo identifier (`ve_tower.N3Response.market_event_id` passes the request's value straight
+    through); `event_fingerprint` is `ve_tower`'s own artifact-dependent value the client cannot predict."""
+    server = _FakeServer(response_bytes=_response_json(market_event_id="a-different-event"))
     try:
         client = _client(server)
         result = client.request_n3_n4(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == STALE_RESPONSE
+    finally:
+        server.stop()
+
+
+def test_response_event_fingerprint_is_recorded_not_required_to_match_request() -> None:
+    """A response whose `event_fingerprint` differs from what the client sent -- but whose `request_id`
+    and `market_event_id` both correctly match -- is a GENUINE, ACCEPTED reply: `event_fingerprint` is
+    `ve_tower`'s own artifact-dependent identity, never something the client could have guessed correctly
+    in advance. It's recorded on the result for provenance, not compared against the request."""
+    server = _FakeServer(response_bytes=_response_json(event_fingerprint="ve-tower-computed-this-not-the-client"))
+    try:
+        client = _client(server)
+        result = client.request_n3_n4(_sample_request())
+        assert isinstance(result, TowerN3N4Result)
+        assert result.event_fingerprint == "ve-tower-computed-this-not-the-client"
     finally:
         server.stop()
 

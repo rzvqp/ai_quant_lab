@@ -60,6 +60,27 @@ def test_default_expected_sha256_is_the_pinned_reference() -> None:
     assert PINNED_WHEEL_SHA256 == "edd208ad6c2c943b17a11759ece1fdf5ab2a7025779b191764c383ecce987d11"
 
 
+def test_expected_size_bytes_is_parameterized_not_hardcoded(tmp_path: Path) -> None:
+    """2026-08-14 fix: `expected_size_bytes` previously fell back silently to `PINNED_WHEEL_SIZE_BYTES`
+    (ve_brain's own 34,250) regardless of what wheel was actually being checked -- reusing this function
+    for any OTHER wheel of a different size would always fail on size alone, even given the exact right
+    file. A file the SAME size as ve_brain's own pin but explicitly checked against a DIFFERENT expected
+    size must be refused on size, proving the parameter is genuinely used, not shadowed by the module
+    constant."""
+    same_size_as_ve_brain = tmp_path / "other.whl"
+    same_size_as_ve_brain.write_bytes(b"w" * PINNED_WHEEL_SIZE_BYTES)
+    with pytest.raises(ArtifactHashMismatchError, match="size"):
+        verify_wheel_hash(same_size_as_ve_brain, expected_size_bytes=PINNED_WHEEL_SIZE_BYTES + 1)
+
+
+def test_expected_size_bytes_custom_value_passes_when_it_matches(tmp_path: Path) -> None:
+    custom_size = PINNED_WHEEL_SIZE_BYTES + 5000
+    synthetic = tmp_path / "custom_size.whl"
+    synthetic.write_bytes(b"q" * custom_size)
+    expected_hash = hashlib.sha256(synthetic.read_bytes()).hexdigest()
+    verify_wheel_hash(synthetic, expected_sha256=expected_hash, expected_size_bytes=custom_size)
+
+
 def test_the_actual_delivered_wheel_verifies_against_the_pin(tmp_path: Path) -> None:
     """End-to-end proof using the REAL wheel bytes for this mandate, copied into this session's own
     scratchpad and re-verified (not just trusted from the CEO's message or Red Team's report) -- skipped

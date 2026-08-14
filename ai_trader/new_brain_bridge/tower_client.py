@@ -53,10 +53,15 @@ from ai_trader.new_brain_bridge.tower_protocol import (
 class TowerN3N4Result:
     """A successful, session-and-identity-verified reply. `n3_output`/`n4_output` are opaque dicts -- this
     client does not interpret their contents, matching `mandate2_readiness.event_identity.NodeTrace`'s own
-    "record the boundary, never interpret what's inside it" convention."""
+    "record the boundary, never interpret what's inside it" convention.
+
+    `event_fingerprint` is `ve_tower`'s OWN artifact-dependent identity for this event (see 2026-08-14
+    correction below) -- recorded here for downstream provenance, never compared against anything the
+    client sent."""
 
     request_id: str
     market_event_id: str
+    event_fingerprint: str
     tower_version: str
     n3_output: dict[str, object] | None
     n4_output: dict[str, object] | None
@@ -190,28 +195,31 @@ class TowerClient:
                 detail=f"client={PROTOCOL_VERSION} worker={response.protocol_version}",
             )
 
-        if response.request_id == request.request_id and response.event_fingerprint != request.event_fingerprint:
-            return TowerUnavailableResult(
-                request_id=request.request_id, market_event_id=request.market_event_id,
-                reason=STALE_RESPONSE,
-                detail=(
-                    f"request_id matched but event_fingerprint differs: "
-                    f"sent={request.event_fingerprint} received={response.event_fingerprint}"
-                ),
-            )
-        if (
-            response.request_id != request.request_id
-            or response.market_event_id != request.market_event_id
-            or response.event_fingerprint != request.event_fingerprint
-        ):
+        # 2026-08-14 correction (Phase 2, first real -- non-stub -- worker response): `event_fingerprint`
+        # is `ve_tower`'s OWN artifact-dependent identity (see `ve_tower.fingerprint.event_fingerprint`,
+        # which folds in the installed package's version + vendored source commits) -- the client, running
+        # in a venv that never has `ve_tower` installed, structurally CANNOT compute the correct value in
+        # advance to compare against. Comparing it here was only ever satisfied because the STUB echoed
+        # back whatever the client sent; a genuine response could never match. `request_id` (client-
+        # generated, echoed) and `market_event_id` (an honest echo of a value that already uniquely
+        # identifies the event -- see `bridge.py`'s own `f"{symbol}:{timeframe}:{ts_close}"` convention)
+        # remain the two identifiers BOTH sides can actually agree on; `event_fingerprint` is recorded on
+        # the result below for provenance, never required to match a client-side guess.
+        if response.request_id != request.request_id:
             return TowerUnavailableResult(
                 request_id=request.request_id, market_event_id=request.market_event_id,
                 reason=RESPONSE_IDENTITY_MISMATCH,
                 detail=(
-                    f"sent request_id={request.request_id} market_event_id={request.market_event_id} "
-                    f"event_fingerprint={request.event_fingerprint}; received request_id="
-                    f"{response.request_id} market_event_id={response.market_event_id} "
-                    f"event_fingerprint={response.event_fingerprint}"
+                    f"sent request_id={request.request_id}; received request_id={response.request_id}"
+                ),
+            )
+        if response.market_event_id != request.market_event_id:
+            return TowerUnavailableResult(
+                request_id=request.request_id, market_event_id=request.market_event_id,
+                reason=STALE_RESPONSE,
+                detail=(
+                    f"request_id matched but market_event_id differs: "
+                    f"sent={request.market_event_id} received={response.market_event_id}"
                 ),
             )
 
@@ -239,6 +247,7 @@ class TowerClient:
         return TowerN3N4Result(
             request_id=response.request_id,
             market_event_id=response.market_event_id,
+            event_fingerprint=response.event_fingerprint,
             tower_version=response.tower_version,
             n3_output=response.n3_output,
             n4_output=response.n4_output,

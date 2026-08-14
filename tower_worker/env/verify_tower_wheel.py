@@ -9,12 +9,10 @@ admin/build-time check, not code the isolated worker itself ever runs), from the
 
     venv\\Scripts\\python.exe tower_worker\\env\\verify_tower_wheel.py <path-to-wheel> <sha256> <size-bytes>
 
-**`PINNED_TOWER_WHEEL_SHA256` is deliberately `None` today.** No repaired `ve_tower` wheel exists yet
-(0.1.0 was rejected, `TOWER_HANDOFF_FAIL`). Once Red Team verifies a delivered wheel's hash, that value
-(plus size and filename) goes here, exactly once, as the new pin -- never accepted from the command line
-alone without also being written back into this file, so the pin itself stays under version control and
-auditable, the same discipline `wheel_verification.py`'s own `PINNED_WHEEL_SHA256` already established for
-`ve_brain`.
+**2026-08-14, `STAGED_INSTALL_AUTHORIZED`: pin closed.** `ve_tower` 0.3.0's real wheel bytes are committed
+at `ai_quant_lab-wp5b` (`ve_tower/release/ve_tower-0.3.0-py3-none-any.whl`, commit `8078c99`, all four
+remotes synced to `de7a56f`) -- independently re-hashed here before being written into this pin, matching
+`HANDOFF_MANIFEST-0.3.0.json` and Red Team's `RT-TOWER-0006` (`TOWER_ARTIFACT_PASS`) exactly.
 """
 
 from __future__ import annotations
@@ -31,25 +29,24 @@ from ai_trader.mandate2_readiness.wheel_verification import (  # noqa: E402
     verify_wheel_hash,
 )
 
-PINNED_TOWER_WHEEL_SHA256: str | None = None
-PINNED_TOWER_WHEEL_SIZE_BYTES: int | None = None
-PINNED_TOWER_WHEEL_FILENAME: str | None = None
+PINNED_TOWER_WHEEL_SHA256: str = "0c2581c068f3bd7d0c5beff1358af0aa906485d69ed74bf66c8a6d8d0c0120d2"
+PINNED_TOWER_WHEEL_SIZE_BYTES: int = 77088
+PINNED_TOWER_WHEEL_FILENAME: str = "ve_tower-0.3.0-py3-none-any.whl"
+"""Independently re-hashed from the committed file at `ai_quant_lab-wp5b`'s
+`ve_tower/release/ve_tower-0.3.0-py3-none-any.whl` (commit `8078c99`) before being written here -- matches
+`HANDOFF_MANIFEST-0.3.0.json`'s own `wheel_sha256` and Red Team's `RT-TOWER-0006` (`TOWER_ARTIFACT_PASS`)
+exactly."""
 
 
 def verify_tower_wheel(wheel_path: Path) -> None:
-    """Fail-closed on two independent grounds: no pin recorded yet (nothing to compare against -- refuses
-    rather than silently accepting anything), and the reused `verify_wheel_hash`'s own filename/size/hash
-    checks once a pin exists."""
-    if PINNED_TOWER_WHEEL_SHA256 is None:
-        raise ArtifactHashMismatchError(
-            "ARTIFACT_HASH_MISMATCH: no PINNED_TOWER_WHEEL_SHA256 recorded yet -- "
-            "Red Team must verify and record the pin in this file before any install."
-        )
+    """Fail-closed: filename, size, and SHA-256 must all match the pin above."""
     if wheel_path.name != PINNED_TOWER_WHEEL_FILENAME:
         raise ArtifactHashMismatchError(
             f"ARTIFACT_HASH_MISMATCH: filename {wheel_path.name!r} != expected {PINNED_TOWER_WHEEL_FILENAME!r}"
         )
-    verify_wheel_hash(wheel_path, expected_sha256=PINNED_TOWER_WHEEL_SHA256)
+    verify_wheel_hash(
+        wheel_path, expected_sha256=PINNED_TOWER_WHEEL_SHA256, expected_size_bytes=PINNED_TOWER_WHEEL_SIZE_BYTES,
+    )
 
 
 def main(argv: list[str]) -> int:
