@@ -16,21 +16,29 @@ from .version import (
     VE_TOWER_VERSION, SOURCE_REPO, SOURCE_BRANCH, VENDORED_SOURCE_COMMITS, VENDORED_BLOB_SHA1,
     LEVEL_TOWER_FREEZE_COMMIT, N2_CONTRACT_VERSION, N3_CONTRACT_VERSION, N4_CONTRACT_VERSION, N3_CODE_VERSION,
     N4_CODE_VERSION, N2_EXPECTED_TIMEFRAME, N3_EXPECTED_TIMEFRAME, N4_EXPECTED_TIMEFRAME, VE_BRAIN_TARGET_VERSION,
+    CHAIN_REQUEST_CONTRACT_VERSION, CHAIN_RESPONSE_CONTRACT_VERSION, TOWER_CHAIN_BINDING_VERSION,
     IncompatibleTowerContractError, build_info,
 )
+
+# `run_tower_chain` e SINGURA suprafață autorizată pentru live/replay/shadow. Producătorii direcți de mai jos rămân
+# pentru compat/research, dar NU sunt acceptați ca dovadă a traseului production-bound (RT-TOWER-0007).
+PRODUCTION_ENTRYPOINT: str = "run_tower_chain"
+UNBOUND_DIRECT_API: tuple[str, ...] = ("run_n2", "run_n3", "run_n4")
 from .reason_codes import ReasonCode
 from .canonical import canonical_hash, canonical_bytes, git_blob_sha1, NonFiniteValueError
 from .data_identity import DataIdentity, DataIdentityError, build_data_identity
 from .fingerprint import event_fingerprint, same_event
 from .contracts import (
     N2Request, N2Response, N2Factor, N3Request, N3Response, N3Level, LevelProvenance, N4Request, N4Response,
+    ChainRequest, ChainResponse, parse_chain_request, UnknownRequestFieldError,
     SchemaValidationError, SUPPORTED_N2_CONTRACTS, SUPPORTED_N3_CONTRACTS, SUPPORTED_N4_CONTRACTS,
-    validate_n2_request, validate_n3_request, validate_n4_request,
+    SUPPORTED_CHAIN_CONTRACTS, validate_n2_request, validate_n3_request, validate_n4_request,
     assert_n2_compatible, assert_n3_compatible, assert_n4_compatible,
 )
 from .n2 import run_n2
 from .n3 import run_n3
 from .n4 import run_n4
+from .chain import run_tower_chain
 
 __version__ = VE_TOWER_VERSION
 
@@ -43,9 +51,11 @@ __all__ = [
     "build_info", "ReasonCode", "canonical_hash", "canonical_bytes", "git_blob_sha1", "NonFiniteValueError",
     "DataIdentity", "DataIdentityError", "build_data_identity", "event_fingerprint", "same_event",
     "N2Request", "N2Response", "N2Factor", "N3Request", "N3Response", "N3Level", "LevelProvenance",
-    "N4Request", "N4Response", "SchemaValidationError",
-    "SUPPORTED_N2_CONTRACTS", "SUPPORTED_N3_CONTRACTS", "SUPPORTED_N4_CONTRACTS",
-    "validate_n2_request", "validate_n3_request", "validate_n4_request",
+    "N4Request", "N4Response", "ChainRequest", "ChainResponse", "parse_chain_request", "UnknownRequestFieldError",
+    "SchemaValidationError", "SUPPORTED_N2_CONTRACTS", "SUPPORTED_N3_CONTRACTS", "SUPPORTED_N4_CONTRACTS",
+    "SUPPORTED_CHAIN_CONTRACTS", "validate_n2_request", "validate_n3_request", "validate_n4_request",
     "assert_n2_compatible", "assert_n3_compatible", "assert_n4_compatible",
-    "run_n2", "run_n3", "run_n4",
+    "CHAIN_REQUEST_CONTRACT_VERSION", "CHAIN_RESPONSE_CONTRACT_VERSION", "TOWER_CHAIN_BINDING_VERSION",
+    "PRODUCTION_ENTRYPOINT", "UNBOUND_DIRECT_API",
+    "run_n2", "run_n3", "run_n4", "run_tower_chain",
 ]

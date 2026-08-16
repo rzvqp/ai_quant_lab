@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ve_tower"
-version = "0.4.0"
+version = "0.5.0"
 description = "VE Tower — official N1-N4 level-tower phenomena provider (regime, bias, zone map, zone confirmation) supplied by the Validation Engine to the AI Trader. Vendors the ratified modules byte-identical; feeds ve_brain.DecisionRequest."
 requires-python = ">=3.12"                 # level_output.py folosește generice PEP-695 (type/Ok[T]) — 3.12+
 dependencies = ["numpy>=1.24", "pandas>=2.0"]   # turnul face matematică pe bare; NU e stdlib-only (spre deosebire de ve_brain)

@@ -7,13 +7,16 @@ din `code/` (verificat de `tests/test_vendor_integrity.py` contra comiturilor de
 
 from __future__ import annotations
 
-VE_TOWER_VERSION: str = "0.4.0"
+VE_TOWER_VERSION: str = "0.5.0"
 # Istoric (versiuni PĂSTRATE pentru audit, niciodată suprascrise):
 #   0.1.0 (contract v1, wheel SHA-256 e5457561…f08b2db5) — RESPINS TOWER_HANDOFF_FAIL (fără timeframe strict / identitate).
 #   0.2.0 (contract v2, wheel SHA-256 3ea791ba…cc2e91a8) — TOWER_HANDOFF_CONDITIONAL: încărcătorul lăsa module parțial.
 #   0.3.0 (wheel SHA-256 0c2581c0…0120d2) — încărcare TRANZACȚIONALĂ. Contract N3/N4 rămâne v2.
-#   0.4.0 — EXPUNE producătorul N2 (`run_n2` peste `bias_h1` DEJA VENDAT @850815f, fără re-vendorizare / rescriere).
-#          Contract N2 `tower-n2-request-v1`. N3/N4 rămân v2 (neatinse; ve_tower 0.3.0 nu se suprascrie).
+#   0.4.0 (wheel SHA-256 fe9f8b14…9a8852) — EXPUNE N2 (`run_n2` peste `bias_h1` @850815f). N2_HANDOFF_CONDITIONAL:
+#          `run_n3/run_n4` acceptau orice `n2_fingerprint` de la apelant (legătura N2→N3/N4 neimpusă).
+#   0.5.0 — ORCHESTRATOR `run_tower_chain` (RT-TOWER-0007): rulează N2→N3→N4 INTERN; apelantul NU poate furniza
+#          n2_fingerprint / bias_available / N2Response / N3Response. run_n3/run_n4 devin UNBOUND_DIRECT_API
+#          (compat/research), interzise pe calea de producție. Contract N2/N3/N4 NESCHIMBAT (v2/tower-n2-request-v1).
 
 SOURCE_REPO: str = "ai_quant_lab-wp5b"
 SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
@@ -68,6 +71,11 @@ N4_EXPECTED_TIMEFRAME: str = "M5"
 
 # contractul producătorului N2 (nou în 0.4.0). code_version-ul intern = SCHEMA_VERSION al lui bias_h1 (citit la runtime).
 N2_CONTRACT_VERSION: str = "tower-n2-request-v1"
+
+# ORCHESTRATORUL de lanț (nou în 0.5.0) — SINGURA suprafață autorizată pentru traseul live/replay/shadow.
+CHAIN_REQUEST_CONTRACT_VERSION: str = "tower-chain-request-v1"
+CHAIN_RESPONSE_CONTRACT_VERSION: str = "tower-chain-response-v1"
+TOWER_CHAIN_BINDING_VERSION: str = "tower-chain-binding-v1"   # marker: legătura N2→N3→N4 e impusă în artefact
 # code_version-urile INTERNE ale modulelor ratificate (din schema lor sigilată)
 N3_CODE_VERSION: str = "level3-v2.0-reanchored"
 N4_CODE_VERSION: str = "level4-v2.0-w3"

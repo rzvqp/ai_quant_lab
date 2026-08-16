@@ -15,8 +15,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from dataclasses import fields as _dc_fields
+from typing import Any as _Any
+
 from .data_identity import DataIdentity
-from .version import IncompatibleTowerContractError, N2_CONTRACT_VERSION, N3_CONTRACT_VERSION, N4_CONTRACT_VERSION
+from .version import (CHAIN_REQUEST_CONTRACT_VERSION, IncompatibleTowerContractError, N2_CONTRACT_VERSION,
+                      N3_CONTRACT_VERSION, N4_CONTRACT_VERSION)
 
 SUPPORTED_N2_CONTRACTS: tuple[str, ...] = (N2_CONTRACT_VERSION,)
 SUPPORTED_N3_CONTRACTS: tuple[str, ...] = (N3_CONTRACT_VERSION,)
@@ -222,6 +226,92 @@ def assert_n2_compatible(contract_version: str) -> None:
     if contract_version not in SUPPORTED_N2_CONTRACTS:
         raise IncompatibleTowerContractError(
             f"N2 contract {contract_version!r} nesuportat; suportate: {SUPPORTED_N2_CONTRACTS}")
+
+
+# ── ORCHESTRATORUL de lanț (RT-TOWER-0007) — apelantul dă DOAR date primare + rezultate N1 oficiale ──
+SUPPORTED_CHAIN_CONTRACTS: tuple[str, ...] = (CHAIN_REQUEST_CONTRACT_VERSION,)
+
+
+@dataclass(frozen=True)
+class ChainRequest:
+    """Intrarea orchestratorului. NU conține `n2_fingerprint`, `bias_available`, `N2Response`, `N3Response`,
+    `output_fingerprint` — acelea se obțin EXCLUSIV din funcțiile rulate în aceeași cursă. Interzicerea e STRUCTURALĂ
+    (nu există câmpuri) + verificată de `parse_chain_request` (câmp necunoscut ⇒ UNKNOWN_REQUEST_FIELD)."""
+    contract_version: str
+    market_event_id: str
+    correlation_id: str
+    symbol: str
+    as_of: int
+    configuration_fingerprint: str
+    # rezultate N1 OFICIALE (singura intrare „amonte" permisă)
+    n1_fingerprint: str
+    regime_axes_status: tuple[str, ...]
+    # bare primare, închise + ordonate, per timeframe
+    h1_open: tuple[float, ...]
+    h1_high: tuple[float, ...]
+    h1_low: tuple[float, ...]
+    h1_close: tuple[float, ...]
+    h1_time: tuple[int, ...]
+    m15_open: tuple[float, ...]
+    m15_high: tuple[float, ...]
+    m15_low: tuple[float, ...]
+    m15_close: tuple[float, ...]
+    m15_time: tuple[int, ...]
+    m5_high: tuple[float, ...]
+    m5_low: tuple[float, ...]
+    m5_close: tuple[float, ...]
+    m5_time: tuple[int, ...]
+    # identitatea sursei per timeframe
+    h1_source_identity: str
+    m15_source_identity: str
+    m5_source_identity: str
+    # N4: strategia oficială + partea cerută de strategie
+    strategy_id: str
+    strategy_version: str
+    side: int
+    # versiunile de contract așteptate (upgrade/rollback controlat)
+    expected_n2_contract: str
+    expected_n3_contract: str
+    expected_n4_contract: str
+    # freshness per timeframe (opțional)
+    h1_max_staleness_s: int | None = None
+    m15_max_staleness_s: int | None = None
+    m5_max_staleness_s: int | None = None
+
+
+@dataclass(frozen=True)
+class ChainResponse:
+    contract_version: str                      # tower-chain-response-v1
+    tower_version: str
+    chain_binding_version: str
+    market_event_id: str
+    correlation_id: str
+    configuration_fingerprint: str
+    n2: N2Response | None
+    n3: N3Response | None
+    n4: N4Response | None
+    chain_fingerprint: str
+    chain_status: str                          # OK_CHAIN / N2_UNAVAILABLE / N3_UNAVAILABLE / N4_UNAVAILABLE / CHAIN_IDENTITY_MISMATCH
+    terminal_reason_code: str
+
+
+_CHAIN_FIELD_NAMES: frozenset[str] = frozenset(f.name for f in _dc_fields(ChainRequest))
+
+
+class UnknownRequestFieldError(ValueError):
+    """Un câmp necunoscut (ex. `n2_fingerprint`, `bias_available`) a fost trimis orchestratorului — refuz explicit."""
+
+
+def parse_chain_request(payload: dict[str, _Any]) -> ChainRequest:
+    """Construiește ChainRequest dintr-un dict RESPINGÂND orice câmp necunoscut (n2_fingerprint/bias_available/etc.).
+    Suprafață machine-readable pentru consumatori care nu construiesc dataclass-ul direct."""
+    unknown = set(payload) - _CHAIN_FIELD_NAMES
+    if unknown:
+        raise UnknownRequestFieldError(f"câmpuri necunoscute în cererea de lanț: {sorted(unknown)}")
+    kwargs: dict[str, _Any] = {}
+    for k, v in payload.items():
+        kwargs[k] = tuple(v) if isinstance(v, list) else v
+    return ChainRequest(**kwargs)
 
 
 def validate_n3_request(req: N3Request) -> None:

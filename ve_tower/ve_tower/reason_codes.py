@@ -22,6 +22,12 @@ class ReasonCode(Enum):
     NO_PENETRATION = "no_penetration"                              # N4: nu intră în populație
     CASCADE_REGIME_ALL_AXES_UNAVAILABLE = "cascade_regime_all_axes_unavailable"   # N2: toate axele N1 indisponibile
     N2_UNAVAILABLE = "n2_unavailable"                              # N2: indisponibil (fail-closed generic)
+    # ── orchestrator de lanț (RT-TOWER-0007): status-uri + refuzuri de identitate ──
+    OK_CHAIN = "ok_chain"                                          # lanț complet N2→N3→N4 disponibil
+    N3_UNAVAILABLE = "n3_unavailable"                             # cascadă: N3 indisponibil ⇒ N4 nu confirmă
+    N4_UNAVAILABLE = "n4_unavailable"                             # cascadă: N4 indisponibil
+    CHAIN_IDENTITY_MISMATCH = "chain_identity_mismatch"          # mismatch event/config/source/contract/link ⇒ fail-closed
+    UNKNOWN_REQUEST_FIELD = "unknown_request_field"              # câmp necunoscut (ex. n2_fingerprint) în cererea de lanț
 
     # ── indisponibilități de nivel-CONTRACT (adaugate de adaptor, fail-closed) ──
     SCHEMA_VALIDATION_FAILED = "schema_validation_failed"           # cererea nu respectă schema

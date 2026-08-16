@@ -1,5 +1,30 @@
 # ve_tower — CHANGELOG
 
+## 0.5.0 — ORCHESTRATOR de lanț `run_tower_chain` (remediere N2_CHAIN_BINDING, RT-TOWER-0007)
+
+Verdict Red Team pe 0.4.0: **N2_HANDOFF_CONDITIONAL / N2_CHAIN_BINDING_REQUIRED**. N2 însuși e ACCEPTAT; singurul
+defect: `run_n3`/`run_n4` acceptau ORICE `n2_fingerprint` de la apelant ("LONG", "", deadbeef…) — fingerprintul era
+consumat, dar autenticitatea legăturii nu era impusă. Corectat FĂRĂ a atinge modulele vendate și FĂRĂ a suprascrie 0.4.0:
+
+- **`run_tower_chain`** — orchestrator versionat ÎN artefact, SINGURA suprafață autorizată pentru live/replay/shadow.
+  Rulează N2→N3→N4 INTERN și obține `n2_fingerprint`, `bias_available`, identitatea N3 EXCLUSIV din rezultatele
+  funcțiilor executate în aceeași cursă. Contract `tower-chain-request-v1` / `tower-chain-response-v1`.
+- **Injecția e imposibilă STRUCTURAL**: `ChainRequest` nu are câmp `n2_fingerprint`/`bias_available`/`N2Response`/
+  `output_fingerprint`; `parse_chain_request` respinge orice câmp necunoscut (`UNKNOWN_REQUEST_FIELD`). Testul decisiv:
+  o valoare inventată de apelant nu poate ajunge ca n2_fingerprint în run_n3.
+- **`ChainResponse`**: N2/N3/N4 responses complete + `chain_fingerprint` (peste market_event_id · config fp · N2
+  output_fingerprint · N3 node/event identity · N4 node/event identity · strategy_id · contract versions · artifact
+  version) + `chain_status` + `terminal_reason_code`.
+- **Cascadă fail-closed**: N2 indisponibil ⇒ `N2_UNAVAILABLE` (N3/N4 nu rulează); N3 indisponibil ⇒ `N3_UNAVAILABLE`;
+  N4 indisponibil ⇒ `N4_UNAVAILABLE`; orice mismatch de identitate ⇒ `CHAIN_IDENTITY_MISMATCH`. Fără fallback, fără
+  valori fabricate, fără default LONG.
+- **`run_n2`/`run_n3`/`run_n4` = `UNBOUND_DIRECT_API`** (compat/research), INTERZISE pe calea de producție; nu sunt
+  dovadă a traseului production-bound. `PRODUCTION_ENTRYPOINT="run_tower_chain"`, `TOWER_CHAIN_BINDING_VERSION=
+  "tower-chain-binding-v1"` (expus în pin/manifest).
+- **Contract N2/N3/N4 NESCHIMBAT** (tower-n2-request-v1 / v2). Module vendate byte-identice. ve_brain/N1/Router/EV/N6
+  neatinse. 15 teste de lanț (binding, cascadă, identitate, chain_fingerprint, import-uri interzise, entrypoint unic);
+  68 total.
+
 ## 0.4.0 — EXPUNE producătorul N2 (verdict B: N2_EXISTS_BUT_IS_NOT_PACKAGED)
 
 N2 (bias direcțional H1) EXISTA ca implementare ratificată (`code/bias_h1.py` @850815f, spec
