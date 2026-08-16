@@ -161,7 +161,9 @@ CLUSTER_BUDGET = 44          # max micro-variants per (family,regime,mechanism) 
 
 
 def cluster_of(family, regime, entry):
-    return f"{family}|{regime}|{MECHANISM.get(entry, entry)}"
+    # normalize on (regime, mechanism) ONLY — NOT the family label (old records embedded the entry in
+    # family, which split pullback2/3/4 into false clusters). pullback2/3/4 => one 'pullback' cluster.
+    return f"{regime}|{MECHANISM.get(entry, entry)}"
 
 
 _HSF_FIELDS = ("regime", "entry", "stop", "hold", "exit_kind", "exit_param", "position_at_regime_end")
