@@ -108,7 +108,7 @@ def build_BT02(ctx):
                 return bl.end
         return ctx.n
     for b in ctx.breaks():
-        i = b.idx; lvl = b.ref.price
+        i = b.idx; lvl = b.reference_swing.price
         if not (0 < i < ctx.n - 1):
             continue
         elig[i] = True
@@ -130,7 +130,7 @@ def build_BT02(ctx):
 def build_C01(ctx):
     o, h, l, c = ctx.o, ctx.h, ctx.l, ctx.c
     comp = compression_flags(ctx.atr); exp = ctx.exp
-    tr = []
+    tr = []; elig = np.zeros(ctx.n, dtype=bool)
     for i in np.flatnonzero(exp):
         if not (0 < i < ctx.n - 1):
             continue
@@ -139,11 +139,12 @@ def build_C01(ctx):
             hh = max(hh, h[j]); ll = min(ll, l[j]); j -= 1; steps += 1
         if steps < 2 or hh <= ll:
             continue
+        elig[i] = True                          # eligible = expansion bar exiting a >=2-bar compression
         if c[i] > o[i] and c[i] > hh and ll < o[i+1]:
             tr.append(Trade(i, "long", float(ll), HOLD_L))
         elif c[i] < o[i] and c[i] < ll and hh > o[i+1]:
             tr.append(Trade(i, "short", float(hh), HOLD_L))
-    return tr, comp.astype(bool)
+    return tr, elig
 
 
 # ── TREND_DOWN × selective structure SHORT (pullback short, wide swing-high stop) ──

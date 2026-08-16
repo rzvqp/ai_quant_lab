@@ -140,44 +140,43 @@ def classify(res, elig, trades, years, dt):
 
     k = R.get("k_episodes", 0); ev = R.get("EV_net_avg_R"); bs = R.get("best_share"); ta = R.get("trimmed_avg_R")
     if R.get("n", 0) == 0:
-        st, rs = "STRUCTURALLY_FALSIFIED", "no RECENT-window signals"
+        st, rs = "STRUCTURALLY_FALSIFIED", "GATE1: no RECENT-window signals"
     elif k < 5:
         st, rs = "ARCHIVE_INSUFFICIENT", f"recent k={k}<5 eligible episodes (0.5^k not significant)"
     elif ev is None or ev <= 0:
-        st, rs = "STRUCTURALLY_FALSIFIED", f"recent EV_net<=0 (avg_R={ev})"
+        st, rs = "STRUCTURALLY_FALSIFIED", f"GATE1 recent GROSS EV<=0 (avg_R={ev})"
     elif bs is not None and bs > 0.5:
         st, rs = "STRUCTURALLY_FALSIFIED", f"recent single-trade dependence (best_share={bs})"
     elif (bs is not None and bs > 0.30) or (ta is not None and ta <= 0):
-        st, rs = "FAT_TAIL_DEPENDENT", f"recent EV+ but fat-tail (best_share={bs}, trimmed={ta}); QUEUED_FOR_CANONICAL_RERUN"
+        st, rs = "FAT_TAIL_DEPENDENT", f"recent GROSS+ but fat-tail (best_share={bs}, trimmed={ta}); net UNEVALUATED"
     else:
-        st, rs = "PROVISIONAL_SCREENED", "recent EV_net>0 & trim-robust; QUEUED_FOR_CANONICAL_RERUN"
+        st, rs = "PROVISIONAL_SCREENED", "recent GROSS EV>0 & trim-robust; net pending ratified cost model"
     return dict(status=st, reason=rs, RECENT_PRIMARY=R, HISTORICAL_TRANSFER=H, COMBINED_DIAGNOSTIC=C,
                 estimand="RECENT_PRIMARY (2022-12→2025-10)")
 
 
-def process_one(cid, ctx, years, dt):
-    """Full per-candidate loop. Returns the registry record. Deterministic checks before backtest."""
-    from edge_research.flowb_strategies import LIBRARY
+def process_spec(cid, spec, ctx, years, dt):
+    """PHASE A per-hypothesis loop (generator-driven). GATE 0 (determinism/lookahead) + GATE 1 (GROSS,
+    cost=0) + episode count + fat-tail on GROSS. NET is UNEVALUATED (Phase B / ratified cost model)."""
+    from edge_research.flowb_generator import gen_signals
     from edge_research._screen import canonical_evaluate
-    card = LIBRARY[cid]
-    trades, elig = card["build"](ctx)
-    # deterministic checks (before any evaluation)
+    base = dict(candidate_id=cid, cell=spec["cell"], family=spec["family"], regime=spec["regime"],
+                run_hash=spec["run_hash"], spec={k: spec[k] for k in ("entry", "stop", "hold", "exit_label")},
+                ts=now(), cost_version="PENDING_AI_TRADER_SHADOW_COST_MODEL_v1",
+                net_status="UNEVALUATED_PENDING_RATIFIED_COST",
+                MARK="PROVISIONAL · GROSS-GATED · NET UNEVALUATED · REQUIRES CANONICAL RERUN")
+    trades, elig = gen_signals(ctx, spec)
     det = []
-    for t in trades:
+    for t in trades:                                     # GATE 0: determinism + lookahead + regime-gate
         if not (0 < t.signal_idx < ctx.n - 1):
             det.append("entry idx out of range")
         if not elig[t.signal_idx]:
             det.append("signal OUTSIDE pre-registered regime")
     if det:
-        return dict(candidate_id=cid, cell=card["cell"], family=card["family"], regime=card["regime"],
-                    direction=card["direction"], stop=card["stop"], status="STRUCTURALLY_FALSIFIED",
-                    reason="deterministic: " + ";".join(sorted(set(det))), ts=now(),
-                    MARK="PROVISIONAL · NON-COMPARABLE · REQUIRES CANONICAL RERUN")
-    res = canonical_evaluate(ctx.d, trades) if trades else []
+        return dict(**base, status="STRUCTURALLY_FALSIFIED", reason="GATE0: " + ";".join(sorted(set(det))))
+    res = canonical_evaluate(ctx.d, trades, gross=True) if trades else []   # GATE 1 GROSS
     cl = classify(res, elig, trades, years, dt)
-    return dict(candidate_id=cid, cell=card["cell"], family=card["family"], regime=card["regime"],
-                direction=card["direction"], stop=card["stop"], note=card.get("note"), ts=now(), **cl,
-                MARK="PROVISIONAL · NON-COMPARABLE · REQUIRES CANONICAL RERUN")
+    return dict(**base, **cl)
 
 
 def run(max_candidates=None):
@@ -199,43 +198,61 @@ def run(max_candidates=None):
     n_blocks = len(blocks)
 
     processed = 0
+    # PHASE A — generator-driven. Build the grid; process specs whose run_hash is NOT already in the
+    # registry (idempotent). m_total continues (NOT reset). T05 (frozen) is untouched.
+    from edge_research.flowb_generator import build_grid
+    grid = build_grid()
+    done_hashes = {r.get("run_hash") for r in reg if r.get("run_hash")}
+    seq_start = st.get("gen_seq", 0)
     batch_records = []
-    while st["queue"] and (max_candidates is None or processed < max_candidates):
-        cid = st["queue"][0]
-        if cid in st["completed_ids"] or cid in st["failed_ids"]:
-            st["queue"].pop(0); continue            # IDEMPOTENT — never re-run a finalized candidate
-        st["current_candidate"] = cid
+    for gi, spec in enumerate(grid):
+        if max_candidates is not None and processed >= max_candidates:
+            break
+        if spec["run_hash"] in done_hashes:
+            continue                                    # IDEMPOTENT — never re-run a finalized hypothesis
+        seq_start += 1
+        cid = f"CAND-G{seq_start:04d}"
         watchdog(current_candidate=cid, current_phase="processing", last_commit=None)
         try:
-            rec = process_one(cid, ctx, years, dt)
+            rec = process_spec(cid, spec, ctx, years, dt)
         except Exception as e:
-            watchdog(current_candidate=cid, current_phase="CANDIDATE_TIMEOUT/ERROR", last_error=str(e)[:200])
-            rec = dict(candidate_id=cid, status="STRUCTURALLY_FALSIFIED", reason=f"error: {str(e)[:120]}", ts=now())
-        reg.append(rec)
-        st["m_total"] += 1
+            watchdog(current_candidate=cid, current_phase="CANDIDATE_ERROR", last_error=str(e)[:200])
+            rec = dict(candidate_id=cid, run_hash=spec["run_hash"], cell=spec["cell"],
+                       status="STRUCTURALLY_FALSIFIED", reason=f"error: {str(e)[:120]}", ts=now())
+        reg.append(rec); done_hashes.add(spec["run_hash"])
+        st["m_total"] += 1; st["gen_seq"] = seq_start
         (st["failed_ids"] if rec["status"] in ("STRUCTURALLY_FALSIFIED", "ARCHIVE_INSUFFICIENT")
          else st["completed_ids"]).append(cid)
         if rec["status"] in ("PROVISIONAL_SCREENED", "FAT_TAIL_DEPENDENT"):
             st["canonical_rerun_queue"].append(cid)
-        st["queue"].pop(0)
         st["last_checkpoint_ts"] = now()
-        _save(F_STATE, st); _save(F_REG, reg)          # CHECKPOINT after every candidate
+        _save(F_STATE, st); _save(F_REG, reg)          # CHECKPOINT after every hypothesis
         batch_records.append(rec); processed += 1
         watchdog(current_candidate=cid, current_phase="checkpointed")
+        if processed % 25 == 0:                          # report per 25 — WITHOUT stopping
+            _save(os.path.join(STATE_DIR, "reports", f"batch_{now()}_{processed}.json"),
+                  dict(processed=processed, m_total=st["m_total"]))
 
-    st["loop_state"] = "ACTIVE" if st["queue"] else "FAMILY_QUEUE_EXHAUSTED"
+    # SHORTLIST: <=5 PROVISIONAL_SCREENED survivors, ranked by recent GROSS trimmed avg_R (robust EV).
+    survivors = [r for r in reg if r.get("status") == "PROVISIONAL_SCREENED"
+                 and r.get("RECENT_PRIMARY", {}).get("trimmed_avg_R") is not None]
+    survivors.sort(key=lambda r: r["RECENT_PRIMARY"]["trimmed_avg_R"], reverse=True)
+    shortlist = [r["candidate_id"] for r in survivors[:5]]
+    st["ACTIVE_PROVISIONAL_SHORTLIST"] = shortlist
+    remaining = sum(1 for s in grid if s["run_hash"] not in done_hashes)
+    st["loop_state"] = "ALPHA_LOOP_ACTIVE" if remaining else "GRID_EXHAUSTED"
     _save(F_STATE, st)
-    report = dict(status="ALPHA_LOOP_ACTIVE" if st["queue"] else "ALPHA_LOOP_ACTIVE·QUEUE_EMPTY",
-                  m_total=st["m_total"], processed_this_run=processed, n_blocks=n_blocks,
-                  queue_remaining=st["queue"], canonical_rerun_queue=st["canonical_rerun_queue"],
-                  completed=st["completed_ids"], failed=st["failed_ids"],
-                  primary_estimand="RECENT_PRIMARY 2022-12→2025-10",
-                  batch=[dict(id=r["candidate_id"], status=r["status"], reason=r.get("reason", ""),
-                              recent=r.get("RECENT_PRIMARY", {}).get("EV_net_avg_R"),
-                              recent_k_ep=r.get("RECENT_PRIMARY", {}).get("k_episodes"),
-                              recent_DD=r.get("RECENT_PRIMARY", {}).get("max_drawdown_R"),
+    report = dict(status="ALPHA_LOOP_ACTIVE", phase="A (GROSS-gated; net UNEVALUATED)",
+                  m_total=st["m_total"], processed_this_run=processed, grid_total=len(grid),
+                  grid_remaining=remaining, ACTIVE_PROVISIONAL_SHORTLIST=shortlist,
+                  n_provisional=len(survivors), n_fat_tail=sum(1 for r in reg if r.get("status") == "FAT_TAIL_DEPENDENT"),
+                  n_falsified=sum(1 for r in reg if r.get("status") == "STRUCTURALLY_FALSIFIED"),
+                  n_archive=sum(1 for r in reg if r.get("status") == "ARCHIVE_INSUFFICIENT"),
+                  primary_estimand="RECENT_PRIMARY 2022-12→2025-10 (GROSS)",
+                  batch=[dict(id=r["candidate_id"], cell=r.get("cell"), status=r["status"],
+                              recent_gross=r.get("RECENT_PRIMARY", {}).get("EV_net_avg_R"),
                               recent_trimmed=r.get("RECENT_PRIMARY", {}).get("trimmed_avg_R"),
-                              historical=r.get("HISTORICAL_TRANSFER", {}).get("EV_net_avg_R")) for r in batch_records])
+                              recent_k=r.get("RECENT_PRIMARY", {}).get("k_episodes")) for r in batch_records])
     _save(os.path.join(STATE_DIR, "reports", f"report_{now()}.json"), report)
     return report
 

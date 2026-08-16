@@ -119,6 +119,8 @@ class Trade:
     stop: float
     time_stop_bars: int
     target: float | None = None
+    exit_kind: str | None = None   # canonical menu: 'rr' | 'trailing' | 'time' | None (auto)
+    exit_param: float | None = None  # rr multiple for 'rr'; bar count for 'time'
 
 
 def breakout_trades(levels_norm, high, low, close, period_index, blocks):
@@ -169,7 +171,9 @@ def trades_to_setups(trades):
     setups = []
     for t in trades:
         dirn = 1 if t.side == "long" else -1
-        if t.target is not None:
+        if t.exit_kind is not None:                      # explicit canonical exit (rr / trailing / time)
+            ek, ep = t.exit_kind, t.exit_param
+        elif t.target is not None:
             ek, ep = "opp_liq", float(t.target)
         else:
             ek, ep = "time", int(t.time_stop_bars)
@@ -178,16 +182,21 @@ def trades_to_setups(trades):
     return setups
 
 
-def canonical_evaluate(d, trades):
-    """THE ONLY evaluation path. Delegates to the canonical evaluator mstrat.simulate (NET of CFG cost,
-    floored stop, no-overlap, worst-case). `d` = the _common.load DataFrame; m_atr is set from atr14
-    (the ratified ATR-14, identical formula). Returns a res list [{r(net), signal_idx}] for metrics()."""
+def canonical_evaluate(d, trades, gross=False):
+    """Delegates to the canonical evaluator mstrat.simulate (floored stop, no-overlap, worst-case).
+    NET of CFG cost by default. `gross=True` runs the SAME canonical engine at ZERO transaction cost
+    (spread=slip=0) for GATE 1 GROSS ONLY — this is the explicit gross gate, NOT a net cost fallback and
+    NOT an alternative calculator; the executable-stop floor still applies. The NET verdict (Phase B) uses
+    the RATIFIED cost model (AI_TRADER_SHADOW_COST_MODEL_v1), never a local number."""
     sim, CFG = _canonical()
+    cfg = dict(CFG)
+    if gross:
+        cfg["spread_ticks"] = 0.0; cfg["slip_ticks"] = 0.0   # GROSS = canonical mechanics, zero cost
     dd = d.copy()
     if "m_atr" not in dd.columns:
         dd["m_atr"] = dd["atr14"]
     setups = trades_to_setups(trades)
-    led = sim(dd, setups, CFG)   # DataFrame: R (net), si, ei
+    led = sim(dd, setups, cfg)   # DataFrame: R, si, ei
     return [dict(r=float(r), signal_idx=int(si)) for r, si in zip(led["R"].to_numpy(), led["si"].to_numpy())]
 
 
