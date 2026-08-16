@@ -22,7 +22,17 @@ _EVENT_IDENTITY_REQUIRED_FIELDS = (
 class EventIdentity:
     """One per decision cycle. Every string field required non-empty; `received_timestamp` can never
     precede `market_timestamp` (receiving a bar before the market produced it is not a valid state, and
-    treating it as one would silently accept a corrupted or fabricated timestamp)."""
+    treating it as one would silently accept a corrupted or fabricated timestamp).
+
+    **Tower identity fields (Red Team RT-MANDATE2-0002 remediation, 2026-08-16)** -- all optional,
+    `None` until a real tower call actually happens (Router-ineligible/ATR-insufficient/cost-unavailable
+    outcomes never reach the tower, so they correctly carry no tower identity at all, rather than a
+    fabricated placeholder). Every non-`None` value here is copied verbatim from the isolated worker's
+    own verified response -- `bridge.py` never recomputes or guesses these. `n3_*`/`n4_*` are
+    deliberately DISTINCT fields, never merged into one: N3 answers on M15, N4 on M5, so their
+    `data_identity`/`node_input_fingerprint` are legitimately different values for the same event, while
+    `n3_event_fingerprint`/`n4_event_fingerprint` are expected to AGREE (both describe the same
+    `market_event_id`) -- `bridge.py` treats disagreement as `TOWER_IDENTITY_MISMATCH`, fail-closed."""
 
     trace_id: str
     market_event_id: str
@@ -34,6 +44,19 @@ class EventIdentity:
     brain_version: str
     catalog_hash: str
     configuration_fingerprint: str
+    worker_session_id: str | None = None
+    worker_identity_fingerprint: str | None = None
+    tower_version: str | None = None
+    n3_contract_version: str | None = None
+    n3_code_version: str | None = None
+    n3_event_fingerprint: str | None = None
+    n3_node_input_fingerprint: str | None = None
+    n3_data_identity: str | None = None
+    n4_contract_version: str | None = None
+    n4_code_version: str | None = None
+    n4_event_fingerprint: str | None = None
+    n4_node_input_fingerprint: str | None = None
+    n4_data_identity: str | None = None
 
     def __post_init__(self) -> None:
         for name in _EVENT_IDENTITY_REQUIRED_FIELDS:

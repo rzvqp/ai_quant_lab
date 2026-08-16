@@ -141,10 +141,26 @@ def _last_bar(builder: RawAxesBuilder) -> Bar:
     return bars[-1]
 
 
+_N3_DATA_IDENTITY = {"symbol": _SYMBOL, "timeframe": "M15", "bar_count": 150, "bars_content_hash": "n3-hash"}
+_N4_DATA_IDENTITY = {"symbol": _SYMBOL, "timeframe": "M5", "bar_count": 150, "bars_content_hash": "n4-hash"}
+
+
 def test_tower_true_result_flows_into_the_decision_request() -> None:
+    """`n3_output`/`n4_output` now carry the SAME identity fields the real worker actually returns
+    (contract_version/event_fingerprint/node_input_fingerprint/data_identity -- empirically confirmed
+    against the real installed `ve_tower` 0.3.0, RT-MANDATE2-0002) -- a minimal payload missing these is
+    correctly treated as `TOWER_IDENTITY_UNAVAILABLE` (see the dedicated test below), not as a bug here."""
     worker = _FakeWorker(
-        n3_output={"market_map_available": True, "levels_available": True},
-        n4_output={"confirmation_available": True},
+        n3_output={
+            "market_map_available": True, "levels_available": True, "contract_version": "tower-n3-request-v2",
+            "n3_version": "level3-v2.0-reanchored", "event_fingerprint": "shared-event-fp",
+            "node_input_fingerprint": "n3-node-input-fp", "data_identity": _N3_DATA_IDENTITY,
+        },
+        n4_output={
+            "confirmation_available": True, "contract_version": "tower-n4-request-v2",
+            "n4_version": "level4-v2.0-w3", "event_fingerprint": "shared-event-fp",
+            "node_input_fingerprint": "n4-node-input-fp", "data_identity": _N4_DATA_IDENTITY,
+        },
     )
     try:
         gateway = _FakeTimeframeAwareGateway(
@@ -165,9 +181,87 @@ def test_tower_true_result_flows_into_the_decision_request() -> None:
         # instead is real ve_brain logic (EV/probability gates), not asserted here; only that the tower
         # gap itself no longer fires.
         assert ve_brain.ReasonCode.MISSING_LEVEL_INPUT.value not in outcome.decision.reason_codes
-        tower_trace = next(t for t in outcome.node_traces if t.node_name == "Tower")
-        assert tower_trace.component_version == "0.3.0"
+        n3_trace = next(t for t in outcome.node_traces if t.node_name == "TowerN3")
+        n4_trace = next(t for t in outcome.node_traces if t.node_name == "TowerN4")
+        assert n3_trace.component_version == "tower-n3-request-v2"
+        assert n4_trace.component_version == "tower-n4-request-v2"
+        assert n3_trace.input_fingerprint == "n3-node-input-fp"
+        assert n4_trace.input_fingerprint == "n4-node-input-fp"
+        assert n3_trace.input_fingerprint != n4_trace.input_fingerprint  # distinct per node, per the CEO's own rule
+        # N4->N3 response linkage: TowerN4's own output is a fingerprint OVER n3's event_fingerprint --
+        # changing n3's event_fingerprint (see the mismatch test below) provably changes n4_trace.output too.
+        from ai_trader.new_brain_bridge.bridge import _fp
+        assert n4_trace.output == _fp(str(True), "shared-event-fp", "shared-event-fp")
+        assert outcome.event_identity.n3_data_identity != outcome.event_identity.n4_data_identity
+        assert outcome.event_identity.n3_event_fingerprint == outcome.event_identity.n4_event_fingerprint == "shared-event-fp"
+        assert outcome.event_identity.worker_session_id == _SESSION.session_id
+        assert outcome.event_identity.worker_identity_fingerprint == _SESSION.worker_identity_fingerprint
         assert gateway.copy_rates_from_calls, "expected the tower path to actually fetch bars"
+    finally:
+        worker.stop()
+
+
+def test_tower_response_missing_identity_fields_degrades_to_identity_unavailable() -> None:
+    """The pre-remediation minimal payload (booleans only, no identity fields) must now be treated as
+    `TOWER_IDENTITY_UNAVAILABLE`, fail-closed -- never silently accepted as available with no identity."""
+    worker = _FakeWorker(
+        n3_output={"market_map_available": True, "levels_available": True},
+        n4_output={"confirmation_available": True},
+    )
+    try:
+        gateway = _FakeTimeframeAwareGateway(
+            m15_rates=_closed_rates(count=150, step=900, now=10_000_000, start_price=2000.0),
+            m5_rates=_closed_rates(count=150, step=300, now=10_000_000, start_price=2010.0),
+        )
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+
+        builder = RawAxesBuilder(_SYMBOL)
+        last_bar = _last_bar(builder)
+        outcomes = evaluate_bar(last_bar, timeframe=_TIMEFRAME, axes_builder=builder, tower=tower)
+
+        outcome = next(o for o in outcomes if o.strategy_id == "trend_pullback")
+        assert outcome.decision is not None
+        assert outcome.decision.reason_codes == (ve_brain.ReasonCode.MISSING_LEVEL_INPUT.value,)
+        n3_trace = next(t for t in outcome.node_traces if t.node_name == "TowerN3")
+        assert "TOWER_IDENTITY_UNAVAILABLE" in n3_trace.reason_codes
+        assert outcome.event_identity.n3_data_identity is None  # never a fabricated substitute
+    finally:
+        worker.stop()
+
+
+def test_tower_n3_n4_event_fingerprint_disagreement_degrades_to_identity_mismatch() -> None:
+    """A worker reply where N3 and N4 disagree on `event_fingerprint` (same event, different node
+    identity) must degrade to `TOWER_IDENTITY_MISMATCH`, fail-closed -- this can never happen from the
+    real worker (both come from the SAME request/event), but a corrupted or impostor reply must still be
+    caught here, not trusted."""
+    worker = _FakeWorker(
+        n3_output={
+            "market_map_available": True, "levels_available": True, "contract_version": "tower-n3-request-v2",
+            "n3_version": "level3-v2.0-reanchored", "event_fingerprint": "event-fp-A",
+            "node_input_fingerprint": "n3-node-input-fp", "data_identity": _N3_DATA_IDENTITY,
+        },
+        n4_output={
+            "confirmation_available": True, "contract_version": "tower-n4-request-v2",
+            "n4_version": "level4-v2.0-w3", "event_fingerprint": "event-fp-B",
+            "node_input_fingerprint": "n4-node-input-fp", "data_identity": _N4_DATA_IDENTITY,
+        },
+    )
+    try:
+        gateway = _FakeTimeframeAwareGateway(
+            m15_rates=_closed_rates(count=150, step=900, now=10_000_000, start_price=2000.0),
+            m5_rates=_closed_rates(count=150, step=300, now=10_000_000, start_price=2010.0),
+        )
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+
+        builder = RawAxesBuilder(_SYMBOL)
+        last_bar = _last_bar(builder)
+        outcomes = evaluate_bar(last_bar, timeframe=_TIMEFRAME, axes_builder=builder, tower=tower)
+
+        outcome = next(o for o in outcomes if o.strategy_id == "trend_pullback")
+        assert outcome.decision is not None
+        assert outcome.decision.reason_codes == (ve_brain.ReasonCode.MISSING_LEVEL_INPUT.value,)
+        n3_trace = next(t for t in outcome.node_traces if t.node_name == "TowerN3")
+        assert "TOWER_IDENTITY_MISMATCH" in n3_trace.reason_codes
     finally:
         worker.stop()
 
@@ -193,8 +287,9 @@ def test_tower_unavailable_result_keeps_all_three_flags_false() -> None:
         outcome = next(o for o in outcomes if o.strategy_id == "trend_pullback")
         assert outcome.decision is not None
         assert outcome.decision.reason_codes == (ve_brain.ReasonCode.MISSING_LEVEL_INPUT.value,)
-        tower_trace = next(t for t in outcome.node_traces if t.node_name == "Tower")
-        assert tower_trace.reason_codes == ("HANDSHAKE_NOT_ESTABLISHED",)
+        n3_trace = next(t for t in outcome.node_traces if t.node_name == "TowerN3")
+        assert n3_trace.reason_codes == ("HANDSHAKE_NOT_ESTABLISHED",)
+        assert outcome.event_identity.worker_session_id is None  # no session -- never a fabricated one
     finally:
         worker.stop()
 

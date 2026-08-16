@@ -34,8 +34,9 @@ convention has zero effect on any decision produced today."""
 from __future__ import annotations
 
 import hashlib
+import json
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import ve_brain  # type: ignore[import-untyped]  # external VE artifact, no py.typed marker -- never modified
 
@@ -89,6 +90,34 @@ this is the seam to change -- not something today's `ve_tower` API or catalog gi
 (every entry in `ve_brain.CANONICAL_STRATEGIES` is `allowed_directions=("LONG",)`, so every strategy would
 share the same side regardless)."""
 
+_TOWER_IDENTITY_UNAVAILABLE = "TOWER_IDENTITY_UNAVAILABLE"
+_TOWER_IDENTITY_MISMATCH = "TOWER_IDENTITY_MISMATCH"
+"""Red Team RT-MANDATE2-0002 remediation, 2026-08-16: "Camp lipsa sau incompatibil: NO_TRADE /
+TOWER_IDENTITY_UNAVAILABLE, fail-closed, fara fallback. Mismatch intre raspuns si cerere: NO_TRADE /
+TOWER_IDENTITY_MISMATCH." A successful (`ok=True`) worker response is expected to carry, on BOTH `n3_output`
+and (when present) `n4_output`: `contract_version`, `event_fingerprint`, `node_input_fingerprint`,
+`data_identity`. Missing any of these on a node that IS present degrades that whole query to
+`TOWER_IDENTITY_UNAVAILABLE` (all three tower booleans forced `False`) -- never silently treated as
+available with an absent identity. When both N3 and N4 are present, their `event_fingerprint`s are expected
+to AGREE (same `market_event_id`, same underlying event) -- disagreement is `TOWER_IDENTITY_MISMATCH`, also
+fail-closed. `node_input_fingerprint`/`data_identity` are DELIBERATELY never compared against each other
+(N3 answers on M15, N4 on M5 -- see `_TowerQueryResult`'s own docstring): only `event_fingerprint` is the
+shared correlation key."""
+
+
+def _opt_str(value: object) -> str | None:
+    return value if isinstance(value, str) else None
+
+
+def _canonical_data_identity(data_identity: object) -> str | None:
+    """`ve_tower`'s own `DataIdentity` arrives here as an already-JSON-decoded dict (the wire format is
+    opaque JSON, per `tower_client.py`'s own "does not interpret contents" convention) -- canonicalized
+    (sorted keys) so the SAME identity always serializes to the SAME string, never re-derived or
+    recomputed, only re-serialized for storage on a `NodeTrace`/`EventIdentity`'s own string fields."""
+    if not isinstance(data_identity, dict):
+        return None
+    return json.dumps(data_identity, sort_keys=True, separators=(",", ":"))
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class TowerDependencies:
@@ -136,16 +165,35 @@ def _fp(*parts: str) -> str:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class _TowerQueryResult:
+    """`market_map_available`/`levels_available`/`confirmation_available` are the ONLY fields the pre-
+    RT-MANDATE2-0002 version of this type carried -- every field below is new, and every value is copied
+    verbatim from the worker's own verified response, never recomputed locally. `n3_*`/`n4_*` stay
+    DISTINCT (never merged into one "tower identity"): N3 answers on M15, N4 on M5, so their
+    `data_identity`/`node_input_fingerprint` are legitimately different for the same event -- only
+    `event_fingerprint` is expected to agree between them (the shared correlation key for this event)."""
+
     market_map_available: bool
     levels_available: bool
     confirmation_available: bool
     reason_codes: tuple[str, ...]
     tower_version: str
+    worker_session_id: str | None = None
+    worker_identity_fingerprint: str | None = None
+    n3_contract_version: str | None = None
+    n3_code_version: str | None = None
+    n3_event_fingerprint: str | None = None
+    n3_node_input_fingerprint: str | None = None
+    n3_data_identity: str | None = None
+    n4_contract_version: str | None = None
+    n4_code_version: str | None = None
+    n4_event_fingerprint: str | None = None
+    n4_node_input_fingerprint: str | None = None
+    n4_data_identity: str | None = None
 
 
 def _query_tower(
     tower: TowerDependencies, *, market_event_id: str, symbol: str, as_of: int,
-    n1_available: bool, n1_fingerprint: str, bias_direction: str | None,
+    n1_available: bool, n1_fingerprint: str, bias_direction: str | None, n1_axes_direction: str,
 ) -> _TowerQueryResult:
     """ONE call per bar, shared across the whole catalog -- see `_SHARED_TOWER_STRATEGY_ID`'s own
     docstring for why this is correct rather than a shortcut. Fetches M15/M5 history fresh (read-only,
@@ -180,10 +228,19 @@ def _query_tower(
 
     n2_output: dict[str, object] = {
         "available": bias_direction is not None,
-        "fingerprint": _fp(market_event_id, "n2", str(bias_direction)),
+        "fingerprint": _fp(market_event_id, "n2", str(bias_direction), str(n1_axes_direction)),
     }
     if bias_direction is not None:
         n2_output["bias_direction"] = bias_direction
+    """No independently-versioned N2 contract exists anywhere in the installed real artifacts -- confirmed
+    empirically (2026-08-16, Red Team RT-MANDATE2-0002): neither `ve_brain` (only `N1_CONTRACT_VERSION`
+    exists) nor `ve_tower` (only `N3_CONTRACT_VERSION`/`N4_CONTRACT_VERSION` exist) define an `N2` contract
+    version, and `N3Response`/`N4Response` never echo an `n2_fingerprint` back for verification -- `n2_
+    fingerprint` is a REQUIRED INPUT FIELD on `N3Request`/`N4Request` the CALLER asserts, unchecked and
+    unvalidated by `ve_tower` itself. This fingerprint now folds in `n1_axes_direction` (the REAL, N1-
+    computed `RawAxes.direction`) alongside the caller-supplied `bias_direction` -- an honest strengthening,
+    NOT a claim that a real, independently-contracted N2 stage exists. Per the CEO's own explicit rule
+    ("Nu inventa local un N2 pentru a obtine PASS"), this gap is disclosed, never papered over."""
 
     request = TowerRequest(
         protocol_version=PROTOCOL_VERSION, schema_version=REQUEST_SCHEMA_VERSION,
@@ -208,11 +265,59 @@ def _query_tower(
     market_map_available = n3.get("market_map_available") is True
     levels_available = n3.get("levels_available") is True
     confirmation_available = n4.get("confirmation_available") is True
+
+    # Red Team RT-MANDATE2-0002 remediation, 2026-08-16: extract the worker's own REAL per-node identity
+    # (never fabricated) instead of discarding everything but the three booleans above.
+    n3_contract_version = _opt_str(n3.get("contract_version"))
+    n3_code_version = _opt_str(n3.get("n3_version"))
+    n3_event_fingerprint = _opt_str(n3.get("event_fingerprint"))
+    n3_node_input_fingerprint = _opt_str(n3.get("node_input_fingerprint"))
+    n3_data_identity = _canonical_data_identity(n3.get("data_identity"))
+    n4_contract_version = _opt_str(n4.get("contract_version"))
+    n4_code_version = _opt_str(n4.get("n4_version"))
+    n4_event_fingerprint = _opt_str(n4.get("event_fingerprint"))
+    n4_node_input_fingerprint = _opt_str(n4.get("node_input_fingerprint"))
+    n4_data_identity = _canonical_data_identity(n4.get("data_identity"))
+
+    identity_reason_codes: tuple[str, ...] = ()
+    n3_identity_complete = (
+        n3_contract_version is not None and n3_event_fingerprint is not None
+        and n3_node_input_fingerprint is not None and n3_data_identity is not None
+    )
+    if result.n3_output is not None and not n3_identity_complete:
+        identity_reason_codes += (_TOWER_IDENTITY_UNAVAILABLE,)
+    if result.n4_output is not None:
+        n4_identity_complete = (
+            n4_contract_version is not None and n4_event_fingerprint is not None
+            and n4_node_input_fingerprint is not None and n4_data_identity is not None
+        )
+        if not n4_identity_complete:
+            identity_reason_codes += (_TOWER_IDENTITY_UNAVAILABLE,)
+        elif n3_identity_complete and n3_event_fingerprint != n4_event_fingerprint:
+            identity_reason_codes += (_TOWER_IDENTITY_MISMATCH,)
+
+    if identity_reason_codes:
+        # Fail-closed: an incomplete or mismatched identity means this answer cannot be trusted as
+        # genuinely belonging to a single, correlated event -- never surfaced as available with an
+        # unverifiable or contradictory identity attached.
+        return _TowerQueryResult(
+            market_map_available=False, levels_available=False, confirmation_available=False,
+            reason_codes=gap_reason_codes + result.reason_codes + identity_reason_codes,
+            tower_version=result.tower_version,
+        )
+
     return _TowerQueryResult(
         market_map_available=market_map_available, levels_available=levels_available,
         confirmation_available=confirmation_available,
         reason_codes=gap_reason_codes + result.reason_codes,
         tower_version=result.tower_version,
+        worker_session_id=result.session_id, worker_identity_fingerprint=result.worker_identity_fingerprint,
+        n3_contract_version=n3_contract_version, n3_code_version=n3_code_version,
+        n3_event_fingerprint=n3_event_fingerprint, n3_node_input_fingerprint=n3_node_input_fingerprint,
+        n3_data_identity=n3_data_identity,
+        n4_contract_version=n4_contract_version, n4_code_version=n4_code_version,
+        n4_event_fingerprint=n4_event_fingerprint, n4_node_input_fingerprint=n4_node_input_fingerprint,
+        n4_data_identity=n4_data_identity,
     )
 
 
@@ -280,6 +385,7 @@ def evaluate_bar(
             _tower_result_cache.append(_query_tower(
                 tower, market_event_id=market_event_id, symbol=bar.symbol, as_of=bar.ts_close,
                 n1_available=True, n1_fingerprint=n1_output_fp, bias_direction=bias_direction,
+                n1_axes_direction=str(axes.direction),
             ))
         return _tower_result_cache[0]
 
@@ -348,13 +454,43 @@ def evaluate_bar(
 
         if tower is not None:
             tower_result = _get_tower_result()
+            # Red Team RT-MANDATE2-0002 remediation, 2026-08-16: ONE "Tower" trace with a locally-
+            # fabricated `_fp(market_event_id, "tower")` input replaced with TWO traces -- "TowerN3"
+            # (M15) and "TowerN4" (M5) -- each carrying the worker's own REAL, verified identity, never a
+            # local guess. `TowerN4`'s `output` embeds `n3_event_fingerprint` alongside its own, making
+            # the N4->N3 response linkage independently checkable straight from the persisted trace.
             traces.append(NodeTrace(
-                trace_id=trace_id, node_name="Tower", input_fingerprint=_fp(market_event_id, "tower"),
+                trace_id=trace_id, node_name="TowerN3",
+                input_fingerprint=tower_result.n3_node_input_fingerprint or _fp(market_event_id, "n3-unavailable"),
                 output=_fp(str(tower_result.market_map_available), str(tower_result.levels_available),
-                           str(tower_result.confirmation_available)),
+                           tower_result.n3_event_fingerprint or ""),
                 reason_codes=tower_result.reason_codes, latency_seconds=0.0,
-                component_version=tower_result.tower_version,
+                component_version=tower_result.n3_contract_version or tower_result.tower_version,
             ))
+            traces.append(NodeTrace(
+                trace_id=trace_id, node_name="TowerN4",
+                input_fingerprint=tower_result.n4_node_input_fingerprint or _fp(market_event_id, "n4-unavailable"),
+                output=_fp(str(tower_result.confirmation_available), tower_result.n4_event_fingerprint or "",
+                           tower_result.n3_event_fingerprint or ""),
+                reason_codes=tower_result.reason_codes, latency_seconds=0.0,
+                component_version=tower_result.n4_contract_version or tower_result.tower_version,
+            ))
+            event_identity = replace(
+                event_identity,
+                worker_session_id=tower_result.worker_session_id,
+                worker_identity_fingerprint=tower_result.worker_identity_fingerprint,
+                tower_version=tower_result.tower_version,
+                n3_contract_version=tower_result.n3_contract_version,
+                n3_code_version=tower_result.n3_code_version,
+                n3_event_fingerprint=tower_result.n3_event_fingerprint,
+                n3_node_input_fingerprint=tower_result.n3_node_input_fingerprint,
+                n3_data_identity=tower_result.n3_data_identity,
+                n4_contract_version=tower_result.n4_contract_version,
+                n4_code_version=tower_result.n4_code_version,
+                n4_event_fingerprint=tower_result.n4_event_fingerprint,
+                n4_node_input_fingerprint=tower_result.n4_node_input_fingerprint,
+                n4_data_identity=tower_result.n4_data_identity,
+            )
         else:
             tower_result = _TowerQueryResult(
                 market_map_available=False, levels_available=False, confirmation_available=False,

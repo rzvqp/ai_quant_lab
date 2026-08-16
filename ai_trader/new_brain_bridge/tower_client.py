@@ -57,7 +57,13 @@ class TowerN3N4Result:
 
     `event_fingerprint` is `ve_tower`'s OWN artifact-dependent identity for this event (see 2026-08-14
     correction below) -- recorded here for downstream provenance, never compared against anything the
-    client sent."""
+    client sent.
+
+    `session_id`/`worker_identity_fingerprint` (Red Team RT-MANDATE2-0002 remediation, 2026-08-16):
+    the SAME values `_do_request` already verified match `self._session` before ever constructing this
+    result -- exposed here so callers can propagate the AUTHORITATIVE, worker-verified session/identity
+    downstream (telemetry, N6, Risk Manager) instead of recomputing or fabricating a substitute. Never a
+    fresh claim; always the already-checked session values."""
 
     request_id: str
     market_event_id: str
@@ -66,6 +72,8 @@ class TowerN3N4Result:
     n3_output: dict[str, object] | None
     n4_output: dict[str, object] | None
     reason_codes: tuple[str, ...]
+    session_id: str
+    worker_identity_fingerprint: str
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -252,4 +260,6 @@ class TowerClient:
             n3_output=response.n3_output,
             n4_output=response.n4_output,
             reason_codes=response.reason_codes,
+            session_id=response.session_id,
+            worker_identity_fingerprint=response.worker_identity_fingerprint,
         )
