@@ -1,0 +1,61 @@
+{
+  "generated_at_utc": 1786889001,
+  "tower_identity": {
+    "ve_tower_package_version": "0.3.0",
+    "package_build_commit": "6daf2aa",
+    "worker_package_version": "0.2.0"
+  },
+  "part1_real_live_path": {
+    "last_bar_ts_close": 1786752000,
+    "bars_observed": 250,
+    "decision": null,
+    "reason_codes": [],
+    "node_trace_sequence": [
+      {
+        "node": "N1",
+        "reason_codes": []
+      },
+      {
+        "node": "Router",
+        "reason_codes": [
+          "UNCERTAIN_REGIME"
+        ]
+      }
+    ],
+    "tower_reason_codes": [],
+    "tower_version": null
+  },
+  "part1b_direct_tower_probe_on_live_data": {
+    "ok": true,
+    "tower_version": "0.3.0",
+    "n3_market_map_available": true,
+    "n3_levels_available": true,
+    "n3_level_count": 37,
+    "n4_confirmation_available": true,
+    "reason_codes": [
+      "ok_market_map",
+      "ok_confirmation"
+    ]
+  },
+  "part2_fully_approved_candidate_blocked_at_broker": {
+    "risk_manager_approved": true,
+    "risk_manager_reason_codes": [],
+    "reached_broker_gate": true,
+    "blocked": true,
+    "block_reason": "BrokerOrderSubmissionGate: order submission is DISABLED -- Mandate 2 integration not yet ratified by Red Team -- default-closed",
+    "gate_enabled": false,
+    "broker_state_before": {
+      "positions_total": 0,
+      "orders_total": 0,
+      "balance": 1800.34,
+      "equity": 1800.34
+    },
+    "broker_state_after": {
+      "positions_total": 0,
+      "orders_total": 0,
+      "balance": 1800.34,
+      "equity": 1800.34
+    },
+    "broker_state_unchanged": true
+  }
+}

@@ -39,6 +39,7 @@ from ve_tower_worker.protocol import (
     FRAME_TYPE_HANDSHAKE,
     FRAME_TYPE_N3N4_REQUEST,
     MALFORMED_REQUEST,
+    NODE_FAILURE_DEGRADED_TO_UNAVAILABLE,
     PROTOCOL_VERSION,
     PROTOCOL_VERSION_MISMATCH,
     ProtocolValidationError,
@@ -154,7 +155,26 @@ class TowerWorkerServer:
                 reason_codes=(PROTOCOL_VERSION_MISMATCH,),
             )
             return self._stamp_session(response)
-        return self._stamp_session(self._decision_fn(request))
+        try:
+            decision_response = self._decision_fn(request)
+        except Exception as exc:  # noqa: BLE001 -- deliberately broad: this is the ONE place a single
+            # node's own unexpected failure (a `ve_tower` internal bug, an N3/N4 call raising instead of
+            # returning its own Unavailable shape) is contained to THIS decision cycle, per test 20b
+            # (`test_e2e_readiness.py`, Mandate B point 5): "degrade to NO_TRADE for THAT decision cycle,
+            # not hang, not guess, not propagate the exception and kill the whole process." Without this,
+            # an uncaught exception here propagates through `handle_one_connection` (which only catches
+            # `TowerConnectionClosed`/`ProtocolValidationError`/`TimeoutError`/`OSError`) into
+            # `serve_forever`'s bare `while True` loop, with no outer handler -- crashing the ENTIRE
+            # persistent worker process over a single bad request, not just refusing that one connection.
+            degraded = TowerResponse(
+                protocol_version=PROTOCOL_VERSION, schema_version=RESPONSE_SCHEMA_VERSION,
+                request_id=request.request_id, market_event_id=request.market_event_id,
+                event_fingerprint=request.event_fingerprint, tower_version="UNAVAILABLE", ok=False,
+                n3_output=None, n4_output=None, session_id="", worker_identity_fingerprint="",
+                reason_codes=(NODE_FAILURE_DEGRADED_TO_UNAVAILABLE, f"{type(exc).__name__}: {exc}"),
+            )
+            return self._stamp_session(degraded)
+        return self._stamp_session(decision_response)
 
     def _stamp_session(self, response: TowerResponse) -> TowerResponse:
         """The ONE place `session_id`/`worker_identity_fingerprint` become authoritative -- always

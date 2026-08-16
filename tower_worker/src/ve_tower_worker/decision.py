@@ -147,7 +147,7 @@ def real_decision(request: TowerRequest) -> TowerResponse:
         source_identity=f"tower-client:{request.symbol}:M15",
         open=m15_open, high=m15_high, low=m15_low, close=m15_close, time=m15_time,
         as_of=as_of, regime_available=n1_available, bias_available=n2_available,
-        n1_fingerprint=n1_fp, n2_fingerprint=n2_fp,
+        n1_fingerprint=n1_fp, n2_fingerprint=n2_fp, max_staleness_s=request.max_staleness_s,
     )
     n3_resp = ve_tower.run_n3(n3_req)
 
@@ -172,6 +172,7 @@ def real_decision(request: TowerRequest) -> TowerResponse:
             n3_market_map_available=n3_resp.market_map_available,
             n3_level_zone_id=level.zone_id,
             n3_level_provenance=tuple((p.family, p.instance_count) for p in level.provenance),
+            max_staleness_s=request.max_staleness_s,
         )
         n4_resp = ve_tower.run_n4(n4_req)
 

@@ -177,6 +177,9 @@ class TowerRequest:
     m5_closed_bars: tuple[dict[str, object], ...]
     strategy_id: str
     strategy_version: str
+    max_staleness_s: int | None = None
+    """Mirrors `ve_tower_worker.protocol.TowerRequest`'s own field exactly -- threaded through to
+    `ve_tower.N3Request`/`N4Request`'s `max_staleness_s`. `None` (default) means no staleness check."""
     protocol_version: str = PROTOCOL_VERSION
     schema_version: str = REQUEST_SCHEMA_VERSION
     type: str = FRAME_TYPE_N3N4_REQUEST
@@ -199,6 +202,7 @@ class TowerRequest:
             "m5_closed_bars": list(self.m5_closed_bars),
             "strategy_id": self.strategy_id,
             "strategy_version": self.strategy_version,
+            "max_staleness_s": self.max_staleness_s,
         }
         return json.dumps(payload, sort_keys=True).encode("utf-8")
 

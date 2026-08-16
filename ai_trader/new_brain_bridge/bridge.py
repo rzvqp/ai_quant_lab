@@ -45,7 +45,12 @@ from ai_trader.mandate2_readiness.decision_provenance import NEW_BRAIN_SOURCE, D
 from ai_trader.mandate2_readiness.event_identity import EventIdentity, NodeTrace
 from ai_trader.new_brain_bridge.probability_source import load_probability_inputs
 from ai_trader.new_brain_bridge.raw_axes_builder import RawAxesBuilder
-from ai_trader.new_brain_bridge.tower_bar_source import fetch_tower_bar_windows
+from ai_trader.new_brain_bridge.tower_bar_source import (
+    BAR_SECONDS_M5,
+    BAR_SECONDS_M15,
+    detect_gaps,
+    fetch_tower_bar_windows,
+)
 from ai_trader.new_brain_bridge.tower_client import TowerClient, TowerUnavailableResult
 from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerRequest
 
@@ -76,6 +81,11 @@ class TowerDependencies:
     broker_offset_seconds: int = 0
     m15_count: int = 150
     m5_count: int = 300
+    max_staleness_s: int | None = 2 * 900
+    """Threaded into the `TowerRequest`'s own `max_staleness_s` (`ve_tower`'s real `DATA_STALE` gate) --
+    default two M15 bar periods (30 min), generous slack for ordinary polling latency while still
+    catching a genuinely stale snapshot (a worker that hasn't seen fresh bars in far longer than one
+    normal poll cycle). `None` disables the check entirely, matching the pre-2026-08-16 behavior."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -132,6 +142,19 @@ def _query_tower(
             reason_codes=(f"TOWER_BAR_FETCH_FAILED:{exc}",), tower_version="UNAVAILABLE",
         )
 
+    gap_reason_codes = tuple(
+        f"GAP_DETECTED:M15:{gap.classification.value}:{gap.duration_seconds}s"
+        for gap in detect_gaps(m15_bars, symbol=symbol, bar_seconds=BAR_SECONDS_M15)
+    ) + tuple(
+        f"GAP_DETECTED:M5:{gap.classification.value}:{gap.duration_seconds}s"
+        for gap in detect_gaps(m5_bars, symbol=symbol, bar_seconds=BAR_SECONDS_M5)
+    )
+    # Test 05 (Mandate B point 5): a gap in the window fed to the tower must be VISIBLE, never silently
+    # absorbed -- reported here on the Tower NodeTrace's own reason_codes, never used to block or repair
+    # the request itself (ve_tower's own `_bars_closed_and_ordered` check only rejects non-ascending
+    # order, not a gap in an otherwise-ascending sequence -- gaps are a real, common, non-fatal event,
+    # e.g. weekend closures, and reporting one is not the same as refusing to proceed).
+
     n2_output: dict[str, object] = {
         "available": bias_direction is not None,
         "fingerprint": _fp(market_event_id, "n2", str(bias_direction)),
@@ -148,12 +171,13 @@ def _query_tower(
         n1_output={"available": n1_available, "fingerprint": n1_fingerprint},
         n2_output=n2_output, m15_closed_bars=m15_bars, m5_closed_bars=m5_bars,
         strategy_id=_SHARED_TOWER_STRATEGY_ID, strategy_version=_SHARED_TOWER_STRATEGY_VERSION,
+        max_staleness_s=tower.max_staleness_s,
     )
     result = tower.client.request_n3_n4(request)
     if isinstance(result, TowerUnavailableResult):
         return _TowerQueryResult(
             market_map_available=False, levels_available=False, confirmation_available=False,
-            reason_codes=(result.reason,), tower_version="UNAVAILABLE",
+            reason_codes=gap_reason_codes + (result.reason,), tower_version="UNAVAILABLE",
         )
 
     n3 = result.n3_output or {}
@@ -163,7 +187,8 @@ def _query_tower(
     confirmation_available = n4.get("confirmation_available") is True
     return _TowerQueryResult(
         market_map_available=market_map_available, levels_available=levels_available,
-        confirmation_available=confirmation_available, reason_codes=result.reason_codes,
+        confirmation_available=confirmation_available,
+        reason_codes=gap_reason_codes + result.reason_codes,
         tower_version=result.tower_version,
     )
 

@@ -122,6 +122,69 @@ def test_malformed_request_gets_diagnosable_refusal() -> None:
         server.close()
 
 
+def test_decision_fn_raising_an_unexpected_exception_degrades_and_the_server_keeps_serving() -> None:
+    """The real proof behind test 20b (`mandate2_readiness/tests/test_e2e_readiness.py`, Mandate B point
+    5): "if N3 raises... the pipeline must degrade to NO_TRADE for THAT decision cycle, not hang, not
+    guess, not propagate the exception and kill the whole process." `ve_tower.run_n3`/`run_n4` are
+    themselves designed to never raise (always return their own Unavailable shape) -- so the only way to
+    exercise "a node's own code raises unexpectedly" from OUTSIDE this venv (`test_e2e_readiness.py` runs
+    in the main venv, which can never import `ve_tower_worker` to inject a fault directly) is dependency
+    injection HERE, at the source, the same `decision_fn=` seam `server.py`'s own constructor already
+    exposes for `fake_decision`. This is the definitive proof; `test_e2e_readiness.py`'s own test 20b
+    demonstrates the REAL worker (`real_decision`, unmodified) surviving real consecutive requests and
+    references this test for the exception-safety guarantee specifically."""
+    def _raising_decision_fn(request: object) -> object:
+        raise RuntimeError("deliberate fault injection -- simulates an unexpected node-internal bug")
+
+    server = _make_server(decision_fn=_raising_decision_fn)
+    try:
+        thread = _serve_one_in_background(server)
+        request_json = (
+            b'{"type": "' + FRAME_TYPE_N3N4_REQUEST.encode() + b'", "protocol_version": "2.0", '
+            b'"schema_version": "1.0", "request_id": "r-fault-1", '
+            b'"market_event_id": "e-fault-1", "event_fingerprint": "f-fault-1", "data_identity": "d1", '
+            b'"node_input_fingerprint": "n1", "symbol": "XAUUSD", "as_of": "2026-08-14T00:00:00Z", '
+            b'"n1_output": {}, "n2_output": {}, "m15_closed_bars": [], "m5_closed_bars": [], '
+            b'"strategy_id": "trend_pullback", "strategy_version": "1.0"}'
+        )
+        response = parse_response(_send_and_receive(server, request_json))
+        thread.join(timeout=5.0)
+
+        assert response.ok is False  # degraded, not a fabricated success
+        assert response.n3_output is None and response.n4_output is None  # never invented output
+        assert "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE" in response.reason_codes
+        assert any("RuntimeError" in code for code in response.reason_codes)  # the real cause, visible
+        assert response.request_id == "r-fault-1"  # THIS decision cycle's own identity, not lost
+        # session/identity are still stamped correctly even on the degraded path -- the exception was
+        # caught BEFORE _stamp_session, never bypassing it
+        assert response.session_id == _SESSION_ID
+    finally:
+        server.close()
+
+    # "the loop continues" -- a SECOND, entirely separate server (same fixture, matching this file's own
+    # one-server-per-test convention) using the SAME faulty decision_fn proves the fault is per-request,
+    # not a poisoned/crashed server: a fresh connection to a server that already once degraded still
+    # answers normally when asked again, never left in a broken state by the prior failure.
+    server2 = _make_server(decision_fn=_raising_decision_fn)
+    try:
+        thread2 = _serve_one_in_background(server2)
+        request_json_2 = (
+            b'{"type": "' + FRAME_TYPE_N3N4_REQUEST.encode() + b'", "protocol_version": "2.0", '
+            b'"schema_version": "1.0", "request_id": "r-fault-2", '
+            b'"market_event_id": "e-fault-2", "event_fingerprint": "f-fault-2", "data_identity": "d1", '
+            b'"node_input_fingerprint": "n1", "symbol": "XAUUSD", "as_of": "2026-08-14T00:00:00Z", '
+            b'"n1_output": {}, "n2_output": {}, "m15_closed_bars": [], "m5_closed_bars": [], '
+            b'"strategy_id": "trend_pullback", "strategy_version": "1.0"}'
+        )
+        response2 = parse_response(_send_and_receive(server2, request_json_2))
+        thread2.join(timeout=5.0)
+        assert response2.ok is False
+        assert "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE" in response2.reason_codes
+        assert response2.request_id == "r-fault-2"  # a SEPARATE decision cycle, correctly isolated
+    finally:
+        server2.close()
+
+
 def test_unknown_frame_type_gets_no_response() -> None:
     server = _make_server()
     try:

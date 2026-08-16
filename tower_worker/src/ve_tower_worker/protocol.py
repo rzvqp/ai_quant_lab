@@ -62,6 +62,7 @@ HANDSHAKE_HMAC_MISMATCH = "HANDSHAKE_HMAC_MISMATCH"
 HANDSHAKE_IDENTITY_MISMATCH = "HANDSHAKE_IDENTITY_MISMATCH"
 HANDSHAKE_SESSION_ID_MISMATCH = "HANDSHAKE_SESSION_ID_MISMATCH"
 HANDSHAKE_NOT_ESTABLISHED = "HANDSHAKE_NOT_ESTABLISHED"
+NODE_FAILURE_DEGRADED_TO_UNAVAILABLE = "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE"
 
 
 class ProtocolValidationError(Exception):
@@ -195,6 +196,12 @@ class TowerRequest:
     m5_closed_bars: tuple[dict[str, object], ...]
     strategy_id: str
     strategy_version: str
+    max_staleness_s: int | None = None
+    """Threaded straight through to `ve_tower.N3Request`/`N4Request`'s own `max_staleness_s` -- `None`
+    (the default, and every pre-2026-08-16 caller) means no staleness check, byte-for-byte the original
+    behavior. Added for test 09 (`test_e2e_readiness.py`, Mandate B point 5): "a decision citing a stale
+    snapshot is rejected before reaching N6" -- ve_tower's own `DATA_STALE` gate is real and already
+    existed in the artifact; this field is the wire-level plumbing letting a caller actually reach it."""
     type: str = FRAME_TYPE_N3N4_REQUEST
 
     def to_json_bytes(self) -> bytes:
@@ -215,6 +222,7 @@ class TowerRequest:
             "m5_closed_bars": list(self.m5_closed_bars),
             "strategy_id": self.strategy_id,
             "strategy_version": self.strategy_version,
+            "max_staleness_s": self.max_staleness_s,
         }
         return json.dumps(payload, sort_keys=True).encode("utf-8")
 
@@ -282,6 +290,18 @@ def _require_bar_list(obj: dict[str, object], key: str) -> tuple[dict[str, objec
     return tuple(value)
 
 
+def _opt_int(obj: dict[str, object], key: str) -> int | None:
+    """Absent key or explicit JSON `null` both mean `None` -- a pre-`max_staleness_s` caller's request
+    (the key simply missing) and a caller explicitly opting out of staleness checking (`null`) are the
+    same thing to this parser, both honest "no check requested"."""
+    value = obj.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' must be an int or null")
+    return value
+
+
 def peek_frame_type(raw: bytes) -> str:
     """Reads only the `type` discriminator, for routing before full parsing. Fail-closed: any non-object
     JSON, invalid JSON, or missing/non-string `type` raises rather than defaulting to a guess."""
@@ -342,6 +362,7 @@ def parse_request(raw: bytes) -> TowerRequest:
         m5_closed_bars=_require_bar_list(obj, "m5_closed_bars"),
         strategy_id=_require_str(obj, "strategy_id"),
         strategy_version=_require_str(obj, "strategy_version"),
+        max_staleness_s=_opt_int(obj, "max_staleness_s"),
     )
 
 

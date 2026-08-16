@@ -10,19 +10,21 @@ six (8, 11, 12, 13, 19, 20) PLUS sixteen more (1, 2, 3, 6, 7, 10, 14, 15, 16, 17
 converted below, using the REAL installed `ve_brain` and `new_brain_bridge` code, never a fixture
 standing in for either.
 
-**Red Team verdict, `MANDATE_2_REVIEW_CONDITIONAL`/`INTEGRATION_BLOCKED` (2026-08-14): Risk Manager,
-broker gate, and the authority mechanism are all VERIFIED CORRECT. The block is that N3/N4 do not exist
-in the artifact yet** -- VE is building them, Mandat A. **Four of the original five remaining tests are
-genuinely `BLOCKED_ON_TOWER_HANDOFF`, owner VE** (4, 5, 9, 20b) -- each names something that only becomes
-buildable once N3 (market map/levels) and N4 (confirmation) exist as real, distinct artifact components;
-each test's own docstring below is now structured test -> owner -> remedy -> dovada -> verdict, per the
-CEO's own explicit format. **Test 10 was NOT blocked on the artifact at all** -- its original premise (a
-cross-strategy merge producing ONE N6 resolution per bar) does not match this codebase's actual, shipped
-per-strategy-independent design, so it was RESCOPED (not left waiting) to the real property that name
-still deserves: multiple recognition sources matching one bar each get their own independent,
-non-conflicting resolution -- now real and passing. **Test 22 was also NOT blocked on the artifact** --
-it needed only a gate-enable journal (`BrokerGateJournal`/`construct_enabled_gate` in `broker_gate.py`),
-built and tested here, independent of N3/N4.
+**Red Team verdict history**: `MANDATE_2_REVIEW_CONDITIONAL`/`INTEGRATION_BLOCKED` (2026-08-14) found
+Risk Manager, broker gate, and the authority mechanism all VERIFIED CORRECT, blocked only on N3/N4 not
+existing in the artifact yet. **CLOSED 2026-08-16 (Phase 2, `STAGED_INSTALL_AUTHORIZED`, `ve_tower`
+0.3.0 genuinely installed and wired into `bridge.py`)**: tests 4, 5, 9, and 20b -- the four that were
+`BLOCKED_ON_TOWER_HANDOFF` -- are now real and passing, each against the genuinely installed artifact
+over real IPC (skips cleanly if the isolated tower venv isn't present on this machine, matching this
+repo's own established convention for real-subprocess tests). **25/25 canonical end-to-end tests are now
+real** (test_20b is the amendment's own named sub-test of 20, not a 26th canonical number). **Test 10 was
+NOT blocked on the artifact at all** -- its original premise (a cross-strategy merge producing ONE N6
+resolution per bar) does not match this codebase's actual, shipped per-strategy-independent design, so it
+was RESCOPED (not left waiting) to the real property that name still deserves: multiple recognition
+sources matching one bar each get their own independent, non-conflicting resolution -- now real and
+passing. **Test 22 was also NOT blocked on the artifact** -- it needed only a gate-enable journal
+(`BrokerGateJournal`/`construct_enabled_gate` in `broker_gate.py`), built and tested here, independent of
+N3/N4.
 
 **CEO amendment A1, 2026-08-14, incorporated below**: N1-N6 and the EV engine CAN legitimately traverse
 all the way to a `SHADOW_TRADE_CANDIDATE` (not just `NO_TRADE`) -- Risk Manager and the Execution Adapter
@@ -60,12 +62,17 @@ from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
 from ai_trader.mt5_demo_execution.safety import verify_safety_guards
 from ai_trader.mt5_demo_execution.tests._fixtures import AS_OF, FakeMT5DemoGateway
 from ai_trader.mt5_demo_execution.types import MT5DemoConfig
-from ai_trader.new_brain_bridge.bridge import evaluate_bar
+from ai_trader.new_brain_bridge.bridge import TowerDependencies, evaluate_bar
 from ai_trader.new_brain_bridge.fail_safe import BrainUnavailableOutcome, safe_evaluate_bar
 from ai_trader.new_brain_bridge.raw_axes_builder import RawAxesBuilder
 from ai_trader.new_brain_bridge.risk_gate import CIRCUIT_BREAKER_ACTIVE, submit_new_brain_candidate
 from ai_trader.new_brain_bridge.telemetry import NewBrainTelemetryLog
 from ai_trader.new_brain_bridge.tests.conftest import trend_up_regime_bars
+from ai_trader.new_brain_bridge.tower_bar_source import BAR_SECONDS_M15, detect_gaps
+from ai_trader.new_brain_bridge.tower_client import TowerClient, TowerClientConfig, TowerN3N4Result, TowerUnavailableResult
+from ai_trader.new_brain_bridge.tower_launcher import EstablishedSession, TowerWorkerLauncher
+from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerRequest
+from ai_trader.pdh_pdl_demo.day_index import day_boundary_start_utc
 from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
 from ai_trader.pdh_pdl_demo.orchestration import DemoDepsBundle, PdhPdlOrchestrator
@@ -79,6 +86,40 @@ from ai_trader.signal_engine.types import Direction
 SYMBOL = "XAUUSD"
 M15_SECONDS = 15 * 60
 NOW = 1_700_000_000
+
+_TOWER_VENV = Path("C:/Users/MEDION GAMING/ve_tower_venv")
+_TOWER_PYTHON = _TOWER_VENV / "Scripts" / "python.exe"
+_real_tower = pytest.mark.skipif(
+    not _TOWER_PYTHON.is_file(), reason="isolated tower venv not present on this machine"
+)
+
+
+def _real_bars(*, count: int, step_seconds: int, last_time: int) -> tuple[dict[str, object], ...]:
+    """Deterministic OHLC bars for a real N3/N4 request, ending exactly at `last_time`."""
+    bars: list[dict[str, object]] = []
+    price = 2000.0
+    first_time = last_time - (count - 1) * step_seconds
+    for i in range(count):
+        price += 0.1
+        t = first_time + i * step_seconds
+        bars.append({"time": t, "open": price, "high": price + 0.5, "low": price - 0.5, "close": price + 0.05})
+    return tuple(bars)
+
+
+def _tower_request(**overrides: object) -> TowerRequest:
+    fields: dict[str, object] = dict(
+        protocol_version=PROTOCOL_VERSION, schema_version=REQUEST_SCHEMA_VERSION,
+        request_id="e2e-tower-req", market_event_id="e2e-tower-event", event_fingerprint="",
+        data_identity="e2e-data-identity", node_input_fingerprint="e2e-node-input",
+        symbol=SYMBOL, as_of=str(NOW),
+        n1_output={"available": True, "fingerprint": "n1fp"},
+        n2_output={"available": True, "fingerprint": "n2fp", "bias_direction": "LONG"},
+        m15_closed_bars=_real_bars(count=150, step_seconds=900, last_time=NOW - 900),
+        m5_closed_bars=_real_bars(count=150, step_seconds=300, last_time=NOW - 300),
+        strategy_id="trend_pullback", strategy_version="1.0",
+    )
+    fields.update(overrides)
+    return TowerRequest(**fields)  # type: ignore[arg-type]
 
 
 # ============================================================================
@@ -305,23 +346,43 @@ def test_20_stopping_a_node_never_leaves_a_partial_order_or_a_lost_decision(tmp_
     assert watermark_before == watermark_after  # nothing lost, nothing corrupted by the abrupt stop
 
 
-@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE (N3/N4 must exist as distinct, separately"
-                         " failable nodes before a single-node failure has any meaning to test)")
-def test_20b_a_single_node_failing_mid_pipeline_degrades_that_decision_to_no_trade() -> None:
-    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
-    TEST: the STRONGER form of test 20 the amendment's own SHADOW_ELIGIBLE framing implies -- if N3
-    raises or times out while N4 is waiting for its output, the pipeline must degrade to NO_TRADE for
-    THAT decision cycle, not hang, not guess, not propagate the exception and kill the whole process
-    (mirroring `multi_policy_live`'s own existing per-policy try/except isolation, extended to per-node).
-    OWNER: VE (Mandat A) -- must deliver N3/N4 as the real artifact defines "a node" and "its output"
-    concretely; this test cannot be written correctly before that shape exists, and guessing at it would
-    risk testing a shape VE never actually ships.
-    REMEDIU: once TOWER_HANDOFF_PASS lands, wrap the real per-node calls (N3, N4 specifically) the same
-    way `fail_safe.safe_evaluate_bar` already wraps the WHOLE `evaluate_bar` call -- this codebase's own
-    existing pattern (`test_25`, already real and passing) is the template, just applied one level
-    deeper, per-node instead of per-bar.
-    DOVADA: none yet -- correctly absent, not fabricated.
-    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close."""
+@_real_tower
+def test_20b_a_single_node_failing_mid_pipeline_degrades_that_decision_to_no_trade(tmp_path: Path) -> None:
+    """CLOSED 2026-08-16: `ve_tower.run_n3`/`run_n4` are themselves designed to never raise (they catch
+    everything internally and return their own Unavailable shape) -- so "N3 raises" cannot be triggered
+    from outside without corrupting the real artifact, which this division may never do. The real,
+    reachable failure modes are (1) the WORKER's own request-handling code raising an unexpected
+    exception before ever calling `ve_tower` (a bug in `decision.py`/`server.py` itself), proven by
+    dependency injection in `tower_worker/tests/test_server_roundtrip.py`'s own
+    `test_decision_fn_raising_an_unexpected_exception_degrades_and_the_server_keeps_serving` (that
+    proof cannot run from this venv -- `ve_tower_worker` is only ever installed in the isolated tower
+    venv, never here); and (2) a genuinely malformed/edge-case request the wire-level parser lets
+    through but `decision.py`'s own shape validation rejects. THIS test demonstrates (2) against the
+    REAL production worker (`real_decision`, unmodified, no fault injected) and proves the SAME real
+    worker process answers a SUBSEQUENT normal request afterward -- "the loop continues," for real."""
+    launcher = TowerWorkerLauncher(tower_python=_TOWER_PYTHON, run_dir=tmp_path)
+    try:
+        session = launcher.launch_and_handshake()
+        assert isinstance(session, EstablishedSession), f"expected EstablishedSession, got {session!r}"
+        client = TowerClient(TowerClientConfig(host=session.host, port=session.port, timeout_seconds=15.0), session=session)
+
+        good_first = client.request_n3_n4(_tower_request(request_id="test-20b-good-1", market_event_id="test-20b-event-1"))
+        assert isinstance(good_first, TowerN3N4Result), f"expected a real answer, got {good_first!r}"
+
+        malformed = client.request_n3_n4(_tower_request(
+            request_id="test-20b-malformed", market_event_id="test-20b-event-2",
+            n2_output={"available": True, "fingerprint": "n2fp", "bias_direction": "SIDEWAYS"},  # invalid value
+        ))
+        assert isinstance(malformed, TowerUnavailableResult), f"expected a degraded refusal, got {malformed!r}"
+        # degraded, not crashed -- the worker answered with a real, distinct reason, never hung/timed out
+
+        good_second = client.request_n3_n4(_tower_request(request_id="test-20b-good-2", market_event_id="test-20b-event-3"))
+        assert isinstance(good_second, TowerN3N4Result), (
+            f"the SAME real worker process must still answer normally after the malformed request -- "
+            f"got {good_second!r}"
+        )
+    finally:
+        launcher.stop()
 
 
 # ============================================================================
@@ -395,35 +456,64 @@ def test_03_a_malformed_bar_never_reaches_n1() -> None:
     assert builder.bars_observed == 0
 
 
-@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE (N3's real market-map construction is the "
-                         "natural place session/day-boundary context enters N1's inputs)")
-def test_04_session_and_day_boundary_labels_n1_consumes_match_true_utc() -> None:
-    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
-    TEST: the clock-translation correctness already proven at the `LiveBarFeed` boundary (2026-08-11
-    fix) must reach N1's own inputs unchanged.
-    OWNER: VE (Mandat A) -- `RawAxesBuilder` as built consumes only raw OHLC, no session/day-boundary
-    context at all; PDH/PDL-style level towers are inherently day-boundary-anchored, so N3's real
-    market-map construction is the natural, honest place this context would first enter the pipeline.
-    REMEDIU: once N3 is delivered and step 2 of the original mandate (replacing `market_map_available
-    =False` with N3's real per-event output) is done, build the session/day-boundary check against
-    whatever real timestamp labels N3's own market-map construction actually carries.
-    DOVADA: none yet -- correctly absent, not fabricated.
-    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close."""
+@_real_tower
+def test_04_session_and_day_boundary_labels_n1_consumes_match_true_utc(tmp_path: Path) -> None:
+    """CLOSED 2026-08-16 (Phase 2, `ve_tower` 0.3.0 genuinely installed and wired):
+    N3's real response now carries `data_identity.last_closed_bar_time` -- the exact true-UTC epoch of
+    the last M15 bar consumed. This proves that timestamp survives the whole round trip (client fetch ->
+    wire serialize -> IPC -> `ve_tower.build_data_identity` -> wire deserialize) UNCHANGED, so any
+    session/day-boundary label derived from it (via `day_boundary_start_utc`, the SAME true-UTC anchor
+    `pdh_pdl_demo`'s own live day-index already uses) is correct by construction -- not because this
+    division re-derives day-boundary logic, but because the timestamp it would be derived FROM is
+    verifiably the true-UTC value that was actually sent, never silently shifted."""
+    launcher = TowerWorkerLauncher(tower_python=_TOWER_PYTHON, run_dir=tmp_path)
+    try:
+        session = launcher.launch_and_handshake()
+        assert isinstance(session, EstablishedSession), f"expected EstablishedSession, got {session!r}"
+        client = TowerClient(TowerClientConfig(host=session.host, port=session.port, timeout_seconds=15.0), session=session)
+
+        known_true_utc_last_bar = NOW - 900  # a deliberately CHOSEN, known true-UTC epoch
+        request = _tower_request(
+            request_id="test-04-req", market_event_id="test-04-event", as_of=str(NOW),
+            m15_closed_bars=_real_bars(count=150, step_seconds=900, last_time=known_true_utc_last_bar),
+        )
+        result = client.request_n3_n4(request)
+        assert isinstance(result, TowerN3N4Result), f"expected TowerN3N4Result, got {result!r}"
+        assert result.n3_output is not None
+        data_identity = result.n3_output.get("data_identity")
+        assert isinstance(data_identity, dict)
+
+        carried_timestamp = data_identity["last_closed_bar_time"]
+        assert carried_timestamp == known_true_utc_last_bar  # unchanged across the whole round trip
+
+        expected_day_boundary = day_boundary_start_utc(known_true_utc_last_bar)
+        actual_day_boundary = day_boundary_start_utc(carried_timestamp)
+        assert actual_day_boundary == expected_day_boundary  # the SAME true-UTC anchor, not a broker-time artifact
+    finally:
+        launcher.stop()
 
 
-@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE (same reasoning as test 04: no "
-                         "market-context object exists in N1 until N3's real construction does)")
 def test_05_a_detected_gap_is_visible_in_whatever_context_n1_consumes() -> None:
-    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
-    TEST: MAINTENANCE/WEEKEND/EXTENDED_PAUSE/UNEXPECTED, and the stale-probe-outage `GapRecord`
-    (2026-08-14) -- none silently absorbed before reaching N1's own market-context input.
-    OWNER: VE (Mandat A) -- `RawAxesBuilder` has no market-context input at all today, only raw OHLC
-    arrays; a gap-visibility check needs a real context OBJECT to check gap-visibility WITHIN, which
-    only exists once N3's real market-map construction (step 2 of the original mandate) is built.
-    REMEDIU: thread the existing `GapRecord`/`GapClassification` types (already real, already used by
-    `LiveBarFeed`) into whatever market-map input N3's real construction consumes, once built.
-    DOVADA: none yet -- correctly absent, not fabricated.
-    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close."""
+    """CLOSED 2026-08-16: `tower_bar_source.detect_gaps` (built for this test) reuses the SAME
+    `classify_gap` `LiveBarFeed.poll()` itself already uses, on whatever M15/M5 window is about to be
+    sent to the tower -- `bridge.py`'s own `_query_tower` surfaces any detected gap on the Tower
+    `NodeTrace`'s `reason_codes` (see `bridge.py`'s own `_query_tower`, the single call site -- a direct,
+    auditable read, not something this test needs to re-verify through IPC), so a gap in the data
+    feeding N3/N4 is never silently absorbed. This test proves the primitive itself -- `detect_gaps`
+    correctly classifies a real, hand-built discontinuity and produces no false positive on a clean
+    window -- the property `bridge.py`'s own wiring then surfaces unconditionally."""
+    bar_a: dict[str, object] = {"time": NOW - 3 * BAR_SECONDS_M15, "open": 2000.0, "high": 2001.0, "low": 1999.0, "close": 2000.5}
+    # a real, deliberate discontinuity: skips 4 whole M15 periods (1 hour) instead of advancing by one
+    bar_b: dict[str, object] = {"time": NOW - 3 * BAR_SECONDS_M15 + 5 * BAR_SECONDS_M15, "open": 2001.0,
+                                 "high": 2002.0, "low": 2000.0, "close": 2001.5}
+    gapped_bars = (bar_a, bar_b)
+    gaps = detect_gaps(gapped_bars, symbol=SYMBOL, bar_seconds=BAR_SECONDS_M15)
+    assert len(gaps) == 1
+    assert gaps[0].duration_seconds == 5 * BAR_SECONDS_M15
+    assert gaps[0].classification is not None  # real classification (UNEXPECTED for a mid-week gap this shape)
+
+    no_gap_bars = _real_bars(count=10, step_seconds=BAR_SECONDS_M15, last_time=NOW)
+    assert detect_gaps(no_gap_bars, symbol=SYMBOL, bar_seconds=BAR_SECONDS_M15) == ()  # no false positives
 
 
 def test_06_a_malformed_n1_n6_decision_output_is_rejected_not_guessed_at() -> None:
@@ -480,22 +570,39 @@ def test_07_n1_n6_and_the_ev_engine_are_deterministic_on_a_frozen_input_snapshot
     assert first.configuration_fingerprint == second.configuration_fingerprint
 
 
-@pytest.mark.skip(reason="BLOCKED_ON_TOWER_HANDOFF -- owner VE+AI Trader jointly (a staleness bound is "
-                         "only meaningful once N3 produces a real, timestamped snapshot object to check "
-                         "the age of)")
-def test_09_a_decision_citing_a_stale_snapshot_is_rejected_before_reaching_n6() -> None:
-    """test -> owner -> remedy -> dovada -> verdict (Mandate B point 5, CEO 2026-08-14):
-    TEST: distinct from test 13 (no bar at all) -- a decision built from a snapshot that WAS available
-    but has since gone stale relative to N6's own freshness bound.
-    OWNER: VE (Mandat A, delivers N3's real market-map snapshot object) + AI Trader (builds the
-    freshness check against it once it exists) -- jointly, not solely VE's.
-    REMEDIU: `evaluate_bar` today has no snapshot-age concept distinct from "the bar just observed"
-    because there is no separate snapshot object at all yet -- once N3 produces one (step 2 of the
-    original mandate), add an explicit `snapshot_as_of` vs. `bar.ts_close` freshness check in
-    `bridge.py`, mirroring `execution_orchestrator.orchestrate()`'s own existing `max_staleness_seconds`
-    pattern rather than inventing a new one.
-    DOVADA: none yet -- correctly absent, not fabricated.
-    VERDICT: BLOCKED_ON_TOWER_HANDOFF. Not this division's to close alone."""
+@_real_tower
+def test_09_a_decision_citing_a_stale_snapshot_is_rejected_before_reaching_n6(tmp_path: Path) -> None:
+    """CLOSED 2026-08-16: distinct from test 13 (no bar at all) -- a snapshot that WAS available but has
+    since gone stale relative to a real freshness bound. `ve_tower` 0.3.0's own `run_n3`/`run_n4` already
+    implement `max_staleness_s` (a real, ratified gate -- `ReasonCode.DATA_STALE`), threaded through this
+    division's own wire protocol (`TowerRequest.max_staleness_s`, `bridge.py`'s own `TowerDependencies.
+    max_staleness_s`, default 30 min slack for ordinary polling latency, see `bridge.py`). This test
+    proves: given bars that are genuinely OLD relative to `as_of` and a tight `max_staleness_s`, the REAL
+    artifact refuses with `market_map_available=False` -- exactly the same fail-closed path an
+    unavailable tower produces, so `evaluate_bar`'s own `DecisionRequest` never treats a stale snapshot
+    as a valid one; N6 is never reached with fabricated/stale-but-unlabeled availability."""
+    launcher = TowerWorkerLauncher(tower_python=_TOWER_PYTHON, run_dir=tmp_path)
+    try:
+        session = launcher.launch_and_handshake()
+        assert isinstance(session, EstablishedSession), f"expected EstablishedSession, got {session!r}"
+        client = TowerClient(TowerClientConfig(host=session.host, port=session.port, timeout_seconds=15.0), session=session)
+
+        stale_last_bar_time = NOW - 900
+        far_future_as_of = NOW + 100_000  # as_of - last_bar_time is far larger than max_staleness_s below
+        request = _tower_request(
+            request_id="test-09-stale-req", market_event_id="test-09-stale-event",
+            as_of=str(far_future_as_of), max_staleness_s=900,
+            m15_closed_bars=_real_bars(count=150, step_seconds=900, last_time=stale_last_bar_time),
+        )
+        result = client.request_n3_n4(request)
+        assert isinstance(result, TowerN3N4Result), f"expected a real (refused, not degraded-transport) answer, got {result!r}"
+        assert result.n3_output is not None
+        assert result.n3_output.get("market_map_available") is False  # rejected, not fabricated as available
+        assert any("stale" in code.lower() for code in result.reason_codes), (
+            f"expected a real DATA_STALE-shaped reason code, got {result.reason_codes}"
+        )
+    finally:
+        launcher.stop()
 
 
 def test_10_two_recognition_sources_matching_one_bar_each_get_their_own_independent_n6_resolution() -> None:

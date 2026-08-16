@@ -5,18 +5,27 @@ N1), but `ve_tower` needs M15 (N3) and M5 (N4) SIMULTANEOUSLY, regardless of wha
 runs on -- no such dual-timeframe source existed anywhere in this repo before this file.
 
 **Deliberately NOT `LiveBarFeed`** (`live_signal_source/bar_feed.py`, "Piesa 1"): that class owns
-watermark/dedup/gap-detection/backfill state for INCREMENTAL polling of ONE timeframe over a process's
-whole lifetime. This is a stateless snapshot -- "give me the last N closed bars of M15/M5 right now" --
-for a single decision. Reuses `MT5Gateway.copy_rates_from` directly and the SAME broker-offset correction
-+ still-forming-bar filter `bar_feed.py` already established (`make_broker_offset`, `_read_field`) rather
+watermark/dedup/backfill state for INCREMENTAL polling of ONE timeframe over a process's whole lifetime.
+This is a stateless snapshot -- "give me the last N closed bars of M15/M5 right now" -- for a single
+decision. Reuses `MT5Gateway.copy_rates_from` directly and the SAME broker-offset correction +
+still-forming-bar filter `bar_feed.py` already established (`make_broker_offset`, `_read_field`) rather
 than re-deriving either -- a caller already running a `LiveBarFeed` for its own N1 timeframe should reuse
-its `broker_offset` callable here too, so both fetches agree on the same broker/UTC correction."""
+its `broker_offset` callable here too, so both fetches agree on the same broker/UTC correction.
+
+**Gap DETECTION (not recovery), added 2026-08-16 for test 05** (`test_e2e_readiness.py`, Mandate B point
+5: "a detected gap is visible in whatever context N1 consumes"): `detect_gaps` reuses `bar_feed.py`'s own
+`classify_gap` on WHATEVER window this module fetched -- a gap in the M15/M5 window this file hands to
+`ve_tower` must be visible to the caller (bridge.py surfaces it on the Tower `NodeTrace`), never silently
+absorbed the way a plain OHLC array would hide it. This is deliberately NOT the same as `LiveBarFeed`'s
+own gap detection (which compares against a persisted watermark across POLLS, for recovery/backfill
+purposes) -- this is a single, one-shot check WITHIN the fetched window itself, every time it's fetched."""
 
 from __future__ import annotations
 
 from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway
 from ai_trader.live_signal_source.bar_feed import _read_field
-from ai_trader.live_signal_source.types import BarFeedError
+from ai_trader.live_signal_source.gap_classification import classify_gap
+from ai_trader.live_signal_source.types import BarFeedError, GapRecord
 
 MT5_TIMEFRAME_M15 = 15
 MT5_TIMEFRAME_M5 = 5
@@ -82,3 +91,24 @@ def fetch_tower_bar_windows(
         count=m5_count, now=now, broker_offset_seconds=broker_offset_seconds,
     )
     return m15, m5
+
+
+def detect_gaps(bars: tuple[dict[str, object], ...], *, symbol: str, bar_seconds: int) -> tuple[GapRecord, ...]:
+    """Every place two consecutive bars in `bars` (already sorted oldest-first, as `fetch_closed_bars`
+    always returns them) are not exactly `bar_seconds` apart -- classified via the SAME `classify_gap`
+    `LiveBarFeed.poll()` itself uses, so a gap inside a tower window is labeled identically to how the
+    same real event would be labeled if `LiveBarFeed` had seen it. Never filled, never estimated -- only
+    reported, matching this codebase's own "golul se raporteaza, nu se umple" convention."""
+    gaps: list[GapRecord] = []
+    previous_time: int | None = None
+    for bar in bars:
+        ts_open = bar["time"]
+        assert isinstance(ts_open, int)
+        if previous_time is not None and ts_open != previous_time + bar_seconds:
+            gaps.append(GapRecord(
+                symbol=symbol, gap_start=previous_time, gap_end=ts_open,
+                duration_seconds=ts_open - previous_time, classification=classify_gap(previous_time, ts_open),
+                bars_backfilled=0, backfill_capped=False,
+            ))
+        previous_time = ts_open
+    return tuple(gaps)

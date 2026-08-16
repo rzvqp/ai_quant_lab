@@ -10,7 +10,7 @@ finds a particular zone or confirmation."""
 
 from __future__ import annotations
 
-import ve_tower  # the REAL installed artifact -- these tests fail to collect if it's ever uninstalled here
+import ve_tower  # type: ignore[import-untyped]  # the REAL installed artifact -- fails to collect if ever uninstalled
 
 from ve_tower_worker.decision import real_decision
 from ve_tower_worker.protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerRequest
@@ -21,7 +21,7 @@ _AS_OF = 1_700_000_000  # arbitrary fixed epoch anchor, deterministic across run
 def _synthetic_bars(*, count: int, step_seconds: int, as_of: int, start_price: float = 2000.0) -> tuple[dict[str, object], ...]:
     """Deterministic pseudo-random walk (LCG, no `random` module -- reproducible without seeding concerns),
     closing at `as_of`. `count` closed bars, strictly ascending, each `step_seconds` apart."""
-    bars = []
+    bars: list[dict[str, object]] = []
     price = start_price
     state = 12345
     first_time = as_of - (count - 1) * step_seconds
@@ -97,7 +97,8 @@ def test_real_decision_malformed_bias_direction_fails_closed() -> None:
 
 def test_real_decision_malformed_bar_fails_closed() -> None:
     request = _make_request()
-    bad_bars = ({"time": 1, "open": 1.0, "high": 1.0, "low": 1.0},) + request.m15_closed_bars[1:]  # missing 'close'
+    bad_bar: dict[str, object] = {"time": 1, "open": 1.0, "high": 1.0, "low": 1.0}  # missing 'close'
+    bad_bars = (bad_bar,) + request.m15_closed_bars[1:]
     import dataclasses
     request = dataclasses.replace(request, m15_closed_bars=bad_bars)
     response = real_decision(request)
