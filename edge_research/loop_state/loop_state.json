@@ -458,18 +458,26 @@
       "recent_trimmed": 0.3292,
       "recent_gross_EV": 0.4206,
       "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.75
-    },
-    {
-      "mechanism_id": "TREND_UP|None",
-      "representative": "CAND-T05",
-      "recent_trimmed": 0.2021,
-      "recent_gross_EV": 0.3894,
-      "status": "GROSS_ONLY_AWAITING_COST",
       "surviving_frac": 1.0
     },
     {
-      "mechanism_id": "TREND_UP|continuation",
+      "mechanism_id": "trend_up_pullback3|TREND_UP|pullback",
+      "representative": "CAND-G0027",
+      "recent_trimmed": 0.2936,
+      "recent_gross_EV": 0.5549,
+      "status": "GROSS_ONLY_AWAITING_COST",
+      "surviving_frac": 0.79
+    },
+    {
+      "mechanism_id": "trend_up_pullback2|TREND_UP|pullback",
+      "representative": "CAND-G0017",
+      "recent_trimmed": 0.1873,
+      "recent_gross_EV": 0.2689,
+      "status": "GROSS_ONLY_AWAITING_COST",
+      "surviving_frac": 0.7
+    },
+    {
+      "mechanism_id": "trend_up_continuation|TREND_UP|continuation",
       "representative": "CAND-G0168",
       "recent_trimmed": 0.0641,
       "recent_gross_EV": 0.083,
@@ -477,20 +485,12 @@
       "surviving_frac": 0.6
     },
     {
-      "mechanism_id": "TREND_UP|momentum",
+      "mechanism_id": "trend_up_momentum|TREND_UP|momentum",
       "representative": "CAND-G0059",
       "recent_trimmed": 0.0592,
       "recent_gross_EV": 0.0852,
       "status": "GROSS_ONLY_AWAITING_COST",
       "surviving_frac": 0.6
-    },
-    {
-      "mechanism_id": "BREAKOUT_TRANSITION|breakout_retest",
-      "representative": "CAND-G0163",
-      "recent_trimmed": 0.049,
-      "recent_gross_EV": 0.068,
-      "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.2
     }
   ],
   "AWAITING_COST_QUEUE": [
@@ -572,9 +572,23 @@
   ],
   "ROUTER_PARITY": {
     "verdict": "REGIME_CLASSIFIER_NONCANONICAL",
-    "detail": "Official N1 TREND predicate = structure in {weak,strong} AND direction axis (ve_brain.regime_routing.applicable_regimes). My Alpha classifier = MK-01 swing HH+HL. DIFFERENT definitions => populations do NOT match by construction.",
-    "blocker": "ROUTER_PARITY_BLOCKED_MISSING_N1_PRODUCER: applicable_regimes(RawAxes) contract exists, but the bars->RawAxes PRODUCER (is_compressed/is_displacement/direction/structure) is not runnable standalone (only test fixtures; producer lives in unpackaged ve_tower N-phenomena = known INTEGRATION_BLOCKED). Cannot compute official eligible populations on M15 bars.",
-    "consequence": "results remain STRICTLY DIAGNOSTIC; NO edge declared; canonical path = adopt official N1 RawAxes eligibility (needs the producer packaged) then re-run. IMPLEMENTATION_BLOCKED_MISSING_PRIMITIVE (N1 RawAxes producer) \u2014 no invented substitute."
+    "status": "ALPHA_BLOCKED_CANONICAL_N1_HANDOFF",
+    "supersedes": "ROUTER_PARITY_BLOCKED_MISSING_N1_PRODUCER (WITHDRAWN \u2014 was NOT globally missing)",
+    "canonical_producer": {
+      "component": "RawAxesBuilder -> ve_brain.RawAxes -> ve_brain.StrategyRouter",
+      "repo": "ai_quant_lab-research-main (AI Trader)",
+      "commit": "a98a0a4",
+      "file": "ai_trader/new_brain_bridge/raw_axes_builder.py",
+      "detectors": "ai_trader/structural_observer/vendor_bridge.py (frozen submodule 61cbd58)"
+    },
+    "consequence": "no edge, no cost gate, no ratification, no OOS until N1_HANDOFF_PASS",
+    "handoff_report": "reports/N1_HANDOFF_INVENTORY.md",
+    "ceo_ts": "2026-08-16"
   },
-  "identity_model": "hypothesis_semantic_fingerprint (economic -> dedup/m) SEPARATE from evaluation_run_hash (full eval identity: data+evaluator+cost+router+n1+classifier+snapshots)"
+  "identity_model": "hypothesis_semantic_fingerprint (economic -> dedup/m) SEPARATE from evaluation_run_hash (full eval identity: data+evaluator+cost+router+n1+classifier+snapshots)",
+  "SHORTLIST_CORRECTION": {
+    "distinct_mechanisms": 4,
+    "ceo_ts": "2026-08-16",
+    "note": "T05 (frozen benchmark) folded into TREND_UP|pullback with gross-rep G0037; bos+bos_retest collapsed to one breakout mechanism; lone-survivor clusters (n_surviving<2) excluded from shortlist."
+  }
 }

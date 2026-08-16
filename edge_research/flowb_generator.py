@@ -150,13 +150,16 @@ GENERATOR_VERSION = "flowb_gen_v2"
 # entry -> economic MECHANISM CLUSTER (pullback2/3/4 are the SAME cluster, not distinct mechanisms).
 MECHANISM = {"pullback2": "pullback", "pullback3": "pullback", "pullback4": "pullback",
              "momentum": "momentum", "continuation": "continuation",
-             "comp_break": "compression_breakout", "bos": "breakout_confirmation",
-             "bos_retest": "breakout_retest"}
+             "comp_break": "compression_breakout",
+             # bos (enter on the break) and bos_retest (enter on the retest of the broken level) are ONE
+             # economic mechanism — trade the confirmed structural break as a regime transition — differing
+             # only in ENTRY TIMING/price, a variant axis exactly like pullback depth (2/3/4). Collapsed to
+             # one 'breakout' cluster (CEO 2026-08-16: entry-timing/stop/hold differences ≠ new mechanism).
+             "bos": "breakout", "bos_retest": "breakout"}
 RATIONALE = {"pullback": "buy the retracement, resume the trend", "momentum": "enter on trend-direction impulse",
              "continuation": "buy a fresh breakout of the recent extreme within the trend",
              "compression_breakout": "range compresses then expands; trade the expansion",
-             "breakout_confirmation": "structure break (body-BOS) confirms the transition",
-             "breakout_retest": "structure break then a retest of the broken level"}
+             "breakout": "confirmed structural break as a regime transition (enter on break or on its retest)"}
 CLUSTER_BUDGET = 44          # max micro-variants per (family,regime,mechanism) cluster -> no monopoly
 
 

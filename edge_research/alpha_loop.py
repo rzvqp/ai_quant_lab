@@ -216,11 +216,20 @@ def build_shortlist_and_clusters(reg):
                                  weakest=weakest["candidate_id"],
                                  EV_dispersion=round(statistics.pstdev(evs), 3) if len(evs) > 1 else 0.0))
     cluster_rank.sort(key=lambda c: c["rep_recent_trimmed"], reverse=True)
-    # SHORTLIST: <=5 DISTINCT mechanisms, one representative each (never 5 pullback3 variants)
+    # SHORTLIST: only the DISTINCT surviving mechanisms — never force to a fixed count (CEO 2026-08-16:
+    # "Shortlistul are maximum 4 mecanisme distincte, nu 5. Nu forța completarea lui."). One representative
+    # per mechanism; stop/hold/exit variants (e.g. T05 wide-stop vs G0037 pullback3/ATR/time) are ONE
+    # mechanism, folded in — the frozen benchmark T05 shares TREND_UP|pullback with its gross rep G0037.
+    CAP = 5  # upper bound only; the list is as long as there are distinct surviving mechanisms (≤4 today)
+    # A shortlisted MECHANISM must be supported by >=2 surviving variants. A cluster where only ONE of N
+    # variants survives is a lone parameter point, indistinguishable from overfitting to one config — the
+    # opposite of a robust mechanism. This is a robustness floor, NOT a count target (CEO: don't force 5).
+    ROBUST = [c for c in cluster_rank if c["n_surviving"] >= 2]
     shortlist = [dict(mechanism_id=c["mechanism_id"], representative=c["representative"],
                       recent_trimmed=c["rep_recent_trimmed"], recent_gross_EV=c["rep_recent_gross_EV"],
-                      status="GROSS_ONLY_AWAITING_COST", surviving_frac=c["surviving_frac"])
-                 for c in cluster_rank[:5]]
+                      status="GROSS_ONLY_AWAITING_COST", surviving_frac=c["surviving_frac"],
+                      n_variants=c["n_variants"], n_surviving=c["n_surviving"])
+                 for c in ROBUST[:CAP]]
     return shortlist, cluster_rank
 
 
