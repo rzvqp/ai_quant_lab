@@ -7,12 +7,13 @@ din `code/` (verificat de `tests/test_vendor_integrity.py` contra comiturilor de
 
 from __future__ import annotations
 
-VE_TOWER_VERSION: str = "0.3.0"
+VE_TOWER_VERSION: str = "0.4.0"
 # Istoric (versiuni PĂSTRATE pentru audit, niciodată suprascrise):
 #   0.1.0 (contract v1, wheel SHA-256 e5457561…f08b2db5) — RESPINS TOWER_HANDOFF_FAIL (fără timeframe strict / identitate).
-#   0.2.0 (contract v2, wheel SHA-256 3ea791ba…cc2e91a8) — TOWER_HANDOFF_CONDITIONAL: încărcătorul lăsa module parțial
-#          încărcate la o tentativă eșuată (coliziune la al 2-lea modul → level_output rămânea în sys.modules).
-#   0.3.0 — încărcare TRANZACȚIONALĂ (rollback complet + excepția originală). Contractul rămâne v2 (nemodificat).
+#   0.2.0 (contract v2, wheel SHA-256 3ea791ba…cc2e91a8) — TOWER_HANDOFF_CONDITIONAL: încărcătorul lăsa module parțial.
+#   0.3.0 (wheel SHA-256 0c2581c0…0120d2) — încărcare TRANZACȚIONALĂ. Contract N3/N4 rămâne v2.
+#   0.4.0 — EXPUNE producătorul N2 (`run_n2` peste `bias_h1` DEJA VENDAT @850815f, fără re-vendorizare / rescriere).
+#          Contract N2 `tower-n2-request-v1`. N3/N4 rămân v2 (neatinse; ve_tower 0.3.0 nu se suprascrie).
 
 SOURCE_REPO: str = "ai_quant_lab-wp5b"
 SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
@@ -61,8 +62,12 @@ N3_CONTRACT_VERSION: str = "tower-n3-request-v2"
 N4_CONTRACT_VERSION: str = "tower-n4-request-v2"
 
 # TIMEFRAME STRICT — verificat la RUNTIME. Orice altă valoare ⇒ unavailable/INVALID_TIMEFRAME (fail-closed).
+N2_EXPECTED_TIMEFRAME: str = "H1"       # N2 = bias direcțional pe H1 (bias_h1)
 N3_EXPECTED_TIMEFRAME: str = "M15"
 N4_EXPECTED_TIMEFRAME: str = "M5"
+
+# contractul producătorului N2 (nou în 0.4.0). code_version-ul intern = SCHEMA_VERSION al lui bias_h1 (citit la runtime).
+N2_CONTRACT_VERSION: str = "tower-n2-request-v1"
 # code_version-urile INTERNE ale modulelor ratificate (din schema lor sigilată)
 N3_CODE_VERSION: str = "level3-v2.0-reanchored"
 N4_CODE_VERSION: str = "level4-v2.0-w3"

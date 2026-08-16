@@ -1,5 +1,27 @@
 # ve_tower — CHANGELOG
 
+## 0.4.0 — EXPUNE producătorul N2 (verdict B: N2_EXISTS_BUT_IS_NOT_PACKAGED)
+
+N2 (bias direcțional H1) EXISTA ca implementare ratificată (`code/bias_h1.py` @850815f, spec
+STAT-LEVEL2-BIAS-H1-SPEC-v1.0 @1b2933c + SPEC3 directional @404b6c8, manifest v2.7.61) și era deja VENDAT byte-identic
+în ve_tower, dar NU era EXPUS ca producător versionat. 0.4.0 îl expune, FĂRĂ re-vendorizare și FĂRĂ rescriere semantică:
+
+- **`run_n2`** peste `bias_h1.compute_bias` DEJA VENDAT (`_tower/bias_h1.py`, blob `1638c7dd…`, source `850815f`).
+- Contract `tower-n2-request-v1` + `N2Response`: factori determiniști (`N2Factor`: structure/displacement/liquidity/
+  momentum → LONG/SHORT/UNKNOWN), `availability`, reason codes, `n2_code_version` (= `SCHEMA_VERSION` citit din
+  bias_h1), `data_identity`, `node_input_fingerprint`, **`output_fingerprint`** (identitatea IEȘIRII N2 pe care N3/N4 o
+  primesc în locul lui bias_direction / default LONG), `market_event_id`, `event_fingerprint`, validitate/expirare.
+- **Timeframe STRICT H1** (orice ≠ H1 ⇒ `invalid_timeframe`). Cascadă N1→N2 (`cascade_regime_all_axes_unavailable`).
+  NaN/Inf REFUZ, sursă obligatorie, bare închise+ordonate, stale → indisponibil. `N2_UNAVAILABLE` fail-closed.
+- **INTERZIS respectat**: fără default LONG (cascada ⇒ `factors=()`, `output_fingerprint=None`, NU un factor fabricat),
+  fără wildcard/placeholder, fără fingerprint dintr-un string al apelantului. **N2 NU emite probabilitate**
+  (`emits_probability=False` în modulul ratificat) — separat de `probability_inputs` pentru EV.
+- **N3/N4 rămân v2, NEATINSE** (ve_tower 0.3.0 nu se suprascrie). AI Trader alimentează câmpul existent `n2_fingerprint`
+  din N3/N4 cu `N2Response.output_fingerprint` REAL (nu "LONG"). Legarea/validarea explicită a n2_fingerprint în N3/N4
+  = contract v3 viitor (schimbare de contract ⇒ handoff separat), nu inclusă aici.
+- 15 teste N2 (determinism, single-OHLC→alt fingerprint, fără probabilitate, fără default LONG, timeframe strict,
+  future/unordered/stale/NaN/sursă/contract refuzate, lanț N1→N2→N3→N4 cu fingerprint N2 real). 53 total.
+
 ## 0.3.0 — încărcare TRANZACȚIONALĂ (remediere TOWER_HANDOFF_CONDITIONAL)
 
 Verdict Red Team pe 0.2.0: **TOWER_HANDOFF_CONDITIONAL** — identitatea/timeframe/substituirea/byte-integritatea sunt

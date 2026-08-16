@@ -14,18 +14,21 @@ from __future__ import annotations
 from ._bootstrap import ensure_tower_loaded, tower_module, TowerLoadCollisionError
 from .version import (
     VE_TOWER_VERSION, SOURCE_REPO, SOURCE_BRANCH, VENDORED_SOURCE_COMMITS, VENDORED_BLOB_SHA1,
-    LEVEL_TOWER_FREEZE_COMMIT, N3_CONTRACT_VERSION, N4_CONTRACT_VERSION, N3_CODE_VERSION, N4_CODE_VERSION,
-    N3_EXPECTED_TIMEFRAME, N4_EXPECTED_TIMEFRAME, VE_BRAIN_TARGET_VERSION, IncompatibleTowerContractError, build_info,
+    LEVEL_TOWER_FREEZE_COMMIT, N2_CONTRACT_VERSION, N3_CONTRACT_VERSION, N4_CONTRACT_VERSION, N3_CODE_VERSION,
+    N4_CODE_VERSION, N2_EXPECTED_TIMEFRAME, N3_EXPECTED_TIMEFRAME, N4_EXPECTED_TIMEFRAME, VE_BRAIN_TARGET_VERSION,
+    IncompatibleTowerContractError, build_info,
 )
 from .reason_codes import ReasonCode
 from .canonical import canonical_hash, canonical_bytes, git_blob_sha1, NonFiniteValueError
 from .data_identity import DataIdentity, DataIdentityError, build_data_identity
 from .fingerprint import event_fingerprint, same_event
 from .contracts import (
-    N3Request, N3Response, N3Level, LevelProvenance, N4Request, N4Response,
-    SchemaValidationError, SUPPORTED_N3_CONTRACTS, SUPPORTED_N4_CONTRACTS,
-    validate_n3_request, validate_n4_request, assert_n3_compatible, assert_n4_compatible,
+    N2Request, N2Response, N2Factor, N3Request, N3Response, N3Level, LevelProvenance, N4Request, N4Response,
+    SchemaValidationError, SUPPORTED_N2_CONTRACTS, SUPPORTED_N3_CONTRACTS, SUPPORTED_N4_CONTRACTS,
+    validate_n2_request, validate_n3_request, validate_n4_request,
+    assert_n2_compatible, assert_n3_compatible, assert_n4_compatible,
 )
+from .n2 import run_n2
 from .n3 import run_n3
 from .n4 import run_n4
 
@@ -34,12 +37,15 @@ __version__ = VE_TOWER_VERSION
 __all__ = [
     "ensure_tower_loaded", "tower_module", "TowerLoadCollisionError",
     "VE_TOWER_VERSION", "SOURCE_REPO", "SOURCE_BRANCH", "VENDORED_SOURCE_COMMITS", "VENDORED_BLOB_SHA1",
-    "LEVEL_TOWER_FREEZE_COMMIT", "N3_CONTRACT_VERSION", "N4_CONTRACT_VERSION", "N3_CODE_VERSION", "N4_CODE_VERSION",
-    "N3_EXPECTED_TIMEFRAME", "N4_EXPECTED_TIMEFRAME", "VE_BRAIN_TARGET_VERSION", "IncompatibleTowerContractError",
+    "LEVEL_TOWER_FREEZE_COMMIT", "N2_CONTRACT_VERSION", "N3_CONTRACT_VERSION", "N4_CONTRACT_VERSION",
+    "N3_CODE_VERSION", "N4_CODE_VERSION", "N2_EXPECTED_TIMEFRAME", "N3_EXPECTED_TIMEFRAME", "N4_EXPECTED_TIMEFRAME",
+    "VE_BRAIN_TARGET_VERSION", "IncompatibleTowerContractError",
     "build_info", "ReasonCode", "canonical_hash", "canonical_bytes", "git_blob_sha1", "NonFiniteValueError",
     "DataIdentity", "DataIdentityError", "build_data_identity", "event_fingerprint", "same_event",
-    "N3Request", "N3Response", "N3Level", "LevelProvenance", "N4Request", "N4Response",
-    "SchemaValidationError", "SUPPORTED_N3_CONTRACTS", "SUPPORTED_N4_CONTRACTS",
-    "validate_n3_request", "validate_n4_request", "assert_n3_compatible", "assert_n4_compatible",
-    "run_n3", "run_n4",
+    "N2Request", "N2Response", "N2Factor", "N3Request", "N3Response", "N3Level", "LevelProvenance",
+    "N4Request", "N4Response", "SchemaValidationError",
+    "SUPPORTED_N2_CONTRACTS", "SUPPORTED_N3_CONTRACTS", "SUPPORTED_N4_CONTRACTS",
+    "validate_n2_request", "validate_n3_request", "validate_n4_request",
+    "assert_n2_compatible", "assert_n3_compatible", "assert_n4_compatible",
+    "run_n2", "run_n3", "run_n4",
 ]

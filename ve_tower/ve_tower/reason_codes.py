@@ -9,6 +9,7 @@ from enum import Enum
 
 class ReasonCode(Enum):
     # ── pozitive ──
+    OK_BIAS_FACTORS = "ok_bias_factors"            # N2: factori direcționali produși (determiniști, fără probabilitate)
     OK_MARKET_MAP = "ok_market_map"                 # N3: hartă produsă (poate fi și mulțime vidă = Ok)
     OK_CONFIRMATION = "ok_confirmation"             # N4: descriptor măsurat (inclusiv UNDETERMINED)
 
@@ -19,6 +20,8 @@ class ReasonCode(Enum):
     INVALID_SIDE = "invalid_side"                                   # N4: side ∉ {+1,-1}
     ZONE_UNAVAILABLE = "zone_unavailable"                           # N4: nivelul N3 nefinit (cascada N3→N4)
     NO_PENETRATION = "no_penetration"                              # N4: nu intră în populație
+    CASCADE_REGIME_ALL_AXES_UNAVAILABLE = "cascade_regime_all_axes_unavailable"   # N2: toate axele N1 indisponibile
+    N2_UNAVAILABLE = "n2_unavailable"                              # N2: indisponibil (fail-closed generic)
 
     # ── indisponibilități de nivel-CONTRACT (adaugate de adaptor, fail-closed) ──
     SCHEMA_VALIDATION_FAILED = "schema_validation_failed"           # cererea nu respectă schema
@@ -38,7 +41,7 @@ class ReasonCode(Enum):
 _RATIFIED_REASONS: frozenset[str] = frozenset({
     ReasonCode.INCOMPLETE_WINDOW.value, ReasonCode.CASCADE_LEVEL1_OR_LEVEL2_UNAVAILABLE.value,
     ReasonCode.ATR_UNAVAILABLE.value, ReasonCode.INVALID_SIDE.value, ReasonCode.ZONE_UNAVAILABLE.value,
-    ReasonCode.NO_PENETRATION.value,
+    ReasonCode.NO_PENETRATION.value, ReasonCode.CASCADE_REGIME_ALL_AXES_UNAVAILABLE.value,
 })
 
 

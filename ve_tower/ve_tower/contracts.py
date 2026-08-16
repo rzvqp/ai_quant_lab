@@ -16,14 +16,64 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .data_identity import DataIdentity
-from .version import IncompatibleTowerContractError, N3_CONTRACT_VERSION, N4_CONTRACT_VERSION
+from .version import IncompatibleTowerContractError, N2_CONTRACT_VERSION, N3_CONTRACT_VERSION, N4_CONTRACT_VERSION
 
+SUPPORTED_N2_CONTRACTS: tuple[str, ...] = (N2_CONTRACT_VERSION,)
 SUPPORTED_N3_CONTRACTS: tuple[str, ...] = (N3_CONTRACT_VERSION,)
 SUPPORTED_N4_CONTRACTS: tuple[str, ...] = (N4_CONTRACT_VERSION,)
 
 
 class SchemaValidationError(ValueError):
     """Cererea nu respectă schema. Reason: SCHEMA_VALIDATION_FAILED (fail-closed în adaptor)."""
+
+
+# ── N2 (H1 directional bias FACTORS — determiniști, NU probabilitate) ──
+@dataclass(frozen=True)
+class N2Request:
+    contract_version: str
+    market_event_id: str
+    symbol: str
+    timeframe: str                             # VALIDAT strict la H1
+    source_identity: str
+    open: tuple[float, ...]                     # H1 INCHISE, ordonate
+    high: tuple[float, ...]
+    low: tuple[float, ...]
+    close: tuple[float, ...]
+    time: tuple[int, ...]
+    as_of: int
+    regime_axes_status: tuple[str, ...]        # statusurile axelor N1 (cascada N1→N2). Toate "unavailable" ⇒ cascadă.
+    n1_fingerprint: str                        # identitatea ieșirii N1 (intră în node_input_fingerprint)
+    max_staleness_s: int | None = None
+    dataset_id: str | None = None
+    segment_id: str | None = None
+    manifest_hash: str | None = None
+
+
+@dataclass(frozen=True)
+class N2Factor:
+    name: str                                  # structure / displacement / liquidity / momentum
+    direction: str                             # LONG / SHORT / UNKNOWN (măsurat) — sau None dacă factorul e Unavailable
+    available: bool
+    primitive: str
+    assumption: bool                           # True doar pentru liquidity_above
+
+
+@dataclass(frozen=True)
+class N2Response:
+    contract_version: str
+    n2_code_version: str                       # SCHEMA_VERSION al bias_h1 ratificat (citit din modul)
+    market_event_id: str
+    event_fingerprint: str                     # COMUN cu N3/N4
+    data_identity: DataIdentity | None
+    node_input_fingerprint: str | None
+    output_fingerprint: str | None             # amprenta IEȘIRII N2 — o primesc N3/N4 (nu bias_direction, nu default)
+    bias_available: bool
+    factors: tuple[N2Factor, ...]              # factorii determiniști (ordonați: structure, displacement, liquidity, momentum)
+    direction_share_long: float | None         # DESCRIPTIV, NU previziune
+    direction_share_short: float | None
+    as_of_index: int | None
+    valid_until_index: int | None
+    reason_codes: tuple[str, ...]
 
 
 # ── N3 (zone map) ──
@@ -159,6 +209,19 @@ def _validate_ohlc(*series: tuple[float, ...]) -> None:
     for s in series:
         for v in s:
             _require(isinstance(v, (int, float)), "valoare OHLC ne-numerică")
+
+
+def validate_n2_request(req: N2Request) -> None:
+    _require(bool(req.market_event_id), "market_event_id gol")
+    _require(bool(req.symbol) and bool(req.timeframe), "symbol/timeframe gol")
+    _validate_ohlc(req.open, req.high, req.low, req.close)
+    _require(len(req.time) == len(req.close), "time și close de lungimi diferite")
+
+
+def assert_n2_compatible(contract_version: str) -> None:
+    if contract_version not in SUPPORTED_N2_CONTRACTS:
+        raise IncompatibleTowerContractError(
+            f"N2 contract {contract_version!r} nesuportat; suportate: {SUPPORTED_N2_CONTRACTS}")
 
 
 def validate_n3_request(req: N3Request) -> None:
