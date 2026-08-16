@@ -43,6 +43,14 @@ from ai_trader.execution_engine.adapters.mt5_gateway import MT5Gateway
 from ai_trader.live_signal_source.types import Bar, BarFeedError
 from ai_trader.mandate2_readiness.decision_provenance import NEW_BRAIN_SOURCE, DecisionProvenance
 from ai_trader.mandate2_readiness.event_identity import EventIdentity, NodeTrace
+from ai_trader.mandate2_readiness.shadow_cost_model import (
+    CALIBRATION_STATUS,
+    SHADOW_COST_MODEL_VERSION,
+    CostComponents,
+    CostModelUnavailableError,
+)
+from ai_trader.mandate2_readiness.shadow_cost_model import configuration_fingerprint as cost_model_configuration_fingerprint
+from ai_trader.mandate2_readiness.shadow_cost_model import is_within_provenance_window, resolve_cost_components
 from ai_trader.new_brain_bridge.probability_source import load_probability_inputs
 from ai_trader.new_brain_bridge.raw_axes_builder import RawAxesBuilder
 from ai_trader.new_brain_bridge.tower_bar_source import (
@@ -56,6 +64,21 @@ from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_
 
 _PLACEHOLDER_TARGET_RR = 2.0
 _ELIGIBILITY_POLICY_VERSION = "eligibility-v1"
+_COST_MODEL_UNAVAILABLE = "COST_MODEL_UNAVAILABLE"
+_COST_MODEL_FINGERPRINT_MISMATCH = "COST_MODEL_FINGERPRINT_MISMATCH"
+_COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW = "COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW"
+"""CEO correction, 2026-08-16: `bridge.py` no longer hardcodes `full_spread_price`/`entry_slippage_price`/
+`exit_slippage_price` -- every `DecisionRequest` built here consumes
+`mandate2_readiness.shadow_cost_model.resolve_cost_components(tier="BASE")` exclusively. A missing/
+unavailable model (`CostModelUnavailableError`) OR a caller-pinned `expected_cost_model_fingerprint` that
+doesn't match `shadow_cost_model.configuration_fingerprint()` both degrade EVERY strategy for that bar to
+`decision=None` (this codebase's own NO_TRADE-equivalent, matching `ATR_HISTORY_INSUFFICIENT`'s own
+established shape) -- never a local calculator, never a manual copy, never `0.0` as a silent fallback.
+`_COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW` is NON-blocking (a real decision still proceeds) but is
+always disclosed on the `CostModel` node trace when `bar.ts_close`'s own UTC calendar day falls outside
+`shadow_cost_model.COST_PROVENANCE_WINDOW`'s exact observed day-set -- true for essentially every live
+bar today, since the window is 4 specific days in the past. Applying the ratified cost model outside its
+own provenance window is disclosed, never silently treated as validating the strategy further."""
 _SHARED_TOWER_STRATEGY_ID = "tower-shared-n3n4-probe"
 _SHARED_TOWER_STRATEGY_VERSION = "1.0"
 """N3/N4's own computation never reads `strategy_id`/`strategy_version` (see `ve_tower.n4.run_n4` -- they
@@ -204,6 +227,7 @@ def evaluate_bar(
     segment_id: str = "live",
     manifest_hash: str = "live-manifest",
     tower: TowerDependencies | None = None,
+    expected_cost_model_fingerprint: str | None = None,
 ) -> tuple[NewBrainOutcome, ...]:
     """Feeds ONE real closed bar through the real chain for EVERY catalog strategy. Raises `ValueError`
     if `bar.symbol` doesn't match `axes_builder`'s own symbol -- the same fail-closed check
@@ -226,6 +250,24 @@ def evaluate_bar(
 
     atr = axes_builder.atr14()
     entry_price = axes_builder.last_close
+
+    cost_components: CostComponents | None
+    cost_unavailable_reason_codes: tuple[str, ...]
+    if (expected_cost_model_fingerprint is not None
+            and expected_cost_model_fingerprint != cost_model_configuration_fingerprint()):
+        cost_components = None
+        cost_unavailable_reason_codes = (_COST_MODEL_FINGERPRINT_MISMATCH,)
+    else:
+        try:
+            cost_components = resolve_cost_components(tier="BASE")
+            cost_unavailable_reason_codes = ()
+        except CostModelUnavailableError as exc:
+            cost_components = None
+            cost_unavailable_reason_codes = (_COST_MODEL_UNAVAILABLE, str(exc))
+    cost_extrapolated_outside_window = not is_within_provenance_window(bar.ts_close)
+    """Non-blocking: `True` for essentially every real live bar today (the ratified provenance window is
+    4 specific past calendar days) -- disclosed on the `CostModel` node trace below, never silently
+    treated as validating anything further about the strategy."""
 
     _tower_result_cache: list[_TowerQueryResult] = []
 
@@ -274,10 +316,15 @@ def evaluate_bar(
             ))
             continue
 
-        if atr is None or entry_price is None:
+        if atr is None or entry_price is None or cost_components is None:
+            missing_reasons: list[str] = []
+            if atr is None or entry_price is None:
+                missing_reasons.append("ATR_HISTORY_INSUFFICIENT")
+            if cost_components is None:
+                missing_reasons.extend(cost_unavailable_reason_codes)
             traces.append(NodeTrace(
                 trace_id=trace_id, node_name="N6", input_fingerprint=_fp(trace_id, "no-geometry"),
-                output="", reason_codes=("ATR_HISTORY_INSUFFICIENT",), latency_seconds=0.0,
+                output="", reason_codes=tuple(missing_reasons), latency_seconds=0.0,
                 component_version=ve_brain.ENGINE_VERSION,
             ))
             outcomes.append(NewBrainOutcome(
@@ -286,6 +333,14 @@ def evaluate_bar(
                 provenance=None,
             ))
             continue
+
+        traces.append(NodeTrace(
+            trace_id=trace_id, node_name="CostModel", input_fingerprint=cost_model_configuration_fingerprint(),
+            output=_fp(str(cost_components.full_spread_price), str(cost_components.entry_slippage_price),
+                       str(cost_components.exit_slippage_price)),
+            reason_codes=(_COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW,) if cost_extrapolated_outside_window else (),
+            latency_seconds=0.0, component_version=f"{SHADOW_COST_MODEL_VERSION}:{CALIBRATION_STATUS}",
+        ))
 
         stop_price = entry_price - atr
         regime_label = eligibility.matched_regimes[0] if eligibility.matched_regimes else None
@@ -318,8 +373,11 @@ def evaluate_bar(
             confirmation_available=tower_result.confirmation_available,
             entry_price=entry_price, stop_price=stop_price, target_kind="rr",
             target_param=_PLACEHOLDER_TARGET_RR, holding_window=canon.holding_window, atr=atr,
-            probability_inputs=probability_inputs, full_spread_price=0.10, entry_slippage_price=0.05,
-            exit_slippage_price=0.05, symbol=bar.symbol, timeframe=timeframe, block_start=0,
+            probability_inputs=probability_inputs,
+            full_spread_price=cost_components.full_spread_price,
+            entry_slippage_price=cost_components.entry_slippage_price,
+            exit_slippage_price=cost_components.exit_slippage_price,
+            symbol=bar.symbol, timeframe=timeframe, block_start=0,
             block_end=bar.ts_close, segment_id=segment_id, manifest_hash=manifest_hash,
             n1_contract_version=ve_brain.N1_CONTRACT_VERSION,
             raw_axis_schema_version=ve_brain.RAW_AXIS_SCHEMA_VERSION, router_version=ve_brain.ROUTER_VERSION,

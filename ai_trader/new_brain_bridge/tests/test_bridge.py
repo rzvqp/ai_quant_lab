@@ -99,7 +99,7 @@ def test_a_real_feed_event_reaches_n6_and_is_no_trade_missing_level_input() -> N
         assert decision.decision == "NO_TRADE"
         assert decision.reason_codes == (ve_brain.ReasonCode.MISSING_LEVEL_INPUT.value,)
         assert outcome.provenance is None  # only TRADE/SHADOW_TRADE_CANDIDATE ever gets provenance
-        assert [t.node_name for t in outcome.node_traces] == ["N1", "Router", "EV", "N6"]
+        assert [t.node_name for t in outcome.node_traces] == ["N1", "Router", "CostModel", "EV", "N6"]
 
     experimental_decision = by_strategy["trend_experimental"].decision
     assert experimental_decision is not None

@@ -891,7 +891,7 @@ def test_24_n1_n6_internal_state_is_captured_in_the_audit_record_without_this_di
 
     record = next(r for r in log.entries if r.strategy_id == "trend_pullback")
     node_names = [t.node_name for t in record.node_traces]
-    assert node_names == ["N1", "Router", "EV", "N6"]  # enough per-node structure for external review
+    assert node_names == ["N1", "Router", "CostModel", "EV", "N6"]  # enough per-node structure for external review
     assert record.decision_summary is not None
 
 

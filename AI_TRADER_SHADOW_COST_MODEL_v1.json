@@ -1,21 +1,35 @@
 {
-  "base_provisional": {
+  "base_ratified": {
     "entry_slippage_price": 0.0,
     "exit_slippage_price": 0.0,
     "full_spread_price": 0.05,
+    "note": "RATIFIED official value for the BASE operational scenario -- zero slippage components are NOT a claim of a real fill measured at zero cost (zero real fills exist); real_measured_slippage() remains COST_MODEL_UNAVAILABLE unconditionally.",
     "round_trip_total": 0.05
   },
-  "bridge_py_cost_literal": {
+  "bridge_py_cost_literal_historical": {
     "entry_slippage_price": 0.05,
     "exit_slippage_price": 0.05,
     "full_spread_price": 0.1,
-    "note": "new_brain_bridge/bridge.py commit bd59266 -- does NOT match BASE_PROVISIONAL despite a nearby test comment mis-citing it as such; flagged for CEO/Red Team, not resolved here"
+    "note": "HISTORICAL ONLY -- new_brain_bridge/bridge.py commit bd59266 through 2026-08-16 used this literal; bridge.py now imports this module exclusively and no longer contains it."
   },
-  "bridge_py_cost_literal_mismatch": true,
+  "bridge_py_cost_literal_mismatch_historical": true,
   "broker_company": "Fusion Markets Pty Ltd",
   "broker_server": "FusionMarkets-Demo",
-  "configuration_fingerprint": "46f96944bb42bcab",
-  "content_hash": "c1fa84777c4cb1dcc8bcd158553bab36de776bfe4baced9348c3b1c0f441cde8",
+  "calibration_status": "RATIFIED",
+  "configuration_fingerprint": "b7bb9a9aed17a1c8",
+  "content_hash": "1341f228bb627e8bd33dc38822e2cc834efddd322a70f10561a120c4789f0111",
+  "cost_provenance_window": {
+    "contiguous": false,
+    "first_day": "2026-08-04",
+    "last_day": "2026-08-12",
+    "note": "2026-08-05 through 2026-08-09 had ZERO observations (disclosed operator pause, see source report). Membership is exact-day-set, NOT a continuous [first_day, last_day] range.",
+    "observed_calendar_days_utc": [
+      "2026-08-04",
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-12"
+    ]
+  },
   "data_identity": {
     "monitored_calendar_days": [
       "2026-08-04",
@@ -37,7 +51,7 @@
   "exit_order_type": "broker-side SL/TP bracket (BROKER_SLTP) \u2014 no discrete closing order is submitted by this codebase today",
   "formula": {
     "base_once_real_slippage_exists": "BASE = median(spread) + median(slippage), per execution, both legs",
-    "currently_in_effect": "BASE_PROVISIONAL/STRESS_PROVISIONAL (above) -- explicitly NOT empirical, unchanged until real slippage data exists and a ratified calibration supersedes them",
+    "currently_in_effect": "BASE_RATIFIED/STRESS_RATIFIED (above) -- explicitly NOT empirical measurement of real fills, unchanged until real slippage data exists and a new ratified calibration supersedes them",
     "stress_once_real_slippage_exists": "STRESS = upper percentiles -- threshold set by Statistician + Red Team, not this division"
   },
   "monitored_calendar_days": [
@@ -54,6 +68,7 @@
   "source_report_blob_sha1": "0e8207a4e81349fae11104db524206910b7b0816",
   "source_report_commit": "351f789",
   "source_report_path": "AI_TRADER_MANDATE8_STEP1_COST_CALIBRATION_REPORT.md",
+  "spread_dispersion_iqr": 0.04,
   "spread_distribution_by_session": {
     "asia": {
       "mean": 0.0647,
@@ -93,10 +108,12 @@
     "p95": 0.2,
     "p99": 0.2
   },
-  "stress_provisional": {
+  "standard_error": "UNAVAILABLE -- not computed in the ratifying source; raw observations were never committed to git, only the aggregate percentile table was, and a stddev/SE cannot be honestly derived from percentiles alone without assuming a distribution shape",
+  "stress_ratified": {
     "entry_slippage_price": 0.08,
     "exit_slippage_price": 0.08,
     "full_spread_price": 0.08,
+    "note": "RATIFIED official value for the STRESS scenario.",
     "round_trip_total": 0.24
   },
   "symbol": "XAUUSD",

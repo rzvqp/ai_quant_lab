@@ -1,48 +1,74 @@
-"""`AI_TRADER_SHADOW_COST_MODEL_v1` — CEO decision, 2026-08-16: "Costurile pe care le monitorizezi si le
-calculezi in shadow devin sursa canonica pentru TOATE strategiile proiectului." This module IS that
-publication: a single, importable source of truth so this division, the evaluator, and Alpha all read the
-exact same numbers, from the exact same place, with the exact same provenance — never three independent
-copies that can silently drift (see `_DISCLOSED_DISCREPANCY` below for a real one this canonicalization
-effort caught).
+"""`AI_TRADER_SHADOW_COST_MODEL_v1` — CEO decision, 2026-08-16 (ratified), amended 2026-08-16 (RATIFIED
+status + real wiring): "Costurile pe care le monitorizezi si le calculezi in shadow devin sursa canonica
+pentru TOATE strategiile proiectului." This module IS that publication: a single, importable source of
+truth so this division, the evaluator, and Alpha all read the exact same numbers, from the exact same
+place, with the exact same provenance — never three independent copies that can silently drift (see
+`BRIDGE_PY_COST_LITERAL_MISMATCH` below for a real one this canonicalization effort caught and
+`new_brain_bridge/bridge.py` now closes by importing this module directly, exclusively).
 
 **Every number below is copied, verbatim, from git-committed sources — never invented, never
-recalibrated here.** The spread distribution and BASE_PROVISIONAL/STRESS_PROVISIONAL standard are copied
-from `AI_TRADER_MANDATE8_STEP1_COST_CALIBRATION_REPORT.md` (committed `351f789`, git blob
+recalibrated here.** The spread distribution and BASE/STRESS standard are copied from
+`AI_TRADER_MANDATE8_STEP1_COST_CALIBRATION_REPORT.md` (committed `351f789`, git blob
 `0e8207a4e81349fae11104db524206910b7b0816` — this module's own tests re-verify that blob hash against the
 live file before trusting it, so a future edit to that report can never silently desync from what this
 module claims to publish). Re-pulling `spread_collection`'s live SQLite state store to produce FRESH
 percentiles was deliberately NOT done — the CEO's own instruction is to publish what is already
 git-committed, not to recalibrate against runtime state that was never ratified.
 
-**Fail-closed, not zero-as-fallback** (CEO's own explicit instruction, 2026-08-16: "Zero NU e
-fallback"): `real_measured_slippage()` raises `CostModelUnavailableError` unconditionally today — zero
-real fills exist across any live policy (confirmed in the Mandate 8 report, unchanged since: `pdh_pdl_demo
-/slippage.py`'s `SlippageLog` is wired into both orchestrators but has never recorded an entry). Treating
-that absence as `0.0` would misrepresent "never measured" as "measured, and free" — exactly the failure
-mode this module exists to rule out.
+**RATIFIED, 2026-08-16 (second CEO decision)**: `calibration_status` transitions `PROVISIONAL` ->
+`RATIFIED` — the exact numeric VALUES are unchanged (CEO: "Pastreaza valorile exacte, dar schimba
+semantic"), but `calibration_status` now enters both `content_hash()` and `configuration_fingerprint()`,
+so this publication's hash differs from the original v1 PROVISIONAL publication's hash — any result
+computed against the OLD hash is `NON_COMPARABLE` with anything computed after this change, exactly as
+instructed ("Rezultatele produse cu configurația veche devin automat NON_COMPARABLE prin schimbarea
+hash-ului"). `BASE_RATIFIED`'s `0.00`/`0.00` slippage components are the OFFICIAL, RATIFIED value for the
+BASE operational scenario — NOT a claim that real fills were measured at zero cost. Zero real fills exist
+to date; `real_measured_slippage()` still fails closed unconditionally.
 
-**Disclosed discrepancy, found by this canonicalization exercise, NOT resolved here** (`NU recalibra`
-applies to this module too — silently changing either side to make them agree would itself be an
-undisclosed recalibration): `ai_trader/new_brain_bridge/bridge.py`'s own `DecisionRequest` construction
-uses a literal cost triple — `full_spread_price=0.10, entry_slippage_price=0.05, exit_slippage_price=
-0.05` (introduced commit `bd59266`, 2026-08-14) — that does NOT match this module's own
-`BASE_PROVISIONAL` (`0.05/0.00/0.00`) despite a nearby test fixture's comment
-(`mandate2_readiness/tests/test_brain_functional_proofs.py`, committed `f4859a5`, ten hours earlier the
-SAME day) explicitly (and incorrectly) citing those bridge.py numbers as "BASE_PROVISIONAL... from
-AI_TRADER_MANDATE8_STEP1_COST_CALIBRATION_REPORT.md". The report's own table never contained `0.10/0.05/
-0.05` at all. This means `bridge.py`'s currently-running `new_brain_bridge` path is NOT actually feeding
-N6 the ratified BASE_PROVISIONAL standard today — it is feeding a THIRD, uncited number nobody
-independently ratified. Flagged here as `BRIDGE_PY_COST_LITERAL_MISMATCH` for CEO/Red Team decision;
-`bridge.py` is deliberately left unmodified by this module (fixing it would itself be a recalibration
-decision, not an export task)."""
+**Fail-closed, not zero-as-fallback** (CEO's own explicit instruction: "Zero NU e fallback"):
+`real_measured_slippage()` raises `CostModelUnavailableError` unconditionally today — zero real fills
+exist across any live policy (confirmed in the Mandate 8 report, unchanged since: `pdh_pdl_demo/
+slippage.py`'s `SlippageLog` is wired into both orchestrators but has never recorded an entry). Treating
+that absence as `0.0` would misrepresent "never measured" as "measured, and free" — exactly the failure
+mode this module exists to rule out. `full_spread_price`/`entry_slippage_price`/`exit_slippage_price`
+likewise never silently substitute a default on an unknown tier or an incompatible caller-supplied
+fingerprint — both raise `CostModelUnavailableError`, the ONLY path `new_brain_bridge/bridge.py` accepts
+as a signal to degrade that decision cycle to `NO_TRADE`.
+
+**Disclosed discrepancy, found by the first canonicalization exercise, NOW CLOSED**: `bridge.py`'s
+`DecisionRequest` construction previously hardcoded `full_spread_price=0.10, entry_slippage_price=0.05,
+exit_slippage_price=0.05` (introduced commit `bd59266`, 2026-08-14) — a THIRD, never-ratified number that
+matched neither `BASE_RATIFIED` nor `STRESS_RATIFIED`. `bridge.py` now imports this module's own
+`full_spread_price()`/`entry_slippage_price()`/`exit_slippage_price()` functions exclusively — no local
+literal, no alternate calculator, no manual copy. `BRIDGE_PY_COST_LITERAL_MISMATCH` and
+`_BRIDGE_PY_COST_LITERAL` below are kept as a historical record (and a regression guard — a future test
+can assert `bridge.py`'s source no longer contains those literals) but are no longer live in
+`bridge.py`'s own code path.
+
+**Provenance window, extracted from the ratifying report's own section 1 — nothing invented.** The report
+states 4 DISTINCT CALENDAR DAYS with real observations: `2026-08-04`, `2026-08-10`, `2026-08-11`,
+`2026-08-12` — explicitly NON-CONTIGUOUS (`2026-08-05` through `2026-08-09` had ZERO observations, the
+disclosed operator pause). The report gives no finer-grained (sub-day) timestamps for the overall
+monitoring window (only for the specific 2026-08-11 duplicate-bar incident sub-window, which is a
+different, narrower fact) — so `COST_PROVENANCE_WINDOW` is deliberately expressed as the exact day-set,
+not a smooth start/end range, and `is_within_provenance_window()` checks EXACT calendar-day membership,
+not a continuous span. Every real live decision made on any date other than those 4 exact days —
+including every decision made today, 2026-08-16, and every date after — is OUTSIDE the provenance window
+by this exact, honest definition; callers must surface `COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW` when
+that is true, never treat it as silently fine."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 SHADOW_COST_MODEL_VERSION = "v1"
+CALIBRATION_STATUS = "RATIFIED"
+"""CEO decision, 2026-08-16 (second directive): was `PROVISIONAL`. Enters both `content_hash()` and
+`configuration_fingerprint()` -- the mechanism the CEO's own instruction relies on to make prior results
+`NON_COMPARABLE` automatically, without a top-level version bump."""
 
 SOURCE_REPORT_PATH = "AI_TRADER_MANDATE8_STEP1_COST_CALIBRATION_REPORT.md"
 SOURCE_REPORT_COMMIT = "351f789"
@@ -70,6 +96,17 @@ MONITORED_CALENDAR_DAYS = ("2026-08-04", "2026-08-10", "2026-08-11", "2026-08-12
 """4 distinct calendar days, per the ratifying report's own section 1 — 2026-08-04 isolated before the
 known operator pause, 08-10 through 08-12 the continuous run that followed."""
 
+COST_PROVENANCE_WINDOW = {
+    "observed_calendar_days_utc": list(MONITORED_CALENDAR_DAYS),
+    "first_day": MONITORED_CALENDAR_DAYS[0],
+    "last_day": MONITORED_CALENDAR_DAYS[-1],
+    "contiguous": False,
+    "note": "2026-08-05 through 2026-08-09 had ZERO observations (disclosed operator pause, see source "
+            "report). Membership is exact-day-set, NOT a continuous [first_day, last_day] range.",
+}
+"""Enters `content_hash()`/`configuration_fingerprint()` per the CEO's own explicit instruction
+("cost_provenance_window intra in config_hash")."""
+
 
 class CostModelUnavailableError(Exception):
     """Raised whenever a required cost component has no real, git-ratified value to return — fail-closed,
@@ -94,21 +131,24 @@ class CostComponents:
         return self.full_spread_price + self.entry_slippage_price + self.exit_slippage_price
 
 
-BASE_PROVISIONAL = CostComponents(full_spread_price=0.05, entry_slippage_price=0.00, exit_slippage_price=0.00)
-STRESS_PROVISIONAL = CostComponents(full_spread_price=0.08, entry_slippage_price=0.08, exit_slippage_price=0.08)
-"""Copied VERBATIM from the ratifying report's own section 3 table — `BASE_PROVISIONAL`/
-`STRESS_PROVISIONAL`, "Approved provisionally (CEO, this mandate)... explicitly NOT empirical
-calibration". `STRESS_PROVISIONAL.round_trip_total == 0.24` (0.08 spread + 0.08 + 0.08 slippage),
-matching the report's own stated total exactly."""
+BASE_RATIFIED = CostComponents(full_spread_price=0.05, entry_slippage_price=0.00, exit_slippage_price=0.00)
+STRESS_RATIFIED = CostComponents(full_spread_price=0.08, entry_slippage_price=0.08, exit_slippage_price=0.08)
+"""Values copied VERBATIM from the ratifying report's own section 3 table (formerly named
+`BASE_PROVISIONAL`/`STRESS_PROVISIONAL` — same numbers, `calibration_status` now `RATIFIED` per the CEO's
+second decision, 2026-08-16). `BASE_RATIFIED`'s `0.00`/`0.00` slippage is the RATIFIED value for the BASE
+operational scenario, explicitly NOT a claim that a real fill was measured at zero cost -- see module
+docstring. `STRESS_RATIFIED.round_trip_total == 0.24` (0.08 spread + 0.08 + 0.08 slippage), matching the
+report's own stated total exactly."""
 
 _BRIDGE_PY_COST_LITERAL = CostComponents(full_spread_price=0.10, entry_slippage_price=0.05, exit_slippage_price=0.05)
-"""What `new_brain_bridge/bridge.py`'s `DecisionRequest` construction ACTUALLY uses today (commit
-`bd59266`) — NOT this module's `BASE_PROVISIONAL`. Exposed here, read-only, purely so a consumer (or a
-test) can compare against it programmatically; never returned as this module's own recommended value."""
+"""What `new_brain_bridge/bridge.py`'s `DecisionRequest` construction used to hardcode (commit `bd59266`,
+2026-08-14 through the fix committed 2026-08-16) — kept here ONLY as a historical/regression-guard
+reference; `bridge.py` no longer contains this literal anywhere in its own source."""
 
-BRIDGE_PY_COST_LITERAL_MISMATCH = _BRIDGE_PY_COST_LITERAL != BASE_PROVISIONAL
-"""`True` today — see this module's own docstring, "Disclosed discrepancy" section. A future fix to
-either side would flip this to `False`; this module does not attempt to force that itself."""
+BRIDGE_PY_COST_LITERAL_MISMATCH = _BRIDGE_PY_COST_LITERAL != BASE_RATIFIED
+"""`True` — the historical literal never matched the ratified standard. Retained as a standing fact for
+audit trail; `bridge.py` itself no longer uses `_BRIDGE_PY_COST_LITERAL` at all (see
+`test_bridge_py_contains_no_hardcoded_cost_literals` in `new_brain_bridge/tests/test_bridge.py`)."""
 
 
 # Real, measured spread distribution — CLEAN (deduplicated), copied verbatim from the ratifying report's
@@ -124,6 +164,13 @@ SPREAD_DISTRIBUTION_BY_SESSION = {
     "ny": {"n": 83, "median_p50": 0.0800, "p90": 0.1200, "mean": 0.0835},
     "late": {"n": 21, "median_p50": 0.0900, "p90": 0.2000, "mean": 0.1133},
 }
+SPREAD_DISPERSION_IQR = round(SPREAD_DISTRIBUTION_CLEAN["p75"] - SPREAD_DISTRIBUTION_CLEAN["p25"], 4)
+"""Interquartile range, DERIVED from the two already-published, already-ratified percentiles above (p75 -
+p25) — not a new measurement, not a recomputation from raw data (the raw 175 observations were never
+committed to git, only this aggregate table was). No standard deviation is published: the ratifying
+report never computed one, and one cannot be honestly derived from percentiles alone without assuming a
+distribution shape this module has no basis to assume. `standard_error` is therefore reported as
+unavailable in the manifest, not approximated."""
 
 
 def full_spread_price(*, tier: str = "BASE") -> float:
@@ -144,11 +191,17 @@ def round_trip_cost(*, tier: str = "BASE") -> float:
     return _components_for_tier(tier).round_trip_total
 
 
+def resolve_cost_components(*, tier: str = "BASE") -> CostComponents:
+    """The single call `new_brain_bridge/bridge.py` uses to resolve all three cost fields at once --
+    raises `CostModelUnavailableError` (never returns a partial or zeroed result) on any unknown tier."""
+    return _components_for_tier(tier)
+
+
 def _components_for_tier(tier: str) -> CostComponents:
     if tier == "BASE":
-        return BASE_PROVISIONAL
+        return BASE_RATIFIED
     if tier == "STRESS":
-        return STRESS_PROVISIONAL
+        return STRESS_RATIFIED
     raise CostModelUnavailableError(
         f"COST_MODEL_UNAVAILABLE: unknown tier {tier!r} — only 'BASE' or 'STRESS' are published"
     )
@@ -169,36 +222,54 @@ def real_measured_slippage(*, leg: str) -> float:
     )
 
 
+def is_within_provenance_window(as_of_epoch_seconds: int) -> bool:
+    """`True` only if `as_of_epoch_seconds`'s own UTC calendar date is EXACTLY one of
+    `MONITORED_CALENDAR_DAYS` -- membership in the discrete day-set, never a continuous range (the window
+    is genuinely non-contiguous; see module docstring). A caller (`bridge.py`) that resolves cost
+    components for a date outside this window must surface
+    `COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW` -- this function only answers the membership question,
+    it never blocks or degrades anything itself."""
+    day = datetime.fromtimestamp(as_of_epoch_seconds, tz=timezone.utc).strftime("%Y-%m-%d")
+    return day in MONITORED_CALENDAR_DAYS
+
+
 def content_hash() -> str:
-    """A single, reproducible sha256 over every published numeric field this module exposes — the
+    """A single, reproducible sha256 over every published numeric/status field this module exposes — the
     'hash de continut' the CEO's directive requires. Recomputed from the module's OWN in-memory constants
     (not re-read from disk), so it is stable across processes and only ever changes if this module's own
-    published values change (which requires a new version, per the CEO's own 'niciodata o modificare
-    tacita' instruction)."""
+    published values (INCLUDING `calibration_status`/`cost_provenance_window`, per the CEO's own second
+    decision) change."""
     payload = {
         "version": SHADOW_COST_MODEL_VERSION,
-        "base_provisional": {
-            "full_spread_price": BASE_PROVISIONAL.full_spread_price,
-            "entry_slippage_price": BASE_PROVISIONAL.entry_slippage_price,
-            "exit_slippage_price": BASE_PROVISIONAL.exit_slippage_price,
+        "calibration_status": CALIBRATION_STATUS,
+        "base_ratified": {
+            "full_spread_price": BASE_RATIFIED.full_spread_price,
+            "entry_slippage_price": BASE_RATIFIED.entry_slippage_price,
+            "exit_slippage_price": BASE_RATIFIED.exit_slippage_price,
         },
-        "stress_provisional": {
-            "full_spread_price": STRESS_PROVISIONAL.full_spread_price,
-            "entry_slippage_price": STRESS_PROVISIONAL.entry_slippage_price,
-            "exit_slippage_price": STRESS_PROVISIONAL.exit_slippage_price,
+        "stress_ratified": {
+            "full_spread_price": STRESS_RATIFIED.full_spread_price,
+            "entry_slippage_price": STRESS_RATIFIED.entry_slippage_price,
+            "exit_slippage_price": STRESS_RATIFIED.exit_slippage_price,
         },
         "spread_distribution_clean": SPREAD_DISTRIBUTION_CLEAN,
         "spread_distribution_by_session": SPREAD_DISTRIBUTION_BY_SESSION,
+        "cost_provenance_window": COST_PROVENANCE_WINDOW,
         "source_report_blob_sha1": SOURCE_REPORT_BLOB_SHA1,
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
 
 def configuration_fingerprint() -> str:
-    """The identity fields governing THIS publication — commit + version + source blob, distinct from
-    `content_hash()` (which covers the numeric payload only). Truncated to 16 hex chars, matching this
-    codebase's own established `_fp()` convention (`new_brain_bridge/bridge.py`)."""
-    payload = f"{SHADOW_COST_MODEL_VERSION}|{SOURCE_REPORT_COMMIT}|{SOURCE_REPORT_BLOB_SHA1}|{SLIPPAGE_MECHANISM_BLOB_SHA1}"
+    """The identity fields governing THIS publication — commit + version + calibration_status +
+    provenance window + source blobs, distinct from `content_hash()` (numeric payload only). Truncated to
+    16 hex chars, matching this codebase's own established `_fp()` convention (`new_brain_bridge/
+    bridge.py`). Changing `CALIBRATION_STATUS` (PROVISIONAL -> RATIFIED) changes this value -- the exact
+    mechanism the CEO's instruction relies on to make old results `NON_COMPARABLE` automatically."""
+    payload = (
+        f"{SHADOW_COST_MODEL_VERSION}|{CALIBRATION_STATUS}|{SOURCE_REPORT_COMMIT}|{SOURCE_REPORT_BLOB_SHA1}|"
+        f"{SLIPPAGE_MECHANISM_BLOB_SHA1}|{json.dumps(COST_PROVENANCE_WINDOW, sort_keys=True)}"
+    )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
 
@@ -222,6 +293,7 @@ def manifest() -> dict[str, object]:
     Red Team's own external inspection, per the CEO's own instruction)."""
     return {
         "shadow_cost_model_version": SHADOW_COST_MODEL_VERSION,
+        "calibration_status": CALIBRATION_STATUS,
         "broker_server": BROKER_SERVER,
         "broker_company": BROKER_COMPANY,
         "symbol": SYMBOL,
@@ -229,25 +301,32 @@ def manifest() -> dict[str, object]:
         "entry_order_type": ENTRY_ORDER_TYPE,
         "exit_order_type": EXIT_ORDER_TYPE,
         "monitored_calendar_days": list(MONITORED_CALENDAR_DAYS),
-        "base_provisional": {
-            "full_spread_price": BASE_PROVISIONAL.full_spread_price,
-            "entry_slippage_price": BASE_PROVISIONAL.entry_slippage_price,
-            "exit_slippage_price": BASE_PROVISIONAL.exit_slippage_price,
-            "round_trip_total": BASE_PROVISIONAL.round_trip_total,
+        "cost_provenance_window": COST_PROVENANCE_WINDOW,
+        "base_ratified": {
+            "full_spread_price": BASE_RATIFIED.full_spread_price,
+            "entry_slippage_price": BASE_RATIFIED.entry_slippage_price,
+            "exit_slippage_price": BASE_RATIFIED.exit_slippage_price,
+            "round_trip_total": BASE_RATIFIED.round_trip_total,
+            "note": "RATIFIED official value for the BASE operational scenario -- zero slippage "
+                    "components are NOT a claim of a real fill measured at zero cost (zero real fills "
+                    "exist); real_measured_slippage() remains COST_MODEL_UNAVAILABLE unconditionally.",
         },
-        "stress_provisional": {
-            "full_spread_price": STRESS_PROVISIONAL.full_spread_price,
-            "entry_slippage_price": STRESS_PROVISIONAL.entry_slippage_price,
-            "exit_slippage_price": STRESS_PROVISIONAL.exit_slippage_price,
-            "round_trip_total": STRESS_PROVISIONAL.round_trip_total,
+        "stress_ratified": {
+            "full_spread_price": STRESS_RATIFIED.full_spread_price,
+            "entry_slippage_price": STRESS_RATIFIED.entry_slippage_price,
+            "exit_slippage_price": STRESS_RATIFIED.exit_slippage_price,
+            "round_trip_total": STRESS_RATIFIED.round_trip_total,
+            "note": "RATIFIED official value for the STRESS scenario.",
         },
         "formula": {
             "base_once_real_slippage_exists": "BASE = median(spread) + median(slippage), per execution, both legs",
             "stress_once_real_slippage_exists": "STRESS = upper percentiles -- threshold set by Statistician + Red Team, not this division",
-            "currently_in_effect": "BASE_PROVISIONAL/STRESS_PROVISIONAL (above) -- explicitly NOT empirical, unchanged until real slippage data exists and a ratified calibration supersedes them",
+            "currently_in_effect": "BASE_RATIFIED/STRESS_RATIFIED (above) -- explicitly NOT empirical measurement of real fills, unchanged until real slippage data exists and a new ratified calibration supersedes them",
         },
         "spread_distribution_clean": SPREAD_DISTRIBUTION_CLEAN,
         "spread_distribution_by_session": SPREAD_DISTRIBUTION_BY_SESSION,
+        "spread_dispersion_iqr": SPREAD_DISPERSION_IQR,
+        "standard_error": "UNAVAILABLE -- not computed in the ratifying source; raw observations were never committed to git, only the aggregate percentile table was, and a stddev/SE cannot be honestly derived from percentiles alone without assuming a distribution shape",
         "slippage_distribution": "COST_MODEL_UNAVAILABLE -- zero real observations",
         "data_source": {"spread": SPREAD_DATA_SOURCE, "slippage": SLIPPAGE_DATA_SOURCE},
         "source_report_path": SOURCE_REPORT_PATH,
@@ -259,12 +338,12 @@ def manifest() -> dict[str, object]:
         "data_identity": data_identity(),
         "configuration_fingerprint": configuration_fingerprint(),
         "content_hash": content_hash(),
-        "bridge_py_cost_literal_mismatch": BRIDGE_PY_COST_LITERAL_MISMATCH,
-        "bridge_py_cost_literal": {
+        "bridge_py_cost_literal_mismatch_historical": BRIDGE_PY_COST_LITERAL_MISMATCH,
+        "bridge_py_cost_literal_historical": {
             "full_spread_price": _BRIDGE_PY_COST_LITERAL.full_spread_price,
             "entry_slippage_price": _BRIDGE_PY_COST_LITERAL.entry_slippage_price,
             "exit_slippage_price": _BRIDGE_PY_COST_LITERAL.exit_slippage_price,
-            "note": "new_brain_bridge/bridge.py commit bd59266 -- does NOT match BASE_PROVISIONAL despite "
-                    "a nearby test comment mis-citing it as such; flagged for CEO/Red Team, not resolved here",
+            "note": "HISTORICAL ONLY -- new_brain_bridge/bridge.py commit bd59266 through 2026-08-16 used "
+                    "this literal; bridge.py now imports this module exclusively and no longer contains it.",
         },
     }

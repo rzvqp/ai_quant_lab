@@ -143,7 +143,7 @@ def test_full_chain_n1_through_execution_adapter_persists_under_one_trace_id() -
 
     record = log.entries[0]
     node_names = [t.node_name for t in record.node_traces]
-    assert node_names == ["N1", "Router", "EV", "N6", "RiskManager", "ExecutionAdapter"]
+    assert node_names == ["N1", "Router", "CostModel", "EV", "N6", "RiskManager", "ExecutionAdapter"]
     assert all(t.trace_id == outcome.event_identity.trace_id for t in record.node_traces)
     assert record.decision_summary is not None
     assert record.decision_summary.decision == "NO_TRADE"
