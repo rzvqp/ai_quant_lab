@@ -227,10 +227,21 @@ def build_shortlist_and_clusters(reg):
 def process_spec(cid, spec, ctx, years, dt):
     """PHASE A per-hypothesis loop (generator-driven). GATE 0 (determinism/lookahead) + GATE 1 (GROSS,
     cost=0) + episode count + fat-tail on GROSS. NET is UNEVALUATED (Phase B / ratified cost model)."""
-    from edge_research.flowb_generator import gen_signals, semantic_fingerprint
+    from edge_research.flowb_generator import gen_signals, semantic_fingerprint, evaluation_run_hash
     from edge_research._screen import canonical_evaluate
+    # RUN CONTEXT = the exact evaluation identity (NOT the economic hypothesis). Changing any of these =>
+    # new evaluation_run_hash, SAME hypothesis_semantic_fingerprint + SAME m.
+    run_context = dict(data_identity="M15_v2/pre_holdout/4-block/2011-2025",
+                       evaluator="mstrat.simulate", cost_model="GROSS(spread=0)_AWAITING_RATIFIED",
+                       engine_snapshot="canonical@f0d3b34", ratified_snapshot="5443077",
+                       measurement_contract="episode_primary_v2", classifier_version="alpha_swing_regime_v1",
+                       n1_contract="NONCANONICAL_alpha_swing", router_version="NONE_not_routed",
+                       eligibility_version="alpha_swing_regime_v1")
+    hsf = spec.get("hypothesis_semantic_fingerprint", spec["run_hash"])
     base = dict(candidate_id=cid, cell=spec["cell"], family=spec["family"], regime=spec["regime"],
-                run_hash=spec["run_hash"], configuration_fingerprint=spec["run_hash"],
+                hypothesis_semantic_fingerprint=hsf, run_hash=hsf,
+                evaluation_run_hash=evaluation_run_hash(hsf, run_context), run_context=run_context,
+                configuration_fingerprint=spec["run_hash"],
                 mechanism_cluster=spec.get("mechanism_cluster"), generator_version=spec.get("generator_version"),
                 economic_rationale=spec.get("economic_rationale"), direction=spec.get("direction"),
                 parameter_neighborhood=spec.get("parameter_neighborhood"),

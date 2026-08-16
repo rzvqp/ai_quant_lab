@@ -164,14 +164,27 @@ def cluster_of(family, regime, entry):
     return f"{family}|{regime}|{MECHANISM.get(entry, entry)}"
 
 
-_ID_FIELDS = ("regime", "entry", "stop", "hold", "exit_kind", "exit_param", "position_at_regime_end")
+_HSF_FIELDS = ("regime", "entry", "stop", "hold", "exit_kind", "exit_param", "position_at_regime_end")
 
 
-def run_hash(spec):
-    # ECONOMIC-CONFIG identity only (NOT family label, NOT generator_version) so the SAME economic
-    # hypothesis is stable across generator versions -> idempotent, never doubled. Re-generation of an
-    # existing config is a DUPLICATE (skipped, m unchanged); only new configs grow m.
-    return hashlib.md5(str(tuple((k, spec.get(k)) for k in _ID_FIELDS)).encode()).hexdigest()[:12]
+def hypothesis_semantic_fingerprint(spec):
+    """HYPOTHESIS identity = the ECONOMIC LOGIC only (regime, signal/entry, stop, exit, holding,
+    position_at_regime_end). Role: economic dedup, candidate identity, the m count. The SAME hypothesis
+    re-run under a different evaluator/cost/router keeps THIS fingerprint and the SAME m."""
+    return hashlib.md5(str(tuple((k, spec.get(k)) for k in _HSF_FIELDS)).encode()).hexdigest()[:12]
+
+
+# kept as an alias so existing dedup callers keep working; identity role is the HSF.
+run_hash = hypothesis_semantic_fingerprint
+
+
+def evaluation_run_hash(hsf, run_context):
+    """RUN identity = the exact EVALUATION (HSF + data_identity + evaluator/engine + measurement contract
+    + N1 contract + router + eligibility + cost model + snapshot identities + classifier + impl commit).
+    Role: comparability + reproduction. Changing evaluator/cost/router/data => NEW run_hash, SAME hsf/m if
+    the economic logic is unchanged. NOT reducible to the economic config."""
+    payload = dict(hsf=hsf, **{k: run_context.get(k) for k in sorted(run_context)})
+    return hashlib.sha256(str(sorted(payload.items())).encode()).hexdigest()[:16]
 
 
 def semantic_fingerprint(family, regime, entry, direction):
@@ -197,11 +210,12 @@ def build_grid():
         spec = dict(family=family, regime=regime, entry=entry, stop=stop, hold=int(hold), exit_kind=ek,
                     exit_param=(float(ep) if ep is not None else None),
                     position_at_regime_end="HOLD_UNTIL_STRATEGY_EXIT")
-        rh = run_hash(spec)
+        rh = hypothesis_semantic_fingerprint(spec)
         if rh in seen:
             return
         seen.add(rh); cluster_count[cl] = cluster_count.get(cl, 0) + 1
-        specs.append(dict(cell=f"{family} × {entry}", run_hash=rh, exit_label=exlabel,
+        specs.append(dict(cell=f"{family} × {entry}", run_hash=rh, hypothesis_semantic_fingerprint=rh,
+                          exit_label=exlabel,
                           mechanism_cluster=cl, generator_version=GENERATOR_VERSION,
                           economic_rationale=RATIONALE.get(MECHANISM.get(entry, entry), ""),
                           direction=direction, parameter_neighborhood=dict(stop=stop, exit=exlabel, hold=int(hold)),
