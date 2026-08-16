@@ -96,63 +96,94 @@ def _max_dd_R(rs_in_order):
     return round(dd, 2)
 
 
-def _window_stats(res_sub, elig, trades_sub, years):
-    """Metrics + episode coverage + DD for a subset of trades (one window)."""
+def _window_stats(res_sub, elig, trades_sub, years, wmask):
+    """EPISODE-PRIMARY stats for one window. wmask = per-bar bool of the window. Episodes are contiguous
+    runs of (elig AND window). Reports eligible bars/episodes, per-episode net_R, best-episode share,
+    walk-forward folds, and NOT_APPLICABLE_YEAR / ELIGIBLE_YEAR_NEGATIVE labels."""
     from edge_research._screen import metrics
-    eps = episodes_of(elig)
+    import numpy as np
+    elig_w = np.asarray(elig) & np.asarray(wmask)
+    eps = episodes_of(elig_w)
     def ep_idx(si):
         for k, (s, e) in enumerate(eps):
             if s <= si < e:
                 return k
         return None
-    used = {ep_idx(t.signal_idx) for t in trades_sub}; used.discard(None)
-    k_eps = len(used)
+    n_elig_bars = int(elig_w.sum()); n_elig_eps = len(eps)
+    used = {ep_idx(t.signal_idx) for t in trades_sub}; used.discard(None); k_eps = len(used)
     if not res_sub:
-        return dict(n=0, k_episodes=k_eps)
+        return dict(n=0, n_eligible_bars=n_elig_bars, n_eligible_episodes=n_elig_eps, k_episodes_with_trades=k_eps)
+    ordered = sorted(res_sub, key=lambda z: z["signal_idx"])
     m = metrics(res_sub)
     byep, byyear = {}, {}
-    for x in sorted(res_sub, key=lambda z: z["signal_idx"]):
+    for x in ordered:
         byep.setdefault(ep_idx(x["signal_idx"]), []).append(x["r"])
         byyear.setdefault(int(years[x["signal_idx"]]), []).append(x["r"])
-    per_year = {str(y): round(sum(v) / len(v), 3) for y, v in sorted(byyear.items())}
-    loo = round(min(m["total_R"] - sum(v) for v in byep.values()), 2) if len(byep) >= 2 else None
-    dd = _max_dd_R([x["r"] for x in sorted(res_sub, key=lambda z: z["signal_idx"])])
-    return dict(n=m["n"], k_episodes=k_eps, EV_net_avg_R=m["avg_R"], PF=m["profit_factor"],
+    ep_R = {str(k): round(sum(v), 2) for k, v in sorted(byep.items(), key=lambda kv: (kv[0] is None, kv[0]))}
+    tot = m["total_R"]
+    best_ep_share = round(max(abs(sum(v)) for v in byep.values()) / abs(tot), 3) if tot else None
+    loo = round(min(tot - sum(v) for v in byep.values()), 2) if len(byep) >= 2 else None
+    dd = _max_dd_R([x["r"] for x in ordered])
+    # walk-forward: 3 time-ordered folds within the window (stability, not optimization)
+    rs = [x["r"] for x in ordered]; f = max(1, len(rs) // 3)
+    wf = [round(sum(rs[i:i+f]) / max(1, len(rs[i:i+f])), 3) for i in range(0, len(rs), f)][:3]
+    # year diagnostics with NOT_APPLICABLE labels
+    yr_elig = {}
+    yidx = np.asarray(years)
+    for y in sorted(set(int(v) for v in yidx[wmask])) if np.any(wmask) else []:
+        eb = int((elig_w & (yidx == y)).sum())
+        if eb == 0:
+            yr_elig[str(y)] = "NOT_APPLICABLE_YEAR"
+        else:
+            avg = sum(byyear.get(y, [0])) / max(1, len(byyear.get(y, [])))
+            yr_elig[str(y)] = ("ELIGIBLE_YEAR_NEGATIVE" if avg <= 0 else round(avg, 3)) if y in byyear else "ELIGIBLE_NO_TRADE"
+    return dict(n=m["n"], n_eligible_bars=n_elig_bars, n_eligible_episodes=n_elig_eps,
+                k_episodes_with_trades=k_eps, EV_net_avg_R=m["avg_R"], PF=m["profit_factor"],
                 win_rate=m["win_rate"], median_R=m["median_R"], best_share=m.get("best_share_of_total"),
-                trimmed_avg_R=m.get("trimmed_top1pct", {}).get("avg_R"), max_drawdown_R=dd,
-                leave_one_episode_out_total_R=loo, per_year_avg_R=per_year)
+                best_episode_share=best_ep_share, trimmed_avg_R=m.get("trimmed_top1pct", {}).get("avg_R"),
+                max_drawdown_R=dd, leave_one_episode_out_total_R=loo, walk_forward_folds=wf,
+                per_episode_R=ep_R, year_diag=yr_elig)
 
 
 def classify(res, elig, trades, years, dt):
     """RECENT-PRIMARY classification. Reports RECENT_PRIMARY (the estimand), HISTORICAL_TRANSFER (stress),
     COMBINED_DIAGNOSTIC (never decides). Decision is on RECENT: EV_net>0, >=5 recent episodes, not
     single-trade, trimmed-top-1% not inverting. Older losses do NOT auto-eliminate."""
-    import pandas as pd
+    import pandas as pd, numpy as np
     rs_ = pd.Timestamp(RECENT_START, tz="UTC"); re_ = pd.Timestamp(RECENT_END, tz="UTC")
-    is_recent = (pd.DatetimeIndex(dt) >= rs_) & (pd.DatetimeIndex(dt) < re_)
+    di = pd.DatetimeIndex(dt)
+    is_recent = np.asarray((di >= rs_) & (di < re_))
+    is_hist = np.asarray(di < rs_)              # 2011-2021 same-regime (elig already gates regime)
     recent = [x for x in res if is_recent[x["signal_idx"]]]
-    hist = [x for x in res if not is_recent[x["signal_idx"]]]
+    hist = [x for x in res if is_hist[x["signal_idx"]]]
     tr_recent = [t for t in trades if is_recent[t.signal_idx]]
-    tr_hist = [t for t in trades if not is_recent[t.signal_idx]]
-    R = _window_stats(recent, elig, tr_recent, years)     # PRIMARY
-    H = _window_stats(hist, elig, tr_hist, years)          # TRANSFER / STRESS
-    C = _window_stats(res, elig, trades, years)            # DIAGNOSTIC only
+    tr_hist = [t for t in trades if is_hist[t.signal_idx]]
+    R = _window_stats(recent, elig, tr_recent, years, is_recent)   # PRIMARY (episode unit)
+    H = _window_stats(hist, elig, tr_hist, years, is_hist)         # HISTORICAL_REGIME_TRANSFER
+    C = _window_stats(res, elig, trades, years, np.ones(len(elig), bool))  # DIAGNOSTIC only
 
-    k = R.get("k_episodes", 0); ev = R.get("EV_net_avg_R"); bs = R.get("best_share"); ta = R.get("trimmed_avg_R")
+    k = R.get("n_eligible_episodes", 0); kt = R.get("k_episodes_with_trades", 0)
+    ev = R.get("EV_net_avg_R"); bs = R.get("best_share"); ta = R.get("trimmed_avg_R")
+    bes = R.get("best_episode_share")
+    h_ev = H.get("EV_net_avg_R")
     if R.get("n", 0) == 0:
         st, rs = "STRUCTURALLY_FALSIFIED", "GATE1: no RECENT-window signals"
-    elif k < 5:
-        st, rs = "ARCHIVE_INSUFFICIENT", f"recent k={k}<5 eligible episodes (0.5^k not significant)"
+    elif kt < 5:
+        st, rs = "ARCHIVE_INSUFFICIENT", f"recent episodes-with-trades={kt}<5 (0.5^k not significant)"
     elif ev is None or ev <= 0:
         st, rs = "STRUCTURALLY_FALSIFIED", f"GATE1 recent GROSS EV<=0 (avg_R={ev})"
     elif bs is not None and bs > 0.5:
         st, rs = "STRUCTURALLY_FALSIFIED", f"recent single-trade dependence (best_share={bs})"
-    elif (bs is not None and bs > 0.30) or (ta is not None and ta <= 0):
-        st, rs = "FAT_TAIL_DEPENDENT", f"recent GROSS+ but fat-tail (best_share={bs}, trimmed={ta}); net UNEVALUATED"
+    elif (bs is not None and bs > 0.30) or (ta is not None and ta <= 0) or (bes is not None and bes > 0.5):
+        st, rs = "FAT_TAIL_DEPENDENT", f"recent GROSS+ but concentrated (best_trade={bs}, best_episode={bes}, trimmed={ta})"
     else:
-        st, rs = "PROVISIONAL_SCREENED", "recent GROSS EV>0 & trim-robust; net pending ratified cost model"
-    return dict(status=st, reason=rs, RECENT_PRIMARY=R, HISTORICAL_TRANSFER=H, COMBINED_DIAGNOSTIC=C,
-                estimand="RECENT_PRIMARY (2022-12→2025-10)")
+        # recent survives. Historical (same-regime) decides SURVIVOR vs RECENT-only.
+        if h_ev is not None and h_ev > 0:
+            st, rs = "PROVISIONAL_SCREENING_SURVIVOR", f"recent GROSS EV>0 robust + historical same-regime transfer +{h_ev}; net UNEVALUATED"
+        else:
+            st, rs = "RECENT_REGIME_EDGE_PROVISIONAL", f"recent GROSS EV>0 robust; HISTORICAL_TRANSFER_WEAK (hist EV={h_ev}); net UNEVALUATED"
+    return dict(status=st, reason=rs, RECENT_PRIMARY=R, HISTORICAL_REGIME_TRANSFER=H, COMBINED_DIAGNOSTIC=C,
+                estimand="RECENT_PRIMARY episodes (2022-12→2025-10)", position_at_regime_end="HOLD_UNTIL_STRATEGY_EXIT")
 
 
 def process_spec(cid, spec, ctx, years, dt):
@@ -223,7 +254,7 @@ def run(max_candidates=None):
         st["m_total"] += 1; st["gen_seq"] = seq_start
         (st["failed_ids"] if rec["status"] in ("STRUCTURALLY_FALSIFIED", "ARCHIVE_INSUFFICIENT")
          else st["completed_ids"]).append(cid)
-        if rec["status"] in ("PROVISIONAL_SCREENED", "FAT_TAIL_DEPENDENT"):
+        if rec["status"] in ("PROVISIONAL_SCREENING_SURVIVOR", "RECENT_REGIME_EDGE_PROVISIONAL", "FAT_TAIL_DEPENDENT"):
             st["canonical_rerun_queue"].append(cid)
         st["last_checkpoint_ts"] = now()
         _save(F_STATE, st); _save(F_REG, reg)          # CHECKPOINT after every hypothesis
@@ -233,26 +264,32 @@ def run(max_candidates=None):
             _save(os.path.join(STATE_DIR, "reports", f"batch_{now()}_{processed}.json"),
                   dict(processed=processed, m_total=st["m_total"]))
 
-    # SHORTLIST: <=5 PROVISIONAL_SCREENED survivors, ranked by recent GROSS trimmed avg_R (robust EV).
-    survivors = [r for r in reg if r.get("status") == "PROVISIONAL_SCREENED"
+    # SHORTLIST: <=5 survivors. PROVISIONAL_SCREENING_SURVIVOR (recent+historical) ranks above
+    # RECENT_REGIME_EDGE_PROVISIONAL (recent-only); within each, by recent trimmed avg_R.
+    def rank(r):
+        s = r.get("status"); tr = r.get("RECENT_PRIMARY", {}).get("trimmed_avg_R") or -9
+        tier = 2 if s == "PROVISIONAL_SCREENING_SURVIVOR" else (1 if s == "RECENT_REGIME_EDGE_PROVISIONAL" else -1)
+        return (tier, tr)
+    survivors = [r for r in reg if r.get("status") in ("PROVISIONAL_SCREENING_SURVIVOR", "RECENT_REGIME_EDGE_PROVISIONAL")
                  and r.get("RECENT_PRIMARY", {}).get("trimmed_avg_R") is not None]
-    survivors.sort(key=lambda r: r["RECENT_PRIMARY"]["trimmed_avg_R"], reverse=True)
-    shortlist = [r["candidate_id"] for r in survivors[:5]]
+    survivors.sort(key=rank, reverse=True)
+    shortlist = [dict(id=r["candidate_id"], status=r["status"], cell=r.get("cell"),
+                      recent_trimmed=r["RECENT_PRIMARY"]["trimmed_avg_R"]) for r in survivors[:5]]
     st["ACTIVE_PROVISIONAL_SHORTLIST"] = shortlist
     remaining = sum(1 for s in grid if s["run_hash"] not in done_hashes)
     st["loop_state"] = "ALPHA_LOOP_ACTIVE" if remaining else "GRID_EXHAUSTED"
     _save(F_STATE, st)
-    report = dict(status="ALPHA_LOOP_ACTIVE", phase="A (GROSS-gated; net UNEVALUATED)",
+    from collections import Counter
+    sc = Counter(r.get("status") for r in reg)
+    report = dict(status="ALPHA_LOOP_ACTIVE", phase="A (GROSS-gated; net UNEVALUATED, regime-episode-primary)",
                   m_total=st["m_total"], processed_this_run=processed, grid_total=len(grid),
                   grid_remaining=remaining, ACTIVE_PROVISIONAL_SHORTLIST=shortlist,
-                  n_provisional=len(survivors), n_fat_tail=sum(1 for r in reg if r.get("status") == "FAT_TAIL_DEPENDENT"),
-                  n_falsified=sum(1 for r in reg if r.get("status") == "STRUCTURALLY_FALSIFIED"),
-                  n_archive=sum(1 for r in reg if r.get("status") == "ARCHIVE_INSUFFICIENT"),
-                  primary_estimand="RECENT_PRIMARY 2022-12→2025-10 (GROSS)",
+                  status_counts=dict(sc), primary_estimand="RECENT_PRIMARY episodes 2022-12→2025-10 (GROSS)",
                   batch=[dict(id=r["candidate_id"], cell=r.get("cell"), status=r["status"],
                               recent_gross=r.get("RECENT_PRIMARY", {}).get("EV_net_avg_R"),
                               recent_trimmed=r.get("RECENT_PRIMARY", {}).get("trimmed_avg_R"),
-                              recent_k=r.get("RECENT_PRIMARY", {}).get("k_episodes")) for r in batch_records])
+                              recent_eps=r.get("RECENT_PRIMARY", {}).get("k_episodes_with_trades"),
+                              hist=r.get("HISTORICAL_REGIME_TRANSFER", {}).get("EV_net_avg_R")) for r in batch_records])
     _save(os.path.join(STATE_DIR, "reports", f"report_{now()}.json"), report)
     return report
 

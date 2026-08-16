@@ -143,7 +143,8 @@ def build_grid():
     seen = set()
     def add(family, cell, regime, entry, stop, hold, ek, ep, exlabel):
         spec = dict(family=family, regime=regime, entry=entry, stop=stop, hold=int(hold), exit_kind=ek,
-                    exit_param=(float(ep) if ep is not None else None))
+                    exit_param=(float(ep) if ep is not None else None),
+                    position_at_regime_end="HOLD_UNTIL_STRATEGY_EXIT")  # declared; part of identity/run_hash
         rh = run_hash(spec)
         if rh in seen:
             return
