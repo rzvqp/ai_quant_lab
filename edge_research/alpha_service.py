@@ -48,28 +48,51 @@ def _hb(cycles, m_total, loop_state, phase):
     os.replace(tmp, HB)
 
 
-def _already_running():
-    """Singleton guard: if a heartbeat is FRESH (<180s) and its PID is alive, another instance owns
-    the loop -> this launch exits. Enables a 10-min auto-restart trigger without ever double-running."""
+STALE_S = 180
+
+
+def _pid_alive(pid):
     try:
-        hb = json.load(open(HB))
-        if int(time.time()) - hb.get("ts", 0) < 180:
-            pid = hb.get("pid")
-            if pid and pid != os.getpid():
-                try:
-                    os.kill(pid, 0)   # signal 0 = liveness probe
-                    return True
-                except (OSError, ProcessLookupError):
-                    return False
+        os.kill(pid, 0); return True
+    except (OSError, ProcessLookupError):
+        return False
+
+
+def _is_alpha_service(pid):
+    """Verify a PID is THIS service (never AI Trader) before any controlled restart."""
+    try:
+        import psutil
+        cl = " ".join(psutil.Process(pid).cmdline())
+        return "alpha_service" in cl
+    except Exception:
+        return False
+
+
+def _owner_status():
+    """Returns ('owned_alive', pid) | ('stalled', pid) | ('free', None). Real watchdog: a live PID with a
+    STALE heartbeat is a frozen process (STALLED), not a valid owner."""
+    try:
+        hb = json.load(open(HB)); pid = hb.get("pid"); age = int(time.time()) - hb.get("ts", 0)
+        if pid and pid != os.getpid() and _pid_alive(pid):
+            return (("owned_alive", pid) if age < STALE_S else ("stalled", pid))
     except Exception:
         pass
-    return False
+    return ("free", None)
 
 
 def main():
-    if _already_running():
-        _log(f"pid={os.getpid()} exiting — another instance owns the loop (singleton)")
+    owner, pid = _owner_status()
+    if owner == "owned_alive":
+        _log(f"pid={os.getpid()} exiting — pid {pid} owns the loop, heartbeat fresh (singleton)")
         return
+    if owner == "stalled":
+        if _is_alpha_service(pid):        # controlled restart ONLY after exact-identity verification
+            try:
+                os.kill(pid, 9); _log(f"ALPHA_SERVICE_STALLED: pid {pid} frozen (stale heartbeat) — killed; taking over")
+            except Exception as e:
+                _log(f"could not kill stalled pid {pid}: {e}")
+        else:
+            _log(f"stale heartbeat pid {pid} is NOT alpha_service (or unverifiable) — NOT killing (never touch AI Trader); taking over")
     try:
         import psutil  # optional: lower priority further
         psutil.Process(os.getpid()).nice(psutil.BELOW_NORMAL_PRIORITY_CLASS if os.name == "nt" else 19)

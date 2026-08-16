@@ -24,8 +24,8 @@ def _entries(ctx, entry, regime):
     """Return (list of (signal_idx, side), eligibility_arr) for an entry type + causal regime."""
     o, h, l, c, reg = ctx.o, ctx.h, ctx.l, ctx.c, ctx.reg
     n = ctx.n; out = []
-    if entry in ("pullback2", "pullback3"):
-        nb = 2 if entry == "pullback2" else 3
+    if entry.startswith("pullback"):
+        nb = int(entry[len("pullback"):])
         tgt = UP if regime == UP else DOWN
         elig = np.array([r == tgt for r in reg])
         for i in range(nb + 1, n - 1):
@@ -145,46 +145,83 @@ def gen_signals(ctx, spec):
     return trades, elig
 
 
+GENERATOR_VERSION = "flowb_gen_v2"
+
+# entry -> economic MECHANISM CLUSTER (pullback2/3/4 are the SAME cluster, not distinct mechanisms).
+MECHANISM = {"pullback2": "pullback", "pullback3": "pullback", "pullback4": "pullback",
+             "momentum": "momentum", "continuation": "continuation",
+             "comp_break": "compression_breakout", "bos": "breakout_confirmation",
+             "bos_retest": "breakout_retest"}
+RATIONALE = {"pullback": "buy the retracement, resume the trend", "momentum": "enter on trend-direction impulse",
+             "continuation": "buy a fresh breakout of the recent extreme within the trend",
+             "compression_breakout": "range compresses then expands; trade the expansion",
+             "breakout_confirmation": "structure break (body-BOS) confirms the transition",
+             "breakout_retest": "structure break then a retest of the broken level"}
+CLUSTER_BUDGET = 44          # max micro-variants per (family,regime,mechanism) cluster -> no monopoly
+
+
+def cluster_of(family, regime, entry):
+    return f"{family}|{regime}|{MECHANISM.get(entry, entry)}"
+
+
+_ID_FIELDS = ("regime", "entry", "stop", "hold", "exit_kind", "exit_param", "position_at_regime_end")
+
+
 def run_hash(spec):
-    return hashlib.md5(str(tuple(sorted(spec.items()))).encode()).hexdigest()[:12]
+    # ECONOMIC-CONFIG identity only (NOT family label, NOT generator_version) so the SAME economic
+    # hypothesis is stable across generator versions -> idempotent, never doubled. Re-generation of an
+    # existing config is a DUPLICATE (skipped, m unchanged); only new configs grow m.
+    return hashlib.md5(str(tuple((k, spec.get(k)) for k in _ID_FIELDS)).encode()).hexdigest()[:12]
 
 
-# ── the GRID: distinct hypotheses per family (dimensions varied = distinct pre-registered hyps) ──
-EXITS = [("time", 20.0, "time20"), ("time", 40.0, "time40"), ("rr", 2.0, "rr2"),
-         ("rr", 3.0, "rr3"), ("trailing", None, "trail")]
+def semantic_fingerprint(family, regime, entry, direction):
+    """Economic logic only (mechanism cluster + direction), NO microparameters -> semantic-duplicate check."""
+    return hashlib.md5(f"{cluster_of(family, regime, entry)}|{direction}".encode()).hexdigest()[:10]
+
+
+# ── the CATALOG: cluster-budgeted declarative hypotheses across the authorized mechanisms ──
+EXITS = [("time", 20.0, "time20"), ("time", 40.0, "time40"), ("time", 60.0, "time60"),
+         ("rr", 2.0, "rr2"), ("rr", 3.0, "rr3"), ("rr", 1.5, "rr1_5"), ("trailing", None, "trail")]
+STOPS_TREND = ["swing", "bar", "atr1", "atr2", "atr3"]
+STOPS_BREAK = ["swing", "bar", "atr2", "atr3"]
 
 
 def build_grid():
     specs = []
     seen = set()
-    def add(family, cell, regime, entry, stop, hold, ek, ep, exlabel):
+    cluster_count = {}
+    def add(family, regime, entry, direction, stop, hold, ek, ep, exlabel):
+        cl = cluster_of(family, regime, entry)
+        if cluster_count.get(cl, 0) >= CLUSTER_BUDGET:
+            return  # cluster budget reached -> move on (no pullback monopoly)
         spec = dict(family=family, regime=regime, entry=entry, stop=stop, hold=int(hold), exit_kind=ek,
                     exit_param=(float(ep) if ep is not None else None),
-                    position_at_regime_end="HOLD_UNTIL_STRATEGY_EXIT")  # declared; part of identity/run_hash
+                    position_at_regime_end="HOLD_UNTIL_STRATEGY_EXIT")
         rh = run_hash(spec)
         if rh in seen:
             return
-        seen.add(rh)
-        specs.append(dict(cell=cell, run_hash=rh, exit_label=exlabel, **spec))
-    # TREND_UP long, TREND_DOWN short
+        seen.add(rh); cluster_count[cl] = cluster_count.get(cl, 0) + 1
+        specs.append(dict(cell=f"{family} × {entry}", run_hash=rh, exit_label=exlabel,
+                          mechanism_cluster=cl, generator_version=GENERATOR_VERSION,
+                          economic_rationale=RATIONALE.get(MECHANISM.get(entry, entry), ""),
+                          direction=direction, parameter_neighborhood=dict(stop=stop, exit=exlabel, hold=int(hold)),
+                          **spec))
     for reg, fam in [(UP, "TREND_UP"), (DOWN, "TREND_DOWN")]:
-        for entry in ["pullback2", "pullback3", "momentum", "continuation"]:
-            for stop in ["swing", "bar", "atr1", "atr2"]:
+        d = "long" if reg == UP else "short"
+        for entry in ["pullback2", "pullback3", "pullback4", "momentum", "continuation"]:
+            for stop in STOPS_TREND:
                 for ek, ep, xl in EXITS:
                     hold = int(ep) if ek == "time" else 40
-                    add(f"{fam.lower()}_{entry}", f"{fam} × {entry}", reg, entry, stop, hold, ek, ep, xl)
-    # COMPRESSION × breakout (direction from the break)
-    for stop in ["range", "atr1", "atr2"]:
+                    add(fam, reg, entry, d, stop, hold, ek, ep, xl)
+    for stop in ["range"] + STOPS_BREAK:
         for ek, ep, xl in EXITS:
             hold = int(ep) if ek == "time" else 40
-            add("compression_breakout", "COMPRESSION × breakout", "COMPRESSION", "comp_break", stop, hold, ek, ep, xl)
-    # BREAKOUT_TRANSITION × {confirmation, retest}
+            add("COMPRESSION", "COMPRESSION", "comp_break", "break", stop, hold, ek, ep, xl)
     for entry in ["bos", "bos_retest"]:
-        for stop in ["swing", "bar", "atr2"]:
+        for stop in STOPS_BREAK:
             for ek, ep, xl in EXITS:
                 hold = int(ep) if ek == "time" else 40
-                add(f"breakout_transition_{entry}", f"BREAKOUT_TRANSITION × {entry}", "BREAKOUT_TRANSITION",
-                    entry, stop, hold, ek, ep, xl)
+                add("BREAKOUT_TRANSITION", "BREAKOUT_TRANSITION", entry, "break", stop, hold, ek, ep, xl)
     return specs
 
 

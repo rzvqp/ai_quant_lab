@@ -194,12 +194,11 @@ def build_shortlist_and_clusters(reg):
     stop/hold/exit are ONE mechanism, not N edges. Shortlist = <=5 ECONOMICALLY DISTINCT mechanisms,
     one representative each (best surviving variant by recent trimmed). NET UNEVALUATED → all AWAITING_COST."""
     import statistics
+    from edge_research.flowb_generator import cluster_of
     clusters = {}
     for r in reg:
         sp = r.get("spec") or {}
-        if not sp or not r.get("RECENT_PRIMARY", {}).get("EV_net_avg_R") is not None:
-            pass
-        mech = f"{r.get('family')}|{r.get('regime')}|{sp.get('entry')}"
+        mech = r.get("mechanism_cluster") or cluster_of(r.get("family"), r.get("regime"), sp.get("entry"))
         clusters.setdefault(mech, []).append(r)
     cluster_rank = []
     for mech, variants in clusters.items():
@@ -228,13 +227,19 @@ def build_shortlist_and_clusters(reg):
 def process_spec(cid, spec, ctx, years, dt):
     """PHASE A per-hypothesis loop (generator-driven). GATE 0 (determinism/lookahead) + GATE 1 (GROSS,
     cost=0) + episode count + fat-tail on GROSS. NET is UNEVALUATED (Phase B / ratified cost model)."""
-    from edge_research.flowb_generator import gen_signals
+    from edge_research.flowb_generator import gen_signals, semantic_fingerprint
     from edge_research._screen import canonical_evaluate
     base = dict(candidate_id=cid, cell=spec["cell"], family=spec["family"], regime=spec["regime"],
-                run_hash=spec["run_hash"], spec={k: spec[k] for k in ("entry", "stop", "hold", "exit_label")},
-                ts=now(), cost_version="PENDING_AI_TRADER_SHADOW_COST_MODEL_v1",
+                run_hash=spec["run_hash"], configuration_fingerprint=spec["run_hash"],
+                mechanism_cluster=spec.get("mechanism_cluster"), generator_version=spec.get("generator_version"),
+                economic_rationale=spec.get("economic_rationale"), direction=spec.get("direction"),
+                parameter_neighborhood=spec.get("parameter_neighborhood"),
+                semantic_fingerprint=semantic_fingerprint(spec["family"], spec["regime"], spec["entry"], spec.get("direction", "")),
+                position_at_regime_end=spec.get("position_at_regime_end"),
+                spec={k: spec[k] for k in ("entry", "stop", "hold", "exit_label")},
+                preregistration_ts=now(), ts=now(), cost_version="PENDING_AI_TRADER_SHADOW_COST_MODEL_v1",
                 net_status="UNEVALUATED_PENDING_RATIFIED_COST",
-                MARK="PROVISIONAL · GROSS-GATED · NET UNEVALUATED · REQUIRES CANONICAL RERUN")
+                MARK="GROSS_GATED · NET UNEVALUATED · AWAITING_COST")
     trades, elig = gen_signals(ctx, spec)
     det = []
     for t in trades:                                     # GATE 0: determinism + lookahead + regime-gate
@@ -306,11 +311,23 @@ def run(max_candidates=None):
     shortlist, clusters = build_shortlist_and_clusters(reg)
     st["ACTIVE_PROVISIONAL_SHORTLIST"] = shortlist
     remaining = sum(1 for s in grid if s["run_hash"] not in done_hashes)
-    st["loop_state"] = "ALPHA_LOOP_ACTIVE" if remaining else "GRID_EXHAUSTED"
+    # AUTO-REFILL: catalog with work -> ACTIVE. Catalog fully enumerated -> GENERATOR_EXHAUSTED +
+    # IMPLEMENTATION_QUEUE (mechanisms needing NEW declarative logic, not arbitrary runtime code).
+    if remaining > 0:
+        st["loop_state"] = "ALPHA_LOOP_ACTIVE"; status = "ALPHA_LOOP_ACTIVE"
+    else:
+        st["loop_state"] = "GENERATOR_EXHAUSTED"; status = "ALPHA_LOOP_IDLE_NO_WORK"
+        st["IMPLEMENTATION_QUEUE"] = ["EXIT_ON_REGIME_INVALIDATION (needs dynamic regime-exit in simulator)",
+                                     "session-conditioned continuation (needs session eligibility x trend)",
+                                     "volatility-conditioned trend (needs vol-regime gate)",
+                                     "acceptance/value-area entries (needs new detector)"]
+    st["snapshot_provenance"] = dict(vendor="C:/Users/MEDION GAMING/.alpha_vendor",
+        ratified_source="alpha1/discovery-mk-matrix-v1", ratified_commit="5443077",
+        canonical_commit="f0d3b34", note="changing a snapshot => new run_hash, results NON_COMPARABLE")
     _save(F_STATE, st)
     from collections import Counter
     sc = Counter(r.get("status") for r in reg)
-    report = dict(status="ALPHA_LOOP_ACTIVE", phase="A (GROSS-gated; NET UNEVALUATED; regime-episode-primary)",
+    report = dict(status=status, wave=st.get("wave_id", 1), phase="A (GROSS-gated; NET UNEVALUATED; regime-episode-primary)",
                   m_total=st["m_total"], processed_this_run=processed, grid_total=len(grid),
                   grid_remaining=remaining, n_distinct_mechanisms=len(clusters),
                   ACTIVE_PROVISIONAL_SHORTLIST=shortlist, MECHANISM_CLUSTER_RANKING=clusters[:8],
