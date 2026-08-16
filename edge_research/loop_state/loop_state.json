@@ -70,7 +70,23 @@
     "CAND-G0157",
     "CAND-G0162",
     "CAND-G0163",
-    "CAND-G0164"
+    "CAND-G0164",
+    "CAND-G0166",
+    "CAND-G0167",
+    "CAND-G0168",
+    "CAND-G0169",
+    "CAND-G0171",
+    "CAND-G0172",
+    "CAND-G0173",
+    "CAND-G0174",
+    "CAND-G0176",
+    "CAND-G0177",
+    "CAND-G0178",
+    "CAND-G0179",
+    "CAND-G0181",
+    "CAND-G0182",
+    "CAND-G0183",
+    "CAND-G0184"
   ],
   "failed_ids": [
     "CAND-TD01",
@@ -174,7 +190,31 @@
     "CAND-G0159",
     "CAND-G0160",
     "CAND-G0161",
-    "CAND-G0165"
+    "CAND-G0165",
+    "CAND-G0170",
+    "CAND-G0175",
+    "CAND-G0180",
+    "CAND-G0185",
+    "CAND-G0186",
+    "CAND-G0187",
+    "CAND-G0188",
+    "CAND-G0189",
+    "CAND-G0190",
+    "CAND-G0191",
+    "CAND-G0192",
+    "CAND-G0193",
+    "CAND-G0194",
+    "CAND-G0195",
+    "CAND-G0196",
+    "CAND-G0197",
+    "CAND-G0198",
+    "CAND-G0199",
+    "CAND-G0200",
+    "CAND-G0201",
+    "CAND-G0202",
+    "CAND-G0203",
+    "CAND-G0204",
+    "CAND-G0205"
   ],
   "canonical_rerun_queue": [
     "CAND-T05",
@@ -247,7 +287,7 @@
     "CAND-G0163",
     "CAND-G0164"
   ],
-  "m_total": 171,
+  "m_total": 211,
   "family_budget": {
     "max_candidates_per_cycle": 4,
     "max_variants_per_hypothesis": 2,
@@ -255,7 +295,7 @@
     "abandon_after_consecutive_falsified": 6
   },
   "current_candidate": "CAND-BT02",
-  "last_checkpoint_ts": 1786897828,
+  "last_checkpoint_ts": 1786898077,
   "range_cells_skipped": [
     "RANGE \u00d7 mean reversion",
     "RANGE \u00d7 level fade",
@@ -264,37 +304,29 @@
   ],
   "frozen_highest_priority_provisional_candidate": "CAND-T05",
   "resume_instruction": "Architect auto-resumes from THIS checkpoint after MANDATE_2_PASS. No registry/m reset. Do not modify/rerun/vary T05.",
-  "gen_seq": 165,
+  "gen_seq": 205,
   "ACTIVE_PROVISIONAL_SHORTLIST": [
     {
-      "id": "CAND-G0037",
-      "status": "PROVISIONAL_SCREENING_SURVIVOR",
-      "cell": "TREND_UP \u00d7 pullback3",
-      "recent_trimmed": 0.3292
-    },
-    {
-      "id": "CAND-G0027",
-      "status": "PROVISIONAL_SCREENING_SURVIVOR",
-      "cell": "TREND_UP \u00d7 pullback3",
-      "recent_trimmed": 0.2936
-    },
-    {
-      "id": "CAND-G0032",
-      "status": "PROVISIONAL_SCREENING_SURVIVOR",
-      "cell": "TREND_UP \u00d7 pullback3",
-      "recent_trimmed": 0.2645
-    },
-    {
-      "id": "CAND-G0039",
-      "status": "PROVISIONAL_SCREENING_SURVIVOR",
-      "cell": "TREND_UP \u00d7 pullback3",
-      "recent_trimmed": 0.2641
-    },
-    {
-      "id": "CAND-G0022",
-      "status": "PROVISIONAL_SCREENING_SURVIVOR",
-      "cell": "TREND_UP \u00d7 pullback3",
-      "recent_trimmed": 0.2195
+      "mechanism_id": "trend_up_continuation|TREND_UP|continuation",
+      "representative": "CAND-G0168",
+      "recent_trimmed": 0.0641,
+      "recent_gross_EV": 0.083,
+      "status": "GROSS_ONLY_AWAITING_COST",
+      "surviving_frac": 0.6
     }
+  ],
+  "AWAITING_COST_QUEUE": [
+    "CAND-G0166",
+    "CAND-G0167",
+    "CAND-G0168",
+    "CAND-G0169",
+    "CAND-G0173",
+    "CAND-G0174",
+    "CAND-G0178",
+    "CAND-G0179",
+    "CAND-G0181",
+    "CAND-G0182",
+    "CAND-G0183",
+    "CAND-G0184"
   ]
 }
