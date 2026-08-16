@@ -109,7 +109,7 @@ def main():
         try:
             from edge_research.alpha_loop import run
             _hb(cycles, _mtot(), "ACTIVE", "run")
-            rep = run()                       # processes pending grid (idempotent); returns quickly if none
+            rep = run(max_candidates=25)       # BOUNDED batch (=report-per-25); keeps heartbeat fresh
             _log(f"cycle {cycles}: processed={rep.get('processed_this_run')} m_total={rep.get('m_total')} "
                  f"grid_remaining={rep.get('grid_remaining')} shortlist={len(rep.get('ACTIVE_PROVISIONAL_SHORTLIST', []))}")
             _hb(cycles, rep.get("m_total"), rep.get("status", "ACTIVE"), "idle" if not rep.get("grid_remaining") else "run")
