@@ -2700,4 +2700,74 @@
                data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [65], prev_hash E64.
   entry_hash:  E64
+
+[65] 2026-08-16
+  prev_hash:   E64
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: a98a0a4 (code) / c7f87a3 (report) — AI Trader READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2_FINAL
+  battery_ver: RT-MANDATE2-0002
+  reviewer:    Red Team
+  detail:      PHASE-2 FINAL VERIFICATION at a98a0a4/c7f87a3 (not prior versions). VERDICT =
+               ***MANDATE_2_REVIEW_CONDITIONAL***. Six of seven review areas PASS; held CONDITIONAL by the
+               single DECISIVE requirement (Area 2): NO single correlated chain. CEO rule applied verbatim:
+               "lipire a unor probe separate fara identitate comuna -> CONDITIONAL; bypass reproductibil al
+               unei componente de decizie -> FAIL" -> first clause fires, second does NOT.
+               (2 DECISIVE) demonstrate_candidate_v2_full_path.py = THREE disjoint proofs, THREE unrelated
+               identity sets: Part1 real 250 MT5 bars -> N1 -> Router -> UNCERTAIN_REGIME (tower/N3/N4/EV/N6/
+               Risk/broker NEVER reached); Part1b BYPASSES Router, hand-builds TowerRequest with FABRICATED
+               identity (event_fingerprint="", data_identity="candidate-v2-direct-probe-data-identity",
+               node_input_fingerprint="candidate-v2-direct-probe-node-input", strategy_id="candidate-v2-direct-
+               probe") -> 37 N3 levels; Part2 CONSTRUCTS EventIdentity(trace_id="candidate-v2-demo-trace",
+               market_event_id="candidate-v2-demo-event", configuration_fingerprint="candidate-v2-demo-cfg") +
+               hand-built DecisionResponse("SHADOW_TRADE_CANDIDATE")/DecisionProvenance/NewBrainOutcome injected
+               at submit_new_brain_candidate -> real Risk -> broker BLOCKED, BYPASSING N1->N2->IPC->N3->N4->
+               Router->Eligibility->EV->N6. NO shared market_event_id/trace_id/event_fingerprint/data_identity/
+               node_input_fingerprint/session_id/configuration_fingerprint spans all three. Part2's approved
+               candidate is TEST-ONLY construction ("same pattern test 8/16/17") -> violates CEO's explicit
+               "dovada candidatului complet aprobat trebuie sa traverseze aceleasi componente instalate si
+               aceeasi cale de productie/replay, nu ocoliri construite exclusiv in test."
+               WHY NOT FAIL: production bridge.evaluate_bar @ a98a0a4 bypasses NO decision component -- N1
+               (RawAxesBuilder), Router, isolated IPC worker (request_n3_n4), cost model, EV, N6, Risk, Exec
+               Adapter, broker gate all executed. Worker decision.py IGNORES client placeholder identity, feeds
+               REAL bars to ve_tower.run_n3/run_n4 (source_identity per symbol) -> ve_tower data-substitution
+               protection INTACT. Bypasses confined to EVIDENCE script, not the production decision path.
+               SUPPORTING (production identity thin, a gap not itself FAIL): IPC TowerRequest sent with
+               event_fingerprint="" + placeholder data_identity/node_input_fingerprint=_fp(market_event_id,lit);
+               worker returns REAL ve_tower event_fingerprint/data_identity/node_input_fingerprint but bridge
+               does NOT propagate them downstream -- Tower NodeTrace.input_fingerprint=_fp(market_event_id,
+               "tower"), trace_id=_fp(market_event_id,strategy_id,ver), config_fp=_fp(trace_id,VE_BRAIN_VERSION);
+               worker session_id verified at handshake but NOT threaded into candidate provenance. Production
+               correlation spine = market_event_id + derived trace_id ONLY.
+               AREAS THAT PASS: (1 delivery) a98a0a4==remote trader/ai-trader-implementation HEAD (local==remote),
+               a98a0a4 dated 2026-08-16 19:05:10 +0300, c7f87a3 exists; report<->code consistent; 2 skips =
+               MT5_REAL_DEMO_ORDER_TEST/MT5_REAL_TERMINAL_TEST operator-gated (correctly OFF, irrelevant to
+               shadow w/ broker blocked); 4 warnings = pre-existing div-by-zero market_state.py:92. LIMITATION:
+               did NOT re-run the 4h20m regression (15594.95s) -- verified structure + fail-closed logic + exit-0/
+               3393-passed internal consistency, not a full re-run. (3 isolation) bridge has NO ve_tower import in
+               main; 3 Falses now REAL reads from tower resp (n3.get(...) is True) w/ fail-closed False only on
+               absent/malformed (164/202); server _stamp_session stamps session_id/worker_identity_fingerprint
+               unconditionally, re-derived from identity_fn not client, HMAC(challenge+identity+session_id).
+               (4 cost) resolve_cost_components(tier="BASE") exclusive; fail-closed COST_MODEL_FINGERPRINT_
+               MISMATCH / COST_MODEL_UNAVAILABLE; zero hardcoded cost literals (grep); tests test_bridge_cost_
+               model_wiring.py + test_shadow_cost_model.py present; ratification not reopened. (5 authority)
+               set_authority exported + tested (test_authority.py real SqliteStateStore) but NEVER called in
+               production/demo -- INACTIVE, verified without activation. (6 broker) BrokerOrderSubmissionGate
+               default enabled=False; approved candidate -> reached_broker_gate=True, blocked=True; enabled=True
+               grep-able + constructed nowhere; positions=0/orders=0/balance=1800.34 unchanged. CAVEAT: the
+               candidate reaching the gate in the demo is the FABRICATED Part2 one (inherits Area-2 caveat).
+               CONDITION TO CLEAR -> PASS_FOR_LIVE_SHADOW: ONE replay run through installed components,
+               MT5 bar->N1->N2->IPC worker->N3->N4->Router->Eligibility->Candidate->EV->N6->Risk->Exec->broker
+               BLOCKED, ONE shared identity set with the tower's REAL returned event_fingerprint/data_identity/
+               node_input_fingerprint propagated into candidate+N6/Risk provenance (NOT _fp placeholders), NO
+               hand-constructed DecisionResponse/EventIdentity. Auditable NO_TRADE on live data OK only if the
+               same run still traverses the same installed components under one identity; replay a date whose
+               regime yields a candidate if live=UNCERTAIN (CEO permits "cale de productie/replay").
+               STILL FORBIDDEN: LIVE_SHADOW start (not automatic; CEO grants separately), authority activation
+               (set_authority uncalled), BROKER_ORDER_SUBMISSION stays DISABLED, no real orders. Alpha stays
+               ALPHA_BLOCKED_CANONICAL_N1_HANDOFF; CAND-T05 + all Alpha results frozen/diagnostic. ve_tower stays
+               isolated in the tower venv. Red Team modified no engine, ran no data, changed nothing outside
+               red_team/.
+               STATE: OPERATIONAL. Next entry [66], prev_hash E65.
+  entry_hash:  E65
 ```
