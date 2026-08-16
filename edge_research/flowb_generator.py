@@ -50,6 +50,22 @@ def _entries(ctx, entry, regime):
                 elif tgt == DOWN and c[i] < o[i]:
                     out.append((i, "short"))
         return out, elig
+    if entry == "continuation":
+        # DISTINCT mechanism from pullback: buy a FRESH breakout of the recent high WITHIN an uptrend
+        # (buy strength), not the dip. Lookahead-safe (rolling max of prior bars, shifted).
+        import pandas as pd
+        tgt = UP if regime == UP else DOWN
+        elig = np.array([r == tgt for r in reg])
+        H = pd.Series(h); L = pd.Series(l)
+        rmax = H.rolling(20).max().shift(1).to_numpy(); rmin = L.rolling(20).min().shift(1).to_numpy()
+        for i in range(21, n - 1):
+            if reg[i] != tgt:
+                continue
+            if tgt == UP and np.isfinite(rmax[i]) and c[i] > rmax[i]:
+                out.append((i, "long"))
+            elif tgt == DOWN and np.isfinite(rmin[i]) and c[i] < rmin[i]:
+                out.append((i, "short"))
+        return out, elig
     if entry in ("bos", "bos_retest"):
         elig = np.zeros(n, dtype=bool)
         def be(idx):
@@ -152,7 +168,7 @@ def build_grid():
         specs.append(dict(cell=cell, run_hash=rh, exit_label=exlabel, **spec))
     # TREND_UP long, TREND_DOWN short
     for reg, fam in [(UP, "TREND_UP"), (DOWN, "TREND_DOWN")]:
-        for entry in ["pullback2", "pullback3", "momentum"]:
+        for entry in ["pullback2", "pullback3", "momentum", "continuation"]:
             for stop in ["swing", "bar", "atr1", "atr2"]:
                 for ek, ep, xl in EXITS:
                     hold = int(ep) if ek == "time" else 40

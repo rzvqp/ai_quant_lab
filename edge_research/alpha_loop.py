@@ -166,24 +166,63 @@ def classify(res, elig, trades, years, dt):
     ev = R.get("EV_net_avg_R"); bs = R.get("best_share"); ta = R.get("trimmed_avg_R")
     bes = R.get("best_episode_share")
     h_ev = H.get("EV_net_avg_R")
+    # GROSS-ONLY labels: NET is UNEVALUATED (no ratified cost), so the confirmed 'survivor/provisional'
+    # verdicts are FORBIDDEN. These are GROSS gates awaiting the ratified cost model.
     if R.get("n", 0) == 0:
-        st, rs = "STRUCTURALLY_FALSIFIED", "GATE1: no RECENT-window signals"
+        st, rs = "GROSS_STRUCTURALLY_FALSIFIED", "GATE1: no RECENT-window signals"
     elif kt < 5:
         st, rs = "ARCHIVE_INSUFFICIENT", f"recent episodes-with-trades={kt}<5 (0.5^k not significant)"
     elif ev is None or ev <= 0:
-        st, rs = "STRUCTURALLY_FALSIFIED", f"GATE1 recent GROSS EV<=0 (avg_R={ev})"
+        st, rs = "GROSS_STRUCTURALLY_FALSIFIED", f"GATE1 recent GROSS EV<=0 (avg_R={ev})"
     elif bs is not None and bs > 0.5:
-        st, rs = "STRUCTURALLY_FALSIFIED", f"recent single-trade dependence (best_share={bs})"
+        st, rs = "GROSS_STRUCTURALLY_FALSIFIED", f"recent single-trade dependence (best_share={bs})"
     elif (bs is not None and bs > 0.30) or (ta is not None and ta <= 0) or (bes is not None and bes > 0.5):
-        st, rs = "FAT_TAIL_DEPENDENT", f"recent GROSS+ but concentrated (best_trade={bs}, best_episode={bes}, trimmed={ta})"
+        st, rs = "GROSS_FAT_TAIL_DEPENDENT", f"recent GROSS+ but concentrated (best_trade={bs}, best_episode={bes}, trimmed={ta})"
+    elif h_ev is not None and h_ev > 0:
+        st, rs = "GROSS_EPISODE_SURVIVOR_AWAITING_COST", f"recent GROSS EV>0 robust + historical same-regime GROSS transfer +{h_ev}; NET UNEVALUATED → AWAITING_COST_QUEUE"
     else:
-        # recent survives. Historical (same-regime) decides SURVIVOR vs RECENT-only.
-        if h_ev is not None and h_ev > 0:
-            st, rs = "PROVISIONAL_SCREENING_SURVIVOR", f"recent GROSS EV>0 robust + historical same-regime transfer +{h_ev}; net UNEVALUATED"
-        else:
-            st, rs = "RECENT_REGIME_EDGE_PROVISIONAL", f"recent GROSS EV>0 robust; HISTORICAL_TRANSFER_WEAK (hist EV={h_ev}); net UNEVALUATED"
+        st, rs = "RECENT_GROSS_SIGNAL_AWAITING_COST", f"recent GROSS EV>0 robust; historical GROSS transfer weak (EV={h_ev}); NET UNEVALUATED → AWAITING_COST_QUEUE"
     return dict(status=st, reason=rs, RECENT_PRIMARY=R, HISTORICAL_REGIME_TRANSFER=H, COMBINED_DIAGNOSTIC=C,
                 estimand="RECENT_PRIMARY episodes (2022-12→2025-10)", position_at_regime_end="HOLD_UNTIL_STRATEGY_EXIT")
+
+
+SURVIVOR_STATUSES = ("GROSS_EPISODE_SURVIVOR_AWAITING_COST", "RECENT_GROSS_SIGNAL_AWAITING_COST")
+
+
+def build_shortlist_and_clusters(reg):
+    """Two rankings. A mechanism CLUSTER = (family, regime, entry) — variants differing only by
+    stop/hold/exit are ONE mechanism, not N edges. Shortlist = <=5 ECONOMICALLY DISTINCT mechanisms,
+    one representative each (best surviving variant by recent trimmed). NET UNEVALUATED → all AWAITING_COST."""
+    import statistics
+    clusters = {}
+    for r in reg:
+        sp = r.get("spec") or {}
+        if not sp or not r.get("RECENT_PRIMARY", {}).get("EV_net_avg_R") is not None:
+            pass
+        mech = f"{r.get('family')}|{r.get('regime')}|{sp.get('entry')}"
+        clusters.setdefault(mech, []).append(r)
+    cluster_rank = []
+    for mech, variants in clusters.items():
+        surv = [v for v in variants if v.get("status") in SURVIVOR_STATUSES
+                and v.get("RECENT_PRIMARY", {}).get("trimmed_avg_R") is not None]
+        if not surv:
+            continue
+        surv.sort(key=lambda v: v["RECENT_PRIMARY"]["trimmed_avg_R"], reverse=True)
+        rep = surv[0]; weakest = surv[-1]
+        evs = [v["RECENT_PRIMARY"]["EV_net_avg_R"] for v in variants if v.get("RECENT_PRIMARY", {}).get("EV_net_avg_R") is not None]
+        cluster_rank.append(dict(mechanism_id=mech, n_variants=len(variants), n_surviving=len(surv),
+                                 surviving_frac=round(len(surv) / len(variants), 2),
+                                 representative=rep["candidate_id"], rep_recent_trimmed=rep["RECENT_PRIMARY"]["trimmed_avg_R"],
+                                 rep_recent_gross_EV=rep["RECENT_PRIMARY"]["EV_net_avg_R"],
+                                 weakest=weakest["candidate_id"],
+                                 EV_dispersion=round(statistics.pstdev(evs), 3) if len(evs) > 1 else 0.0))
+    cluster_rank.sort(key=lambda c: c["rep_recent_trimmed"], reverse=True)
+    # SHORTLIST: <=5 DISTINCT mechanisms, one representative each (never 5 pullback3 variants)
+    shortlist = [dict(mechanism_id=c["mechanism_id"], representative=c["representative"],
+                      recent_trimmed=c["rep_recent_trimmed"], recent_gross_EV=c["rep_recent_gross_EV"],
+                      status="GROSS_ONLY_AWAITING_COST", surviving_frac=c["surviving_frac"])
+                 for c in cluster_rank[:5]]
+    return shortlist, cluster_rank
 
 
 def process_spec(cid, spec, ctx, years, dt):
@@ -252,10 +291,10 @@ def run(max_candidates=None):
                        status="STRUCTURALLY_FALSIFIED", reason=f"error: {str(e)[:120]}", ts=now())
         reg.append(rec); done_hashes.add(spec["run_hash"])
         st["m_total"] += 1; st["gen_seq"] = seq_start
-        (st["failed_ids"] if rec["status"] in ("STRUCTURALLY_FALSIFIED", "ARCHIVE_INSUFFICIENT")
+        (st["failed_ids"] if rec["status"] in ("GROSS_STRUCTURALLY_FALSIFIED", "ARCHIVE_INSUFFICIENT")
          else st["completed_ids"]).append(cid)
-        if rec["status"] in ("PROVISIONAL_SCREENING_SURVIVOR", "RECENT_REGIME_EDGE_PROVISIONAL", "FAT_TAIL_DEPENDENT"):
-            st["canonical_rerun_queue"].append(cid)
+        if rec["status"] in ("GROSS_EPISODE_SURVIVOR_AWAITING_COST", "RECENT_GROSS_SIGNAL_AWAITING_COST"):
+            st.setdefault("AWAITING_COST_QUEUE", []).append(cid)
         st["last_checkpoint_ts"] = now()
         _save(F_STATE, st); _save(F_REG, reg)          # CHECKPOINT after every hypothesis
         batch_records.append(rec); processed += 1
@@ -264,26 +303,20 @@ def run(max_candidates=None):
             _save(os.path.join(STATE_DIR, "reports", f"batch_{now()}_{processed}.json"),
                   dict(processed=processed, m_total=st["m_total"]))
 
-    # SHORTLIST: <=5 survivors. PROVISIONAL_SCREENING_SURVIVOR (recent+historical) ranks above
-    # RECENT_REGIME_EDGE_PROVISIONAL (recent-only); within each, by recent trimmed avg_R.
-    def rank(r):
-        s = r.get("status"); tr = r.get("RECENT_PRIMARY", {}).get("trimmed_avg_R") or -9
-        tier = 2 if s == "PROVISIONAL_SCREENING_SURVIVOR" else (1 if s == "RECENT_REGIME_EDGE_PROVISIONAL" else -1)
-        return (tier, tr)
-    survivors = [r for r in reg if r.get("status") in ("PROVISIONAL_SCREENING_SURVIVOR", "RECENT_REGIME_EDGE_PROVISIONAL")
-                 and r.get("RECENT_PRIMARY", {}).get("trimmed_avg_R") is not None]
-    survivors.sort(key=rank, reverse=True)
-    shortlist = [dict(id=r["candidate_id"], status=r["status"], cell=r.get("cell"),
-                      recent_trimmed=r["RECENT_PRIMARY"]["trimmed_avg_R"]) for r in survivors[:5]]
+    shortlist, clusters = build_shortlist_and_clusters(reg)
     st["ACTIVE_PROVISIONAL_SHORTLIST"] = shortlist
     remaining = sum(1 for s in grid if s["run_hash"] not in done_hashes)
     st["loop_state"] = "ALPHA_LOOP_ACTIVE" if remaining else "GRID_EXHAUSTED"
     _save(F_STATE, st)
     from collections import Counter
     sc = Counter(r.get("status") for r in reg)
-    report = dict(status="ALPHA_LOOP_ACTIVE", phase="A (GROSS-gated; net UNEVALUATED, regime-episode-primary)",
+    report = dict(status="ALPHA_LOOP_ACTIVE", phase="A (GROSS-gated; NET UNEVALUATED; regime-episode-primary)",
                   m_total=st["m_total"], processed_this_run=processed, grid_total=len(grid),
-                  grid_remaining=remaining, ACTIVE_PROVISIONAL_SHORTLIST=shortlist,
+                  grid_remaining=remaining, n_distinct_mechanisms=len(clusters),
+                  ACTIVE_PROVISIONAL_SHORTLIST=shortlist, MECHANISM_CLUSTER_RANKING=clusters[:8],
+                  AWAITING_COST_QUEUE_n=len(st.get("AWAITING_COST_QUEUE", [])),
+                  ROUTER_PARITY=st.get("ROUTER_PARITY", "PENDING (official N1/StrategyRouter not yet fixtured)"),
+                  OOS_access_count=len(_load(F_OOS, [])),
                   status_counts=dict(sc), primary_estimand="RECENT_PRIMARY episodes 2022-12→2025-10 (GROSS)",
                   batch=[dict(id=r["candidate_id"], cell=r.get("cell"), status=r["status"],
                               recent_gross=r.get("RECENT_PRIMARY", {}).get("EV_net_avg_R"),
