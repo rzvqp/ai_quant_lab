@@ -2770,4 +2770,72 @@
                red_team/.
                STATE: OPERATIONAL. Next entry [66], prev_hash E65.
   entry_hash:  E65
+
+[66] 2026-08-17
+  prev_hash:   E65
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: 1362765 (ve_tower 0.4.0 wheel delivery) / build bd49884 / inventory a5241fb
+  battery_ver: RT-TOWER-0007
+  reviewer:    Red Team
+  detail:      N2 HANDOFF — independent verification of ve_tower 0.4.0. VERDICT =
+               ***N2_HANDOFF_CONDITIONAL · N2_CHAIN_BINDING_REQUIRED***. N2 itself correct on every axis; held
+               CONDITIONAL by the DECISIVE point (§6): the N2->N3/N4 link is NOT contractually bound. Synthetic
+               data only; no engine modified; nothing outside red_team/.
+               (1 IDENTITY) wheel SHA-256 fe9f8b14...8852 exact, 80396 bytes; git-stored bytes == working wheel
+               (git cat-file 1362765:ve_tower/release/...whl == expected) -> physical handoff, NO rebuild; commits
+               bd49884(build)/1362765(delivery,HEAD)/a5241fb(inventory) resolve; METADATA 0.4.0, py>=3.12,
+               numpy>=1.24/pandas>=2.0; clean-venv install imports ONLY from site-packages, run_n2 from wheel.
+               Complete pin present (package/wheel/build/delivery/N2-source bias_h1@850815f/N2-blob 1638c7dd/
+               N2-contract tower-n2-request-v1/N2-code=bias_h1.SCHEMA_VERSION runtime-read/N3-N4 contracts v2/
+               code level3-v2.0-reanchored+level4-v2.0-w3/deps/ve_brain-target 0.1.3).
+               (2 PROVENANCE, git-verified) _tower/bias_h1.py BYTE-IDENTICAL to code/bias_h1.py@850815f (git
+               rev-parse == git hash-object == claim 1638c7dd; raw sha256 identical) -> not re-vendored, not
+               rewritten; run_n2 = thin adapter over bias_h1.compute_bias; n2_code_version = bias_h1.SCHEMA_VERSION
+               runtime-read. ALL 13 vendored blobs byte-identical to ratified heads (13/13). N3/N4 ratified
+               modules + adapters (zone_map/zone_confirmation/n3/n4/canonical/data_identity/fingerprint/_bootstrap)
+               byte-identical vs 0.3.0; only contracts.py differs (additive N2 types). ve_brain/Router/EV/N6 absent
+               from wheel -> untouched.
+               (3 SEMANTICS) deterministic H1 directional factors (structure_run_h1/displacement_h1/liquidity_above
+               /momentum->Unavailable); Direction enum {long,short,unknown}; NO probability/probability_inputs/EV/
+               TRADE/order/position; emits_probability=False from schema_payload; direction_share_* descriptive.
+               (4 CONTRACT) N2Request/N2Response, tower-n2-request-v1, strict H1, closed+ordered, source_identity
+               mandatory, freshness, data_identity+node_input_fingerprint+output_fingerprint, reason codes; missing/
+               stale/incompatible -> N2_UNAVAILABLE, no fabricated values.
+               (5 ATTACKS 16/16, installed wheel, synthetic) determinism / one-OHLC->diff-identity / future-bar->
+               refused / non-H1->invalid_timeframe / unordered->refused / incomplete->schema_validation_failed /
+               stale->data_stale / NaN+Inf->non_finite_value / missing-source->source_identity_missing / bad-
+               contract->incompatible_contract / regime-unavail->cascade / NO default LONG (flat->all unknown,
+               output_fp None) / restart-determinism identical fp across processes / output_fp independent of caller
+               market_event_id / no probability.
+               (6 DECISIVE — BINDING NOT ENFORCED) run_n2 produces a REAL output_fingerprint (canonical_hash over
+               node_input_fingerprint+factors+shares). BUT run_n3/run_n4 accept ANY caller-supplied n2_fingerprint:
+               empirically market_map_available=True for real fp / "LONG" / "placeholder" / "" / fabricated 64-hex
+               deadbeefx8. run_n3 never calls run_n2, has no N2Response to verify against, no membership check; the
+               string only alters node_input_fingerprint by inclusion; NO in-artefact orchestrator (run_n2 only
+               __init__-exported); cascade driven by caller-supplied bias_available boolean; N3/N4 stay contract v2.
+               The artefact's own test_full_n1_to_n4 feeds "some-other-n2-fp" and asserts only that nif DIFFERS
+               (consumption), both producing a valid map -> proves consumption NOT rejection. Per CEO criterion:
+               link is a caller convention, not a contractual guarantee -> N2_CHAIN_BINDING_REQUIRED.
+               (7 TESTS) 53 passed/0 failed (matches VE 53); 15 N2 tests (matches); N1->N2->N3->N4 fixture uses the
+               REAL run_n2 output_fingerprint. MISSING (explicit, not assumed): NO negative test asserting run_n3/
+               run_n4 REJECTS a modified/foreign n2_fingerprint (impossible under v2). mypy strict on 11 modules NOT
+               independently re-run (VE static-typing claim, low-risk).
+               (8 COMPAT/ROLLBACK) 0.4.0 runs in separate tower venv; upgrade 0.3.0->0.4.0 AND rollback 0.4.0->0.3.0
+               reproducible (run_n2 gone at 0.3.0); old 0.3.0 worker has no run_n2 -> can't accept new contract;
+               ZERO forbidden imports (no market_intelligence/risk/execution/broker/order_send; the lone
+               market_intelligence hit is a docstring stating it is NOT imported); AI Trader main venv untouched,
+               HOLD @ 54cf26e.
+               REMEDIATION (either, CEO-permitted): (a) N3/N4 v3 contracts that RECEIVE+VALIDATE the N2 response
+               identity and REJECT a mismatch; or (b) versioned in-artefact orchestrator running run_n2 and passing
+               output_fingerprint internally with no caller substitution. Must be versioned+tested (incl. negative
+               substitution-rejection test)+re-verified. NOT acceptable: promise "AI Trader will pass the right
+               value". POST-PASS: install verified wheel ONLY in tower venv, update pin+handshake 0.4.0, worker runs
+               real N2, remove bias_direction="LONG"+synthetic fp, resume from 54cf26e, build single correlated
+               path, run full regression, deliver READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2_CORRELATED.
+               STILL FORBIDDEN: LIVE_SHADOW NEPORNIT, authority NEACTIVATA, broker DISABLED. Alpha stays
+               ALPHA_BLOCKED_CANONICAL_N1_HANDOFF; CAND-T05 frozen. Red Team modified no engine, ran no real data,
+               changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [67], prev_hash E66.
+  entry_hash:  E66
 ```
