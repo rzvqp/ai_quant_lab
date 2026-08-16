@@ -1,0 +1,104 @@
+{
+  "base_provisional": {
+    "entry_slippage_price": 0.0,
+    "exit_slippage_price": 0.0,
+    "full_spread_price": 0.05,
+    "round_trip_total": 0.05
+  },
+  "bridge_py_cost_literal": {
+    "entry_slippage_price": 0.05,
+    "exit_slippage_price": 0.05,
+    "full_spread_price": 0.1,
+    "note": "new_brain_bridge/bridge.py commit bd59266 -- does NOT match BASE_PROVISIONAL despite a nearby test comment mis-citing it as such; flagged for CEO/Red Team, not resolved here"
+  },
+  "bridge_py_cost_literal_mismatch": true,
+  "broker_company": "Fusion Markets Pty Ltd",
+  "broker_server": "FusionMarkets-Demo",
+  "configuration_fingerprint": "46f96944bb42bcab",
+  "content_hash": "c1fa84777c4cb1dcc8bcd158553bab36de776bfe4baced9348c3b1c0f441cde8",
+  "data_identity": {
+    "monitored_calendar_days": [
+      "2026-08-04",
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-12"
+    ],
+    "n_clean_observations": 175,
+    "source_identity": "spread_collection.observations (SqliteStateStore append_log, all 5 live-process state stores; shared XAUUSD M15 feed's own spread_collection_state/xauusd_m15.db is authoritative)",
+    "source_report_blob_sha1": "0e8207a4e81349fae11104db524206910b7b0816",
+    "source_report_commit": "351f789",
+    "symbol": "XAUUSD"
+  },
+  "data_source": {
+    "slippage": "pdh_pdl_demo.slippage.SlippageLog (wired, zero entries recorded \u2014 no real fill has occurred yet)",
+    "spread": "spread_collection.observations (SqliteStateStore append_log, all 5 live-process state stores; shared XAUUSD M15 feed's own spread_collection_state/xauusd_m15.db is authoritative)"
+  },
+  "entry_order_type": "MARKET (unset price field \u2014 see request_builder.py; realized fill price read from the order acknowledgement)",
+  "exit_order_type": "broker-side SL/TP bracket (BROKER_SLTP) \u2014 no discrete closing order is submitted by this codebase today",
+  "formula": {
+    "base_once_real_slippage_exists": "BASE = median(spread) + median(slippage), per execution, both legs",
+    "currently_in_effect": "BASE_PROVISIONAL/STRESS_PROVISIONAL (above) -- explicitly NOT empirical, unchanged until real slippage data exists and a ratified calibration supersedes them",
+    "stress_once_real_slippage_exists": "STRESS = upper percentiles -- threshold set by Statistician + Red Team, not this division"
+  },
+  "monitored_calendar_days": [
+    "2026-08-04",
+    "2026-08-10",
+    "2026-08-11",
+    "2026-08-12"
+  ],
+  "shadow_cost_model_version": "v1",
+  "slippage_distribution": "COST_MODEL_UNAVAILABLE -- zero real observations",
+  "slippage_mechanism_blob_sha1": "4f59f114da73054c0a9dc246fc5d4c153cee057f",
+  "slippage_mechanism_commit": "351f789",
+  "slippage_mechanism_path": "ai_trader/pdh_pdl_demo/slippage.py",
+  "source_report_blob_sha1": "0e8207a4e81349fae11104db524206910b7b0816",
+  "source_report_commit": "351f789",
+  "source_report_path": "AI_TRADER_MANDATE8_STEP1_COST_CALIBRATION_REPORT.md",
+  "spread_distribution_by_session": {
+    "asia": {
+      "mean": 0.0647,
+      "median_p50": 0.05,
+      "n": 38,
+      "p90": 0.1
+    },
+    "late": {
+      "mean": 0.1133,
+      "median_p50": 0.09,
+      "n": 21,
+      "p90": 0.2
+    },
+    "london": {
+      "mean": 0.0721,
+      "median_p50": 0.07,
+      "n": 33,
+      "p90": 0.12
+    },
+    "ny": {
+      "mean": 0.0835,
+      "median_p50": 0.08,
+      "n": 83,
+      "p90": 0.12
+    }
+  },
+  "spread_distribution_clean": {
+    "max": 0.2,
+    "mean": 0.0809,
+    "median_p50": 0.07,
+    "min": 0.05,
+    "n": 175,
+    "p10": 0.05,
+    "p25": 0.05,
+    "p75": 0.09,
+    "p90": 0.124,
+    "p95": 0.2,
+    "p99": 0.2
+  },
+  "stress_provisional": {
+    "entry_slippage_price": 0.08,
+    "exit_slippage_price": 0.08,
+    "full_spread_price": 0.08,
+    "round_trip_total": 0.24
+  },
+  "symbol": "XAUUSD",
+  "units": "instrument quote-price units (XAUUSD bid/ask price scale \u2014 e.g. spread=0.05 means ask-bid=0.05 in quote price, NOT pips or basis points)"
+}
