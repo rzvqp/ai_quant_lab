@@ -565,10 +565,11 @@
     "note": "changing a snapshot => new run_hash, results NON_COMPARABLE"
   },
   "IMPLEMENTATION_QUEUE": [
-    "EXIT_ON_REGIME_INVALIDATION (needs dynamic regime-exit in simulator)",
-    "session-conditioned continuation (needs session eligibility x trend)",
-    "volatility-conditioned trend (needs vol-regime gate)",
-    "acceptance/value-area entries (needs new detector)"
+    "EXIT_ON_REGIME_INVALIDATION :: IMPLEMENTATION_BLOCKED_MISSING_PRIMITIVE (no regime-state exit in canonical menu + per-bar N1 regime blocked)",
+    "session-conditioned :: SPEC_READY EVALUATION_DEFERRED (distinctness gate)",
+    "volatility-conditioned :: SPEC_READY EVALUATION_DEFERRED (distinctness gate)",
+    "breakout-continuation :: SPEC_READY DISTINCTNESS_CONTESTED",
+    "compression-to-expansion :: POTENTIAL_DUPLICATE of comp_break"
   ],
   "ROUTER_PARITY": {
     "verdict": "REGIME_CLASSIFIER_NONCANONICAL",
@@ -590,5 +591,13 @@
     "distinct_mechanisms": 4,
     "ceo_ts": "2026-08-16",
     "note": "T05 (frozen benchmark) folded into TREND_UP|pullback with gross-rep G0037; bos+bos_retest collapsed to one breakout mechanism; lone-survivor clusters (n_surviving<2) excluded from shortlist."
-  }
+  },
+  "N1_HANDOFF_PREP": {
+    "ceo_ts": "2026-08-16",
+    "inventory": "reports/N1_HANDOFF_INVENTORY.md (rev2: ve_brain 0.1.3 / ve_tower 0.3.0 separated; ve_tower NOT an N1 dep \u2014 code-verified)",
+    "acceptance_suite": "edge_research/test_n1_acceptance.py (12 BLOCKED_ON_N1_ARTIFACT + 2 active hygiene guards PASS)",
+    "rerun_manifest": "reports/N1_RERUN_MANIFEST.json (355 flagged needs_n1_rerun=TRUE; 62 needs_cost_rerun; no rerun executed)",
+    "impl_queue_specs": "reports/IMPLEMENTATION_QUEUE_SPECS.md (spec-only, m unchanged)"
+  },
+  "m_unchanged_by_specs": true
 }
