@@ -27,6 +27,10 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.1** (ATR internal) — computes ATR via canonical `market_state.atr14`; chain reaches N4. Defect (RT-TOWER-0009): N3 `AtrProvenance.atr_value`=`atr14[-1]` but zone_map consumes `atr14[i-1]`. Wheel SHA-256 `297aac5d…268807` kept for audit.
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
+## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- Handoff `21ae632` (AI Trader, `ai_trader/n1_replay/`, ve_brain 0.1.3, detector `dc28e4a`). Closure git-only in `N1_REPLAY_CLOSURE.md`: 14 ai_trader.* runtime + 5 detectors @ submodule `61cbd58c` (`market_structure` blob `52bb1eba…` ≠ ve_tower) + ve_brain external + numpy.
+- Packaged as **`ve_n1_replay 0.1.0`** — standalone, isolated namespace, vendored byte-identical (ai @21ae632 / detectors @61cbd58c), transactional bootstrap fail-closed on foreign collision, surface preserved (N1ReplayEngine: initialize/observe_closed_bar/replay/snapshot/restore/reset). **A/B parity source@21ae632 vs installed wheel = identical** (TREND_UP/UNCERTAIN/BOS_BULL). 18 tests, mypy clean, empty-venv verified. No ai_trader/ve_tower/MT5/broker at runtime; LIVE_SHADOW untouched. Awaiting Red Team; Alpha stays ALPHA_BLOCKED_CANONICAL_N1_HANDOFF (355 hypotheses NOT run).
+
 ## N2 (MANDATE N2, verdict B — N2_EXISTS_BUT_IS_NOT_PACKAGED)
 - N2 = `code/bias_h1.py` @`850815f` (build `81a0a62`, spec STAT-LEVEL2-BIAS-H1-SPEC-v1.0 @`1b2933c` + SPEC3 @`404b6c8`, manifest **v2.7.61**). Deterministic directional factors; `emits_probability=False`. Inventory + verdict in `N2_INVENTORY.md` @`a5241fb`.
 - Packaged in **ve_tower 0.4.0** (`run_n2`). AI Trader stays HOLD at `54cf26e` until Red Team N2_HANDOFF_PASS. Hints `v2.7.51`/`RT-CODE-A-0011`/`B-L1` were NOT confirmed in git.
