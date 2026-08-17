@@ -376,6 +376,19 @@ def _round_to_nearest_probe_bar(raw_offset: int) -> int:
     return round(raw_offset / _OFFSET_PROBE_BAR_SECONDS) * _OFFSET_PROBE_BAR_SECONDS
 
 
+def watermark_key(symbol: str, mt5_timeframe: int, *, suffix: str | None = None) -> str:
+    """The ONE formula for `LiveBarFeed`'s own persisted-watermark key -- extracted (RT-N1-HYDRATION-0001,
+    2026-08-18) so a caller that needs to SEED a feed's watermark before construction (N1 startup
+    hydration, so the very first bar the real decision-loop feed ever polls is the first genuinely new one
+    after warmup) can compute the exact same key `LiveBarFeed.__init__` itself uses, rather than
+    duplicating this string format and risking silent drift. `LiveBarFeed.__init__` below calls this
+    function too -- there is only one place the key is actually built."""
+    key = f"live_signal_source.bar_feed:{symbol}:{mt5_timeframe}"
+    if suffix is not None:
+        key += f":{suffix}"
+    return key
+
+
 class LiveBarFeed:
     def __init__(
         self, gateway: MT5Gateway, symbol: str, mt5_timeframe: int, bar_seconds: int,
@@ -400,9 +413,7 @@ class LiveBarFeed:
         behavior. Set via `make_broker_offset(gateway, symbol)` in production, where MT5 timestamps are
         actually broker-server time."""
         self._state_store = state_store
-        self._watermark_key = f"live_signal_source.bar_feed:{symbol}:{mt5_timeframe}"
-        if watermark_key_suffix is not None:
-            self._watermark_key += f":{watermark_key_suffix}"
+        self._watermark_key = watermark_key(symbol, mt5_timeframe, suffix=watermark_key_suffix)
         """RT-TIME-0001 section B: an optional suffix so TWO `LiveBarFeed` instances polling the SAME
         `(symbol, mt5_timeframe)` -- e.g. the main M15 decision loop and a second, independent M15
         context-refresh consumer -- persist genuinely separate watermarks instead of silently colliding

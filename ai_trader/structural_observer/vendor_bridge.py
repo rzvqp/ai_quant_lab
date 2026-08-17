@@ -37,9 +37,19 @@ _VENDOR_CODE_PATH = Path(__file__).resolve().parents[2] / "vendor" / "alpha_auto
 if str(_VENDOR_CODE_PATH) not in sys.path:
     sys.path.insert(0, str(_VENDOR_CODE_PATH))
 
-from market_structure import Block, detect_swings, label_structure, detect_breaks  # type: ignore[import-not-found] # noqa: E402
+from market_structure import Block, K_DEFAULT, detect_swings, label_structure, detect_breaks  # type: ignore[import-not-found] # noqa: E402
 from imbalance_mechanics import detect_fvgs, detect_fvg_reactions  # type: ignore[import-not-found] # noqa: E402
-from market_state import expansion, compression, sessions, atr14  # type: ignore[import-not-found] # noqa: E402
+from market_state import (  # type: ignore[import-not-found] # noqa: E402
+    ATR_WINDOW,
+    COMPRESSION_PCTL,
+    COMPRESSION_WINDOW,
+    DISP_MULT,
+    BODY_FRAC,
+    expansion,
+    compression,
+    sessions,
+    atr14,
+)
 from order_flow import (  # type: ignore[import-not-found] # noqa: E402
     detect_order_blocks,
     track_breaker,
@@ -49,6 +59,7 @@ from order_flow import (  # type: ignore[import-not-found] # noqa: E402
 
 __all__ = [
     "Block",
+    "K_DEFAULT",
     "detect_swings",
     "label_structure",
     "detect_breaks",
@@ -58,8 +69,19 @@ __all__ = [
     "compression",
     "sessions",
     "atr14",
+    "ATR_WINDOW",
+    "COMPRESSION_WINDOW",
+    "COMPRESSION_PCTL",
+    "DISP_MULT",
+    "BODY_FRAC",
     "detect_order_blocks",
     "track_breaker",
     "detect_mitigations",
     "detect_rejections",
 ]
+"""RT-N1-HYDRATION-0001 (2026-08-18) added the six constants (`K_DEFAULT`/`ATR_WINDOW`/
+`COMPRESSION_WINDOW`/`COMPRESSION_PCTL`/`DISP_MULT`/`BODY_FRAC`) to this file's existing exports -- N1
+startup hydration needs to DERIVE its own required warmup bar count and detector-configuration
+fingerprint from the vendored detectors' own real tunables, never hardcode a duplicate literal that could
+silently drift from the submodule's pinned commit. This is purely additive: every symbol already exported
+is unchanged."""
