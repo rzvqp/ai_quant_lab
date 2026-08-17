@@ -99,7 +99,36 @@ CAND-0002 is self-triggering (the expansion bar is its own event), so it needs n
 
 ---
 
-## STATE: `ALPHA_LOOP_ACTIVE` — persistent continuous-loop service; RECENT-market primary; RANGE blocked; promotion blocked
+## STATE: `ALPHA_LOOP_ACTIVE` — DETACHED persistent service with AUTO-REFILL (survives session; runs until PAUSED_BY_CEO)
+
+**Detached service + auto-refill delivered.** `edge_research/alpha_service.py` runs under Windows Task Scheduler ("AlphaDiscoveryLoop", 10-min auto-restart trigger + singleton guard) → parent = `svchost.exe`, **survives chat-session close** (verified). Uses DURABLE snapshots (`C:\Users\MEDION GAMING\.alpha_vendor\`, provenance recorded: ratified `5443077`, canonical `f0d3b34`), niced BELOW_NORMAL (AI Trader keeps CPU). Per bounded cycle (25 = report-per-25): check PAUSED_BY_CEO → singleton/stale watchdog → process → atomic checkpoint → registry → auto-refill from the generator → continue. **GRID_EXHAUSTED → GENERATE_NEXT_WAVE** (not idle); when the declarative catalog is fully enumerated → `GENERATOR_EXHAUSTED` + `ALPHA_LOOP_IDLE_NO_WORK` + `IMPLEMENTATION_QUEUE` (mechanisms needing new code, never arbitrary runtime exec).
+
+Generator v2: cluster-budgeted declarative catalog (**319** configs; pullback2/3/4 = ONE cluster, budget 44 → no monopoly); run_hash = ECONOMIC-CONFIG-ONLY (stable across generator versions → never doubled); declarative fields per hyp (mechanism_cluster, generator_version, economic_rationale, direction, parameter_neighborhood, semantic_fingerprint, configuration_fingerprint, preregistration_ts, position_at_regime_end). Real watchdog: live-PID + stale-heartbeat = `ALPHA_SERVICE_STALLED` → controlled restart ONLY after verifying the PID is alpha_service (never AI Trader).
+
+**Decisive tests — ALL PASSED (evidence in `loop_state/`):** grid-empty → auto-refill ✓ · **m grew 210 → 275+ AUTONOMOUSLY** (detached service, zero chat loop-run) ✓ · restart doesn't double (dedup by economic config dropped 16; idempotent) ✓ · semantic duplicate refused ✓ · one cluster doesn't monopolize (budget 44) ✓ · checkpoint survives restart (m preserved 210→250→275 across 3 restarts) ✓ · **PAUSED_BY_CEO stops cleanly** (log: "flag found — exiting cleanly") ✓ · flag removed → resumes ✓ · **OOS access = 0** (2025-11+ SEALED) ✓ · AI Trader keeps priority (niced) ✓ · **survives session close** (parent svchost) ✓. All strategies GROSS-only / AWAITING_COST; no RATIFIED/PROMOTED/LIVE; ROUTER_PARITY PENDING.
+
+### (superseded) `ALPHA_LOOP_ACTIVE` — Phase A (GROSS-gated, regime-EPISODE-primary)
+
+**Reactivated + episode-primary amendment integrated.** Persistent service (`alpha_loop.py` + `flowb_generator.py` grid of 165 distinct hypotheses + `flowb_strategies.py` + `regime.py`), niced to yield CPU to AI Trader. Per hypothesis: pre-register (run_hash incl. regime + `position_at_regime_end=HOLD_UNTIL_STRATEGY_EXIT`) → GATE 0 determinism/lookahead → **GATE 1 GROSS** (canonical engine, cost=0) → **regime-EPISODE-primary** classify → checkpoint. **NET is UNEVALUATED** (Phase B / ratified `AI_TRADER_SHADOW_COST_MODEL_v1`; old 0.20-cost results SUPERSEDED). RECENT_PRIMARY = 2022-12→2025-10 eligible episodes; HISTORICAL_REGIME_TRANSFER = 2011-21 same-regime episodes; 2025-11+ SEALED; **OOS log empty**. A no-regime period = `NOT_APPLICABLE`, not a loss. Verdicts: PROVISIONAL_SCREENING_SURVIVOR (recent+historical both hold) / RECENT_REGIME_EDGE_PROVISIONAL (recent holds, HISTORICAL_TRANSFER_WEAK) / FAT_TAIL_DEPENDENT (best-trade or best-EPISODE concentration) / STRUCTURALLY_FALSIFIED / ARCHIVE_INSUFFICIENT (recent episodes-with-trades <5). Max Alpha status = PROVISIONAL. Ranking 300→≤5 on recent-episode EV / trimmed / DD / walk-forward / historical-episode transfer — NOT 15-yr aggregate.
+
+### 🔁 BATCH — Phase A grid (in progress; ~66/165 as of report). Strong convergent finding.
+Status so far: **26 SURVIVOR · 16 RECENT_REGIME_EDGE · 18 FALSIFIED · 6 FAT_TAIL.** The robust mechanism = **TREND_UP × pullback3 (3-bar pullback) LONG** — survives across all stop/exit variants (not param-fragile). Emerging shortlist (recent-primary GROSS):
+
+| id | variant | recent gross EV | trimmed | best-ep-share | DD_R | walk-forward folds | hist |
+|---|---|---|---|---|---|---|---|
+| **CAND-G0037** | pullback3 / atr2 / time40 | **+0.42** | **+0.33** | **0.054** | **−11** | **[+0.36,+0.58,+0.32]** | +0.07 |
+| CAND-G0027 | pullback3 / bar / time40 | +0.55 | +0.29 | 0.105 | −31 | [+0.63,+0.48,+0.56] | +0.04 |
+| CAND-G0032 | pullback3 / atr1 / time40 | +0.41 | +0.26 | 0.089 | −18 | [+0.41,+0.46,+0.33] | +0.12 |
+| CAND-G0039 | pullback3 / atr2 / rr3 | +0.29 | +0.26 | 0.039 | −15 | [+0.17,+0.41,+0.28] | +0.03 |
+| CAND-G0022 | pullback3 / swing / time40 | +0.41 | +0.22 | 0.132 | −24 | [+0.32,+0.53,+0.30] | +0.15 |
+
+All GROSS + PROVISIONAL; NET pending the ratified cost model. CAND-T05 (the frozen benchmark, pullback2 variant) is consistent with — and now surpassed by — the pullback3 cluster. Service continues in the background to finish the grid + finalize the ≤5 shortlist; reports per 25; does NOT enter WAITING.
+
+### (superseded) `ALPHA_PAUSED_BY_CEO` — controlled stop
+
+> **⏸ CONTROLLED STOP (CEO).** ALPHA_DISCOVERY paused so AI Trader can be completed first — this overrides ALPHA_LOOP_ACTIVE. Stopped ONLY after a safe atomic checkpoint: the persistent runner had already reached `FAMILY_QUEUE_EXHAUSTED` (no job mid-write, no runner process active). **Everything preserved, nothing reset:** m_total=6, hypothesis registry (6), candidate queue, canonical_rerun_queue=[T05,T06], OOS access log (empty), checkpoint + watchdog state. **T05 FROZEN = `HIGHEST_PRIORITY_PROVISIONAL_CANDIDATE`** — not modified, not rerun, no new variants. **Resume:** after `MANDATE_2_PASS` the Architect auto-resumes EXACTLY from this checkpoint — no registry/m reset, no fresh request needed. The first robust recent edge (T05) is frozen, not lost.
+
+### (paused) `ALPHA_LOOP_ACTIVE` — persistent continuous-loop service; RECENT-market primary; RANGE blocked; promotion blocked
 
 **Persistent service delivered** (`edge_research/alpha_loop.py` + `flowb_strategies.py` + `regime.py`): the 9 deliverables — persistent runner, initial queue, checkpoint after every candidate (atomic), watchdog (heartbeat/restart_count; caught a candidate error and CONTINUED — did not halt the lab), per-family budgets, hypothesis registry (`loop_state/hypothesis_registry.json`), reporting-without-stopping, **restart-with-correct-resume PROVEN** (a run interrupted at m=3 resumed to m=4→6 without re-running finalized candidates), OOS access log **empty** (holdout sealed). `ALPHA_LOOP_ACTIVE`.
 

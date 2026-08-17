@@ -1,2 +1,5 @@
 ctx_*.npz
 *.tmp
+service.log
+service_stdouterr.log
+service_heartbeat.json

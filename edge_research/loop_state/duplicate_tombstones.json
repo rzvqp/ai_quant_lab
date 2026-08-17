@@ -1,0 +1,13 @@
+{
+  "migration": "m 226(race)->210 : dedup by hypothesis_semantic_fingerprint (economic config)",
+  "n_economic_duplicates_dropped": 16,
+  "rule": "same hypothesis_semantic_fingerprint => DUPLICATE_HYPOTHESIS; m unchanged; not re-run",
+  "cause": "old-code service (economic run_hash) re-processed specs against the re-stamped registry (race)",
+  "note": "the pruned duplicate records were removed during race-cleanup; the rule+count are preserved here; from now tombstones are recorded per-duplicate at generation (canonical_candidate_id / duplicate_candidate_id / reason / hsf)",
+  "fields_going_forward": [
+    "canonical_candidate_id",
+    "duplicate_candidate_id",
+    "reason",
+    "hypothesis_semantic_fingerprint"
+  ]
+}
