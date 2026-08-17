@@ -1,8 +1,8 @@
 {
   "manifest_schema_version": "ve-n1-replay-manifest-v1",
   "package_version": "0.1.1",
-  "package_build_commit": "TBD_BUILD_COMMIT",
-  "state_delivery_commit": "TBD_STATE_COMMIT",
+  "package_build_commit": "07da208",
+  "state_delivery_commit": "07da208",
   "supersedes": "0.1.0",
   "change_summary": "Incremental N1 replay engine: O(n^2)->O(n)/bounded-amortized performance remediation. Per-bar result byte-identical to 0.1.0. Adds IncrementalRawAxesBuilder, N1IncrementalReplayEngine, replay_batch (canonical read-only ledger), bounded incremental snapshot/restore. No change to evaluation_identity or detector bytes.",
   "wheel_filename": "ve_n1_replay-0.1.1-py3-none-any.whl",
