@@ -3078,4 +3078,68 @@
                frozen. Red Team modified no engine, ran no real orders, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [71], prev_hash E70.
   entry_hash:  E70
+
+[71] 2026-08-17
+  prev_hash:   E70
+  event:       VERDICT
+  dc_id:       DC-AITRADER-MANDATE2
+  freeze_hash: eb97a80 (runtime) / 04c339d (auth) / 0050dea (preflight) / 0ec9fe9 (activation, HEAD)
+  battery_ver: RT-MANDATE2-0004
+  reviewer:    Red Team
+  detail:      POST-ACTIVATION LIVE_SHADOW RUNTIME AUDIT. VERDICT = ***LIVE_SHADOW_RUNTIME_PASS***. LIVE_SHADOW
+               already active (CEO-authorized RT-MANDATE2-0003 b05cbcb). Audit ENTIRELY READ-ONLY; live process
+               NOT stopped (broker blocked, no material safety defect -> shadow continues). MANDATE_2_PASS remains
+               valid. No engine modified; nothing outside red_team/.
+               (1 runtime identity) live tree: wrapper PID 26880 (git-bash) -> interpreter PID 6232 (ai_trader.
+               new_brain_live.entrypoint, research-main venv) -> isolated worker PID 28632 (ve_tower_venv -I) ->
+               14224. research-main on ai-trader-implementation HEAD 0ec9fe9; runtime eb97a80 IS ancestor; post-
+               commits 04c339d/0050dea/0ec9fe9 touch ONLY report/preflight files (diff --stat: .gitignore + 3
+               LIVE_SHADOW_* records + live_shadow_preflight.py), NO runtime-code change. No uncommitted runtime
+               changes (4 dirty = untracked logs/scratch). ve_tower isolation: main venv pip show not found; tower
+               venv ve_tower 0.5.2; worker -I from tower venv. stdout LIVE_SHADOW starting tower_version=0.5.2,
+               stderr empty.
+               (2 delta code) new_brain_live/{entrypoint,deps,live_shadow_journal} + fail_safe + preflight: NO
+               Router/Elig/EV/N6/Risk bypass; NO legacy fallback (safe_evaluate_bar any exception -> BrainUnavail
+               = NO_TRADE, structural no market_intelligence call); NO fixture identity in production (deps builds
+               real MT5 account/portfolio/instrument/risk via MT5AccountBridge/MT5PortfolioStateSource, not make_*);
+               NO fabricated probability (loop never patches load_probability_inputs; real ->None -> NO_TRADE); NO
+               default LONG (side from contract); NO broker access (order_send never imported); NO fail-open /
+               swallowed-to-continue (broad catch is fail-closed). AST guard forbids run_n2/n3/n4/order_send/set_
+               authority/enabled=True/order-capable imports.
+               ★ (3 DECISIVE broker safety) CODE: BrokerOrderSubmissionGate @dataclass(frozen=True,slots,kw_only),
+               enabled=False default, immutable no-setter, only source-visible enabled=True flips (none in runtime);
+               attempt_shadow_execution calls gate.authorize() (raises for approved candidate). RUNTIME (WAL-aware
+               read of live xauusd_m15.db): 40 shadow records ALL LIVE_SHADOW_NO_TRADE decision None; ZERO reached
+               broker gate; total order_send_calls=0; balance/equity 1800.34 unchanged, 0 positions/orders. Restart
+               -> fresh default gate (frozen). NO real path to order_send.
+               (4 authority/legacy) persisted kv_state decision_authority=1.0 -> current_authority=NEW_BRAIN; set_
+               authority NEVER called in runtime (only def/test/AST-forbidden; loop reads current_authority fresh);
+               single flip = CEO-authorized external act; no auto LEGACY fallback; new process sole decision
+               producer; pdh_pdl_demo/multi_policy_live/market_intelligence NOT running -> if started, demoted to
+               LEGACY_SHADOW_TELEMETRY. Determination: benign config, not safety-relevant telemetry loss (new-brain
+               telemetry+journal capture the path); running the 3 for parallel telemetry is a CEO product choice.
+               (5 detached/recovery) PID 6232 single decision interpreter (26880 = nohup wrapper, not 2nd instance);
+               survives session/launcher close; restart-dedup via persisted watermark (poll ts_open<=last_emitted
+               seeded from persisted); circuit-breaker/authority/gate re-read+reconstructed fresh fail-closed;
+               stale-probe BarFeedError -> process exit (fail-closed). NON-BLOCKING NOTE: no explicit singleton lock
+               (pidfile/mutex) prevents 2 concurrent loops -- NOT a safety defect (both would block at frozen gate,
+               zero broker impact; only one runs) -- recommend a singleton guard as hardening. Controlled restart
+               = taskkill //PID 6232 //T (SIGTERM finishes tick + closes store), reconfirm gate blocked before/after.
+               (6 live bars/dedup) 10 distinct market_event_ids 900s apart (M15), exactly 4 strategies each, ZERO
+               duplicate (event,strategy) pairs, ZERO lookahead (received>=market); first NEW bar after 36-event
+               snapshot (XAUUSD:M15:1786993140) processed once NO_TRADE not reprocessed; correlated N1->Router
+               identity; live market UNCERTAIN_REGIME -> Router honestly refuses -> tower correctly not reached;
+               NO_TRADE reason real+explicit; no invented probabilities.
+               (7 fail-safe/journal) MT5 init fail -> LIVE_SHADOW_STARTUP_FAILED; feed error -> BarFeedError process
+               exit (fail-closed); tower unavail/crash/timeout/stale/identity-mismatch -> bridge fail-closes all-
+               False -> NO_TRADE or safe_evaluate_bar -> BrainUnavailable; bad handshake/wrong-0.5.0 -> startup fail
+               / HANDSHAKE_IDENTITY_MISMATCH; NaN/Inf -> non_finite_value fail-closed; journal-write failure only
+               after broker already blocked. stderr empty.
+               DISPOSITION: LIVE_SHADOW_RUNTIME_PASS; only finding = non-blocking singleton-lock recommendation (no
+               broker impact). MANDATE_2_PASS valid; LIVE_SHADOW continues broker DISABLED (Red Team did NOT stop
+               it). Broker activation needs a separate CEO mandate; Red Team does not authorize real orders. Alpha
+               ALPHA_BLOCKED_CANONICAL_N1_HANDOFF; CAND-T05 frozen. Red Team modified no engine, ran no real orders,
+               changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [72], prev_hash E71.
+  entry_hash:  E71
 ```
