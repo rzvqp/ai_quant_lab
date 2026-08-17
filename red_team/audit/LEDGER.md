@@ -2959,4 +2959,55 @@
                ran no real data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [69], prev_hash E68.
   entry_hash:  E68
+
+[69] 2026-08-17
+  prev_hash:   E68
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: f7876ae (ve_tower 0.5.2 delivery HEAD) / build b0cf2ea / wheel-commit 60bf71b
+  battery_ver: RT-TOWER-0010
+  reviewer:    Red Team
+  detail:      TOWER CHAIN ATR — DELTA closure of ve_tower 0.5.2. VERDICT = ***TOWER_CHAIN_ATR_PASS***. Closes
+               RT-TOWER-0009 FAIL (ecace9f): the N3 provenance value now reports the ATR zone_map actually
+               consumes. Provenance-only delta; N2/N4 not reopened. Synthetic data only; observe-only; nothing
+               outside red_team/.
+               (1 identity) wheel SHA 1abcd60d...c28d8 exact, git-stored bytes == working wheel; build b0cf2ea
+               (correct N3 ATR provenance, provenance-only), wheel-commit 60bf71b, HEAD f7876ae; METADATA 0.5.2;
+               sidecar describes wheel exactly incl. updated atr_source (n3_consumed_index "i-1", n4_band_index
+               "-1", n3_cross_check "atr_value == N3Level.band / 0.25"), state_delivery 60bf71b, vendored_source_
+               identity sha256:4c0dee...69e1c; clean-venv import from site-packages.
+               (2 delta provenance-only) DIFFER only chain.py/contracts.py(AtrProvenance +evaluation_index/
+               consumed_atr_index/consumed_bar_timestamp)/version.py; SAME byte-identical all 13 vendored + n2/n3/
+               n4 + reason_codes + __init__ + infra; 13 blobs git-anchored to installed wheel; N2/N3/N4 contracts
+               unchanged; ve_brain/N1/Router/EV/N6 untouched; no economic change (value now reported IS the one
+               zone_map already used, no recompute).
+               ★ (3 DECISIVE, full precision, 3 fixtures) chain.py derives eval_i=n-1, n3_consumed_idx=i-1,
+               n3_val=atr14[i-1]. Verified: A i=39 consumed_idx=38 atr_value=3.5700000000==atr14[38]==band/0.25;
+               B i=49 idx=48 4.3128571429==...; C i=59 idx=58 3.6285714286==... (all Δ<1e-12). consumed_bar_
+               timestamp==m15_time[i-1] all 3. OLD BUG GONE: atr_value != atr14[-1] on every fixture (A 3.570 vs
+               3.588, B 4.313 vs 4.073, C 3.629 vs 3.614). Committed old-bug test test_n3_provenance_equals_atr_
+               consumed_by_zone_map_three_fixtures (asserts atr_value==lvl.band/0.25) fails on 0.5.1, passes on
+               0.5.2; test_provenance_indices_bound_to_ratified_rule pins eval=39/consumed=38/timestamps.
+               (4 N4 unchanged) instrumented: N4 ATR=atr14[-1] (n4_band_idx=n-1), progress_reference=M15_band_
+               1xATR, NOT M5/None; ok_chain + confirmation_available=True + ok_confirmation from real zone_
+               confirmation; N4 consumed_idx=n-1. N3(i-1) vs N4(i) difference correct by construction, declared.
+               (5 decision identical 0.5.1<->0.5.2) same 3 fixtures under both wheels: chain_status/terminal/N2
+               factors/N3 map(zone_id,anchor,band,rank)/N3 levels/N4 confirmation+reasons byte-identical; only
+               n3_atr_provenance (corrected value + new fields) and derived chain_fingerprint change. Nothing else.
+               (6 chain-binding regression) n2_fingerprint/bias_available/atr/n3_atr/n4_atr/atr_value injection ->
+               UnknownRequestFieldError; N2->N3 + N3->N4 binding intact; substituted N3 -> chain_identity_mismatch;
+               no default LONG; no N2 probability; production entrypoint run_tower_chain; UNBOUND_DIRECT_API;
+               future M15 bar >as_of refused (no-lookahead); M15 stale fail-closed; deterministic.
+               (7 tests) 76 passed/0 failed (matches VE, +3 vs 0.5.1 = provenance-consumed + index-binding + N4/
+               decision-regression tests); mypy --strict on 12 modules clean (re-run); zero forbidden imports;
+               upgrade 0.5.1->0.5.2 + rollback 0.5.2->0.5.1 reproducible (round-trip); AI Trader main venv
+               untouched.
+               AUTHORIZES (automatic on PASS): AI Trader resumes from ee92c8c; installs exactly ve_tower-0.5.2
+               (1abcd60d...c28d8) ONLY in tower venv; updates pin+handshake; finalizes the single correlated run;
+               runs full regression; delivers READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2_CORRELATED (= next
+               separate review, RT-MANDATE2 track). STILL FORBIDDEN: LIVE_SHADOW start, authority activation;
+               broker DISABLED; Alpha ALPHA_BLOCKED_CANONICAL_N1_HANDOFF; CAND-T05 frozen. Red Team modified no
+               engine, ran no real data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [70], prev_hash E69.
+  entry_hash:  E69
 ```
