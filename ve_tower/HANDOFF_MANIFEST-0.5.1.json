@@ -2,7 +2,7 @@
   "manifest_schema_version": "ve-tower-handoff-manifest-v2",
   "ve_tower_package_version": "0.5.1",
   "package_build_commit": "efc6e23",
-  "state_delivery_commit": "PENDING",
+  "state_delivery_commit": "5f252dc",
   "wheel_filename": "ve_tower-0.5.1-py3-none-any.whl",
   "wheel_sha256": "297aac5d5004b056c9785b8359be763cb7f9cf4056db865cd810040caa268807",
   "artifact_fingerprint": "e79b9eb2c449b120",
