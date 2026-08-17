@@ -1,0 +1,7 @@
+watermark: None
+telemetry entries: 56
+last telemetry market_event_id: XAUUSD:M15:1786996740
+journal entries: 56
+last journal entry: LiveShadowRecord(category=<LiveShadowCategory.LIVE_SHADOW_NO_TRADE: 'LIVE_SHADOW_NO_TRADE'>, trace_id='916f00c51ef44068', market_event_id='XAUUSD:M15:1786996740', strategy_id='trend_experimental', as_of=1786996740, terminal_reason_code='NO_DECISION', decision=None, reached_broker_gate=None, broker_blocked=None, order_send_calls=None, orders_created=None, positions_created=None)
+heartbeat: None
+authority: DecisionAuthority.NEW_BRAIN
