@@ -634,9 +634,10 @@ def test_09_a_decision_citing_a_stale_snapshot_is_rejected_before_reaching_n6(tm
         assert result.n3_output.get("market_map_available") is False  # rejected, not fabricated as available
         # RT-TOWER-0008: on a successful chain run (ok=True) the top-level `reason_codes` is always empty --
         # the real per-node reason (DATA_STALE) lives on N3's OWN output, not the chain envelope.
-        n3_reason_codes = result.n3_output.get("reason_codes") or ()
-        assert any("stale" in str(code).lower() for code in n3_reason_codes), (
-            f"expected a real DATA_STALE-shaped reason code on n3_output, got {n3_reason_codes}"
+        n3_reason_codes_raw = result.n3_output.get("reason_codes")
+        assert isinstance(n3_reason_codes_raw, list)
+        assert any("stale" in str(code).lower() for code in n3_reason_codes_raw), (
+            f"expected a real DATA_STALE-shaped reason code on n3_output, got {n3_reason_codes_raw}"
         )
     finally:
         launcher.stop()

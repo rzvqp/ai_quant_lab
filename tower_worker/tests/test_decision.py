@@ -73,12 +73,12 @@ def _make_request(
     )
 
 
-def test_real_decision_calls_the_genuinely_installed_ve_tower_0_5_0() -> None:
+def test_real_decision_calls_the_genuinely_installed_ve_tower_0_5_2() -> None:
     """Not a stub: proves the installed distribution's own version string comes back, and that it is
-    genuinely 0.5.0 -- the version this whole remediation exists to wire in."""
+    genuinely 0.5.2 -- the version RT-TOWER-0010 (`TOWER_CHAIN_ATR_PASS`) wires in."""
     response = real_decision(_make_request())
     assert response.ok is True
-    assert response.tower_version == ve_tower.VE_TOWER_VERSION == "0.5.0"
+    assert response.tower_version == ve_tower.VE_TOWER_VERSION == "0.5.2"
     assert response.chain_binding_version == ve_tower.TOWER_CHAIN_BINDING_VERSION == "tower-chain-binding-v1"
     assert response.chain_response_contract_version == ve_tower.CHAIN_RESPONSE_CONTRACT_VERSION
 

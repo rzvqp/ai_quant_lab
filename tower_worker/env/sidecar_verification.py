@@ -72,6 +72,13 @@ class VerifiedSidecar:
     unbound_direct_api: tuple[str, ...] = ()
     """Chain-binding fields -- `None`/empty for a v1 (pre-0.5.0) sidecar, always populated for a
     successfully-verified v2 sidecar (see `_verify_sidecar_v2`'s own required-field check)."""
+    atr_source_commit: str | None = None
+    """RT-TOWER-0010 (2026-08-17, `ve_tower` 0.5.2): the `atr_source.source_commit` nested field -- `None`
+    for a v2 sidecar predating 0.5.1 (0.5.0 has no `atr_source` key at all, matching
+    `INTEGRATION_BLOCKED_TOWER_CHAIN_ATR_UNAVAILABLE`'s own finding). Only `source_commit` is pinned here
+    (the concrete, git-blob-tied identity of the vendored module ATR is threaded from); the descriptive
+    sub-fields (`n3_consumed_index`/`n4_band_index`/`n3_cross_check` in 0.5.2, differently-named in 0.5.1)
+    are documentary, not a security identity."""
 
 
 def recompute_vendored_source_identity(blob_sha1: dict[str, str]) -> str:
@@ -175,6 +182,13 @@ def _verify_sidecar_v2(obj: dict[str, object]) -> VerifiedSidecar:
             f"(expected exactly {{'run_n2', 'run_n3', 'run_n4'}})"
         )
 
+    atr_source_commit: str | None = None
+    atr_source = obj.get("atr_source")
+    if atr_source is not None:
+        if not isinstance(atr_source, dict) or not isinstance(atr_source.get("source_commit"), str):
+            raise SidecarVerificationError("atr_source present but malformed (missing string source_commit)")
+        atr_source_commit = atr_source["source_commit"]
+
     return VerifiedSidecar(
         ve_tower_package_version=obj["ve_tower_package_version"],  # type: ignore[arg-type]
         package_build_commit=obj["package_build_commit"],  # type: ignore[arg-type]
@@ -193,6 +207,7 @@ def _verify_sidecar_v2(obj: dict[str, object]) -> VerifiedSidecar:
         tower_chain_binding_version=obj["tower_chain_binding_version"],  # type: ignore[arg-type]
         production_entrypoint=obj["production_entrypoint"],  # type: ignore[arg-type]
         unbound_direct_api=tuple(unbound_direct_api),  # type: ignore[arg-type]
+        atr_source_commit=atr_source_commit,
     )
 
 
@@ -245,6 +260,8 @@ def cross_check_against_existing_pin(sidecar: VerifiedSidecar) -> tuple[str, ...
             mismatches.append("tower_chain_binding_version")
         if sidecar.production_entrypoint != tower_identity_pin.EXPECTED_PRODUCTION_ENTRYPOINT:
             mismatches.append("production_entrypoint")
+        if sidecar.atr_source_commit != tower_identity_pin.EXPECTED_ATR_SOURCE_COMMIT:
+            mismatches.append("atr_source_commit")
     return tuple(mismatches)
 
 

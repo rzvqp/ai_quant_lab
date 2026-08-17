@@ -63,6 +63,7 @@ def _matching_identity(**overrides: object) -> WorkerIdentity:
         "chain_response_contract_version": tower_identity_pin.EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION,
         "tower_chain_binding_version": tower_identity_pin.EXPECTED_TOWER_CHAIN_BINDING_VERSION,
         "production_entrypoint": tower_identity_pin.EXPECTED_PRODUCTION_ENTRYPOINT,
+        "atr_source_commit": tower_identity_pin.EXPECTED_ATR_SOURCE_COMMIT,
     }
     fields.update(overrides)
     return WorkerIdentity(**fields)  # type: ignore[arg-type]
@@ -225,6 +226,7 @@ def test_8_valid_handshake_against_the_real_worker_is_accepted(tmp_path: Path, m
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION", "STUB-TEST-CHAIN-RESPONSE-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_TOWER_CHAIN_BINDING_VERSION", "STUB-TEST-CHAIN-BINDING-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_PRODUCTION_ENTRYPOINT", "STUB-TEST-run_tower_chain")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_ATR_SOURCE_COMMIT", "STUB-TEST-ATR-SOURCE-COMMIT-NEVER-REAL")
 
     launcher = TowerWorkerLauncher(
         tower_python=_TOWER_PYTHON, run_dir=tmp_path, extra_env={"VE_TOWER_WORKER_TEST_IDENTITY": "1"},
@@ -275,6 +277,7 @@ def test_17_worker_crash_leaves_the_launcher_process_alive_and_reports_connectio
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION", "STUB-TEST-CHAIN-RESPONSE-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_TOWER_CHAIN_BINDING_VERSION", "STUB-TEST-CHAIN-BINDING-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_PRODUCTION_ENTRYPOINT", "STUB-TEST-run_tower_chain")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_ATR_SOURCE_COMMIT", "STUB-TEST-ATR-SOURCE-COMMIT-NEVER-REAL")
 
     launcher = TowerWorkerLauncher(
         tower_python=_TOWER_PYTHON, run_dir=tmp_path, extra_env={"VE_TOWER_WORKER_TEST_IDENTITY": "1"},

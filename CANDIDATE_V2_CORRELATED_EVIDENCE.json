@@ -1,0 +1,425 @@
+{
+  "generated_at_utc": 1786963352,
+  "worker_identity": {
+    "worker_package_version": "0.3.0",
+    "worker_delivery_commit": "7747c4b4fbdf71e0e435d5957ad2fa38d0e2f80f",
+    "protocol_version": "3.0",
+    "ve_tower_package_version": "0.5.2",
+    "package_build_commit": "b0cf2ea",
+    "state_delivery_commit": "60bf71b",
+    "wheel_sha256": "1abcd60d6e541468a38e68a8b57e4200178585df37b489ff59b0ac99693c28d8",
+    "vendored_source_identity": "sha256:4c0deecbec7afc74b1fc7f61898ad10e54b63d3b7c5cad63b80ee8c647a69e1c",
+    "n3_contract_version": "tower-n3-request-v2",
+    "n4_contract_version": "tower-n4-request-v2",
+    "n2_contract_version": "tower-n2-request-v1",
+    "chain_request_contract_version": "tower-chain-request-v1",
+    "chain_response_contract_version": "tower-chain-response-v1",
+    "tower_chain_binding_version": "tower-chain-binding-v1",
+    "production_entrypoint": "run_tower_chain",
+    "atr_source_commit": "a80d8a085dfc26e3042beb512a10aa5c5c1ccb62"
+  },
+  "mt5_live_probe_result": {
+    "probed": true,
+    "last_bar_ts_close": 1786962600,
+    "router_reason_codes": {
+      "trend_pullback": [
+        "UNCERTAIN_REGIME"
+      ],
+      "range_fade": [
+        "TRUE_RANGE_NOT_IDENTIFIABLE"
+      ],
+      "trend_shadow": [
+        "UNCERTAIN_REGIME"
+      ],
+      "trend_experimental": [
+        "UNCERTAIN_REGIME"
+      ]
+    }
+  },
+  "bar_data_provenance": {
+    "source": "VERSIONED_CANONICAL_FIXTURE:new_brain_bridge.tests.conftest.trend_up_regime_bars",
+    "bar_count": 478,
+    "first_ts_open": 0,
+    "last_ts_close": 430200
+  },
+  "all_strategy_decisions": [
+    {
+      "strategy_id": "trend_pullback",
+      "decision": "TRADE",
+      "reason_codes": [
+        "TRADE_VALIDATED_EDGE"
+      ],
+      "node_traces": [
+        {
+          "node": "N1",
+          "input_fingerprint": "1d392304c92d7fa5",
+          "output": "407f3839b7f01b7f",
+          "reason_codes": [],
+          "component_version": "n1-additive-raw-axes-v1"
+        },
+        {
+          "node": "Router",
+          "input_fingerprint": "471f4832a1665543",
+          "output": "aedd3cccbbf46d1e",
+          "reason_codes": [
+            "ROUTER_ELIGIBLE"
+          ],
+          "component_version": "router-v1"
+        },
+        {
+          "node": "CostModel",
+          "input_fingerprint": "b7bb9a9aed17a1c8",
+          "output": "860e208812d61406",
+          "reason_codes": [
+            "COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW"
+          ],
+          "component_version": "v1:RATIFIED"
+        },
+        {
+          "node": "TowerN2",
+          "input_fingerprint": "afbfa785cbd0e887d241c4dba04d5608e1684cf00a200ea3947d676b82c26389",
+          "output": "d125cd9813e818f1",
+          "reason_codes": [],
+          "component_version": "tower-n2-request-v1"
+        },
+        {
+          "node": "TowerN3",
+          "input_fingerprint": "89bc87fbd6580072b46ac684aa059459327b7e1da1d26fb9333dda27ea72d9e6",
+          "output": "2db0d745d43162bf",
+          "reason_codes": [],
+          "component_version": "tower-n3-request-v2"
+        },
+        {
+          "node": "TowerN4",
+          "input_fingerprint": "4769f891222045dbf445259b4b0e72669b52a5837e2d3c0d2367a408140a8c89",
+          "output": "58bef95ff68e11f1",
+          "reason_codes": [],
+          "component_version": "tower-n4-request-v2"
+        },
+        {
+          "node": "EV",
+          "input_fingerprint": "581c577a82d89029",
+          "output": "270393f5b853e35e",
+          "reason_codes": [],
+          "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+        },
+        {
+          "node": "N6",
+          "input_fingerprint": "3d8a8b6cd277a09b",
+          "output": "99f69fbec1691ece",
+          "reason_codes": [
+            "TRADE_VALIDATED_EDGE"
+          ],
+          "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+        }
+      ]
+    },
+    {
+      "strategy_id": "range_fade",
+      "decision": null,
+      "reason_codes": [],
+      "node_traces": [
+        {
+          "node": "N1",
+          "input_fingerprint": "1d392304c92d7fa5",
+          "output": "407f3839b7f01b7f",
+          "reason_codes": [],
+          "component_version": "n1-additive-raw-axes-v1"
+        },
+        {
+          "node": "Router",
+          "input_fingerprint": "471f4832a1665543",
+          "output": "03aa6eb593ab6b93",
+          "reason_codes": [
+            "TRUE_RANGE_NOT_IDENTIFIABLE"
+          ],
+          "component_version": "router-v1"
+        }
+      ]
+    },
+    {
+      "strategy_id": "trend_shadow",
+      "decision": "SHADOW_TRADE_CANDIDATE",
+      "reason_codes": [
+        "SHADOW_CANDIDATE_EV_POSITIVE"
+      ],
+      "node_traces": [
+        {
+          "node": "N1",
+          "input_fingerprint": "1d392304c92d7fa5",
+          "output": "407f3839b7f01b7f",
+          "reason_codes": [],
+          "component_version": "n1-additive-raw-axes-v1"
+        },
+        {
+          "node": "Router",
+          "input_fingerprint": "471f4832a1665543",
+          "output": "aedd3cccbbf46d1e",
+          "reason_codes": [
+            "ROUTER_ELIGIBLE"
+          ],
+          "component_version": "router-v1"
+        },
+        {
+          "node": "CostModel",
+          "input_fingerprint": "b7bb9a9aed17a1c8",
+          "output": "860e208812d61406",
+          "reason_codes": [
+            "COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW"
+          ],
+          "component_version": "v1:RATIFIED"
+        },
+        {
+          "node": "TowerN2",
+          "input_fingerprint": "afbfa785cbd0e887d241c4dba04d5608e1684cf00a200ea3947d676b82c26389",
+          "output": "c31f8c033859a31b",
+          "reason_codes": [],
+          "component_version": "tower-n2-request-v1"
+        },
+        {
+          "node": "TowerN3",
+          "input_fingerprint": "89bc87fbd6580072b46ac684aa059459327b7e1da1d26fb9333dda27ea72d9e6",
+          "output": "2db0d745d43162bf",
+          "reason_codes": [],
+          "component_version": "tower-n3-request-v2"
+        },
+        {
+          "node": "TowerN4",
+          "input_fingerprint": "4769f891222045dbf445259b4b0e72669b52a5837e2d3c0d2367a408140a8c89",
+          "output": "58bef95ff68e11f1",
+          "reason_codes": [],
+          "component_version": "tower-n4-request-v2"
+        },
+        {
+          "node": "EV",
+          "input_fingerprint": "ea4b44fc18654dcd",
+          "output": "270393f5b853e35e",
+          "reason_codes": [],
+          "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+        },
+        {
+          "node": "N6",
+          "input_fingerprint": "e852eed87e4c9762",
+          "output": "803909e29a208ba1",
+          "reason_codes": [
+            "SHADOW_CANDIDATE_EV_POSITIVE"
+          ],
+          "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+        }
+      ]
+    },
+    {
+      "strategy_id": "trend_experimental",
+      "decision": "NO_TRADE",
+      "reason_codes": [
+        "NO_ELIGIBLE_STRATEGY"
+      ],
+      "node_traces": [
+        {
+          "node": "N1",
+          "input_fingerprint": "1d392304c92d7fa5",
+          "output": "407f3839b7f01b7f",
+          "reason_codes": [],
+          "component_version": "n1-additive-raw-axes-v1"
+        },
+        {
+          "node": "Router",
+          "input_fingerprint": "471f4832a1665543",
+          "output": "aedd3cccbbf46d1e",
+          "reason_codes": [
+            "ROUTER_ELIGIBLE"
+          ],
+          "component_version": "router-v1"
+        },
+        {
+          "node": "CostModel",
+          "input_fingerprint": "b7bb9a9aed17a1c8",
+          "output": "860e208812d61406",
+          "reason_codes": [
+            "COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW"
+          ],
+          "component_version": "v1:RATIFIED"
+        },
+        {
+          "node": "TowerN2",
+          "input_fingerprint": "afbfa785cbd0e887d241c4dba04d5608e1684cf00a200ea3947d676b82c26389",
+          "output": "eee8cd36b51985c3",
+          "reason_codes": [],
+          "component_version": "tower-n2-request-v1"
+        },
+        {
+          "node": "TowerN3",
+          "input_fingerprint": "89bc87fbd6580072b46ac684aa059459327b7e1da1d26fb9333dda27ea72d9e6",
+          "output": "2db0d745d43162bf",
+          "reason_codes": [],
+          "component_version": "tower-n3-request-v2"
+        },
+        {
+          "node": "TowerN4",
+          "input_fingerprint": "4769f891222045dbf445259b4b0e72669b52a5837e2d3c0d2367a408140a8c89",
+          "output": "58bef95ff68e11f1",
+          "reason_codes": [],
+          "component_version": "tower-n4-request-v2"
+        },
+        {
+          "node": "EV",
+          "input_fingerprint": "68bb53fbff5913e9",
+          "output": "dc937b59892604f5",
+          "reason_codes": [],
+          "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+        },
+        {
+          "node": "N6",
+          "input_fingerprint": "f111dfe28959a544",
+          "output": "75e8f472b33cd29a",
+          "reason_codes": [
+            "NO_ELIGIBLE_STRATEGY"
+          ],
+          "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+        }
+      ]
+    }
+  ],
+  "single_correlated_identity": {
+    "market_event_id": "XAUUSD:M15:430200",
+    "trace_id": "44ab1b6187f77690",
+    "configuration_fingerprint": "3d8a8b6cd277a09b",
+    "worker_session_id": "ed489567e1b64588adedf36b9be0e9e4",
+    "worker_identity_fingerprint": "337660b500c913ce6e620153502ca6549dedc02f305e3985505e408c334703bb",
+    "tower_version": "0.5.2",
+    "chain_binding_version": "tower-chain-binding-v1",
+    "chain_response_contract_version": "tower-chain-response-v1",
+    "chain_fingerprint": "112749852f7a1f8782fb4bbcf8477d044095ccc053b69a1c490ab8da775d2eee",
+    "chain_status": "ok_chain",
+    "terminal_reason_code": "ok_chain",
+    "n2": {
+      "contract_version": "tower-n2-request-v1",
+      "code_version": "STAT-LEVEL2-BIAS-H1-SPEC-v1.0",
+      "event_fingerprint": "997d40de3e8aa57f",
+      "node_input_fingerprint": "afbfa785cbd0e887d241c4dba04d5608e1684cf00a200ea3947d676b82c26389",
+      "data_identity": "{\"as_of\":430200,\"bar_count\":119,\"bars_content_hash\":\"995705b83b488eb4b51ed8f5d7ecd4a121062f7110be12b6ff490e2634454f37\",\"contract_version\":\"tower-n2-request-v1\",\"dataset_id\":null,\"first_bar_time\":0,\"last_closed_bar_time\":424800,\"manifest_hash\":null,\"segment_id\":null,\"source_identity\":\"tower-client:XAUUSD:H1\",\"symbol\":\"XAUUSD\",\"timeframe\":\"H1\"}",
+      "output_fingerprint": "ff6266af7b1ec39b3a732896757e5fe5e094150155680744e7f06693769a236d"
+    },
+    "n3": {
+      "contract_version": "tower-n3-request-v2",
+      "code_version": "level3-v2.0-reanchored",
+      "event_fingerprint": "997d40de3e8aa57f",
+      "node_input_fingerprint": "89bc87fbd6580072b46ac684aa059459327b7e1da1d26fb9333dda27ea72d9e6",
+      "data_identity": "{\"as_of\":430200,\"bar_count\":150,\"bars_content_hash\":\"cd8a7c99b4f317e415e760cb0b8a00d457802a1a31eab9b629b2755c3fbf71a3\",\"contract_version\":\"tower-n3-request-v2\",\"dataset_id\":null,\"first_bar_time\":295200,\"last_closed_bar_time\":429300,\"manifest_hash\":null,\"segment_id\":null,\"source_identity\":\"tower-client:XAUUSD:M15\",\"symbol\":\"XAUUSD\",\"timeframe\":\"M15\"}"
+    },
+    "n4": {
+      "contract_version": "tower-n4-request-v2",
+      "code_version": "level4-v2.0-w3",
+      "event_fingerprint": "997d40de3e8aa57f",
+      "node_input_fingerprint": "4769f891222045dbf445259b4b0e72669b52a5837e2d3c0d2367a408140a8c89",
+      "data_identity": "{\"as_of\":430200,\"bar_count\":150,\"bars_content_hash\":\"05e0bb895f0db311cd15bb49bdc937e8428b0296cbfa5fbe17763bbd55a1282a\",\"contract_version\":\"tower-n4-request-v2\",\"dataset_id\":null,\"first_bar_time\":385200,\"last_closed_bar_time\":429900,\"manifest_hash\":null,\"segment_id\":null,\"source_identity\":\"tower-client:XAUUSD:M5\",\"symbol\":\"XAUUSD\",\"timeframe\":\"M5\"}"
+    },
+    "strategy_id": "trend_pullback",
+    "side_provenance": "StrategyContract.allowed_directions[0] (see node_traces' TowerN2 output)",
+    "cost_model_fingerprint": "860e208812d61406",
+    "n6_configuration_fingerprint": "63b8b7ac5ef85aa3",
+    "n6_engine_version": "ev-core@bdd15e5+ev-adapter-v1"
+  },
+  "decision": {
+    "decision": "TRADE",
+    "reason_codes": [
+      "TRADE_VALIDATED_EDGE"
+    ],
+    "expected_value_net": 1.1594785616755494,
+    "probability_inputs_provenance": "TEST_ONLY_CANONICAL_FIXTURE (illustrative, never production, never demonstrating edge)"
+  },
+  "node_traces": [
+    {
+      "node": "N1",
+      "input_fingerprint": "1d392304c92d7fa5",
+      "output": "407f3839b7f01b7f",
+      "reason_codes": [],
+      "component_version": "n1-additive-raw-axes-v1"
+    },
+    {
+      "node": "Router",
+      "input_fingerprint": "471f4832a1665543",
+      "output": "aedd3cccbbf46d1e",
+      "reason_codes": [
+        "ROUTER_ELIGIBLE"
+      ],
+      "component_version": "router-v1"
+    },
+    {
+      "node": "CostModel",
+      "input_fingerprint": "b7bb9a9aed17a1c8",
+      "output": "860e208812d61406",
+      "reason_codes": [
+        "COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW"
+      ],
+      "component_version": "v1:RATIFIED"
+    },
+    {
+      "node": "TowerN2",
+      "input_fingerprint": "afbfa785cbd0e887d241c4dba04d5608e1684cf00a200ea3947d676b82c26389",
+      "output": "d125cd9813e818f1",
+      "reason_codes": [],
+      "component_version": "tower-n2-request-v1"
+    },
+    {
+      "node": "TowerN3",
+      "input_fingerprint": "89bc87fbd6580072b46ac684aa059459327b7e1da1d26fb9333dda27ea72d9e6",
+      "output": "2db0d745d43162bf",
+      "reason_codes": [],
+      "component_version": "tower-n3-request-v2"
+    },
+    {
+      "node": "TowerN4",
+      "input_fingerprint": "4769f891222045dbf445259b4b0e72669b52a5837e2d3c0d2367a408140a8c89",
+      "output": "58bef95ff68e11f1",
+      "reason_codes": [],
+      "component_version": "tower-n4-request-v2"
+    },
+    {
+      "node": "EV",
+      "input_fingerprint": "581c577a82d89029",
+      "output": "270393f5b853e35e",
+      "reason_codes": [],
+      "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+    },
+    {
+      "node": "N6",
+      "input_fingerprint": "3d8a8b6cd277a09b",
+      "output": "99f69fbec1691ece",
+      "reason_codes": [
+        "TRADE_VALIDATED_EDGE"
+      ],
+      "component_version": "ev-core@bdd15e5+ev-adapter-v1"
+    }
+  ],
+  "risk_manager": {
+    "approved_upstream": true,
+    "risk_approved": true,
+    "reason_codes": []
+  },
+  "broker_gate": {
+    "reached_broker_gate": true,
+    "broker_blocked": true,
+    "block_reason": "BrokerOrderSubmissionGate: order submission is DISABLED -- Mandate 2 integration not yet ratified by Red Team -- default-closed",
+    "gate_enabled": false
+  },
+  "broker_evidence": {
+    "broker_state_before": {
+      "positions_total": 0,
+      "orders_total": 0,
+      "balance": 1800.34,
+      "equity": 1800.34
+    },
+    "broker_state_after": {
+      "positions_total": 0,
+      "orders_total": 0,
+      "balance": 1800.34,
+      "equity": 1800.34
+    },
+    "broker_state_unchanged": true,
+    "order_send_calls": 0,
+    "orders_created": 0,
+    "positions_created": 0
+  },
+  "result": "READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2_CORRELATED"
+}

@@ -81,6 +81,7 @@ def _stub_pin(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION", "STUB-TEST-CHAIN-RESPONSE-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_TOWER_CHAIN_BINDING_VERSION", "STUB-TEST-CHAIN-BINDING-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_PRODUCTION_ENTRYPOINT", "STUB-TEST-run_tower_chain")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_ATR_SOURCE_COMMIT", "STUB-TEST-ATR-SOURCE-COMMIT-NEVER-REAL")
 
 
 def test_host_modules_preloaded_in_main_process_worker_still_starts_clean(

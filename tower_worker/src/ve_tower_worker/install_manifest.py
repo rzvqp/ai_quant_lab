@@ -36,10 +36,15 @@ class InstallManifest:
     chain_response_contract_version: str | None = None
     tower_chain_binding_version: str | None = None
     production_entrypoint: str | None = None
+    atr_source_commit: str | None = None
     """Chain-binding fields (RT-TOWER-0008 remediation, 2026-08-17): `None` for every install manifest
     written before `ve_tower` 0.5.0 (0.3.0/0.4.0 pre-date `run_tower_chain`/N2 entirely) -- honest absence,
     never backfilled or guessed for an old install. A worker reading an old manifest with these `None`
-    correctly refuses to claim chain-binding support in its own handshake identity."""
+    correctly refuses to claim chain-binding support in its own handshake identity.
+
+    `atr_source_commit` (RT-TOWER-0010, 2026-08-17): `None` for every install manifest written before
+    `ve_tower` 0.5.2 (0.5.0/0.5.1 either lacked ATR provenance entirely or shipped a provenance value VE
+    itself later corrected)."""
 
 
 def manifest_path(*, venv_root: Path) -> Path:
@@ -74,7 +79,7 @@ def read_install_manifest(*, venv_root: Path) -> InstallManifest | None:
     optional_str_fields = (
         "vendored_source_identity", "n3_contract_version", "n4_contract_version", "n2_contract_version",
         "chain_request_contract_version", "chain_response_contract_version", "tower_chain_binding_version",
-        "production_entrypoint",
+        "production_entrypoint", "atr_source_commit",
     )
     for f in optional_str_fields:
         if obj.get(f) is not None and not isinstance(obj.get(f), str):
@@ -93,6 +98,7 @@ def read_install_manifest(*, venv_root: Path) -> InstallManifest | None:
         chain_response_contract_version=obj.get("chain_response_contract_version"),
         tower_chain_binding_version=obj.get("tower_chain_binding_version"),
         production_entrypoint=obj.get("production_entrypoint"),
+        atr_source_commit=obj.get("atr_source_commit"),
         installed_at_utc=obj["installed_at_utc"],
         installed_by=obj["installed_by"],
         verification_note=obj["verification_note"],

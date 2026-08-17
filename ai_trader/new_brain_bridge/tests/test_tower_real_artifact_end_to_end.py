@@ -19,6 +19,8 @@ from ai_trader.new_brain_bridge.tower_identity_pin import (
     EXPECTED_N2_CONTRACT_VERSION,
     EXPECTED_N3_CONTRACT_VERSION,
     EXPECTED_N4_CONTRACT_VERSION,
+    EXPECTED_PACKAGE_BUILD_COMMIT,
+    EXPECTED_VE_TOWER_PACKAGE_VERSION,
 )
 from ai_trader.new_brain_bridge.tower_launcher import EstablishedSession, TowerWorkerLauncher
 from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerChainRequest
@@ -90,8 +92,8 @@ def test_real_worker_handshake_is_accepted_with_no_test_identity_override(tmp_pa
     try:
         result = launcher.launch_and_handshake()
         assert isinstance(result, EstablishedSession), f"expected EstablishedSession, got {result!r}"
-        assert result.worker_identity.ve_tower_package_version == "0.5.0"
-        assert result.worker_identity.package_build_commit == "b128d8b"
+        assert result.worker_identity.ve_tower_package_version == EXPECTED_VE_TOWER_PACKAGE_VERSION
+        assert result.worker_identity.package_build_commit == EXPECTED_PACKAGE_BUILD_COMMIT
         assert result.worker_identity.production_entrypoint == "run_tower_chain"
         assert result.worker_identity.n2_contract_version == EXPECTED_N2_CONTRACT_VERSION
     finally:
@@ -113,7 +115,7 @@ def test_real_worker_answers_a_real_chain_fixture_over_real_ipc(tmp_path: Path) 
         result = client.request_chain(_fixture_request())
 
         assert isinstance(result, TowerChainResult), f"expected TowerChainResult, got {result!r}"
-        assert result.tower_version == "0.5.0"
+        assert result.tower_version == EXPECTED_VE_TOWER_PACKAGE_VERSION
         assert result.chain_binding_version == "tower-chain-binding-v1"
         assert result.n2_output is not None
         assert "bias_available" in result.n2_output

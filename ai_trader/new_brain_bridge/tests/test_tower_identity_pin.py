@@ -32,6 +32,7 @@ def _matching_identity(**overrides: object) -> WorkerIdentity:
         "chain_response_contract_version": tower_identity_pin.EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION,
         "tower_chain_binding_version": tower_identity_pin.EXPECTED_TOWER_CHAIN_BINDING_VERSION,
         "production_entrypoint": tower_identity_pin.EXPECTED_PRODUCTION_ENTRYPOINT,
+        "atr_source_commit": tower_identity_pin.EXPECTED_ATR_SOURCE_COMMIT,
     }
     fields.update(overrides)
     return WorkerIdentity(**fields)  # type: ignore[arg-type]
@@ -103,6 +104,20 @@ def test_6_different_n3_or_n4_contract_fails() -> None:
     mismatched_fields = {m.field for m in mismatches}
     assert "n3_contract_version" in mismatched_fields
     assert "n4_contract_version" in mismatched_fields
+
+
+def test_wrong_atr_source_commit_is_a_mismatch() -> None:
+    """RT-TOWER-0010 (`ve_tower` 0.5.2): a worker claiming a different `market_state` source commit for
+    ATR must fail closed -- the same discipline as every other exact-match identity field."""
+    identity = _matching_identity(atr_source_commit="some-other-commit")
+    mismatches = verify_pin(identity)
+    assert any(m.field == "atr_source_commit" for m in mismatches)
+
+
+def test_atr_source_commit_none_fails() -> None:
+    identity = _matching_identity(atr_source_commit=None)
+    mismatches = verify_pin(identity)
+    assert any(m.field == "atr_source_commit" and m.actual is None for m in mismatches)
 
 
 def test_wrong_ve_tower_package_version_is_a_mismatch() -> None:

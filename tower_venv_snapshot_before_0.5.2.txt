@@ -1,0 +1,19 @@
+ast_serialize==0.8.0
+colorama==0.4.6
+iniconfig==2.3.0
+librt==0.15.0
+mypy==2.3.0
+mypy_extensions==1.1.0
+numpy==2.5.1
+packaging==26.3
+pandas==3.0.3
+pathspec==1.1.1
+pluggy==1.6.0
+Pygments==2.20.0
+pytest==9.1.1
+python-dateutil==2.9.0.post0
+six==1.17.0
+typing_extensions==4.16.0
+tzdata==2026.3
+ve-tower-worker @ file:///C:/Users/MEDION%20GAMING/ai_quant_lab-research-main/tower_worker
+ve_tower @ file:///C:/Users/MEDION%20GAMING/ai_quant_lab-wp5b/ve_tower/release/ve_tower-0.5.2-py3-none-any.whl#sha256=1abcd60d6e541468a38e68a8b57e4200178585df37b489ff59b0ac99693c28d8

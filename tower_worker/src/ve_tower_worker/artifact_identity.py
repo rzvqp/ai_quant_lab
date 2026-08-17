@@ -74,4 +74,5 @@ def read_real_worker_identity(*, venv_root: Path | None = None) -> WorkerIdentit
             ve_tower_manifest.tower_chain_binding_version if ve_tower_manifest else None
         ),
         production_entrypoint=ve_tower_manifest.production_entrypoint if ve_tower_manifest else None,
+        atr_source_commit=ve_tower_manifest.atr_source_commit if ve_tower_manifest else None,
     )

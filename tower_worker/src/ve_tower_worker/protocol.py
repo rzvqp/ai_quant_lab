@@ -112,8 +112,13 @@ class WorkerIdentity:
     chain_response_contract_version: str | None = None
     tower_chain_binding_version: str | None = None
     production_entrypoint: str | None = None
+    atr_source_commit: str | None = None
     """Chain-binding fields (RT-TOWER-0008 remediation, 2026-08-17, `ve_tower` 0.5.0): `None` for a
-    worker running against a pre-0.5.0 `ve_tower` -- honest absence, never backfilled."""
+    worker running against a pre-0.5.0 `ve_tower` -- honest absence, never backfilled.
+
+    `atr_source_commit` (RT-TOWER-0010, 2026-08-17, `ve_tower` 0.5.2): the vendored `market_state`
+    module's own source commit backing the real `atr14` now threaded into `run_n3`/`run_n4` -- `None`
+    for a worker running against 0.5.0 (which hardcoded `atr=None`)."""
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -132,6 +137,7 @@ class WorkerIdentity:
             "chain_response_contract_version": self.chain_response_contract_version,
             "tower_chain_binding_version": self.tower_chain_binding_version,
             "production_entrypoint": self.production_entrypoint,
+            "atr_source_commit": self.atr_source_commit,
         }
 
     def canonical_json(self) -> str:
@@ -171,6 +177,7 @@ def worker_identity_from_dict(obj: dict[str, object]) -> WorkerIdentity:
         chain_response_contract_version=_opt_str("chain_response_contract_version"),
         tower_chain_binding_version=_opt_str("tower_chain_binding_version"),
         production_entrypoint=_opt_str("production_entrypoint"),
+        atr_source_commit=_opt_str("atr_source_commit"),
     )
 
 

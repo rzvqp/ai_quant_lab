@@ -56,10 +56,10 @@ from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, WorkerId
 
 EXPECTED_WORKER_PACKAGE_VERSION = "0.3.0"
 EXPECTED_PROTOCOL_VERSION = PROTOCOL_VERSION
-EXPECTED_VE_TOWER_PACKAGE_VERSION = "0.5.0"
-EXPECTED_PACKAGE_BUILD_COMMIT = "b128d8b"
-EXPECTED_STATE_DELIVERY_COMMIT = "26470f5"
-EXPECTED_WHEEL_SHA256 = "6d99baf62f9a245031722a3b59c4df59b98211707c26d587641eff424cd94df7"
+EXPECTED_VE_TOWER_PACKAGE_VERSION = "0.5.2"
+EXPECTED_PACKAGE_BUILD_COMMIT = "b0cf2ea"
+EXPECTED_STATE_DELIVERY_COMMIT = "60bf71b"
+EXPECTED_WHEEL_SHA256 = "1abcd60d6e541468a38e68a8b57e4200178585df37b489ff59b0ac99693c28d8"
 EXPECTED_VENDORED_SOURCE_IDENTITY = "sha256:4c0deecbec7afc74b1fc7f61898ad10e54b63d3b7c5cad63b80ee8c647a69e1c"
 EXPECTED_N3_CONTRACT_VERSION = "tower-n3-request-v2"
 EXPECTED_N4_CONTRACT_VERSION = "tower-n4-request-v2"
@@ -68,6 +68,7 @@ EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION = "tower-chain-request-v1"
 EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION = "tower-chain-response-v1"
 EXPECTED_TOWER_CHAIN_BINDING_VERSION = "tower-chain-binding-v1"
 EXPECTED_PRODUCTION_ENTRYPOINT = "run_tower_chain"
+EXPECTED_ATR_SOURCE_COMMIT = "a80d8a085dfc26e3042beb512a10aa5c5c1ccb62"
 """RT-TOWER-0008 remediation (2026-08-17, `ve_tower` 0.5.0, `N2_HANDOFF_PASS`/`N2_CHAIN_BINDING_PASS`,
 Red Team `RT-TOWER-0008` @ `ai_quant_lab-wp5b` commit `d2f5a68`). Sourced from `HANDOFF_MANIFEST-0.5.0.json`
 (`ai_quant_lab-wp5b` @ `26470f5`, schema `ve-tower-handoff-manifest-v2`), verified by
@@ -94,7 +95,31 @@ rewrite; a worker still reporting `0.2.0` is running pre-remediation code and mu
 
 **Vendored identity unchanged from 0.3.0's pin** -- confirmed byte-identical: `ve_tower` 0.5.0 adds the
 NEW `run_tower_chain`/N2 orchestrator on top of the SAME ratified, byte-identical N1/N3/N4 vendored
-modules, never re-vendored."""
+modules, never re-vendored.
+
+**2026-08-17, RT-TOWER-0010 (`TOWER_CHAIN_ATR_PASS`, Red Team commit `68c6b59`, `ve_tower` 0.5.2).**
+Sourced from `HANDOFF_MANIFEST-0.5.2.json` (`ai_quant_lab-wp5b` @ `60bf71b`), independently re-hashed
+(wheel SHA-256 matches both `SHA256SUMS.txt` and this repo's own from-bytes recomputation). The SAME
+three-commit-identity discipline applies again, with the same divergence between the chat-quoted "delivery"
+commit and the sidecar's own authoritative field -- confirmed via `git log` on `ai_quant_lab-wp5b`:
+
+- `package_build_commit` (`b0cf2ea`) -- "ve_tower 0.5.2: correct N3 ATR provenance value (provenance-only,
+  RT-TOWER-0009)" -- matches both the sidecar and the chat message.
+- `state_delivery_commit` (`60bf71b`, THIS pin's authoritative value) -- "ve_tower: physical 0.5.2 wheel +
+  sidecar manifest (N3 ATR provenance fix)" -- the sidecar's OWN declared value.
+- `f7876ae` -- "ve_tower: stamp 0.5.2 manifest state_delivery_commit 60bf71b": the chat message called this
+  "delivery", but per `git log` it is the LATER stamping commit, exactly the same shape as `d7d5bab` was for
+  0.5.0. Not used for `state_delivery_commit`, for the same reason `d7d5bab` was not.
+
+**`EXPECTED_ATR_SOURCE_COMMIT`** pins the specific vendored module (`market_state`, real function `atr14`)
+that `run_tower_chain` now threads a genuine ATR value from into `run_n3`/`run_n4` -- closing the
+`INTEGRATION_BLOCKED_TOWER_CHAIN_ATR_UNAVAILABLE` finding (checkpoint `ee92c8c`). Read from the sidecar's
+own `atr_source.source_commit` field, cross-checked against its `vendored_source_commits.market_state`
+entry (identical, confirming ATR is threaded from the SAME already-vendored, byte-identical module --
+`vendored_source_identity` is unchanged from 0.5.0/0.5.1, so no module was re-vendored or newly added; only
+the adaptor (`chain.py`) was fixed to stop hardcoding `atr=None`). `git log` also shows the intermediate
+attempt: `ve_tower` 0.5.1 (`efc6e23`, "compute ATR internally in the chain") first made N4 reachable; 0.5.2
+(`b0cf2ea`) corrects a wrong provenance VALUE that shipped with 0.5.1, not a re-fix of availability itself."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -125,6 +150,7 @@ def verify_pin(claimed: WorkerIdentity) -> tuple[PinMismatch, ...]:
          claimed.chain_response_contract_version),
         ("tower_chain_binding_version", EXPECTED_TOWER_CHAIN_BINDING_VERSION, claimed.tower_chain_binding_version),
         ("production_entrypoint", EXPECTED_PRODUCTION_ENTRYPOINT, claimed.production_entrypoint),
+        ("atr_source_commit", EXPECTED_ATR_SOURCE_COMMIT, claimed.atr_source_commit),
     )
     mismatches = []
     for field_name, expected, actual in exact_match_checks:

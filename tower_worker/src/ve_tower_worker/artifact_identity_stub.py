@@ -32,6 +32,7 @@ STUB_IDENTITY = WorkerIdentity(
     chain_response_contract_version="STUB-TEST-CHAIN-RESPONSE-1.0",
     tower_chain_binding_version="STUB-TEST-CHAIN-BINDING-1.0",
     production_entrypoint="STUB-TEST-run_tower_chain",
+    atr_source_commit="STUB-TEST-ATR-SOURCE-COMMIT-NEVER-REAL",
 )
 
 
