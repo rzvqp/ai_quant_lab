@@ -115,7 +115,51 @@ def test_full_chain_ok() -> None:
     r = run_tower_chain(_req_ok())
     assert r.chain_status == "ok_chain" and r.terminal_reason_code == "ok_chain"
     assert r.n2.bias_available and r.n3.market_map_available and r.n4.confirmation_available   # type: ignore[union-attr]
-    assert r.chain_binding_version == "tower-chain-binding-v1" and r.tower_version == "0.5.0"
+    assert r.chain_binding_version == "tower-chain-binding-v1" and r.tower_version == vt.VE_TOWER_VERSION
+
+
+# ═══ ATR (remediere TOWER_CHAIN_ATR) ═══
+def test_chain_computes_atr_internally_and_n4_not_atr_unavailable() -> None:
+    # DECISIV: pe fixture valid, lanțul ajunge la N4 FĂRĂ atr_unavailable (ATR real ajunge la N4)
+    r = run_tower_chain(_req_ok())
+    assert r.n4 is not None and r.n4.reason_codes != ("atr_unavailable",)
+    assert r.n4.confirmation_available   # date suficiente ⇒ confirmarea depinde de date, nu de lipsa ATR
+
+
+def test_atr_provenance_recorded_m15_for_n3_and_band_for_n4() -> None:
+    r = run_tower_chain(_req_ok())
+    assert r.n3_atr_provenance is not None and r.n3_atr_provenance.timeframe == "M15"
+    assert r.n3_atr_provenance.source_module == "market_state" and r.n3_atr_provenance.period == 14
+    assert r.n4_atr_provenance is not None and r.n4_atr_provenance.timeframe == "M15_band_1xATR"   # SPEC2 §3, NU M5
+    assert r.n4_atr_provenance.available and r.n4_atr_provenance.atr_value is not None
+
+
+def test_caller_cannot_supply_atr_fields() -> None:
+    fields = {f.name for f in dataclasses.fields(ChainRequest)}
+    assert fields.isdisjoint({"atr", "n3_atr", "n4_atr", "atr_fingerprint"})
+    good = {f.name: getattr(_req(), f.name) for f in dataclasses.fields(ChainRequest)}
+    for bad in ("atr", "n3_atr", "n4_atr"):
+        with pytest.raises(vt.UnknownRequestFieldError):
+            parse_chain_request({**good, bad: [1.0, 2.0]})
+
+
+def test_m15_insufficient_atr_unavailable() -> None:
+    # M15 prea scurt (<15) ⇒ atr14 NaN ⇒ N3 indisponibil (atr canonic lipsă)
+    o = tuple([100.0] * 10); h = tuple([101.0] * 10); l = tuple([99.0] * 10); c = tuple([100.0] * 10)
+    t = tuple(T0 + j * 900 for j in range(10))
+    r = run_tower_chain(_req(m15_open=o, m15_high=h, m15_low=l, m15_close=c, m15_time=t))
+    assert r.chain_status in ("n3_unavailable", "n4_unavailable")
+    assert r.n3 is not None and not r.n3.market_map_available
+
+
+def test_chain_fingerprint_includes_atr_identity() -> None:
+    base = run_tower_chain(_req_ok())
+    # schimbă barele M15 (deci și ATR-ul M15/banda) ⇒ chain_fingerprint diferit
+    o, h, l, c, t = _h1()  # placeholder to reuse structure
+    okreq = _req_ok()
+    m15c2 = tuple(list(okreq.m15_close[:20]) + [okreq.m15_close[20] + 0.5] + list(okreq.m15_close[21:]))
+    mut = dataclasses.replace(okreq, m15_close=m15c2)
+    assert run_tower_chain(mut).chain_fingerprint != base.chain_fingerprint
 
 
 def test_cascade_n2_unavailable() -> None:

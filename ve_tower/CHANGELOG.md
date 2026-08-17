@@ -1,5 +1,29 @@
 # ve_tower — CHANGELOG
 
+## 0.5.1 — ATR calculat INTERN în orchestrator (remediere TOWER_CHAIN_ATR)
+
+Defect reproductibil în 0.5.0: `run_tower_chain` chema `run_n3(atr=None)` și `run_n4(atr=None)`. N4 (cu atr=None)
+cade determinist pe `atr_unavailable` ⇒ lanțul nu putea produce NICIODATĂ `confirmation_available=True`, deci nu
+ajungea la EV/N6 ca oportunitate aprobată. Corectat FĂRĂ a atinge modulele vendate / contractele N2/N3/N4:
+
+- **ATR canonic INTERN**: orchestratorul calculează ATR din barele primite cu primitiva RATIFICATĂ
+  `market_state.atr14` (source `a80d8a0`, period **14**, TR = `max(h-l,|h-c₋₁|,|l-c₋₁|)`). Un singur detector, cel
+  ratificat — NU un al doilea, NU ATR din AI Trader.
+- **Convenția de timeframe (justificată din git, raportată înainte de implementare)**: N3 ← `atr14(M15)`; N4 ← **banda
+  M15 1×ATR** = `atr14(M15)[-1]`. `zone_confirmation` măsoară progresul contra benzii M15 (`zone_confirmation.py:22`
+  „NU ATR M5"; `progress_reference="M15_band_1xATR"`; `market_bus.py:255,268` wire `atr=[m15_atr[-1]]*len(m5)`). A
+  folosi ATR M5 pentru N4 ar schimba semantica modulului ratificat — INTERZIS. **RAPORT:** mandatul cerea „N4 ATR din
+  M5"; sursa ratificată impune banda M15 — implementez ratificatul și justific din git.
+- **Apelantul NU poate furniza** `atr`/`n3_atr`/`n4_atr`/atr fingerprint (nu există câmpuri; `parse_chain_request`
+  respinge câmp necunoscut). ATR calculat din bare `<= as_of` (fără lookahead).
+- **Fail-closed**: M15/M5 insuficiente/incomplete/neordonate/stale/NaN/Inf ⇒ `ATR_UNAVAILABLE`, nod indisponibil, reason
+  explicit, zero fallback, zero `atr=0`.
+- **Proveniență ATR** (`AtrProvenance`) în `ChainResponse` pentru N3 și N4 (source module/commit · function · timeframe
+  · period · TR · as_of · last closed bar · source identity · atr value · availability · reason) și legată în
+  `chain_fingerprint` (+ deja în `data_identity` a nodurilor prin bare). Schimbarea barelor/ATR ⇒ altă identitate.
+- Contracte N2/N3/N4 NESCHIMBATE; module vendate byte-identice; ve_brain/N1/Router/EV/N6 neatinse; 0.5.0 păstrat.
+  73 teste (decisivul: pe fixture valid, lanțul ajunge la N4 fără `atr_unavailable`). mypy --strict clean.
+
 ## 0.5.0 — ORCHESTRATOR de lanț `run_tower_chain` (remediere N2_CHAIN_BINDING, RT-TOWER-0007)
 
 Verdict Red Team pe 0.4.0: **N2_HANDOFF_CONDITIONAL / N2_CHAIN_BINDING_REQUIRED**. N2 însuși e ACCEPTAT; singurul

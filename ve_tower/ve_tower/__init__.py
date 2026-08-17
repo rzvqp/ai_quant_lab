@@ -30,7 +30,7 @@ from .data_identity import DataIdentity, DataIdentityError, build_data_identity
 from .fingerprint import event_fingerprint, same_event
 from .contracts import (
     N2Request, N2Response, N2Factor, N3Request, N3Response, N3Level, LevelProvenance, N4Request, N4Response,
-    ChainRequest, ChainResponse, parse_chain_request, UnknownRequestFieldError,
+    ChainRequest, ChainResponse, AtrProvenance, parse_chain_request, UnknownRequestFieldError,
     SchemaValidationError, SUPPORTED_N2_CONTRACTS, SUPPORTED_N3_CONTRACTS, SUPPORTED_N4_CONTRACTS,
     SUPPORTED_CHAIN_CONTRACTS, validate_n2_request, validate_n3_request, validate_n4_request,
     assert_n2_compatible, assert_n3_compatible, assert_n4_compatible,
@@ -51,7 +51,7 @@ __all__ = [
     "build_info", "ReasonCode", "canonical_hash", "canonical_bytes", "git_blob_sha1", "NonFiniteValueError",
     "DataIdentity", "DataIdentityError", "build_data_identity", "event_fingerprint", "same_event",
     "N2Request", "N2Response", "N2Factor", "N3Request", "N3Response", "N3Level", "LevelProvenance",
-    "N4Request", "N4Response", "ChainRequest", "ChainResponse", "parse_chain_request", "UnknownRequestFieldError",
+    "N4Request", "N4Response", "ChainRequest", "ChainResponse", "AtrProvenance", "parse_chain_request", "UnknownRequestFieldError",
     "SchemaValidationError", "SUPPORTED_N2_CONTRACTS", "SUPPORTED_N3_CONTRACTS", "SUPPORTED_N4_CONTRACTS",
     "SUPPORTED_CHAIN_CONTRACTS", "validate_n2_request", "validate_n3_request", "validate_n4_request",
     "assert_n2_compatible", "assert_n3_compatible", "assert_n4_compatible",

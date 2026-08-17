@@ -280,6 +280,23 @@ class ChainRequest:
 
 
 @dataclass(frozen=True)
+class AtrProvenance:
+    """Proveniența AUDITABILĂ a unui ATR calculat INTERN de orchestrator din barele primite (nu de la apelant)."""
+    source_module: str                         # market_state
+    source_commit: str                         # commitul-sursă al primitivei atr14
+    function: str                              # atr14
+    timeframe: str                             # M15 (N3) / M15 band (N4 — reper de progres, SPEC2 §3)
+    period: int                                # 14
+    true_range_convention: str                 # max(h-l, |h-c₋₁|, |l-c₋₁|)
+    as_of: int
+    last_closed_bar_time: int
+    source_identity: str
+    atr_value: float | None                    # valoarea ATR folosită (None dacă indisponibil)
+    available: bool
+    reason_code: str
+
+
+@dataclass(frozen=True)
 class ChainResponse:
     contract_version: str                      # tower-chain-response-v1
     tower_version: str
@@ -290,6 +307,8 @@ class ChainResponse:
     n2: N2Response | None
     n3: N3Response | None
     n4: N4Response | None
+    n3_atr_provenance: AtrProvenance | None     # ATR M15 pentru N3 (calculat intern)
+    n4_atr_provenance: AtrProvenance | None     # banda M15 1×ATR pentru N4 (calculat intern; SPEC2 §3)
     chain_fingerprint: str
     chain_status: str                          # OK_CHAIN / N2_UNAVAILABLE / N3_UNAVAILABLE / N4_UNAVAILABLE / CHAIN_IDENTITY_MISMATCH
     terminal_reason_code: str
