@@ -2838,4 +2838,72 @@
                changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [67], prev_hash E66.
   entry_hash:  E66
+
+[67] 2026-08-17
+  prev_hash:   E66
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: d7d5bab (ve_tower 0.5.0 delivery HEAD) / build b128d8b / wheel-commit 26470f5
+  battery_ver: RT-TOWER-0008
+  reviewer:    Red Team
+  detail:      N2 CHAIN BINDING — DELTA revalidation of ve_tower 0.5.0 (fix for RT-TOWER-0007
+               N2_CHAIN_BINDING_REQUIRED). VERDICT = ***N2_HANDOFF_PASS · N2_CHAIN_BINDING_PASS***. The gap is
+               closed STRUCTURALLY via a versioned in-artefact orchestrator run_tower_chain. DELTA review — N2
+               provenance/semantics NOT reopened (no new defect). Synthetic data only; instrumentation observe/
+               attack-only; nothing outside red_team/. 32/32 Red Team checks + 68/68 artefact tests.
+               (1 IDENTITY) wheel SHA-256 6d99baf...94df7 exact, git-stored bytes == working wheel; build b128d8b
+               (chain orchestrator), wheel-commit 26470f5, delivery HEAD d7d5bab (stamps state_delivery_commit
+               26470f5). METADATA 0.5.0/py>=3.12/numpy>=1.24+pandas>=2.0. Sidecar HANDOFF_MANIFEST-0.5.0.json
+               describes wheel EXACTLY (version/build/delivery/SHA/production_entrypoint/unbound_direct_api/chain+
+               N2+N3+N4 contracts/binding version/13 vendored_blob_sha1/vendored_source_identity sha256:4c0dee...
+               69e1c/predecessor wheels). Clean-venv import only from site-packages; smoke test run_tower_chain
+               from wheel. Complete pin present incl. PRODUCTION_ENTRYPOINT=run_tower_chain + TOWER_CHAIN_BINDING_
+               VERSION=tower-chain-binding-v1.
+               (2 DELTA) NEW chain.py; DIFFER __init__/contracts(chain+parse_chain_request)/reason_codes/version;
+               SAME (byte-identical) all 13 vendored _tower/* + n2.py + n3.py + n4.py + canonical/data_identity/
+               fingerprint/_bootstrap. N2/N3/N4 contracts UNCHANGED. 13 vendored blobs git-anchored to INSTALLED
+               wheel (13/13). ve_brain/N1/Router/EV/N6 absent from wheel = untouched.
+               (3 DECISIVE INJECTION — impossible+rejected) ChainRequest has NO n2_fingerprint/bias_available/
+               output_fingerprint/n2/n3 field (introspected). parse_chain_request({...,n2_fingerprint:real/"LONG"/
+               "placeholder"/""/deadbeefx8}) -> UnknownRequestFieldError; same for bias_available/output_fingerprint
+               /caller-n2. ChainRequest(**{...,n2_fingerprint:x}) -> TypeError. NONE reach run_n3.
+               (4 REAL ORCHESTRATION, independently instrumented) call-through spies over a full run_tower_chain:
+               N3 receives EXACTLY the executed N2's output_fingerprint (n3_req.n2_fingerprint == n2_resp.output_
+               fingerprint, 6ac880c4==6ac880c4); bias_available into N3 from executed N2 not caller; N4 bound to
+               executed N3 (n4.n3_event_fingerprint == n3.event_fingerprint 292a8486, n3_node_input_fingerprint
+               match, level = n3.market_map[0].price_anchor, n2fp real). ATTACK: monkeypatch run_n3 to forge
+               event_fingerprint -> run_tower_chain returns chain_identity_mismatch (substituted intermediate
+               DETECTED + refused; real caller can't even reach it).
+               (5 CHAIN IDENTITY) ChainResponse preserves market_event_id/correlation_id/configuration_fingerprint/
+               tower_version 0.5.0/binding version/chain contract + N2(data_identity+nif+output_fp)+N3(data_identity
+               +nif+event_fp)+N4(data_identity+nif+event_fp+N3-link)+strategy_id+chain_fingerprint+terminal reason+
+               status. chain_fingerprint INDEPENDENTLY RECOMPUTED via documented composition -> exact match
+               (86a6f0d8). Sensitivity: market_event_id/config/strategy/H1-bar each change the fingerprint.
+               (6 FAIL-CLOSED) N2 unavail->n3=None,n4=None,factors=(),output_fp None (NO default LONG); N3 unavail
+               (M15 stale)->n4=None; N4/empty-map/M5-stale->n4_unavailable confirmation False no fabrication;
+               incompatible chain contract->refused; H1 non-finite->non_finite_value; missing H1 source->source_
+               identity_missing; substituted identity->chain_identity_mismatch. Zero fallback/default-LONG/N2-
+               probability/fabricated node.
+               (7 PRODUCTION SURFACE) PRODUCTION_ENTRYPOINT=run_tower_chain; UNBOUND_DIRECT_API=(run_n2,run_n3,
+               run_n4) marked compat/research; run_tower_chain builds every intermediate request INTERNALLY from
+               executed results, not client identities, not bypassable via ChainRequest; ZERO forbidden imports
+               (import-statement grep on installed wheel; chain.py imports only ve_tower internals); no Risk/Exec/
+               broker/order_send.
+               (8 TESTS/COMPAT) 68 passed/0 failed (matches VE 68); 15 chain tests (matches); negative tests
+               present (structural injection/unknown-field/n3-uses-exact-n2-fp real-vs-forged/cascades/no-default-
+               LONG/incompatible-contract/nan/missing-source/fingerprint determinism+sensitivity/production-
+               entrypoint-only/no-forbidden-imports); mypy --strict on the 12 top-level modules CLEAN (exit 0,
+               independently re-run); upgrade 0.4.0->0.5.0 + rollback 0.5.0->0.4.0 reproducible; AI Trader main venv
+               untouched. NON-BLOCKING NOTE: suite lacks a committed regression test that a substituted intermediate
+               N3/N4 response yields CHAIN_IDENTITY_MISMATCH (guard unreachable by a real caller, verified by my own
+               attack) -> recommend VE add one so the guard can't silently regress.
+               AUTHORIZES (automatic on PASS): AI Trader resumes from 54cf26e; installs exactly ve_tower-0.5.0
+               (6d99baf...94df7) ONLY in tower venv; updates pin+handshake; uses EXCLUSIVELY run_tower_chain; removes
+               bias_direction="LONG" + all synthetic N2 fingerprints; produces the single correlated path; runs full
+               regression; delivers READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2_CORRELATED (= next separate review, the
+               RT-MANDATE2 track). STILL FORBIDDEN: LIVE_SHADOW start, authority activation; broker stays DISABLED;
+               AI Trader HOLD until correlated-chain verdict; Alpha ALPHA_BLOCKED_CANONICAL_N1_HANDOFF; CAND-T05
+               frozen. Red Team modified no engine, ran no real data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [68], prev_hash E67.
+  entry_hash:  E67
 ```
