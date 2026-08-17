@@ -2906,4 +2906,57 @@
                frozen. Red Team modified no engine, ran no real data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [68], prev_hash E67.
   entry_hash:  E67
+
+[68] 2026-08-17
+  prev_hash:   E67
+  event:       VERDICT
+  dc_id:       DC-VE-TOWER-HANDOFF
+  freeze_hash: 73ec3c0 (ve_tower 0.5.1 delivery HEAD) / build efc6e23 / wheel-commit 5f252dc
+  battery_ver: RT-TOWER-0009
+  reviewer:    Red Team
+  detail:      TOWER CHAIN ATR — DELTA revalidation of ve_tower 0.5.1 (fix for the 0.5.0 N4 atr=None ->
+               permanent atr_unavailable defect). VERDICT = ***TOWER_CHAIN_ATR_FAIL***. The PRIMARY N4 defect IS
+               fixed, but ONE reproducible provenance defect blocks PASS. DELTA — N2/chain-binding not reopened.
+               Synthetic data only; instrumentation observe-only; nothing outside red_team/.
+               ★ BLOCKING (§4): N3 AtrProvenance.atr_value != ATR actually consumed by N3. chain.py records
+               n3_atr value = m15_atr[-1] (as_of bar), but zone_map (git 5888978 line 191) uses a = atr14[i-1]
+               (= [-2], its ratified non-lookahead band) for band + distance_atr. Recovered consumed ATR from the
+               zone (band = 0.25*a -> a = band/0.25) and confirmed SYSTEMATIC across 3 synthetic M15 fixtures:
+               A reported 3.071429 vs consumed 3.085714; B 4.072857 vs 4.312857 (~6% delta); C 3.614286 vs
+               3.628571 -- reported always == atr14[-1], consumed always == atr14[-2]. AtrProvenance.atr_value is
+               documented "valoarea ATR folosita" (value USED) -> misreports. VE's own test_atr_provenance_
+               recorded_m15_for_n3_and_band_for_n4 only checks timeframe/source_module/period, NOT the value vs
+               consumed -> suite doesn't catch it. Per CEO S4 rule ("provenance value != ATR consumed -> FAIL") +
+               PASS cond "N3 provenance corespunde calculului sau real" (unmet). REQUIRED FIX (naming only): N3
+               provenance must report atr14[i-1] (= m15_atr[-2]) matching zone_map; zone_map unchanged.
+               EVERYTHING ELSE PASSES: (1 identity) SHA exact, git-stored bytes match, build efc6e23/wheel-commit
+               5f252dc/HEAD 73ec3c0, sidecar describes wheel exactly incl. new atr_source block (market_state.
+               atr14@a80d8a0, period 14, TR max(h-l,|h-cprev|,|l-cprev|), n3 M15, n4 M15_band_1xATR), state_
+               delivery_commit 5f252dc authoritative, vendored_source_identity sha256:4c0dee...69e1c; clean-venv
+               import from site-packages; smoke run_tower_chain. (2 delta) DIFFER only __init__/chain/contracts
+               (AtrProvenance)/version; SAME byte-identical all 13 vendored + n2/n3/n4 + reason_codes + infra; 13
+               blobs git-anchored; contracts N2/N3/N4 unchanged; ve_brain/N1/Router/EV/N6 untouched. (3 canonical
+               ATR, git-verified) atr14@a80d8a0 period14 + TR formula + rolling(14).mean + NaN warmup; zone_
+               confirmation@7f2694f progress_reference=M15_band_1xATR "NU ATR M5" -> VE correctly followed ratified
+               semantics (N4=M15 band NOT M5), NOT faulted. (5 N4 primary fix) instrumented: N4 gets atr=[m15_last]
+               *len(m5) real M15 band, NOT None/M5; m15_last==atr14[-1]; ok_chain + confirmation_available=True +
+               ok_confirmation from real zone_confirmation. (6 no-lookahead) future M15 bar >as_of -> refused
+               (bars_not_closed_or_ordered); N4 uses last-causal M15 band across M15/M5 boundary; deterministic.
+               (7 fail-closed + ATR injection) insufficient/stale/unordered/NaN M15 -> node unavailable no
+               fabrication; atr/n3_atr/n4_atr/atr_value/atr_fingerprint/atr_available -> UnknownRequestFieldError +
+               TypeError (structural); zero atr=0/None-as-available/M5-fallback/caller-ATR. (8 provenance) N4
+               provenance value == consumed band (atr14[-1]), declares M15_band_1xATR, all fields present; chain_
+               fingerprint independently recomputed (incl ATR identity) exact; N3 provenance = the blocking defect.
+               (9 chain-binding regression INTACT) n2_fingerprint/bias_available injection impossible; N3 gets real
+               N2 output_fingerprint; substituted N3 -> CHAIN_IDENTITY_MISMATCH; no default LONG; no N2 probability;
+               production entrypoint run_tower_chain; UNBOUND_DIRECT_API. (10 tests) 73 passed/0 failed (matches);
+               mypy --strict on 12 modules clean (re-run); zero forbidden imports; upgrade 0.5.0->0.5.1 + rollback
+               0.5.1->0.5.0 reproducible (round-trip); AI Trader main venv untouched, sandbox restored to 0.5.0.
+               CONSEQUENCE: no PASS; AI Trader HOLD @ ee92c8c, do NOT install 0.5.1, do NOT finalize correlated run
+               on this wheel; fix N3 provenance value + add committed test (atr_value == zone.band/band_mult), re-
+               deliver -> Red Team re-runs this DELTA. LIVE_SHADOW not started; authority not activated; broker
+               DISABLED; Alpha ALPHA_BLOCKED_CANONICAL_N1_HANDOFF; CAND-T05 frozen. Red Team modified no engine,
+               ran no real data, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [69], prev_hash E68.
+  entry_hash:  E68
 ```
