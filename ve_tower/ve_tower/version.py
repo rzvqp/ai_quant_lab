@@ -7,7 +7,7 @@ din `code/` (verificat de `tests/test_vendor_integrity.py` contra comiturilor de
 
 from __future__ import annotations
 
-VE_TOWER_VERSION: str = "0.5.1"
+VE_TOWER_VERSION: str = "0.5.2"
 # Istoric (versiuni PĂSTRATE pentru audit, niciodată suprascrise):
 #   0.1.0 (contract v1, wheel SHA-256 e5457561…f08b2db5) — RESPINS TOWER_HANDOFF_FAIL (fără timeframe strict / identitate).
 #   0.2.0 (contract v2, wheel SHA-256 3ea791ba…cc2e91a8) — TOWER_HANDOFF_CONDITIONAL: încărcătorul lăsa module parțial.
@@ -16,8 +16,10 @@ VE_TOWER_VERSION: str = "0.5.1"
 #          `run_n3/run_n4` acceptau orice `n2_fingerprint` de la apelant (legătura N2→N3/N4 neimpusă).
 #   0.5.0 (wheel SHA-256 6d99baf6…4cd94df7) — ORCHESTRATOR `run_tower_chain` (RT-TOWER-0007): N2→N3→N4 INTERN.
 #          Defect: chema run_n3/run_n4 cu atr=None ⇒ N4 mereu `atr_unavailable` (nu ajungea la confirmation).
-#   0.5.1 — ATR calculat INTERN din bare (canonic `market_state.atr14`): N3←ATR M15, N4←banda M15 1×ATR (SPEC2 §3,
-#          NU ATR M5). Apelantul NU poate furniza atr/n3_atr/n4_atr. Proveniență ATR în răspuns + chain_fingerprint.
+#   0.5.1 (wheel SHA-256 297aac5d…268807) — ATR INTERN canonic. Defect: N3 AtrProvenance.atr_value = atr14[-1], dar
+#          zone_map CONSUMĂ atr14[i-1] (i=n-1). Decizia N3 corectă, proveniența greșită (RT-TOWER-0009).
+#   0.5.2 — PROVENANCE-ONLY: N3 AtrProvenance.atr_value = atr14[i-1] (ATR-ul EFECTIV consumat), + evaluation_index /
+#          consumed_atr_index / consumed_bar_timestamp. N4 rămâne atr14[-1]. Decizia N3/N4 NESCHIMBATĂ.
 
 SOURCE_REPO: str = "ai_quant_lab-wp5b"
 SOURCE_BRANCH: str = "discovery-mk-matrix-v1"

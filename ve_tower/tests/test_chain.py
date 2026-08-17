@@ -152,6 +152,57 @@ def test_m15_insufficient_atr_unavailable() -> None:
     assert r.n3 is not None and not r.n3.market_map_available
 
 
+def _m15_amp(amp: float) -> tuple[tuple[float, ...], ...]:
+    o = []; h = []; l = []; c = []; t = []
+    for j in range(40):
+        b = 100.0 + (amp if (j // 5) % 2 else -amp)
+        o.append(b); h.append(b + 1.5 * amp); l.append(b - 1.5 * amp); c.append(b + 0.3 * amp); t.append(T0 + j * 900)
+    return tuple(o), tuple(h), tuple(l), tuple(c), tuple(t)
+
+
+def _req_amp_ok(amp: float) -> ChainRequest:
+    m15o, m15h, m15l, m15c, m15t = _m15_amp(amp)
+    probe = run_tower_chain(_req(m15_open=m15o, m15_high=m15h, m15_low=m15l, m15_close=m15c, m15_time=m15t))
+    assert probe.n3 is not None and probe.n3.market_map
+    anchor = probe.n3.market_map[0].price_anchor
+    m5h, m5l, m5c, m5t = _m5(anchor)
+    return _req(m15_open=m15o, m15_high=m15h, m15_low=m15l, m15_close=m15c, m15_time=m15t,
+                m5_high=m5h, m5_low=m5l, m5_close=m5c, m5_time=m5t)
+
+
+def test_n3_provenance_equals_atr_consumed_by_zone_map_three_fixtures() -> None:
+    # DECISIV (RT-TOWER-0009): atr_value = ATR-ul EFECTIV consumat de zone_map = level.band / band_mult (0.25).
+    # Prinde vechiul bug (provenance = atr14[-1] = banda N4) vs consumed (atr14[i-1]).
+    for amp in (1.0, 1.7, 2.3):                                       # ATR variabil
+        r = run_tower_chain(_req_amp_ok(amp))
+        assert r.n3 is not None and r.n3.market_map and r.n3_atr_provenance is not None
+        lvl = r.n3.market_map[0]
+        consumed = lvl.band / 0.25                                    # zone_map: band = 0.25 × atr14[i-1]
+        assert r.n3_atr_provenance.atr_value == pytest.approx(consumed, abs=1e-9), amp
+        # vechiul bug ar fi raportat banda N4 (atr14[-1]); acum diferă de N4 prin construcție
+        assert r.n4_atr_provenance is not None
+        assert r.n3_atr_provenance.atr_value != r.n4_atr_provenance.atr_value
+
+
+def test_provenance_indices_bound_to_ratified_rule() -> None:
+    r = run_tower_chain(_req_ok())
+    p3 = r.n3_atr_provenance; p4 = r.n4_atr_provenance
+    assert p3 is not None and p4 is not None
+    assert p3.evaluation_index == 39 and p3.consumed_atr_index == 38          # i=n-1, i-1
+    assert p4.consumed_atr_index == 39                                        # banda = atr14[-1]
+    assert p3.consumed_bar_timestamp == T0 + 38 * 900 and p4.consumed_bar_timestamp == T0 + 39 * 900
+
+
+def test_n4_band_and_decision_unchanged_regression() -> None:
+    # regresie: banda N4 rămâne atr14(M15)[-1] și confirmarea funcționează (decizia neschimbată vs 0.5.1)
+    r = run_tower_chain(_req_ok())
+    ms = __import__("ve_tower").tower_module("market_state")
+    ok = _req_ok()
+    m15_atr = ms.atr14(list(ok.m15_high), list(ok.m15_low), list(ok.m15_close))
+    assert r.n4_atr_provenance.atr_value == pytest.approx(m15_atr[-1], abs=1e-9)   # banda neschimbată
+    assert r.n4.confirmation_available and r.chain_status == "ok_chain"            # decizia neschimbată
+
+
 def test_chain_fingerprint_includes_atr_identity() -> None:
     base = run_tower_chain(_req_ok())
     # schimbă barele M15 (deci și ATR-ul M15/banda) ⇒ chain_fingerprint diferit

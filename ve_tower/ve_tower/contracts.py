@@ -281,19 +281,26 @@ class ChainRequest:
 
 @dataclass(frozen=True)
 class AtrProvenance:
-    """Proveniența AUDITABILĂ a unui ATR calculat INTERN de orchestrator din barele primite (nu de la apelant)."""
+    """Proveniența AUDITABILĂ a unui ATR calculat INTERN de orchestrator din barele primite (nu de la apelant).
+
+    `atr_value` = ATR-ul EFECTIV consumat de nod. Pentru N3, `zone_map` folosește `i = n-1` și `atr14(M15)[i-1]`
+    (RT-TOWER-0009): `evaluation_index = i`, `consumed_atr_index = i-1`. Pentru N4, banda M15 = `atr14(M15)[-1]`
+    (`consumed_atr_index = n-1`). N3 și N4 pot avea valori ATR diferite prin construcție — corect."""
     source_module: str                         # market_state
     source_commit: str                         # commitul-sursă al primitivei atr14
     function: str                              # atr14
-    timeframe: str                             # M15 (N3) / M15 band (N4 — reper de progres, SPEC2 §3)
+    timeframe: str                             # M15 (N3) / M15_band_1xATR (N4 — reper de progres, SPEC2 §3)
     period: int                                # 14
     true_range_convention: str                 # max(h-l, |h-c₋₁|, |l-c₋₁|)
     as_of: int
-    last_closed_bar_time: int
+    last_closed_bar_time: int                  # ultima bară M15 închisă (n-1)
     source_identity: str
-    atr_value: float | None                    # valoarea ATR folosită (None dacă indisponibil)
+    atr_value: float | None                    # ATR-ul EFECTIV consumat (None dacă indisponibil)
     available: bool
     reason_code: str
+    evaluation_index: int | None               # i = n-1 (indexul de evaluare al nodului)
+    consumed_atr_index: int | None             # N3: i-1 · N4: n-1 (indexul barei al cărei ATR e consumat)
+    consumed_bar_timestamp: int | None         # timestamp-ul barei M15 la consumed_atr_index
 
 
 @dataclass(frozen=True)

@@ -24,7 +24,8 @@ This document is the Git-persisted snapshot of program status; the conversation 
 
   - **0.4.0** (adds N2 producer; N3/N4 stay v2) — exposes `run_n2` over ratified `bias_h1` @850815f. N2_HANDOFF_CONDITIONAL (RT-TOWER-0007): `run_n3/run_n4` trusted any caller `n2_fingerprint`. Wheel SHA-256 `fe9f8b14…9a8852` kept for audit.
   - **0.5.0** (chain orchestrator) — `run_tower_chain` runs N2→N3→N4 internally; caller cannot supply `n2_fingerprint`. Defect: called `run_n4(atr=None)` → N4 always `atr_unavailable`. Wheel SHA-256 `6d99baf6…4cd94df7` kept for audit.
-  - **0.5.1** (ATR internal; contracts unchanged) — orchestrator computes ATR from received bars via canonical `market_state.atr14`: N3←`atr14(M15)`, N4←M15 1×ATR band `atr14(M15)[-1]` (SPEC2 §3 — **not** M5 ATR; reported+justified). Caller cannot supply `atr`/`n3_atr`/`n4_atr`. `AtrProvenance` in `ChainResponse` + `chain_fingerprint`. Fixes TOWER_CHAIN_ATR: chain now reaches N4 without `atr_unavailable`. 73 tests. Awaiting Red Team TOWER_CHAIN_ATR.
+  - **0.5.1** (ATR internal) — computes ATR via canonical `market_state.atr14`; chain reaches N4. Defect (RT-TOWER-0009): N3 `AtrProvenance.atr_value`=`atr14[-1]` but zone_map consumes `atr14[i-1]`. Wheel SHA-256 `297aac5d…268807` kept for audit.
+  - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N2 (MANDATE N2, verdict B — N2_EXISTS_BUT_IS_NOT_PACKAGED)
 - N2 = `code/bias_h1.py` @`850815f` (build `81a0a62`, spec STAT-LEVEL2-BIAS-H1-SPEC-v1.0 @`1b2933c` + SPEC3 @`404b6c8`, manifest **v2.7.61**). Deterministic directional factors; `emits_probability=False`. Inventory + verdict in `N2_INVENTORY.md` @`a5241fb`.

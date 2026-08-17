@@ -37,12 +37,21 @@ _ATR_TR: str = "max(h-l,|h-c_prev|,|l-c_prev|)"
 
 
 def _atr_prov(*, timeframe: str, as_of: int, last_bar_time: int, source_identity: str, value: float | None,
-              available: bool) -> AtrProvenance:
+              available: bool, evaluation_index: int | None, consumed_atr_index: int | None,
+              consumed_bar_timestamp: int | None) -> AtrProvenance:
     return AtrProvenance(
         source_module="market_state", source_commit=VENDORED_SOURCE_COMMITS["market_state"], function="atr14",
         timeframe=timeframe, period=_ATR_PERIOD, true_range_convention=_ATR_TR, as_of=as_of,
         last_closed_bar_time=last_bar_time, source_identity=source_identity, atr_value=value, available=available,
-        reason_code="atr_ok" if available else ReasonCode.ATR_UNAVAILABLE.value)
+        reason_code="atr_ok" if available else ReasonCode.ATR_UNAVAILABLE.value, evaluation_index=evaluation_index,
+        consumed_atr_index=consumed_atr_index, consumed_bar_timestamp=consumed_bar_timestamp)
+
+
+def _atr_at(series: list[float], idx: int) -> float | None:
+    """Valoarea ATR la un index (0<=idx<len), finită și >0, altfel None."""
+    if 0 <= idx < len(series) and math.isfinite(series[idx]) and series[idx] > 0.0:
+        return float(series[idx])
+    return None
 
 
 def _chain_fingerprint(req: ChainRequest, n2: N2Response | None, n3: N3Response | None, n4: N4Response | None,
@@ -95,14 +104,20 @@ def run_tower_chain(req: ChainRequest) -> ChainResponse:
     if not n2.bias_available or n2.output_fingerprint is None:
         return _resp(req, n2, None, None, None, None, ReasonCode.N2_UNAVAILABLE, n2.reason_codes[0])
 
-    # ── ATR M15 CANONIC (intern) pentru N3 + banda M15 pentru N4 ──
+    # ── ATR M15 CANONIC (intern). Legat de REGULA RATIFICATĂ din zone_map: `i = n-1`, ATR consumat = `atr14[i-1]`
+    # (RT-TOWER-0009). N4 folosește banda M15 = `atr14[-1]` (indexul n-1). NU hardcodat orb — derivat din i. ──
     m15_atr = ms.atr14(list(req.m15_high), list(req.m15_low), list(req.m15_close))
-    m15_last = m15_atr[-1] if m15_atr else float("nan")
-    m15_atr_ok = bool(m15_atr) and math.isfinite(m15_last) and m15_last > 0.0
+    n_m15 = len(req.m15_close)
+    eval_i = n_m15 - 1                                    # indexul de evaluare al zone_map
+    n3_consumed_idx = eval_i - 1                          # zone_map: atr14[i-1]
+    n4_band_idx = n_m15 - 1                               # banda M15 = atr14[-1]
     m15_bar_t = req.m15_time[-1] if req.m15_time else req.as_of
-    n3_atr = _atr_prov(timeframe="M15", as_of=req.as_of, last_bar_time=m15_bar_t,
-                       source_identity=req.m15_source_identity, value=(m15_last if m15_atr_ok else None),
-                       available=m15_atr_ok)
+    n3_val = _atr_at(m15_atr, n3_consumed_idx)            # ATR-ul EFECTIV consumat de N3
+    band_val = _atr_at(m15_atr, n4_band_idx)              # banda M15 pentru N4
+    n3_atr = _atr_prov(
+        timeframe="M15", as_of=req.as_of, last_bar_time=m15_bar_t, source_identity=req.m15_source_identity,
+        value=n3_val, available=n3_val is not None, evaluation_index=eval_i, consumed_atr_index=n3_consumed_idx,
+        consumed_bar_timestamp=(req.m15_time[n3_consumed_idx] if 0 <= n3_consumed_idx < len(req.m15_time) else None))
 
     # ── N3 (M15): ATR-ul e canonicul `atr14(M15)`. `zone_map` îl calculează INTERN din ACELEAȘI bare M15 (verificat:
     # chain m15_atr == atr14 intern). Trecem atr=None ca să nu dublăm seria (warmup-ul NaN al atr14 ar fi refuzat de
@@ -118,11 +133,13 @@ def run_tower_chain(req: ChainRequest) -> ChainResponse:
     if not n3.market_map:
         return _resp(req, n2, n3, None, n3_atr, None, ReasonCode.N4_UNAVAILABLE, ReasonCode.ZONE_UNAVAILABLE.value)
 
-    # ── banda M15 1×ATR pentru N4 (SPEC2 §3). Bandă nefinită ⇒ ATR_UNAVAILABLE, fără a chema run_n4 cu NaN ──
-    n4_atr = _atr_prov(timeframe="M15_band_1xATR", as_of=req.as_of, last_bar_time=m15_bar_t,
-                       source_identity=req.m15_source_identity, value=(m15_last if m15_atr_ok else None),
-                       available=m15_atr_ok)
-    if not m15_atr_ok:
+    # ── banda M15 1×ATR pentru N4 (SPEC2 §3) = atr14[-1]. Bandă nefinită ⇒ ATR_UNAVAILABLE, fără a chema run_n4 cu NaN ──
+    n4_atr = _atr_prov(
+        timeframe="M15_band_1xATR", as_of=req.as_of, last_bar_time=m15_bar_t,
+        source_identity=req.m15_source_identity, value=band_val, available=band_val is not None,
+        evaluation_index=eval_i, consumed_atr_index=n4_band_idx,
+        consumed_bar_timestamp=(req.m15_time[n4_band_idx] if 0 <= n4_band_idx < len(req.m15_time) else None))
+    if band_val is None:
         return _resp(req, n2, n3, None, n3_atr, n4_atr, ReasonCode.N4_UNAVAILABLE, ReasonCode.ATR_UNAVAILABLE.value)
 
     # ── N4 (M5) — LEGAT de răspunsul N3 real (rank-1), cu banda M15 ca reper de ATR ──
@@ -136,7 +153,7 @@ def run_tower_chain(req: ChainRequest) -> ChainResponse:
         n3_market_event_id=n3.market_event_id, n3_event_fingerprint=n3.event_fingerprint,
         n3_node_input_fingerprint=n3.node_input_fingerprint or "", n3_market_map_available=n3.market_map_available,
         n3_level_zone_id=lvl.zone_id, n3_level_provenance=tuple((p.family, p.instance_count) for p in lvl.provenance),
-        w=3, atr=tuple([m15_last] * len(req.m5_close)), max_staleness_s=req.m5_max_staleness_s))
+        w=3, atr=tuple([band_val] * len(req.m5_close)), max_staleness_s=req.m5_max_staleness_s))
 
     efp = event_fingerprint(market_event_id=req.market_event_id, symbol=req.symbol, as_of=req.as_of)
     ids_ok = (n2.event_fingerprint == efp and n3.event_fingerprint == efp and n4.event_fingerprint == efp

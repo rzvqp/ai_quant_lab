@@ -1,5 +1,23 @@
 # ve_tower — CHANGELOG
 
+## 0.5.2 — corecție PROVENANCE-ONLY a valorii ATR N3 (RT-TOWER-0009)
+
+Verdict Red Team pe 0.5.1: **TOWER_CHAIN_ATR_FAIL**. Defectul funcțional (N4) e ÎNCHIS; singurul rest: N3
+`AtrProvenance.atr_value` raporta `atr14(M15)[-1]`, dar `zone_map` ratificat CONSUMĂ `atr14(M15)[i-1]` cu `i = n-1`
+(`zone_map.py:185,191`). Decizia N3 era CORECTĂ; doar proveniența era greșită. Delta **exclusiv de proveniență**:
+
+- N3 `AtrProvenance.atr_value` = ATR-ul EFECTIV consumat = `atr14(M15)[i-1]`, `i = len(M15)-1` — legat de regula
+  ratificată din zone_map (NU hardcodat orb `[-2]`). Cross-check: `atr_value == N3Level.band / BAND_ATR_MULT(0.25)`.
+- Adăugat în `AtrProvenance`: `evaluation_index` (i), `consumed_atr_index` (N3: i-1 · N4: n-1),
+  `consumed_bar_timestamp`.
+- N4 rămâne `atr14(M15)[-1]` (banda M15 1×ATR). N3 și N4 au valori ATR DIFERITE prin construcție — corect, documentat.
+- **Decizia N3/N4 NESCHIMBATĂ** față de 0.5.1: `run_n3` primește tot `atr=None` (zone_map calculează intern identic),
+  `run_n4` primește ACEEAȘI bandă `atr14[-1]`. Doar `atr_value`/indicii de proveniență + `chain_fingerprint`-ul derivat
+  din ei se schimbă. Regresie confirmată: N3 levels + N4 confirmation identice.
+- Test decisiv comis (prinde vechiul bug pe 3 fixture-uri cu ATR variabil: `atr_value == level.band/0.25`, ≠ banda N4).
+  Contracte de decizie neschimbate; module vendate byte-identice; ve_brain/N1/Router/EV/N6 neatinse; 0.5.1 păstrat.
+  76 teste; mypy --strict clean.
+
 ## 0.5.1 — ATR calculat INTERN în orchestrator (remediere TOWER_CHAIN_ATR)
 
 Defect reproductibil în 0.5.0: `run_tower_chain` chema `run_n3(atr=None)` și `run_n4(atr=None)`. N4 (cu atr=None)
