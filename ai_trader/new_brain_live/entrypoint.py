@@ -33,7 +33,9 @@ overwhelming majority of real events are therefore expected to resolve `NO_TRADE
 
 from __future__ import annotations
 
+import os
 import signal
+import subprocess
 import time
 from pathlib import Path
 from typing import Callable
@@ -53,7 +55,9 @@ from ai_trader.new_brain_bridge.telemetry import NewBrainTelemetryLog
 from ai_trader.new_brain_bridge.tower_client import TowerClient, TowerClientConfig
 from ai_trader.new_brain_bridge.tower_launcher import EstablishedSession, TowerWorkerLauncher
 from ai_trader.new_brain_live.deps import NewBrainLiveDepsFactory
+from ai_trader.new_brain_live.heartbeat import HeartbeatWriter, LiveShadowHeartbeat
 from ai_trader.new_brain_live.live_shadow_journal import LiveShadowCategory, LiveShadowJournal, LiveShadowRecord
+from ai_trader.new_brain_live.singleton import AlreadyRunningError, SingletonLock
 from ai_trader.persistent_state.store import SqliteStateStore
 from ai_trader.risk_manager.types import EngineState
 from ai_trader.risk_manager_live.circuit_breaker import load_persisted_circuit_state
@@ -65,10 +69,26 @@ POLL_INTERVAL_SECONDS = 30.0
 TOWER_VENV_PYTHON = Path("C:/Users/MEDION GAMING/ve_tower_venv/Scripts/python.exe")
 DEFAULT_STATE_DIR = Path(__file__).resolve().parents[2] / "new_brain_live_state"
 DEFAULT_DB_PATH = DEFAULT_STATE_DIR / "xauusd_m15.db"
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _default_sleep(seconds: float) -> None:
     time.sleep(seconds)
+
+
+def current_git_commit() -> str:
+    """Read fresh from git every call -- never hardcoded, never self-referential (this file's own
+    commit can't be known by this file). Fails soft to `"UNKNOWN"`: a heartbeat's diagnostic
+    `runtime_commit` field must never crash the live loop over an unavailable `git` binary."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short=7", "HEAD"], cwd=_REPO_ROOT, capture_output=True, text=True,
+            timeout=10,
+        )
+        commit = result.stdout.strip()
+        return commit if result.returncode == 0 and commit else "UNKNOWN"
+    except Exception:  # noqa: BLE001 -- diagnostic-only, must never raise
+        return "UNKNOWN"
 
 
 class NewBrainLiveLoop:
@@ -81,6 +101,9 @@ class NewBrainLiveLoop:
         self, *, feed: LiveBarFeed, axes_builder: RawAxesBuilder, tower: TowerDependencies,
         deps_factory: NewBrainLiveDepsFactory, state_store: SqliteStateStore,
         telemetry_log: NewBrainTelemetryLog, shadow_journal: LiveShadowJournal,
+        heartbeat_writer: HeartbeatWriter | None = None,
+        gateway: RealMT5HistoryGateway | None = None,
+        timeframe: str = "M15",
         poll_interval_seconds: float = POLL_INTERVAL_SECONDS,
         authority_check: Callable[[], DecisionAuthority] | None = None,
         gate: BrokerOrderSubmissionGate = BrokerOrderSubmissionGate(),
@@ -94,11 +117,18 @@ class NewBrainLiveLoop:
         self._state_store = state_store
         self._telemetry_log = telemetry_log
         self._shadow_journal = shadow_journal
+        self._heartbeat_writer = heartbeat_writer
+        self._gateway = gateway
+        self._timeframe = timeframe
         self._poll_interval_seconds = poll_interval_seconds
         self._authority_check = authority_check
         self._gate = gate
         self._stop_requested = False
         self.events_processed = 0
+        self._last_bar: Bar | None = None
+        self._pid = os.getpid()
+        self._process_start_identity = f"{self._pid}:{int(time.time())}"
+        self._runtime_commit = current_git_commit()
 
     @property
     def stop_requested(self) -> bool:
@@ -115,6 +145,7 @@ class NewBrainLiveLoop:
         signal.signal(signal.SIGTERM, self._handle_stop_signal)
 
     def _process_bar(self, bar: Bar) -> None:
+        self._last_bar = bar
         outcomes = safe_evaluate_bar(bar, timeframe="M15", axes_builder=self._axes_builder, tower=self._tower)
         if isinstance(outcomes, BrainUnavailableOutcome):
             return  # NO_TRADE / BRAIN_UNAVAILABLE -- no legacy fallback exists in this file's body
@@ -189,13 +220,65 @@ class NewBrainLiveLoop:
                 broker_blocked=shadow_result.blocked, order_send_calls=0, orders_created=0, positions_created=0,
             ))
 
+    def _build_heartbeat(self) -> LiveShadowHeartbeat:
+        authority = self._authority_check() if self._authority_check is not None else None
+        session = self._tower.client.session if self._tower is not None else None
+        last_entry = self._shadow_journal.entries[-1] if self._shadow_journal.entries else None
+
+        mt5_connected = False
+        balance: float | None = None
+        equity: float | None = None
+        open_orders: int | None = None
+        open_positions: int | None = None
+        try:
+            account = self._deps_factory.account()
+            balance, equity, mt5_connected = account.balance, account.equity, True
+        except Exception:  # noqa: BLE001 -- heartbeat is diagnostic-only, must never crash the loop
+            pass
+        if self._gateway is not None:
+            try:
+                orders = self._gateway.orders_get(symbol=self._axes_builder.symbol)
+                positions = self._gateway.positions_get(symbol=self._axes_builder.symbol)
+                open_orders = None if orders is None else len(orders)
+                open_positions = None if positions is None else len(positions)
+            except Exception:  # noqa: BLE001
+                pass
+
+        return LiveShadowHeartbeat(
+            timestamp_utc=int(time.time()), pid=self._pid,
+            process_start_identity=self._process_start_identity, runtime_commit=self._runtime_commit,
+            authority=("UNKNOWN" if authority is None else authority.value),
+            broker_gate_state=("ENABLED" if self._gate.enabled else "DISABLED"),
+            tower_worker_session_id=(None if session is None else session.session_id),
+            last_closed_bar_id=(
+                None if self._last_bar is None
+                else f"{self._last_bar.symbol}:{self._timeframe}:{self._last_bar.ts_close}"
+            ),
+            last_market_event_id=(None if last_entry is None else last_entry.market_event_id),
+            last_journal_sequence=len(self._shadow_journal.entries),
+            last_outcome_reason=(None if last_entry is None else last_entry.terminal_reason_code),
+            mt5_connected=mt5_connected, balance=balance, equity=equity,
+            open_orders=open_orders, open_positions=open_positions,
+        )
+
+    def _write_heartbeat(self) -> None:
+        if self._heartbeat_writer is None:
+            return
+        try:
+            self._heartbeat_writer.record(self._build_heartbeat())
+        except Exception:  # noqa: BLE001 -- a heartbeat write must never crash the live loop
+            pass
+
     def tick(self) -> bool:
-        circuit_state = load_persisted_circuit_state(self._state_store)
-        if circuit_state.state is not EngineState.READY:
-            return False
-        for bar in self._feed.poll():
-            self._process_bar(bar)
-        return True
+        try:
+            circuit_state = load_persisted_circuit_state(self._state_store)
+            if circuit_state.state is not EngineState.READY:
+                return False
+            for bar in self._feed.poll():
+                self._process_bar(bar)
+            return True
+        finally:
+            self._write_heartbeat()
 
     def run_forever(
         self, sleep: Callable[[float], None] = _default_sleep, install_signal_handlers: bool = True,
@@ -227,38 +310,52 @@ def build_loop(
     deps_factory = NewBrainLiveDepsFactory(symbol, gateway, state_dir)
     telemetry_log = NewBrainTelemetryLog(state_store)
     shadow_journal = LiveShadowJournal(state_store)
+    heartbeat_writer = HeartbeatWriter(state_store)
     return NewBrainLiveLoop(
         feed=feed, axes_builder=axes_builder, tower=tower, deps_factory=deps_factory, state_store=state_store,
-        telemetry_log=telemetry_log, shadow_journal=shadow_journal,
-        authority_check=lambda: current_authority(state_store),
+        telemetry_log=telemetry_log, shadow_journal=shadow_journal, heartbeat_writer=heartbeat_writer,
+        gateway=gateway, authority_check=lambda: current_authority(state_store),
     )
 
 
 def main() -> None:
-    DEFAULT_STATE_DIR.mkdir(parents=True, exist_ok=True)
-
-    gateway = RealMT5HistoryGateway()
-    if not gateway.initialize():
-        raise SystemExit(f"new_brain_live: LIVE_SHADOW_STARTUP_FAILED -- MT5 initialize() failed: {gateway.last_error()!r}")
-
-    launcher = TowerWorkerLauncher(tower_python=TOWER_VENV_PYTHON)
-    session = launcher.launch_and_handshake()
-    if not isinstance(session, EstablishedSession):
-        gateway.shutdown()
-        raise SystemExit(f"new_brain_live: LIVE_SHADOW_STARTUP_FAILED -- tower handshake failed: {session!r}")
-
-    state_store = SqliteStateStore(DEFAULT_DB_PATH)
+    """Singleton acquisition happens FIRST, before any MT5/tower I/O -- a second launch must exit
+    cleanly (`ALREADY_RUNNING`) without ever touching the terminal or spawning a second tower worker
+    (RT-N1-PERSIST-0001 section 1: "maximum o instanta decizionala")."""
+    lock = SingletonLock()
     try:
-        loop = build_loop(gateway, session, state_store, DEFAULT_STATE_DIR)
-        print(
-            f"new_brain_live: LIVE_SHADOW starting -- symbol={SYMBOL} "
-            f"tower_version={session.worker_identity.ve_tower_package_version} db={DEFAULT_DB_PATH}",
-            flush=True,
-        )
-        loop.run_forever()
+        lock.acquire()
+    except AlreadyRunningError as exc:
+        print(f"new_brain_live: ALREADY_RUNNING -- {exc}", flush=True)
+        raise SystemExit(0)
+
+    try:
+        DEFAULT_STATE_DIR.mkdir(parents=True, exist_ok=True)
+
+        gateway = RealMT5HistoryGateway()
+        if not gateway.initialize():
+            raise SystemExit(f"new_brain_live: LIVE_SHADOW_STARTUP_FAILED -- MT5 initialize() failed: {gateway.last_error()!r}")
+
+        launcher = TowerWorkerLauncher(tower_python=TOWER_VENV_PYTHON)
+        session = launcher.launch_and_handshake()
+        if not isinstance(session, EstablishedSession):
+            gateway.shutdown()
+            raise SystemExit(f"new_brain_live: LIVE_SHADOW_STARTUP_FAILED -- tower handshake failed: {session!r}")
+
+        state_store = SqliteStateStore(DEFAULT_DB_PATH)
+        try:
+            loop = build_loop(gateway, session, state_store, DEFAULT_STATE_DIR)
+            print(
+                f"new_brain_live: LIVE_SHADOW starting -- symbol={SYMBOL} "
+                f"tower_version={session.worker_identity.ve_tower_package_version} db={DEFAULT_DB_PATH}",
+                flush=True,
+            )
+            loop.run_forever()
+        finally:
+            launcher.stop()
+            gateway.shutdown()
     finally:
-        launcher.stop()
-        gateway.shutdown()
+        lock.release()
 
 
 if __name__ == "__main__":

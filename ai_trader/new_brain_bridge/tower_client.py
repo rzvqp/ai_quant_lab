@@ -138,6 +138,13 @@ class TowerClient:
     def cache_metrics(self) -> CacheMetrics:
         return self._cache.metrics
 
+    @property
+    def session(self) -> EstablishedSession | None:
+        """Read-only -- for callers that need to report the bound session's own identity (e.g. a
+        heartbeat) without duplicating `bind_session`'s own bookkeeping. `None` means no handshake has
+        ever succeeded, exactly matching `request_chain`'s own `HANDSHAKE_NOT_ESTABLISHED` condition."""
+        return self._session
+
     def bind_session(self, session: EstablishedSession | None) -> None:
         """Rebinding to a new (or no) session clears the cache -- a cached result belongs to the session
         that produced it (CEO mandate: "stergere la schimbarea session_id, stergere la restart")."""

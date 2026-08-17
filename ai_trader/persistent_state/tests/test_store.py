@@ -42,6 +42,44 @@ def test_value_persists_across_separate_store_instances_same_file(tmp_path: Path
     assert second.get_value("watermark:XAUUSD:M15") == 1_700_000_000.0
 
 
+def test_get_text_returns_none_when_key_absent(tmp_path: Path) -> None:
+    store = SqliteStateStore(tmp_path / "state.db")
+    assert store.get_text("missing") is None
+
+
+def test_set_then_get_text_round_trips(tmp_path: Path) -> None:
+    store = SqliteStateStore(tmp_path / "state.db")
+    store.set_text("heartbeat:XAUUSD:M15", '{"pid": 1234}')
+    assert store.get_text("heartbeat:XAUUSD:M15") == '{"pid": 1234}'
+
+
+def test_set_text_overwrites_existing_key(tmp_path: Path) -> None:
+    store = SqliteStateStore(tmp_path / "state.db")
+    store.set_text("k", "first")
+    store.set_text("k", "second")
+    assert store.get_text("k") == "second"
+
+
+def test_text_value_persists_across_separate_store_instances_same_file(tmp_path: Path) -> None:
+    db_path = tmp_path / "state.db"
+    first = SqliteStateStore(db_path)
+    first.set_text("heartbeat", '{"pid": 1}')
+    first.close()
+
+    second = SqliteStateStore(db_path)
+    assert second.get_text("heartbeat") == '{"pid": 1}'
+
+
+def test_text_and_numeric_kv_are_independent_namespaces(tmp_path: Path) -> None:
+    """`kv_state`/`kv_text_state` are separate tables -- the same key string in each namespace never
+    collides with the other."""
+    store = SqliteStateStore(tmp_path / "state.db")
+    store.set_value("shared_key", 1.0)
+    store.set_text("shared_key", "text-value")
+    assert store.get_value("shared_key") == 1.0
+    assert store.get_text("shared_key") == "text-value"
+
+
 def test_append_log_entry_and_read_back_in_order(tmp_path: Path) -> None:
     store = SqliteStateStore(tmp_path / "state.db")
     store.append_log_entry("journal", "first")

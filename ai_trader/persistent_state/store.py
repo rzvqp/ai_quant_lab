@@ -50,6 +50,9 @@ class SqliteStateStore:
             "log_name TEXT NOT NULL, seq INTEGER NOT NULL, payload TEXT NOT NULL, "
             "PRIMARY KEY (log_name, seq))"
         )
+        self._conn.execute(
+            "CREATE TABLE IF NOT EXISTS kv_text_state (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
+        )
 
     def verify_integrity(self) -> bool:
         try:
@@ -67,6 +70,23 @@ class SqliteStateStore:
     def set_value(self, key: str, value: float) -> None:
         self._conn.execute(
             "INSERT INTO kv_state (key, value) VALUES (?, ?) "
+            "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            (key, value),
+        )
+
+    def get_text(self, key: str) -> str | None:
+        """Overwrite-latest text storage -- for a value representing CURRENT status (e.g. a heartbeat
+        snapshot), never an append-only history. Separate table from `kv_state` (`REAL`-only) rather
+        than widening that column's type, so every existing `get_value`/`set_value` caller is
+        unaffected (RT-N1-PERSIST-0001, additive extension, no existing behavior changed)."""
+        row = self._conn.execute("SELECT value FROM kv_text_state WHERE key = ?", (key,)).fetchone()
+        if row is None:
+            return None
+        return str(row[0])
+
+    def set_text(self, key: str, value: str) -> None:
+        self._conn.execute(
+            "INSERT INTO kv_text_state (key, value) VALUES (?, ?) "
             "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
             (key, value),
         )
