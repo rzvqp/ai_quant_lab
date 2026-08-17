@@ -306,7 +306,11 @@ def build_loop(
     tower_client = TowerClient(
         TowerClientConfig(host=session.host, port=session.port, timeout_seconds=15.0), session=session,
     )
-    tower = TowerDependencies(client=tower_client, gateway=gateway, now=int(time.time()))
+    tower = TowerDependencies(client=tower_client, gateway=gateway)
+    # RT-TIME-0001 section A: `wall_clock_provider` defaults to the real `time.time`, called fresh on
+    # every tower-chain call -- never captured once here. Bar-fetch anchoring uses `event_as_of`/
+    # `data_cutoff` (derived per-call from the bar actually being evaluated), which is the fix for the
+    # `TowerDependencies.now`-frozen-at-startup defect `LIVE_SHADOW_TIMEFRAME_AUDIT.md` found.
     deps_factory = NewBrainLiveDepsFactory(symbol, gateway, state_dir)
     telemetry_log = NewBrainTelemetryLog(state_store)
     shadow_journal = LiveShadowJournal(state_store)

@@ -42,6 +42,7 @@ import hashlib
 import json
 import time
 from dataclasses import dataclass, replace
+from typing import Callable
 
 import ve_brain  # type: ignore[import-untyped]  # external VE artifact, no py.typed marker -- never modified
 
@@ -73,8 +74,11 @@ from ai_trader.new_brain_bridge.tower_identity_pin import (
     EXPECTED_N4_CONTRACT_VERSION,
 )
 from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerChainRequest
+from ai_trader.new_brain_bridge.wall_clock import ClockRollbackError
 
 _PLACEHOLDER_TARGET_RR = 2.0
+_FUTURE_EVENT_REJECTED = "FUTURE_EVENT_REJECTED"
+_WALL_CLOCK_ROLLBACK_DETECTED = "WALL_CLOCK_ROLLBACK_DETECTED"
 _ELIGIBILITY_POLICY_VERSION = "eligibility-v1"
 _COST_MODEL_UNAVAILABLE = "COST_MODEL_UNAVAILABLE"
 _COST_MODEL_FINGERPRINT_MISMATCH = "COST_MODEL_FINGERPRINT_MISMATCH"
@@ -127,7 +131,6 @@ class TowerDependencies:
 
     client: TowerClient
     gateway: MT5Gateway
-    now: int
     broker_offset_seconds: int = 0
     h1_count: int = 150
     m15_count: int = 150
@@ -138,6 +141,18 @@ class TowerDependencies:
     """Threaded into the `TowerChainRequest`'s own per-timeframe `*_max_staleness_s` (`ve_tower`'s real
     `DATA_STALE` gate) -- each defaults to two bar periods of slack for ordinary polling latency while
     still catching a genuinely stale snapshot. `None` disables the check for that timeframe entirely."""
+    wall_clock_provider: Callable[[], float] = time.time
+    """RT-TIME-0001 section A (2026-08-17) remediation: replaces the former `now: int` field, which was
+    captured ONCE (`int(time.time())`) at `TowerDependencies` construction time and then reused,
+    unchanged, for every tower-chain bar fetch for the rest of that process's life -- the exact defect
+    `LIVE_SHADOW_TIMEFRAME_AUDIT.md` (commit `85e2051`) found causes N4/N3/N2 to fail `DATA_STALE`
+    roughly 10/30/120 minutes after any process start, permanently, until the next restart. `bar-fetch
+    data selection now uses `event_as_of`/`data_cutoff` (per-call, derived from the bar actually being
+    evaluated -- see `_query_tower_chain`), NEVER this field. `wall_clock_provider` exists ONLY to answer
+    "what time is it right now" for health/staleness/latency reporting on the trace -- called FRESH on
+    every single call, never cached, never reused across calls. Defaults to the real `time.time`; a
+    caller wanting rollback detection should inject a `wall_clock.MonotonicWallClock()` instance
+    instead."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -215,9 +230,46 @@ class _ChainQueryResult:
     n4_node_input_fingerprint: str | None = None
     n4_data_identity: str | None = None
 
+    # -- Request-scoped time fields (RT-TIME-0001 section A) -- see `EventIdentity`'s own docstring for
+    # the exact meaning of each; `_query_tower_chain` populates every one of these on EVERY return path
+    # (including every fail-closed one), never only on success.
+    event_as_of: int | None = None
+    data_cutoff: int | None = None
+    wall_clock_now: int | None = None
+    last_closed_h1: int | None = None
+    last_closed_m15: int | None = None
+    last_closed_m5: int | None = None
+    fetch_timestamp: int | None = None
+    staleness_reason_h1: str | None = None
+    staleness_reason_m15: str | None = None
+    staleness_reason_m5: str | None = None
+
+
+def _last_closed_ts(bars: tuple[dict[str, object], ...], *, bar_seconds: int) -> int | None:
+    """`ts_close` of the most recent bar in an already-sorted-oldest-first window, or `None` if empty."""
+    if not bars:
+        return None
+    last_time = bars[-1]["time"]
+    assert isinstance(last_time, int)
+    return last_time + bar_seconds
+
+
+def _staleness_reason(*, event_as_of: int, last_closed: int | None, max_staleness_s: int | None) -> str:
+    """Bridge-side, INFORMATIONAL echo of the same staleness math `ve_tower`'s own `DATA_STALE` gate
+    independently performs (`ve_tower/n2.py`/`n3.py`/`n4.py`: `(req.as_of - req.time[-1]) >
+    max_staleness_s`) -- never the authority for the actual availability decision (that stays entirely
+    `ve_tower`'s own, unchanged by this fix), only for the trace's own audit fields."""
+    if last_closed is None:
+        return "NO_BARS_FETCHED"
+    age = event_as_of - last_closed
+    if max_staleness_s is not None and age > max_staleness_s:
+        return f"STALE:{age}s"
+    return f"OK:{age}s"
+
 
 def _query_tower_chain(
-    tower: TowerDependencies, *, market_event_id: str, trace_id: str, symbol: str, as_of: int,
+    tower: TowerDependencies, *, market_event_id: str, trace_id: str, symbol: str,
+    event_as_of: int, data_cutoff: int,
     configuration_fingerprint: str, n1_fingerprint: str, regime_axes_status: tuple[str, ...],
     strategy_id: str, strategy_version: str, side: int,
 ) -> _ChainQueryResult:
@@ -227,18 +279,69 @@ def _query_tower_chain(
     comes back to the booleans `evaluate_bar` needs plus the full real identity -- fail-closed (all
     `False`) on ANY failure mode: bar-fetch failure, no established session, connection failure, protocol
     mismatch, contract-expectation mismatch, or `ve_tower` itself reporting the chain unavailable. Never
-    raises -- a tower failure must degrade to `NO_TRADE`, never crash the bar-evaluation loop."""
+    raises -- a tower failure must degrade to `NO_TRADE`, never crash the bar-evaluation loop.
+
+    **RT-TIME-0001 section A**: `event_as_of` is the bar/event actually being evaluated (`bar.ts_close`)
+    -- never the process's own start time. `data_cutoff` is the most recent timestamp data may be drawn
+    from, clamped here to never exceed `event_as_of` (the caller is expected to already pass
+    `data_cutoff <= event_as_of`; this clamp is a defense-in-depth invariant, not the primary enforcement
+    point). Bar selection uses `data_cutoff`, NEVER `wall_clock_now` and NEVER a value captured once at
+    process start -- this is the exact fix for the frozen-`TowerDependencies.now` defect
+    `LIVE_SHADOW_TIMEFRAME_AUDIT.md` found."""
+    data_cutoff = min(data_cutoff, event_as_of)
+
+    try:
+        wall_clock_now = int(tower.wall_clock_provider())
+    except ClockRollbackError as exc:
+        return _ChainQueryResult(
+            market_map_available=False, levels_available=False, confirmation_available=False,
+            bias_available=False, reason_codes=(f"{_WALL_CLOCK_ROLLBACK_DETECTED}:{exc}",),
+            tower_version="UNAVAILABLE", side=side, event_as_of=event_as_of, data_cutoff=data_cutoff,
+        )
+
+    if event_as_of > wall_clock_now:
+        return _ChainQueryResult(
+            market_map_available=False, levels_available=False, confirmation_available=False,
+            bias_available=False,
+            reason_codes=(f"{_FUTURE_EVENT_REJECTED}:event_as_of={event_as_of}:wall_clock_now={wall_clock_now}",),
+            tower_version="UNAVAILABLE", side=side, event_as_of=event_as_of, data_cutoff=data_cutoff,
+            wall_clock_now=wall_clock_now,
+        )
+
+    fetch_timestamp = wall_clock_now
+
     try:
         h1_bars, m15_bars, m5_bars = fetch_tower_chain_bar_windows(
-            tower.gateway, symbol=symbol, now=tower.now, broker_offset_seconds=tower.broker_offset_seconds,
+            tower.gateway, symbol=symbol, now=data_cutoff, broker_offset_seconds=tower.broker_offset_seconds,
             h1_count=tower.h1_count, m15_count=tower.m15_count, m5_count=tower.m5_count,
         )
     except BarFeedError as exc:
         return _ChainQueryResult(
             market_map_available=False, levels_available=False, confirmation_available=False,
             bias_available=False, reason_codes=(f"TOWER_BAR_FETCH_FAILED:{exc}",), tower_version="UNAVAILABLE",
-            side=side,
+            side=side, event_as_of=event_as_of, data_cutoff=data_cutoff, wall_clock_now=wall_clock_now,
+            fetch_timestamp=fetch_timestamp, staleness_reason_h1="NO_BARS_FETCHED",
+            staleness_reason_m15="NO_BARS_FETCHED", staleness_reason_m5="NO_BARS_FETCHED",
         )
+
+    last_closed_h1 = _last_closed_ts(h1_bars, bar_seconds=BAR_SECONDS_H1)
+    last_closed_m15 = _last_closed_ts(m15_bars, bar_seconds=BAR_SECONDS_M15)
+    last_closed_m5 = _last_closed_ts(m5_bars, bar_seconds=BAR_SECONDS_M5)
+    staleness_reason_h1 = _staleness_reason(
+        event_as_of=event_as_of, last_closed=last_closed_h1, max_staleness_s=tower.h1_max_staleness_s,
+    )
+    staleness_reason_m15 = _staleness_reason(
+        event_as_of=event_as_of, last_closed=last_closed_m15, max_staleness_s=tower.m15_max_staleness_s,
+    )
+    staleness_reason_m5 = _staleness_reason(
+        event_as_of=event_as_of, last_closed=last_closed_m5, max_staleness_s=tower.m5_max_staleness_s,
+    )
+    _time_fields: dict[str, object] = dict(
+        event_as_of=event_as_of, data_cutoff=data_cutoff, wall_clock_now=wall_clock_now,
+        last_closed_h1=last_closed_h1, last_closed_m15=last_closed_m15, last_closed_m5=last_closed_m5,
+        fetch_timestamp=fetch_timestamp, staleness_reason_h1=staleness_reason_h1,
+        staleness_reason_m15=staleness_reason_m15, staleness_reason_m5=staleness_reason_m5,
+    )
 
     gap_reason_codes = tuple(
         f"GAP_DETECTED:H1:{gap.classification.value}:{gap.duration_seconds}s"
@@ -262,7 +365,7 @@ def _query_tower_chain(
     request = TowerChainRequest(
         protocol_version=PROTOCOL_VERSION, schema_version=REQUEST_SCHEMA_VERSION,
         request_id=_fp(market_event_id, str(side), "chain-request"), market_event_id=market_event_id,
-        trace_id=trace_id, correlation_id=market_event_id, symbol=symbol, as_of=as_of,
+        trace_id=trace_id, correlation_id=market_event_id, symbol=symbol, as_of=event_as_of,
         configuration_fingerprint=configuration_fingerprint, regime_axes_status=regime_axes_status,
         h1_open=_series(h1_bars, "open"), h1_high=_series(h1_bars, "high"), h1_low=_series(h1_bars, "low"),
         h1_close=_series(h1_bars, "close"), h1_time=_times(h1_bars),
@@ -283,7 +386,7 @@ def _query_tower_chain(
         return _ChainQueryResult(
             market_map_available=False, levels_available=False, confirmation_available=False,
             bias_available=False, reason_codes=gap_reason_codes + (result.reason,), tower_version="UNAVAILABLE",
-            side=side,
+            side=side, **_time_fields,  # type: ignore[arg-type]
         )
 
     n2 = result.n2_output or {}
@@ -355,13 +458,14 @@ def _query_tower_chain(
         return _ChainQueryResult(
             market_map_available=False, levels_available=False, confirmation_available=False,
             bias_available=False, reason_codes=gap_reason_codes + result.reason_codes + identity_reason_codes,
-            tower_version=result.tower_version, side=side,
+            tower_version=result.tower_version, side=side, **_time_fields,  # type: ignore[arg-type]
         )
 
     return _ChainQueryResult(
         market_map_available=market_map_available, levels_available=levels_available,
         confirmation_available=confirmation_available, bias_available=bias_available,
         reason_codes=gap_reason_codes + result.reason_codes, tower_version=result.tower_version, side=side,
+        **_time_fields,  # type: ignore[arg-type]
         worker_session_id=result.session_id, worker_identity_fingerprint=result.worker_identity_fingerprint,
         chain_binding_version=result.chain_binding_version,
         chain_response_contract_version=result.chain_response_contract_version,
@@ -457,7 +561,8 @@ def evaluate_bar(
         if side not in _chain_result_cache:
             _chain_result_cache[side] = _query_tower_chain(
                 tower, market_event_id=market_event_id, trace_id=trace_id, symbol=bar.symbol,
-                as_of=bar.ts_close, configuration_fingerprint=configuration_fingerprint,
+                event_as_of=bar.ts_close, data_cutoff=bar.ts_close,
+                configuration_fingerprint=configuration_fingerprint,
                 n1_fingerprint=n1_output_fp, regime_axes_status=regime_axes_status,
                 strategy_id=strategy_id, strategy_version=strategy_version, side=side,
             )
@@ -588,6 +693,13 @@ def evaluate_bar(
                 n4_event_fingerprint=chain_result.n4_event_fingerprint,
                 n4_node_input_fingerprint=chain_result.n4_node_input_fingerprint,
                 n4_data_identity=chain_result.n4_data_identity,
+                event_as_of=chain_result.event_as_of, data_cutoff=chain_result.data_cutoff,
+                wall_clock_now=chain_result.wall_clock_now, last_closed_h1=chain_result.last_closed_h1,
+                last_closed_m15=chain_result.last_closed_m15, last_closed_m5=chain_result.last_closed_m5,
+                fetch_timestamp=chain_result.fetch_timestamp,
+                staleness_reason_h1=chain_result.staleness_reason_h1,
+                staleness_reason_m15=chain_result.staleness_reason_m15,
+                staleness_reason_m5=chain_result.staleness_reason_m5,
             )
         else:
             chain_result = _ChainQueryResult(

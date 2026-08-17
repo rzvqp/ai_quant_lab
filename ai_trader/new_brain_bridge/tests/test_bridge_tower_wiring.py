@@ -77,7 +77,15 @@ def _closed_rates(*, count: int, step: int, now: int, start_price: float) -> tup
     return tuple(rates)
 
 
-def _default_gateway(now: int = 10_000_000) -> _FakeTimeframeAwareGateway:
+_LAST_BAR_TS_CLOSE = 478 * 900
+"""`trend_up_regime_bars()`'s own last bar close (460 calm bars + 18 BOS bars, `(460+18)*900`) -- the
+REAL `event_as_of`/`data_cutoff` every test in this file now evaluates against (RT-TIME-0001 section A:
+bar-fetch anchoring is `data_cutoff`-based, not an arbitrary disconnected `now`, so the fake gateway's own
+canned bars must actually straddle the real bar being evaluated or `fetch_closed_bars`' own
+`ts_close > now: continue` filter would discard every one of them as "future")."""
+
+
+def _default_gateway(now: int = _LAST_BAR_TS_CLOSE) -> _FakeTimeframeAwareGateway:
     return _FakeTimeframeAwareGateway(
         h1_rates=_closed_rates(count=150, step=3600, now=now, start_price=1990.0),
         m15_rates=_closed_rates(count=150, step=900, now=now, start_price=2000.0),
@@ -189,7 +197,7 @@ def test_tower_chain_true_result_flows_into_the_decision_request() -> None:
     worker = _FakeWorker(n2_output=_COMPLETE_N2_OUTPUT, n3_output=_COMPLETE_N3_OUTPUT, n4_output=_COMPLETE_N4_OUTPUT)
     try:
         gateway = _default_gateway()
-        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway)  # type: ignore[arg-type]
 
         builder = RawAxesBuilder(_SYMBOL)
         last_bar = _last_bar(builder)
@@ -239,7 +247,7 @@ def test_tower_chain_response_missing_identity_fields_degrades_to_identity_unava
     )
     try:
         gateway = _default_gateway()
-        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway)  # type: ignore[arg-type]
 
         builder = RawAxesBuilder(_SYMBOL)
         last_bar = _last_bar(builder)
@@ -268,7 +276,7 @@ def test_tower_chain_node_event_fingerprint_disagreement_degrades_to_identity_mi
     )
     try:
         gateway = _default_gateway()
-        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway)  # type: ignore[arg-type]
 
         builder = RawAxesBuilder(_SYMBOL)
         last_bar = _last_bar(builder)
@@ -291,7 +299,7 @@ def test_tower_unavailable_result_keeps_all_flags_false() -> None:
         gateway = _default_gateway()
         # No established session at all -- HANDSHAKE_NOT_ESTABLISHED.
         client = TowerClient(TowerClientConfig(host=worker.host, port=worker.port), session=None)
-        tower = TowerDependencies(client=client, gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+        tower = TowerDependencies(client=client, gateway=gateway)  # type: ignore[arg-type]
 
         builder = RawAxesBuilder(_SYMBOL)
         last_bar = _last_bar(builder)
@@ -317,7 +325,7 @@ def test_tower_is_queried_at_most_once_per_side_shared_across_catalog() -> None:
     )
     try:
         gateway = _default_gateway()
-        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway)  # type: ignore[arg-type]
 
         builder = RawAxesBuilder(_SYMBOL)
         last_bar = _last_bar(builder)
@@ -338,7 +346,7 @@ def test_tower_never_queried_when_no_strategy_reaches_geometry() -> None:
     worker = _FakeWorker(n2_output=None, n3_output=None, n4_output=None)
     try:
         gateway = _FakeTimeframeAwareGateway(h1_rates=(), m15_rates=(), m5_rates=())
-        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway)  # type: ignore[arg-type]
 
         builder = RawAxesBuilder(_SYMBOL)
         price = 2400.0
@@ -364,7 +372,7 @@ def test_side_is_derived_from_the_strategy_contract_never_a_default() -> None:
     worker = _FakeWorker(n2_output=_COMPLETE_N2_OUTPUT, n3_output=_COMPLETE_N3_OUTPUT, n4_output=_COMPLETE_N4_OUTPUT)
     try:
         gateway = _default_gateway()
-        tower = TowerDependencies(client=_client_for(worker), gateway=gateway, now=10_000_000)  # type: ignore[arg-type]
+        tower = TowerDependencies(client=_client_for(worker), gateway=gateway)  # type: ignore[arg-type]
 
         builder = RawAxesBuilder(_SYMBOL)
         last_bar = _last_bar(builder)

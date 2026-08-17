@@ -72,6 +72,26 @@ class EventIdentity:
     n4_node_input_fingerprint: str | None = None
     n4_data_identity: str | None = None
 
+    # -- Request-scoped time fields (RT-TIME-0001 section A, 2026-08-17) -- all optional, `None` until a
+    # real tower call actually happens (mirrors the tower identity fields above: a Router-ineligible or
+    # ATR-insufficient outcome never reaches the tower, so it correctly carries none of these either).
+    # `event_as_of`/`data_cutoff` are what the fetched H1/M15/M5 windows are actually anchored to;
+    # `wall_clock_now` is operational-only (never used to select data -- see `wall_clock.py`'s own
+    # docstring). `last_closed_h1`/`_m15`/`_m5` are the ts_close of the most recent bar actually fetched
+    # for each timeframe (`None` if that window came back empty). `staleness_reason_*` is a bridge-side,
+    # informational echo of the SAME staleness math `ve_tower`'s own `DATA_STALE` gate independently
+    # performs -- never the authority for the actual decision, only for audit/trace purposes.
+    event_as_of: int | None = None
+    data_cutoff: int | None = None
+    wall_clock_now: int | None = None
+    last_closed_h1: int | None = None
+    last_closed_m15: int | None = None
+    last_closed_m5: int | None = None
+    fetch_timestamp: int | None = None
+    staleness_reason_h1: str | None = None
+    staleness_reason_m15: str | None = None
+    staleness_reason_m5: str | None = None
+
     def __post_init__(self) -> None:
         for name in _EVENT_IDENTITY_REQUIRED_FIELDS:
             if not getattr(self, name):
