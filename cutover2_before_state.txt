@@ -1,0 +1,7 @@
+watermark: 1786995840.0
+telemetry entries: 56
+last telemetry market_event_id: XAUUSD:M15:1786996740
+journal entries: 56
+last journal entry: LiveShadowRecord(category=<LiveShadowCategory.LIVE_SHADOW_NO_TRADE: 'LIVE_SHADOW_NO_TRADE'>, trace_id='916f00c51ef44068', market_event_id='XAUUSD:M15:1786996740', strategy_id='trend_experimental', as_of=1786996740, terminal_reason_code='NO_DECISION', decision=None, reached_broker_gate=None, broker_blocked=None, order_send_calls=None, orders_created=None, positions_created=None)
+heartbeat: LiveShadowHeartbeat(timestamp_utc=1786997519, pid=2956, process_start_identity='2956:1786997068', runtime_commit='630032e', authority='NEW_BRAIN', broker_gate_state='DISABLED', tower_worker_session_id='c755b04469d3977b2d132da22a95cc91', last_closed_bar_id=None, last_market_event_id='XAUUSD:M15:1786996740', last_journal_sequence=56, last_outcome_reason='NO_DECISION', mt5_connected=True, balance=1800.34, equity=1800.34, open_orders=0, open_positions=0)
+authority: DecisionAuthority.NEW_BRAIN
