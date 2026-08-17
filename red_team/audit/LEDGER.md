@@ -3010,4 +3010,72 @@
                engine, ran no real data, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [70], prev_hash E69.
   entry_hash:  E69
+
+[70] 2026-08-17
+  prev_hash:   E69
+  event:       VERDICT
+  dc_id:       DC-AITRADER-MANDATE2
+  freeze_hash: 6e5a333 (code) / bf9243d (report) — READY_FOR_LIVE_SHADOW_REVIEW_CANDIDATE_V2_CORRELATED
+  battery_ver: RT-MANDATE2-0003
+  reviewer:    Red Team
+  detail:      FINAL VERIFICATION. VERDICT = ***PASS_FOR_LIVE_SHADOW · READY_FOR_CEO_LIVE_SHADOW_AUTHORIZATION***
+               (first PASS in the Mandate-2 track; supersedes RT-MANDATE2-0002 CONDITIONAL). Branch
+               ai-trader-implementation, local==remote (bf9243d==trader/...), on ve_tower 0.5.2 (1abcd60d...c28d8,
+               TOWER_CHAIN_ATR_PASS, RT-TOWER-0010 68c6b59). The single correlated chain RT-MANDATE2-0002 required
+               is now demonstrated. No engine modified; synthetic/fixture + read-only real MT5 for broker
+               evidence; nothing outside red_team/.
+               (1 delivery) 6e5a333 (descends from HOLD ee92c8c) + bf9243d exist; branch head==remote; report<->
+               code<->CANDIDATE_V2_CORRELATED_EVIDENCE.json consistent; ve_tower 0.5.2 installed --no-deps NON-
+               EDITABLE (site-packages) in tower venv ONLY, main venv clean (pip show not found before+after);
+               verify_pin(real handshake)==() zero mismatches (15+atr_source_commit); rollback: 0.5.0 handshake
+               REFUSED (HANDSHAKE_IDENTITY_MISMATCH expected 0.5.2 actual 0.5.0).
+               ★ (2 DECISIVE single path) demonstrate_candidate_v2_correlated.py = ONE run: live MT5 probed first
+               (UNCERTAIN_REGIME/TRUE_RANGE_NOT_IDENTIFIABLE, captured not discarded) -> versioned canonical
+               fixture trend_up_regime_bars (CEO-allowed 2nd option) -> ONE bridge.evaluate_bar -> approved_outcome
+               (real event_identity+decision read back, never rebuilt) -> submit_new_brain_candidate -> attempt_
+               shadow_execution -> broker BLOCKED. Source-verified bridge.evaluate_bar @6e5a333: N1 observe ->
+               StrategyRouter.eligible (ineligible->decision=None no N6) -> resolve_cost_components -> tower.client.
+               request_chain (IPC v3) -> side=_side_from_strategy -> real chain identities propagated into
+               EventIdentity via replace() -> ve_brain.decide_n6 -> provenance from real response. INDEPENDENTLY
+               RAN the AST guard over the script: ZERO hits for EventIdentity/DecisionResponse/DecisionProvenance/
+               N2/N3/N4Response, run_n2/n3/n4, set_authority, order_send, bias_direction="LONG". Worker decision.py
+               calls run_tower_chain EXCLUSIVELY. confirmation_available from real N4, not overridden. No manual
+               construction / no direct API / no bypass / not three glued proofs.
+               ★ (3 identity, independently recomputed) common spine: market_event_id XAUUSD:M15:430200, trace_id
+               44ab1b61, config_fp 3d8a8b6c, worker_session_id ed489567, worker_identity_fp 337660b5, tower 0.5.2,
+               binding tower-chain-binding-v1, chain_fingerprint 112749852f, chain_status ok_chain. Distinct
+               propagated: N2/N3/N4 own node_input_fingerprint + data_identity (real bars_content_hash, H1/M15/M5,
+               all as_of=430200), N2 output_fingerprint ff6266af, N3->N4 link, ATR provenance, strategy_id trend_
+               pullback, cost_model_fp 860e2088, N6 ev-core@bdd15e5. DECISIVE RECOMPUTE: ve_tower.event_fingerprint
+               ("XAUUSD:M15:430200","XAUUSD",430200)=997d40de3e8aa57f == the event_fingerprint shared by N2+N3+N4
+               in evidence. Genuine + reproducible.
+               (4 strategy/probability) side=StrategyContract.allowed_directions[0] (never default/operator/fixture/
+               bias_direction/N2-copy; catalog all LONG->side=1). probability_inputs=TEST_ONLY_CANONICAL_FIXTURE
+               (labeled, monkeypatched at demo load site only, never production, no edge claim); PRODUCTION load_
+               probability_inputs returns None -> fail-closed without ratified stats. Declared limitation, does not
+               block LIVE_SHADOW per CEO. router_bias_direction gap disclosed (defaults None, unused for side).
+               (5 worker/IPC) chain v3 (TowerChainRequest/Response), run_tower_chain exclusive, _ALLOWED_CHAIN_
+               REQUEST_FIELDS unknown-field reject, HMAC session, pin exact (15+1), production entrypoint, direct
+               APIs UNBOUND; stale/wrong-0.5.0/loopback fail-closed (rollback refusal proven).
+               (6 cost) resolve_cost_components(tier=BASE) exclusive; BASE_RATIFIED(0.05,0,0)/STRESS_RATIFIED(0.08,
+               0.08,0.08) distinct; fingerprint mismatch->COST_MODEL_FINGERPRINT_MISMATCH, unavailable->COST_MODEL_
+               UNAVAILABLE; zero cost literals in bridge; provenance on CostModel trace; not reopened.
+               (7 risk/broker) decision=TRADE, approved_upstream+risk_approved=True, reached_broker_gate=True,
+               broker_blocked=True, gate_enabled=False; real read-only MT5: positions/orders 0->0, balance+equity
+               1800.34 unchanged, order_send/orders/positions=0; gate no-setter dataclass default-closed; order_
+               send never imported (AST). Two operator-gated real-order tests NOT executed.
+               (8 authority) set_authority NEVER called in production/demo (docstrings only, AST-confirmed);
+               authority INACTIVE (default LEGACY); after future NEW_BRAIN switch legacy=telemetry-only, can't reach
+               Risk/Execution; new-brain unavailable->NO_TRADE, zero fallback. Not activated during review.
+               (9 regression) log full_regression_output_rt_tower_0010.txt: 3407 passed / 0 failed / 2 skipped /
+               4 warnings / 21347.47s (5:55:47) / EXIT_CODE=0; targeted 310/310; mypy --strict clean. 2 skips =
+               operator-gated real-terminal/order tests; 4 warnings = pre-existing E000 div-by-zero market_state.py:
+               92 (unrelated). Full 6h re-run not repeated (CEO SS9): commit exact + log/exit authentic + delta/path
+               re-executed independently (RT-TOWER-0010 76 tests + event_fingerprint recompute + AST guard + full
+               source inspection).
+               NEXT: Red Team does NOT start LIVE_SHADOW. CEO issues the single remaining approval separately. Even
+               after LIVE_SHADOW starts, BROKER stays DISABLED. Alpha ALPHA_BLOCKED_CANONICAL_N1_HANDOFF; CAND-T05
+               frozen. Red Team modified no engine, ran no real orders, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [71], prev_hash E70.
+  entry_hash:  E70
 ```
