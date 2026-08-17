@@ -1,0 +1,28 @@
+{
+  "live_vs_replay_identical": true,
+  "trend_up_last_regimes": [
+    "TREND_UP"
+  ],
+  "trend_up_is_TREND_UP": true,
+  "trend_up_raw_axes": "RawAxes(is_compressed=False, is_displacement=False, direction='up', structure='strong', volatility_state='unknown', n1_contract_version='n1-additive-raw-axes-v1', raw_axis_schema_version='raw-axis-v1')",
+  "uncertain_prefix_regimes": [
+    "UNCERTAIN"
+  ],
+  "uncertain_axes_status": "('unavailable', 'available', 'unavailable', 'unavailable')",
+  "trend_down_last_regimes": [
+    "COMPRESSION",
+    "TREND_DOWN"
+  ],
+  "trend_down_is_TREND_DOWN": true,
+  "trend_down_raw_axes": "RawAxes(is_compressed=True, is_displacement=False, direction='down', structure='strong', volatility_state='unknown', n1_contract_version='n1-additive-raw-axes-v1', raw_axis_schema_version='raw-axis-v1')",
+  "bos_last_raw_axes": "RawAxes(is_compressed=None, is_displacement=False, direction='up', structure='strong', volatility_state='unknown', n1_contract_version='n1-additive-raw-axes-v1', raw_axis_schema_version='raw-axis-v1')",
+  "snapshot_restore_identical": true,
+  "duplicate_bar": "idempotent OK",
+  "out_of_order": "OutOfOrderBarError OK",
+  "modified_last_changes_only_last_fp": false,
+  "n1_contract_version": "n1-additive-raw-axes-v1",
+  "router_version": "router-v1",
+  "detector_config_fp": "effa0663b8a45bb5"
+}
+
+SMOKE_PARITY: PASS

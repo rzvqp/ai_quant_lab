@@ -458,39 +458,39 @@
       "recent_trimmed": 0.3292,
       "recent_gross_EV": 0.4206,
       "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 1.0
+      "surviving_frac": 0.76,
+      "n_variants": 41,
+      "n_surviving": 31
     },
     {
-      "mechanism_id": "trend_up_pullback3|TREND_UP|pullback",
-      "representative": "CAND-G0027",
-      "recent_trimmed": 0.2936,
-      "recent_gross_EV": 0.5549,
-      "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.79
-    },
-    {
-      "mechanism_id": "trend_up_pullback2|TREND_UP|pullback",
-      "representative": "CAND-G0017",
-      "recent_trimmed": 0.1873,
-      "recent_gross_EV": 0.2689,
-      "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.7
-    },
-    {
-      "mechanism_id": "trend_up_continuation|TREND_UP|continuation",
+      "mechanism_id": "TREND_UP|continuation",
       "representative": "CAND-G0168",
       "recent_trimmed": 0.0641,
       "recent_gross_EV": 0.083,
       "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.6
+      "surviving_frac": 0.6,
+      "n_variants": 20,
+      "n_surviving": 12
     },
     {
-      "mechanism_id": "trend_up_momentum|TREND_UP|momentum",
+      "mechanism_id": "TREND_UP|momentum",
       "representative": "CAND-G0059",
       "recent_trimmed": 0.0592,
       "recent_gross_EV": 0.0852,
       "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.6
+      "surviving_frac": 0.6,
+      "n_variants": 20,
+      "n_surviving": 12
+    },
+    {
+      "mechanism_id": "BREAKOUT_TRANSITION|breakout",
+      "representative": "CAND-G0163",
+      "recent_trimmed": 0.049,
+      "recent_gross_EV": 0.068,
+      "status": "GROSS_ONLY_AWAITING_COST",
+      "surviving_frac": 0.17,
+      "n_variants": 30,
+      "n_surviving": 5
     }
   ],
   "AWAITING_COST_QUEUE": [
@@ -565,11 +565,10 @@
     "note": "changing a snapshot => new run_hash, results NON_COMPARABLE"
   },
   "IMPLEMENTATION_QUEUE": [
-    "EXIT_ON_REGIME_INVALIDATION :: IMPLEMENTATION_BLOCKED_MISSING_PRIMITIVE (no regime-state exit in canonical menu + per-bar N1 regime blocked)",
-    "session-conditioned :: SPEC_READY EVALUATION_DEFERRED (distinctness gate)",
-    "volatility-conditioned :: SPEC_READY EVALUATION_DEFERRED (distinctness gate)",
-    "breakout-continuation :: SPEC_READY DISTINCTNESS_CONTESTED",
-    "compression-to-expansion :: POTENTIAL_DUPLICATE of comp_break"
+    "EXIT_ON_REGIME_INVALIDATION (needs dynamic regime-exit in simulator)",
+    "session-conditioned continuation (needs session eligibility x trend)",
+    "volatility-conditioned trend (needs vol-regime gate)",
+    "acceptance/value-area entries (needs new detector)"
   ],
   "ROUTER_PARITY": {
     "verdict": "REGIME_CLASSIFIER_NONCANONICAL",
@@ -599,5 +598,26 @@
     "rerun_manifest": "reports/N1_RERUN_MANIFEST.json (355 flagged needs_n1_rerun=TRUE; 62 needs_cost_rerun; no rerun executed)",
     "impl_queue_specs": "reports/IMPLEMENTATION_QUEUE_SPECS.md (spec-only, m unchanged)"
   },
-  "m_unchanged_by_specs": true
+  "m_unchanged_by_specs": true,
+  "N1_HANDOFF_RERUN": {
+    "authorization": "RT-N1-0001 N1_HANDOFF_PASS (Red Team 5352570)",
+    "phase1_install": "PASS \u2014 SHA-256 exact (ve_n1_replay 372b35f9, ve_brain edd208ad); isolated venv .alpha_n1_venv; ve_tower NOT importable; hermetic vendored _ai",
+    "phase1_smoke_parity": "PASS \u2014 TREND_UP/DOWN/UNCERTAIN/BOS/live=replay/snapshot-restore/duplicate-idempotent/out-of-order-rejected",
+    "phase2_status": "ALPHA_RERUN_BLOCKED_N1_REPLAY_PERFORMANCE",
+    "blocker": "engine recomputes full history per bar (O(n^2)+); 355696-bar replay ~20+ days, infeasible; measured 2.87/18.3/54.6 ms marginal at history 200/600/1000",
+    "fix_is_feasible": "windowed W>=500 byte-identical to full history (proven) -> an incremental rolling-buffer engine would be O(n*W), exact",
+    "requested": "ve_n1_replay>=0.1.1 incremental bounded-window mode, OR authorization for windowed/long background job",
+    "cost_model_located": "AI_TRADER_SHADOW_COST_MODEL_v1 RATIFIED (BASE 0.05, STRESS 0.24, cfg b7bb9a9aed17a1c8, content 1341f228, SE UNAVAILABLE) \u2014 ready to bind",
+    "reports": [
+      "reports/n1_rerun/N1_INSTALL_AND_PARITY_VERIFICATION.md",
+      "reports/n1_rerun/N1_RERUN_FEASIBILITY_BLOCKER.md"
+    ],
+    "preserved": {
+      "m_total": 357,
+      "hypotheses": 355,
+      "tombstones": 16,
+      "oos_access": 0,
+      "old_results": "NOT promoted/compared/relabeled"
+    }
+  }
 }
