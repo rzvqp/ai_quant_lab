@@ -3269,4 +3269,60 @@
                changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [74], prev_hash E73.
   entry_hash:  E73
+
+[74] 2026-08-18
+  prev_hash:   E73
+  event:       VERDICT
+  dc_id:       DC-VE-N1-REPLAY-HANDOFF
+  freeze_hash: e118c33 (ve_n1_replay 0.1.1 delivery) / build 07da208
+  battery_ver: RT-N1-0002
+  reviewer:    Red Team
+  detail:      N1 INCREMENTAL REPLAY revalidation of ve_n1_replay 0.1.1. VERDICT = ***N1_INCREMENTAL_PASS***.
+               Incremental O(n) engine byte-identical per-bar to 0.1.0; preserves UNBOUNDED structural state
+               across snapshot+restart (>5000-bar break survives, NOT lost to UNCERTAIN) -> resolves the N1_
+               HYDRATION_CONDITIONAL blocker (RT-N1-0001 C / RT-TIME-0001 C). LIVE_SHADOW untouched (read-only);
+               broker DISABLED; Alpha did not run the 355 hypotheses. No VE engine modified; nothing outside
+               red_team/.
+               (1 identity) wheel SHA 2cff7e7b...d29ab + 68937 bytes exact, git-stored bytes == working wheel;
+               build 07da208, delivery/state e118c33; sidecar self_declared_pass=false, ve_brain 0.1.3 edd208ad
+               unchanged, vendored_source_identity unchanged 1d4f6c48; incremental block declares history_horizon
+               460 + structure/direction NOT truncated.
+               (2 byte-integrity + installed-wheel tests) diff 0.1.0->0.1.1: NEW incremental.py; DIFFER __init__/
+               version; ALL 15 AI + 5 detectors + _bootstrap byte-identical (market_structure still 52bb1eba).
+               Empty venv (copied whitelisted numpy + pinned ve_brain 0.1.3 + 0.1.1 wheel); ve_n1_replay.__file__
+               = site-packages; artefact tests run from neutral dir against INSTALLED wheel -> 43 passed.
+               (3 parity) 1038-bar history, break 560 bars old (>460 window): incremental == original oracle byte-
+               identical every bar (RawAxes/regimes/Router/reason_codes/availability/input_data_identity/all
+               fingerprints), 0 mismatches. incr inherits _build_result/identity/snapshot, swaps only _axes_builder.
+               ★ (4 DECISIVE adversarial) 5300 calm bars after a real break (age=5300>5000): incremental final =
+               structure=strong/direction=up/regimes={TREND_UP,COMPRESSION}, NOT UNCERTAIN. Snapshot after break+
+               300 -> restore fresh engine -> continue ~5000 bars: continuation IDENTICAL to never-restarted run;
+               restored final still carries the >5000-bar-old break. Exactly the 0.1.0 blocker failure mode; 0.1.1
+               does not lose it.
+               (5 snapshot unbounded) snapshot_state persists FULL structural state (last_high/low, swing stacks
+               {HH,LL,HL,LH}, consumed set, pending swing, latest_break_kind), NOT just last 460 bars; bounded
+               460-buffer only for compression<=460/displacement<=15/atr14=14. Verified restored == continuous.
+               (6 lookahead/chunk/determinism/isolation) zero lookahead (prefix stable); chunk invariance (chunked
+               + snapshot-restore between chunks == monolithic); restart determinism; two instances no shared state.
+               (7 ledger/identity) fingerprint changes on impl_commit/symbol/timeframe; cross-identity snapshot
+               restore refused (IncompatibleSnapshotError) -> data/contract/Router/detector/version change
+               invalidates ledger, no silent cross-config comparison.
+               ★ (8 BENCHMARK independent, 355696 bars from installed wheel) 1128.8s = 18.8 min << 4h target. ms/bar
+               FLAT: 3.115/3.157/3.158/3.160/3.170/3.171/3.174 at 50k/100k/150k/200k/250k/300k/355696 = +1.9% over
+               7x data = O(n) (O(n^2) would hit ~22 ms/bar). ~2min over VE's 16.9min = background CPU (live shadow +
+               worker + light Alpha service). Checked for lingering "Parity+timing>5000" task before benchmark:
+               NONE; only Alpha discovery service ~3% CPU, left untouched.
+               (9 no forbidden) no MetaTrader5/ve_tower/broker/execution imports; no order_send/set_authority/
+               probability_inputs in code; sole SEALED = HoldoutStatus enum label in byte-identical strategy_manager
+               /contract.py, NOT sealed-data access.
+               (10 LIVE_SHADOW untouched, read-only) authority 1.0=NEW_BRAIN; journal all NO_TRADE, order_send=0,
+               none reached broker; broker DISABLED; Alpha not running 355 hypotheses.
+               AUTHORIZES: resolves ve_n1_replay-incremental-PASS + canonical-N1-hydration condition. Alpha may use
+               ve_n1_replay 0.1.1 ONLY in Alpha env (+ pinned ve_brain 0.1.3) for the canonical N1 rerun of the 355
+               hypotheses. Does NOT authorize broker, does NOT authorize LIVE_SHADOW cutover (still gated on final
+               integration + full regression + cutover review per RT-TIME-0001), does NOT start Alpha. LIVE_SHADOW
+               untouched, broker DISABLED, CAND-T05 frozen. Red Team modified no VE engine, ran no real orders,
+               disturbed no live process, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [75], prev_hash E74.
+  entry_hash:  E74
 ```
