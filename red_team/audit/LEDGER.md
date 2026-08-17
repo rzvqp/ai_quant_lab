@@ -3207,4 +3207,66 @@
                process, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [73], prev_hash E72.
   entry_hash:  E72
+
+[73] 2026-08-18
+  prev_hash:   E72
+  event:       VERDICT
+  dc_id:       DC-AITRADER-TIME-DUALCLOCK
+  freeze_hash: 5bad823 (report HEAD) / A 7905236 / B 6b45ee1 / C 8607d01 / adversarial 5ac10eb
+  battery_ver: RT-TIME-0001
+  reviewer:    Red Team
+  detail:      TIME FIX + M5 DUAL-CLOCK delta revalidation. VERDICT: A+B = ***TIME_AND_DUAL_CLOCK_PASS ·
+               DEPLOYMENT_HELD_FOR_N1_INCREMENTAL_STATE***; C = ***N1_HYDRATION_CONDITIONAL_PENDING_INCREMENTAL_
+               STATE*** (unchanged, no new defect). LIVE_SHADOW stayed active on OLD runtime 255eee6; audit
+               ENTIRELY READ-ONLY (no deploy/restart/cutover). No engine modified; nothing outside red_team/.
+               (1 delivery) all commits exist, branch head 5bad823==remote, linear 255eee6->A7905236->B6b45ee1->
+               C8607d01->adversarial5ac10eb->report5bad823; A diff 6 files (wall_clock.py new + bridge/event_
+               identity/entrypoint + tests), B diff 8 files +1006/-0 additive (new dual_clock/ package). No
+               tradingview-mcp files. Live runtime 255eee6 IS ancestor of A -> does NOT consume new files.
+               (2 A request-scoped time) OLD BUG: TowerDependencies.now captured once at startup -> DATA_STALE
+               ~10min(M5)/~30(M15)/~2h(H1), recover only on restart. FIX: now field REMOVED; wall_clock_provider
+               called fresh per-request (reporting ONLY, docstring forbids data selection); _query_tower_chain
+               takes event_as_of+data_cutoff, data_cutoff=min(data_cutoff,event_as_of) (no future data); clock
+               rollback->WALL_CLOCK_ROLLBACK_DETECTED (MonotonicWallClock raises ClockRollbackError); event_as_of>
+               wall_clock_now->FUTURE_EVENT_REJECTED before fetch; staleness informational (ve_tower DATA_STALE
+               authoritative). 11 A tests pass (fake-clock +3600 advances w/o rebuilding TowerDependencies while
+               data_cutoff pinned to event_as_of; catch-up anchors fetch to event's own as_of not now; future-
+               refuse; rollback fail-closed; restart identical anchor; process-uptime doesn't artificially stale).
+               (3 B M5 dual-clock, DECISIVE) architecture: N1/Router on M15 cadence via upstream_context.build_
+               context (real RawAxesBuilder+Router, own watermark), M5 tick reads (never recomputes) cached
+               context; eligible M5 -> bridge -> REAL run_tower_chain (H1+M15+M5); no direct run_n2/n3/n4; EV/N6/
+               Risk after chain; broker DISABLED. ★ ZERO-LOOKAHEAD dual constraint in _process_m5_bar: context.
+               market_timestamp > bar.ts_close -> CONTEXT_FROM_FUTURE (line 145) AND age > max -> CONTEXT_STALE
+               (both, not just max-age). 11 B tests pass incl test_context_from_the_future_is_rejected_not_
+               silently_accepted (M5 before cached context -> all CONTEXT_FROM_FUTURE, worker.connection_count=0),
+               stale->NO_TRADE, missing->NO_TRADE-no-tower, eligible->real chain N2/N3/N4 traces, legacy-never-
+               tower, broker-never-enabled, reached-broker candidate blocked order_send=0, dedup (2nd tick no new
+               bar->0 evals), independent watermarks, serialization round-trip.
+               (4 chain binding) real run_tower_chain per eligible M5; N2 fp from executed N2, N3<-N2, N4<-N3,
+               real chain/session/worker identity, H1/M15/M5 last_closed_bar + event_as_of/data_cutoff/wall_clock
+               persisted; NO cached-response injection / default LONG / synthetic fp / placeholder identity /
+               fabricated probability / test-only identity.
+               (5 C CONDITIONAL) adversarial test_bounded_snapshot_restore_loses_structure..._BLOCKER PASSES +
+               ASSERTS the divergence (structure/direction UNBOUNDED; BOS_BULL break older than required_bar_count
+               -> bounded restore UNCERTAIN vs continuous TREND_UP + diff Router eligibility); explicitly NOT
+               relaxed ("do not loosen"); n1_hydration NOT imported by entrypoint/dual_clock -> C not activated,
+               bounded snapshot not used by runtime, not canonical. C stays N1_HYDRATION_CONDITIONAL_PENDING_
+               INCREMENTAL_STATE (VE builds official incremental artefact).
+               (6 tests/safety) A 11 + B 11 + C 11 + adversarial 1; targeted regression new_brain_bridge+new_brain_
+               live 231 passed/0 failed (no regression attributable to A/B/C); mypy --strict clean. READ-ONLY
+               runtime: Scheduled Task AITraderLiveShadow Running; live PID 22592/25992 started 23:12:37 when HEAD
+               was 255eee6 (A committed later 23:38:15) -> executes 255eee6 not new files; decision_authority=1.0
+               =NEW_BRAIN; 76 shadow records all NO_TRADE, order_send=0, none reached broker; broker DISABLED;
+               zero orders/positions. CEO 8200 deposit = CEO_EXTERNAL_DEMO_ACCOUNT_DEPOSIT not PnL (order_send=0+
+               zero positions corroborate). No new bars during close = MARKET_CLOSED_EXPECTED_NO_NEW_BAR.
+               NON-BLOCKING DEPLOY-HYGIENE NOTE: running process is 255eee6 but working tree at 5bad823 (A/B on
+               disk) -> a watchdog/crash restart would auto-load A's bridge/entrypoint. Recommend pinning task
+               checkout to 255eee6 or gating A/B behind a flag until cutover review. Not a defect in A/B/C code.
+               DISPOSITION: A/B PASS does NOT authorize cutover. DEPLOYMENT_HELD until ve_n1_replay incremental
+               PASS + canonical N1 hydration + final integration + full regression + cutover review. LIVE_SHADOW
+               continues on old runtime 255eee6, broker DISABLED, authority NEW_BRAIN, CAND-T05 frozen. Red Team
+               modified no engine, ran no real orders, did not deploy/restart/cutover, disturbed no live process,
+               changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [74], prev_hash E73.
+  entry_hash:  E73
 ```
