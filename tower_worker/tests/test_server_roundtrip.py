@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import socket
 import threading
 
@@ -10,12 +11,12 @@ import pytest
 from ve_tower_worker.artifact_identity_stub import STUB_IDENTITY, stub_read_worker_identity
 from ve_tower_worker.decision_stub import FAKE_TOWER_VERSION, fake_decision
 from ve_tower_worker.protocol import (
-    FRAME_TYPE_N3N4_REQUEST,
+    FRAME_TYPE_CHAIN_REQUEST,
     MALFORMED_REQUEST,
     PROTOCOL_VERSION_MISMATCH,
+    UNKNOWN_REQUEST_FIELD,
     HandshakeRequest,
     parse_handshake_response,
-    parse_response,
     pack_frame,
     unpack_length_prefix,
 )
@@ -23,6 +24,25 @@ from ve_tower_worker.server import NonLoopbackBindError, TowerWorkerServer, recv
 
 _SESSION_ID = "test-session-1"
 _SESSION_SECRET = b"test-secret-bytes-0123456789ab"
+
+
+def _chain_request_json(**overrides: object) -> bytes:
+    fields: dict[str, object] = {
+        "type": FRAME_TYPE_CHAIN_REQUEST, "protocol_version": "3.0", "schema_version": "1.0",
+        "request_id": "r1", "market_event_id": "e1", "trace_id": "t1", "correlation_id": "c1",
+        "symbol": "XAUUSD", "as_of": 1_700_000_000, "configuration_fingerprint": "cfg-1",
+        "regime_axes_status": ["TREND_UP"],
+        "h1_open": [], "h1_high": [], "h1_low": [], "h1_close": [], "h1_time": [],
+        "h1_source_identity": "tower-client:XAUUSD:H1", "h1_max_staleness_s": None,
+        "m15_open": [], "m15_high": [], "m15_low": [], "m15_close": [], "m15_time": [],
+        "m15_source_identity": "tower-client:XAUUSD:M15", "m15_max_staleness_s": None,
+        "m5_high": [], "m5_low": [], "m5_close": [], "m5_time": [],
+        "m5_source_identity": "tower-client:XAUUSD:M5", "m5_max_staleness_s": None,
+        "strategy_id": "trend_pullback", "strategy_version": "1.0", "side": 1,
+        "expected_n2_contract": "stub-n2", "expected_n3_contract": "stub-n3", "expected_n4_contract": "stub-n4",
+    }
+    fields.update(overrides)
+    return json.dumps(fields).encode("utf-8")
 
 
 def _make_server(**overrides: object) -> TowerWorkerServer:
@@ -62,26 +82,17 @@ def test_valid_request_gets_fake_decision_response() -> None:
     server = _make_server()
     try:
         thread = _serve_one_in_background(server)
-        request_json = (
-            b'{"type": "' + FRAME_TYPE_N3N4_REQUEST.encode() + b'", "protocol_version": "2.0", '
-            b'"schema_version": "1.0", "request_id": "r1", '
-            b'"market_event_id": "e1", "event_fingerprint": "f1", "data_identity": "d1", '
-            b'"node_input_fingerprint": "n1", "symbol": "XAUUSD", "as_of": "2026-08-14T00:00:00Z", '
-            b'"n1_output": {}, "n2_output": {}, "m15_closed_bars": [], "m5_closed_bars": [], '
-            b'"strategy_id": "trend_pullback", "strategy_version": "1.0"}'
-        )
-        response_bytes = _send_and_receive(server, request_json)
-        response = parse_response(response_bytes)
+        response = json.loads(_send_and_receive(server, _chain_request_json()))
         thread.join(timeout=5.0)
-        assert response.ok
-        assert response.request_id == "r1"
-        assert response.market_event_id == "e1"
-        assert response.event_fingerprint == "f1"
-        assert response.tower_version == FAKE_TOWER_VERSION
-        assert response.reason_codes == ("STUB_FIXTURE_RESPONSE",)
+        assert response["ok"] is True
+        assert response["request_id"] == "r1"
+        assert response["market_event_id"] == "e1"
+        assert response["correlation_id"] == "c1"
+        assert response["tower_version"] == FAKE_TOWER_VERSION
+        assert response["reason_codes"] == ["STUB_FIXTURE_RESPONSE"]
         # session/identity are stamped by the SERVER, unconditionally -- never left to decision_fn
-        assert response.session_id == _SESSION_ID
-        assert response.worker_identity_fingerprint == STUB_IDENTITY.fingerprint()
+        assert response["session_id"] == _SESSION_ID
+        assert response["worker_identity_fingerprint"] == STUB_IDENTITY.fingerprint()
     finally:
         server.close()
 
@@ -90,21 +101,13 @@ def test_protocol_version_mismatch_is_refused() -> None:
     server = _make_server()
     try:
         thread = _serve_one_in_background(server)
-        request_json = (
-            b'{"type": "' + FRAME_TYPE_N3N4_REQUEST.encode() + b'", "protocol_version": "99.0", '
-            b'"schema_version": "1.0", "request_id": "r2", '
-            b'"market_event_id": "e2", "event_fingerprint": "f2", "data_identity": "d1", '
-            b'"node_input_fingerprint": "n1", "symbol": "XAUUSD", "as_of": "2026-08-14T00:00:00Z", '
-            b'"n1_output": {}, "n2_output": {}, "m15_closed_bars": [], "m5_closed_bars": [], '
-            b'"strategy_id": "trend_pullback", "strategy_version": "1.0"}'
-        )
-        response = parse_response(_send_and_receive(server, request_json))
+        response = json.loads(_send_and_receive(server, _chain_request_json(protocol_version="99.0", request_id="r2", market_event_id="e2")))
         thread.join(timeout=5.0)
-        assert not response.ok
-        assert response.reason_codes == (PROTOCOL_VERSION_MISMATCH,)
-        assert response.request_id == "r2"
-        assert response.market_event_id == "e2"
-        assert response.session_id == _SESSION_ID
+        assert response["ok"] is False
+        assert response["reason_codes"] == [PROTOCOL_VERSION_MISMATCH]
+        assert response["request_id"] == "r2"
+        assert response["market_event_id"] == "e2"
+        assert response["session_id"] == _SESSION_ID
     finally:
         server.close()
 
@@ -113,51 +116,58 @@ def test_malformed_request_gets_diagnosable_refusal() -> None:
     server = _make_server()
     try:
         thread = _serve_one_in_background(server)
-        response = parse_response(_send_and_receive(server, b'{"type": "n3n4_request"}'))
+        response = json.loads(_send_and_receive(server, b'{"type": "chain_request"}'))
         thread.join(timeout=5.0)
-        assert not response.ok
-        assert response.reason_codes == (MALFORMED_REQUEST,)
-        assert response.request_id == "UNKNOWN"
+        assert response["ok"] is False
+        assert response["terminal_reason_code"] == MALFORMED_REQUEST
+        assert response["request_id"] == "UNKNOWN"
+    finally:
+        server.close()
+
+
+def test_unknown_request_field_is_refused() -> None:
+    """The exact structural enforcement CEO section 5 requires: a client that tries to smuggle
+    `n2_fingerprint`/`bias_available`/any other non-permitted field gets refused, not silently ignored."""
+    server = _make_server()
+    try:
+        thread = _serve_one_in_background(server)
+        response = json.loads(_send_and_receive(
+            server, _chain_request_json(request_id="r-unknown-field", n2_fingerprint="sneaky-value"),
+        ))
+        thread.join(timeout=5.0)
+        assert response["ok"] is False
+        assert response["terminal_reason_code"] == UNKNOWN_REQUEST_FIELD
     finally:
         server.close()
 
 
 def test_decision_fn_raising_an_unexpected_exception_degrades_and_the_server_keeps_serving() -> None:
     """The real proof behind test 20b (`mandate2_readiness/tests/test_e2e_readiness.py`, Mandate B point
-    5): "if N3 raises... the pipeline must degrade to NO_TRADE for THAT decision cycle, not hang, not
-    guess, not propagate the exception and kill the whole process." `ve_tower.run_n3`/`run_n4` are
-    themselves designed to never raise (always return their own Unavailable shape) -- so the only way to
-    exercise "a node's own code raises unexpectedly" from OUTSIDE this venv (`test_e2e_readiness.py` runs
-    in the main venv, which can never import `ve_tower_worker` to inject a fault directly) is dependency
-    injection HERE, at the source, the same `decision_fn=` seam `server.py`'s own constructor already
-    exposes for `fake_decision`. This is the definitive proof; `test_e2e_readiness.py`'s own test 20b
-    demonstrates the REAL worker (`real_decision`, unmodified) surviving real consecutive requests and
-    references this test for the exception-safety guarantee specifically."""
+    5): "if a node raises... the pipeline must degrade to NO_TRADE for THAT decision cycle, not hang, not
+    guess, not propagate the exception and kill the whole process." `ve_tower.run_tower_chain` is itself
+    designed to never raise (always returns its own Unavailable/degraded shape) -- so the only way to
+    exercise "a node's own code raises unexpectedly" from OUTSIDE this venv is dependency injection HERE,
+    at the source, the same `decision_fn=` seam `server.py`'s own constructor already exposes for
+    `fake_decision`."""
     def _raising_decision_fn(request: object) -> object:
         raise RuntimeError("deliberate fault injection -- simulates an unexpected node-internal bug")
 
     server = _make_server(decision_fn=_raising_decision_fn)
     try:
         thread = _serve_one_in_background(server)
-        request_json = (
-            b'{"type": "' + FRAME_TYPE_N3N4_REQUEST.encode() + b'", "protocol_version": "2.0", '
-            b'"schema_version": "1.0", "request_id": "r-fault-1", '
-            b'"market_event_id": "e-fault-1", "event_fingerprint": "f-fault-1", "data_identity": "d1", '
-            b'"node_input_fingerprint": "n1", "symbol": "XAUUSD", "as_of": "2026-08-14T00:00:00Z", '
-            b'"n1_output": {}, "n2_output": {}, "m15_closed_bars": [], "m5_closed_bars": [], '
-            b'"strategy_id": "trend_pullback", "strategy_version": "1.0"}'
-        )
-        response = parse_response(_send_and_receive(server, request_json))
+        response = json.loads(_send_and_receive(
+            server, _chain_request_json(request_id="r-fault-1", market_event_id="e-fault-1"),
+        ))
         thread.join(timeout=5.0)
 
-        assert response.ok is False  # degraded, not a fabricated success
-        assert response.n3_output is None and response.n4_output is None  # never invented output
-        assert "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE" in response.reason_codes
-        assert any("RuntimeError" in code for code in response.reason_codes)  # the real cause, visible
-        assert response.request_id == "r-fault-1"  # THIS decision cycle's own identity, not lost
+        assert response["ok"] is False  # degraded, not a fabricated success
+        assert response["n2_output"] is None and response["n3_output"] is None and response["n4_output"] is None
+        assert "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE" in response["reason_codes"]
+        assert any("RuntimeError" in code for code in response["reason_codes"])  # the real cause, visible
+        assert response["request_id"] == "r-fault-1"  # THIS decision cycle's own identity, not lost
         # session/identity are still stamped correctly even on the degraded path -- the exception was
         # caught BEFORE _stamp_session, never bypassing it
-        assert response.session_id == _SESSION_ID
+        assert response["session_id"] == _SESSION_ID
     finally:
         server.close()
 
@@ -168,19 +178,13 @@ def test_decision_fn_raising_an_unexpected_exception_degrades_and_the_server_kee
     server2 = _make_server(decision_fn=_raising_decision_fn)
     try:
         thread2 = _serve_one_in_background(server2)
-        request_json_2 = (
-            b'{"type": "' + FRAME_TYPE_N3N4_REQUEST.encode() + b'", "protocol_version": "2.0", '
-            b'"schema_version": "1.0", "request_id": "r-fault-2", '
-            b'"market_event_id": "e-fault-2", "event_fingerprint": "f-fault-2", "data_identity": "d1", '
-            b'"node_input_fingerprint": "n1", "symbol": "XAUUSD", "as_of": "2026-08-14T00:00:00Z", '
-            b'"n1_output": {}, "n2_output": {}, "m15_closed_bars": [], "m5_closed_bars": [], '
-            b'"strategy_id": "trend_pullback", "strategy_version": "1.0"}'
-        )
-        response2 = parse_response(_send_and_receive(server2, request_json_2))
+        response2 = json.loads(_send_and_receive(
+            server2, _chain_request_json(request_id="r-fault-2", market_event_id="e-fault-2"),
+        ))
         thread2.join(timeout=5.0)
-        assert response2.ok is False
-        assert "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE" in response2.reason_codes
-        assert response2.request_id == "r-fault-2"  # a SEPARATE decision cycle, correctly isolated
+        assert response2["ok"] is False
+        assert "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE" in response2["reason_codes"]
+        assert response2["request_id"] == "r-fault-2"  # a SEPARATE decision cycle, correctly isolated
     finally:
         server2.close()
 

@@ -27,6 +27,11 @@ STUB_IDENTITY = WorkerIdentity(
     vendored_source_identity="STUB-TEST-VENDORED-SOURCE-IDENTITY-NEVER-REAL",
     n3_contract_version="STUB-TEST-N3-CONTRACT-1.0",
     n4_contract_version="STUB-TEST-N4-CONTRACT-1.0",
+    n2_contract_version="STUB-TEST-N2-CONTRACT-1.0",
+    chain_request_contract_version="STUB-TEST-CHAIN-REQUEST-1.0",
+    chain_response_contract_version="STUB-TEST-CHAIN-RESPONSE-1.0",
+    tower_chain_binding_version="STUB-TEST-CHAIN-BINDING-1.0",
+    production_entrypoint="STUB-TEST-run_tower_chain",
 )
 
 

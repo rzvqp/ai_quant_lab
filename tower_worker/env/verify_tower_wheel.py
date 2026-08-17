@@ -29,13 +29,15 @@ from ai_trader.mandate2_readiness.wheel_verification import (  # noqa: E402
     verify_wheel_hash,
 )
 
-PINNED_TOWER_WHEEL_SHA256: str = "0c2581c068f3bd7d0c5beff1358af0aa906485d69ed74bf66c8a6d8d0c0120d2"
-PINNED_TOWER_WHEEL_SIZE_BYTES: int = 77088
-PINNED_TOWER_WHEEL_FILENAME: str = "ve_tower-0.3.0-py3-none-any.whl"
-"""Independently re-hashed from the committed file at `ai_quant_lab-wp5b`'s
-`ve_tower/release/ve_tower-0.3.0-py3-none-any.whl` (commit `8078c99`) before being written here -- matches
-`HANDOFF_MANIFEST-0.3.0.json`'s own `wheel_sha256` and Red Team's `RT-TOWER-0006` (`TOWER_ARTIFACT_PASS`)
-exactly."""
+PINNED_TOWER_WHEEL_SHA256: str = "6d99baf62f9a245031722a3b59c4df59b98211707c26d587641eff424cd94df7"
+PINNED_TOWER_WHEEL_SIZE_BYTES: int = 84801
+PINNED_TOWER_WHEEL_FILENAME: str = "ve_tower-0.5.0-py3-none-any.whl"
+"""RT-TOWER-0008 remediation (2026-08-17): independently re-hashed from the committed file at
+`ai_quant_lab-wp5b`'s `ve_tower/release/ve_tower-0.5.0-py3-none-any.whl` (commit `26470f5`) -- matches
+`HANDOFF_MANIFEST-0.5.0.json`'s own `wheel_sha256`, the release directory's own `SHA256SUMS.txt`, and this
+repo's own independent recomputation, all three agreeing. Size read directly from the committed file
+(`os.path.getsize`), not copied from anywhere else. Superseded pins remain in git history
+(`ve_tower-0.3.0-py3-none-any.whl` @ 77088 bytes, `ve_tower-0.4.0-py3-none-any.whl`) for rollback."""
 
 
 def verify_tower_wheel(wheel_path: Path) -> None:

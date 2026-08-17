@@ -29,7 +29,7 @@ import pytest
 from ai_trader.new_brain_bridge import tower_identity_pin
 from ai_trader.new_brain_bridge.tower_client import TowerClient, TowerClientConfig, TowerUnavailableResult
 from ai_trader.new_brain_bridge.tower_launcher import EstablishedSession, TowerWorkerLauncher
-from ai_trader.new_brain_bridge.tower_protocol import CONNECTION_FAILED, STALE_SESSION, TowerRequest
+from ai_trader.new_brain_bridge.tower_protocol import CONNECTION_FAILED, STALE_SESSION, TowerChainRequest
 
 _TOWER_VENV = Path("C:/Users/MEDION GAMING/ve_tower_venv")
 _TOWER_PYTHON = _TOWER_VENV / "Scripts" / "python.exe"
@@ -39,15 +39,21 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def _sample_request(**overrides: object) -> TowerRequest:
+def _sample_request(**overrides: object) -> TowerChainRequest:
     fields: dict[str, object] = dict(
-        request_id="req-iso-1", market_event_id="evt-iso-1", event_fingerprint="fp-iso-1",
-        data_identity="data-1", node_input_fingerprint="nif-1", symbol="XAUUSD",
-        as_of="2026-08-14T12:00:00Z", n1_output={}, n2_output={}, m15_closed_bars=(), m5_closed_bars=(),
-        strategy_id="trend_pullback", strategy_version="1.0",
+        request_id="req-iso-1", market_event_id="evt-iso-1", trace_id="trace-iso-1",
+        correlation_id="corr-iso-1", symbol="XAUUSD", as_of=1_700_000_000, configuration_fingerprint="cfg-1",
+        regime_axes_status=("TREND_UP",),
+        h1_open=(), h1_high=(), h1_low=(), h1_close=(), h1_time=(), h1_source_identity="tower-client:XAUUSD:H1",
+        m15_open=(), m15_high=(), m15_low=(), m15_close=(), m15_time=(),
+        m15_source_identity="tower-client:XAUUSD:M15",
+        m5_high=(), m5_low=(), m5_close=(), m5_time=(), m5_source_identity="tower-client:XAUUSD:M5",
+        strategy_id="trend_pullback", strategy_version="1.0", side=1,
+        expected_n2_contract="STUB-TEST-N2-CONTRACT-1.0", expected_n3_contract="STUB-TEST-N3-CONTRACT-1.0",
+        expected_n4_contract="STUB-TEST-N4-CONTRACT-1.0",
     )
     fields.update(overrides)
-    return TowerRequest(**fields)  # type: ignore[arg-type]
+    return TowerChainRequest(**fields)  # type: ignore[arg-type]
 
 
 @pytest.fixture
@@ -60,9 +66,21 @@ def _stub_pin(monkeypatch: pytest.MonkeyPatch) -> None:
     `test_tower_launcher.py::test_8` for why this monkeypatch is necessary and honest (the real,
     production pin cannot pass today; this proves the mechanism, not a claim about `ve_tower`'s real
     readiness)."""
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_VE_TOWER_PACKAGE_VERSION", "0.3.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_PACKAGE_BUILD_COMMIT", "6daf2aa")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_STATE_DELIVERY_COMMIT", "0207ffa")
+    monkeypatch.setattr(
+        tower_identity_pin, "EXPECTED_WHEEL_SHA256",
+        "0c2581c068f3bd7d0c5beff1358af0aa906485d69ed74bf66c8a6d8d0c0120d2",
+    )
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_VENDORED_SOURCE_IDENTITY", "STUB-TEST-VENDORED-SOURCE-IDENTITY-NEVER-REAL")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_N3_CONTRACT_VERSION", "STUB-TEST-N3-CONTRACT-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_N4_CONTRACT_VERSION", "STUB-TEST-N4-CONTRACT-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_N2_CONTRACT_VERSION", "STUB-TEST-N2-CONTRACT-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION", "STUB-TEST-CHAIN-REQUEST-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION", "STUB-TEST-CHAIN-RESPONSE-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_TOWER_CHAIN_BINDING_VERSION", "STUB-TEST-CHAIN-BINDING-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_PRODUCTION_ENTRYPOINT", "STUB-TEST-run_tower_chain")
 
 
 def test_host_modules_preloaded_in_main_process_worker_still_starts_clean(
@@ -121,7 +139,7 @@ def test_worker_crash_leaves_ai_trader_alive_and_produces_no_trade(
         client = TowerClient(
             TowerClientConfig(host=session.host, port=session.port, timeout_seconds=2.0), session=session,
         )
-        result = client.request_n3_n4(_sample_request())
+        result = client.request_chain(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == CONNECTION_FAILED
         # "AI Trader ramane VIU": this very test process is still running and able to keep executing --
@@ -184,7 +202,7 @@ def test_6_response_from_the_previous_sessions_worker_after_restart_is_refused(
         stale_client = TowerClient(
             TowerClientConfig(host=session_b.host, port=session_b.port, timeout_seconds=2.0), session=session_a,
         )
-        result = stale_client.request_n3_n4(_sample_request())
+        result = stale_client.request_chain(_sample_request())
         assert isinstance(result, TowerUnavailableResult)
         assert result.reason == STALE_SESSION
     finally:

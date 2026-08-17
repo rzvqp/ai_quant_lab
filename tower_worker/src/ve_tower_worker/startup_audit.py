@@ -110,6 +110,31 @@ def enforce_startup_audit(
     raise TowerWorkerStartupFailed("TOWER_WORKER_STARTUP_FAILED: " + "; ".join(reasons))
 
 
+_REQUIRED_CHAIN_IDENTITY_FIELDS = (
+    "n2_contract_version", "chain_request_contract_version", "chain_response_contract_version",
+    "tower_chain_binding_version", "production_entrypoint",
+)
+
+
+def enforce_chain_identity_complete(identity: object) -> None:
+    """RT-TOWER-0008 remediation (2026-08-17, CEO section 2): "n2_contract_version, chain_request_
+    contract_version, chain_response_contract_version, tower_chain_binding_version, production_entrypoint
+    trebuie sa fie NON-None si exact-match. Oricare None/missing: TOWER_WORKER_STARTUP_FAILED, fail-
+    closed." This is the PRODUCTION handshake's own completeness gate -- run by `cli.main` on whatever
+    `identity_fn()` actually returns, BEFORE the worker ever announces `TOWER_WORKER_READY`, so an
+    incomplete identity (a pre-0.5.0 install, a manifest that failed to write the new chain fields, a
+    stub used outside its own test harness) refuses to start rather than accept connections it cannot
+    honestly serve. `verify_pin` on the CLIENT side is a SEPARATE, later check (exact-match against the
+    expected 0.5.0 pin) -- this is the worker's OWN self-check that it has something to claim at all."""
+    missing = tuple(
+        field for field in _REQUIRED_CHAIN_IDENTITY_FIELDS if getattr(identity, field, None) is None
+    )
+    if missing:
+        raise TowerWorkerStartupFailed(
+            "TOWER_WORKER_STARTUP_FAILED: incomplete chain identity, missing/None: " + ", ".join(missing)
+        )
+
+
 def cwd_is_outside_repo(cwd: Path) -> bool:
     """Structural check the launch script itself should also honor (CWD outside the AI Trader repo) --
     exposed here as a pure function so both the launcher and the isolation tests can call the exact same

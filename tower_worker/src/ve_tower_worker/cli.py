@@ -26,7 +26,11 @@ from types import FrameType
 
 from ve_tower_worker.artifact_identity import read_real_worker_identity
 from ve_tower_worker.server import IdentityFn, NonLoopbackBindError, TowerWorkerServer
-from ve_tower_worker.startup_audit import TowerWorkerStartupFailed, enforce_startup_audit
+from ve_tower_worker.startup_audit import (
+    TowerWorkerStartupFailed,
+    enforce_chain_identity_complete,
+    enforce_startup_audit,
+)
 
 DEFAULT_PORT = 0
 """Ephemeral by default -- the worker binds whatever the OS assigns and reports the real port back over
@@ -103,9 +107,16 @@ def main(argv: list[str] | None = None) -> int:
     session_id, session_secret = session
     process_start_identity = secrets.token_hex(16)
 
+    identity_fn = _identity_fn()
+    try:
+        enforce_chain_identity_complete(identity_fn())
+    except TowerWorkerStartupFailed as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+
     try:
         server = TowerWorkerServer(
-            host=args.host, port=args.port, identity_fn=_identity_fn(),
+            host=args.host, port=args.port, identity_fn=identity_fn,
             session_id=session_id, session_secret=session_secret,
             process_start_identity=process_start_identity,
         )

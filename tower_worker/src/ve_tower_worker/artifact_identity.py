@@ -63,4 +63,15 @@ def read_real_worker_identity(*, venv_root: Path | None = None) -> WorkerIdentit
         vendored_source_identity=ve_tower_manifest.vendored_source_identity if ve_tower_manifest else None,
         n3_contract_version=ve_tower_manifest.n3_contract_version if ve_tower_manifest else None,
         n4_contract_version=ve_tower_manifest.n4_contract_version if ve_tower_manifest else None,
+        n2_contract_version=ve_tower_manifest.n2_contract_version if ve_tower_manifest else None,
+        chain_request_contract_version=(
+            ve_tower_manifest.chain_request_contract_version if ve_tower_manifest else None
+        ),
+        chain_response_contract_version=(
+            ve_tower_manifest.chain_response_contract_version if ve_tower_manifest else None
+        ),
+        tower_chain_binding_version=(
+            ve_tower_manifest.tower_chain_binding_version if ve_tower_manifest else None
+        ),
+        production_entrypoint=ve_tower_manifest.production_entrypoint if ve_tower_manifest else None,
     )

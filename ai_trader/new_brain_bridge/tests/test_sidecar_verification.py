@@ -25,6 +25,13 @@ from sidecar_verification import (  # type: ignore[import-not-found] # noqa: E40
 )
 
 _REAL_SIDECAR_PATH = Path("C:/Users/MEDION GAMING/ai_quant_lab-wp5b/ve_tower/HANDOFF_MANIFEST-0.3.0.json")
+"""Schema v1 (0.3.0/0.4.0 historical) -- used below for the v1-specific parsing/mutation tests, which
+remain valid regression coverage regardless of which version `tower_identity_pin.py`'s pin currently
+targets."""
+_REAL_SIDECAR_PATH_V2 = Path("C:/Users/MEDION GAMING/ai_quant_lab-wp5b/ve_tower/HANDOFF_MANIFEST-0.5.0.json")
+"""Schema v2 (0.5.0+, RT-TOWER-0008 chain-binding) -- the sidecar `tower_identity_pin.py`'s CURRENT pin
+is sourced from; the "matches the existing pin" cross-check must use THIS file, not the historical v1
+one, or it would (correctly) report a mismatch against a pin that has since moved on."""
 
 pytestmark = pytest.mark.skipif(
     not _REAL_SIDECAR_PATH.is_file(), reason="the real VE sidecar manifest is not present on this machine"
@@ -54,8 +61,22 @@ def test_the_real_sidecar_verifies_cleanly() -> None:
     assert sidecar.vendored_module_count == 13
 
 
-def test_the_real_sidecar_cross_checks_clean_against_the_existing_pin() -> None:
+def test_the_0_3_0_sidecar_verifies_cleanly_as_schema_v1_historical() -> None:
+    """The 0.3.0 sidecar no longer matches the CURRENT (0.5.0) pin -- expected, since the pin has moved
+    on -- but it must still verify cleanly as a well-formed schema-v1 artifact in its own right."""
     sidecar = verify_sidecar(_REAL_SIDECAR_PATH)
+    assert sidecar.manifest_schema_version == "ve-tower-handoff-manifest-v1"
+    assert sidecar.ve_tower_package_version == "0.3.0"
+
+
+@pytest.mark.skipif(
+    not _REAL_SIDECAR_PATH_V2.is_file(), reason="the real 0.5.0 VE sidecar manifest is not present on this machine",
+)
+def test_the_real_0_5_0_sidecar_cross_checks_clean_against_the_current_pin() -> None:
+    """RT-TOWER-0008 (2026-08-17): the CURRENT pin is sourced from the 0.5.0 sidecar -- this is the live
+    version of the CEO's own #4/#5 retest items today."""
+    sidecar = verify_sidecar(_REAL_SIDECAR_PATH_V2)
+    assert sidecar.manifest_schema_version == "ve-tower-handoff-manifest-v2"
     assert cross_check_against_existing_pin(sidecar) == ()
 
 

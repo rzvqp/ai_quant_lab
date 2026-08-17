@@ -27,6 +27,11 @@ def _matching_identity(**overrides: object) -> WorkerIdentity:
         "vendored_source_identity": tower_identity_pin.EXPECTED_VENDORED_SOURCE_IDENTITY,
         "n3_contract_version": tower_identity_pin.EXPECTED_N3_CONTRACT_VERSION,
         "n4_contract_version": tower_identity_pin.EXPECTED_N4_CONTRACT_VERSION,
+        "n2_contract_version": tower_identity_pin.EXPECTED_N2_CONTRACT_VERSION,
+        "chain_request_contract_version": tower_identity_pin.EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION,
+        "chain_response_contract_version": tower_identity_pin.EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION,
+        "tower_chain_binding_version": tower_identity_pin.EXPECTED_TOWER_CHAIN_BINDING_VERSION,
+        "production_entrypoint": tower_identity_pin.EXPECTED_PRODUCTION_ENTRYPOINT,
     }
     fields.update(overrides)
     return WorkerIdentity(**fields)  # type: ignore[arg-type]
@@ -107,11 +112,14 @@ def test_wrong_ve_tower_package_version_is_a_mismatch() -> None:
 
 
 def test_wrong_package_build_commit_is_a_mismatch() -> None:
-    """The CEO's own correction that `6daf2aa` is `package_build_commit`, not a catch-all source identity
-    -- a mismatch here must be reported under exactly that field name."""
+    """The CEO's own correction that `package_build_commit` is a distinct identity, never a catch-all
+    source identity -- a mismatch here must be reported under exactly that field name."""
     identity = _matching_identity(package_build_commit="wrongcommit")
     mismatches = verify_pin(identity)
-    assert any(m.field == "package_build_commit" and m.expected == "6daf2aa" for m in mismatches)
+    assert any(
+        m.field == "package_build_commit" and m.expected == tower_identity_pin.EXPECTED_PACKAGE_BUILD_COMMIT
+        for m in mismatches
+    )
 
 
 def test_none_claimed_for_a_concrete_expected_field_is_a_mismatch() -> None:

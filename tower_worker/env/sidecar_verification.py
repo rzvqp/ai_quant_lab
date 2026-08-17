@@ -32,7 +32,16 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-EXPECTED_MANIFEST_SCHEMA_VERSION = "ve-tower-handoff-manifest-v1"
+EXPECTED_MANIFEST_SCHEMA_VERSION_V1 = "ve-tower-handoff-manifest-v1"
+EXPECTED_MANIFEST_SCHEMA_VERSION_V2 = "ve-tower-handoff-manifest-v2"
+"""v2, RT-TOWER-0008 remediation (2026-08-17): `ve_tower` 0.5.0's sidecar adds the chain-binding fields
+(`production_entrypoint`/`unbound_direct_api`/`chain_request_contract_version`/
+`chain_response_contract_version`/`tower_chain_binding_version`/`n2_request_contract_version`) and drops
+the redundant `vendored_module_count` declared-count field and the separate per-node request/response
+version pair (v1 duplicated `n3_request_contract_version`/`n3_response_contract_version` as an internal
+consistency check; v2 has exactly one version per node type, since the wire-level request/response split
+was never a real degree of freedom in practice). Both schema versions remain independently verifiable --
+v1 for auditing the 0.3.0/0.4.0 historical deliveries, v2 for 0.5.0 onward."""
 EXPECTED_VENDORED_MODULE_COUNT = 13
 
 
@@ -54,6 +63,15 @@ class VerifiedSidecar:
     vendored_source_identity: str
     """The RECOMPUTED value -- never the manifest's own declared string taken on faith."""
     vendored_module_count: int
+    manifest_schema_version: str
+    n2_contract_version: str | None = None
+    chain_request_contract_version: str | None = None
+    chain_response_contract_version: str | None = None
+    tower_chain_binding_version: str | None = None
+    production_entrypoint: str | None = None
+    unbound_direct_api: tuple[str, ...] = ()
+    """Chain-binding fields -- `None`/empty for a v1 (pre-0.5.0) sidecar, always populated for a
+    successfully-verified v2 sidecar (see `_verify_sidecar_v2`'s own required-field check)."""
 
 
 def recompute_vendored_source_identity(blob_sha1: dict[str, str]) -> str:
@@ -65,22 +83,12 @@ def recompute_vendored_source_identity(blob_sha1: dict[str, str]) -> str:
     return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
-def verify_sidecar(path: Path) -> VerifiedSidecar:
-    """Fail-closed on any structural or cryptographic inconsistency. Never returns a value it hasn't
-    itself checked."""
-    try:
-        obj = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise SidecarVerificationError(f"cannot read/parse sidecar at {path}: {exc}") from exc
-    if not isinstance(obj, dict):
-        raise SidecarVerificationError("sidecar top-level JSON value is not an object")
-
-    schema = obj.get("manifest_schema_version")
-    if schema != EXPECTED_MANIFEST_SCHEMA_VERSION:
-        raise SidecarVerificationError(
-            f"unexpected manifest_schema_version: {schema!r} (expected {EXPECTED_MANIFEST_SCHEMA_VERSION!r})"
-        )
-
+def _verify_common_identity_and_vendoring(obj: dict[str, object]) -> tuple[str, int]:
+    """Shared across v1/v2: recompute `vendored_source_identity` from the raw blob-sha1 pairs (never trust
+    the manifest's own declared string), and confirm exactly 13 vendored modules -- both schema versions
+    vendor the SAME ratified N1/N3/N4 modules byte-identical; 0.5.0 adds `run_tower_chain`/N2 on top
+    without re-vendoring them (confirmed: `vendored_source_identity` is IDENTICAL between the 0.3.0 and
+    0.5.0 sidecars)."""
     blob_sha1 = obj.get("vendored_blob_sha1")
     if not isinstance(blob_sha1, dict) or not all(
         isinstance(k, str) and isinstance(v, str) for k, v in blob_sha1.items()
@@ -90,18 +98,29 @@ def verify_sidecar(path: Path) -> VerifiedSidecar:
         raise SidecarVerificationError(
             f"vendored_blob_sha1 has {len(blob_sha1)} entries, expected {EXPECTED_VENDORED_MODULE_COUNT}"
         )
-    declared_count = obj.get("vendored_module_count")
-    if declared_count != len(blob_sha1):
-        raise SidecarVerificationError(
-            f"vendored_module_count ({declared_count!r}) does not match len(vendored_blob_sha1) ({len(blob_sha1)})"
-        )
-
     recomputed_identity = recompute_vendored_source_identity(blob_sha1)
     declared_identity = obj.get("vendored_source_identity")
     if recomputed_identity != declared_identity:
         raise SidecarVerificationError(
             f"vendored_source_identity mismatch: recomputed={recomputed_identity!r} "
             f"declared={declared_identity!r}"
+        )
+    return recomputed_identity, len(blob_sha1)
+
+
+def _verify_required_str_fields(obj: dict[str, object], *, field_names: tuple[str, ...]) -> None:
+    for field_name in field_names:
+        value = obj.get(field_name)
+        if not isinstance(value, str) or not value:
+            raise SidecarVerificationError(f"missing or empty required field: {field_name!r}")
+
+
+def _verify_sidecar_v1(obj: dict[str, object]) -> VerifiedSidecar:
+    declared_count = obj.get("vendored_module_count")
+    recomputed_identity, module_count = _verify_common_identity_and_vendoring(obj)
+    if declared_count != module_count:
+        raise SidecarVerificationError(
+            f"vendored_module_count ({declared_count!r}) does not match len(vendored_blob_sha1) ({module_count})"
         )
 
     n3_request = obj.get("n3_request_contract_version")
@@ -117,26 +136,85 @@ def verify_sidecar(path: Path) -> VerifiedSidecar:
             f"n4 request/response contract version mismatch or missing: {n4_request!r} != {n4_response!r}"
         )
 
-    required_str_fields = (
+    _verify_required_str_fields(obj, field_names=(
         "ve_tower_package_version", "package_build_commit", "state_delivery_commit", "wheel_sha256",
         "wheel_filename", "artifact_fingerprint",
-    )
-    for field_name in required_str_fields:
-        value = obj.get(field_name)
-        if not isinstance(value, str) or not value:
-            raise SidecarVerificationError(f"missing or empty required field: {field_name!r}")
+    ))
 
     return VerifiedSidecar(
-        ve_tower_package_version=obj["ve_tower_package_version"],
-        package_build_commit=obj["package_build_commit"],
-        state_delivery_commit=obj["state_delivery_commit"],
-        wheel_sha256=obj["wheel_sha256"],
-        wheel_filename=obj["wheel_filename"],
-        artifact_fingerprint=obj["artifact_fingerprint"],
+        ve_tower_package_version=obj["ve_tower_package_version"],  # type: ignore[arg-type]
+        package_build_commit=obj["package_build_commit"],  # type: ignore[arg-type]
+        state_delivery_commit=obj["state_delivery_commit"],  # type: ignore[arg-type]
+        wheel_sha256=obj["wheel_sha256"],  # type: ignore[arg-type]
+        wheel_filename=obj["wheel_filename"],  # type: ignore[arg-type]
+        artifact_fingerprint=obj["artifact_fingerprint"],  # type: ignore[arg-type]
         n3_contract_version=n3_request,
         n4_contract_version=n4_request,
         vendored_source_identity=recomputed_identity,
-        vendored_module_count=len(blob_sha1),
+        vendored_module_count=module_count,
+        manifest_schema_version=EXPECTED_MANIFEST_SCHEMA_VERSION_V1,
+    )
+
+
+def _verify_sidecar_v2(obj: dict[str, object]) -> VerifiedSidecar:
+    recomputed_identity, module_count = _verify_common_identity_and_vendoring(obj)
+
+    _verify_required_str_fields(obj, field_names=(
+        "ve_tower_package_version", "package_build_commit", "state_delivery_commit", "wheel_sha256",
+        "wheel_filename", "artifact_fingerprint", "n3_request_contract_version", "n4_request_contract_version",
+        "n2_request_contract_version", "chain_request_contract_version", "chain_response_contract_version",
+        "tower_chain_binding_version", "production_entrypoint",
+    ))
+
+    unbound_direct_api = obj.get("unbound_direct_api")
+    if not isinstance(unbound_direct_api, list) or not all(isinstance(x, str) for x in unbound_direct_api):
+        raise SidecarVerificationError("unbound_direct_api missing or not a list of strings")
+    if set(unbound_direct_api) != {"run_n2", "run_n3", "run_n4"}:
+        raise SidecarVerificationError(
+            f"unbound_direct_api unexpected contents: {unbound_direct_api!r} "
+            f"(expected exactly {{'run_n2', 'run_n3', 'run_n4'}})"
+        )
+
+    return VerifiedSidecar(
+        ve_tower_package_version=obj["ve_tower_package_version"],  # type: ignore[arg-type]
+        package_build_commit=obj["package_build_commit"],  # type: ignore[arg-type]
+        state_delivery_commit=obj["state_delivery_commit"],  # type: ignore[arg-type]
+        wheel_sha256=obj["wheel_sha256"],  # type: ignore[arg-type]
+        wheel_filename=obj["wheel_filename"],  # type: ignore[arg-type]
+        artifact_fingerprint=obj["artifact_fingerprint"],  # type: ignore[arg-type]
+        n3_contract_version=obj["n3_request_contract_version"],  # type: ignore[arg-type]
+        n4_contract_version=obj["n4_request_contract_version"],  # type: ignore[arg-type]
+        vendored_source_identity=recomputed_identity,
+        vendored_module_count=module_count,
+        manifest_schema_version=EXPECTED_MANIFEST_SCHEMA_VERSION_V2,
+        n2_contract_version=obj["n2_request_contract_version"],  # type: ignore[arg-type]
+        chain_request_contract_version=obj["chain_request_contract_version"],  # type: ignore[arg-type]
+        chain_response_contract_version=obj["chain_response_contract_version"],  # type: ignore[arg-type]
+        tower_chain_binding_version=obj["tower_chain_binding_version"],  # type: ignore[arg-type]
+        production_entrypoint=obj["production_entrypoint"],  # type: ignore[arg-type]
+        unbound_direct_api=tuple(unbound_direct_api),  # type: ignore[arg-type]
+    )
+
+
+def verify_sidecar(path: Path) -> VerifiedSidecar:
+    """Fail-closed on any structural or cryptographic inconsistency. Never returns a value it hasn't
+    itself checked. Dispatches on `manifest_schema_version` -- v1 (0.3.0/0.4.0 historical) or v2 (0.5.0+
+    chain-binding)."""
+    try:
+        obj = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SidecarVerificationError(f"cannot read/parse sidecar at {path}: {exc}") from exc
+    if not isinstance(obj, dict):
+        raise SidecarVerificationError("sidecar top-level JSON value is not an object")
+
+    schema = obj.get("manifest_schema_version")
+    if schema == EXPECTED_MANIFEST_SCHEMA_VERSION_V1:
+        return _verify_sidecar_v1(obj)
+    if schema == EXPECTED_MANIFEST_SCHEMA_VERSION_V2:
+        return _verify_sidecar_v2(obj)
+    raise SidecarVerificationError(
+        f"unexpected manifest_schema_version: {schema!r} "
+        f"(expected {EXPECTED_MANIFEST_SCHEMA_VERSION_V1!r} or {EXPECTED_MANIFEST_SCHEMA_VERSION_V2!r})"
     )
 
 
@@ -156,6 +234,17 @@ def cross_check_against_existing_pin(sidecar: VerifiedSidecar) -> tuple[str, ...
         mismatches.append("state_delivery_commit")
     if sidecar.wheel_sha256 != tower_identity_pin.EXPECTED_WHEEL_SHA256:
         mismatches.append("wheel_sha256")
+    if sidecar.manifest_schema_version == EXPECTED_MANIFEST_SCHEMA_VERSION_V2:
+        if sidecar.n2_contract_version != tower_identity_pin.EXPECTED_N2_CONTRACT_VERSION:
+            mismatches.append("n2_contract_version")
+        if sidecar.chain_request_contract_version != tower_identity_pin.EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION:
+            mismatches.append("chain_request_contract_version")
+        if sidecar.chain_response_contract_version != tower_identity_pin.EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION:
+            mismatches.append("chain_response_contract_version")
+        if sidecar.tower_chain_binding_version != tower_identity_pin.EXPECTED_TOWER_CHAIN_BINDING_VERSION:
+            mismatches.append("tower_chain_binding_version")
+        if sidecar.production_entrypoint != tower_identity_pin.EXPECTED_PRODUCTION_ENTRYPOINT:
+            mismatches.append("production_entrypoint")
     return tuple(mismatches)
 
 

@@ -58,6 +58,11 @@ def _matching_identity(**overrides: object) -> WorkerIdentity:
         "vendored_source_identity": tower_identity_pin.EXPECTED_VENDORED_SOURCE_IDENTITY,
         "n3_contract_version": tower_identity_pin.EXPECTED_N3_CONTRACT_VERSION,
         "n4_contract_version": tower_identity_pin.EXPECTED_N4_CONTRACT_VERSION,
+        "n2_contract_version": tower_identity_pin.EXPECTED_N2_CONTRACT_VERSION,
+        "chain_request_contract_version": tower_identity_pin.EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION,
+        "chain_response_contract_version": tower_identity_pin.EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION,
+        "tower_chain_binding_version": tower_identity_pin.EXPECTED_TOWER_CHAIN_BINDING_VERSION,
+        "production_entrypoint": tower_identity_pin.EXPECTED_PRODUCTION_ENTRYPOINT,
     }
     fields.update(overrides)
     return WorkerIdentity(**fields)  # type: ignore[arg-type]
@@ -205,9 +210,21 @@ def test_8_valid_handshake_against_the_real_worker_is_accepted(tmp_path: Path, m
     the pin's three currently-PENDING fields to match the stub's synthetic values -- proving the FULL
     mechanism (spawn, stdin secret handoff, readiness, HMAC, pin) works end-to-end, without ever installing
     `ve_tower` and without ever claiming the currently-incomplete production pin actually passes today."""
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_VE_TOWER_PACKAGE_VERSION", "0.3.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_PACKAGE_BUILD_COMMIT", "6daf2aa")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_STATE_DELIVERY_COMMIT", "0207ffa")
+    monkeypatch.setattr(
+        tower_identity_pin, "EXPECTED_WHEEL_SHA256",
+        "0c2581c068f3bd7d0c5beff1358af0aa906485d69ed74bf66c8a6d8d0c0120d2",
+    )
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_VENDORED_SOURCE_IDENTITY", "STUB-TEST-VENDORED-SOURCE-IDENTITY-NEVER-REAL")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_N3_CONTRACT_VERSION", "STUB-TEST-N3-CONTRACT-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_N4_CONTRACT_VERSION", "STUB-TEST-N4-CONTRACT-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_N2_CONTRACT_VERSION", "STUB-TEST-N2-CONTRACT-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION", "STUB-TEST-CHAIN-REQUEST-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION", "STUB-TEST-CHAIN-RESPONSE-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_TOWER_CHAIN_BINDING_VERSION", "STUB-TEST-CHAIN-BINDING-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_PRODUCTION_ENTRYPOINT", "STUB-TEST-run_tower_chain")
 
     launcher = TowerWorkerLauncher(
         tower_python=_TOWER_PYTHON, run_dir=tmp_path, extra_env={"VE_TOWER_WORKER_TEST_IDENTITY": "1"},
@@ -243,9 +260,21 @@ def test_7_port_already_occupied_by_another_process_is_not_connected_to(tmp_path
 def test_17_worker_crash_leaves_the_launcher_process_alive_and_reports_connection_failed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_VE_TOWER_PACKAGE_VERSION", "0.3.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_PACKAGE_BUILD_COMMIT", "6daf2aa")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_STATE_DELIVERY_COMMIT", "0207ffa")
+    monkeypatch.setattr(
+        tower_identity_pin, "EXPECTED_WHEEL_SHA256",
+        "0c2581c068f3bd7d0c5beff1358af0aa906485d69ed74bf66c8a6d8d0c0120d2",
+    )
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_VENDORED_SOURCE_IDENTITY", "STUB-TEST-VENDORED-SOURCE-IDENTITY-NEVER-REAL")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_N3_CONTRACT_VERSION", "STUB-TEST-N3-CONTRACT-1.0")
     monkeypatch.setattr(tower_identity_pin, "EXPECTED_N4_CONTRACT_VERSION", "STUB-TEST-N4-CONTRACT-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_N2_CONTRACT_VERSION", "STUB-TEST-N2-CONTRACT-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION", "STUB-TEST-CHAIN-REQUEST-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION", "STUB-TEST-CHAIN-RESPONSE-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_TOWER_CHAIN_BINDING_VERSION", "STUB-TEST-CHAIN-BINDING-1.0")
+    monkeypatch.setattr(tower_identity_pin, "EXPECTED_PRODUCTION_ENTRYPOINT", "STUB-TEST-run_tower_chain")
 
     launcher = TowerWorkerLauncher(
         tower_python=_TOWER_PYTHON, run_dir=tmp_path, extra_env={"VE_TOWER_WORKER_TEST_IDENTITY": "1"},

@@ -1,35 +1,40 @@
-"""N1 -> Router -> Eligibility -> Tower (N3/N4) -> `DecisionRequest` -> EV -> N6, for ONE real closed bar,
-against the full canonical catalog (CEO Mandate 2 step 5, 2026-08-14; tower wiring added Phase 2 step 5,
-2026-08-14). This is the FIRST place in `ai_trader` that constructs a `ve_brain.DecisionRequest` from real
-live data -- nothing here is a fixture.
+"""N1 -> Router -> Eligibility -> Tower chain (N2/N3/N4) -> `DecisionRequest` -> EV -> N6, for ONE real
+closed bar, against the full canonical catalog (CEO Mandate 2 step 5, 2026-08-14; tower wiring added
+Phase 2 step 5, 2026-08-14; chain-binding rewrite RT-TOWER-0008, 2026-08-17). This is the FIRST place in
+`ai_trader` that constructs a `ve_brain.DecisionRequest` from real live data -- nothing here is a fixture.
+
+**RT-TOWER-0008 (2026-08-17): the worker now runs a real `ve_tower.run_tower_chain` (N2+N3+N4 together)**,
+`ve_tower` 0.5.0. N2 (bias, computed from real H1 bars) is a genuine, independently-contracted producer
+INSIDE `ve_tower` -- this module no longer fabricates any N2 identity, no longer accepts a caller-supplied
+`bias_direction` for the chain, and no longer defaults anything to `"LONG"`. `side` (the int the chain
+needs, 1=LONG/-1=SHORT) is derived EXCLUSIVELY from the ELIGIBLE strategy's own contracted
+`StrategyContract.allowed_directions[0]` -- never a module-level default, never an operator input, never
+copied from N2's own output.
+
+**`router_bias_direction` remains a SEPARATE, pre-existing `ve_brain.StrategyRouter.eligible` argument** --
+an upstream regime-eligibility signal, unrelated to the tower chain's own `side`. No real, independently-
+computed source for it exists yet upstream of the Router (that gap is disclosed, not invented around);
+its default is honestly `None`, never a silently-assumed `"LONG"`.
 
 **One structural gap remains, disclosed here rather than papered over** (see `probability_source.py` for
 the full detail): `probability_inputs` is always `None` -- no validated per-regime outcome-count table
 exists yet.
 
 **`market_map_available`/`levels_available`/`confirmation_available` are now REAL** when `tower=` is
-supplied (see `TowerDependencies` below) -- sourced from `ve_tower` 0.3.0's own `run_n3`/`run_n4`, called
-once per bar (not once per catalog strategy: N3/N4's actual computation does not depend on strategy
-identity -- see `_query_tower`'s own docstring) via the isolated tower worker over the versioned IPC
-boundary. `tower=None` (the default, and every call site before this Phase-2 wiring) keeps all three
-`False`, byte-for-byte the pre-Phase-2 behavior -- never `True` without a genuine `ve_tower` answer.
-
-**Consequence, stated plainly and covered by this package's own tests**: with `tower=None` (or the tower
-genuinely unavailable), `decide_n6` returns `NO_TRADE` for every real event, terminal reason
-`MISSING_LEVEL_INPUT` for any strategy that survives eligibility+catalog checks. This is the CORRECT,
-EXPECTED behavior of a SHADOW-only integration proving the wiring itself, not producing trades -- not a
-defect. With a real, available tower answer, the SAME reason can now genuinely clear for the first time --
-still gated entirely by `ve_brain.decide_n6`'s own EV/probability logic, never bypassed here.
+supplied (see `TowerDependencies` below) -- sourced from `ve_tower` 0.5.0's own `run_tower_chain`, called
+once per (bar, side) -- not once per bar regardless of strategy, and not once per catalog strategy: N3/N4's
+actual level computation does not depend on strategy identity, but N2/N4's SIDE does, so the memoization
+key is `side`, not the bar alone. `tower=None` (the default) keeps all three `False`, byte-for-byte the
+pre-Phase-2 behavior -- never `True` without a genuine `ve_tower` answer.
 
 **Geometry is real-price-derived, not fabricated, but its SIZING CONVENTION is an explicit placeholder**:
 `entry_price` is the real last close, `atr` is the real vendored ATR14 over the real accumulated bar
 history (`RawAxesBuilder.atr14()`) -- both genuine numbers from genuine data. `stop_price` (`entry -
 1xATR`, LONG-only, since every entry in `ve_brain.CANONICAL_STRATEGIES` has `allowed_directions=
 ("LONG",)`) and `target_param` (`_PLACEHOLDER_TARGET_RR = 2.0`) are a SIZING CONVENTION, not a validated
-strategy rule -- they exist only so `ve_brain.validate_request` can be satisfied and the REAL current
-terminal reason (`MISSING_LEVEL_INPUT`, gap 2 above) is reached honestly, instead of an earlier, less
-informative `SCHEMA_VALIDATION_FAILED`. Since gap 2 makes the outcome `NO_TRADE` regardless of RR, this
-convention has zero effect on any decision produced today."""
+strategy rule -- they exist only so `ve_brain.validate_request` can be satisfied. Since gap 2 makes the
+outcome `NO_TRADE` regardless of RR whenever the tower is genuinely unavailable, this convention has zero
+effect on any decision produced by an unavailable tower."""
 
 from __future__ import annotations
 
@@ -55,13 +60,19 @@ from ai_trader.mandate2_readiness.shadow_cost_model import is_within_provenance_
 from ai_trader.new_brain_bridge.probability_source import load_probability_inputs
 from ai_trader.new_brain_bridge.raw_axes_builder import RawAxesBuilder
 from ai_trader.new_brain_bridge.tower_bar_source import (
+    BAR_SECONDS_H1,
     BAR_SECONDS_M5,
     BAR_SECONDS_M15,
     detect_gaps,
-    fetch_tower_bar_windows,
+    fetch_tower_chain_bar_windows,
 )
 from ai_trader.new_brain_bridge.tower_client import TowerClient, TowerUnavailableResult
-from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerRequest
+from ai_trader.new_brain_bridge.tower_identity_pin import (
+    EXPECTED_N2_CONTRACT_VERSION,
+    EXPECTED_N3_CONTRACT_VERSION,
+    EXPECTED_N4_CONTRACT_VERSION,
+)
+from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerChainRequest
 
 _PLACEHOLDER_TARGET_RR = 2.0
 _ELIGIBILITY_POLICY_VERSION = "eligibility-v1"
@@ -73,36 +84,23 @@ _COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW = "COST_EXTRAPOLATED_OUTSIDE_PROVEN
 `mandate2_readiness.shadow_cost_model.resolve_cost_components(tier="BASE")` exclusively. A missing/
 unavailable model (`CostModelUnavailableError`) OR a caller-pinned `expected_cost_model_fingerprint` that
 doesn't match `shadow_cost_model.configuration_fingerprint()` both degrade EVERY strategy for that bar to
-`decision=None` (this codebase's own NO_TRADE-equivalent, matching `ATR_HISTORY_INSUFFICIENT`'s own
-established shape) -- never a local calculator, never a manual copy, never `0.0` as a silent fallback.
-`_COST_EXTRAPOLATED_OUTSIDE_PROVENANCE_WINDOW` is NON-blocking (a real decision still proceeds) but is
-always disclosed on the `CostModel` node trace when `bar.ts_close`'s own UTC calendar day falls outside
-`shadow_cost_model.COST_PROVENANCE_WINDOW`'s exact observed day-set -- true for essentially every live
-bar today, since the window is 4 specific days in the past. Applying the ratified cost model outside its
-own provenance window is disclosed, never silently treated as validating the strategy further."""
-_SHARED_TOWER_STRATEGY_ID = "tower-shared-n3n4-probe"
-_SHARED_TOWER_STRATEGY_VERSION = "1.0"
-"""N3/N4's own computation never reads `strategy_id`/`strategy_version` (see `ve_tower.n4.run_n4` -- they
-enter only the node's own identity/audit fingerprint) -- one shared, clearly-labeled identity is used for
-ONE tower call per bar, reused across every catalog strategy, rather than N (catalog size) IDENTICAL calls
-that would only differ in an unused label. If a strategy-specific level-selection policy is ever needed,
-this is the seam to change -- not something today's `ve_tower` API or catalog gives a reason to build yet
-(every entry in `ve_brain.CANONICAL_STRATEGIES` is `allowed_directions=("LONG",)`, so every strategy would
-share the same side regardless)."""
+`decision=None` -- never a local calculator, never a manual copy, never `0.0` as a silent fallback."""
 
 _TOWER_IDENTITY_UNAVAILABLE = "TOWER_IDENTITY_UNAVAILABLE"
 _TOWER_IDENTITY_MISMATCH = "TOWER_IDENTITY_MISMATCH"
-"""Red Team RT-MANDATE2-0002 remediation, 2026-08-16: "Camp lipsa sau incompatibil: NO_TRADE /
-TOWER_IDENTITY_UNAVAILABLE, fail-closed, fara fallback. Mismatch intre raspuns si cerere: NO_TRADE /
-TOWER_IDENTITY_MISMATCH." A successful (`ok=True`) worker response is expected to carry, on BOTH `n3_output`
-and (when present) `n4_output`: `contract_version`, `event_fingerprint`, `node_input_fingerprint`,
-`data_identity`. Missing any of these on a node that IS present degrades that whole query to
-`TOWER_IDENTITY_UNAVAILABLE` (all three tower booleans forced `False`) -- never silently treated as
-available with an absent identity. When both N3 and N4 are present, their `event_fingerprint`s are expected
-to AGREE (same `market_event_id`, same underlying event) -- disagreement is `TOWER_IDENTITY_MISMATCH`, also
-fail-closed. `node_input_fingerprint`/`data_identity` are DELIBERATELY never compared against each other
-(N3 answers on M15, N4 on M5 -- see `_TowerQueryResult`'s own docstring): only `event_fingerprint` is the
-shared correlation key."""
+_N2_UNAVAILABLE = "N2_UNAVAILABLE"
+_N3_UNAVAILABLE = "N3_UNAVAILABLE"
+_N4_UNAVAILABLE = "N4_UNAVAILABLE"
+_CHAIN_IDENTITY_MISMATCH = "CHAIN_IDENTITY_MISMATCH"
+"""RT-TOWER-0008 remediation, 2026-08-17 (CEO section 5): "N2 indisponibil: NO_TRADE / N2_UNAVAILABLE. N3
+indisponibil: NO_TRADE / N3_UNAVAILABLE. N4 indisponibil: NO_TRADE / N4_UNAVAILABLE. Chain identity
+mismatch: NO_TRADE / CHAIN_IDENTITY_MISMATCH." A successful (`ok=True`) chain response is expected to
+carry, on every node that IS present, its own `contract_version`/`event_fingerprint`/
+`node_input_fingerprint`/`data_identity` -- missing any of these degrades to `TOWER_IDENTITY_UNAVAILABLE`.
+`n2`/`n3`/`n4` event_fingerprints are expected to AGREE (same underlying market event) -- disagreement is
+`CHAIN_IDENTITY_MISMATCH`. `node_input_fingerprint`/`data_identity` are DELIBERATELY never compared
+against each other across nodes: N2 answers on H1, N3 on M15, N4 on M5 -- distinct data, distinct
+identity, per the CEO's own explicit rule ("Nu forta identitatile per nod sa fie egale")."""
 
 
 def _opt_str(value: object) -> str | None:
@@ -121,23 +119,25 @@ def _canonical_data_identity(data_identity: object) -> str | None:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class TowerDependencies:
-    """Everything `evaluate_bar` needs to make ONE real tower call for the whole bar. `client` must
-    already be bound to an `EstablishedSession` (`TowerWorkerLauncher.launch_and_handshake` ->
-    `TowerClient(session=...)`) -- session lifecycle (launch once at process start, re-handshake on
-    worker restart/crash) is the CALLER's responsibility, not this module's; `evaluate_bar` never spawns
-    or manages the worker process itself, matching every other injected dependency in this file."""
+    """Everything `evaluate_bar` needs to make real tower chain calls (at most one per distinct `side`
+    actually needed this bar). `client` must already be bound to an `EstablishedSession`
+    (`TowerWorkerLauncher.launch_and_handshake` -> `TowerClient(session=...)`) -- session lifecycle
+    (launch once at process start, re-handshake on worker restart/crash) is the CALLER's responsibility,
+    not this module's; `evaluate_bar` never spawns or manages the worker process itself."""
 
     client: TowerClient
     gateway: MT5Gateway
     now: int
     broker_offset_seconds: int = 0
+    h1_count: int = 150
     m15_count: int = 150
     m5_count: int = 300
-    max_staleness_s: int | None = 2 * 900
-    """Threaded into the `TowerRequest`'s own `max_staleness_s` (`ve_tower`'s real `DATA_STALE` gate) --
-    default two M15 bar periods (30 min), generous slack for ordinary polling latency while still
-    catching a genuinely stale snapshot (a worker that hasn't seen fresh bars in far longer than one
-    normal poll cycle). `None` disables the check entirely, matching the pre-2026-08-16 behavior."""
+    h1_max_staleness_s: int | None = 2 * 3600
+    m15_max_staleness_s: int | None = 2 * 900
+    m5_max_staleness_s: int | None = 2 * 300
+    """Threaded into the `TowerChainRequest`'s own per-timeframe `*_max_staleness_s` (`ve_tower`'s real
+    `DATA_STALE` gate) -- each defaults to two bar periods of slack for ordinary polling latency while
+    still catching a genuinely stale snapshot. `None` disables the check for that timeframe entirely."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -163,22 +163,47 @@ def _fp(*parts: str) -> str:
     return hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()[:16]
 
 
+def _side_from_strategy(canon: ve_brain.StrategyContract) -> int:
+    """RT-TOWER-0008 (2026-08-17, CEO section 3): `side` MUST come from the strategy the Router has
+    already deemed eligible -- specifically its own contracted `allowed_directions[0]`, never a default,
+    never an operator input, never a fixture, never `bias_direction`, never copied from N2's own output.
+    Every entry in `ve_brain.CANONICAL_STRATEGIES` is `allowed_directions=("LONG",)` today -- `side=1` for
+    all of them is a genuine fact read from the catalog, not a bridge.py-level constant."""
+    return 1 if canon.allowed_directions[0] == "LONG" else -1
+
+
+def _side_provenance(canon: ve_brain.StrategyContract) -> str:
+    return f"StrategyContract.allowed_directions[0]={canon.allowed_directions[0]!r} (strategy_id={canon.strategy_id!r})"
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
-class _TowerQueryResult:
-    """`market_map_available`/`levels_available`/`confirmation_available` are the ONLY fields the pre-
-    RT-MANDATE2-0002 version of this type carried -- every field below is new, and every value is copied
-    verbatim from the worker's own verified response, never recomputed locally. `n3_*`/`n4_*` stay
-    DISTINCT (never merged into one "tower identity"): N3 answers on M15, N4 on M5, so their
-    `data_identity`/`node_input_fingerprint` are legitimately different for the same event -- only
-    `event_fingerprint` is expected to agree between them (the shared correlation key for this event)."""
+class _ChainQueryResult:
+    """Every field here is copied verbatim from the worker's own verified `ve_tower.run_tower_chain`
+    response, never fabricated locally. `n2_*`/`n3_*`/`n4_*` stay DISTINCT (never merged into one "tower
+    identity"): N2 answers on H1, N3 on M15, N4 on M5, so their `data_identity`/`node_input_fingerprint`
+    are legitimately different for the same event -- only `event_fingerprint` is expected to agree across
+    all three (the shared correlation key for this event)."""
 
     market_map_available: bool
     levels_available: bool
     confirmation_available: bool
+    bias_available: bool
     reason_codes: tuple[str, ...]
     tower_version: str
+    side: int
     worker_session_id: str | None = None
     worker_identity_fingerprint: str | None = None
+    chain_binding_version: str | None = None
+    chain_response_contract_version: str | None = None
+    chain_fingerprint: str | None = None
+    chain_status: str | None = None
+    terminal_reason_code: str | None = None
+    n2_contract_version: str | None = None
+    n2_code_version: str | None = None
+    n2_event_fingerprint: str | None = None
+    n2_node_input_fingerprint: str | None = None
+    n2_data_identity: str | None = None
+    n2_output_fingerprint: str | None = None
     n3_contract_version: str | None = None
     n3_code_version: str | None = None
     n3_event_fingerprint: str | None = None
@@ -191,83 +216,90 @@ class _TowerQueryResult:
     n4_data_identity: str | None = None
 
 
-def _query_tower(
-    tower: TowerDependencies, *, market_event_id: str, symbol: str, as_of: int,
-    n1_available: bool, n1_fingerprint: str, bias_direction: str | None, n1_axes_direction: str,
-) -> _TowerQueryResult:
-    """ONE call per bar, shared across the whole catalog -- see `_SHARED_TOWER_STRATEGY_ID`'s own
-    docstring for why this is correct rather than a shortcut. Fetches M15/M5 history fresh (read-only,
-    `tower_bar_source.fetch_tower_bar_windows`), sends ONE `TowerRequest`, and reduces whatever comes
-    back to the three booleans `evaluate_bar` needs -- fail-closed (all `False`) on ANY failure mode:
-    bar-fetch failure, no established session, connection failure, protocol mismatch, or `ve_tower`
-    itself reporting unavailable. Never raises -- a tower failure must degrade to `NO_TRADE`
-    (`MISSING_LEVEL_INPUT`), never crash the bar-evaluation loop."""
+def _query_tower_chain(
+    tower: TowerDependencies, *, market_event_id: str, trace_id: str, symbol: str, as_of: int,
+    configuration_fingerprint: str, n1_fingerprint: str, regime_axes_status: tuple[str, ...],
+    strategy_id: str, strategy_version: str, side: int,
+) -> _ChainQueryResult:
+    """ONE chain call per distinct `side` actually needed this bar (memoized by the caller -- see
+    `evaluate_bar`'s own `_get_chain_result`). Fetches H1/M15/M5 history fresh (read-only,
+    `tower_bar_source.fetch_tower_chain_bar_windows`), sends ONE `TowerChainRequest`, and reduces whatever
+    comes back to the booleans `evaluate_bar` needs plus the full real identity -- fail-closed (all
+    `False`) on ANY failure mode: bar-fetch failure, no established session, connection failure, protocol
+    mismatch, contract-expectation mismatch, or `ve_tower` itself reporting the chain unavailable. Never
+    raises -- a tower failure must degrade to `NO_TRADE`, never crash the bar-evaluation loop."""
     try:
-        m15_bars, m5_bars = fetch_tower_bar_windows(
+        h1_bars, m15_bars, m5_bars = fetch_tower_chain_bar_windows(
             tower.gateway, symbol=symbol, now=tower.now, broker_offset_seconds=tower.broker_offset_seconds,
-            m15_count=tower.m15_count, m5_count=tower.m5_count,
+            h1_count=tower.h1_count, m15_count=tower.m15_count, m5_count=tower.m5_count,
         )
     except BarFeedError as exc:
-        return _TowerQueryResult(
+        return _ChainQueryResult(
             market_map_available=False, levels_available=False, confirmation_available=False,
-            reason_codes=(f"TOWER_BAR_FETCH_FAILED:{exc}",), tower_version="UNAVAILABLE",
+            bias_available=False, reason_codes=(f"TOWER_BAR_FETCH_FAILED:{exc}",), tower_version="UNAVAILABLE",
+            side=side,
         )
 
     gap_reason_codes = tuple(
+        f"GAP_DETECTED:H1:{gap.classification.value}:{gap.duration_seconds}s"
+        for gap in detect_gaps(h1_bars, symbol=symbol, bar_seconds=BAR_SECONDS_H1)
+    ) + tuple(
         f"GAP_DETECTED:M15:{gap.classification.value}:{gap.duration_seconds}s"
         for gap in detect_gaps(m15_bars, symbol=symbol, bar_seconds=BAR_SECONDS_M15)
     ) + tuple(
         f"GAP_DETECTED:M5:{gap.classification.value}:{gap.duration_seconds}s"
         for gap in detect_gaps(m5_bars, symbol=symbol, bar_seconds=BAR_SECONDS_M5)
     )
-    # Test 05 (Mandate B point 5): a gap in the window fed to the tower must be VISIBLE, never silently
-    # absorbed -- reported here on the Tower NodeTrace's own reason_codes, never used to block or repair
-    # the request itself (ve_tower's own `_bars_closed_and_ordered` check only rejects non-ascending
-    # order, not a gap in an otherwise-ascending sequence -- gaps are a real, common, non-fatal event,
-    # e.g. weekend closures, and reporting one is not the same as refusing to proceed).
+    # A gap in a window fed to the tower must be VISIBLE, never silently absorbed -- reported on the
+    # relevant NodeTrace's own reason_codes, never used to block or repair the request itself.
 
-    n2_output: dict[str, object] = {
-        "available": bias_direction is not None,
-        "fingerprint": _fp(market_event_id, "n2", str(bias_direction), str(n1_axes_direction)),
-    }
-    if bias_direction is not None:
-        n2_output["bias_direction"] = bias_direction
-    """No independently-versioned N2 contract exists anywhere in the installed real artifacts -- confirmed
-    empirically (2026-08-16, Red Team RT-MANDATE2-0002): neither `ve_brain` (only `N1_CONTRACT_VERSION`
-    exists) nor `ve_tower` (only `N3_CONTRACT_VERSION`/`N4_CONTRACT_VERSION` exist) define an `N2` contract
-    version, and `N3Response`/`N4Response` never echo an `n2_fingerprint` back for verification -- `n2_
-    fingerprint` is a REQUIRED INPUT FIELD on `N3Request`/`N4Request` the CALLER asserts, unchecked and
-    unvalidated by `ve_tower` itself. This fingerprint now folds in `n1_axes_direction` (the REAL, N1-
-    computed `RawAxes.direction`) alongside the caller-supplied `bias_direction` -- an honest strengthening,
-    NOT a claim that a real, independently-contracted N2 stage exists. Per the CEO's own explicit rule
-    ("Nu inventa local un N2 pentru a obtine PASS"), this gap is disclosed, never papered over."""
+    def _series(bars: tuple[dict[str, object], ...], field: str) -> tuple[float, ...]:
+        return tuple(float(b[field]) for b in bars)  # type: ignore[arg-type]
 
-    request = TowerRequest(
+    def _times(bars: tuple[dict[str, object], ...]) -> tuple[int, ...]:
+        return tuple(int(b["time"]) for b in bars)  # type: ignore[call-overload]
+
+    request = TowerChainRequest(
         protocol_version=PROTOCOL_VERSION, schema_version=REQUEST_SCHEMA_VERSION,
-        request_id=_fp(market_event_id, "tower-request"), market_event_id=market_event_id,
-        event_fingerprint="", data_identity=_fp(market_event_id, "data-identity"),
-        node_input_fingerprint=_fp(market_event_id, "node-input"),
-        symbol=symbol, as_of=str(as_of),
-        n1_output={"available": n1_available, "fingerprint": n1_fingerprint},
-        n2_output=n2_output, m15_closed_bars=m15_bars, m5_closed_bars=m5_bars,
-        strategy_id=_SHARED_TOWER_STRATEGY_ID, strategy_version=_SHARED_TOWER_STRATEGY_VERSION,
-        max_staleness_s=tower.max_staleness_s,
+        request_id=_fp(market_event_id, str(side), "chain-request"), market_event_id=market_event_id,
+        trace_id=trace_id, correlation_id=market_event_id, symbol=symbol, as_of=as_of,
+        configuration_fingerprint=configuration_fingerprint, regime_axes_status=regime_axes_status,
+        h1_open=_series(h1_bars, "open"), h1_high=_series(h1_bars, "high"), h1_low=_series(h1_bars, "low"),
+        h1_close=_series(h1_bars, "close"), h1_time=_times(h1_bars),
+        h1_source_identity=f"tower-client:{symbol}:H1",
+        m15_open=_series(m15_bars, "open"), m15_high=_series(m15_bars, "high"), m15_low=_series(m15_bars, "low"),
+        m15_close=_series(m15_bars, "close"), m15_time=_times(m15_bars),
+        m15_source_identity=f"tower-client:{symbol}:M15",
+        m5_high=_series(m5_bars, "high"), m5_low=_series(m5_bars, "low"), m5_close=_series(m5_bars, "close"),
+        m5_time=_times(m5_bars), m5_source_identity=f"tower-client:{symbol}:M5",
+        strategy_id=strategy_id, strategy_version=strategy_version, side=side,
+        expected_n2_contract=EXPECTED_N2_CONTRACT_VERSION, expected_n3_contract=EXPECTED_N3_CONTRACT_VERSION,
+        expected_n4_contract=EXPECTED_N4_CONTRACT_VERSION,
+        h1_max_staleness_s=tower.h1_max_staleness_s, m15_max_staleness_s=tower.m15_max_staleness_s,
+        m5_max_staleness_s=tower.m5_max_staleness_s,
     )
-    result = tower.client.request_n3_n4(request)
+    result = tower.client.request_chain(request)
     if isinstance(result, TowerUnavailableResult):
-        return _TowerQueryResult(
+        return _ChainQueryResult(
             market_map_available=False, levels_available=False, confirmation_available=False,
-            reason_codes=gap_reason_codes + (result.reason,), tower_version="UNAVAILABLE",
+            bias_available=False, reason_codes=gap_reason_codes + (result.reason,), tower_version="UNAVAILABLE",
+            side=side,
         )
 
+    n2 = result.n2_output or {}
     n3 = result.n3_output or {}
     n4 = result.n4_output or {}
     market_map_available = n3.get("market_map_available") is True
     levels_available = n3.get("levels_available") is True
     confirmation_available = n4.get("confirmation_available") is True
+    bias_available = n2.get("bias_available") is True
 
-    # Red Team RT-MANDATE2-0002 remediation, 2026-08-16: extract the worker's own REAL per-node identity
-    # (never fabricated) instead of discarding everything but the three booleans above.
+    n2_contract_version = _opt_str(n2.get("contract_version"))
+    n2_code_version = _opt_str(n2.get("n2_code_version"))
+    n2_event_fingerprint = _opt_str(n2.get("event_fingerprint"))
+    n2_node_input_fingerprint = _opt_str(n2.get("node_input_fingerprint"))
+    n2_data_identity = _canonical_data_identity(n2.get("data_identity"))
+    n2_output_fingerprint = _opt_str(n2.get("output_fingerprint"))
     n3_contract_version = _opt_str(n3.get("contract_version"))
     n3_code_version = _opt_str(n3.get("n3_version"))
     n3_event_fingerprint = _opt_str(n3.get("event_fingerprint"))
@@ -280,38 +312,64 @@ def _query_tower(
     n4_data_identity = _canonical_data_identity(n4.get("data_identity"))
 
     identity_reason_codes: tuple[str, ...] = ()
-    n3_identity_complete = (
-        n3_contract_version is not None and n3_event_fingerprint is not None
-        and n3_node_input_fingerprint is not None and n3_data_identity is not None
-    )
-    if result.n3_output is not None and not n3_identity_complete:
-        identity_reason_codes += (_TOWER_IDENTITY_UNAVAILABLE,)
-    if result.n4_output is not None:
-        n4_identity_complete = (
-            n4_contract_version is not None and n4_event_fingerprint is not None
-            and n4_node_input_fingerprint is not None and n4_data_identity is not None
+    event_fingerprints_seen: list[str] = []
+
+    def _check_node_identity(
+        *, present: bool, contract_version: str | None, event_fingerprint: str | None,
+        node_input_fingerprint: str | None, data_identity: str | None, unavailable_code: str,
+    ) -> None:
+        nonlocal identity_reason_codes
+        if not present:
+            return
+        complete = (
+            contract_version is not None and event_fingerprint is not None
+            and node_input_fingerprint is not None and data_identity is not None
         )
-        if not n4_identity_complete:
-            identity_reason_codes += (_TOWER_IDENTITY_UNAVAILABLE,)
-        elif n3_identity_complete and n3_event_fingerprint != n4_event_fingerprint:
-            identity_reason_codes += (_TOWER_IDENTITY_MISMATCH,)
+        if not complete:
+            identity_reason_codes += (_TOWER_IDENTITY_UNAVAILABLE, unavailable_code)
+        elif event_fingerprint is not None:
+            event_fingerprints_seen.append(event_fingerprint)
+
+    _check_node_identity(
+        present=result.n2_output is not None, contract_version=n2_contract_version,
+        event_fingerprint=n2_event_fingerprint, node_input_fingerprint=n2_node_input_fingerprint,
+        data_identity=n2_data_identity, unavailable_code=_N2_UNAVAILABLE,
+    )
+    _check_node_identity(
+        present=result.n3_output is not None, contract_version=n3_contract_version,
+        event_fingerprint=n3_event_fingerprint, node_input_fingerprint=n3_node_input_fingerprint,
+        data_identity=n3_data_identity, unavailable_code=_N3_UNAVAILABLE,
+    )
+    _check_node_identity(
+        present=result.n4_output is not None, contract_version=n4_contract_version,
+        event_fingerprint=n4_event_fingerprint, node_input_fingerprint=n4_node_input_fingerprint,
+        data_identity=n4_data_identity, unavailable_code=_N4_UNAVAILABLE,
+    )
+    if len(set(event_fingerprints_seen)) > 1:
+        identity_reason_codes += (_CHAIN_IDENTITY_MISMATCH,)
 
     if identity_reason_codes:
         # Fail-closed: an incomplete or mismatched identity means this answer cannot be trusted as
         # genuinely belonging to a single, correlated event -- never surfaced as available with an
         # unverifiable or contradictory identity attached.
-        return _TowerQueryResult(
+        return _ChainQueryResult(
             market_map_available=False, levels_available=False, confirmation_available=False,
-            reason_codes=gap_reason_codes + result.reason_codes + identity_reason_codes,
-            tower_version=result.tower_version,
+            bias_available=False, reason_codes=gap_reason_codes + result.reason_codes + identity_reason_codes,
+            tower_version=result.tower_version, side=side,
         )
 
-    return _TowerQueryResult(
+    return _ChainQueryResult(
         market_map_available=market_map_available, levels_available=levels_available,
-        confirmation_available=confirmation_available,
-        reason_codes=gap_reason_codes + result.reason_codes,
-        tower_version=result.tower_version,
+        confirmation_available=confirmation_available, bias_available=bias_available,
+        reason_codes=gap_reason_codes + result.reason_codes, tower_version=result.tower_version, side=side,
         worker_session_id=result.session_id, worker_identity_fingerprint=result.worker_identity_fingerprint,
+        chain_binding_version=result.chain_binding_version,
+        chain_response_contract_version=result.chain_response_contract_version,
+        chain_fingerprint=result.chain_fingerprint, chain_status=result.chain_status,
+        terminal_reason_code=result.terminal_reason_code,
+        n2_contract_version=n2_contract_version, n2_code_version=n2_code_version,
+        n2_event_fingerprint=n2_event_fingerprint, n2_node_input_fingerprint=n2_node_input_fingerprint,
+        n2_data_identity=n2_data_identity, n2_output_fingerprint=n2_output_fingerprint,
         n3_contract_version=n3_contract_version, n3_code_version=n3_code_version,
         n3_event_fingerprint=n3_event_fingerprint, n3_node_input_fingerprint=n3_node_input_fingerprint,
         n3_data_identity=n3_data_identity,
@@ -326,7 +384,7 @@ def evaluate_bar(
     *,
     timeframe: str,
     axes_builder: RawAxesBuilder,
-    bias_direction: str | None = "LONG",
+    router_bias_direction: str | None = None,
     confidence: float = 1.0,
     catalog: tuple[ve_brain.StrategyContract, ...] = ve_brain.CANONICAL_STRATEGIES,
     segment_id: str = "live",
@@ -337,7 +395,12 @@ def evaluate_bar(
     """Feeds ONE real closed bar through the real chain for EVERY catalog strategy. Raises `ValueError`
     if `bar.symbol` doesn't match `axes_builder`'s own symbol -- the same fail-closed check
     `RawAxesBuilder.observe` itself performs, surfaced here too since this is the actual entrypoint
-    callers use."""
+    callers use.
+
+    `router_bias_direction` feeds ONLY `ve_brain.StrategyRouter.eligible`'s own pre-existing argument (a
+    regime-eligibility signal, unrelated to the tower chain) -- honestly `None` by default, since no real,
+    independently-computed source for it exists upstream of the Router today. It is NEVER used to derive
+    the tower chain's own `side` (see `_side_from_strategy`)."""
     if bar.symbol != axes_builder.symbol:
         raise ValueError(f"evaluate_bar: bar symbol {bar.symbol!r} != axes_builder symbol "
                           f"{axes_builder.symbol!r}")
@@ -348,10 +411,19 @@ def evaluate_bar(
     n1_input_fp = _fp(bar.symbol, timeframe, str(bar.ts_close))
     n1_output_fp = _fp(str(axes.is_compressed), str(axes.is_displacement), str(axes.direction),
                         str(axes.structure))
+    # ve_tower's own ratified `bias_h1.Status` vocabulary is EXACTLY the two literal strings "available"/
+    # "unavailable" (see `bias_h1.Status` enum, empirically confirmed via source introspection of the
+    # installed 0.5.0 artifact -- `run_tower_chain`'s own `regime_available = any(s == "available" for s
+    # in req.regime_axes_status)` depends on this exact vocabulary). An axis is "available" iff N1 actually
+    # measured it this bar (`RawAxes`'s own `bool | None` / `str | None` fields are `None` until measured).
+    regime_axes_status = tuple(
+        "available" if value is not None else "unavailable"
+        for value in (axes.is_compressed, axes.is_displacement, axes.direction, axes.structure)
+    )
 
     router = ve_brain.StrategyRouter(catalog)
-    eligibility_decisions = router.eligible(axes, market_event_id, bias_direction, confidence)
-    router_input_fp = _fp(market_event_id, str(bias_direction), str(confidence))
+    eligibility_decisions = router.eligible(axes, market_event_id, router_bias_direction, confidence)
+    router_input_fp = _fp(market_event_id, str(router_bias_direction), str(confidence))
 
     atr = axes_builder.atr14()
     entry_price = axes_builder.last_close
@@ -374,20 +446,22 @@ def evaluate_bar(
     4 specific past calendar days) -- disclosed on the `CostModel` node trace below, never silently
     treated as validating anything further about the strategy."""
 
-    _tower_result_cache: list[_TowerQueryResult] = []
+    _chain_result_cache: dict[int, _ChainQueryResult] = {}
 
-    def _get_tower_result() -> _TowerQueryResult:
-        """Lazy, memoized within this ONE `evaluate_bar` call -- computed only if/when the first
-        eligible, geometry-complete strategy actually needs it, never for a bar where every strategy is
-        ineligible or `atr`/`entry_price` are still `None`."""
+    def _get_chain_result(*, side: int, trace_id: str, configuration_fingerprint: str,
+                           strategy_id: str, strategy_version: str) -> _ChainQueryResult:
+        """Lazy, memoized PER `side` within this ONE `evaluate_bar` call -- N2/N4's own computation
+        depends on `side`, so two strategies sharing the same contracted side correctly share ONE chain
+        call, while a (hypothetical, not present in today's catalog) opposite-side strategy gets its own."""
         assert tower is not None  # only ever called from the `tower is not None` branch below
-        if not _tower_result_cache:
-            _tower_result_cache.append(_query_tower(
-                tower, market_event_id=market_event_id, symbol=bar.symbol, as_of=bar.ts_close,
-                n1_available=True, n1_fingerprint=n1_output_fp, bias_direction=bias_direction,
-                n1_axes_direction=str(axes.direction),
-            ))
-        return _tower_result_cache[0]
+        if side not in _chain_result_cache:
+            _chain_result_cache[side] = _query_tower_chain(
+                tower, market_event_id=market_event_id, trace_id=trace_id, symbol=bar.symbol,
+                as_of=bar.ts_close, configuration_fingerprint=configuration_fingerprint,
+                n1_fingerprint=n1_output_fp, regime_axes_status=regime_axes_status,
+                strategy_id=strategy_id, strategy_version=strategy_version, side=side,
+            )
+        return _chain_result_cache[side]
 
     outcomes: list[NewBrainOutcome] = []
     for canon in catalog:
@@ -448,53 +522,78 @@ def evaluate_bar(
             latency_seconds=0.0, component_version=f"{SHADOW_COST_MODEL_VERSION}:{CALIBRATION_STATUS}",
         ))
 
+        side = _side_from_strategy(canon)
+        bias_direction = "LONG" if side == 1 else "SHORT"
+        # RT-TOWER-0008 (2026-08-17): `bias_direction` fed to `ve_brain.DecisionRequest` (a REQUIRED
+        # field of ve_brain's own external contract) is now derived from the SAME per-strategy `side` the
+        # tower chain itself consumes -- see `_side_from_strategy`'s own docstring for the exact
+        # provenance chain. Never a bridge.py-level default, never independent of the chain's own side.
         stop_price = entry_price - atr
         regime_label = eligibility.matched_regimes[0] if eligibility.matched_regimes else None
         probability_inputs = load_probability_inputs(canon.strategy_id, canon.strategy_version)
 
         if tower is not None:
-            tower_result = _get_tower_result()
-            # Red Team RT-MANDATE2-0002 remediation, 2026-08-16: ONE "Tower" trace with a locally-
-            # fabricated `_fp(market_event_id, "tower")` input replaced with TWO traces -- "TowerN3"
-            # (M15) and "TowerN4" (M5) -- each carrying the worker's own REAL, verified identity, never a
-            # local guess. `TowerN4`'s `output` embeds `n3_event_fingerprint` alongside its own, making
-            # the N4->N3 response linkage independently checkable straight from the persisted trace.
+            chain_result = _get_chain_result(
+                side=side, trace_id=trace_id, configuration_fingerprint=configuration_fingerprint,
+                strategy_id=canon.strategy_id, strategy_version=canon.strategy_version,
+            )
+            side_provenance = _side_provenance(canon)
+            traces.append(NodeTrace(
+                trace_id=trace_id, node_name="TowerN2",
+                input_fingerprint=chain_result.n2_node_input_fingerprint or _fp(market_event_id, "n2-unavailable"),
+                output=_fp(str(chain_result.bias_available), chain_result.n2_output_fingerprint or "",
+                           str(side), side_provenance),
+                reason_codes=chain_result.reason_codes, latency_seconds=0.0,
+                component_version=chain_result.n2_contract_version or chain_result.tower_version,
+            ))
             traces.append(NodeTrace(
                 trace_id=trace_id, node_name="TowerN3",
-                input_fingerprint=tower_result.n3_node_input_fingerprint or _fp(market_event_id, "n3-unavailable"),
-                output=_fp(str(tower_result.market_map_available), str(tower_result.levels_available),
-                           tower_result.n3_event_fingerprint or ""),
-                reason_codes=tower_result.reason_codes, latency_seconds=0.0,
-                component_version=tower_result.n3_contract_version or tower_result.tower_version,
+                input_fingerprint=chain_result.n3_node_input_fingerprint or _fp(market_event_id, "n3-unavailable"),
+                output=_fp(str(chain_result.market_map_available), str(chain_result.levels_available),
+                           chain_result.n3_event_fingerprint or ""),
+                reason_codes=chain_result.reason_codes, latency_seconds=0.0,
+                component_version=chain_result.n3_contract_version or chain_result.tower_version,
             ))
             traces.append(NodeTrace(
                 trace_id=trace_id, node_name="TowerN4",
-                input_fingerprint=tower_result.n4_node_input_fingerprint or _fp(market_event_id, "n4-unavailable"),
-                output=_fp(str(tower_result.confirmation_available), tower_result.n4_event_fingerprint or "",
-                           tower_result.n3_event_fingerprint or ""),
-                reason_codes=tower_result.reason_codes, latency_seconds=0.0,
-                component_version=tower_result.n4_contract_version or tower_result.tower_version,
+                input_fingerprint=chain_result.n4_node_input_fingerprint or _fp(market_event_id, "n4-unavailable"),
+                output=_fp(str(chain_result.confirmation_available), chain_result.n4_event_fingerprint or "",
+                           chain_result.n3_event_fingerprint or ""),
+                reason_codes=chain_result.reason_codes, latency_seconds=0.0,
+                component_version=chain_result.n4_contract_version or chain_result.tower_version,
             ))
             event_identity = replace(
                 event_identity,
-                worker_session_id=tower_result.worker_session_id,
-                worker_identity_fingerprint=tower_result.worker_identity_fingerprint,
-                tower_version=tower_result.tower_version,
-                n3_contract_version=tower_result.n3_contract_version,
-                n3_code_version=tower_result.n3_code_version,
-                n3_event_fingerprint=tower_result.n3_event_fingerprint,
-                n3_node_input_fingerprint=tower_result.n3_node_input_fingerprint,
-                n3_data_identity=tower_result.n3_data_identity,
-                n4_contract_version=tower_result.n4_contract_version,
-                n4_code_version=tower_result.n4_code_version,
-                n4_event_fingerprint=tower_result.n4_event_fingerprint,
-                n4_node_input_fingerprint=tower_result.n4_node_input_fingerprint,
-                n4_data_identity=tower_result.n4_data_identity,
+                worker_session_id=chain_result.worker_session_id,
+                worker_identity_fingerprint=chain_result.worker_identity_fingerprint,
+                tower_version=chain_result.tower_version,
+                chain_binding_version=chain_result.chain_binding_version,
+                chain_response_contract_version=chain_result.chain_response_contract_version,
+                chain_fingerprint=chain_result.chain_fingerprint,
+                chain_status=chain_result.chain_status,
+                terminal_reason_code=chain_result.terminal_reason_code,
+                n2_contract_version=chain_result.n2_contract_version,
+                n2_code_version=chain_result.n2_code_version,
+                n2_event_fingerprint=chain_result.n2_event_fingerprint,
+                n2_node_input_fingerprint=chain_result.n2_node_input_fingerprint,
+                n2_data_identity=chain_result.n2_data_identity,
+                n2_output_fingerprint=chain_result.n2_output_fingerprint,
+                n3_contract_version=chain_result.n3_contract_version,
+                n3_code_version=chain_result.n3_code_version,
+                n3_event_fingerprint=chain_result.n3_event_fingerprint,
+                n3_node_input_fingerprint=chain_result.n3_node_input_fingerprint,
+                n3_data_identity=chain_result.n3_data_identity,
+                n4_contract_version=chain_result.n4_contract_version,
+                n4_code_version=chain_result.n4_code_version,
+                n4_event_fingerprint=chain_result.n4_event_fingerprint,
+                n4_node_input_fingerprint=chain_result.n4_node_input_fingerprint,
+                n4_data_identity=chain_result.n4_data_identity,
             )
         else:
-            tower_result = _TowerQueryResult(
+            chain_result = _ChainQueryResult(
                 market_map_available=False, levels_available=False, confirmation_available=False,
-                reason_codes=("TOWER_NOT_WIRED",), tower_version="UNAVAILABLE",
+                bias_available=False, reason_codes=("TOWER_NOT_WIRED",), tower_version="UNAVAILABLE",
+                side=side,
             )
 
         candidate = ve_brain.DecisionRequest(
@@ -504,9 +603,9 @@ def evaluate_bar(
             strategy_policy_fingerprint=ve_brain.strategy_policy_fingerprint(canon),
             market_event_id=market_event_id, regime_fingerprint=eligibility.regime_fingerprint,
             market_state_ref=n1_output_fp, regime_label=regime_label, bias_direction=bias_direction,
-            market_map_available=tower_result.market_map_available,
-            levels_available=tower_result.levels_available,
-            confirmation_available=tower_result.confirmation_available,
+            market_map_available=chain_result.market_map_available,
+            levels_available=chain_result.levels_available,
+            confirmation_available=chain_result.confirmation_available,
             entry_price=entry_price, stop_price=stop_price, target_kind="rr",
             target_param=_PLACEHOLDER_TARGET_RR, holding_window=canon.holding_window, atr=atr,
             probability_inputs=probability_inputs,

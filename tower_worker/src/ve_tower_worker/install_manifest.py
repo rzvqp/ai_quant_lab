@@ -31,6 +31,15 @@ class InstallManifest:
     installed_at_utc: str
     installed_by: str
     verification_note: str
+    n2_contract_version: str | None = None
+    chain_request_contract_version: str | None = None
+    chain_response_contract_version: str | None = None
+    tower_chain_binding_version: str | None = None
+    production_entrypoint: str | None = None
+    """Chain-binding fields (RT-TOWER-0008 remediation, 2026-08-17): `None` for every install manifest
+    written before `ve_tower` 0.5.0 (0.3.0/0.4.0 pre-date `run_tower_chain`/N2 entirely) -- honest absence,
+    never backfilled or guessed for an old install. A worker reading an old manifest with these `None`
+    correctly refuses to claim chain-binding support in its own handshake identity."""
 
 
 def manifest_path(*, venv_root: Path) -> Path:
@@ -62,7 +71,11 @@ def read_install_manifest(*, venv_root: Path) -> InstallManifest | None:
     )
     if not all(isinstance(obj.get(f), str) for f in required_str_fields):
         return None
-    optional_str_fields = ("vendored_source_identity", "n3_contract_version", "n4_contract_version")
+    optional_str_fields = (
+        "vendored_source_identity", "n3_contract_version", "n4_contract_version", "n2_contract_version",
+        "chain_request_contract_version", "chain_response_contract_version", "tower_chain_binding_version",
+        "production_entrypoint",
+    )
     for f in optional_str_fields:
         if obj.get(f) is not None and not isinstance(obj.get(f), str):
             return None
@@ -75,6 +88,11 @@ def read_install_manifest(*, venv_root: Path) -> InstallManifest | None:
         vendored_source_identity=obj.get("vendored_source_identity"),
         n3_contract_version=obj.get("n3_contract_version"),
         n4_contract_version=obj.get("n4_contract_version"),
+        n2_contract_version=obj.get("n2_contract_version"),
+        chain_request_contract_version=obj.get("chain_request_contract_version"),
+        chain_response_contract_version=obj.get("chain_response_contract_version"),
+        tower_chain_binding_version=obj.get("tower_chain_binding_version"),
+        production_entrypoint=obj.get("production_entrypoint"),
         installed_at_utc=obj["installed_at_utc"],
         installed_by=obj["installed_by"],
         verification_note=obj["verification_note"],

@@ -24,15 +24,18 @@ class EventIdentity:
     precede `market_timestamp` (receiving a bar before the market produced it is not a valid state, and
     treating it as one would silently accept a corrupted or fabricated timestamp).
 
-    **Tower identity fields (Red Team RT-MANDATE2-0002 remediation, 2026-08-16)** -- all optional,
-    `None` until a real tower call actually happens (Router-ineligible/ATR-insufficient/cost-unavailable
-    outcomes never reach the tower, so they correctly carry no tower identity at all, rather than a
-    fabricated placeholder). Every non-`None` value here is copied verbatim from the isolated worker's
-    own verified response -- `bridge.py` never recomputes or guesses these. `n3_*`/`n4_*` are
-    deliberately DISTINCT fields, never merged into one: N3 answers on M15, N4 on M5, so their
-    `data_identity`/`node_input_fingerprint` are legitimately different values for the same event, while
-    `n3_event_fingerprint`/`n4_event_fingerprint` are expected to AGREE (both describe the same
-    `market_event_id`) -- `bridge.py` treats disagreement as `TOWER_IDENTITY_MISMATCH`, fail-closed."""
+    **Tower identity fields (Red Team RT-MANDATE2-0002 remediation, 2026-08-16; extended to N2 by
+    RT-TOWER-0008, 2026-08-17)** -- all optional, `None` until a real tower call actually happens
+    (Router-ineligible/ATR-insufficient/cost-unavailable outcomes never reach the tower, so they
+    correctly carry no tower identity at all, rather than a fabricated placeholder). Every non-`None`
+    value here is copied verbatim from the isolated worker's own verified response -- `bridge.py` never
+    recomputes or guesses these. `n2_*`/`n3_*`/`n4_*` are deliberately DISTINCT fields, never merged into
+    one: N2 answers on H1, N3 on M15, N4 on M5, so their `data_identity`/`node_input_fingerprint` are
+    legitimately different values for the same event, while their `event_fingerprint`s are expected to
+    AGREE (all describe the same `market_event_id`) -- `bridge.py` treats disagreement as
+    `CHAIN_IDENTITY_MISMATCH`, fail-closed. `chain_fingerprint`/`chain_binding_version`/
+    `chain_response_contract_version`/`chain_status`/`terminal_reason_code` are the whole-chain identity
+    `ve_tower.run_tower_chain` itself returns, shared across N2/N3/N4 for this one call."""
 
     trace_id: str
     market_event_id: str
@@ -47,6 +50,17 @@ class EventIdentity:
     worker_session_id: str | None = None
     worker_identity_fingerprint: str | None = None
     tower_version: str | None = None
+    chain_binding_version: str | None = None
+    chain_response_contract_version: str | None = None
+    chain_fingerprint: str | None = None
+    chain_status: str | None = None
+    terminal_reason_code: str | None = None
+    n2_contract_version: str | None = None
+    n2_code_version: str | None = None
+    n2_event_fingerprint: str | None = None
+    n2_node_input_fingerprint: str | None = None
+    n2_data_identity: str | None = None
+    n2_output_fingerprint: str | None = None
     n3_contract_version: str | None = None
     n3_code_version: str | None = None
     n3_event_fingerprint: str | None = None

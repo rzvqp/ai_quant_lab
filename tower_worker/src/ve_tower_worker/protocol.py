@@ -1,9 +1,20 @@
 """Versioned local IPC contract between AI Trader (client) and the isolated tower worker (server).
 
-**v2, 2026-08-14 (Red Team remediation, `TOWER_HANDOFF_CONDITIONAL`)**: adds the session handshake
+**v3, 2026-08-17 (Red Team RT-TOWER-0008 remediation, `N2_HANDOFF_PASS`/`N2_CHAIN_BINDING_PASS`)**:
+replaces the v2 `TowerRequest`/`TowerResponse` (N3/N4-only, client-supplied `n2_output`/`n1_output`,
+locally-fabricated identity fields) with `TowerChainRequest`/`TowerChainResponse`. `parse_chain_request`
+is the enforcement point for the CEO's own ban list ("Clientul NU poate trimite: n2_fingerprint,
+bias_available, output_fingerprint N2, N2Response, N3Response, identitati intermediare sintetice") --
+ANY key in the incoming JSON object that is not in `_ALLOWED_CHAIN_REQUEST_FIELDS` is rejected with
+`UNKNOWN_REQUEST_FIELD` before a `TowerChainRequest` is ever constructed. This is a structural guarantee,
+not a convention: even a client that WANTED to smuggle a fabricated identity field has no wire slot to put
+it in that this parser will accept.
+
+**v2, 2026-08-14 (Red Team remediation, `TOWER_HANDOFF_CONDITIONAL`)**: added the session handshake
 (`HandshakeRequest`/`HandshakeResponse`/`WorkerIdentity`) and per-response session/identity binding
-(`TowerResponse.session_id`/`worker_identity_fingerprint`). A frame's `type` field discriminates
-handshake frames from N3/N4 request/response frames on the same wire -- see `FRAME_TYPE_*`.
+(`TowerChainResponse.session_id`/`worker_identity_fingerprint`). Unchanged by this v3 revision. A frame's
+`type` field discriminates handshake frames from chain request/response frames on the same wire -- see
+`FRAME_TYPE_*`.
 
 **Transport choice, and why**: a plain TCP socket on `127.0.0.1` ONLY (never `0.0.0.0`, never a
 non-loopback address -- enforced at the server's construction site, see `server.py`), with a 4-byte
@@ -34,7 +45,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-PROTOCOL_VERSION = "2.0"
+PROTOCOL_VERSION = "3.0"
 REQUEST_SCHEMA_VERSION = "1.0"
 RESPONSE_SCHEMA_VERSION = "2.0"
 
@@ -46,8 +57,8 @@ allocation against a malformed or hostile length prefix before a single payload 
 
 FRAME_TYPE_HANDSHAKE = "handshake"
 FRAME_TYPE_HANDSHAKE_RESPONSE = "handshake_response"
-FRAME_TYPE_N3N4_REQUEST = "n3n4_request"
-FRAME_TYPE_N3N4_RESPONSE = "n3n4_response"
+FRAME_TYPE_CHAIN_REQUEST = "chain_request"
+FRAME_TYPE_CHAIN_RESPONSE = "chain_response"
 
 TOWER_UNAVAILABLE = "TOWER_UNAVAILABLE"
 PROTOCOL_VERSION_MISMATCH = "PROTOCOL_VERSION_MISMATCH"
@@ -63,6 +74,7 @@ HANDSHAKE_IDENTITY_MISMATCH = "HANDSHAKE_IDENTITY_MISMATCH"
 HANDSHAKE_SESSION_ID_MISMATCH = "HANDSHAKE_SESSION_ID_MISMATCH"
 HANDSHAKE_NOT_ESTABLISHED = "HANDSHAKE_NOT_ESTABLISHED"
 NODE_FAILURE_DEGRADED_TO_UNAVAILABLE = "NODE_FAILURE_DEGRADED_TO_UNAVAILABLE"
+UNKNOWN_REQUEST_FIELD = "UNKNOWN_REQUEST_FIELD"
 
 
 class ProtocolValidationError(Exception):
@@ -95,6 +107,13 @@ class WorkerIdentity:
     vendored_source_identity: str | None
     n3_contract_version: str | None
     n4_contract_version: str | None
+    n2_contract_version: str | None = None
+    chain_request_contract_version: str | None = None
+    chain_response_contract_version: str | None = None
+    tower_chain_binding_version: str | None = None
+    production_entrypoint: str | None = None
+    """Chain-binding fields (RT-TOWER-0008 remediation, 2026-08-17, `ve_tower` 0.5.0): `None` for a
+    worker running against a pre-0.5.0 `ve_tower` -- honest absence, never backfilled."""
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -108,6 +127,11 @@ class WorkerIdentity:
             "vendored_source_identity": self.vendored_source_identity,
             "n3_contract_version": self.n3_contract_version,
             "n4_contract_version": self.n4_contract_version,
+            "n2_contract_version": self.n2_contract_version,
+            "chain_request_contract_version": self.chain_request_contract_version,
+            "chain_response_contract_version": self.chain_response_contract_version,
+            "tower_chain_binding_version": self.tower_chain_binding_version,
+            "production_entrypoint": self.production_entrypoint,
         }
 
     def canonical_json(self) -> str:
@@ -142,6 +166,11 @@ def worker_identity_from_dict(obj: dict[str, object]) -> WorkerIdentity:
         vendored_source_identity=_opt_str("vendored_source_identity"),
         n3_contract_version=_opt_str("n3_contract_version"),
         n4_contract_version=_opt_str("n4_contract_version"),
+        n2_contract_version=_opt_str("n2_contract_version"),
+        chain_request_contract_version=_opt_str("chain_request_contract_version"),
+        chain_response_contract_version=_opt_str("chain_response_contract_version"),
+        tower_chain_binding_version=_opt_str("tower_chain_binding_version"),
+        production_entrypoint=_opt_str("production_entrypoint"),
     )
 
 
@@ -179,69 +208,86 @@ class HandshakeResponse:
         return json.dumps(payload, sort_keys=True).encode("utf-8")
 
 
+_ALLOWED_CHAIN_REQUEST_FIELDS = frozenset({
+    "type", "protocol_version", "schema_version", "request_id",
+    "market_event_id", "trace_id", "correlation_id", "symbol", "as_of", "configuration_fingerprint",
+    "regime_axes_status",
+    "h1_open", "h1_high", "h1_low", "h1_close", "h1_time", "h1_source_identity", "h1_max_staleness_s",
+    "m15_open", "m15_high", "m15_low", "m15_close", "m15_time", "m15_source_identity", "m15_max_staleness_s",
+    "m5_high", "m5_low", "m5_close", "m5_time", "m5_source_identity", "m5_max_staleness_s",
+    "strategy_id", "strategy_version", "side",
+    "expected_n2_contract", "expected_n3_contract", "expected_n4_contract",
+})
+"""The COMPLETE, EXHAUSTIVE set of fields a chain request may carry -- CEO section 4/5 (2026-08-17):
+"Camp necunoscut: UNKNOWN_REQUEST_FIELD, fail-closed." AND "Clientul NU poate trimite: n2_fingerprint,
+bias_available, output_fingerprint N2, N2Response, N3Response, identitati intermediare sintetice." Checked
+by `parse_chain_request` BEFORE any field is read into a `TowerChainRequest` -- an extra key is rejected
+outright, not silently dropped."""
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
-class TowerRequest:
-    protocol_version: str
-    schema_version: str
+class TowerChainRequest:
     request_id: str
     market_event_id: str
-    event_fingerprint: str
-    data_identity: str
-    node_input_fingerprint: str
+    trace_id: str
+    correlation_id: str
     symbol: str
-    as_of: str
-    n1_output: dict[str, object]
-    n2_output: dict[str, object]
-    m15_closed_bars: tuple[dict[str, object], ...]
-    m5_closed_bars: tuple[dict[str, object], ...]
+    as_of: int
+    configuration_fingerprint: str
+    regime_axes_status: tuple[str, ...]
+    h1_open: tuple[float, ...]
+    h1_high: tuple[float, ...]
+    h1_low: tuple[float, ...]
+    h1_close: tuple[float, ...]
+    h1_time: tuple[int, ...]
+    h1_source_identity: str
+    m15_open: tuple[float, ...]
+    m15_high: tuple[float, ...]
+    m15_low: tuple[float, ...]
+    m15_close: tuple[float, ...]
+    m15_time: tuple[int, ...]
+    m15_source_identity: str
+    m5_high: tuple[float, ...]
+    m5_low: tuple[float, ...]
+    m5_close: tuple[float, ...]
+    m5_time: tuple[int, ...]
+    m5_source_identity: str
     strategy_id: str
     strategy_version: str
-    max_staleness_s: int | None = None
-    """Threaded straight through to `ve_tower.N3Request`/`N4Request`'s own `max_staleness_s` -- `None`
-    (the default, and every pre-2026-08-16 caller) means no staleness check, byte-for-byte the original
-    behavior. Added for test 09 (`test_e2e_readiness.py`, Mandate B point 5): "a decision citing a stale
-    snapshot is rejected before reaching N6" -- ve_tower's own `DATA_STALE` gate is real and already
-    existed in the artifact; this field is the wire-level plumbing letting a caller actually reach it."""
-    type: str = FRAME_TYPE_N3N4_REQUEST
-
-    def to_json_bytes(self) -> bytes:
-        payload = {
-            "type": self.type,
-            "protocol_version": self.protocol_version,
-            "schema_version": self.schema_version,
-            "request_id": self.request_id,
-            "market_event_id": self.market_event_id,
-            "event_fingerprint": self.event_fingerprint,
-            "data_identity": self.data_identity,
-            "node_input_fingerprint": self.node_input_fingerprint,
-            "symbol": self.symbol,
-            "as_of": self.as_of,
-            "n1_output": self.n1_output,
-            "n2_output": self.n2_output,
-            "m15_closed_bars": list(self.m15_closed_bars),
-            "m5_closed_bars": list(self.m5_closed_bars),
-            "strategy_id": self.strategy_id,
-            "strategy_version": self.strategy_version,
-            "max_staleness_s": self.max_staleness_s,
-        }
-        return json.dumps(payload, sort_keys=True).encode("utf-8")
+    side: int
+    expected_n2_contract: str
+    expected_n3_contract: str
+    expected_n4_contract: str
+    h1_max_staleness_s: int | None = None
+    m15_max_staleness_s: int | None = None
+    m5_max_staleness_s: int | None = None
+    protocol_version: str = PROTOCOL_VERSION
+    schema_version: str = REQUEST_SCHEMA_VERSION
+    type: str = FRAME_TYPE_CHAIN_REQUEST
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class TowerResponse:
+class TowerChainResponse:
     protocol_version: str
     schema_version: str
     request_id: str
     market_event_id: str
-    event_fingerprint: str
+    correlation_id: str
+    configuration_fingerprint: str
     tower_version: str
+    chain_binding_version: str
+    chain_response_contract_version: str
+    chain_fingerprint: str
+    chain_status: str
+    terminal_reason_code: str
     ok: bool
+    n2_output: dict[str, object] | None
     n3_output: dict[str, object] | None
     n4_output: dict[str, object] | None
     session_id: str
     worker_identity_fingerprint: str
     reason_codes: tuple[str, ...] = field(default_factory=tuple)
-    type: str = FRAME_TYPE_N3N4_RESPONSE
+    type: str = FRAME_TYPE_CHAIN_RESPONSE
 
     def to_json_bytes(self) -> bytes:
         payload = {
@@ -250,9 +296,16 @@ class TowerResponse:
             "schema_version": self.schema_version,
             "request_id": self.request_id,
             "market_event_id": self.market_event_id,
-            "event_fingerprint": self.event_fingerprint,
+            "correlation_id": self.correlation_id,
+            "configuration_fingerprint": self.configuration_fingerprint,
             "tower_version": self.tower_version,
+            "chain_binding_version": self.chain_binding_version,
+            "chain_response_contract_version": self.chain_response_contract_version,
+            "chain_fingerprint": self.chain_fingerprint,
+            "chain_status": self.chain_status,
+            "terminal_reason_code": self.terminal_reason_code,
             "ok": self.ok,
+            "n2_output": self.n2_output,
             "n3_output": self.n3_output,
             "n4_output": self.n4_output,
             "session_id": self.session_id,
@@ -283,17 +336,28 @@ def _require_dict(obj: dict[str, object], key: str) -> dict[str, object]:
     return value
 
 
-def _require_bar_list(obj: dict[str, object], key: str) -> tuple[dict[str, object], ...]:
+def _require_float_list(obj: dict[str, object], key: str) -> tuple[float, ...]:
     value = obj.get(key)
-    if not isinstance(value, list) or not all(isinstance(item, dict) for item in value):
-        raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' missing or not a list of objects")
+    if not isinstance(value, list) or not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in value):
+        raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' missing or not a list of numbers")
+    return tuple(float(x) for x in value)
+
+
+def _require_int_list(obj: dict[str, object], key: str) -> tuple[int, ...]:
+    value = obj.get(key)
+    if not isinstance(value, list) or not all(isinstance(x, int) and not isinstance(x, bool) for x in value):
+        raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' missing or not a list of ints")
+    return tuple(value)
+
+
+def _require_str_list(obj: dict[str, object], key: str) -> tuple[str, ...]:
+    value = obj.get(key)
+    if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
+        raise ProtocolValidationError(f"MALFORMED_REQUEST: field '{key}' missing or not a list of strings")
     return tuple(value)
 
 
 def _opt_int(obj: dict[str, object], key: str) -> int | None:
-    """Absent key or explicit JSON `null` both mean `None` -- a pre-`max_staleness_s` caller's request
-    (the key simply missing) and a caller explicitly opting out of staleness checking (`null`) are the
-    same thing to this parser, both honest "no check requested"."""
     value = obj.get(key)
     if value is None:
         return None
@@ -342,59 +406,45 @@ def _parse_object(raw: bytes) -> dict[str, object]:
     return obj
 
 
-def parse_request(raw: bytes) -> TowerRequest:
-    """Fail-closed: any missing/mistyped field raises `ProtocolValidationError` before a `TowerRequest`
-    is ever constructed -- the server never operates on a partially-trusted object."""
+def parse_chain_request(raw: bytes) -> TowerChainRequest:
+    """Fail-closed: any missing/mistyped field, OR any field NOT in `_ALLOWED_CHAIN_REQUEST_FIELDS`,
+    raises `ProtocolValidationError` before a `TowerChainRequest` is ever constructed -- the server never
+    operates on a partially-trusted OR over-permissive object."""
     obj = _parse_object(raw)
-    return TowerRequest(
+    extra_fields = set(obj) - _ALLOWED_CHAIN_REQUEST_FIELDS
+    if extra_fields:
+        raise ProtocolValidationError(
+            f"{UNKNOWN_REQUEST_FIELD}: field(s) not permitted on a chain request: {sorted(extra_fields)}"
+        )
+    return TowerChainRequest(
         protocol_version=_require_str(obj, "protocol_version"),
         schema_version=_require_str(obj, "schema_version"),
         request_id=_require_str(obj, "request_id"),
         market_event_id=_require_str(obj, "market_event_id"),
-        event_fingerprint=_require_str(obj, "event_fingerprint"),
-        data_identity=_require_str(obj, "data_identity"),
-        node_input_fingerprint=_require_str(obj, "node_input_fingerprint"),
+        trace_id=_require_str(obj, "trace_id"),
+        correlation_id=_require_str(obj, "correlation_id"),
         symbol=_require_str(obj, "symbol"),
-        as_of=_require_str(obj, "as_of"),
-        n1_output=_require_dict(obj, "n1_output"),
-        n2_output=_require_dict(obj, "n2_output"),
-        m15_closed_bars=_require_bar_list(obj, "m15_closed_bars"),
-        m5_closed_bars=_require_bar_list(obj, "m5_closed_bars"),
-        strategy_id=_require_str(obj, "strategy_id"),
-        strategy_version=_require_str(obj, "strategy_version"),
-        max_staleness_s=_opt_int(obj, "max_staleness_s"),
-    )
-
-
-def parse_response(raw: bytes) -> TowerResponse:
-    """Fail-closed, mirroring `parse_request`. Called by the CLIENT on the worker's reply -- a malformed
-    reply must never be silently treated as a valid (even if empty) N3/N4 output."""
-    obj = _parse_object(raw)
-    ok = obj.get("ok")
-    if not isinstance(ok, bool):
-        raise ProtocolValidationError("MALFORMED_REQUEST: field 'ok' missing or not a bool")
-    n3_output = obj.get("n3_output")
-    if n3_output is not None and not isinstance(n3_output, dict):
-        raise ProtocolValidationError("MALFORMED_REQUEST: field 'n3_output' not an object or null")
-    n4_output = obj.get("n4_output")
-    if n4_output is not None and not isinstance(n4_output, dict):
-        raise ProtocolValidationError("MALFORMED_REQUEST: field 'n4_output' not an object or null")
-    reason_codes_raw = obj.get("reason_codes")
-    if not isinstance(reason_codes_raw, list) or not all(isinstance(r, str) for r in reason_codes_raw):
-        raise ProtocolValidationError("MALFORMED_REQUEST: field 'reason_codes' missing or not a list of strings")
-    return TowerResponse(
-        protocol_version=_require_str(obj, "protocol_version"),
-        schema_version=_require_str(obj, "schema_version"),
-        request_id=_require_str(obj, "request_id"),
-        market_event_id=_require_str(obj, "market_event_id"),
-        event_fingerprint=_require_str(obj, "event_fingerprint"),
-        tower_version=_require_str(obj, "tower_version"),
-        ok=ok,
-        n3_output=n3_output,
-        n4_output=n4_output,
-        session_id=_require_str(obj, "session_id"),
-        worker_identity_fingerprint=_require_str(obj, "worker_identity_fingerprint"),
-        reason_codes=tuple(reason_codes_raw),
+        as_of=_require_int(obj, "as_of"),
+        configuration_fingerprint=_require_str(obj, "configuration_fingerprint"),
+        regime_axes_status=_require_str_list(obj, "regime_axes_status"),
+        h1_open=_require_float_list(obj, "h1_open"), h1_high=_require_float_list(obj, "h1_high"),
+        h1_low=_require_float_list(obj, "h1_low"), h1_close=_require_float_list(obj, "h1_close"),
+        h1_time=_require_int_list(obj, "h1_time"), h1_source_identity=_require_str(obj, "h1_source_identity"),
+        h1_max_staleness_s=_opt_int(obj, "h1_max_staleness_s"),
+        m15_open=_require_float_list(obj, "m15_open"), m15_high=_require_float_list(obj, "m15_high"),
+        m15_low=_require_float_list(obj, "m15_low"), m15_close=_require_float_list(obj, "m15_close"),
+        m15_time=_require_int_list(obj, "m15_time"),
+        m15_source_identity=_require_str(obj, "m15_source_identity"),
+        m15_max_staleness_s=_opt_int(obj, "m15_max_staleness_s"),
+        m5_high=_require_float_list(obj, "m5_high"), m5_low=_require_float_list(obj, "m5_low"),
+        m5_close=_require_float_list(obj, "m5_close"), m5_time=_require_int_list(obj, "m5_time"),
+        m5_source_identity=_require_str(obj, "m5_source_identity"),
+        m5_max_staleness_s=_opt_int(obj, "m5_max_staleness_s"),
+        strategy_id=_require_str(obj, "strategy_id"), strategy_version=_require_str(obj, "strategy_version"),
+        side=_require_int(obj, "side"),
+        expected_n2_contract=_require_str(obj, "expected_n2_contract"),
+        expected_n3_contract=_require_str(obj, "expected_n3_contract"),
+        expected_n4_contract=_require_str(obj, "expected_n4_contract"),
     )
 
 

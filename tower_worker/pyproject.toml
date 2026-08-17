@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ve-tower-worker"
-version = "0.2.0"
-description = "Isolated worker process hosting ve_tower (N3/N4) behind a versioned local IPC boundary. Never imports ai_trader. Never installed in the AI Trader venv."
+version = "0.3.0"
+description = "Isolated worker process hosting ve_tower's real_decision -- exclusively ve_tower.run_tower_chain (N2/N3/N4) -- behind a versioned local IPC boundary (protocol v3, chain-based). Never imports ai_trader. Never installed in the AI Trader venv."
 requires-python = ">=3.12"
 dependencies = []
 

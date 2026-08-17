@@ -54,18 +54,47 @@ from dataclasses import dataclass
 
 from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, WorkerIdentity
 
-EXPECTED_WORKER_PACKAGE_VERSION = "0.2.0"
+EXPECTED_WORKER_PACKAGE_VERSION = "0.3.0"
 EXPECTED_PROTOCOL_VERSION = PROTOCOL_VERSION
-EXPECTED_VE_TOWER_PACKAGE_VERSION = "0.3.0"
-EXPECTED_PACKAGE_BUILD_COMMIT = "6daf2aa"
-EXPECTED_STATE_DELIVERY_COMMIT = "0207ffa"
-EXPECTED_WHEEL_SHA256 = "0c2581c068f3bd7d0c5beff1358af0aa906485d69ed74bf66c8a6d8d0c0120d2"
+EXPECTED_VE_TOWER_PACKAGE_VERSION = "0.5.0"
+EXPECTED_PACKAGE_BUILD_COMMIT = "b128d8b"
+EXPECTED_STATE_DELIVERY_COMMIT = "26470f5"
+EXPECTED_WHEEL_SHA256 = "6d99baf62f9a245031722a3b59c4df59b98211707c26d587641eff424cd94df7"
 EXPECTED_VENDORED_SOURCE_IDENTITY = "sha256:4c0deecbec7afc74b1fc7f61898ad10e54b63d3b7c5cad63b80ee8c647a69e1c"
 EXPECTED_N3_CONTRACT_VERSION = "tower-n3-request-v2"
 EXPECTED_N4_CONTRACT_VERSION = "tower-n4-request-v2"
-"""All three sourced from `HANDOFF_MANIFEST-0.3.0.json` (`ai_quant_lab-wp5b` @ `12f9241`), verified by
-`tower_worker/env/sidecar_verification.py` and independently corroborated by Red Team's `RT-TOWER-0004`
-(`ai_quant_lab` @ `ccb50c5`, verdict `TOWER_METADATA_PASS`) BEFORE being written here."""
+EXPECTED_N2_CONTRACT_VERSION = "tower-n2-request-v1"
+EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION = "tower-chain-request-v1"
+EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION = "tower-chain-response-v1"
+EXPECTED_TOWER_CHAIN_BINDING_VERSION = "tower-chain-binding-v1"
+EXPECTED_PRODUCTION_ENTRYPOINT = "run_tower_chain"
+"""RT-TOWER-0008 remediation (2026-08-17, `ve_tower` 0.5.0, `N2_HANDOFF_PASS`/`N2_CHAIN_BINDING_PASS`,
+Red Team `RT-TOWER-0008` @ `ai_quant_lab-wp5b` commit `d2f5a68`). Sourced from `HANDOFF_MANIFEST-0.5.0.json`
+(`ai_quant_lab-wp5b` @ `26470f5`, schema `ve-tower-handoff-manifest-v2`), verified by
+`tower_worker/env/sidecar_verification.py` (`_verify_sidecar_v2`) BEFORE being written here -- the wheel's
+own SHA-256 was independently re-hashed against the committed file and against `SHA256SUMS.txt`, both
+matching the manifest and each other.
+
+**Three DISTINCT commit identities, never conflated** (CEO correction, 2026-08-17 -- the report and this
+pin must never call two different commits "the delivery commit"):
+- `package_build_commit` (`b128d8b`) -- the commit `ve_tower 0.5.0` was BUILT from (the chain orchestrator
+  itself, "ve_tower 0.5.0: chain orchestrator run_tower_chain").
+- `state_delivery_commit` (`26470f5`, THIS pin's authoritative value) -- the commit that physically
+  delivered the wheel + sidecar manifest ("ve_tower: physical 0.5.0 wheel + sidecar handoff manifest") --
+  the sidecar's OWN declared value, read from the manifest, never from a chat paraphrase.
+- `d7d5bab` -- a LATER commit whose own message is literally "stamp manifest state_delivery_commit to
+  26470f5": the act of publishing/back-referencing the delivery, not the delivery's own identity. This pin
+  deliberately does NOT use `d7d5bab` for `state_delivery_commit` -- verified via `git log` that both
+  commits are real and non-conflicting, but the sidecar (the cryptographically-tied-to-the-wheel artifact)
+  is the authority for what `state_delivery_commit` means, not the stamping commit that references it.
+
+**`EXPECTED_WORKER_PACKAGE_VERSION` bumped 0.2.0 -> 0.3.0** alongside this pin update -- see
+`tower_worker/pyproject.toml`/`decision.py`'s own version bump for the `run_tower_chain`-exclusive
+rewrite; a worker still reporting `0.2.0` is running pre-remediation code and must fail the pin.
+
+**Vendored identity unchanged from 0.3.0's pin** -- confirmed byte-identical: `ve_tower` 0.5.0 adds the
+NEW `run_tower_chain`/N2 orchestrator on top of the SAME ratified, byte-identical N1/N3/N4 vendored
+modules, never re-vendored."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -89,6 +118,13 @@ def verify_pin(claimed: WorkerIdentity) -> tuple[PinMismatch, ...]:
         ("vendored_source_identity", EXPECTED_VENDORED_SOURCE_IDENTITY, claimed.vendored_source_identity),
         ("n3_contract_version", EXPECTED_N3_CONTRACT_VERSION, claimed.n3_contract_version),
         ("n4_contract_version", EXPECTED_N4_CONTRACT_VERSION, claimed.n4_contract_version),
+        ("n2_contract_version", EXPECTED_N2_CONTRACT_VERSION, claimed.n2_contract_version),
+        ("chain_request_contract_version", EXPECTED_CHAIN_REQUEST_CONTRACT_VERSION,
+         claimed.chain_request_contract_version),
+        ("chain_response_contract_version", EXPECTED_CHAIN_RESPONSE_CONTRACT_VERSION,
+         claimed.chain_response_contract_version),
+        ("tower_chain_binding_version", EXPECTED_TOWER_CHAIN_BINDING_VERSION, claimed.tower_chain_binding_version),
+        ("production_entrypoint", EXPECTED_PRODUCTION_ENTRYPOINT, claimed.production_entrypoint),
     )
     mismatches = []
     for field_name, expected, actual in exact_match_checks:

@@ -69,9 +69,14 @@ from ai_trader.new_brain_bridge.risk_gate import CIRCUIT_BREAKER_ACTIVE, submit_
 from ai_trader.new_brain_bridge.telemetry import NewBrainTelemetryLog
 from ai_trader.new_brain_bridge.tests.conftest import trend_up_regime_bars
 from ai_trader.new_brain_bridge.tower_bar_source import BAR_SECONDS_M15, detect_gaps
-from ai_trader.new_brain_bridge.tower_client import TowerClient, TowerClientConfig, TowerN3N4Result, TowerUnavailableResult
+from ai_trader.new_brain_bridge.tower_client import TowerChainResult, TowerClient, TowerClientConfig, TowerUnavailableResult
+from ai_trader.new_brain_bridge.tower_identity_pin import (
+    EXPECTED_N2_CONTRACT_VERSION,
+    EXPECTED_N3_CONTRACT_VERSION,
+    EXPECTED_N4_CONTRACT_VERSION,
+)
 from ai_trader.new_brain_bridge.tower_launcher import EstablishedSession, TowerWorkerLauncher
-from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerRequest
+from ai_trader.new_brain_bridge.tower_protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerChainRequest
 from ai_trader.pdh_pdl_demo.day_index import day_boundary_start_utc
 from ai_trader.order_manager.journal import OrderManagerAuditJournal
 from ai_trader.pdh_pdl_demo.journal import PdhPdlAuditJournal
@@ -95,7 +100,7 @@ _real_tower = pytest.mark.skipif(
 
 
 def _real_bars(*, count: int, step_seconds: int, last_time: int) -> tuple[dict[str, object], ...]:
-    """Deterministic OHLC bars for a real N3/N4 request, ending exactly at `last_time`."""
+    """Deterministic OHLC bars for a real chain request, ending exactly at `last_time`."""
     bars: list[dict[str, object]] = []
     price = 2000.0
     first_time = last_time - (count - 1) * step_seconds
@@ -106,20 +111,39 @@ def _real_bars(*, count: int, step_seconds: int, last_time: int) -> tuple[dict[s
     return tuple(bars)
 
 
-def _tower_request(**overrides: object) -> TowerRequest:
+def _series(bars: tuple[dict[str, object], ...], key: str) -> tuple[float, ...]:
+    return tuple(float(b[key]) for b in bars)  # type: ignore[arg-type]
+
+
+def _times(bars: tuple[dict[str, object], ...]) -> tuple[int, ...]:
+    return tuple(int(b["time"]) for b in bars)  # type: ignore[call-overload]
+
+
+def _tower_chain_request(**overrides: object) -> TowerChainRequest:
+    """Mirrors `bridge.py`'s own `_query_tower_chain` construction field-for-field (RT-TOWER-0008) --
+    a real chain request, no client-asserted N2/N3/N4 identity anywhere on the wire."""
+    h1_bars = _real_bars(count=150, step_seconds=3600, last_time=NOW - 3600)
+    m15_bars = _real_bars(count=150, step_seconds=900, last_time=NOW - 900)
+    m5_bars = _real_bars(count=150, step_seconds=300, last_time=NOW - 300)
     fields: dict[str, object] = dict(
         protocol_version=PROTOCOL_VERSION, schema_version=REQUEST_SCHEMA_VERSION,
-        request_id="e2e-tower-req", market_event_id="e2e-tower-event", event_fingerprint="",
-        data_identity="e2e-data-identity", node_input_fingerprint="e2e-node-input",
-        symbol=SYMBOL, as_of=str(NOW),
-        n1_output={"available": True, "fingerprint": "n1fp"},
-        n2_output={"available": True, "fingerprint": "n2fp", "bias_direction": "LONG"},
-        m15_closed_bars=_real_bars(count=150, step_seconds=900, last_time=NOW - 900),
-        m5_closed_bars=_real_bars(count=150, step_seconds=300, last_time=NOW - 300),
-        strategy_id="trend_pullback", strategy_version="1.0",
+        request_id="e2e-tower-req", market_event_id="e2e-tower-event",
+        trace_id="e2e-tower-trace", correlation_id="e2e-tower-event",
+        symbol=SYMBOL, as_of=NOW, configuration_fingerprint="e2e-config-fp",
+        regime_axes_status=("MEASURED", "MEASURED", "MEASURED", "MEASURED"),
+        h1_open=_series(h1_bars, "open"), h1_high=_series(h1_bars, "high"), h1_low=_series(h1_bars, "low"),
+        h1_close=_series(h1_bars, "close"), h1_time=_times(h1_bars), h1_source_identity=f"e2e-tower-test:{SYMBOL}:H1",
+        m15_open=_series(m15_bars, "open"), m15_high=_series(m15_bars, "high"), m15_low=_series(m15_bars, "low"),
+        m15_close=_series(m15_bars, "close"), m15_time=_times(m15_bars),
+        m15_source_identity=f"e2e-tower-test:{SYMBOL}:M15",
+        m5_high=_series(m5_bars, "high"), m5_low=_series(m5_bars, "low"), m5_close=_series(m5_bars, "close"),
+        m5_time=_times(m5_bars), m5_source_identity=f"e2e-tower-test:{SYMBOL}:M5",
+        strategy_id="trend_pullback", strategy_version="1.0", side=1,
+        expected_n2_contract=EXPECTED_N2_CONTRACT_VERSION, expected_n3_contract=EXPECTED_N3_CONTRACT_VERSION,
+        expected_n4_contract=EXPECTED_N4_CONTRACT_VERSION,
     )
     fields.update(overrides)
-    return TowerRequest(**fields)  # type: ignore[arg-type]
+    return TowerChainRequest(**fields)  # type: ignore[arg-type]
 
 
 # ============================================================================
@@ -366,18 +390,23 @@ def test_20b_a_single_node_failing_mid_pipeline_degrades_that_decision_to_no_tra
         assert isinstance(session, EstablishedSession), f"expected EstablishedSession, got {session!r}"
         client = TowerClient(TowerClientConfig(host=session.host, port=session.port, timeout_seconds=15.0), session=session)
 
-        good_first = client.request_n3_n4(_tower_request(request_id="test-20b-good-1", market_event_id="test-20b-event-1"))
-        assert isinstance(good_first, TowerN3N4Result), f"expected a real answer, got {good_first!r}"
+        good_first = client.request_chain(_tower_chain_request(request_id="test-20b-good-1", market_event_id="test-20b-event-1", correlation_id="test-20b-event-1"))
+        assert isinstance(good_first, TowerChainResult), f"expected a real answer, got {good_first!r}"
 
-        malformed = client.request_n3_n4(_tower_request(
-            request_id="test-20b-malformed", market_event_id="test-20b-event-2",
-            n2_output={"available": True, "fingerprint": "n2fp", "bias_direction": "SIDEWAYS"},  # invalid value
+        # Under protocol v3 there is no client-supplied N2/N3/N4 content the client could corrupt -- the
+        # wire-level parser and the strict allowlist already make that class of malformation unreachable.
+        # The real, reachable degraded-not-crashed path left is `decision.py`'s own contract-expectation
+        # check: a well-formed, well-typed request whose declared expected contract genuinely does not
+        # match what the installed `ve_tower` provides -- `real_decision`'s own `_CONTRACT_EXPECTATION_MISMATCH`.
+        malformed = client.request_chain(_tower_chain_request(
+            request_id="test-20b-malformed", market_event_id="test-20b-event-2", correlation_id="test-20b-event-2",
+            expected_n2_contract="tower-n2-request-v0-does-not-exist",
         ))
         assert isinstance(malformed, TowerUnavailableResult), f"expected a degraded refusal, got {malformed!r}"
         # degraded, not crashed -- the worker answered with a real, distinct reason, never hung/timed out
 
-        good_second = client.request_n3_n4(_tower_request(request_id="test-20b-good-2", market_event_id="test-20b-event-3"))
-        assert isinstance(good_second, TowerN3N4Result), (
+        good_second = client.request_chain(_tower_chain_request(request_id="test-20b-good-2", market_event_id="test-20b-event-3", correlation_id="test-20b-event-3"))
+        assert isinstance(good_second, TowerChainResult), (
             f"the SAME real worker process must still answer normally after the malformed request -- "
             f"got {good_second!r}"
         )
@@ -473,12 +502,14 @@ def test_04_session_and_day_boundary_labels_n1_consumes_match_true_utc(tmp_path:
         client = TowerClient(TowerClientConfig(host=session.host, port=session.port, timeout_seconds=15.0), session=session)
 
         known_true_utc_last_bar = NOW - 900  # a deliberately CHOSEN, known true-UTC epoch
-        request = _tower_request(
-            request_id="test-04-req", market_event_id="test-04-event", as_of=str(NOW),
-            m15_closed_bars=_real_bars(count=150, step_seconds=900, last_time=known_true_utc_last_bar),
+        m15_bars = _real_bars(count=150, step_seconds=900, last_time=known_true_utc_last_bar)
+        request = _tower_chain_request(
+            request_id="test-04-req", market_event_id="test-04-event", correlation_id="test-04-event", as_of=NOW,
+            m15_open=_series(m15_bars, "open"), m15_high=_series(m15_bars, "high"), m15_low=_series(m15_bars, "low"),
+            m15_close=_series(m15_bars, "close"), m15_time=_times(m15_bars),
         )
-        result = client.request_n3_n4(request)
-        assert isinstance(result, TowerN3N4Result), f"expected TowerN3N4Result, got {result!r}"
+        result = client.request_chain(request)
+        assert isinstance(result, TowerChainResult), f"expected TowerChainResult, got {result!r}"
         assert result.n3_output is not None
         data_identity = result.n3_output.get("data_identity")
         assert isinstance(data_identity, dict)
@@ -572,11 +603,12 @@ def test_07_n1_n6_and_the_ev_engine_are_deterministic_on_a_frozen_input_snapshot
 
 @_real_tower
 def test_09_a_decision_citing_a_stale_snapshot_is_rejected_before_reaching_n6(tmp_path: Path) -> None:
-    """CLOSED 2026-08-16: distinct from test 13 (no bar at all) -- a snapshot that WAS available but has
-    since gone stale relative to a real freshness bound. `ve_tower` 0.3.0's own `run_n3`/`run_n4` already
-    implement `max_staleness_s` (a real, ratified gate -- `ReasonCode.DATA_STALE`), threaded through this
-    division's own wire protocol (`TowerRequest.max_staleness_s`, `bridge.py`'s own `TowerDependencies.
-    max_staleness_s`, default 30 min slack for ordinary polling latency, see `bridge.py`). This test
+    """CLOSED 2026-08-16, updated RT-TOWER-0008 (2026-08-17) for the chain protocol: distinct from test 13
+    (no bar at all) -- a snapshot that WAS available but has since gone stale relative to a real freshness
+    bound. `ve_tower`'s own chain implementation already enforces per-timeframe staleness (a real,
+    ratified gate -- `ReasonCode.DATA_STALE`), threaded through this division's own wire protocol
+    (`TowerChainRequest.m15_max_staleness_s`, `bridge.py`'s own `TowerDependencies.m15_max_staleness_s`,
+    default slack for ordinary polling latency, see `bridge.py`). This test
     proves: given bars that are genuinely OLD relative to `as_of` and a tight `max_staleness_s`, the REAL
     artifact refuses with `market_map_available=False` -- exactly the same fail-closed path an
     unavailable tower produces, so `evaluate_bar`'s own `DecisionRequest` never treats a stale snapshot
@@ -589,17 +621,22 @@ def test_09_a_decision_citing_a_stale_snapshot_is_rejected_before_reaching_n6(tm
 
         stale_last_bar_time = NOW - 900
         far_future_as_of = NOW + 100_000  # as_of - last_bar_time is far larger than max_staleness_s below
-        request = _tower_request(
-            request_id="test-09-stale-req", market_event_id="test-09-stale-event",
-            as_of=str(far_future_as_of), max_staleness_s=900,
-            m15_closed_bars=_real_bars(count=150, step_seconds=900, last_time=stale_last_bar_time),
+        m15_bars = _real_bars(count=150, step_seconds=900, last_time=stale_last_bar_time)
+        request = _tower_chain_request(
+            request_id="test-09-stale-req", market_event_id="test-09-stale-event", correlation_id="test-09-stale-event",
+            as_of=far_future_as_of, m15_max_staleness_s=900,
+            m15_open=_series(m15_bars, "open"), m15_high=_series(m15_bars, "high"), m15_low=_series(m15_bars, "low"),
+            m15_close=_series(m15_bars, "close"), m15_time=_times(m15_bars),
         )
-        result = client.request_n3_n4(request)
-        assert isinstance(result, TowerN3N4Result), f"expected a real (refused, not degraded-transport) answer, got {result!r}"
+        result = client.request_chain(request)
+        assert isinstance(result, TowerChainResult), f"expected a real (refused, not degraded-transport) answer, got {result!r}"
         assert result.n3_output is not None
         assert result.n3_output.get("market_map_available") is False  # rejected, not fabricated as available
-        assert any("stale" in code.lower() for code in result.reason_codes), (
-            f"expected a real DATA_STALE-shaped reason code, got {result.reason_codes}"
+        # RT-TOWER-0008: on a successful chain run (ok=True) the top-level `reason_codes` is always empty --
+        # the real per-node reason (DATA_STALE) lives on N3's OWN output, not the chain envelope.
+        n3_reason_codes = result.n3_output.get("reason_codes") or ()
+        assert any("stale" in str(code).lower() for code in n3_reason_codes), (
+            f"expected a real DATA_STALE-shaped reason code on n3_output, got {n3_reason_codes}"
         )
     finally:
         launcher.stop()

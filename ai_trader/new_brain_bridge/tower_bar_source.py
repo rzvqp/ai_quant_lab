@@ -27,8 +27,15 @@ from ai_trader.live_signal_source.bar_feed import _read_field
 from ai_trader.live_signal_source.gap_classification import classify_gap
 from ai_trader.live_signal_source.types import BarFeedError, GapRecord
 
+MT5_TIMEFRAME_H1 = 16385
+"""The REAL `MetaTrader5.TIMEFRAME_H1` value -- empirically verified (2026-08-17, RT-TOWER-0008), NOT the
+naive `60` (minutes) a reader might guess: MT5's own enum only encodes M1-M30 as their literal minute
+count; H1 and above use a `0x4000`-flagged encoding (`16385 = 0x4001`). Getting this wrong would silently
+fetch the wrong timeframe (or fail) rather than raise -- verified against the actual installed
+`MetaTrader5` package before being written here, not assumed."""
 MT5_TIMEFRAME_M15 = 15
 MT5_TIMEFRAME_M5 = 5
+BAR_SECONDS_H1 = 3600
 BAR_SECONDS_M15 = 900
 BAR_SECONDS_M5 = 300
 
@@ -80,8 +87,9 @@ def fetch_tower_bar_windows(
     gateway: MT5Gateway, *, symbol: str, now: int, broker_offset_seconds: int = 0,
     m15_count: int = 150, m5_count: int = 150,
 ) -> tuple[tuple[dict[str, object], ...], tuple[dict[str, object], ...]]:
-    """`(m15_closed_bars, m5_closed_bars)`, both as of the SAME `now`/`broker_offset_seconds` -- the
-    exact pair `ve_tower_worker.protocol.TowerRequest.m15_closed_bars`/`m5_closed_bars` needs."""
+    """`(m15_closed_bars, m5_closed_bars)`, both as of the SAME `now`/`broker_offset_seconds`. Kept for
+    callers that only need N3/N4's own two timeframes; `fetch_tower_chain_bar_windows` below is the
+    RT-TOWER-0008 (2026-08-17) superset that also fetches H1 for the chain's own N2 (bias) node."""
     m15 = fetch_closed_bars(
         gateway, symbol=symbol, mt5_timeframe=MT5_TIMEFRAME_M15, bar_seconds=BAR_SECONDS_M15,
         count=m15_count, now=now, broker_offset_seconds=broker_offset_seconds,
@@ -91,6 +99,24 @@ def fetch_tower_bar_windows(
         count=m5_count, now=now, broker_offset_seconds=broker_offset_seconds,
     )
     return m15, m5
+
+
+def fetch_tower_chain_bar_windows(
+    gateway: MT5Gateway, *, symbol: str, now: int, broker_offset_seconds: int = 0,
+    h1_count: int = 150, m15_count: int = 150, m5_count: int = 150,
+) -> tuple[tuple[dict[str, object], ...], tuple[dict[str, object], ...], tuple[dict[str, object], ...]]:
+    """`(h1_closed_bars, m15_closed_bars, m5_closed_bars)`, all as of the SAME `now`/
+    `broker_offset_seconds` -- the exact triple `ve_tower.ChainRequest` needs (RT-TOWER-0008, 2026-08-17:
+    N2/bias now runs on H1, a REAL, chain-internal producer -- see `ve_tower.N2_EXPECTED_TIMEFRAME`)."""
+    h1 = fetch_closed_bars(
+        gateway, symbol=symbol, mt5_timeframe=MT5_TIMEFRAME_H1, bar_seconds=BAR_SECONDS_H1,
+        count=h1_count, now=now, broker_offset_seconds=broker_offset_seconds,
+    )
+    m15, m5 = fetch_tower_bar_windows(
+        gateway, symbol=symbol, now=now, broker_offset_seconds=broker_offset_seconds,
+        m15_count=m15_count, m5_count=m5_count,
+    )
+    return h1, m15, m5
 
 
 def detect_gaps(bars: tuple[dict[str, object], ...], *, symbol: str, bar_seconds: int) -> tuple[GapRecord, ...]:

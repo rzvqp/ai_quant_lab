@@ -36,8 +36,8 @@ from collections.abc import Callable
 from ve_tower_worker.artifact_identity import read_real_worker_identity
 from ve_tower_worker.decision import real_decision
 from ve_tower_worker.protocol import (
+    FRAME_TYPE_CHAIN_REQUEST,
     FRAME_TYPE_HANDSHAKE,
-    FRAME_TYPE_N3N4_REQUEST,
     MALFORMED_REQUEST,
     NODE_FAILURE_DEGRADED_TO_UNAVAILABLE,
     PROTOCOL_VERSION,
@@ -45,17 +45,17 @@ from ve_tower_worker.protocol import (
     ProtocolValidationError,
     RESPONSE_SCHEMA_VERSION,
     HandshakeResponse,
-    TowerRequest,
-    TowerResponse,
+    TowerChainRequest,
+    TowerChainResponse,
     WorkerIdentity,
     pack_frame,
+    parse_chain_request,
     parse_handshake_request,
-    parse_request,
     peek_frame_type,
     unpack_length_prefix,
 )
 
-DecisionFn = Callable[[TowerRequest], TowerResponse]
+DecisionFn = Callable[[TowerChainRequest], TowerChainResponse]
 IdentityFn = Callable[[], WorkerIdentity]
 
 LOOPBACK_ALLOWED_HOSTS = ("127.0.0.1",)
@@ -88,8 +88,9 @@ def recv_frame(conn: socket.socket) -> bytes:
 
 
 def _best_effort_echo_fields(request_bytes: bytes) -> tuple[str, str, str]:
-    """Used only to build a diagnosable error response when `parse_request` itself fails -- best-effort,
-    never trusted for anything beyond echoing identity back to a caller that already sent bad data."""
+    """Used only to build a diagnosable error response when `parse_chain_request` itself fails --
+    best-effort, never trusted for anything beyond echoing identity back to a caller that already sent
+    bad data."""
     try:
         obj = json.loads(request_bytes.decode("utf-8", errors="replace"))
         if not isinstance(obj, dict):
@@ -101,7 +102,7 @@ def _best_effort_echo_fields(request_bytes: bytes) -> tuple[str, str, str]:
         value = obj.get(key)
         return value if isinstance(value, str) else "UNKNOWN"
 
-    return _str_or_unknown("request_id"), _str_or_unknown("market_event_id"), _str_or_unknown("event_fingerprint")
+    return _str_or_unknown("request_id"), _str_or_unknown("market_event_id"), _str_or_unknown("correlation_id")
 
 
 class TowerWorkerServer:
@@ -134,49 +135,57 @@ class TowerWorkerServer:
         self._sock.listen(5)
         self.host, self.port = self._sock.getsockname()
 
-    def build_response(self, request_bytes: bytes) -> TowerResponse:
+    def build_response(self, request_bytes: bytes) -> TowerChainResponse:
         try:
-            request = parse_request(request_bytes)
-        except ProtocolValidationError:
-            request_id, market_event_id, event_fingerprint = _best_effort_echo_fields(request_bytes)
-            response = TowerResponse(
+            request = parse_chain_request(request_bytes)
+        except ProtocolValidationError as exc:
+            request_id, market_event_id, correlation_id = _best_effort_echo_fields(request_bytes)
+            reason = str(exc).split(":", 1)[0] if str(exc).startswith("UNKNOWN_REQUEST_FIELD") else MALFORMED_REQUEST
+            response = TowerChainResponse(
                 protocol_version=PROTOCOL_VERSION, schema_version=RESPONSE_SCHEMA_VERSION,
-                request_id=request_id, market_event_id=market_event_id, event_fingerprint=event_fingerprint,
-                tower_version="UNAVAILABLE", ok=False, n3_output=None, n4_output=None,
-                session_id="", worker_identity_fingerprint="", reason_codes=(MALFORMED_REQUEST,),
+                request_id=request_id, market_event_id=market_event_id, correlation_id=correlation_id,
+                configuration_fingerprint="", tower_version="UNAVAILABLE", chain_binding_version="",
+                chain_response_contract_version="", chain_fingerprint="", chain_status="UNAVAILABLE",
+                terminal_reason_code=reason, ok=False, n2_output=None, n3_output=None, n4_output=None,
+                session_id="", worker_identity_fingerprint="", reason_codes=(reason, str(exc)),
             )
             return self._stamp_session(response)
         if request.protocol_version != PROTOCOL_VERSION:
-            response = TowerResponse(
+            response = TowerChainResponse(
                 protocol_version=PROTOCOL_VERSION, schema_version=RESPONSE_SCHEMA_VERSION,
                 request_id=request.request_id, market_event_id=request.market_event_id,
-                event_fingerprint=request.event_fingerprint, tower_version="UNAVAILABLE", ok=False,
-                n3_output=None, n4_output=None, session_id="", worker_identity_fingerprint="",
-                reason_codes=(PROTOCOL_VERSION_MISMATCH,),
+                correlation_id=request.correlation_id, configuration_fingerprint=request.configuration_fingerprint,
+                tower_version="UNAVAILABLE", chain_binding_version="", chain_response_contract_version="",
+                chain_fingerprint="", chain_status="UNAVAILABLE", terminal_reason_code=PROTOCOL_VERSION_MISMATCH,
+                ok=False, n2_output=None, n3_output=None, n4_output=None, session_id="",
+                worker_identity_fingerprint="", reason_codes=(PROTOCOL_VERSION_MISMATCH,),
             )
             return self._stamp_session(response)
         try:
             decision_response = self._decision_fn(request)
         except Exception as exc:  # noqa: BLE001 -- deliberately broad: this is the ONE place a single
-            # node's own unexpected failure (a `ve_tower` internal bug, an N3/N4 call raising instead of
-            # returning its own Unavailable shape) is contained to THIS decision cycle, per test 20b
-            # (`test_e2e_readiness.py`, Mandate B point 5): "degrade to NO_TRADE for THAT decision cycle,
-            # not hang, not guess, not propagate the exception and kill the whole process." Without this,
-            # an uncaught exception here propagates through `handle_one_connection` (which only catches
-            # `TowerConnectionClosed`/`ProtocolValidationError`/`TimeoutError`/`OSError`) into
+            # node's own unexpected failure (a `ve_tower` internal bug, the chain orchestrator raising
+            # instead of returning its own Unavailable shape) is contained to THIS decision cycle, per
+            # test 20b (`test_e2e_readiness.py`, Mandate B point 5): "degrade to NO_TRADE for THAT decision
+            # cycle, not hang, not guess, not propagate the exception and kill the whole process." Without
+            # this, an uncaught exception here propagates through `handle_one_connection` (which only
+            # catches `TowerConnectionClosed`/`ProtocolValidationError`/`TimeoutError`/`OSError`) into
             # `serve_forever`'s bare `while True` loop, with no outer handler -- crashing the ENTIRE
             # persistent worker process over a single bad request, not just refusing that one connection.
-            degraded = TowerResponse(
+            degraded = TowerChainResponse(
                 protocol_version=PROTOCOL_VERSION, schema_version=RESPONSE_SCHEMA_VERSION,
                 request_id=request.request_id, market_event_id=request.market_event_id,
-                event_fingerprint=request.event_fingerprint, tower_version="UNAVAILABLE", ok=False,
+                correlation_id=request.correlation_id, configuration_fingerprint=request.configuration_fingerprint,
+                tower_version="UNAVAILABLE", chain_binding_version="", chain_response_contract_version="",
+                chain_fingerprint="", chain_status="UNAVAILABLE",
+                terminal_reason_code=NODE_FAILURE_DEGRADED_TO_UNAVAILABLE, ok=False, n2_output=None,
                 n3_output=None, n4_output=None, session_id="", worker_identity_fingerprint="",
                 reason_codes=(NODE_FAILURE_DEGRADED_TO_UNAVAILABLE, f"{type(exc).__name__}: {exc}"),
             )
             return self._stamp_session(degraded)
         return self._stamp_session(decision_response)
 
-    def _stamp_session(self, response: TowerResponse) -> TowerResponse:
+    def _stamp_session(self, response: TowerChainResponse) -> TowerChainResponse:
         """The ONE place `session_id`/`worker_identity_fingerprint` become authoritative -- always
         overwrites whatever `decision_fn` returned for those two fields, so decision logic can stay
         session-unaware without any risk of it accidentally forging or omitting them."""
@@ -204,7 +213,7 @@ class TowerWorkerServer:
             frame_type = peek_frame_type(request_bytes)
             if frame_type == FRAME_TYPE_HANDSHAKE:
                 response_bytes = self.build_handshake_response_bytes(request_bytes)
-            elif frame_type == FRAME_TYPE_N3N4_REQUEST:
+            elif frame_type == FRAME_TYPE_CHAIN_REQUEST:
                 response_bytes = self.build_response(request_bytes).to_json_bytes()
             else:
                 return  # unknown frame type -- close without responding, same as any other malformed input

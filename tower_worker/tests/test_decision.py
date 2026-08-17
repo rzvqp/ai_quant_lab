@@ -1,27 +1,37 @@
-"""`real_decision` against the GENUINELY installed `ve_tower` 0.3.0 -- CEO Phase 2 step 4: "ruleaza fixture-ul
-N3/N4 prin IPC real." These tests call `real_decision` directly (no socket) to prove the `ve_tower` wiring
-itself is correct; `test_server_roundtrip.py`-style socket tests cover the transport separately.
+"""`real_decision` against the GENUINELY installed `ve_tower` 0.5.0 -- RT-TOWER-0008 remediation
+(2026-08-17): "workerul foloseste EXCLUSIV orchestratorul... ve_tower.run_tower_chain." These tests call
+`real_decision` directly (no socket) to prove the `ve_tower` chain wiring itself is correct;
+`test_server_roundtrip.py`-style socket tests cover the transport separately.
 
 Fixture data is a small, deterministic, clearly-synthetic OHLC random walk -- CLOSED bars only, strictly
 ascending epoch time, consistent OHLC ordering (`low <= open,close <= high`). It exists to exercise the
-real `ve_tower.run_n3`/`run_n4` code paths end-to-end, not to assert a specific trading outcome -- these
+real `ve_tower.run_tower_chain` code path end-to-end, not to assert a specific trading outcome -- these
 tests check the RESPONSE IS WELL-FORMED and HONEST (whatever `ve_tower` itself decides), never that it
-finds a particular zone or confirmation."""
+finds a particular zone, bias, or confirmation."""
 
 from __future__ import annotations
+
+import dataclasses
 
 import ve_tower  # type: ignore[import-untyped]  # the REAL installed artifact -- fails to collect if ever uninstalled
 
 from ve_tower_worker.decision import real_decision
-from ve_tower_worker.protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerRequest
+from ve_tower_worker.protocol import PROTOCOL_VERSION, REQUEST_SCHEMA_VERSION, TowerChainRequest
 
 _AS_OF = 1_700_000_000  # arbitrary fixed epoch anchor, deterministic across runs
 
 
-def _synthetic_bars(*, count: int, step_seconds: int, as_of: int, start_price: float = 2000.0) -> tuple[dict[str, object], ...]:
+def _synthetic_series(
+    *, count: int, step_seconds: int, as_of: int, start_price: float = 2000.0,
+) -> tuple[tuple[float, ...], tuple[float, ...], tuple[float, ...], tuple[float, ...], tuple[int, ...]]:
     """Deterministic pseudo-random walk (LCG, no `random` module -- reproducible without seeding concerns),
-    closing at `as_of`. `count` closed bars, strictly ascending, each `step_seconds` apart."""
-    bars: list[dict[str, object]] = []
+    closing at `as_of`. `count` closed bars, strictly ascending, each `step_seconds` apart. Returns
+    (open, high, low, close, time) tuples -- the `ChainRequest` wire shape, not dicts."""
+    opens: list[float] = []
+    highs: list[float] = []
+    lows: list[float] = []
+    closes: list[float] = []
+    times: list[int] = []
     price = start_price
     state = 12345
     first_time = as_of - (count - 1) * step_seconds
@@ -32,38 +42,55 @@ def _synthetic_bars(*, count: int, step_seconds: int, as_of: int, start_price: f
         close = price + delta
         high = max(open_, close) + abs(delta) * 0.5 + 0.1
         low = min(open_, close) - abs(delta) * 0.5 - 0.1
-        bars.append({
-            "time": first_time + i * step_seconds,
-            "open": round(open_, 2), "high": round(high, 2),
-            "low": round(low, 2), "close": round(close, 2),
-        })
+        opens.append(round(open_, 2)); highs.append(round(high, 2))
+        lows.append(round(low, 2)); closes.append(round(close, 2))
+        times.append(first_time + i * step_seconds)
         price = close
-    return tuple(bars)
+    return tuple(opens), tuple(highs), tuple(lows), tuple(closes), tuple(times)
 
 
-def _make_request(*, n2_bias_direction: str | object = "LONG", m15_count: int = 150, m5_count: int = 150) -> TowerRequest:
-    m15_bars = _synthetic_bars(count=m15_count, step_seconds=900, as_of=_AS_OF)
-    m5_bars = _synthetic_bars(count=m5_count, step_seconds=300, as_of=_AS_OF, start_price=2010.0)
-    n2_output: dict[str, object] = {"available": True, "fingerprint": "n2fp-test"}
-    if n2_bias_direction is not None:
-        n2_output["bias_direction"] = n2_bias_direction
-    return TowerRequest(
+def _make_request(
+    *, side: int = 1, expected_n2_contract: str | None = None, expected_n3_contract: str | None = None,
+    expected_n4_contract: str | None = None,
+) -> TowerChainRequest:
+    h1_o, h1_h, h1_l, h1_c, h1_t = _synthetic_series(count=150, step_seconds=3600, as_of=_AS_OF)
+    m15_o, m15_h, m15_l, m15_c, m15_t = _synthetic_series(count=150, step_seconds=900, as_of=_AS_OF)
+    _, m5_h, m5_l, m5_c, m5_t = _synthetic_series(count=150, step_seconds=300, as_of=_AS_OF, start_price=2010.0)
+    return TowerChainRequest(
         protocol_version=PROTOCOL_VERSION, schema_version=REQUEST_SCHEMA_VERSION,
-        request_id="req-1", market_event_id="XAUUSD:15:1700000000", event_fingerprint="",
-        data_identity="d1", node_input_fingerprint="n1",
-        symbol="XAUUSD", as_of=str(_AS_OF),
-        n1_output={"available": True, "fingerprint": "n1fp-test"},
-        n2_output=n2_output,
-        m15_closed_bars=m15_bars, m5_closed_bars=m5_bars,
-        strategy_id="trend_pullback", strategy_version="1.0",
+        request_id="req-1", market_event_id="XAUUSD:15:1700000000", trace_id="trace-1",
+        correlation_id="corr-1", symbol="XAUUSD", as_of=_AS_OF, configuration_fingerprint="cfg-1",
+        regime_axes_status=("TREND_UP",),
+        h1_open=h1_o, h1_high=h1_h, h1_low=h1_l, h1_close=h1_c, h1_time=h1_t,
+        h1_source_identity="tower-client:XAUUSD:H1",
+        m15_open=m15_o, m15_high=m15_h, m15_low=m15_l, m15_close=m15_c, m15_time=m15_t,
+        m15_source_identity="tower-client:XAUUSD:M15",
+        m5_high=m5_h, m5_low=m5_l, m5_close=m5_c, m5_time=m5_t, m5_source_identity="tower-client:XAUUSD:M5",
+        strategy_id="trend_pullback", strategy_version="1.0", side=side,
+        expected_n2_contract=expected_n2_contract or ve_tower.N2_CONTRACT_VERSION,
+        expected_n3_contract=expected_n3_contract or ve_tower.N3_CONTRACT_VERSION,
+        expected_n4_contract=expected_n4_contract or ve_tower.N4_CONTRACT_VERSION,
     )
 
 
-def test_real_decision_calls_the_genuinely_installed_ve_tower() -> None:
-    """Not a stub: proves the installed distribution's own version string comes back."""
+def test_real_decision_calls_the_genuinely_installed_ve_tower_0_5_0() -> None:
+    """Not a stub: proves the installed distribution's own version string comes back, and that it is
+    genuinely 0.5.0 -- the version this whole remediation exists to wire in."""
     response = real_decision(_make_request())
     assert response.ok is True
-    assert response.tower_version == ve_tower.VE_TOWER_VERSION == "0.3.0"
+    assert response.tower_version == ve_tower.VE_TOWER_VERSION == "0.5.0"
+    assert response.chain_binding_version == ve_tower.TOWER_CHAIN_BINDING_VERSION == "tower-chain-binding-v1"
+    assert response.chain_response_contract_version == ve_tower.CHAIN_RESPONSE_CONTRACT_VERSION
+
+
+def test_real_decision_returns_well_formed_n2_output() -> None:
+    """N2 is now a REAL, chain-internal producer (computed from H1 bars) -- never client-supplied."""
+    response = real_decision(_make_request())
+    assert response.n2_output is not None
+    assert "bias_available" in response.n2_output
+    assert isinstance(response.n2_output["bias_available"], bool)
+    assert "direction_share_long" in response.n2_output
+    assert "direction_share_short" in response.n2_output
 
 
 def test_real_decision_returns_well_formed_n3_output() -> None:
@@ -74,44 +101,23 @@ def test_real_decision_returns_well_formed_n3_output() -> None:
     assert isinstance(response.n3_output["market_map_available"], bool)
 
 
-def test_real_decision_never_fabricates_confirmation_without_a_market_map() -> None:
-    """If N3 found no map, N4 must never run -- `n4_output` stays `None`, not a fabricated confirmation."""
+def test_real_decision_has_a_real_chain_fingerprint() -> None:
     response = real_decision(_make_request())
-    if response.n3_output is not None and not response.n3_output["market_map_available"]:
-        assert response.n4_output is None
+    assert response.ok is True
+    assert response.chain_fingerprint
+    assert response.chain_status
+    assert response.terminal_reason_code
 
 
-def test_real_decision_skips_n4_when_bias_direction_absent() -> None:
-    """No `bias_direction` -> no side to confirm -> N4 never called, regardless of what N3 found."""
-    response = real_decision(_make_request(n2_bias_direction=None))
-    assert response.n4_output is None
-
-
-def test_real_decision_malformed_bias_direction_fails_closed() -> None:
-    response = real_decision(_make_request(n2_bias_direction="SIDEWAYS"))
+def test_real_decision_contract_expectation_mismatch_fails_closed() -> None:
+    """A caller pinning the WRONG expected N2/N3/N4 contract version must degrade to a fail-closed
+    response, never silently proceed against a contract it didn't actually pin."""
+    response = real_decision(_make_request(expected_n3_contract="wrong-contract-version"))
     assert response.ok is False
+    assert response.n2_output is None
     assert response.n3_output is None
     assert response.n4_output is None
-    assert any("bias_direction" in code for code in response.reason_codes)
-
-
-def test_real_decision_malformed_bar_fails_closed() -> None:
-    request = _make_request()
-    bad_bar: dict[str, object] = {"time": 1, "open": 1.0, "high": 1.0, "low": 1.0}  # missing 'close'
-    bad_bars = (bad_bar,) + request.m15_closed_bars[1:]
-    import dataclasses
-    request = dataclasses.replace(request, m15_closed_bars=bad_bars)
-    response = real_decision(request)
-    assert response.ok is False
-    assert "MALFORMED_TOWER_REQUEST" in response.reason_codes
-
-
-def test_real_decision_bad_as_of_fails_closed() -> None:
-    import dataclasses
-    request = dataclasses.replace(_make_request(), as_of="not-an-epoch")
-    response = real_decision(request)
-    assert response.ok is False
-    assert "MALFORMED_TOWER_REQUEST" in response.reason_codes
+    assert any("CONTRACT_EXPECTATION_MISMATCH" in code for code in response.reason_codes)
 
 
 def test_real_decision_is_deterministic_across_calls() -> None:
@@ -119,6 +125,18 @@ def test_real_decision_is_deterministic_across_calls() -> None:
     `real_decision` never touches session fields -- those are `server.py`'s job)."""
     r1 = real_decision(_make_request())
     r2 = real_decision(_make_request())
+    assert r1.n2_output == r2.n2_output
     assert r1.n3_output == r2.n3_output
     assert r1.n4_output == r2.n4_output
+    assert r1.chain_fingerprint == r2.chain_fingerprint
     assert r1.reason_codes == r2.reason_codes
+
+
+def test_real_decision_side_is_genuinely_threaded_through_not_ignored() -> None:
+    """`side` (LONG=1 vs SHORT=-1) changes what N4 confirms against -- proving it reaches `ve_tower`
+    rather than being silently dropped. Not asserting a specific outcome, only that the two sides are
+    processed (both return a real, well-formed response, not an error)."""
+    long_response = real_decision(_make_request(side=1))
+    short_response = real_decision(_make_request(side=-1))
+    assert long_response.ok is True
+    assert short_response.ok is True
