@@ -1,0 +1,65 @@
+{
+  "manifest_schema_version": "ve-n1-replay-manifest-v1",
+  "package_version": "0.1.1",
+  "package_build_commit": "TBD_BUILD_COMMIT",
+  "state_delivery_commit": "TBD_STATE_COMMIT",
+  "supersedes": "0.1.0",
+  "change_summary": "Incremental N1 replay engine: O(n^2)->O(n)/bounded-amortized performance remediation. Per-bar result byte-identical to 0.1.0. Adds IncrementalRawAxesBuilder, N1IncrementalReplayEngine, replay_batch (canonical read-only ledger), bounded incremental snapshot/restore. No change to evaluation_identity or detector bytes.",
+  "wheel_filename": "ve_n1_replay-0.1.1-py3-none-any.whl",
+  "wheel_sha256": "2cff7e7be1f9401c10753f751a1189a512f5be39946dfada4260b9c5e1cd29ab",
+  "wheel_size_bytes": 68937,
+  "python_requirement": ">=3.12",
+  "dependency_pins": {
+    "numpy": ">=1.24",
+    "ve_brain": {
+      "version": "0.1.3",
+      "wheel_sha256": "edd208ad6c2c943b17a11759ece1fdf5ab2a7025779b191764c383ecce987d11",
+      "note": "external pinned wheel, install separately in tower venv"
+    }
+  },
+  "n1_replay_contract_version": "n1-replay-request-v1",
+  "snapshot_schema_version": "n1-replay-snapshot-v1",
+  "reason_code_schema_version": "n1-replay-reason-codes-v1",
+  "incremental": {
+    "history_horizon": 460,
+    "history_horizon_version": "n1-history-horizon-v1",
+    "ledger_schema_version": "n1-incremental-ledger-v1",
+    "incremental_snapshot_schema_version": "n1-incremental-snapshot-v1",
+    "horizon_derivation": "N1_INCREMENTAL_HORIZON.md (from code): bounded axes is_compressed<=460 (COMPRESSION_WINDOW), is_displacement<=15, atr14=14; unbounded axes structure/direction maintained by incremental swing/break state, NOT truncated",
+    "parity": "byte-identical per-bar result AND intermediate state vs 0.1.0 oracle (N1_INCREMENTAL_PARITY.md, tests/test_incremental.py, 25 tests)",
+    "benchmark": "N1_INCREMENTAL_BENCHMARK.md — up to 355696 bars, under 4h target, ~O(n) scaling"
+  },
+  "router_version": "router-v1",
+  "detector_configuration_fingerprint": "effa0663b8a45bb5",
+  "ai_source_commit": "21ae632",
+  "detector_submodule_commit": "61cbd58c3d5da19001b125b65d669ddad54a14c4",
+  "raw_axes_builder_impl_commit": "21ae632",
+  "vendored_ai_blob_sha1": {
+    "n1_replay/__init__.py": "5e3d1d9520f883a2b2a86d4ecec71422db66bfa9",
+    "n1_replay/engine.py": "f2df0402907c7eb689ba6b53937a6eee055f216f",
+    "n1_replay/errors.py": "2eff7d3371f0d376c79c5b575f52228f098c83b6",
+    "n1_replay/identity.py": "08611d44ab6dba40094051734de546789f6e40b0",
+    "n1_replay/types.py": "c58d40016736e5bc35df08714f0cbfc288dc2e58",
+    "n1_replay/fixtures/__init__.py": "2f481def8b9be154e8861fcf3d16898d0488774d",
+    "n1_replay/fixtures/canonical_bars.py": "4c13daf4864b7e4c3143d2fe02d236ab8cee0a26",
+    "live_signal_source/types.py": "fc5d534e95d2973f5b6e66dade8119ee81fef774",
+    "signal_engine/types.py": "16fba869be2205cad66f2117a0a799e5e6447fc2",
+    "market_scanner/types.py": "09ef62241a16e24bd52f31705af00658cd887e35",
+    "market_scanner/exceptions.py": "729eb8f80782b4df577c2d58914471c846ac9899",
+    "strategy_manager/contract.py": "30bb43f3e0a715dbde9416d307e9d2da795720fe",
+    "mandate2_readiness/wheel_verification.py": "99066d6386f3e830408deab11265439860c36b6b",
+    "new_brain_bridge/raw_axes_builder.py": "d071c8cbd993cb9377b70af6b61e353d4c101966",
+    "structural_observer/vendor_bridge.py": "bb53680c2180a23366b9aa5a08130b4410ea6683"
+  },
+  "vendored_detector_blob_sha1": {
+    "market_structure.py": "52bb1eba76d1dee96fae3ed5f5e434c53612176a",
+    "market_state.py": "3f88f8c88988d2b74caf70c199907cf0871c3019",
+    "imbalance_mechanics.py": "aa1c6d36d6395a1266b17848296a4c74631ab7c1",
+    "order_flow.py": "23b0470086efa24f7b50048e973ecc90fa4a8cb7",
+    "order_block_void.py": "2b0f3f37154c4df475e1e7ef0fa782d6f808de9b"
+  },
+  "vendored_source_identity": "sha256:1d4f6c480c81315575e269067cece84e3784832d7727391f476d08033e06a190",
+  "vendored_source_identity_algorithm": "per entry \"ai <relpath> <blob>\" (@21ae632) or \"det <name> <blob>\" (@61cbd58c); sort asc; join \"\\n\"; trailing \"\\n\"; sha256; prefix \"sha256:\"",
+  "status_requested": "READY_FOR_N1_INCREMENTAL_REVALIDATION",
+  "self_declared_pass": false
+}

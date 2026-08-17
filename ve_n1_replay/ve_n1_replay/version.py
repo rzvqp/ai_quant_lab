@@ -7,10 +7,19 @@ Artefact N1 replay INDEPENDENT de ai_trader: împachetează byte-identic modulel
 
 from __future__ import annotations
 
-VE_N1_REPLAY_VERSION: str = "0.1.0"
+VE_N1_REPLAY_VERSION: str = "0.1.1"
 N1_REPLAY_CONTRACT_VERSION: str = "n1-replay-request-v1"
 SNAPSHOT_SCHEMA_VERSION: str = "n1-replay-snapshot-v1"
 REASON_CODE_SCHEMA_VERSION: str = "n1-replay-reason-codes-v1"
+
+# ── 0.1.1: remediere de performanță O(n²)→O(n)/mărginit-amortizat (motor N1 INCREMENTAL) ──
+# Orizontul de istoric = maximul lookback-ului axelor MĂRGINITE (COMPRESSION_WINDOW), derivat din cod
+# (N1_INCREMENTAL_HORIZON.md), NU ghicit. Legat în identitatea de ledger/snapshot, NU în evaluation_identity
+# (care rămâne = 0.1.0 pentru ca rezultatul per-bară să fie byte-identic).
+HISTORY_HORIZON: int = 460
+HISTORY_HORIZON_VERSION: str = "n1-history-horizon-v1"
+LEDGER_SCHEMA_VERSION: str = "n1-incremental-ledger-v1"
+INCREMENTAL_SNAPSHOT_SCHEMA_VERSION: str = "n1-incremental-snapshot-v1"
 
 # sursele EXACTE
 AI_SOURCE_REPO: str = "ai_quant_lab-wp5b"
@@ -59,4 +68,7 @@ def build_info() -> dict[str, object]:
         "ai_source_commit": AI_SOURCE_COMMIT, "detector_submodule_commit": DETECTOR_SUBMODULE_COMMIT,
         "ve_brain_version": VE_BRAIN_VERSION, "ve_brain_wheel_sha256": VE_BRAIN_WHEEL_SHA256,
         "snapshot_schema_version": SNAPSHOT_SCHEMA_VERSION, "reason_code_schema_version": REASON_CODE_SCHEMA_VERSION,
+        "history_horizon": HISTORY_HORIZON, "history_horizon_version": HISTORY_HORIZON_VERSION,
+        "ledger_schema_version": LEDGER_SCHEMA_VERSION,
+        "incremental_snapshot_schema_version": INCREMENTAL_SNAPSHOT_SCHEMA_VERSION,
     }

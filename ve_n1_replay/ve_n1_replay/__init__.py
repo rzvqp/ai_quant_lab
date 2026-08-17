@@ -43,6 +43,15 @@ StaleStateError = _pkg.StaleStateError
 _lss: Any = vendored_module("ai_trader.live_signal_source.types")
 Bar = _lss.Bar
 
+# ── 0.1.1: motorul N1 INCREMENTAL (O(n)/mărginit-amortizat) + ledger canonic precompute-once ──
+from .version import (
+    HISTORY_HORIZON, HISTORY_HORIZON_VERSION, LEDGER_SCHEMA_VERSION, INCREMENTAL_SNAPSHOT_SCHEMA_VERSION,
+)
+from .incremental import (   # noqa: E402  (după ensure_loaded — closure-ul trebuie încărcat întâi)
+    IncrementalRawAxesBuilder, N1IncrementalReplayEngine, N1IncrementalSnapshot,
+    N1IncrementalLedger, N1IncrementalLedgerRecord,
+)
+
 
 def initialize(*, symbol: str, timeframe: str, bar_interval_seconds: int,
                implementation_commit: str = RAW_AXES_BUILDER_IMPL_COMMIT, **kwargs: object) -> object:
@@ -56,6 +65,10 @@ __all__ = [
     "N1ReplayError", "BarNotClosedError", "DuplicateBarError", "FutureBarError", "IncompatibleSnapshotError",
     "NonFiniteAxesInputError", "OutOfOrderBarError", "StaleStateError", "initialize",
     "ensure_loaded", "vendored_module", "N1ReplayLoadCollisionError",
+    "IncrementalRawAxesBuilder", "N1IncrementalReplayEngine", "N1IncrementalSnapshot",
+    "N1IncrementalLedger", "N1IncrementalLedgerRecord",
+    "HISTORY_HORIZON", "HISTORY_HORIZON_VERSION", "LEDGER_SCHEMA_VERSION",
+    "INCREMENTAL_SNAPSHOT_SCHEMA_VERSION",
     "VE_N1_REPLAY_VERSION", "N1_REPLAY_CONTRACT_VERSION", "SNAPSHOT_SCHEMA_VERSION", "REASON_CODE_SCHEMA_VERSION",
     "AI_SOURCE_COMMIT", "DETECTOR_SUBMODULE_COMMIT", "VE_BRAIN_VERSION", "VE_BRAIN_WHEEL_SHA256",
     "VENDORED_AI_BLOB_SHA1", "VENDORED_DETECTOR_BLOB_SHA1", "RAW_AXES_BUILDER_IMPL_COMMIT", "build_info",
