@@ -3142,4 +3142,69 @@
                changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [72], prev_hash E71.
   entry_hash:  E71
+
+[72] 2026-08-17
+  prev_hash:   E71
+  event:       VERDICT
+  dc_id:       DC-VE-N1-REPLAY-HANDOFF
+  freeze_hash: 8e6eef2 (ve_n1_replay 0.1.0 delivery HEAD) / build 1f9e746 / wheel-commit 1379432
+  battery_ver: RT-N1-0001
+  reviewer:    Red Team
+  detail:      N1 CANONICAL REPLAY HANDOFF — final revalidation of ve_n1_replay 0.1.0. VERDICT =
+               ***N1_HANDOFF_PASS · ALPHA_CANONICAL_RERUN_AUTHORIZED***. Standalone byte-identical N1 replay
+               closure of AI Trader @21ae632 + detectors @61cbd58c, consuming pinned ve_brain 0.1.3. LIVE_SHADOW
+               untouched (read-only), broker DISABLED. No engine modified; synthetic data + git reanchoring;
+               nothing outside red_team/.
+               (1 identity) wheel SHA 372b35f9...0eb3f1 + size 61594 exact, git-stored bytes == working wheel,
+               build 1f9e746, wheel-commit 1379432, delivery HEAD 8e6eef2; sidecar exact (0.1.0, py>=3.12,
+               numpy>=1.24, ve_brain 0.1.3 wheel SHA edd208ad...987d11 INDEPENDENTLY verified, router-v1, detector_
+               config_fp effa0663, contracts n1-replay-request/snapshot/reason-codes-v1); vendored_source_identity
+               INDEPENDENTLY RECOMPUTED via documented algo = sha256:1d4f6c48...06a190 == manifest.
+               (2 closure/byte-integrity) 15 AI modules @21ae632 (git==wheel==manifest 15/15) + 5 detectors
+               @61cbd58c (git==wheel==manifest 5/5). ★ CRITICAL: market_structure = 52bb1eba @61cbd58c, NOT ve_
+               tower's d734ac9a (verified distinct). Closure real (market_structure/market_state/imbalance_
+               mechanics/order_flow/order_block_void + ai_trader tail to market_scanner.exceptions). No silent
+               substitution.
+               (3 bootstrap/collisions) CHARACTERIZED: vendored modules ARE in sys.modules under real names
+               (ai_trader.* + bare detectors), marked, from wheel, NO external ai_trader dependency; foreign
+               occupant -> fail-closed. 18/18 attacks: collision first/middle/last detector + foreign ai_trader
+               pkg/n1_replay/mid-module + foreign ve_tower market_structure -> N1ReplayLoadCollisionError, ZERO
+               leftover vendored, host identity preserved, _loaded False, no stray; exec_module exception ->
+               original exception preserved + full rollback; clean retry succeeds; 8 concurrent imports thread-
+               safe; two engines independent no shared state.
+               (4 parity wheel-vs-source) BYTE-IDENTITY is the proof: 15 AI blobs==@21ae632 + 5 detectors==
+               @61cbd58c (git content hashes, S2). raw_axes_builder byte-identical d071c8cb @21ae632 (wheel src)
+               == @eb97a80 (LIVE_SHADOW runtime). Behavioral: TREND_UP fixture (478 bars) -> availability FULL,
+               applicable_regimes {TREND_UP}, deterministic 2-instance; axis-flip OHLC -> TREND_UP->TREND_DOWN +
+               output_fp changes. 16 real bars journaled all UNCERTAIN_REGIME under the byte-identical N1 code ->
+               wheel reproduces by construction. DISCLOSED LIMITATION (not defect): exact per-bar OHLC not
+               persisted in read-only journal + won't disturb live MT5 -> 16-bar parity via byte-identity
+               (completely verifiable) + behavioral, not exact-OHLC re-run.
+               (5 data identity) content bound via last_closed_bar (full OHLC in result) + snapshot.observed_bars
+               (full raw history). output_fingerprint binds N1 OUTPUT (discrete axes) -- sensitive to axis-
+               affecting OHLC (TREND_UP->TREND_DOWN flips it), correct for replay; sub-axis changes bound by
+               composite (last_closed_bar/snapshot), no silent equality. timestamp->diff identity; unordered->
+               refuse; add/delete->diff; last_closed_bar bound. Content IS bound -> NOT FAIL; VE's fingerprint
+               phrasing accurate for axis-affecting + completed by composite (documentary nuance).
+               (6 replay/snapshot/causality) deterministic; idempotent duplicate (PARTIAL); conflicting dup->
+               DuplicateBarError; future->FutureBarError; unordered->OutOfOrderBarError; NaN/Inf->NonFiniteAxes
+               InputError; snapshot/restore->identical continuation; incompatible snapshot->IncompatibleSnapshot
+               Error; changed pin->IncompatibleSnapshotError; reset->clean; ZERO lookahead (prefix stable).
+               (7 independence) empty venv: no ai_trader repo on path, MetaTrader5/ve_tower/execution/broker NOT
+               in sys.modules, no actual forbidden import statements (only comments); no order_send/set_authority/
+               probability_inputs/legacy-fallback (absent by construction); ve_brain 0.1.3 from exact pinned wheel;
+               ve_tower detectors NOT substituted (foreign ve_tower market_structure -> collision, S3).
+               (8 tests/rollback) 18 tests pass (matches VE), mypy --strict clean, clean install/uninstall(Module
+               NotFoundError)/reinstall, wheel physical-byte verified (SHA+git-stored). Small count covered.
+               (9 live state read-only) authority global = NEW_BRAIN (not inactive); N1 artefact authority-
+               independent (set_authority absent). LIVE_SHADOW alive+healthy: 68 shadow records all NO_TRADE,
+               order_send_calls=0, none reached broker; broker DISABLED; balance/equity 1800.34 unchanged; AI
+               Trader runtime (eb97a80) does NOT import ve_n1_replay (artefact absent from live process).
+               AUTHORIZES: Alpha installs EXACTLY ve_n1_replay-0.1.0 (372b35f9...0eb3f1) ONLY in the Alpha env
+               (with pinned ve_brain 0.1.3) + reruns the 355 hypotheses. Does NOT authorize broker, does NOT modify
+               LIVE_SHADOW. Broker activation needs a separate CEO mandate. LIVE_SHADOW continues untouched broker
+               DISABLED; CAND-T05 frozen. Red Team modified no engine, ran no real orders, disturbed no live
+               process, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [73], prev_hash E72.
+  entry_hash:  E72
 ```
