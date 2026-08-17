@@ -382,6 +382,7 @@ class LiveBarFeed:
         lookback_count: int = 10, clock: Callable[[], int] = _default_clock,
         state_store: SqliteStateStore | None = None,
         broker_offset: Callable[[], int] | None = None,
+        watermark_key_suffix: str | None = None,
     ) -> None:
         if bar_seconds <= 0:
             raise ValueError(f"LiveBarFeed: bar_seconds must be > 0, got {bar_seconds!r}")
@@ -400,6 +401,13 @@ class LiveBarFeed:
         actually broker-server time."""
         self._state_store = state_store
         self._watermark_key = f"live_signal_source.bar_feed:{symbol}:{mt5_timeframe}"
+        if watermark_key_suffix is not None:
+            self._watermark_key += f":{watermark_key_suffix}"
+        """RT-TIME-0001 section B: an optional suffix so TWO `LiveBarFeed` instances polling the SAME
+        `(symbol, mt5_timeframe)` -- e.g. the main M15 decision loop and a second, independent M15
+        context-refresh consumer -- persist genuinely separate watermarks instead of silently colliding
+        on the same key and corrupting each other's dedup state. `None` (the default) reproduces the
+        exact pre-existing key, byte-for-byte -- every current caller is unaffected."""
         self._clock_corrected_since_key = f"{self._watermark_key}.clock_corrected_since"
         self._last_emitted_ts_open: int | None = (
             None if state_store is None else self._load_persisted_watermark(state_store)

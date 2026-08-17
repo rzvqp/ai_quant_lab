@@ -761,3 +761,24 @@ def evaluate_bar(
         ))
 
     return tuple(outcomes)
+
+
+ChainQueryResult = _ChainQueryResult
+"""Public alias (RT-TIME-0001 section B, the M5 dual-clock delivery) -- `new_brain_live`'s own M5-
+triggered N4 path needs the EXACT SAME chain-calling function `evaluate_bar` itself uses, never a
+reimplementation or a direct `run_n2`/`run_n3`/`run_n4` call (the CEO's own explicit "chain-binding"
+rule). Exporting the existing private helper under a public name, unchanged, is the only way to satisfy
+that rule without duplicating `_query_tower_chain`'s own logic."""
+query_tower_chain = _query_tower_chain
+side_from_strategy = _side_from_strategy
+"""Public alias -- `side` must always come from the eligible strategy's own contracted
+`allowed_directions[0]` (never a default, never hardcoded LONG); the M5 path reuses this EXACT
+function rather than re-deriving it, for the same zero-drift reason `query_tower_chain` is exported."""
+side_provenance = _side_provenance
+PLACEHOLDER_TARGET_RR = _PLACEHOLDER_TARGET_RR
+ELIGIBILITY_POLICY_VERSION = _ELIGIBILITY_POLICY_VERSION
+FP = _fp
+"""Public aliases for the two config constants and the generic fingerprint helper the M5 path's own
+`DecisionRequest` construction must match byte-for-byte against `evaluate_bar`'s own -- importing the
+real values rather than re-typing them as new literals is what makes "the same value, guaranteed" true
+rather than merely intended."""
