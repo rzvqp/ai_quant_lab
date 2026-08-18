@@ -3325,4 +3325,65 @@
                disturbed no live process, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [75], prev_hash E74.
   entry_hash:  E74
+
+[75] 2026-08-18
+  prev_hash:   E74
+  event:       VERDICT
+  dc_id:       DC-AITRADER-N1-INTEGRATION
+  freeze_hash: 9f0c13c (integration HEAD) / A 7905236 / B 6b45ee1 / artefact ve_n1_replay 0.1.1 e118c33
+  battery_ver: RT-N1-0003
+  reviewer:    Red Team
+  detail:      N1 INCREMENTAL HYDRATION INTEGRATION REVIEW. VERDICT = ***N1_INCREMENTAL_HYDRATION_INTEGRATION_
+               PASS***. AI Trader's ISOLATED integration of ve_n1_replay 0.1.1 (SHA 2cff7e7b, RT-N1-0002 PASS
+               6230ee5) atop Commit A (request-scoped time) + B (M5 dual-clock). LIVE_SHADOW read-only, no deploy/
+               restart/cutover; no VE engine or AI Trader code modified; nothing outside red_team/.
+               (1 delivery) 9f0c13c HEAD, local==remote; PURELY ADDITIVE (9 new files under new_brain_live/n1_
+               incremental/, +1105, no existing file modified -> cannot regress); no uncommitted runtime; live
+               runtime doesn't consume new files.
+               (2 isolation) import ve_n1_replay in MAIN venv -> ModuleNotFoundError (not installed) -> vendored
+               ai_trader.n1_replay CANNOT collide with repo's real one. Runs only in C:/Users/.../.alpha_n1_venv
+               (ve_n1_replay 0.1.1 + ve_brain 0.1.3 + numpy) via client.py subprocess.run per call, JSON stdio,
+               never in-process import; client reconstructs ve_brain objects with MAIN venv. artifact_pin.verify_
+               pin()=ok BOTH ways (pip direct_url sha256=2cff7e7b + independent rehash both == pin); PINNED_DELIVERY
+               =e118c33, PINNED_RT_PASS=6230ee5, PINNED_VERSION=0.1.1.
+               ★ (3 DECISIVE snapshot fail-closed, via REAL worker) valid same-identity restore -> restore_rejected_
+               reason=None + restore-then-continue byte-identical to continuous; identity mismatch (diff impl_
+               commit) -> IncompatibleSnapshotError refusal; corrupt blob -> UnpicklableSnapshot refusal. After a
+               refused restore the worker returns incomplete-history result w/ restore_rejected_reason set, and BOTH
+               consumers reject: hydrate sets prior=None + cold-rebuild from _DEFAULT_COLD_START_BAR_COUNT=6000
+               bars; refresh loop leaves context store UNTOUCHED (never fabricates) -> stale/missing -> NO_TRADE.
+               Rejected-restore result empirically != true final -> never mistaken for valid context.
+               ★ (4 unbounded memory, via REAL subprocess) 5300 calm bars after a break (age>5000): continuous
+               final = structure=strong/direction=up/{TREND_UP,COMPRESSION}, NOT UNCERTAIN; snapshot(break+300)->
+               restore->continue == continuous identical. Closes the 0.1.0/C blocker.
+               (5 cold start/zero lookahead) hydration via LiveBarFeed closed-bars-only (ts_close<=now); worker
+               observe_closed_bar(as_of=bar.ts_close) + assert_not_stale(wall_clock_now)->StaleStateError; future
+               exclusion feed-enforced; M5 CONTEXT_FROM_FUTURE (worker.connection_count=0, all CONTEXT_FROM_FUTURE)
+               + CONTEXT_STALE. (raw-worker future-bar probe processed by ts_close = feed's job, not defect.)
+               (6 request-scoped time) client sends wall_clock_now FRESH per observe call (never cached at ctor);
+               fresh subprocess per invocation; test_request_scoped_time_not_frozen passes.
+               (7 dual clock M15/M5) incremental context-refresh loop own M15 watermark separate from M5 loop
+               watermark; three M5/two M15 processed once; test_dedup_and_watermark_continuity passes; live journal
+               ZERO duplicate (event,strategy) pairs.
+               (8 failure matrix) N1IncrementalClient -> N1IncrementalWorkerError on subprocess-dead(returncode!=0)/
+               timeout/invalid-JSON/internal-error -> consumers fail-closed context-untouched -> NO_TRADE; corrupt
+               snapshot->UnpicklableSnapshot; mismatch->IncompatibleSnapshotError; missing history->NO_CLOSED_BARS_
+               AVAILABLE; NaN/Inf->NonFiniteAxesInputError; stale->StaleStateError; worker restart inherent (fresh
+               subprocess). NO legacy fallback, NO fabricated values.
+               (9 tests/mypy) 8 integration tests pass against REAL artefact (subprocess ~22s); mypy --strict clean
+               on n1_incremental; no broker/order_send/set_authority/execution/risk imports. Purely additive ->
+               cannot regress existing tests; single preexisting suite item unrelated (fails identically w/wo
+               9f0c13c). Full 6h regression NOT run (authorized only after this PASS).
+               (10 LIVE_SHADOW read-only) process NOT stopped/restarted, Scheduled Task NOT modified. AITraderLive
+               Shadow Running; live PID 22592/25992 started 23:12:37 when HEAD=255eee6 (before A, before 9f0c13c) ->
+               runtime is OLD not 9f0c13c. decision_authority=1.0=NEW_BRAIN; broker DISABLED; 152 records all NO_
+               TRADE, order_send=0, none reached broker; zero orders/positions. After reopen: fresh heartbeat (pid
+               25992), new M15 bars 19->38, watermark advanced, journal continuity, ZERO duplicates.
+               AUTHORIZES (on PASS): ONLY the full AI Trader regression + Red Team report + cutover plan. NOT:
+               deployment, LIVE_SHADOW restart, Scheduled-Task modification, set_authority, broker activation,
+               order_send. LIVE_SHADOW continues on old runtime untouched, broker DISABLED, authority NEW_BRAIN,
+               CAND-T05 frozen. Red Team modified no VE engine or AI Trader code, ran no real orders, disturbed no
+               live process, changed nothing outside red_team/.
+               STATE: OPERATIONAL. Next entry [76], prev_hash E75.
+  entry_hash:  E75
 ```
