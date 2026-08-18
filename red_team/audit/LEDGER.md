@@ -3443,4 +3443,52 @@
                outside red_team/.
                STATE: OPERATIONAL. Next entry [77], prev_hash E76.
   entry_hash:  E76
+
+[77] 2026-08-18
+  prev_hash:   E76
+  event:       VERDICT
+  dc_id:       DC-RANGE-STATE-HANDOFF-0.2.0
+  freeze_hash: ve_n1_replay-0.2.0 sha256 04b96a8b78b2d09bd8b54bd8044058282c6ab24bf2ac0f2aaec6c1f7a278786f (82884 B) / build 1dc355b / delivery 3577026
+  battery_ver: RT-RANGE-0002
+  reviewer:    Red Team
+  detail:      ve_n1_replay 0.2.0 RANGE_STATE FINAL HANDOFF REVALIDATION. VERDICT = ***RANGE_STATE_HANDOFF_PASS***.
+               Read-only; no VE/AI-Trader code change; Alpha not started; Alpha registry/n_generated_total=357/
+               tombstones/verdicts untouched; LIVE_SHADOW/Scheduled-Task/broker not stopped/restarted/modified;
+               no backtest/PnL/SEALED/orders. All 10 sections pass, verified by INDEPENDENTLY driving the public
+               producer (observe_closed_bar/replay_batch) with my own adversarial+boundary sequences (31/31 checks).
+               §1 wheel re-hashed = 04b96a8b…/82884 == declared; sidecar cites aca7801/d0d08c1/v2.7.77/aec8f07/
+               5e56396; self_declared_pass=false. §2 N1 BYTE-IDENTICAL to 0.1.1 (output_fp 0ecaf5815604553c,
+               eval_identity_fp 64414829e2ea080b, digest 9c12d5bdaaca6f02; identity versions stay v1); ONLY new
+               files range_engine.py+range_state.py; 15 AI + 5 detector modules + _bootstrap + incremental byte-
+               identical; "_pkg" v2 bumps = RANGE-surface metadata, NOT a false N1 semantic-change claim. §3 params
+               EXACT (n_touch=2, tol=0.25ATR, er_max=0.40, n_acceptance=2, d_min canonical BARS_PER_DAY_M15,
+               width_filter off, precedence RANGE_STATE_OVER_TREND_PAUSE, swing_k=2, atr=14); ER=|Δnet|/Σ|Δ|;
+               structural_start_ts retrospective, actionable=confirm_ts=structural+k; boundaries from canonical
+               detect_swings stream (parity test). §4 DECISIVE: all 8 event kinds + RANGE_STATE ESTABLISHED reachable
+               via producer; across 10 adversarial/boundary tails (exact-N accept, N-1-back-inside fail, close-at-
+               boundary, wick-through, flip-flop, gap, multi-candidate, lower-break accept+fail) NO single bar ever
+               emitted both BREAKOUT_ACCEPTED and FAILED_BREAKOUT — mutual exclusivity via CANDIDATE->{ACCEPTED xor
+               FAILED} state machine, not fixtures. §5 F7 RANGE_MID_NO_ENTRY: 63 RANGE_MID events, ALL entry_decision.
+               permitted=False+guard tagged, never coincide with a candidate; ledger n_guards=63 (separate counter,
+               NO p-value), 63 records tag guard explicitly; survives snapshot/restart; p-value family = F1-F6,
+               m_inference=26. §6 zero-lookahead (prefix==full), chunk-invariance [116]/[1,115]/[50,66]/[95,1,20],
+               snapshot/restart identical in every state, foreign-identity restore -> RangeSnapshotError fail-closed,
+               two instances isolated. §7 run_hash deterministic + changes on data + config (=config_hash‖data_
+               identity‖range_spec_id); F7 outside p-value family; Alpha registry untouched. §8 77 installed-wheel
+               tests pass; mypy --strict exit 0; O(n) (10k/20k/40k=53/109/219s, 2.06x/2.01x, ~5.5ms/bar -> 355696 ≈
+               32min ≪ 4h); RANGE snapshot BOUNDED (plateaus ≈5772 B, ratio 1.000) while N1 memory grows (ratified
+               unbounded structural memory, RT-N1-0003 §4) -> all growth attributable to N1 not the new layer; wheels
+               0.1.0/0.1.1/0.2.0 present; no leftover process. §9 no executable MT5/broker/order_send/set_authority/
+               probability_inputs/ve_tower/N3/N4/N6/EV import (only ve_brain+stdlib; SEALED = vendored enum value);
+               0.2.0 absent from live venv + ve_tower_venv, confined to rt_n1v20_venv. §10 Scheduled Task Running,
+               LastRun 23:12:37 unchanged (0x41301 RUNNING); live PIDs 22592/25992 on OLD runtime (255eee6, pre-0.2.0)
+               untouched; ve_n1_replay NOT in live venv (0.2.0 not in runtime); Alpha .alpha_n1_venv still 0.1.1
+               (0.2.0 not yet installed — correct); xauusd_m15.db-wal live today 10:43. NOT RUN: full 355696-bar
+               benchmark (O(n) checkpoints extrapolate ~32min), any backtest/PnL/SEALED/order, any Alpha run; git-
+               bytes/.sha256/SHA256SUMS/4-remote local==remote verified prior window. AUTHORIZES ONLY: Alpha install
+               0.2.0 in Alpha env + prepare next combined discovery wave (RANGE, 44 breakout hyps, failed-breakout,
+               sweep, TREND_DOWN/SHORT). NOT deployment/final-regression/cutover/set_authority/broker/order_send.
+               Report: RT-RANGE-0002_range_state_handoff_revalidation_0.2.0_3577026_PASS.md.
+               STATE: OPERATIONAL. Next entry [78], prev_hash E77.
+  entry_hash:  E77
 ```
