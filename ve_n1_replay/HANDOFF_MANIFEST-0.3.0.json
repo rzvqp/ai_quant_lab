@@ -1,8 +1,8 @@
 {
   "manifest_schema_version": "ve-n1-replay-manifest-v1",
   "package_version": "0.3.0",
-  "package_build_commit": "TBD_BUILD_COMMIT",
-  "state_delivery_commit": "TBD_STATE_COMMIT",
+  "package_build_commit": "d307aec",
+  "state_delivery_commit": "d307aec",
   "supersedes_contract": "range-state-v1 (0.2.0) -- new semantic contract, NOT a patch",
   "predecessor_kept_unmodified": {
     "version": "0.2.0", "files": ["ve_n1_replay/range_state.py", "ve_n1_replay/range_engine.py"],
