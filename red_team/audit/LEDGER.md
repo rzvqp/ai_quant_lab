@@ -3491,4 +3491,48 @@
                Report: RT-RANGE-0002_range_state_handoff_revalidation_0.2.0_3577026_PASS.md.
                STATE: OPERATIONAL. Next entry [78], prev_hash E77.
   entry_hash:  E77
+
+[78] 2026-08-18
+  prev_hash:   E77
+  event:       VERDICT
+  dc_id:       DC-RANGE-V2-BLIND-0.3.1
+  freeze_hash: ve_n1_replay-0.3.1 sha256 048ee2b495112c9f90b39d65a7d6bd851764a46f1e32b0eda7c6ad2a42686cca (107386 B) / build aa01f41 / delivery 18d1aa1 / config fingerprint 432170ff5b6d0d20e125ea318d0293053f10ff0da8df9948bb470dde6d6501f6
+  battery_ver: RT-RANGE-0003
+  reviewer:    Red Team
+  detail:      ve_n1_replay 0.3.1 RANGE V2 BLIND SEMANTIC VALIDATION. VERDICT = ***RANGE_V2_BLIND_PROTOCOL_COMPROMISED***
+               (+ concurrent ***RANGE_V2_CONTRACT_AMBIGUITY_REASON_CODES***). Read-only; no artifact/param change; no
+               intermediate result to VE; Alpha not started; n_generated_total=363/m_inference=26/tombstones/Alpha
+               registry/verdicts untouched; LIVE_SHADOW/Task/broker not started/stopped/modified; no PnL/SEALED-OOS/
+               orders. ★ PRIMARY BLOCKER: the RC-07/RC-08 BLIND ESCROW DOES NOT EXIST. RC-07 (channel bullish si
+               range.pdf) + RC-08 (range si trend bearish.pdf) are ONLY two Desktop PDF screenshots — no resolved
+               canonical intervals, no extracted bar data, no pre-registered per-bar semantic expectation matrix
+               anywhere (git history empty; not in red_team/; not on disk). Statistician's OWN ratified docs confirm:
+               "intervalele lor canonice rămân NEREZOLVATE" + "capturile nu conțin date"; protocol delegates them to
+               RT ("RT deține intervalele") but the hand-off never became a usable escrow. §5 requires CONSUMING
+               escrowed/pre-registered expectations, NOT interpretations formed after output; none exist; resolving
+               the PDFs + inventing expectations now = post-hoc, forbidden. §4 "record RC-07/08 data hashes" impossible
+               (no data). So the DECISIVE P2 (a channel marked range = FAIL) CANNOT be adjudicated on the blind corpus.
+               ★ SECOND BLOCKER §3 RANGE_V2_CONTRACT_AMBIGUITY_REASON_CODES: ratified numeric-closure spec contractually
+               specifies reason codes CHANNEL_UP_SLOPE/CHANNEL_DOWN_SLOPE/SLOPE_UNAVAILABLE/ATR_UNAVAILABLE (+WATR-final
+               NO_ENTRY_BY_CONSTRUCTION/ZONES_DEGENERATE/BOUNDARY_EXTENDED); implementation (0.3.0 range_state_v2.py,
+               byte-inherited by 0.3.1) emits IS_CHANNEL (single, dir in structure_class) + INPUT_UNAVAILABLE (generic)
+               + RANGE_MID_NO_ENTRY instead — CLASSIFICATION correct (CHANNEL_UP/DOWN never RANGE_STATE) but exact
+               contract strings absent; no ratified source authorizes the mapping → unresolvable from ratified sources.
+               ★ ARTIFACT OTHERWISE SOUND (independently verified, NOT a semantic defect): §1 wheel re-hash 048ee2b4/
+               107386 == declared == git-stored bytes; fingerprint 432170ff exact; commits 4e69e22/c29ac98/2dde05a/
+               84a1a98/2611d22 all exist, prereg precedes result. §2 config probe 14/14: v0.3.1, w_atr=0.30, s_max
+               DERIVED 0.60 (property, tracks w_atr), no s_max field, ctor TypeError, from_dict LegacyConfigRejected;
+               provenance carries derivation rule. §3 config-pin surgical (single source of truth, legacy/0.2.0/0.3.0
+               snapshots refused, AST guard 0.15 absent). §7 N1 BYTE-IDENTICAL to 0.1.1 (_ai 15 + _det 5 + incremental
+               + _bootstrap wheel-diff empty); isolation clean (only ve_brain+stdlib; no MT5/broker/order_send/
+               set_authority/ve_tower/probability_inputs executable); 0.3.1 NOT in live venv. §8 162 installed-wheel
+               tests PASS; rollback 0.3.1↔0.3.0↔0.1.1 OK. NOT RUN/possible: §4-§6 blind validation (NO escrow); mypy
+               (offline tooling limit — VE clean + my RT-RANGE-0002 run of shared producer); fresh benchmark (config-
+               only delta, O(n) cited from RT-RANGE-0002). §7 LIVE_SHADOW read-only: Task Running, live PIDs 22592/
+               25992 old runtime unchanged, broker DISABLED, 0 orders. NOT AUTHORIZED: ALPHA_RANGE_CANONICAL_LEDGER_
+               RERUN — Alpha stays blocked; VE modifies nothing pending ruling. Next owner: STATISTICIAN_RANGE_V2_
+               FAILURE_RULING (construct/authorize the RC-07/08 escrow + rule on reason-code contract, then re-run).
+               Report: RT-RANGE-0003_range_v2_blind_validation_0.3.1_18d1aa1_COMPROMISED.md.
+               STATE: OPERATIONAL. Next entry [79], prev_hash E78.
+  entry_hash:  E78
 ```
