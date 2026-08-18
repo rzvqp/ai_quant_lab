@@ -619,5 +619,43 @@
       "oos_access": 0,
       "old_results": "NOT promoted/compared/relabeled"
     }
+  },
+  "STATUS": "ALPHA_CANONICAL_SCREENING_COMPLETE_PENDING_REVIEW",
+  "STATUS_ts": "2026-08-18",
+  "CANONICAL_RERUN": {
+    "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
+    "ledger": {
+      "key": "0ca1ad1f940ebab8",
+      "eval_fp": "64414829e2ea080b",
+      "bars": 355696,
+      "build_s": 1121.9,
+      "zero_lookahead": "OK",
+      "snapshot_restore": "OK",
+      "horizon": 460,
+      "breakout_transition_bars": 0
+    },
+    "total": 355,
+    "evaluated": 341,
+    "blocked_unresolved": 14,
+    "net_verdict": {
+      "ARCHIVE_INSUFFICIENT": 133,
+      "NET_STRUCTURALLY_NEGATIVE_GROSS": 119,
+      "RECENT_REGIME_NET_PROVISIONAL": 41,
+      "CANONICAL_PROVISIONAL_SURVIVOR": 31,
+      "NET_FAT_TAIL_DEPENDENT": 17,
+      "RERUN_BLOCKED_UNRESOLVED_SPEC": 14
+    },
+    "survive_BASE": 72,
+    "survive_BASE_die_STRESS": 6,
+    "shortlist": [
+      "TREND_UP|pullback (G0037 EV_BASE +0.271 STRESS +0.238)",
+      "TREND_UP|continuation (G0184 +0.129)",
+      "TREND_UP|momentum (G0059 +0.116)"
+    ],
+    "cost_model": "AI_TRADER_SHADOW_COST_MODEL_v1 RATIFIED (BASE 0.05 STRESS 0.24, cfg b7bb9a9aed17a1c8)",
+    "m_total_unchanged": 357,
+    "oos_access": 0,
+    "sealed_untouched": true,
+    "report": "reports/n1_rerun/CANONICAL_SCREENING_REPORT.md"
   }
 }
