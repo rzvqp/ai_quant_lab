@@ -1,8 +1,8 @@
 {
   "manifest_schema_version": "ve-n1-replay-manifest-v1",
   "package_version": "0.2.0",
-  "package_build_commit": "TBD_BUILD_COMMIT",
-  "state_delivery_commit": "TBD_STATE_COMMIT",
+  "package_build_commit": "1dc355b",
+  "state_delivery_commit": "1dc355b",
   "supersedes": "0.1.1",
   "change_summary": "Additive versioned producer for RANGE_STATE + longitudinal range/breakout events. N1 per-bar output byte-identical to 0.1.1 (N1 engine untouched). No reuse/reinterpretation of StructBand.RANGE; does not route through applicable_regimes; ve_brain/N3/N4/EV/N6 unchanged.",
   "statistician_source_final": {
