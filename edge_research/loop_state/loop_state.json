@@ -433,7 +433,7 @@
     "CAND-G0163",
     "CAND-G0164"
   ],
-  "m_total": 357,
+  "m_total": 363,
   "family_budget": {
     "max_candidates_per_cycle": 4,
     "max_variants_per_hypothesis": 2,
@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "ALPHA_CANONICAL_SCREENING_COMPLETE_PENDING_REVIEW",
+  "STATUS": "ALPHA_COMBINED_DISCOVERY_COMPLETE_AWAITING_STATISTICIAN_REVIEW",
   "STATUS_ts": "2026-08-18",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -657,5 +657,50 @@
     "oos_access": 0,
     "sealed_untouched": true,
     "report": "reports/n1_rerun/CANONICAL_SCREENING_REPORT.md"
+  },
+  "n_generated_total": 363,
+  "n_guards": 118,
+  "COMBINED_WAVE": {
+    "range_ledger": {
+      "ve_n1_replay_version": "0.2.0",
+      "wheel_sha256": "04b96a8b78b2d09bd8b54bd8044058282c6ab24bf2ac0f2aaec6c1f7a278786f",
+      "ve_brain": "0.1.3",
+      "detector": "61cbd58c",
+      "range_state_contract": "range-state-v1",
+      "range_event_contract": "range-events-v1",
+      "primary_rule": "n_touch=2,tol_atr=0.25,er_max=0.40,d_min_bars=96,n_acceptance=2,width_filter=off,RANGE_STATE_OVER_TREND_PAUSE",
+      "replay_batch_seconds": 2068.3,
+      "zero_lookahead": "OK",
+      "accepted_xor_failed": "OK(0 same-bar)",
+      "reproduced_runs": 2,
+      "occupancy_verified_eras": [
+        "2011-12: 23 EST",
+        "2017-18: 0 EST",
+        "2024: 1 EST"
+      ]
+    },
+    "occupancy": {
+      "established_bars": 23,
+      "established_frac": 6.466e-05,
+      "forming_bars": 355643,
+      "event_counts": {
+        "RANGE_MID": 118,
+        "BREAKOUT_CANDIDATE": 1,
+        "BREAKOUT_ACCEPTED": 1,
+        "BREAKOUT_RETEST": 1,
+        "RANGE_HIGH_REJECTION": 0,
+        "RANGE_LOW_REJECTION": 0,
+        "FAILED_BREAKOUT": 0,
+        "LIQUIDITY_SWEEP_REVERSAL": 0
+      },
+      "n_guards": 118,
+      "accepted_xor_failed_disjoint": true
+    },
+    "n_generated_before": 357,
+    "n_generated_after": 363,
+    "f_families_added": 6,
+    "m_inference_untouched": 26,
+    "breakout_relabeled": 44,
+    "report": "reports/combined_wave/COMBINED_DISCOVERY_REPORT.md"
   }
 }
