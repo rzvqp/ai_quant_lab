@@ -224,3 +224,22 @@ NON-MATERIAL `w_atr` VE (0,25) era în interval, la un pas de rețea de valoarea
 ---
 
 **Manifest:** `config/split_manifest.json` v2.7.80, secțiunea `range_v2_watr_final_v2_7_80`.
+
+---
+
+# ADDENDUM — o contradicție în manifest, prinsă de mine la verificarea propriilor invariante
+
+**Manifest: v2.7.80 (rezultatul) + v2.7.81 (această corecție). Fingerprint final `432170ff…`.**
+
+```
+v2.7.77  final_values.n_generated_total = 357      ← GREȘIT
+v2.7.78 / 79 / 80                        = 363      ← CORECT
+```
+
+> **Cauza rădăcină: `357` e formula RETRASĂ `completed + failed`. F1–F6 au fost ÎNREGISTRATE fără dispatch, deci contorul e `>= completed + failed`, niciodată `=`. E ACEEAȘI clasă de eroare pe care am prins-o o dată, supraviețuind într-o secțiune scrisă înainte de corecție și niciodată revizitată.**
+
+**Remediu: literalul greșit NU se șterge.** Secțiunea aceea e o înregistrare istorică, iar rescrierea silențioasă a unui număr publicat e mai gravă decât numărul însuși. Se adnotează imediat adiacent, ca nimeni care citește acea secțiune să nu poată consuma `357` fără să vadă corecția.
+
+**Cum a apărut:** verificând invariantele pe care le afirmasem chiar eu în cele două commit-uri ale v2.7.80. O verificare valorează ceva doar dacă are voie să se întoarcă cu un defect în propriul meu artefact. S-a întors.
+
+**Neafectate:** `m_inference = 26` · `w_atr = 0,30` · `s_max = 0,60` (calculat) · fiecare măsurătoare, verdict, prag și graniță blind · F1–F6 și cele 44 rămân `BLOCKED_PENDING_RANGE_SEMANTIC_FIX` · F7 rămâne `SAFETY_GUARD`.
