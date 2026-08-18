@@ -3386,4 +3386,61 @@
                live process, changed nothing outside red_team/.
                STATE: OPERATIONAL. Next entry [76], prev_hash E75.
   entry_hash:  E75
+
+[76] 2026-08-18
+  prev_hash:   E75
+  event:       INVESTIGATION
+  dc_id:       DC-RANGE-BREAKOUT-REACHABILITY
+  freeze_hash: fbc0f20 (ve_brain 0.1.3 regime_routing) / 21ae632 (RawAxesBuilder) / 61cbd58c (detectors)
+  battery_ver: RT-RANGE-0001
+  reviewer:    Red Team
+  detail:      RANGE/BREAKOUT_TRANSITION GIT-ONLY REACHABILITY INVESTIGATION. STATUS =
+               ***RT_RANGE_BREAKOUT_REACHABILITY_REPORT_READY***. Static Git-only + ratified docs; NO
+               implementation/backtest/engine-change/Alpha-run/LIVE_SHADOW/PnL/2025-11+/enum-reinterpretation.
+               ★ FINDING (proven from Git): BREAKOUT_TRANSITION is STATICALLY UNREACHABLE + RANGE never produced.
+               applicable_regimes@fbc0f20 (regime_routing.py L65) emits BREAKOUT_TRANSITION only if is_displacement
+               AND structure=="range"; but RawAxesBuilder@21ae632 sets structure ONLY via _BREAK_KIND_TO_STRUCTURE_
+               DIRECTION = {bos_bull/bos_bear->"strong", choch_bull/choch_bear->"weak"} (BreakKind@61cbd58c has only
+               those 4) -> structure in {None,weak,strong}, NEVER "range" -> predicate can never be true. EXACT
+               never-true condition: axes.structure=="range". RANGE: no applicable_regimes branch produces it (L33
+               "NICIODATA produsa"); retracted by CEO bd60c7a; RANGE-dependent strategies -> TRUE_RANGE_NOT_
+               IDENTIFIABLE (Router L245). Consistent with Alpha ledger (BREAKOUT_TRANSITION zero bars); 44 breakout
+               hypotheses correctly NOT_EVALUATED/REGIME_UNREACHABLE, not falsified.
+               (2 hypotheses) ALL 7 CONFIRMAT with file/commit/line: H1 StructBand.RANGE=instability-not-lateral
+               (regime_routing L11-12, CONTRACTS L54, bd60c7a); H2 structure axis can't emit true range (_BREAK_KIND
+               mapping); H3 Direction.NEUTRAL conflates range/warmup/missing/fail-closed (bd60c7a, CONTRACTS L50);
+               H4 NEUTRAL-as-RANGE misroutes warmup (bd60c7a "ar fi rutat WARMUP in range"); H5 BREAKOUT_TRANSITION
+               per-bar proxy not longitudinal (HANDOFF_GATES L122); H6 RANGE blocked via TRUE_RANGE_NOT_IDENTIFIABLE
+               (7e4f155/bd60c7a/Router L245); H7 work items data_readiness/consolidation_state exist (CONTRACTS
+               L52-53).
+               (3 truth table) RawAxesBuilder producible (structure,direction): {(None,None),(strong,up),(strong,
+               down),(weak,weak_up),(weak,weak_down)} x is_compressed{None,T,F} x is_displacement{T,F}. applicable_
+               regimes REACHABLE = {UNCERTAIN, TREND_UP, TREND_DOWN, COMPRESSION}; IMPOSSIBLE = {RANGE, BREAKOUT_
+               TRANSITION}. is_displacement irrelevant (AND-gated behind structure=="range"). Static proof ==
+               ledger (zero BREAKOUT_TRANSITION bars); no re-run/benchmark.
+               (4 real breakouts today) BOS bull->TREND_UP, BOS bear->TREND_DOWN, CHoCH bull->TREND_UP, CHoCH bear->
+               TREND_DOWN (all via strong/weak+direction). compression-exit/displacement -> TREND (+COMPRESSION),
+               never BREAKOUT_TRANSITION. Retest: NO detector -> lost. Sweep+reversal: NO N1 detector -> lost unless
+               it causes a BOS/CHoCH. Trendline breakout: NO detector exists (vendor_bridge imports only market_
+               structure swings/BOS/CHoCH + imbalance FVGs + market_state expansion/compression) -> lost. Separation:
+               breakout-from-range IMPOSSIBLE; structural BOS/CHoCH ABSORBED into TREND; trendline ABSENT.
+               (5 verdict) B for RANGE (intentionally blocked/dead route, CEO bd60c7a; needs new versioned producer
+               = declared work item A) + C for BREAKOUT (dead per-bar predicate; correct model = longitudinal 2-
+               state detector -> breakout as EVENT within a regime). CEO proposal (regimes {TREND_UP,TREND_DOWN,
+               RANGE,UNCERTAIN}+events {RANGE_LOW/HIGH_REJECTION,BREAKOUT_CANDIDATE/ACCEPTED/RETEST,FAILED_BREAKOUT,
+               LIQUIDITY_SWEEP_REVERSAL}) COMPATIBLE with N1->Router->N3->N4->EV->N6 but needs new production +
+               version bumps: n1_contract_version + raw_axis_schema_version + router_version + new event contract
+               (EligibilityDecision/RoutingMode/reason-codes); N3/N4/EV/N6 contracts unchanged (events bind to
+               existing N3 levels).
+               (6 impact) correct: RawAxesBuilder + regime_routing (applicable_regimes+Router). Unmodified: N3/N4/EV/
+               N6/cost. Longitudinal stateful detector REQUIRED (real RANGE = consolidation_state over time; strict
+               breakout = 2-state prior-regime->break). 44 breakout hypotheses stay NOT_EVALUATED not negative;
+               hypothesis_semantic_fingerprint + m UNCHANGED on rerun (only producer changes). Mandatory future
+               tests: reachability + zero-lookahead + restart + snapshot.
+               (7 interdictions honored) no engine mod / no new detector / no PnL / no 2025-11+ / no Alpha / no
+               LIVE_SHADOW / NO enum reinterpretation to force a route (finding: structure=="range" statically
+               unproducible, must not be faked). Report -> Statistician -> Architect/VE. Red Team changed nothing
+               outside red_team/.
+               STATE: OPERATIONAL. Next entry [77], prev_hash E76.
+  entry_hash:  E76
 ```
