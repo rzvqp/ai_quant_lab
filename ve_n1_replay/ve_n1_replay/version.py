@@ -7,7 +7,7 @@ Artefact N1 replay INDEPENDENT de ai_trader: împachetează byte-identic modulel
 
 from __future__ import annotations
 
-VE_N1_REPLAY_VERSION: str = "0.2.0"
+VE_N1_REPLAY_VERSION: str = "0.3.0"
 N1_REPLAY_CONTRACT_VERSION: str = "n1-replay-request-v1"
 SNAPSHOT_SCHEMA_VERSION: str = "n1-replay-snapshot-v1"
 REASON_CODE_SCHEMA_VERSION: str = "n1-replay-reason-codes-v1"
@@ -44,6 +44,57 @@ RANGE_PRODUCER_VERSION: str = "range-producer-0.2.0"
 # constante de timeframe RATIFICATE (split_manifest: „D1 = 96 M15 bars"; H4 = 16). d_min PRIMAR = o zi M15.
 BARS_PER_DAY_M15: int = 96
 BARS_PER_WEEK_M15: int = 460     # obdz001.WEEK_BARS (= COMPRESSION_WINDOW); folosit DOAR de varianta de grilă „week"
+BARS_PER_INTRADAY_SESSION_M15: int = 24    # 6 ore M15 — clasa INTRADAY_RANGE la 0.3.0 (Partea 6.3, aca7801/3aac2cc)
+
+# ── 0.3.0: SPEC V2 semantică RANGE_STATE — remediu SEMANTIC_SPEC_DEFECT (NU un patch peste 0.2.0) ──
+# Sursă normativă: Statistician STAT-RANGE-SEMANTIC-DIAGNOSIS-V2-v1.0 @3aac2cc, manifest v2.7.78 @18aa2a1
+# (`18aa2a1` e COMMIT-ul manifestului, NU un "config hash" — Statistician a semnalat chiar ei eticheta greșită
+# aplicată anterior lui aec8f07; nu o repet aici). Ruling: SEMANTIC_SPEC_DEFECT — cauza structurală (dovedită,
+# nu doar măsurată): limita 0.2.0 = extremul unei mulțimi CRESCĂTOARE (monoton nedescrescătoare în lungimea
+# ferestrei); a atinge d_min forța fereastra să crească; creșterea ridica limita; ridicarea limitei invalida
+# RETROACTIV atingerile numărate față de limita veche. Cu cât fereastra era mai lungă, cu atât detectorul își
+# ștergea singur dovezile — o definiție nesatisfiabilă, nu o eroare de implementare (RT a dat PASS; Alpha a
+# reprodus identic de 2 ori/3 ere). 0.2.0 e PĂSTRAT NEMODIFICAT pentru audit — 0.3.0 e producător NOU, separat.
+#
+# Schimbarea centrală (repară exact cei doi factori măsurați, NU adaugă criterii noi):
+#   anchor = MEDIANA extremelor swing-urilor confirmate de pe acea latură (NU maxim ⇒ NU monotonă în lungimea
+#            ferestrei ⇒ nu se auto-invalidează; un singur spike nu mută limita — elimină factorul 71×)
+#   boundary_zone = [anchor − w, anchor + w] (ZONĂ, nu linie)
+#   touch = orice bară al cărei interval [low,high] intersectează boundary_zone (fitilul CONTEAZĂ, nu doar
+#           close-ul; evaluat CAUZAL față de zona-așa-cum-era-atunci, acumulat monoton — NU se re-scanează
+#           retroactiv contra unei zone noi — elimină factorul 160×)
+# `w` (lățime de zonă) și `s_max` (prag de pantă pt. separarea range/canal) sunt declarate "PRE-ÎNREGISTRATĂ" în
+# document dar FĂRĂ valoare numerică literală în text sau manifest (verificat, ambele surse). Nu le optimizez
+# pe rezultate (interzis explicit de mandat) — valorile din `RangeConfigV2` de mai jos sunt PROPUSE DE VE, PE
+# TEMEI STRUCTURAL, NERATIFICATE de Statistician; expuse ca parametri de configurare dinamici, niciodată hard-codați
+# în producător. Vezi RANGE_STATE_V2_CONTRACT.md secțiunea „w și s_max — ambiguitate declarată".
+RANGE_V2_STATISTICIAN_SOURCE_COMMIT: str = "3aac2cc"
+RANGE_V2_STATISTICIAN_MANIFEST_COMMIT: str = "18aa2a1"          # manifest v2.7.78 — COMMIT, nu content_hash
+RANGE_V2_STATISTICIAN_MANIFEST_VERSION: str = "v2.7.78"
+RANGE_V2_RULING: str = "SEMANTIC_SPEC_DEFECT"
+
+PKG_N1_CONTRACT_VERSION_V2: str = "n1-replay-request-v2"        # neschimbat față de 0.2.0 — N1 rămâne neatins
+PKG_RAW_AXIS_SCHEMA_VERSION_V2: str = "raw-axis-schema-v2"      # neschimbat față de 0.2.0
+PKG_ROUTER_VERSION_V2: str = "router-v2"                        # neschimbat față de 0.2.0
+RANGE_STATE_CONTRACT_VERSION_V2: str = "range-state-v2"                  # v1 → v2
+RANGE_EVENT_CONTRACT_VERSION_V2: str = "range-events-v2"                 # v1 → v2 (touch pe interval; 11 evenimente)
+RANGE_SNAPSHOT_SCHEMA_VERSION_V2: str = "range-state-snapshot-v2"        # v1 → v2
+RANGE_LEDGER_SCHEMA_VERSION_V2: str = "range-state-ledger-v2"            # v1 → v2
+RANGE_STATE_SCHEMA_VERSION_V2: str = "range-state-schema-v2"             # v1 → v2 (+boundary_zone/anchor/w/
+                                                                          #   structure_events_inside/range_class/slope)
+RANGE_STATE_MACHINE_VERSION_V2: str = "range-state-machine-v2"
+RANGE_PRODUCER_VERSION_V2: str = "range-producer-0.3.0"
+RANGE_REASON_CODE_SCHEMA_VERSION_V2: str = "range-reason-codes-v2"
+
+# identitatea predecesorului 0.2.0 (pentru refuzul fail-closed la restore/migrare + raportul de compatibilitate)
+PREDECESSOR_0_2_0_VERSION: str = "0.2.0"
+PREDECESSOR_0_2_0_WHEEL_SHA256: str = "04b96a8b78b2d09bd8b54bd8044058282c6ab24bf2ac0f2aaec6c1f7a278786f"
+PREDECESSOR_0_2_0_BUILD_COMMIT: str = "1dc355b"
+PREDECESSOR_0_2_0_DELIVERY_COMMIT: str = "3577026"
+PREDECESSOR_0_2_0_RANGE_STATE_HANDOFF_PASS_COMMIT: str = "898e1b9"   # RT-RANGE-0002
+# baseline N1 — identic la 0.1.1, 0.2.0 și 0.3.0 (motorul N1 nu s-a schimbat niciodată din 0.1.1 încoace)
+N1_BASELINE_VERSION: str = "0.1.1"
+N1_BASELINE_INCREMENTAL_PASS_COMMIT: str = "6230ee5"                 # RT-N1-0002
 
 # sursele EXACTE
 AI_SOURCE_REPO: str = "ai_quant_lab-wp5b"
@@ -95,4 +146,13 @@ def build_info() -> dict[str, object]:
         "history_horizon": HISTORY_HORIZON, "history_horizon_version": HISTORY_HORIZON_VERSION,
         "ledger_schema_version": LEDGER_SCHEMA_VERSION,
         "incremental_snapshot_schema_version": INCREMENTAL_SNAPSHOT_SCHEMA_VERSION,
+        "range_state_contract_version_v2": RANGE_STATE_CONTRACT_VERSION_V2,
+        "range_event_contract_version_v2": RANGE_EVENT_CONTRACT_VERSION_V2,
+        "range_state_schema_version_v2": RANGE_STATE_SCHEMA_VERSION_V2,
+        "range_state_machine_version_v2": RANGE_STATE_MACHINE_VERSION_V2,
+        "range_snapshot_schema_version_v2": RANGE_SNAPSHOT_SCHEMA_VERSION_V2,
+        "range_ledger_schema_version_v2": RANGE_LEDGER_SCHEMA_VERSION_V2,
+        "range_producer_version_v2": RANGE_PRODUCER_VERSION_V2,
+        "range_v2_statistician_source_commit": RANGE_V2_STATISTICIAN_SOURCE_COMMIT,
+        "range_v2_statistician_manifest_commit": RANGE_V2_STATISTICIAN_MANIFEST_COMMIT,
     }

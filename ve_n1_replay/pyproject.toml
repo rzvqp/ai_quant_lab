@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ve_n1_replay"
-version = "0.2.0"
+version = "0.3.0"
 description = "VE N1 Replay — standalone canonical N1 (RawAxes/applicable_regimes/Router) replay for Alpha. Vendors AI Trader's RawAxesBuilder @21ae632 + the pinned detectors @61cbd58c byte-identical, in an isolated namespace; consumes ve_brain 0.1.3 as an external pinned wheel. No ai_trader/ve_tower/MT5/broker at runtime."
 requires-python = ">=3.12"
 # ve_brain 0.1.3 is an EXTERNAL PINNED WHEEL (SHA-256 edd208ad…987d11), installed separately in the tower venv;

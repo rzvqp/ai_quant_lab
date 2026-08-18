@@ -1,5 +1,50 @@
 # ve_n1_replay — CHANGELOG
 
+## 0.3.0 — RANGE_STATE SPEC V2: remediu SEMANTIC_SPEC_DEFECT (READY_FOR_RANGE_SEMANTIC_REVALIDATION)
+
+**Contract NOU, NU un patch peste 0.2.0.** Statistician a diagnosticat 0.2.0 (`STAT-RANGE-SEMANTIC-DIAGNOSIS-V2-v1.0
+@3aac2cc`, manifest v2.7.78 @18aa2a1) ca `SEMANTIC_SPEC_DEFECT`: limita = extremul unei mulțimi CRESCĂTOARE de
+swing-uri confirmate ⇒ a atinge durata minimă forța fereastra să crească ⇒ creșterea ridica limita ⇒ ridicarea
+limitei invalida RETROACTIV atingerile numărate contra limitei vechi — o definiție NESATISFIABILĂ, nu o eroare de
+implementare (RT a dat PASS pe 0.2.0; Alpha a reprodus identic de 2 ori/3 ere). **0.2.0 rămâne NEMODIFICAT** (verificat:
+`git diff` gol), păstrat pentru audit.
+
+- **Schimbarea centrală**: `anchor` = MEDIANA extremelor swing-urilor confirmate pe o fereastră mărginită (NU maxim ⇒
+  NU monotonă în lungimea ferestrei ⇒ nu se auto-invalidează); `boundary_zone=[anchor-w, anchor+w]` (ZONĂ, nu linie);
+  `touch` = orice bară al cărei interval `[low,high]` intersectează zona LA MOMENTUL ACELEI BARE, acumulat ca un
+  CONTOR MONOTON — niciodată re-scanat retroactiv contra unei zone ulterioare. **Dovedit direct vs 0.2.0** pe
+  ACEEAȘI secvență adversarială: 0.2.0 pierde `touches_upper` 8→1 și nu mai reajunge CONFIRMED; 0.3.0 păstrează
+  CONFIRMED și touches cresc monoton prin exact același eveniment.
+- **BOS/CHoCH intern** NU invalidează — descriptor (`structure_events_inside`), reutilizează `IncrementalRawAxesBuilder`
+  (0.1.1) ca instanță internă izolată, nicio reimplementare de detectori.
+- **Separare range/canal**: `|slope|×d_min <= s_max×ATR` (formula EXACTĂ din spec — `d_min`, constanta FIXĂ, nu
+  lungimea episodului, care ar fi crescut deriva nemărginit cu vârsta episodului — bug prins și corectat în timpul
+  livrării). Panta = OLS pe fereastră trailing MĂRGINITĂ de `d_min_bars` close-uri (nu tot episodul — mai puțin
+  zgomotoasă, coerentă cu `d_min` din formula de derivă, `O(d_min_bars)`/bară, NU O(n)).
+- **Două clase de durată**: `RangeConfigV2.intraday()` (d_min=24) / `.multiday()` (d_min=96) — ipoteze SEPARATE dacă
+  testate separat.
+- **11 evenimente** (`range-events-v2`): RANGE_FORMING/ESTABLISHED/HIGH/LOW/MID, BREAKOUT_CANDIDATE,
+  BREAKOUT_ACCEPTED_LONG/SHORT, BREAKOUT_RETEST, BREAKOUT_FAILED, LIQUIDITY_SWEEP. ACCEPTED_LONG/SHORT/FAILED mutual
+  exclusive prin construcția mașinii; SWEEP structural disjunct — zero coliziuni pe aceeași bară (verificat).
+- **F7 `RANGE_MID_NO_ENTRY` = SAFETY_GUARD** neschimbat semantic (amendament final @d0d08c1): refuz executabil,
+  `n_guards` separat, auditabil, supraviețuiește snapshot/restart.
+- **N1 (0.1.1) byte-identic** — motorul N1 neatins; `output_fingerprint` per-bară verificat identic cu o instanță
+  `N1IncrementalReplayEngine` goală pe 4 fixture-uri. `pkg_n1_contract_version`/`pkg_raw_axis_schema_version`/
+  `pkg_router_version` (declarate de pachet) rămân IDENTICE cu 0.2.0 (verificat).
+- **9 versiuni de contract** publicate explicit (artifact/range-state-contract/schema/producer/event-contract/
+  state-machine/snapshot-schema/ledger-schema/reason-codes) + identitatea N1-baseline + identitatea predecesorului
+  0.2.0 (wheel SHA/build/delivery/RT-PASS commits) + sursa Statistician (3aac2cc/18aa2a1). Snapshot 0.2.0 restaurat
+  într-un motor V2 (și invers) e REFUZAT fail-closed — nicio migrare implicită.
+- **Ambiguitate declarată**: `w_atr`/`s_max` sunt „PRE-ÎNREGISTRATĂ" în spec dar FĂRĂ valoare numerică literală
+  (verificat, absentă din document și manifest) — expuse ca parametri configurabili, valori implicite PROPUSE DE VE
+  PE TEMEI STRUCTURAL, NERATIFICATE. Nicio dată reală de piață NU a fost încărcată pentru a le calibra (interzis
+  explicit de mandat) — validarea empirică P1-P3 pe corpusul real rămâne sarcina Red Team pe subsetul BLIND.
+- **45 teste noi** (28 cazuri din mandat + regresie directă vs 0.2.0 + reachability toate cele 11 evenimente +
+  clasificare range/canal izolată de zgomotul motorului complet), **122 teste total** (18+25+34+45), mypy --strict
+  clean, empty-venv + rollback 0.3.0→0.2.0→0.1.1 verificate. Benchmark incremental (fără regresie O(n²), până la
+  355.696 bare). `RANGE_STATE_HANDOFF_PASS` NU e auto-declarat pentru V2 — verdictul e al Red Team (validare
+  semantică BLIND pe RC-06/07/08, pe care VE nu le-a văzut).
+
 ## 0.2.0 — producător ADITIV RANGE_STATE + evenimente longitudinale (READY_FOR_RANGE_STATE_HANDOFF_REVALIDATION)
 
 Adaugă un producător versionat pentru **RANGE_STATE** și **evenimente longitudinale de range/breakout**, conform
