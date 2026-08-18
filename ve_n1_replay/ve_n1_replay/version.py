@@ -7,7 +7,7 @@ Artefact N1 replay INDEPENDENT de ai_trader: împachetează byte-identic modulel
 
 from __future__ import annotations
 
-VE_N1_REPLAY_VERSION: str = "0.1.1"
+VE_N1_REPLAY_VERSION: str = "0.2.0"
 N1_REPLAY_CONTRACT_VERSION: str = "n1-replay-request-v1"
 SNAPSHOT_SCHEMA_VERSION: str = "n1-replay-snapshot-v1"
 REASON_CODE_SCHEMA_VERSION: str = "n1-replay-reason-codes-v1"
@@ -20,6 +20,30 @@ HISTORY_HORIZON: int = 460
 HISTORY_HORIZON_VERSION: str = "n1-history-horizon-v1"
 LEDGER_SCHEMA_VERSION: str = "n1-incremental-ledger-v1"
 INCREMENTAL_SNAPSHOT_SCHEMA_VERSION: str = "n1-incremental-snapshot-v1"
+
+# ── 0.2.0: producător ADITIV RANGE_STATE + evenimente longitudinale de range/breakout ──
+# Implementează STAT-RANGE-RECONCILED-SPEC-v1.0 @aca7801 (manifest v2.7.75 @5063448, reachability RT @5e56396).
+# RANGE_STATE e un STRAT NOU, separat: NU reutilizează/reinterpretează `StructBand.RANGE`, NU trece prin
+# `applicable_regimes` (care nu poate produce RANGE — dovadă RT), NU atinge ve_brain/N3/N4/EV/N6.
+# Rezultatele N1 (TREND_UP/DOWN/COMPRESSION/UNCERTAIN) rămân BYTE-IDENTICE cu 0.1.1 (motorul N1 e neatins).
+#
+# CELE ȘAPTE VERSIUNI CERUTE DE MANDAT — bump-uri la nivel de PACHET pentru suprafața de contract 0.2.0.
+# Sunt DECLARAȚII ale pachetului, distincte de constantele runtime ale `ve_brain` (pe care nu le pot modifica
+# și care rămân neschimbate în identitatea per-bară N1 ⇒ byte-identitate). Ele intră în identitatea RANGE.
+PKG_N1_CONTRACT_VERSION: str = "n1-replay-request-v2"        # (1) n1_contract_version — suprafață extinsă cu RANGE
+PKG_RAW_AXIS_SCHEMA_VERSION: str = "raw-axis-schema-v2"      # (2) raw_axis_schema_version — axă aditivă RANGE_STATE
+PKG_ROUTER_VERSION: str = "router-v2"                        # (3) router_version — suprafață extinsă cu evenimente
+RANGE_STATE_CONTRACT_VERSION: str = "range-state-v1"         # (4) range_state_contract_version
+RANGE_EVENT_CONTRACT_VERSION: str = "range-events-v1"        # (5) range_event_contract_version (spec Partea C)
+RANGE_SNAPSHOT_SCHEMA_VERSION: str = "range-state-snapshot-v1"   # (6) snapshot_schema_version (RANGE)
+RANGE_LEDGER_SCHEMA_VERSION: str = "range-state-ledger-v1"       # (7) ledger_schema_version (RANGE)
+# schema internă a stării RANGE (intră în range_spec_id, Partea B/F)
+RANGE_STATE_SCHEMA_VERSION: str = "range-state-schema-v1"
+RANGE_PRODUCER_VERSION: str = "range-producer-0.2.0"
+
+# constante de timeframe RATIFICATE (split_manifest: „D1 = 96 M15 bars"; H4 = 16). d_min PRIMAR = o zi M15.
+BARS_PER_DAY_M15: int = 96
+BARS_PER_WEEK_M15: int = 460     # obdz001.WEEK_BARS (= COMPRESSION_WINDOW); folosit DOAR de varianta de grilă „week"
 
 # sursele EXACTE
 AI_SOURCE_REPO: str = "ai_quant_lab-wp5b"

@@ -1,5 +1,49 @@
 # ve_n1_replay — CHANGELOG
 
+## 0.2.0 — producător ADITIV RANGE_STATE + evenimente longitudinale (READY_FOR_RANGE_STATE_HANDOFF_REVALIDATION)
+
+Adaugă un producător versionat pentru **RANGE_STATE** și **evenimente longitudinale de range/breakout**, conform
+specului reconciliat final al Statisticianului **STAT-RANGE-RECONCILED-SPEC-v1.0 @`aca7801`** + amendamentul
+**`m_inference` FINAL @`d0d08c1`** (manifest v2.7.77, hash `aec8f07`), pe baza reachability-ului **RT-RANGE-0001
+@`5e56396`**. RANGE_STATE e un STRAT NOU, separat.
+
+- **N1 NEATINS, byte-identic cu 0.1.1**: motorul incremental N1 nu se modifică; `RangeStateReplayEngine` îl COMPUNE și
+  produce RANGE_STATE pe deasupra. `output_fingerprint` per-bară == 0.1.1 (testat). NU reutilizează/reinterpretează
+  `StructBand.RANGE`, NU trece prin `applicable_regimes` (care nu poate produce RANGE — dovadă RT static + empiric:
+  BREAKOUT_TRANSITION pe 0/355.696 bare), NU atinge ve_brain/N3/N4/EV/N6.
+- **Șapte bump-uri de contract** (la nivel de PACHET, în identitatea RANGE; identitatea per-bară N1 rămâne neschimbată):
+  `n1_contract_version`→`n1-replay-request-v2`, `raw_axis_schema_version`→`raw-axis-schema-v2`,
+  `router_version`→`router-v2`, `range_state_contract_version`=`range-state-v1`,
+  `range_event_contract_version`=`range-events-v1`, `snapshot_schema_version`=`range-state-snapshot-v1`,
+  `ledger_schema_version`=`range-state-ledger-v1`.
+- **Producător RANGE_STATE (`range_state.py`)**: stare INCREMENTALĂ (nu recalcul pe fereastră) — limite upper/lower din
+  swing-uri CONFIRMATE (fractali strict D2, byte-identic cu `detect_swings`), `boundary_validity`
+  PROVISIONAL/CONFIRMED/EXTENDED/VIOLATED, `data_readiness` WARMUP/READY/DEGRADED (fail-closed),
+  `consolidation_state` NONE/FORMING/ESTABLISHED/DECAYING, `structural_start_ts` (retrospectiv) vs
+  `actionable_start_ts=confirm_ts` (>= structural + k bare), ER=|Δclose_net|/Σ|Δclose|, width=(H-L)/ATR,
+  RANGE_MID explicit, invalidare doar pe dovezi (ACCEPTED_BREAK/MAX_DURATION/INPUT_UNAVAILABLE, niciodată retroactiv),
+  reason codes, `range_spec_id` (sha256 peste definiția ordonată) + `run_hash`=sha256(config_hash‖data_identity‖spec_id).
+  Zero lookahead.
+- **Mașină de stări longitudinală (`range-events-v1`)**: 8 evenimente (LOW/HIGH_REJECTION, MID, BREAKOUT_CANDIDATE,
+  BREAKOUT_ACCEPTED, BREAKOUT_RETEST, FAILED_BREAKOUT, LIQUIDITY_SWEEP_REVERSAL). BREAKOUT_ACCEPTED și FAILED_BREAKOUT
+  sunt tranziții MUTUAL EXCLUSIVE prin mașină (nu prin filtrare) ⇒ populații disjuncte (repară PRDS). SWEEP reutilizează
+  semnătura D6 (wick dincolo + close înăuntru, aceeași bară). Fără trendline breakout (nicio primitivă canonică).
+- **Precedență**: `TREND_PAUSE ⊆ RANGE_STATE`, `RANGE_STATE_OVER_TREND_PAUSE` (în `range_spec_id`); direcția N1 devine
+  atributul `trend_context` păstrat. Ledger cu MATRICE DE OCUPANȚĂ.
+- **F7 `RANGE_MID_NO_ENTRY` = SAFETY_GUARD** (amendament final): NU strategie, NU ipoteză, NU produce p-value/MDE/prag
+  (`m_inference`=26). REFUZ EXECUTABIL: RANGE_MID emis explicit cu `safety_guard`, `entry_decision` întoarce refuz (zero
+  entry/candidate/p-value/broker), contorizat separat `n_guards` în registrul `SAFETY_GUARDS`, prezent în audit —
+  niciodată dedus din absență; supraviețuiește snapshot/restart.
+- **Snapshot/restore RANGE combinat, mărginit** (`range-state-snapshot-v1`): snapshot N1 incremental + starea RANGE
+  (limite/swing-uri/stare/tranziții/candidat/invalidare/confirm_ts/reason codes/identitate), restaurare bit-identică;
+  fail-closed la nepotrivire de identitate/versiune/`range_spec_id`.
+- **77 teste** (18 N1 + 25 incremental + 34 range: N1 byte-identic, paritate stream swing vs `detect_swings`, actionable
+  numai după confirm_ts, warmup≠range, F7 SAFETY_GUARD, toate cele 8 evenimente reachable, accepted XOR failed, retest,
+  sweep, invalidare, zero-lookahead, chunk invariance, snapshot/restart în FIECARE stare, două instanțe, run_hash,
+  fără MT5/broker/order_send/set_authority/probability_inputs). mypy --strict clean; empty-venv + rollback 0.1.1↔0.2.0
+  verificate. Benchmark incremental (RANGE, până la 355.696 bare, sub 4h, ~O(n)). `RANGE_STATE_HANDOFF_PASS` NU e
+  auto-declarat — verdictul e al Red Team.
+
 ## 0.1.1 — remediere de performanță O(n²)→O(n) (READY_FOR_N1_INCREMENTAL_REVALIDATION)
 
 Motor N1 replay INCREMENTAL care remediază blocajul de performanță al 0.1.0 (un replay complet de 355.696 bare
