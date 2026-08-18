@@ -1,0 +1,40 @@
+{
+  "escrow_id": "RT-BLIND-ESCROW-RANGE-V2-001",
+  "issued_by": "STATISTICIAN",
+  "contract_version": "range-blind-escrow-v1.0",
+  "data_source_identity": "OANDA:XAUUSD M15, populatia canonica pre-holdout (4 blocuri oficiale, 197094 bare)",
+  "payload_sha256": "2dcfbeeab5794d5fd5a4921374aaae44a986ab8752caf7b8e8aada9bdaceb362",
+  "plaintext_sha256": "95dc4f8ea7870dbae86e0ce8945e38ab8a810c15c09444ebccb73605dfd1b39a",
+  "payload_location": "IN AFARA celor patru repo-uri, in zona de escrow Red Team; deschiderea se face cu escrow_tool.py si cheia livrata numai Red Team",
+  "episodes_declared": 2,
+  "episodes_blind_eligible": 0,
+  "eligibility": {
+    "RC-07": "SEMANTIC_ONLY_NOT_BLIND_ELIGIBLE",
+    "RC-08": "SEMANTIC_ONLY_NOT_BLIND_ELIGIBLE"
+  },
+  "bars_count_canonical": { "RC-07": 0, "RC-08": 0 },
+  "unique_match_count": { "RC-07": 0, "RC-08": 0 },
+  "match_instrument_calibration": {
+    "positive_control": "fereastra canonica randata si recautata prin ACELASI extractor: index 150000, N=1280, r=0.9999, eroare 0 bare",
+    "rc07_best_r": 0.5009,
+    "rc08_best_r": 0.5343,
+    "reading": "instrumentul recupereaza o potrivire reala; pentru ambele capturi nu exista niciuna"
+  },
+  "precedence_proof": "sigilat INAINTE de orice rulare Red Team pe artefact; RT-RANGE-0003 @0e1a385 declara sectiunile 4-6 NEEXECUTATE, deci niciun output de detector nu exista pentru aceste episoade",
+  "intervals_visible_here": false,
+  "expected_labels_visible_here": false,
+  "normative_sources": {
+    "prereg": "4e69e22",
+    "watr_final": "c29ac98",
+    "addendum": "2dde05a",
+    "manifest": "v2.7.81 @2611d22",
+    "fingerprint": "432170ff5b6d0d20e125ea318d0293053f10ff0da8df9948bb470dde6d6501f6",
+    "ruling": "STATISTICIAN_RANGE_V2_BLIND_ESCROW_AND_REASON_CODE_RULING_v1.0.md"
+  },
+  "reason_code_contract_version": "range-reason-codes-v2.1",
+  "terminal_status": {
+    "escrow": "RANGE_V2_BLIND_ESCROW_REPAIR_BLOCKED_NO_INDEPENDENT_SEMANTIC_GROUND_TRUTH_REMAINS",
+    "reason_codes": "RANGE_V2_REASON_CODE_CONTRACT_FINAL_READY_FOR_VE_0_3_2",
+    "next_owner": "VE_RANGE_0.3.2_PINNED_REDELIVERY"
+  }
+}
