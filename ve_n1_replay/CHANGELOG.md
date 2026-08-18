@@ -1,5 +1,43 @@
 # ve_n1_replay — CHANGELOG
 
+## 0.3.1 — PIN de configurație V2: `w_atr=0,30` RATIFICAT, `s_max` DERIVAT structural (READY_FOR_RANGE_V2_BLIND_REVALIDATION)
+
+**Modificare CHIRURGICALĂ, nu un patch semantic.** Statistician a rulat protocolul pre-înregistrat (`STAT-RANGE-V2-
+PREREG-PROTOCOL-v1.0` @`4e69e22`, comis ÎNAINTE de orice atingere a datelor) și a fixat configurația finală
+(`STAT-RANGE-V2-WATR-FINAL-v1.0` @`c29ac98`, manifest v2.7.81 @`2611d22`, fingerprint `432170ff…` verificat exact):
+`w_atr = 0,30` (înlocuiește implicitul NERATIFICAT `0,25` al 0.3.0) și `s_max = 2 × w_atr = 0,60`, DERIVAT structural,
+niciodată un parametru liber. Controlul de construcție `RC-CONSTRUCTION-CHANNEL-NEW-01` (S=3,3781, CHANNEL_UP)
+respinge canalul ca range la un factor >2 peste orice `s_max` admisibil — pragul e o consecință a intervalului deja
+publicat, nu o alegere. **0.3.0 rămâne NEMODIFICAT** (verificat: `git diff` gol), păstrat pentru audit.
+
+- **`RangeConfigV2Pinned`** (nou, `range_state_v2_1.py`): `w_atr` e SINGURUL grad de libertate pe zonă (implicit
+  `0,30`, suprascriptibil în teste controlate); `s_max`/`derived_s_max` sunt `@property` calculate ca `2 × w_atr` —
+  NU există câmp `s_max` stocat sau setabil. Constructorul REFUZĂ `s_max` structural (`TypeError` — parametrul nu
+  există). `from_dict()` (parserul) refuză explicit un câmp `s_max` primit din exterior, ridicând
+  `LegacyConfigRejectedError(reason_code=LEGACY_S_MAX_REJECTED)` — UNICUL cod de motiv nou (restul rămân
+  byte-identice cu 0.3.0). `provenance()` expune formula de derivare explicit, nu doar valoarea rezultată.
+  `range_spec_id`/`config_hash`/`run_hash` recalculate (includ `w_atr` + regula de derivare + versiunea de
+  producător `range-producer-0.3.1`) ⇒ rezultatele 0.3.0 devin automat NON-COMPARABILE PRIN TIP.
+- **Gard structural/AST**: `0,15` (implicitul NERATIFICAT vechi) nu mai apare ca literal numeric NICĂIERI în
+  `range_state_v2_1.py`/`range_engine_v2_1.py` — verificat prin scanare `ast` directă a fișierelor sursă de
+  producție (nu doar prin testare comportamentală).
+- **Reutilizare, NU reimplementare**: `RangeStateReplayEngineV2Pinned` (`range_engine_v2_1.py`) compune
+  `N1IncrementalReplayEngine` (0.1.1, NEATINS, importat) + `RangeStateProducerV2` (0.3.0, NEATINS, importat) —
+  `RangeConfigV2Pinned._to_runtime_config()` traduce configurația pin-uită într-un `RangeConfigV2` (0.3.0) real
+  ÎNAINTE de a alimenta clasa neschimbată. Mediana-ancoră, atingerea pe interval, atingerea prin fitil, acumularea
+  cauzală, BOS/CHoCH intern, mașina de stări, cele 11 evenimente, F7 `RANGE_MID_NO_ENTRY`, separarea structurală
+  range/canal, zero-lookahead — TOATE rulează EXACT codul 0.3.0, dovedit structural (`isinstance(eng._range,
+  RangeStateProducerV2)`), nu doar comportamental.
+- **Snapshot/identitate**: `range-state-snapshot-v2-pinned` (nou) — restore REFUZĂ fail-closed orice snapshot 0.2.0
+  SAU 0.3.0 (incl. configurații legacy cu `s_max=0,15` explicit testat), niciodată o migrare implicită.
+- **40 teste noi** (22 cazuri din mandat + 2 gard-uri AST + regresie structurală explicită 0.3.0→0.3.1),
+  **162 teste total** (18+25+34+45+40), mypy `--strict` clean, empty-venv + rollback 0.3.1→0.3.0→0.1.1 verificate.
+  Benchmark comparativ SCURT 0.3.0 vs 0.3.1 (nu rulare completă 355.696 — mandat: delta de configurație, același
+  cod O(n) reutilizat neschimbat, deja dovedit la 0.3.0).
+- `n_generated_total=363`/`m_inference=26`/tombstones/registrul Alpha/F1-F6 și cele 44
+  `BLOCKED_PENDING_RANGE_SEMANTIC_FIX`/F7 `SAFETY_GUARD` NEATINSE. Fără SEALED/OOS, fără RC-07/RC-08, fără
+  `range1.pdf`/`range2.pdf`. `RANGE_V2_BLIND_REVALIDATION` NU e auto-declarat — Red Team primește EXCLUSIV 0.3.1.
+
 ## 0.3.0 — RANGE_STATE SPEC V2: remediu SEMANTIC_SPEC_DEFECT (READY_FOR_RANGE_SEMANTIC_REVALIDATION)
 
 **Contract NOU, NU un patch peste 0.2.0.** Statistician a diagnosticat 0.2.0 (`STAT-RANGE-SEMANTIC-DIAGNOSIS-V2-v1.0

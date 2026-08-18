@@ -7,7 +7,7 @@ Artefact N1 replay INDEPENDENT de ai_trader: împachetează byte-identic modulel
 
 from __future__ import annotations
 
-VE_N1_REPLAY_VERSION: str = "0.3.0"
+VE_N1_REPLAY_VERSION: str = "0.3.1"
 N1_REPLAY_CONTRACT_VERSION: str = "n1-replay-request-v1"
 SNAPSHOT_SCHEMA_VERSION: str = "n1-replay-snapshot-v1"
 REASON_CODE_SCHEMA_VERSION: str = "n1-replay-reason-codes-v1"
@@ -96,6 +96,44 @@ PREDECESSOR_0_2_0_RANGE_STATE_HANDOFF_PASS_COMMIT: str = "898e1b9"   # RT-RANGE-
 N1_BASELINE_VERSION: str = "0.1.1"
 N1_BASELINE_INCREMENTAL_PASS_COMMIT: str = "6230ee5"                 # RT-N1-0002
 
+# ── 0.3.1: PIN de configurație V2 — w_atr RATIFICAT, s_max DERIVAT structural (NU un patch semantic) ──
+# Sursă normativă: Statistician STAT-RANGE-V2-PREREG-PROTOCOL-v1.0 @4e69e22 (precedență) →
+# STAT-RANGE-V2-WATR-FINAL-v1.0 @c29ac98 (rezultat: w_atr=0.30, s_max=2×w_atr=0.60) → addendum @2dde05a
+# (auto-corecție n_generated_total, NEAFECTEAZĂ 0.3.1) → manifest v2.7.80 @84a1a98 → v2.7.81 @2611d22
+# (corectiv, fingerprint final). Control de construcție: RC-CONSTRUCTION-CHANNEL-NEW-01 (S=3,3781 >> s_max=0,60,
+# canal respins ca range — insensibil la valoarea finală a lui w_atr, prag DERIVAT nu ales).
+#
+# `w_atr = 0.30` este UNICUL loc unde acest literal apare ca implicit de PRODUCȚIE în acest fișier — 0.3.0 folosea
+# `w_atr=0.25`/`s_max=0.15` NERATIFICATE (păstrate NEATINSE în range_state_v2.py, pentru audit). `s_max` NU mai
+# există ca literal sau câmp independent în 0.3.1 — e DERIVAT structural (`2 × w_atr`), niciodată stocat separat.
+RANGE_V2_1_STATISTICIAN_PREREG_COMMIT: str = "4e69e22"
+RANGE_V2_1_STATISTICIAN_RESULT_COMMIT: str = "c29ac98"
+RANGE_V2_1_STATISTICIAN_ADDENDUM_COMMIT: str = "2dde05a"
+RANGE_V2_1_MANIFEST_COMMIT: str = "2611d22"                # v2.7.81 (corectiv, final) — supersedes 84a1a98/v2.7.80
+RANGE_V2_1_MANIFEST_VERSION: str = "v2.7.81"
+RANGE_V2_1_MANIFEST_FINGERPRINT: str = (
+    "432170ff5b6d0d20e125ea318d0293053f10ff0da8df9948bb470dde6d6501f6"
+)   # verificat: content_hash.value din split_manifest.json @2611d22, MATCH exact
+RANGE_V2_1_CONSTRUCTION_CONTROL_EPISODE_ID: str = "RC-CONSTRUCTION-CHANNEL-NEW-01"
+
+W_ATR_CANONICAL: float = 0.30                              # RATIFICAT — Statistician @c29ac98
+S_MAX_DERIVATION_MULTIPLIER: float = 2.0                    # s_max = S_MAX_DERIVATION_MULTIPLIER × w_atr
+S_MAX_DERIVATION_FORMULA: str = "derived_s_max = 2 * w_atr"  # citat literal în provenance/fingerprint
+
+RANGE_PRODUCER_VERSION_V2_1: str = "range-producer-0.3.1"
+RANGE_SNAPSHOT_SCHEMA_VERSION_V2_1: str = "range-state-snapshot-v2-pinned"
+RANGE_LEDGER_SCHEMA_VERSION_V2_1: str = "range-state-ledger-v2-pinned"
+RANGE_CONFIG_SCHEMA_VERSION_V2_1: str = "range-config-schema-v2-pinned"
+
+# identitatea predecesorului 0.3.0 (refuz fail-closed la restore/migrare + raport de compatibilitate)
+PREDECESSOR_0_3_0_VERSION: str = "0.3.0"
+PREDECESSOR_0_3_0_WHEEL_SHA256: str = "34603375de736de3d2b48d3471881a76d4107bcb48487100cf3af33f84ee63e0"
+PREDECESSOR_0_3_0_BUILD_COMMIT: str = "d307aec"
+PREDECESSOR_0_3_0_DELIVERY_COMMIT: str = "22e1496"
+
+# UNICUL cod de motiv nou (mandat: "cu excepția unui cod nou strict necesar pentru refuzul configurației legacy")
+LEGACY_S_MAX_REJECTED: str = "LEGACY_S_MAX_REJECTED"
+
 # sursele EXACTE
 AI_SOURCE_REPO: str = "ai_quant_lab-wp5b"
 AI_SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
@@ -155,4 +193,12 @@ def build_info() -> dict[str, object]:
         "range_producer_version_v2": RANGE_PRODUCER_VERSION_V2,
         "range_v2_statistician_source_commit": RANGE_V2_STATISTICIAN_SOURCE_COMMIT,
         "range_v2_statistician_manifest_commit": RANGE_V2_STATISTICIAN_MANIFEST_COMMIT,
+        "w_atr_canonical": W_ATR_CANONICAL, "s_max_derivation_formula": S_MAX_DERIVATION_FORMULA,
+        "range_producer_version_v2_1": RANGE_PRODUCER_VERSION_V2_1,
+        "range_snapshot_schema_version_v2_1": RANGE_SNAPSHOT_SCHEMA_VERSION_V2_1,
+        "range_ledger_schema_version_v2_1": RANGE_LEDGER_SCHEMA_VERSION_V2_1,
+        "range_v2_1_statistician_prereg_commit": RANGE_V2_1_STATISTICIAN_PREREG_COMMIT,
+        "range_v2_1_statistician_result_commit": RANGE_V2_1_STATISTICIAN_RESULT_COMMIT,
+        "range_v2_1_manifest_commit": RANGE_V2_1_MANIFEST_COMMIT,
+        "range_v2_1_manifest_fingerprint": RANGE_V2_1_MANIFEST_FINGERPRINT,
     }
