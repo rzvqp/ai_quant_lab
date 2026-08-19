@@ -1,0 +1,116 @@
+{
+  "manifest_id": "STAT-F1-F4-DELTA-MANIFEST",
+  "version": "1.0",
+  "published_date": "2026-08-20",
+  "verdicts": [
+    "RANGE_V4_F1_INPUT_CONTRACT_DELTA_READY_FOR_RED_TEAM_STATIC_REVIEW",
+    "INTERNAL_SEMANTIC_CHANGE_NOT_JUSTIFIED"
+  ],
+  "self_declared_pass": false,
+  "INDEPENDENT_SEMANTIC_BLIND": false,
+  "BLIND_PASS_NOT_PERMITTED": true,
+  "VALIDATION_WEIGHT": "ZERO",
+  "source_commits": {
+    "contract_v43": "d6e599e",
+    "manifest": "14d4c22",
+    "static_audit": "2c113ef",
+    "detector_frozen": "f224e7d",
+    "prototype_audit": "b7c6fa8",
+    "runner": "82f27c0",
+    "runner_audit": "eb62d3e",
+    "rt0009_protocol": "38daf9b",
+    "rt0009_report": "8e04dd7",
+    "escrow_pkg": "6b96430",
+    "escrow_fix": "dc1d9ed",
+    "stat_escrow_report": "60d1a20",
+    "rt0010_addendum": "7d226c7",
+    "predictions_freeze": "46a9576",
+    "rt0010_report": "57a0cd4",
+    "ledger": "E85"
+  },
+  "frozen_predictions_sha256": "1754c86d1e8be0b06e6bb06fc4688f34c3f61617cdef3a712ede1df646c848da",
+  "f1": {
+    "bars_affected": 13,
+    "of_total": 13824,
+    "field": {
+      "close": 13,
+      "open": 0
+    },
+    "direction": {
+      "above_high": 9,
+      "below_low": 4
+    },
+    "windows_touched": 6,
+    "by_length": {
+      "96": 1,
+      "288": 6,
+      "480": 6
+    },
+    "distinct_magnitude_usd": 0.0005,
+    "magnitude_in_ticks": 0.05,
+    "min_tick": 0.01,
+    "epsilon": 0.005,
+    "epsilon_rule": "min_tick / 2 (DERIVED)",
+    "epsilon_lt_one_tick": true,
+    "alternative_rule_rejected": {
+      "rule": "1e-3/2 = 0.0005 (half a unit of the coarsest field precision)",
+      "accepts": "7/13",
+      "why_rejected": "6 of the 13 float64 deviations exceed 0.0005 by ~1e-13, so the tighter rule rejects the very bars it was derived from"
+    },
+    "input_contract_version": "ohlc_input_contract_v1",
+    "quality_event": "INPUT_OHLC_SUBTICK_TOLERATED",
+    "outside_semantic_reason_codes": true,
+    "tests": 28,
+    "failures": 0
+  },
+  "f4": {
+    "internal_gt": 12,
+    "matched": 1,
+    "detector_side": true,
+    "scorer_side": false,
+    "independent_rematch": "1/12 reproduced WITHOUT importing the scorer; 11 of 12 have IoU exactly 0.000",
+    "iou_threshold_insensitive": "0.5/0.3/0.2/0.1 all give the same 1/12",
+    "primary_causes": {
+      "no_confirmed_MACRO_parent_in_span": 6,
+      "parent_confirmed_but_no_INTERNAL_candidate_generated": 4,
+      "touch_insufficient_ESTABLISHING_FEW_SWINGS": 1,
+      "true_positive": 1
+    },
+    "d_internal_is_not_the_cause": {
+      "TOO_SHORT_INTERNAL_bars": 31,
+      "of_bars": 13824
+    },
+    "candidate_funnel": {
+      "bars_with_no_candidate": 12736,
+      "candidates_created": 112,
+      "killed_before_confirmation": 96,
+      "killed_ZONES_DEGENERATE": 73,
+      "killed_ZONES_INVERTED": 23,
+      "confirmed": 25,
+      "matched": 1
+    },
+    "refuted_hypothesis": {
+      "claim": "INTERNAL spans are structurally too narrow for the shared w_atr",
+      "measurement": "GT INTERNAL width/ATR14 median 5.48 vs MACRO 5.62; 0/12 below the 1.60 threshold",
+      "status": "REFUTED by measurement before publication"
+    }
+  },
+  "f5_new_finding": {
+    "code": "INTERNAL_RETEST_FILTER_UNIT_NONCONFORMANCE",
+    "where": "range_semantic_v4_3.py line 745 (INTERNAL seeding path only)",
+    "defect": "abs(price - boundary) <= cfg.tol_cluster compares a price distance in USD against tol_cluster, which is a MULTIPLE OF ATR; line 442 uses cfg.tol_cluster * st.atr_ref",
+    "comment_claims_identity_code_does_not_implement": true,
+    "measured_gap": "implemented 1.600 USD vs contracted 1.60*ATR (median 2.990 USD); contracted is wider on 87.2% of bars",
+    "direction": "the defect ADMITS more swings than the contract; fixing it would yield FEWER INTERNAL candidates, so it must be decided on conformance grounds, not recall",
+    "macro_unaffected": "guarded by forming_internal"
+  },
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows"
+  },
+  "artefact_hashes": {
+    "ohlc_input_contract.py": "98ff9cedaf2e39f2095add436b52a7c37d6acdcecabd02d3107b3d6c41b3a5c0",
+    "test_ohlc_input_contract.py": "8e96135cc58ef9d7902efafb02130984a9cd670c05da49fcda342886d4ec6f08"
+  },
+  "package_fingerprint": "662b3bcad029cb815977c76036172098fbb18a48dd60c61fc18e4e531aa6decb"
+}

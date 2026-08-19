@@ -82,8 +82,10 @@ Scalarea `1e6` cu trunchiere dă o rezoluție de `1e-6` în preț. **Măsurat, n
 perturbație de *exact* `1e-6` poate fi absorbită de rotunjirea `float64` înainte de trunchiere
 (pe prima bară a ferestrei verificate exact asta se întâmplă); de la `2e-6` în sus detecția e fermă.
 
-Consemnat ca **proprietate a ancorei, nu ca defect**: un tick XAUUSD este 0,001, adică 1000 de
-unități după scalare — o marjă de trei ordine de mărime. Ancora există ca să detecteze un corpus
+Consemnat ca **proprietate a ancorei, nu ca defect**: un tick XAUUSD este **0,01** (corectat
+2026-08-20, mandat 3.107 — aici scria 0,001, greșit; tickul normativ e declarat în `SymbolMeta`
+pe patru subsisteme AI Trader și ratificat de Red Team în `RT-AUDIT-MEAS-0001`), adică **10.000**
+de unități după scalare — o marjă de **patru** ordine de mărime, deci concluzia se întărește. Ancora există ca să detecteze un corpus
 diferit sau o fereastră substituită, iar pentru asta rezoluția e mai mult decât suficientă.
 Testul `test_15b` fixează această limită în suită ca să nu fie descoperită din nou prin surpriză.
 
