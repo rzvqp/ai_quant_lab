@@ -3873,4 +3873,62 @@
                0010_escrow_reaudit_and_real_bar_execution.md + _ADDENDUM_PRERUN.md + _predictions_freeze.md.
                STATE: OPERATIONAL. Next entry [86], prev_hash E85.
   entry_hash:  E85
+
+[86] 2026-08-20
+  prev_hash:   E85
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-F1-F4-F5-STATIC-AUDIT
+  freeze_hash: f1 pkg alpha-automation-v1@870d3f8 fp 662b3bca / report statistician-foundation@ceb6b66 /
+               detector f224e7d / runner 82f27c0 / config_id 24f72a60 / frozen predictions 1754c86d (46a9576)
+  battery_ver: RT-RANGE-0011
+  reviewer:    Red Team
+  detail:      STATIC AUDIT of the Statistician's F1/F4/F5 diagnostic package. VERDICT = ***RANGE_V4_F1_F4_F5_
+               STATIC_AUDIT_PASS*** + RANGE_V4_F1_INPUT_CONTRACT_APPROVED_FOR_VE + INTERNAL_SEMANTIC_CHANGE_NOT_
+               JUSTIFIED_CONFIRMED + F5_EXISTING_CONTRACT_CONFORMANCE_FIX_APPROVED_FOR_VE + MACRO_V4_3_REMAINS_
+               FROZEN + INTERNAL_CAPABILITY_STATUS_RESEARCH_ONLY_NOT_VALIDATED + MACRO_INDEPENDENT_BLIND_PATH_
+               AUTHORIZED_AFTER_VE_PATCH_AUDIT. All 15 commits exist, local=remote x4; pkg 870d3f8 (fp 662b3bca),
+               report ceb6b66; frozen predictions re-hashed 1754c86d=46a9576; detector f224e7d/runner 82f27c0
+               byte-identical (F1 is a NEW separate input contract, not a runner patch). ★ F1 = PASS: reproduced
+               independently 13/13824 rejected, ALL on close (0 open, refines RT-0010), 9 above/4 below, magnitude
+               single 0.0005 (float64 7x .0004999998/6x .0005000001), per-length 96:1/288:6/480:6, 6 windows.
+               Formula ohlc_validation_epsilon=min_tick/2=0.005 DERIVED (MIN_TICK=0.01 normative in SymbolMeta x4
+               subsystems + ratified RT-AUDIT-MEAS-0001; 0.005<1 tick so whole-tick error never masked). Rule A
+               0.005 -> 13/13; rule B 0.0005 -> 7/13 (rejects its own 6 over-nominal data). Comparison = value-vs-
+               shifted-boundary (v>hi+eps strict), verified at float64 edge: close=hi+eps exactly TOLERATED,
+               +1ULP REJECTED. Quality event INPUT_OHLC_SUBTICK_TOLERATED independently confirmed OUTSIDE the 29
+               reason codes (count 0 in detector); stateless (determinism/chunk/restart structural); OHLC byte-
+               UNCHANGED (decisive test_21 passes, seen==13824). 28 tests: 27 pass/1 benign env-skip (test_20,
+               property independently verified)/mypy --strict clean. CLI-after-patch=46a9576 = VE_IMPLEMENTATION_
+               ACCEPTANCE_GATE_REQUIRED (NOT a package defect; Statistician mandate forbade modifying runner).
+               ★ F4 = INTERNAL_SEMANTIC_CHANGE_NOT_JUSTIFIED CONFIRMED: reproduced the 12-case table EXACTLY
+               without importing scorer -- 6 PARENT_UNAVAILABLE (no confirmed MACRO parent, dominant 50%) / 4
+               CANDIDATE_NOT_GENERATED / 1 touch (BLIND-009) / 1 TP (BLIND-022 IoU 0.415); 1/12 exact, 11/12 IoU
+               exactly 0, thresholds 0.5->0/0.3->1/0.2->1/0.1->1 (not a threshold artifact); d_internal NOT the
+               cause (TOO_SHORT_INTERNAL 31 bars, <=1/12 spans touch it); NOT degenerate (INTERNAL width/ATR14
+               median ~4.85, 0/12 below 1.60). 6/12 depend on frozen MACRO (propagated miss, not repairable at
+               INTERNAL per sec.3); only 4/12 localized -> n=4 too small (any rule=memorization). INTERNAL=
+               RESEARCH_ONLY_NOT_VALIDATED; MUST_NOT_BLOCK_MACRO_INDEPENDENT_BLIND_PATH=TRUE. ★ F5 = EXISTING_
+               CONTRACT_CONFORMANCE_FIX_REQUIRED: confirmed at source range_semantic_v4_3.py -- tol_cluster=2*w_atr
+               =1.60 is a DIMENSIONLESS ATR-MULTIPLE; line 442 correctly uses tol_cluster*st.atr_ref (absolute USD,
+               NORMATIVE) but line 745 compares abs(price-boundary) directly vs tol_cluster (treats 1.60 as 1.60
+               USD) while its comment claims identity with Cluster.offer. Measured: median ATR14~1.873 -> normative
+               band median 2.997 USD vs implemented 1.600, contractual wider on 87.5% of bars. = units nonconformity
+               = CONFORMANCE FIX not semantic change (normative unit convention already exists at 442). Fix: line
+               745 -> <= tol_cluster*self._active_macro.atr_ref. MACRO ISOLATED (guarded by forming_internal only).
+               Direction: correct wider band -> filter fires MORE -> FEWER internal candidates -> LOWER recall, so
+               decide on CONFORMANCE not recall (NOT the artificial F4 fix). Identity: code fingerprint changes (new
+               prototype id) but config_id 24f72a60 UNCHANGED -> VE MUST gate pre-fix snapshots on the new code
+               fingerprint (restore hazard). AUTHORIZATION MATRIX: F1 validator PASS/YES, F1 quality event PASS/YES,
+               F4 semantic NOT-JUSTIFIED/NO, F5 conformance REQUIRED/YES, MACRO FROZEN/NO, INTERNAL RESEARCH_ONLY/
+               NO-integration, MACRO blind path OPEN-after-VE-patch-audit. VE authorized ONLY: F1 validator + F1
+               quality event + F5 conformance fix + versioning/fingerprint/snapshot gating + tests. VE FORBIDDEN:
+               MACRO change/d_internal/touch relax/3rd level/per-window rules/recalibrate-on-48/scorer/new blind
+               batch. 1 non-blocking obs: SymbolMeta price_precision=2 vs real corpus 4 decimals (flagged, out of
+               RANGE scope). Good-faith Statistician self-corrections logged (tick 0.001->0.01 14th; rejected own
+               INTERNAL-width hypothesis). NO material defect. Mandatory INDEPENDENT_SEMANTIC_BLIND=FALSE/BLIND_
+               PASS_NOT_PERMITTED/VALIDATION_WEIGHT=ZERO; NOT authorized: BLIND PASS/wheel/Strategy Catalog/Alpha/
+               AI Trader/LIVE_SHADOW/broker/trades. Nothing modified to force PASS; changes only in red_team/.
+               Report: RT-RANGE-0011_f1_f4_f5_static_audit.md.
+               STATE: OPERATIONAL. Next entry [87], prev_hash E86.
+  entry_hash:  E86
 ```
