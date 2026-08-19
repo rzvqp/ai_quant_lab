@@ -3535,4 +3535,47 @@
                Report: RT-RANGE-0003_range_v2_blind_validation_0.3.1_18d1aa1_COMPROMISED.md.
                STATE: OPERATIONAL. Next entry [79], prev_hash E78.
   entry_hash:  E78
+
+[79] 2026-08-19
+  prev_hash:   E78
+  event:       VERDICT
+  dc_id:       DC-RANGE-V3-SEMANTIC-0.4.0
+  freeze_hash: ve_n1_replay-0.4.0 sha256 c79f5fcab202a72c6548a470e7702b6917685dc782c67f5f4dfe4ed0af363699 (126766 B) / build dead38d / delivery 034b919 / manifest v2.7.84 db098ed fingerprint cddaab38
+  battery_ver: RT-RANGE-0004
+  reviewer:    Red Team
+  detail:      ve_n1_replay 0.4.0 RANGE SEMANTIC V3 DELTA REVALIDATION. VERDICT = ***RANGE_V3_SEMANTIC_FAIL***.
+               Read-only; no artifact/param change; no intermediate result to VE; Alpha not started; detector not
+               modified; invariants untouched; LIVE_SHADOW/broker read-only. ★ SOLE MATERIAL DEFECT = §12 PERFORMANCE
+               RISK VIA CONFIG: RangeConfigV3 accepts d_min_bars=200000 (NO contractual cap -- __post_init__ validates
+               only acknowledge/K<=N/positivity), and slope() iterates the whole closes deque (maxlen=d_min_bars) =
+               O(d_min) per bar. Empirically after filling: d_min=200 -> 90.9us/bar, d_min=4000 -> 1829us/bar (20.1x
+               for 20x d_min); extrapolated d_min=200000 ~90ms/bar -> ~8.9h for 355696 bars >> declared 4h. VE
+               benchmarked ONLY canonical d_min=96. Spec bf9f780 silent on a d_min cap. Memory bounded (deque maxlen)
+               so compute-fail not memory-leak. Per mandate §12 (very large values neither refused nor within perf
+               limits; benchmark used only favorable config) + §19 (PASS needs ALL conditions) => FAIL. MINIMAL FIX
+               (VE, not RT): contractual d_min_bars max in __post_init__ (fail-closed like K>N) OR d_min-independent
+               slope window; re-benchmark at max; new version (0.4.1). ★ EVERYTHING ELSE PASSES, independently
+               verified via the PUBLIC surface (RangeSemanticProducerV3.observe / EngineV3 / snapshot): §1 wheel
+               c79f5fca==declared==SHA256SUMS==git-bytes, sidecar describes exactly the delivered wheel (048ee2b4 is a
+               legit predecessor ref), commits bf9f780/db098ed/dead38d/034b919 all exist; §2 delta surgical -- ONLY
+               range_semantic_v3.py+range_engine_v3.py new, _ai(15)+_det(5)+incremental+_bootstrap+6 predecessor range
+               files BYTE-IDENTICAL to 0.3.1, N1 0.1.1 untouched; §3 237/237 tests JUnit from installed wheel;
+               §4 D1 segment-local anchor no leak (segB~4346 not 2400; same suffix diff prehistory identical geometry);
+               §5 D2 degenerate impossible via public (atr None->ATR_UNAVAILABLE, atr0/NaN/Inf never degenerate-est,
+               ZONES_DEGENERATE reachable, never established degenerate); §6 D3 TOO_SHORT reachable only below d_min;
+               §7 D4 breakout terminates but segment survives history w/ reached_established+predecessor_id+
+               TERMINATED_BY_BREAKOUT; §8 HBL-20 sweep EXACT: 1 sweep, confirm bar56 reentry, confirm_ts!=breach52,
+               bars53-55 no premature; §9 K>N refused, K consumed (sweep vs SWEEP_WINDOW_EXPIRED), N consumed (breakout
+               at exactly Nth close N3/N5/N6); §10 all 14 states reachable via public incl CHANNEL_UP/DOWN; §11
+               two-heap running median == statistics.median at every prefix, instances independent; §13 prefix parity +
+               chunk-invariance all splits; §14 snapshot refuses 0.2.0/0.3.0/0.3.1/config-mismatch/unknown/None, atomic;
+               §15 HONESTY OK -- sidecar states HBL are synthetic analogs, CEO_ASSISTED NOT blind/OOS/validation,
+               construction-only; NO RANGE_V3_BLIND_PASS emitted; §16 canonical d_min=96 O(n) confirmed 10k/20k=2.00x
+               ~5.56ms/bar ->~33min@355696 (matches VE 30m41s); §17 no forbidden imports (stdlib+internal only), 0.4.0
+               absent from live venv; §18 invariants untouched by construction (isolated wheel). NOT RUN: mypy (offline
+               tooling limit; VE clean), full 355696 wall-clock (O(n) checkpoints), Alpha/PnL/SEALED. NOT AUTHORIZED:
+               NEW_INDEPENDENT_BLIND_LABEL_BATCH -- Alpha stays blocked pending VE 0.4.1 fix + ruling.
+               Report: RT-RANGE-0004_range_v3_semantic_revalidation_0.4.0_034b919_FAIL.md.
+               STATE: OPERATIONAL. Next entry [80], prev_hash E79.
+  entry_hash:  E79
 ```
