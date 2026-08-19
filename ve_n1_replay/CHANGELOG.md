@@ -1,5 +1,68 @@
 # ve_n1_replay — CHANGELOG
 
+## 0.4.0 — RANGE SEMANTIC V3: redesign LONGITUDINAL, segment-based (READY_FOR_RANGE_V3_SEMANTIC_REVALIDATION)
+
+**Redesign, NU un patch peste 0.3.x.** Statistician a demonstrat (`STAT-RANGE-SEMANTIC-SPEC-V3-v1.0` @`bf9f780`,
+manifest v2.7.84 @`db098ed`, fingerprint `cddaab381f0132eac025e9fcad3454d54fca78dc1abab6bc8b3cea05e5951233`
+verificat exact) că 0.3.1 suferă de patru defecte STRUCTURALE, nu de calibrare: ancora pe `range_window=512`
+bare vs `d_min=96` (5,3× prea largă); `anchor_upper` putea inversa sub `anchor_lower` fără nicio gardă;
+`bars_in_state` satura la ~508, deci `TOO_SHORT` nu putea fi emis NICIODATĂ; o rupere acceptată ȘTERGEA
+episodul (76,65% din bare), fără segmentare longitudinală (17/24 ferestre HBL sunt multi-regim), sweep emis
+ca eveniment fără nicio stare care să-l consume. **0.3.1 rămâne BYTE-NEATINS** (verificat: `git diff` gol pe
+toate fișierele 0.2.0/0.3.0/0.3.1), păstrat pentru audit/rollback.
+
+- **Segmentare longitudinală** (`range_semantic_v3.py`, nou, spațiu de nume PROPRIU `range-semantic-v3.0`):
+  o fereastră NU mai are o singură stare — are o SECVENȚĂ de segmente cu `predecessor_id`/`transition_reason`
+  explicite; un segment ÎNCHEIAT (breakout/canal) rămâne în `history` ca range confirmat care S-A ÎNTÂMPLAT
+  (D4 închis: acceptance ≠ invalidare), NU e șters.
+- **Ancoră segment-locală**: swing-uri acumulate DIN `structural_start`-ul segmentului CURENT, nemărginit pe
+  durata lui (D1 închis structural — NU o nouă fereastră fixă) — mediană calculată printr-o structură
+  incrementală O(log m) (`_RunningMedian`, două heap-uri), NU re-sortare completă la fiecare bară: un
+  re-sort per bară ar fi fost O(n²) pe durata unui segment lung — verificat empiric (0,06ms/bară constant
+  la 31→1088 swing-uri, cu un `d_min_bars` realist) și corectat ÎNAINTE de livrare.
+- **`ZONES_DEGENERATE`** structural — `anchor_upper<=anchor_lower`, lățime insuficientă, NaN/Inf sunt
+  IMPOSIBIL de reprezentat ca geometrie validă (D2 închis prin TIP, nu doar prin verificare ulterioară).
+- **`TOO_SHORT` demonstrabil reachable** — durata se măsoară de la `structural_start` AL SEGMENTULUI (nu
+  vârsta celui mai vechi swing dintr-un buffer extern) — testat exact la limita `d_min-1`/`d_min`/`d_min+1`
+  (D3 închis: nu mai poate satura niciodată).
+- **Breach CAUZAL pe MEȘĂ (high/low), NU pe close** — un wick-sweep dintr-o SINGURĂ bară (depășire+reclaim
+  în aceeași bară) e reprezentabil, semnătura D6 reutilizată din 0.3.x. Rezoluția (sweep/breakout/expirare)
+  se decide pe close, cursă între două praguri pe ACELAȘI contor `pending_consec_outside` (breach=bara 1):
+  reintrare cu `bars_pending<=K` → `LIQUIDITY_SWEEP_*` (`confirm_ts`=bara reintrării, NICIODATĂ breach-ul);
+  `bars_pending>=N` fără reintrare → `BREAKOUT_ACCEPTANCE_*` (segmentul se termină); reintrare REALĂ dar
+  `bars_pending>K` → `SWEEP_WINDOW_EXPIRED` (nici sweep, nici breakout). **Invariant `K<=N` OBLIGATORIU**
+  (corectat față de un design intermediar `K>=N` care făcea fereastra K structural inaccesibilă — aceeași
+  clasă de defect "parametru neutilizabil prin construcție" pe care mandatul o interzice explicit).
+- **`K`/`N`/`w_atr` NEIDENTIFICATE** (§6.4 spec) — `RangeConfigV3` le CERE explicit, FĂRĂ default ascuns
+  (verificat structural: `inspect.signature` confirmă absența oricărui default), refuză construcția fără
+  `acknowledge_construction_only=True` — suprafața de producție refuză configurația neratificată PRIN
+  CONSTRUCȚIE. Niciun parametru de "fereastră a ancorei" nu mai există (D1 eliminat structural, nu doar
+  redenumit).
+- **Toate cele 14 stări/evenimente din spec §6.2** confirmat reachable (`RANGE_ESTABLISHING`/`ESTABLISHED`/
+  `MID`, `BOUNDARY_TEST_UPPER`/`LOWER`, `LIQUIDITY_SWEEP_UP`/`DOWN`, `BREAKOUT_ACCEPTANCE_UP`/`DOWN`,
+  `RANGE_FAILED`, `CHANNEL_UP`/`DOWN`, `TRANSITION`, `UNAVAILABLE`) — trei dintre ele (`RANGE_ESTABLISHING`,
+  `RANGE_FAILED`, `UNAVAILABLE`) erau declarate dar niciodată efectiv construite ca eveniment într-un draft
+  intermediar; corectat înainte de livrare, verificat printr-un test dedicat de reachability.
+- **`HBL-20` reprodus NUMERIC EXACT** (construction-only, nu blind) dintr-un fixture sintetic al verificării
+  proprii, deja publicate, a Statisticianului: breach bara 52 (low 3330,25<3333,06), rămâne ambiguu 53-55,
+  `LIQUIDITY_SWEEP_DOWN` confirmat EXACT la bara 56 (`confirm_ts`=bara 56, NICIODATĂ bara 52), markup bara
+  63 (close 3346,99) deschide pe sus fără să confirme singur breakout. Diagnostic construction-only pe toate
+  cele 24 ferestre HBL (analoage sintetice ale secvenței calitative CEO — ferestrele reale rămân
+  nepublicate): `RANGE_V3_HBL_DIAGNOSTIC.md` — 0/22 ferestre sintetizate cu istoric complet gol (echivalentul
+  „RANGE 0 · CANAL 0" din 0.3.1, unde majoritatea covârșitoare arăta exact acest tipar).
+- **F7 `RANGE_MID_NO_ENTRY`** SAFETY_GUARD neschimbat semantic — `entry_decision_v3` reia exact tiparul.
+- **75 teste noi** (`test_range_semantic_v3.py`) + regresie completă 0.1.0→0.3.1 (162 teste), **237 teste
+  total**, mypy `--strict` clean, wheel construit+instalat, teste rulate din wheel-ul INSTALAT într-un
+  venv GOL (izolat, fără arbore sursă frate), rollback funcțional 0.4.0→0.3.1→0.1.1→0.4.0 verificat (nu
+  doar metadata — suita de teste PROPRIE a fiecărei versiuni rulată cu succes la fiecare pas). Benchmark
+  complet 355.696 bare (arhitectură material schimbată, nu doar o pin de configurație — spre deosebire de
+  0.3.1, unde rularea completă a fost explicit waivată): vezi `RANGE_V3_BENCHMARK.md`.
+- `n_generated_total=363`/`m_inference=26`/tombstones/registrul Alpha/F1-F6/F7 NEATINSE. Fără SEALED/OOS,
+  fără MT5/broker/`order_send`/`set_authority`. `self_declared_pass=false`. Ordinea ulterioară
+  (VE 0.4.0 → Red Team semantic/code PASS → lot blind nou → Red Team blind PASS → VE Strategy Catalog →
+  Red Team PASS → Alpha discovery → AI Trader integration) NEMODIFICATĂ — nicio strategie RANGE
+  implementată aici, LIVE_SHADOW neatins.
+
 ## 0.3.1 — PIN de configurație V2: `w_atr=0,30` RATIFICAT, `s_max` DERIVAT structural (READY_FOR_RANGE_V2_BLIND_REVALIDATION)
 
 **Modificare CHIRURGICALĂ, nu un patch semantic.** Statistician a rulat protocolul pre-înregistrat (`STAT-RANGE-V2-

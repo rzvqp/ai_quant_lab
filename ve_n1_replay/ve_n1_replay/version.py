@@ -7,7 +7,7 @@ Artefact N1 replay INDEPENDENT de ai_trader: împachetează byte-identic modulel
 
 from __future__ import annotations
 
-VE_N1_REPLAY_VERSION: str = "0.3.1"
+VE_N1_REPLAY_VERSION: str = "0.4.0"
 N1_REPLAY_CONTRACT_VERSION: str = "n1-replay-request-v1"
 SNAPSHOT_SCHEMA_VERSION: str = "n1-replay-snapshot-v1"
 REASON_CODE_SCHEMA_VERSION: str = "n1-replay-reason-codes-v1"
@@ -134,6 +134,62 @@ PREDECESSOR_0_3_0_DELIVERY_COMMIT: str = "22e1496"
 # UNICUL cod de motiv nou (mandat: "cu excepția unui cod nou strict necesar pentru refuzul configurației legacy")
 LEGACY_S_MAX_REJECTED: str = "LEGACY_S_MAX_REJECTED"
 
+# ── 0.4.0: RANGE SEMANTIC V3 — REDESIGN longitudinal (NU un patch, contract NOU range-semantic-v3.0) ──
+# Sursă normativă: Statistician STAT-RANGE-SEMANTIC-SPEC-V3-v1.0 @`bf9f780`, manifest v2.7.84 @`db098ed`,
+# fingerprint COMPLET verificat exact din manifest (content_hash.value):
+#   cddaab381f0132eac025e9fcad3454d54fca78dc1abab6bc8b3cea05e5951233
+# Consumă `RANGE_HUMAN_LABEL_BATCH_01.pdf` + `..._CEO_ASSISTED_RESULTS.md/.txt` — lot **CEO_ASSISTED**,
+# **construction-only PERMANENT** (NU blind, NU independent, NU OOS, NU validare). Defecte V2 demonstrate:
+# ancoră pe 512 bare vs d_min 96 (5,3×), ancore care se INVERSEAZĂ (ZONES_DEGENERATE absentă), poartă de
+# durată care nu poate eșua (`bars_in_state` saturează la ~508), ACCEPTED_BREAK pe 76,65% din bare (aceeași
+# CLASĂ de defect ca V1 — regula proprie distruge precondiția alteia), fără segmentare longitudinală
+# (17/24 ferestre sunt multi-regim), sweep EMIS ca eveniment dar consumat de NICIO stare.
+RANGE_V3_STATISTICIAN_SPEC_COMMIT: str = "bf9f780"
+RANGE_V3_MANIFEST_COMMIT: str = "db098ed"
+RANGE_V3_MANIFEST_VERSION: str = "v2.7.84"
+RANGE_V3_MANIFEST_FINGERPRINT: str = (
+    "cddaab381f0132eac025e9fcad3454d54fca78dc1abab6bc8b3cea05e5951233"
+)   # verificat: content_hash.value din split_manifest.json @db098ed, MATCH exact
+RANGE_V3_HBL_BATCH_PDF_SHA256: str = "8599660e73711b22d1d3f25095040107e4795b856e341faabfa735193c679a76"
+RANGE_V3_HBL_PROVENANCE: str = "CEO_ASSISTED"     # NU blind, NU independent, NU OOS — construction-only PERMANENT
+
+# NOUĂ suprafață de contract (9 versiuni — spațiu de nume PROPRIU, NU reutilizează/reinterpretează v2/StructBand)
+RANGE_SEMANTIC_CONTRACT_VERSION_V3: str = "range-semantic-v3.0"
+RANGE_STATE_MACHINE_VERSION_V3: str = "range-state-machine-v3.0"
+RANGE_EVENT_CONTRACT_VERSION_V3: str = "range-events-v3.0"
+RANGE_SNAPSHOT_SCHEMA_VERSION_V3: str = "range-state-snapshot-v3.0"
+RANGE_LEDGER_SCHEMA_VERSION_V3: str = "range-state-ledger-v3.0"
+RANGE_REASON_CODE_CONTRACT_VERSION_V3: str = "range-reason-codes-v3.0"
+RANGE_CONFIG_SCHEMA_VERSION_V3: str = "range-config-schema-v3.0"
+RANGE_EVALUATION_IDENTITY_VERSION_V3: str = "range-evaluation-identity-v3.0"
+RANGE_PRODUCER_VERSION_V3: str = "range-producer-0.4.0"
+
+# ── Parametrii V3 — statutul lor EXACT din spec (§6.4 @bf9f780), NIMIC ascuns ──
+# d_min ȘI n_touch rămân MOȘTENITE (spec: NU marcate NEIDENTIFICAT — doar fereastra ancorei și w_atr trebuie
+# reidentificate sub noua geometrie). K (reintrare sweep) și N (închideri de acceptare) sunt NEIDENTIFICATE
+# — NU au valoare implicită ascunsă; `RangeConfigV3` le cere EXPLICIT, fără default, și refuză construcția
+# fără confirmarea explicită `acknowledge_construction_only=True` (suprafața de producție REFUZĂ configurația
+# neratificată prin construcție, nu doar prin documentație). `w_atr` (deci `s_max=2×w_atr`) NU se transportă
+# automat din 0.3.1 — ancora s-a schimbat (segment-locală, nu fereastră de 512 bare), deci valoarea 0,30
+# ratificată SUB ancora veche NU e validă sub ancora nouă și trebuie reidentificată — la fel NEIDENTIFICAT.
+RANGE_V3_D_MIN_INHERITED: bool = True             # d_min_bars (96/24) — inherited, per spec
+RANGE_V3_N_TOUCH_INHERITED: bool = True           # n_touch — inherited, per spec
+RANGE_V3_K_STATUS: str = "NEIDENTIFICAT"          # fereastra de reintrare pt. sweep — interval plauzibil (1, d_min/4]
+RANGE_V3_N_ACCEPTANCE_STATUS: str = "NEIDENTIFICAT — moștenit provizoriu n_acceptance=2 (marcaj explicit, nu ratificare)"
+RANGE_V3_W_ATR_STATUS: str = "NEIDENTIFICAT — trebuie REIDENTIFICAT sub noua ancoră segment-locală (0.3.1: 0.30 NU se transportă)"
+RANGE_V3_ANCHOR_WINDOW_RULE: str = (
+    "swing-uri acumulate DIN structural_start AL SEGMENTULUI CURENT, nemărginit în viața segmentului "
+    "(mărginit natural: un segment nou pornește gol la fiecare tranziție) — NU fereastra fixă de 512 bare "
+    "din 0.3.x. Aceasta operaționalizează regula declarată 'fereastra ancorei nu poate depăși durata "
+    "segmentului' FĂRĂ a introduce un al patrulea parametru numeric neidentificat."
+)
+
+# identitatea predecesorului 0.3.1 (refuz fail-closed la restore/migrare + raport de compatibilitate)
+PREDECESSOR_0_3_1_VERSION: str = "0.3.1"
+PREDECESSOR_0_3_1_WHEEL_SHA256: str = "048ee2b495112c9f90b39d65a7d6bd851764a46f1e32b0eda7c6ad2a42686cca"
+PREDECESSOR_0_3_1_BUILD_COMMIT: str = "aa01f41"
+PREDECESSOR_0_3_1_DELIVERY_COMMIT: str = "18d1aa1"
+
 # sursele EXACTE
 AI_SOURCE_REPO: str = "ai_quant_lab-wp5b"
 AI_SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
@@ -201,4 +257,10 @@ def build_info() -> dict[str, object]:
         "range_v2_1_statistician_result_commit": RANGE_V2_1_STATISTICIAN_RESULT_COMMIT,
         "range_v2_1_manifest_commit": RANGE_V2_1_MANIFEST_COMMIT,
         "range_v2_1_manifest_fingerprint": RANGE_V2_1_MANIFEST_FINGERPRINT,
+        "range_semantic_contract_version_v3": RANGE_SEMANTIC_CONTRACT_VERSION_V3,
+        "range_producer_version_v3": RANGE_PRODUCER_VERSION_V3,
+        "range_v3_statistician_spec_commit": RANGE_V3_STATISTICIAN_SPEC_COMMIT,
+        "range_v3_manifest_commit": RANGE_V3_MANIFEST_COMMIT,
+        "range_v3_manifest_fingerprint": RANGE_V3_MANIFEST_FINGERPRINT,
+        "range_v3_hbl_provenance": RANGE_V3_HBL_PROVENANCE,
     }

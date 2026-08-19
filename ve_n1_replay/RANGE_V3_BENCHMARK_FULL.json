@@ -1,0 +1,19 @@
+{
+  "results": [
+    {
+      "bars": 355696,
+      "wall_s": 1840.813,
+      "cpu_s": 1823.031,
+      "bars_per_sec": 193.2,
+      "us_per_bar": 5175.24,
+      "run_hash": "961e789020c8",
+      "n_guards": 140790,
+      "events_total": 366811,
+      "confirmed_segments": 64,
+      "snapshot_s": 0.039493,
+      "restore_s": 0.013548,
+      "peak_ws_mb": 691.4
+    }
+  ],
+  "under_4h": true
+}
