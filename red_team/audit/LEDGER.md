@@ -3776,13 +3776,15 @@
                = filename; escrow_key_v3 opens (HMAC tag valid); wrong-key + 1-bit change both refused; exactly 48
                IDs no dup; lengths 16x96+16x288+16x480=13824; corrected 046=288/047=96/048=480 (matches CORRECTION
                ADDENDUM not the stale attached JSONs); XAUUSD M15, per-window start/end land on the real canonical
-               calendar (BLIND-001 2024-12-24 02:30->2024-12-30 08:30, unix 1735007400 present in corpus). BLOCKING
+               calendar (every window's sealed start/end resolves to an existing canonical M15 bar; concrete
+               timestamps withheld per §8). BLOCKING
                ITEM = the ONE §4 check I could not complete: extracted OHLC SHA-256 != published bars_sha256, and
                it is NOT independently reproducible because (1) the canonical-index SOURCE corpus is not
                materialized -- mapping indexes a 197094-bar discovery corpus (canonical_index_start=178230,
                of_total=197094) that exists NOWHERE on disk/Git; the only M15 corpora present are 355696 (full)
-               and 84152 (SUPERSEDED_v1); index 178230 fits neither (sealed ts sits at index 318264 in the 355696
-               corpus); AND (2) NO seal/serialization recipe is committed -- HASHES.md asserts "recalculabile" but
+               and 84152 (SUPERSEDED_v1); index 178230 fits neither (overflows 84152; in the 355696 corpus the
+               sealed window resolves to a materially different index -- the two corpora share no index origin);
+               AND (2) NO seal/serialization recipe is committed -- HASHES.md asserts "recalculabile" but
                a repo-wide search for bars_sha256 across the escrow folder + entire statistician/ tree returns ZERO
                scripts. Extracted BLIND-001's 288 bars by timestamp from the 355696 corpus (timestamps match
                exactly) and tried ~24 serialization conventions (CSV/ISO-vs-unix/OHLC-vs-OHLCV/JSON dict+list

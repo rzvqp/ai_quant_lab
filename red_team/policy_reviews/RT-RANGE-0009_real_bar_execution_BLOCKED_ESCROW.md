@@ -49,7 +49,7 @@ Pre-run protocol committed and pushed BEFORE any sealed read (commit `38daf9b`,
 | Lengths 16×96 + 16×288 + 16×480 = 13 824 bars | **PASS** |
 | Corrected lengths BLIND-046 = 288 · 047 = 96 · 048 = 480 | **PASS** (mapping matches the CORRECTION ADDENDUM, not the stale attached JSONs) |
 | Instrument XAUUSD, timeframe M15 | **PASS** (per-window timestamps land on the canonical M15 calendar, 15-min spacing) |
-| Each window's start_utc/end_utc lands on a real canonical bar | **PASS** (e.g. BLIND-001 `2024-12-24 02:30 → 2024-12-30 08:30`, unix `1735007400`, present in the canonical corpus) |
+| Each window's start_utc/end_utc lands on a real canonical bar | **PASS** (every window's sealed start/end resolves to an existing bar on the canonical M15 calendar — concrete timestamps withheld per §8) |
 | **Each window's extracted OHLC SHA-256 = published `bars_sha256`** | **FAIL — CANNOT REPRODUCE** (see §3) |
 
 Everything about the escrow *container* is sound (tamper-evident, correctly keyed, right population, right
@@ -65,7 +65,8 @@ Two committed/available artifacts are missing, both necessary to recompute the a
    197094`). No CSV of ~197 094 rows exists anywhere under `ai_quant_lab-wp5b/data`, `ai_quant_lab/data`, or the
    escrow folder. The M15 corpora that DO exist are **355 696** rows (wp5b full history) and **84 152** rows
    (`__SUPERSEDED_v1`). Index 178 230 fits neither: it overflows 84 152 and is offset differently from 355 696
-   (the sealed timestamp `1735007400` sits at index 318 264 in the 355 696 corpus, not 178 230). The 197 094-bar
+   (in the 355 696 corpus the sealed window resolves to a materially different index than 178 230 — the two
+   corpora do not share an index origin). The 197 094-bar
    corpus is a reconstruction (the 4 discovery blocks concatenated) that has never been committed as a file.
 
 2. **No seal/hash recipe is committed.** `BLIND_LABEL_BATCH_02_HASHES.md` asserts *"Toate recalculabile"* but
@@ -104,8 +105,8 @@ escrow-publication protocol that blocks the mandated pre-run verification.
 - **No prohibited surfaces.** Zero SEALED/OOS access, zero PnL, zero broker, zero LIVE_SHADOW, zero Alpha,
   zero Strategy Catalog, no wheel, no 6-hour regression. VE / Statistician / AI Trader code untouched; all
   changes confined to `red_team/`.
-- **No sealed data published.** This report contains only opaque IDs, a single already-published timestamp,
-  hashes, and aggregate structure — no bar values, no ID→timestamp mapping, no key, no local paths.
+- **No sealed data published.** This report contains only opaque IDs, hashes, and aggregate structure — no
+  concrete timestamps, no bar values, no ID→timestamp mapping, no key, no local paths.
 - The decrypted mapping was handled only in an off-git scratch location and is not committed; it is deleted at
   delivery.
 
