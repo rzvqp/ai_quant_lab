@@ -124,10 +124,10 @@
     "verify_range_v43_escrow.py": "563cd2fe7c180457436d94105501597bb06da3edae19ab3cf3de25971a91f04c",
     "test_escrow_repro.py": "733093e77e835d355bc64a08f14ad2c27f9b66b267f012a15a671956109fd3e1",
     "BARS_SHA256_SPEC.md": "c6b99500a5c99429906c45c3c9ee322e7c60af555586cc53d3c6abac1b87d92f",
-    "make_manifest.py": "2ce83b42e4354c8a17d10670ba3893febfe08fbb12a7489c6de5ad339b3aa00d"
+    "make_manifest.py": "883a559445419c5c43ea5730988089dfcb42ad00c86bd78f9ec3db4427b4703a"
   },
   "package_fingerprint": {
-    "value": "e6f4018b5e3a5b06f41ba3df3e6eeced6b6a05d21c0c6a6b9165db873a1ed1c0",
-    "computed_over": "sha256 peste artefact_hashes serializat sortat"
+    "value": "2f8dd39c567bd0e888d88505b9bd28664d3ca37ac37a1dca30ec8271037162e2",
+    "computed_over": "sha256 peste artefact_hashes serializat sortat; hashurile de artefact sunt LF-normalizate"
   }
 }

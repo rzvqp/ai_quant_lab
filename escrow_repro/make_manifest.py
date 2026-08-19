@@ -19,7 +19,15 @@ REPO = os.path.dirname(HERE)
 
 
 def sha256_file(path: str) -> str:
-    return hashlib.sha256(io.open(path, "rb").read()).hexdigest()
+    """SHA-256 peste continut NORMALIZAT LF.
+
+    Fara normalizare amprenta pachetului depinde de politica de line-endings a
+    checkout-ului: `git archive` restaureaza CRLF pe Windows, iar doua directoare curate
+    dadeau amprente diferite. Descoperit rulind chiar testul de determinism cerut de mandat.
+    """
+    crlf = bytes([13, 10])
+    raw = io.open(path, "rb").read().replace(crlf, bytes([10]))
+    return hashlib.sha256(raw).hexdigest()
 
 
 def build(result: str, date: str) -> dict[str, Any]:
@@ -118,7 +126,7 @@ def build(result: str, date: str) -> dict[str, Any]:
                    "tests_passed": 22, "tests_failed": 0},
         "artefact_hashes": {},
         "package_fingerprint": {"value": "", "computed_over":
-                                "sha256 peste artefact_hashes serializat sortat"},
+                                "sha256 peste artefact_hashes serializat sortat; hashurile de artefact sunt LF-normalizate"},
     }
     m["artefact_hashes"] = {a: sha256_file(os.path.join(HERE, a)) for a in artefacts}
     body = json.dumps(m["artefact_hashes"], sort_keys=True, ensure_ascii=False)
