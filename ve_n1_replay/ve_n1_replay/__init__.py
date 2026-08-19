@@ -138,6 +138,24 @@ from .range_semantic_v3_1 import RangeConfigV31, RangeSemanticProducerV31   # no
 from .range_engine_v3_1 import (   # noqa: E402
     RangeSemanticEngineV31, RangeSnapshotV31, RangeSnapshotErrorV31,
 )
+# ── PROTOTIP `range-hierarchical-v4.3` (mandat CEO, NU o versiune a pachetului -- vezi range_semantic_v4_3.py
+# pt. domeniu/autorizare completă. VE_N1_REPLAY_VERSION rămâne 0.4.1, niciun wheel, niciun bump public.) ──
+from .version import (
+    RANGE_V4_3_STATISTICIAN_PACKAGE_COMMIT, RANGE_V4_3_STATISTICIAN_MANIFEST_COMMIT,
+    RANGE_V4_3_STATISTICIAN_MANIFEST_VERSION, RANGE_V4_3_STATISTICIAN_MANIFEST_FINGERPRINT,
+    RANGE_V4_3_RED_TEAM_COMMIT, RANGE_V4_3_RED_TEAM_ENTRY, RANGE_V4_3_RED_TEAM_AUDIT,
+    RANGE_V4_3_RED_TEAM_VERDICT, RANGE_V4_3_HARNESS_PATH, RANGE_V4_3_HARNESS_SHA256,
+    RANGE_V4_3_HARNESS_TESTS_PATH, RANGE_V4_3_HARNESS_TESTS_SHA256,
+)
+from .range_semantic_v4_3 import (   # noqa: E402
+    ContractErrorV43, ConfigNotRatifiedErrorV43, Depth, MacroState, InternalState,
+    REASONS_V43, ROLES_V43, ConfigV43, Cluster, Structure, Excursion, Registry,
+    RangeSemanticProducerV43, RangeSemanticResultV43, RangeEventV43,
+    RANGE_HIERARCHICAL_V4_3_CONTRACT_VERSION, RANGE_HIERARCHICAL_V4_3_NORMATIVE_CONFIG_ID,
+)
+from .range_engine_v4_3 import (   # noqa: E402
+    RangeSemanticEngineV43, RangeLedgerV43, RangeReplayRecordV43, RangeSnapshotV43, RangeSnapshotErrorV43,
+)
 
 
 def initialize(*, symbol: str, timeframe: str, bar_interval_seconds: int,
@@ -216,4 +234,16 @@ __all__ = [
     "RANGE_V3_1_RED_TEAM_DEFECT_SECTION", "RANGE_V3_1_FIX_VARIANT",
     "PREDECESSOR_0_4_0_VERSION", "PREDECESSOR_0_4_0_WHEEL_SHA256", "PREDECESSOR_0_4_0_BUILD_COMMIT",
     "PREDECESSOR_0_4_0_DELIVERY_COMMIT",
+    # PROTOTIP range-hierarchical-v4.3 (NU o versiune a pachetului -- vezi range_semantic_v4_3.py)
+    "ContractErrorV43", "ConfigNotRatifiedErrorV43", "Depth", "MacroState", "InternalState",
+    "REASONS_V43", "ROLES_V43", "ConfigV43", "Cluster", "Structure", "Excursion", "Registry",
+    "RangeSemanticProducerV43", "RangeSemanticResultV43", "RangeEventV43",
+    "RANGE_HIERARCHICAL_V4_3_CONTRACT_VERSION", "RANGE_HIERARCHICAL_V4_3_NORMATIVE_CONFIG_ID",
+    "RangeSemanticEngineV43", "RangeLedgerV43", "RangeReplayRecordV43", "RangeSnapshotV43",
+    "RangeSnapshotErrorV43",
+    "RANGE_V4_3_STATISTICIAN_PACKAGE_COMMIT", "RANGE_V4_3_STATISTICIAN_MANIFEST_COMMIT",
+    "RANGE_V4_3_STATISTICIAN_MANIFEST_VERSION", "RANGE_V4_3_STATISTICIAN_MANIFEST_FINGERPRINT",
+    "RANGE_V4_3_RED_TEAM_COMMIT", "RANGE_V4_3_RED_TEAM_ENTRY", "RANGE_V4_3_RED_TEAM_AUDIT",
+    "RANGE_V4_3_RED_TEAM_VERDICT", "RANGE_V4_3_HARNESS_PATH", "RANGE_V4_3_HARNESS_SHA256",
+    "RANGE_V4_3_HARNESS_TESTS_PATH", "RANGE_V4_3_HARNESS_TESTS_SHA256",
 ]

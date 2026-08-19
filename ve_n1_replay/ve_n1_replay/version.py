@@ -222,6 +222,27 @@ PREDECESSOR_0_4_0_WHEEL_SHA256: str = "c79f5fcab202a72c6548a470e7702b6917685dc78
 PREDECESSOR_0_4_0_BUILD_COMMIT: str = "dead38d"
 PREDECESSOR_0_4_0_DELIVERY_COMMIT: str = "034b919"
 
+# ── PROTOTIP `range-hierarchical-v4.3` (mandat CEO, NU o versiune a pachetului -- VE_N1_REPLAY_VERSION rămâne
+# 0.4.1, NEATINS; niciun wheel, nicio atingere release/SHA256SUMS). Provenance-only -- constantele operaționale
+# proprii (contract_version, config_id normativ) trăiesc direct în range_semantic_v4_3.py, nu aici, ca să nu
+# implice o identitate de PACHET pt. ceva ce mandatul interzice explicit să fie livrat ca atare. ──
+RANGE_V4_3_STATISTICIAN_PACKAGE_COMMIT: str = "d6e599e"
+RANGE_V4_3_STATISTICIAN_MANIFEST_COMMIT: str = "14d4c22"
+RANGE_V4_3_STATISTICIAN_MANIFEST_VERSION: str = "v2.7.94"
+RANGE_V4_3_STATISTICIAN_MANIFEST_FINGERPRINT: str = (
+    "a5d69e2d0150d7ca2cf750df49f65cfc55b91fa89d13568fa42f81a48f4ee565")
+RANGE_V4_3_RED_TEAM_COMMIT: str = "2c113ef"
+RANGE_V4_3_RED_TEAM_ENTRY: str = "E81"
+RANGE_V4_3_RED_TEAM_AUDIT: str = "RT-RANGE-0006"
+RANGE_V4_3_RED_TEAM_VERDICT: str = "RANGE_V4_IMPLEMENTATION_PACKAGE_STATIC_PASS"
+RANGE_V4_3_HARNESS_PATH: str = "statistician/harness/range_v42_contract_harness.py"
+RANGE_V4_3_HARNESS_SHA256: str = "c917604bd42a0943d77d385523ececba149a3e78f76a4875ce94cf82a368c72d"
+RANGE_V4_3_HARNESS_TESTS_PATH: str = "statistician/harness/test_range_v42_adversarial.py"
+RANGE_V4_3_HARNESS_TESTS_SHA256: str = "ecb4140e7f47d7b86cb29ef7d50e193a1375dddc2c5505aef7a65add2d277f40"
+# numele fișierului harness conține "v42" din motive ISTORICE (v4.3 = v4.2 + 17 corecții, statistician nu a
+# izolat un fișier nou) -- normativ e contract_version="range-hierarchical-v4.3" (singular, RT §2). VE nu
+# implementează v4.2 -- toate simbolurile VE poartă v4_3/V43, niciodată v42/V42.
+
 # sursele EXACTE
 AI_SOURCE_REPO: str = "ai_quant_lab-wp5b"
 AI_SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
