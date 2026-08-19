@@ -3664,4 +3664,54 @@
                trades. Report: RT-RANGE-0006_range_v4_implementation_package_static_d6e599e_PASS.md.
                STATE: OPERATIONAL. Next entry [82], prev_hash E81.
   entry_hash:  E81
+
+[82] 2026-08-19
+  prev_hash:   E81
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-3-REAL-PROTOTYPE
+  freeze_hash: prototype f224e7d (range_semantic_v4_3.py sha 2aba333c... / range_engine_v4_3.py sha 84dac346...) / config_id 24f72a60 / contract range-hierarchical-v4.3 / initial 119a0cc
+  battery_ver: RT-RANGE-0007
+  reviewer:    Red Team
+  detail:      VE REAL RANGE HIERARCHICAL V4.3 PROTOTYPE AUDIT (frozen commit f224e7d). TWO VERDICTS:
+               A = ***RANGE_V4_3_PROTOTYPE_IMPLEMENTATION_PASS***; B = ***RANGE_V4_3_CONSTRUCTION_RESULT_NOT_
+               REPRODUCED***; PRE_RUN_FREEZE_PROTOCOL = ***FAIL***. Prototype not modified, no wheel, no blind
+               corpus, no SEALED/OOS, no PnL. §1 branch HEAD IS f224e7d, local=remote 4 mirrors; module 1143 lines
+               (created 119a0cc, +64 rigor pass f224e7d). §3 config_id 24f72a60 byte-exact + engine build-guard;
+               changing a param changes identity; snapshot fail-closed on contract_version+config_id+N1; VE claim
+               that schema/snapshot/config/reason-code versions don't exist separately = TRUE (verified, not
+               invented). §4 FREEZE FAIL: VE §9 openly states 'rularea corpusului s-a facut DUPA fix, INAINTE de
+               commit' -- run preceded the freeze declaration; freeze declared AT f224e7d which contains results;
+               disclosed not hidden. §5 CEO config all exact (d_macro=29...w_atr=0.80, tol/s_max/ceiling props).
+               §6 real observe() loop: swings->clusters->push_close->_step_depth(MACRO/INTERNAL)->_check_reversal_
+               watch; every clause reaches a production symbol. §7 THE BUG confirmed real: sweep_reversal_confirmed
+               was tested-but-never-called-from-loop -> LIQUIDITY_SWEEP_REVERSAL unreachable via observe(); fix
+               (_reversal_watch opened at SWEEP_CONFIRMED, opposite-side ref, dynamic episode_end_ts, snapshot-
+               persisted) CORRECT; I independently confirmed reachability via observe()-only (not VE's test), not-
+               every-sweep, no lookahead. §8 HBL-20 trace: SWEEP_CONFIRMED@49, LIQUIDITY_SWEEP_REVERSAL@75,
+               BREAKOUT@77 -- distinct sequential events; bar75 = FIRST causal opposite-swing break (close135>upper
+               120), CONTRACT-required NOT implementation delay; caveat = reversal fires LATE (post-move, ~15pts,
+               inherent to contract). §9 2 depths (MICRO unrepresentable), DEPTH_LIMIT enforced, macro_history
+               retains episodes, e2e+harness 1c/2b pass. §10 prefix-invariance/zero-lookahead PASS (independent).
+               §11 sweep/breakout/promotion via observe, exact boundaries pass. §12 29 closed; reachable via
+               observe() (C13 fix closed last gap; emitters proven in RT-0006). §13 snapshot atomic+fail-closed
+               (missing core fields/wrong-type/mismatch refused, engine unchanged); 2 NITS: string-corrupted list
+               field accepted (deque(str) quirk), missing macro_reversal_watch .get-defaulted. §14 369/370 real
+               PASS + mypy --strict CLEAN on both V4.3 modules; the 1 'fail' = test-portability (hardcoded 'python'
+               subprocess without mypy in base interp, not a type error); 79 harness = 39+27+13 reconciled. §15
+               denominators CORRECT: 88 MACRO / 12 INTERNAL / 26 UNRESOLVED-separate; corrected windows 046=288/
+               047=96/048=480 (13824=16x864). ★ §16 NOT REPRODUCIBLE: synth.py/run_construction.py/construction_
+               run_results.json UNCOMMITTED (VE §9) -> VE's figures (MACRO recall 0.648/prec 0.445/IoU-med 0.770,
+               57/88, sweep209/breakout112/reversal21/promo94) cannot be independently reproduced from the frozen
+               commit (§1 violation: results from uncommitted local files); corpus CIRCULAR (bars synthesized from
+               the labels they're scored against = sanity not accuracy). I confirmed only NON-EMPTINESS (committed
+               detector produces MACRO+breakout on labels-derived bars, the real V3->V4.3 fix) + correct
+               denominators. §18 detector DOES see ranges now (V3 saw zero) but INTERNAL weak (2/12), reversal late,
+               numbers unverifiable -> does NOT justify skipping blind. FINDINGS: freeze-fail, uncommitted-run-
+               harness, circularity, late-reversal, snapshot-type-nits, mypy-test-portability, weak-INTERNAL.
+               IMPLEMENTATION_PASS authorizes ONLY NEW_INDEPENDENT_BLIND_VALIDATION_PREPARATION (RT runs frozen
+               detector on REAL SEALED bars = separate mandate), on condition VE commits the run harness + the
+               construction figures carry NO validation weight. NOT wheel/Strategy Catalog/Alpha/AI Trader/LIVE_
+               SHADOW/broker/trades/6h-regression. Report: RT-RANGE-0007_range_v4_3_real_prototype_f224e7d.md.
+               STATE: OPERATIONAL. Next entry [83], prev_hash E82.
+  entry_hash:  E82
 ```
