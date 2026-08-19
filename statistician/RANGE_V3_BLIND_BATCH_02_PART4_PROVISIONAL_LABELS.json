@@ -1,0 +1,212 @@
+{
+  "artifact": "RANGE_V3_BLIND_BATCH_02_PART4_PROVISIONAL_LABELS",
+  "source_pdf": "RANGE_V3_BLIND_BATCH_02_PART4.pdf",
+  "instrument": "XAUUSD",
+  "timeframe": "M15",
+  "part": 4,
+  "windows_reviewed": 12,
+  "status": "PENDING_CEO_REVIEW",
+  "provenance": "ASSISTANT_FIRST_PASS_WITHOUT_INTERMEDIATE_CEO_FEEDBACK",
+  "independent_blind_validation_eligible": false,
+  "reason": "Clasificarea este o primă lectură realizată de asistent și urmează să fie confirmată sau corectată de CEO.",
+  "labels": [
+    {
+      "id": "BLIND-037",
+      "window_bars": 96,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 8, "class": "TRANSITION", "events": ["SWEEP_DOWN", "FAILED_BREAKOUT_DOWN"]},
+        {"start": 8, "end": 24, "class": "CHANNEL_UP", "intensity": "AGGRESSIVE_RECOVERY"},
+        {"start": 24, "end": 96, "class": "RANGE", "lower": "1886-1888", "upper": "1893-1896", "status": "CONTINUES"}
+      ],
+      "internal_structures": [
+        {"start": 24, "end": 50, "class": "RANGE"},
+        {"start": 50, "end": 70, "class": "CHANNEL_UP"},
+        {"start": 70, "end": 96, "class": "RANGE"}
+      ],
+      "macro": "LIQUIDITY_SWEEP_REVERSAL_BULLISH_TO_RANGE"
+    },
+    {
+      "id": "BLIND-038",
+      "window_bars": 480,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 100, "class": "CHANNEL_UP", "overlay": "UPPER_RANGE"},
+        {"start": 100, "end": 128, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 128, "end": 250, "class": "CHANNEL_DOWN", "overlay": "BEARISH_RANGE"},
+        {"start": 250, "end": 320, "class": "CHANNEL_DOWN", "intensity": "AGGRESSIVE"},
+        {"start": 320, "end": 400, "class": "RANGE", "role": "LOWER_ACCUMULATION"},
+        {"start": 400, "end": 480, "class": "RANGE", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 90, "end": 104, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"},
+        {"start": 385, "end": 404, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"}
+      ],
+      "macro": "MAJOR_TREND_DOWN_TO_LOWER_RANGE"
+    },
+    {
+      "id": "BLIND-039",
+      "window_bars": 288,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 40, "class": "RANGE", "role": "LOWER_BASE"},
+        {"start": 40, "end": 68, "class": "CHANNEL_UP"},
+        {"start": 68, "end": 120, "class": "RANGE"},
+        {"start": 120, "end": 145, "class": "TRANSITION", "event": "BREAKOUT_UP", "status": "ACCEPTED_STRONG"},
+        {"start": 145, "end": 215, "class": "CHANNEL_UP", "overlay": "UPPER_RANGE"},
+        {"start": 215, "end": 280, "class": "RANGE", "role": "UPPER_DISTRIBUTION"},
+        {"start": 280, "end": 288, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "CONTINUES_IN_CONTEXT"}
+      ],
+      "events": [{"start": 200, "end": 214, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"}],
+      "macro": "STEPWISE_TREND_UP_TO_DISTRIBUTION"
+    },
+    {
+      "id": "BLIND-040",
+      "window_bars": 480,
+      "confidence": "MEDIUM_HIGH",
+      "segments": [
+        {"start": 0, "end": 60, "class": "CHANNEL_UP"},
+        {"start": 60, "end": 150, "class": "RANGE"},
+        {"start": 150, "end": 172, "class": "TRANSITION", "events": ["SWEEP_UP", "FAILED_BREAKOUT_UP"]},
+        {"start": 172, "end": 230, "class": "RANGE"},
+        {"start": 230, "end": 330, "class": "RANGE", "role": "LOWER_RANGE"},
+        {"start": 330, "end": 450, "class": "CHANNEL_UP"},
+        {"start": 450, "end": 480, "class": "RANGE", "role": "UPPER_DISTRIBUTION", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 228, "end": 238, "event": "BREAKOUT_DOWN"},
+        {"start": 302, "end": 312, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"},
+        {"start": 422, "end": 440, "event": "BREAKOUT_UP", "status": "ACCEPTED"}
+      ],
+      "macro": "LARGE_RANGE_WITH_BULLISH_EXIT"
+    },
+    {
+      "id": "BLIND-041",
+      "window_bars": 96,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 38, "class": "RANGE", "lower": "1664", "upper": "1667"},
+        {"start": 38, "end": 58, "class": "CHANNEL_DOWN"},
+        {"start": 58, "end": 72, "class": "CHANNEL_UP"},
+        {"start": 72, "end": 96, "class": "RANGE", "lower": "1661", "upper": "1664", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 66, "end": 73, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"},
+        {"start": 72, "end": 78, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"}
+      ],
+      "macro": "RANGE_LEVEL_SHIFT_DOWN"
+    },
+    {
+      "id": "BLIND-042",
+      "window_bars": 288,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 70, "class": "RANGE", "role": "LOWER_ACCUMULATION"},
+        {"start": 70, "end": 100, "class": "TRANSITION", "event": "BREAKOUT_UP", "status": "ACCEPTED_STRONG"},
+        {"start": 100, "end": 160, "class": "CHANNEL_UP", "overlay": "UPPER_RANGE"},
+        {"start": 160, "end": 176, "class": "TRANSITION", "events": ["SWEEP_UP", "FAILED_BREAKOUT_UP"]},
+        {"start": 176, "end": 215, "class": "CHANNEL_DOWN"},
+        {"start": 215, "end": 288, "class": "RANGE", "lower": "1969-1972", "upper": "1979-1983", "status": "CONTINUES"}
+      ],
+      "macro": "BULLISH_LEVEL_SHIFT_THEN_UPPER_RANGE"
+    },
+    {
+      "id": "BLIND-043",
+      "window_bars": 96,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 20, "class": "CHANNEL_DOWN"},
+        {"start": 20, "end": 80, "class": "RANGE", "lower": "1235.5-1236", "upper": "1238.5-1239"},
+        {"start": 80, "end": 92, "class": "TRANSITION", "event": "BREAKOUT_UP", "status": "ACCEPTED_STRONG"},
+        {"start": 92, "end": 96, "class": "RANGE", "role": "UPPER_BASE", "status": "CONTINUES_IN_CONTEXT"}
+      ],
+      "events": [{"start": 8, "end": 20, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"}],
+      "macro": "LOWER_RANGE_TO_BULLISH_BREAKOUT"
+    },
+    {
+      "id": "BLIND-044",
+      "window_bars": 480,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 40, "class": "RANGE"},
+        {"start": 40, "end": 62, "class": "TRANSITION", "event": "BREAKOUT_UP", "status": "ACCEPTED_STRONG"},
+        {"start": 62, "end": 120, "class": "RANGE", "role": "UPPER_DISTRIBUTION"},
+        {"start": 120, "end": 280, "class": "CHANNEL_DOWN", "overlay": "BEARISH_RANGE"},
+        {"start": 280, "end": 296, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 296, "end": 450, "class": "CHANNEL_DOWN", "overlay": "LOWER_RANGE"},
+        {"start": 450, "end": 480, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED"}
+      ],
+      "events": [
+        {"start": 28, "end": 42, "event": "SWEEP_DOWN", "secondary": "LIQUIDITY_SWEEP_REVERSAL_BULLISH"},
+        {"start": 365, "end": 378, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"}
+      ],
+      "macro": "MAJOR_TREND_DOWN_WITH_LEVEL_SHIFTS"
+    },
+    {
+      "id": "BLIND-045",
+      "window_bars": 288,
+      "confidence": "MEDIUM_HIGH",
+      "segments": [
+        {"start": 0, "end": 140, "class": "RANGE", "lower": "1321-1323", "upper": "1333-1337", "overlay": "BEARISH_DRIFT"},
+        {"start": 140, "end": 180, "class": "RANGE", "role": "UPPER_SUBRANGE"},
+        {"start": 180, "end": 200, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 200, "end": 240, "class": "CHANNEL_UP", "role": "RECOVERY"},
+        {"start": 240, "end": 280, "class": "RANGE", "overlay": "BEARISH_DRIFT"},
+        {"start": 280, "end": 288, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "CONTINUES_IN_CONTEXT"}
+      ],
+      "events": [
+        {"start": 88, "end": 98, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"},
+        {"start": 190, "end": 210, "event": "SWEEP_DOWN", "secondary": "LIQUIDITY_SWEEP_REVERSAL_BULLISH"},
+        {"start": 205, "end": 214, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"}
+      ],
+      "macro": "BROAD_RANGE_TO_LOWER_LEVEL_SHIFT"
+    },
+    {
+      "id": "BLIND-046",
+      "window_bars": 480,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 130, "class": "RANGE", "lower": "1723-1725", "upper": "1732-1735", "overlay": "SLIGHT_BULLISH_DRIFT"},
+        {"start": 130, "end": 152, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 152, "end": 250, "class": "RANGE", "overlay": "BEARISH_DRIFT"},
+        {"start": 250, "end": 340, "class": "CHANNEL_DOWN"},
+        {"start": 340, "end": 480, "class": "RANGE", "lower": "1679-1681", "upper": "1686-1689", "status": "CONTINUES"}
+      ],
+      "macro": "MAJOR_TREND_DOWN_TO_LOWER_ACCUMULATION"
+    },
+    {
+      "id": "BLIND-047",
+      "window_bars": 288,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 58, "class": "CHANNEL_UP", "role": "LOWER_RECOVERY"},
+        {"start": 58, "end": 70, "class": "TRANSITION", "event": "BREAKOUT_UP", "status": "ACCEPTED_STRONG"},
+        {"start": 70, "end": 105, "class": "RANGE"},
+        {"start": 105, "end": 180, "class": "CHANNEL_UP"},
+        {"start": 180, "end": 215, "class": "RANGE"},
+        {"start": 215, "end": 232, "class": "TRANSITION", "event": "BREAKOUT_UP", "status": "ACCEPTED_STRONG"},
+        {"start": 232, "end": 288, "class": "RANGE", "role": "UPPER_DISTRIBUTION", "status": "CONTINUES"}
+      ],
+      "macro": "STEPWISE_TREND_UP_WITH_INTERNAL_RANGES"
+    },
+    {
+      "id": "BLIND-048",
+      "window_bars": 288,
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 70, "class": "CHANNEL_DOWN", "overlay": "RANGE"},
+        {"start": 70, "end": 95, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 95, "end": 145, "class": "RANGE", "role": "LOWER_BASE"},
+        {"start": 145, "end": 162, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 162, "end": 195, "class": "RANGE", "role": "LOWEST_ACCUMULATION"},
+        {"start": 195, "end": 230, "class": "CHANNEL_UP"},
+        {"start": 230, "end": 288, "class": "RANGE", "overlay": "SLIGHT_CHANNEL_UP", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 158, "end": 172, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"},
+        {"start": 225, "end": 238, "event": "BREAKOUT_UP", "status": "ACCEPTED"}
+      ],
+      "macro": "BEARISH_MARKDOWN_TO_ACCUMULATION_AND_RECOVERY"
+    }
+  ]
+}
