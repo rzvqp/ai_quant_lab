@@ -404,7 +404,7 @@ Constrângeri structurale obligatorii prin tip:
    d_event << d_micro                  K_reentry ⊥ N_accept (independenți)
 ```
 
-> **Zece valori numerice rămân neidentificate. Niciuna nu se alege în acest document. Coloana din mijloc e DISTRIBUȚIA observată, nu pragul — corpusul dă compromisul, nu punctul, iar punctul cere protocolul din §6 executat în ordinea lui.**
+> **Zece valori nu au număr ratificat sub V4, iar compoziția e verificabilă din tabel: ȘAPTE marcate `NEIDENTIFICAT` (`d_macro`, `d_meso`, `d_micro`, `K_reentry`, `N_accept`, `K_struct`, `tol_touch`) + `w_atr` DE REDERIVAT sub ancora nouă + DOUĂ moștenite dar neratificate sub V4 (`swing_k`, `atr_window`). Celelalte două rânduri NU intră în număr: `s_max` e DERIVAT prin cuplare, iar `n_continuation` e fixat STRUCTURAL. Niciuna nu se alege în acest document. Coloana din mijloc e DISTRIBUȚIA observată, nu pragul — corpusul dă compromisul, nu punctul, iar punctul cere protocolul din §6 executat în ordinea lui.**
 
 ---
 
