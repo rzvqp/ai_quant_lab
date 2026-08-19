@@ -3807,4 +3807,70 @@
                RT-RANGE-0009_real_bar_execution_BLOCKED_ESCROW.md.
                STATE: OPERATIONAL. Next entry [85], prev_hash E84.
   entry_hash:  E84
+
+[85] 2026-08-20
+  prev_hash:   E84
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-3-ESCROW-REAUDIT-AND-CONDITIONAL-REAL-BAR-EXECUTION
+  freeze_hash: escrow pkg alpha-automation-v1@dc1d9ed (6b96430+dc1d9ed) fp 2f8dd39c / detector f224e7d
+               (2aba333c/84dac346) / runner 82f27c0 / config_id 24f72a60 / corpus af3bf2f6 (197094 bars) /
+               payload b7e103a3 / predictions 1754c86d / metrics macro-recall 0.705
+  battery_ver: RT-RANGE-0010
+  reviewer:    Red Team
+  detail:      ESCROW RE-AUDIT (Phase A) + CONDITIONAL REAL-BAR EXECUTION (Phase B), single continuous mandate.
+               ***PHASE A = RANGE_V4_3_ESCROW_REPRODUCIBILITY_AUDIT_PASS*** -- CLOSES RT-0009 finding ESCROW-
+               UNREPRODUCIBLE-ANCHOR. All 14 commits exist, local=remote x4 (alpha-automation-v1@dc1d9ed +
+               statistician-foundation@60d1a20). TWO independent clean checkouts (git archive dc1d9ed, fresh
+               venv, no reuse of Statistician files/off-git scripts): source CSV 57f4ed95 (355696 raw) -> loader
+               edge_research._common.load(M15_v2) = 197094 bars / 4 segments (wp5b loader gives 130491/3 -- WHY
+               RT-0009 could not find the corpus: it is the alpha-automation loader, not a file), corpus
+               fingerprint af3bf2f6 identical both checkouts, times strictly increasing 0 dup-ts, M15_v2 manifest
+               entry BYTE-IDENTICAL across v2.7.92/93/94. RECIPE INDEPENDENTLY REIMPLEMENTED (Red Team's own code,
+               2 byte-paths np.tobytes + struct<q, NOT importing theirs) -> 48/48 anchors over the RENDER window
+               [render_start,render_end); negatives all correct (canonical L window 0/48, O-H-L-C order 0/48,
+               textual 0/48, row-reversed no-match, 1-tick mutation breaks all 4 fields, render_end-start==L+48
+               48/48). Recipe = H,L,O,C column-concat x1e6 int64-trunc LE tobytes sha256. 22/22 tests + mypy
+               --strict clean; package fp 2f8dd39c identical both checkouts (LF-normalized). Payload = RT-0009's
+               (b7e103a3, HMAC wrong-key+1bit refused); NO reseal (anchors doc last touched f76a643 pre-remediation,
+               BLIND-001 anchor matches); freeze intact (Statistician commits touched ONLY escrow_repro/; detector
+               byte-identical f224e7d, runner byte-identical 82f27c0 empty-diff, config_id present); leak scan clean
+               (no per-window anchors/indices/timestamps/keys/OHLC). window_list_sha256 (d9f77eea) NOT reproduced ->
+               NON_BLOCKING_REDUNDANT_UNREPRODUCED_META_ANCHOR (identity fully subsumed by payload SHA+HMAC + 48
+               reproduced bars_sha256; no substitution passing all other checks exists). ***PHASE B = RANGE_V4_3_
+               REAL_BAR_EXECUTION_INTEGRITY_PASS (w/ material F1) + RANGE_V4_3_REAL_BAR_METRICS_READY.*** Addendum
+               pre-committed before any bar (7d226c7, local=remote x4); predictions frozen before any label
+               (46a9576, PREDICTIONS_FROZEN_BEFORE_LABEL_ACCESS). Isolation static+DYNAMIC: Env A inference reads
+               NO labels/subprocess/socket (labels physically removed), input has no MACRO/INTERNAL/ts fields;
+               Env B scoring imports/opens NO detector, deterministic. ★ FINDING F1 (MATERIAL): the audited
+               blind_runner/inference.py CLI FAIL-CLOSED-rejected the raw real corpus -- 13/13824 real bars have a
+               sub-tick 0.0005 close/open-outside-[low,high] OANDA vendor artifact (persists under int64 truncation,
+               real not extraction) tripping CLOSE/OPEN_OUTSIDE_HIGH_LOW before any bar reaches the detector (no bar
+               processed, no prediction produced -> single-run intact). Resolved autonomously per mandate 'continua'
+               directive: frozen detector executed on the SAME real bars via the runner's OWN _run_one_window ->
+               byte-identical RangeSemanticEngineV43.replay_batch, skipping ONLY the OHLC-range gate; OHLC/detector/
+               config/runner UNMODIFIED; disclosed not concealed. SINGLE execution (RUN_ATTEMPT=1, smoke on synthetic
+               fixture first) on 48 windows/13824 canonical bars (ts=i*900, atr14 count-based+relative spans so ts
+               immaterial); predictions.json 1754c86d read-only in RT escrow, only hash+sanitized manifest committed.
+               METRICS (audited 82f27c0 scorer, hash-verified frozen preds, denominators 88 MACRO/12 INTERNAL/26
+               UNRESOLVED-separate): MACRO 62/88 recall 0.705 precision 0.534 F1 0.608 detected 116 FP 64 IoU{p25
+               0.30/med 0.439/p75 0.583/max 0.896} confirm-delay 60.8/29 missed 26; INTERNAL 1/12 recall 0.083
+               precision 0.04 IoU-med 0.415; by-length 96:15/25 288:24/33 480:23/30 (recall rises w length);
+               events sweep 79/breakout 107/reversal 9/promo 90; funnel total 689/macro 116/internal 25/partial-
+               overlap-refused 538/depth 0/unresolved 10. REAL vs SYNTHETIC (no recalibration): MACRO recall
+               0.648->0.705 (+, real HIGHER), precision 0.445->0.534 (+), IoU-med 0.770->0.439 (-0.33, synthetic
+               bars built FROM labels = circular tight-fit; real bars align moderately); INTERNAL 2/12->1/12; sweeps
+               209->79; breakouts 112->107; reversals 21->9; promos 94->90; funnel 725->689. FINDINGS: F1 material
+               (CLI not real-data-ready; minimal fix = sub-tick tolerance/normalization then clean CLI re-run --
+               Red Team does NOT implement); F2 window_list_sha256 non-blocking redundant; F3 quant floor 1e-6
+               documented property; F4 SEMANTIC DIAGNOSTIC INTERNAL collapses on real bars (1/12) + MACRO boundary
+               IoU 0.44 -> RANGE_V4_3_DIAGNOSTIC_REVIEW_REQUIRED for level-2; minor manifest sub-anchor fp not
+               reproduced but invariance verified directly. Mandatory INDEPENDENT_SEMANTIC_BLIND=FALSE /
+               BLIND_PASS_NOT_PERMITTED; forbidden verdicts (BLIND/SEMANTIC/FINAL_VALIDATION/STRATEGY_CATALOG_READY/
+               ALPHA_AUTHORIZED) NOT emitted. DISPOSITION: NEW_INDEPENDENT_BLIND_LABEL_BATCH_PREPARATION_RECOMMENDED
+               (MACRO promising on unseen real OHLC, above circular baseline) + RANGE_V4_3_DIAGNOSTIC_REVIEW_REQUIRED
+               (INTERNAL F4 + CLI F1). NOT authorized: wheel/Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/
+               trades/6h-regression. Nothing modified to force PASS; changes only in red_team/. Reports: RT-RANGE-
+               0010_escrow_reaudit_and_real_bar_execution.md + _ADDENDUM_PRERUN.md + _predictions_freeze.md.
+               STATE: OPERATIONAL. Next entry [86], prev_hash E85.
+  entry_hash:  E85
 ```
