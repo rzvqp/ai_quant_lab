@@ -303,7 +303,10 @@ IoU mediană / maximă                  0,000 / 0,000        0,000 / 0,000
 ## A.3 — Cifrele recalculate
 
 ```
-bare                     14.328   (ESTABLISHING 12.513 = 90,52% · BREACH_PENDING 1.311 = 9,48%)
+bare                     13.824   (ESTABLISHING 12.513 = 90,52% · BREACH_PENDING 1.311 = 9,48%)
+                         ★ CORECTAT la v2.7.88: publicasem 14.328 — transpunere de cifre.
+                           12.513 + 1.311 = 13.824, si 16x96 + 16x288 + 16x480 = 13.824.
+                           A DOUASPREZECEA cifra gresita a mea, prinsa de mine.
                          ★ proporțiile sunt IDENTICE cu cele pe 45 de ferestre, la a doua zecimală
 reason codes             TOO_SHORT 8.111 · IS_CHANNEL 7.136 · FEW_TOUCHES 5.765 ·
                          ESTABLISHING_FEW_SWINGS 5.713 · ZONES_DEGENERATE 24
