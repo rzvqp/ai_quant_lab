@@ -3758,4 +3758,51 @@
                Report: RT-RANGE-0008_range_v4_3_reproducible_runner_82f27c0_PASS.md.
                STATE: OPERATIONAL. Next entry [84], prev_hash E83.
   entry_hash:  E83
+
+[84] 2026-08-19
+  prev_hash:   E83
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-3-REAL-BAR-SEALED-CONSTRUCTION-REVALIDATION
+  freeze_hash: prototype f224e7d / runner 82f27c0 / config_id 24f72a60 / contract range-hierarchical-v4.3 /
+               detector hashes 2aba333c(semantic)/84dac346(engine) / escrow payload-b7e103a3d9b86f72 (20906B)
+  battery_ver: RT-RANGE-0009
+  reviewer:    Red Team
+  detail:      REAL-BAR EXECUTION ON THE 48 CEO-ASSISTED SEALED WINDOWS. VERDICT = ***RANGE_V4_3_REAL_BAR_
+               EXECUTION_BLOCKED_ESCROW*** + RANGE_V4_3_REAL_BAR_METRICS_INVALID (no run, no metrics) +
+               mandatory INDEPENDENT_SEMANTIC_BLIND=FALSE / BLIND_PASS_NOT_PERMITTED. Fail-closed per §4 BEFORE
+               reading any label, BEFORE running the detector, WITHOUT substituting other data. Pre-run protocol
+               committed+pushed BEFORE any sealed read (commit 38daf9b, local=remote 4 mirrors, REAL_BAR_
+               EXECUTION_PROTOCOL_PRECOMMITTED). Escrow CONTAINER fully verified: content-addressed payload SHA-256
+               = filename; escrow_key_v3 opens (HMAC tag valid); wrong-key + 1-bit change both refused; exactly 48
+               IDs no dup; lengths 16x96+16x288+16x480=13824; corrected 046=288/047=96/048=480 (matches CORRECTION
+               ADDENDUM not the stale attached JSONs); XAUUSD M15, per-window start/end land on the real canonical
+               calendar (BLIND-001 2024-12-24 02:30->2024-12-30 08:30, unix 1735007400 present in corpus). BLOCKING
+               ITEM = the ONE §4 check I could not complete: extracted OHLC SHA-256 != published bars_sha256, and
+               it is NOT independently reproducible because (1) the canonical-index SOURCE corpus is not
+               materialized -- mapping indexes a 197094-bar discovery corpus (canonical_index_start=178230,
+               of_total=197094) that exists NOWHERE on disk/Git; the only M15 corpora present are 355696 (full)
+               and 84152 (SUPERSEDED_v1); index 178230 fits neither (sealed ts sits at index 318264 in the 355696
+               corpus); AND (2) NO seal/serialization recipe is committed -- HASHES.md asserts "recalculabile" but
+               a repo-wide search for bars_sha256 across the escrow folder + entire statistician/ tree returns ZERO
+               scripts. Extracted BLIND-001's 288 bars by timestamp from the 355696 corpus (timestamps match
+               exactly) and tried ~24 serialization conventions (CSV/ISO-vs-unix/OHLC-vs-OHLCV/JSON dict+list
+               compact+spaced/1-2-3-5 decimal rounding/pipe-semicolon-tab separators/L=288 window vs 336-bar render
+               window/raw LE float32+float64 bytes) -- NONE reproduce target 7546a8d1f415d6ee. Timestamp-match
+               proves the correct WINDOW but not byte-identity of OHLC VALUES, which is exactly what the anchor
+               exists to prove; substituting the 355696 bars is forbidden ("Nu substitui alte date") and would
+               defeat the escrow (same class as RT-0007 PRE_RUN_FREEZE=FAIL). 1 FINDING (reproducible, non-
+               invented): ESCROW-UNREPRODUCIBLE-ANCHOR -- sealed batch publishes a per-window OHLC verification
+               hash whose reproduction recipe is uncommitted, so no independent party can complete the §4 bar-
+               content check; an unreproducible verification hash cannot verify. NOT a detector defect. DISCIPLINE:
+               zero labels read (Env B never built), zero inference (RUN_ATTEMPT never reached 1), zero SEALED/OOS/
+               PnL/broker/LIVE_SHADOW/Alpha/Strategy Catalog/wheel/6h-regression; VE/Statistician/AI Trader code
+               untouched (changes only in red_team/); no sealed data published (opaque IDs/hashes/one already-public
+               ts only); decrypted mapping handled off-git only and deleted at delivery. AUTHORIZES NOTHING
+               downstream -- only a RE-ATTEMPT of RT-RANGE-0009 after minimal fix: Statistician commits (1) the
+               exact 197094-bar canonical-index source corpus (or its content hash + deterministic build recipe)
+               and (2) the byte-exact bars_sha256 serialization spec/script. Forbidden verdicts (BLIND_PASS/
+               SEMANTIC_PASS/FINAL_VALIDATION_PASS/STRATEGY_CATALOG_READY/ALPHA_AUTHORIZED) NOT emitted. Report:
+               RT-RANGE-0009_real_bar_execution_BLOCKED_ESCROW.md.
+               STATE: OPERATIONAL. Next entry [85], prev_hash E84.
+  entry_hash:  E84
 ```
