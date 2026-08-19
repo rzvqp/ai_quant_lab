@@ -1,5 +1,56 @@
 # ve_n1_replay — CHANGELOG
 
+## 0.4.1 — PERFORMANCE DELTA FIX: pantă OLS incrementală O(1)/bară (READY_FOR_RANGE_V3_PERFORMANCE_DELTA_REVALIDATION)
+
+**Remediază EXCLUSIV §12 identificat de Red Team** (`RT-RANGE-0004` @`87cad2c`, ledger E79, verdict
+`RANGE_V3_SEMANTIC_FAIL` pe 0.4.0 @`034b919`): restul semanticii V3 (14 stări, segmentare longitudinală,
+ancoră, K/N, HBL-20, F7) a trecut INDEPENDENT verificat de Red Team — **domeniu STRICT performanță, NU un
+patch semantic**. **0.4.0 rămâne BYTE-NEATINS** (verificat: `git diff` gol), păstrat pentru audit/rollback.
+
+- **Defectul**: `RangeConfigV3` accepta `d_min_bars` NEMĂRGINIT; `_Segment.slope()` (0.4.0) re-parcurgea
+  ÎNTREAGA coadă `closes` la fiecare bară — O(`d_min_bars`)/bară. Red Team a măsurat 20,1× cost pt. 20×
+  `d_min_bars` (90,9µs/bară la 200 → 1.829µs/bară la 4.000), extrapolat ~90ms/bară și ~8,9h la
+  `d_min_bars=200000` (peste garanția de 4h la 355.696 bare).
+- **Remediu — Varianta A** (recomandată de mandat): pantă OLS pe fereastra trailing recalculată printr-o
+  reformulare cu STATISTICI SUFICIENTE, incrementale O(1)/bară — `Sx(n)=n(n-1)/2`, `Sxx(n)=n(n-1)(2n-1)/6`
+  formă închisă (funcție doar de mărimea ferestrei); `Sy`/`Sxy` actualizate O(1) la fiecare bară (creștere =
+  adăugare pură; plin = evict+append cu formulă algebrică derivată și verificată la fiecare prefix contra
+  unui oracol de recalculare completă, pe 8 forme de secvență × 4 mărimi de fereastră). **Niciun plafon
+  arbitrar pt. `d_min_bars`** — spec `bf9f780` e tăcută asupra unui asemenea maxim, mandatul interzice
+  explicit alegerea unui număr doar ca benchmarkul să treacă (Varianta B rămâne NEUTILIZATĂ).
+- **Fișiere NOI, spațiu de nume propriu** (`range_semantic_v3_1.py`/`range_engine_v3_1.py`, producător
+  `range-producer-0.4.1`): `RangeConfigV31` (subclasează `RangeConfigV3`, suprascrie DOAR identitatea +
+  `__post_init__` pt. hardening-ul de mai jos), `_IncrementalSlope`, `_SegmentV31`, `RangeSemanticProducerV31`
+  (o SINGURĂ linie de logică schimbată vs 0.4.0: `seg.push_close(close)` în loc de `seg.closes.append(close)`),
+  `RangeSemanticEngineV31` (refuză fail-closed snapshot-uri 0.2.0/0.3.0/0.3.1/**0.4.0**, o versiune legacy în
+  plus față de 0.4.0).
+- **Amendament CEO — hardening `d_min_bars`** (găsit de VE prin auto-verificare, raportat transparent ÎNAINTE
+  de a fi cerut): `RangeConfigV3` nu validase NICIODATĂ `d_min_bars` (gol preexistent) — la `d_min_bars=0`,
+  0.4.0 rămânea silențios (`slope()==0.0`), dar 0.4.1 (înainte de amendament) arunca `IndexError`
+  necontractual. Corectat: `RangeConfigV31.__post_init__` respinge `d_min_bars` care nu e `int` strict (`bool`
+  explicit exclus) sau `<1`, cu `RangeSemanticContractErrorV3` (aceeași excepție ca la K>N — niciun tip nou).
+  O valoare invalidă nu mai poate produce NICIODATĂ o instanță de configurație, deci nu mai poate ajunge
+  NICIODATĂ la producător/segment — calea de crash devine structural inaccesibilă. 15 teste noi; cele două
+  benchmark-uri în curs NU au fost repornite (configurațiile lor, `d_min_bars=96`/`200000`, rămân valide și
+  comportamental neschimbate — verificat direct).
+- **Paritate decizională COMPLETĂ** (`RANGE_V3_1_PARITY_REPORT.md`): 0/320 mismatch pe fixture-ul de
+  oscilație; traseul HBL-20 identic bară-cu-bară (sweep bara 56, niciun breakout la/înainte de bara 63);
+  pragul exact `IS_CHANNEL` (sub/la/peste) identic în ambele versiuni, Δdrift<1e-9; fingerprint-ul de
+  configurație DIFERĂ deliberat (leagă 0.4.1 de propria identitate, cerut de mandat); continuare
+  snapshot/restore identică înainte ȘI după umplerea ferestrei.
+- **Benchmark canonic** (355.696 bare, `d_min_bars=96` — cerut explicit de mandat, 4× mai greu decât
+  `d_min_bars=24` folosit de propriul benchmark al lui 0.4.0): **30min 18s, sub 4h cu marjă ~7,9×**,
+  `linear_index=1,111`, statistic INDISTINCTIBIL de timpul propriu al lui 0.4.0 la `d_min_bars` de 4× mai mic
+  — dovadă directă că panta nu mai domină costul. **Benchmark adversarial** (`d_min_bars=200000`, 250.000
+  bare = 200.000 umplere + 50.000 coadă post-umplere, măsurate SEPARAT): **21min 13s**, cost/bară STABIL
+  (5.064µs/bară umplere vs 5.201µs/bară post-umplere, ~2,7% diferență — semnătura O(1), nu O(`d_min_bars`)).
+  La nivel izolat (doar pantă, fără N1): **33.330× speedup măsurat direct** la `d_min_bars=200000`.
+- **320 teste total** (83 noi: 68 mandat + 15 hardening), mypy `--strict` clean, wheel instalat testat
+  într-un venv GOL izolat. **Rollback FUNCȚIONAL pe lanțul cerut de mandat** `0.4.1→0.4.0→0.3.1→0.1.1→0.4.1`
+  (320/320 → 237/237 → 162/162 → 43/43 → 320/320 — suita PROPRIE a fiecărei versiuni, extrasă din commit-ul
+  ei exact de livrare, nu doar metadata). `n_generated_total=363`/`m_inference=26`/tombstones/registrul
+  Alpha/F1-F6/F7 NEATINSE; fără SEALED/OOS; `self_declared_pass=false`; Red Team primește EXCLUSIV 0.4.1.
+
 ## 0.4.0 — RANGE SEMANTIC V3: redesign LONGITUDINAL, segment-based (READY_FOR_RANGE_V3_SEMANTIC_REVALIDATION)
 
 **Redesign, NU un patch peste 0.3.x.** Statistician a demonstrat (`STAT-RANGE-SEMANTIC-SPEC-V3-v1.0` @`bf9f780`,

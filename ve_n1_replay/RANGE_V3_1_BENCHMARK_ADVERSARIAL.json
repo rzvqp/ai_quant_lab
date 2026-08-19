@@ -1,0 +1,16 @@
+{
+  "mode": "adversarial",
+  "d_min_bars": 200000,
+  "result": {
+    "bars": 250000,
+    "d_min_bars": 200000,
+    "fill_at": 200000,
+    "fill_phase_wall_s": 1012.783,
+    "fill_phase_us_per_bar": 5063.915,
+    "post_fill_wall_s": 260.036,
+    "post_fill_us_per_bar": 5200.712,
+    "total_wall_s": 1272.819,
+    "peak_ws_mb": 119.0
+  },
+  "defect_closed_under_4h": true
+}

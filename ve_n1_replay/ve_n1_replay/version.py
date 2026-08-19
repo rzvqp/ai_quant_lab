@@ -7,7 +7,7 @@ Artefact N1 replay INDEPENDENT de ai_trader: împachetează byte-identic modulel
 
 from __future__ import annotations
 
-VE_N1_REPLAY_VERSION: str = "0.4.0"
+VE_N1_REPLAY_VERSION: str = "0.4.1"
 N1_REPLAY_CONTRACT_VERSION: str = "n1-replay-request-v1"
 SNAPSHOT_SCHEMA_VERSION: str = "n1-replay-snapshot-v1"
 REASON_CODE_SCHEMA_VERSION: str = "n1-replay-reason-codes-v1"
@@ -190,6 +190,38 @@ PREDECESSOR_0_3_1_WHEEL_SHA256: str = "048ee2b495112c9f90b39d65a7d6bd851764a46f1
 PREDECESSOR_0_3_1_BUILD_COMMIT: str = "aa01f41"
 PREDECESSOR_0_3_1_DELIVERY_COMMIT: str = "18d1aa1"
 
+# ── 0.4.1: PERFORMANCE DELTA FIX — remediu §12 RT-RANGE-0004, NU un patch semantic ──
+# Sursă normativă: Red Team RT-RANGE-0004 @`87cad2c` (ledger entry E79), verdict RANGE_V3_SEMANTIC_FAIL pe
+# `ve_n1_replay 0.4.0` (build `dead38d`, delivery `034b919`). SINGURUL defect material: `RangeConfigV3`
+# accepta `d_min_bars` nemărginit (ex. 200000), iar `_Segment.slope()` (0.4.0) re-parcurgea întreaga coadă
+# `closes` la FIECARE bară — O(d_min_bars)/bară, măsurat 20,1× cost pt. 20× d_min, extrapolat ~8,9h la
+# d_min_bars=200000 (>> garanția de 4h declarată la 355.696 bare). Restul semanticii V3 (14 stări, segmentare,
+# ancoră, K/N, HBL-20) a trecut INDEPENDENT verificat de Red Team — NEATINS aici (domeniu STRICT performanță).
+# Variantă aleasă: **A — pantă OLS incrementală** (statistici suficiente, NU o resortare/reparcurgere completă
+# per bară) — NU s-a introdus niciun plafon arbitrar pt. `d_min_bars` (spec `bf9f780` e tăcută asupra unui
+# asemenea plafon; mandatul interzice explicit alegerea arbitrară a unui număr doar ca benchmarkul să treacă;
+# Varianta B (plafon) a rămas NEUTILIZATĂ, fiindcă nicio sursă normativă nu publică un asemenea maxim).
+RANGE_V3_1_RED_TEAM_COMMIT: str = "87cad2c"
+RANGE_V3_1_RED_TEAM_ENTRY: str = "E79"
+RANGE_V3_1_RED_TEAM_VERDICT: str = "RANGE_V3_SEMANTIC_FAIL"
+RANGE_V3_1_RED_TEAM_DEFECT_SECTION: str = "§12"
+RANGE_V3_1_FIX_VARIANT: str = "A — incremental OLS slope via sufficient statistics, no d_min_bars cap"
+
+# spațiu de nume PROPRIU pt. 0.4.1 (0.4.0 rămâne BYTE-NEATINS — vezi range_semantic_v3.py, NEMODIFICAT)
+RANGE_PRODUCER_VERSION_V3_1: str = "range-producer-0.4.1"
+RANGE_SNAPSHOT_SCHEMA_VERSION_V3_1: str = "range-state-snapshot-v3.1"   # structura internă a segmentului s-a schimbat
+# NESCHIMBATE față de 0.4.0 (semantica NU s-a schimbat — doar implementarea pantei):
+# range_semantic_contract_version, range_state_machine_version, range_event_contract_version,
+# range_config_schema_version, range_reason_code_contract_version, range_evaluation_identity_version
+# rămân EXACT RANGE_SEMANTIC_CONTRACT_VERSION_V3 etc. (0.4.0) — cele 14 stări/evenimente, K/N, geometria,
+# reason codes NU s-au schimbat, deci NU au un nou identificator de contract.
+
+# identitatea predecesorului 0.4.0 (refuz fail-closed la restore/migrare + raport de compatibilitate)
+PREDECESSOR_0_4_0_VERSION: str = "0.4.0"
+PREDECESSOR_0_4_0_WHEEL_SHA256: str = "c79f5fcab202a72c6548a470e7702b6917685dc782c67f5f4dfe4ed0af363699"
+PREDECESSOR_0_4_0_BUILD_COMMIT: str = "dead38d"
+PREDECESSOR_0_4_0_DELIVERY_COMMIT: str = "034b919"
+
 # sursele EXACTE
 AI_SOURCE_REPO: str = "ai_quant_lab-wp5b"
 AI_SOURCE_BRANCH: str = "discovery-mk-matrix-v1"
@@ -263,4 +295,9 @@ def build_info() -> dict[str, object]:
         "range_v3_manifest_commit": RANGE_V3_MANIFEST_COMMIT,
         "range_v3_manifest_fingerprint": RANGE_V3_MANIFEST_FINGERPRINT,
         "range_v3_hbl_provenance": RANGE_V3_HBL_PROVENANCE,
+        "range_producer_version_v3_1": RANGE_PRODUCER_VERSION_V3_1,
+        "range_snapshot_schema_version_v3_1": RANGE_SNAPSHOT_SCHEMA_VERSION_V3_1,
+        "range_v3_1_red_team_commit": RANGE_V3_1_RED_TEAM_COMMIT,
+        "range_v3_1_red_team_verdict": RANGE_V3_1_RED_TEAM_VERDICT,
+        "range_v3_1_fix_variant": RANGE_V3_1_FIX_VARIANT,
     }

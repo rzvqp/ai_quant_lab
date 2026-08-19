@@ -126,6 +126,18 @@ from .range_semantic_v3 import (   # noqa: E402
 from .range_engine_v3 import (   # noqa: E402
     RangeSemanticEngineV3, RangeLedgerV3, RangeReplayRecordV3, RangeSnapshotV3, RangeSnapshotErrorV3,
 )
+# ── 0.4.1: PERFORMANCE DELTA FIX — remediu §12 RT-RANGE-0004 (pantă OLS incrementală O(1)/bară, 0.4.0 NEATINS) ──
+from .version import (
+    RANGE_PRODUCER_VERSION_V3_1, RANGE_SNAPSHOT_SCHEMA_VERSION_V3_1,
+    RANGE_V3_1_RED_TEAM_COMMIT, RANGE_V3_1_RED_TEAM_ENTRY, RANGE_V3_1_RED_TEAM_VERDICT,
+    RANGE_V3_1_RED_TEAM_DEFECT_SECTION, RANGE_V3_1_FIX_VARIANT,
+    PREDECESSOR_0_4_0_VERSION, PREDECESSOR_0_4_0_WHEEL_SHA256, PREDECESSOR_0_4_0_BUILD_COMMIT,
+    PREDECESSOR_0_4_0_DELIVERY_COMMIT,
+)
+from .range_semantic_v3_1 import RangeConfigV31, RangeSemanticProducerV31   # noqa: E402
+from .range_engine_v3_1 import (   # noqa: E402
+    RangeSemanticEngineV31, RangeSnapshotV31, RangeSnapshotErrorV31,
+)
 
 
 def initialize(*, symbol: str, timeframe: str, bar_interval_seconds: int,
@@ -196,4 +208,12 @@ __all__ = [
     "RANGE_V3_W_ATR_STATUS", "RANGE_V3_ANCHOR_WINDOW_RULE",
     "PREDECESSOR_0_3_1_VERSION", "PREDECESSOR_0_3_1_WHEEL_SHA256", "PREDECESSOR_0_3_1_BUILD_COMMIT",
     "PREDECESSOR_0_3_1_DELIVERY_COMMIT",
+    # 0.4.1 PERFORMANCE DELTA FIX (pantă OLS incrementală O(1)/bară — remediu §12 RT-RANGE-0004)
+    "RangeConfigV31", "RangeSemanticProducerV31",
+    "RangeSemanticEngineV31", "RangeSnapshotV31", "RangeSnapshotErrorV31",
+    "RANGE_PRODUCER_VERSION_V3_1", "RANGE_SNAPSHOT_SCHEMA_VERSION_V3_1",
+    "RANGE_V3_1_RED_TEAM_COMMIT", "RANGE_V3_1_RED_TEAM_ENTRY", "RANGE_V3_1_RED_TEAM_VERDICT",
+    "RANGE_V3_1_RED_TEAM_DEFECT_SECTION", "RANGE_V3_1_FIX_VARIANT",
+    "PREDECESSOR_0_4_0_VERSION", "PREDECESSOR_0_4_0_WHEEL_SHA256", "PREDECESSOR_0_4_0_BUILD_COMMIT",
+    "PREDECESSOR_0_4_0_DELIVERY_COMMIT",
 ]
