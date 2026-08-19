@@ -260,3 +260,104 @@ NON_MATERIAL ZONES_DEGENERATE se declanșează de 24 de ori: garda e vie, dar ra
 **Invariante verificate neatinse:** `n_generated_total = 363` · `m_inference = 26` · tombstones · registrul Alpha · verdictele existente · F1-F6 · F7 `SAFETY_GUARD` · LIVE_SHADOW · broker gate. Zero PnL, zero optimizare, zero acces SEALED/OOS, zero rerulare.
 
 **Manifest:** v2.7.86.
+
+---
+---
+
+# ADDENDUM v1.1 — RECALCULARE PE POPULAȚIA COMPLETĂ DE 48, DUPĂ CORECȚIA `BLIND-046..048`
+
+**Data:** 2026-08-19 · **Verdict:** `RANGE_V3_SEMANTIC_DELTA_REQUIRED` — **NESCHIMBAT.**
+**Detectorul NU a fost rerulat.** Ieșirile capturate anterior acoperă toate cele 48 de ferestre, exact cum am prevăzut când am exclus cele trei.
+
+## A.1 — O contradicție între documentele primite, semnalată înainte de orice calcul
+
+Mandatul cere să folosesc *JSON-urile atașate* ca sursă finală. **Le-am verificat și sunt BYTE-IDENTICE cu cele deja consumate — nu conțin corecția:**
+
+```
+PART3 atașat  e2a48eec…  ==  PART3 consumat anterior   IDENTIC
+PART4 atașat  e77abb89…  ==  PART4 consumat anterior   IDENTIC
+ADDENDUM      2b2960f81485af5cf26bf175db36f23f5ff7839ff76b48604bb3588cf9c057a4
+
+                JSON atașat   addendum   escrow (adevăr sigilat)
+BLIND-046           480          288        288      ← JSON contrazice
+BLIND-047           288           96         96      ← JSON contrazice
+BLIND-048           288          480        480      ← JSON contrazice
+```
+
+> **Rezolvarea, declarată: pentru `BLIND-046..048` am folosit ADDENDUMUL, fiindcă e singurul document care se potrivește cu escrow-ul sigilat — iar escrow-ul e sursa de adevăr, fixată înainte de etichetare. Pentru `BLIND-025..045` am folosit JSON-urile, neschimbate. Nu am ales între două variante după rezultat: am ales-o pe cea care se verifică împotriva unui artefact sigilat anterior.**
+
+Verificat mecanic: fiecare listă de segmente din addendum se termină EXACT la lungimea reală (288 / 96 / 480), fără indici în afara ferestrei. **Cele trei ferestre sunt acum aliniate și reintegrate.**
+
+## A.2 — Rezultatul principal: CONFIRMAT, neschimbat
+
+```
+                                     45 ferestre        48 ferestre (complet)
+bare ESTABLISHED                          0                    0
+segmente RANGE etichetate               103                  114
+segmente RANGE confirmate                 0                    0
+IoU mediană / maximă                  0,000 / 0,000        0,000 / 0,000
+```
+
+**Toate cele trei condiții cerute se confirmă pe populația completă: zero bare `ESTABLISHED`, zero segmente RANGE confirmate, IoU zero.** Verdictul rămâne, iar restul raportului rămâne valabil literă cu literă.
+
+## A.3 — Cifrele recalculate
+
+```
+bare                     14.328   (ESTABLISHING 12.513 = 90,52% · BREACH_PENDING 1.311 = 9,48%)
+                         ★ proporțiile sunt IDENTICE cu cele pe 45 de ferestre, la a doua zecimală
+reason codes             TOO_SHORT 8.111 · IS_CHANNEL 7.136 · FEW_TOUCHES 5.765 ·
+                         ESTABLISHING_FEW_SWINGS 5.713 · ZONES_DEGENERATE 24
+evenimente detector      TRANSITION 6.479 · RANGE_MID 3.303 · BT_UPPER 1.372 · BT_LOWER 1.121 ·
+                         RANGE_ESTABLISHING 547 · LS_DOWN 505 · LS_UP 499 ·
+                         BA_DOWN 282 · BA_UP 263 · RANGE_ESTABLISHED 0
+segmente CEO macro       RANGE 114 · TRANSITION 70 · CHANNEL_UP 53 · CHANNEL_DOWN 45   (282)
+segmente CEO interne     CHANNEL_UP 13 · RANGE 12 · CHANNEL_DOWN 9                      (34)
+evenimente CEO           BREAKOUT_UP 34 · SWEEP_DOWN 38 · SWEEP_UP 28 · BREAKOUT_DOWN 24 ·
+                         FAILED_BREAKOUT_DOWN 6 · FAILED_BREAKOUT_UP 5 · LSR_BULLISH 1
+false negative           246 segmente
+lanț de pierdere         591 segmente deschise · vârstă mediană 17 · MAXIM 80 · ating d_min=96: ZERO
+BREACH_PENDING           767 episoade · mediană 2 · MAXIM 2
+```
+
+| | ferestre | RANGE etichetate | `ESTABLISHED` | evenimente detector |
+|---|---|---|---|---|
+| 96 bare | 16 | 28 | **0** | 1.596 |
+| 288 bare | 16 | 40 | **0** | 4.787 |
+| 480 bare | 16 | 46 | **0** | 7.988 |
+| B1 | 12 | 28 | **0** | 3.590 |
+| B2 | 12 | 29 | **0** | 3.592 |
+| B3 | 12 | 24 | **0** | 3.592 |
+| B4 | 12 | 33 | **0** | 3.597 |
+
+**Design-ul echilibrat se vede acum complet: 16 ferestre pe fiecare lungime, 12 pe fiecare bloc.** Rezultatul rămâne invariant pe ambele axe.
+
+## A.4 — O eroare de parsare a mea, prinsă și corectată
+
+La prima transcriere a addendumului am pus rolul segmentului (`UPPER`, `BEARISH_DRIFT`, `REENTRY`) în același câmp cu evenimentul, iar contorul le-a numărat drept evenimente — apăreau șapte „evenimente" inexistente. **Am corectat: doar segmentele `TRANSITION` poartă evenimente; la `RANGE`/`CHANNEL` acel câmp e un ROL.** Cifrele din A.3 sunt cele de după corecție.
+
+## A.5 — Două ambiguități din addendum, consemnate nu netezite
+
+```
+BLIND-048  235–330  „acumulare și recuperare CHANNEL_UP"  — două clase într-un segment.
+                    Am codificat RANGE cu rol ACCUMULATION_AND_RECOVERY_AMBIGUOUS.
+BLIND-048  460–480  „CHANNEL_DOWN / reintrare în range superior" — la fel.
+                    Am codificat CHANNEL_DOWN, prima clasă numită.
+```
+
+**Niciuna nu schimbă rezultatul** — detectorul nu confirmă nimic în niciuna dintre interpretări. Le consemnez fiindcă o alegere de codificare rămâne o alegere, chiar când e inconsecventă.
+
+## A.6 — Ce NU s-a schimbat
+
+```
+verdictul                        RANGE_V3_SEMANTIC_DELTA_REQUIRED
+configurația detectorului        NEATINSĂ retroactiv: K=2 · N=2 · w_atr=0.30 · d_min=96
+rularea                          UNA singură, cea din raportul principal; zero rerulări
+cauza rădăcină                   a mea: ancoră legată de segment + d_min moștenit la 96,
+                                 iar segmentele ating maximum 80 de bare
+cele 4 defecte de contract       ierarhie · TREND · roluri · secvența de sweep — neschimbate
+proveniența                      lotul rămâne CEO_ASSISTED; NU e validare blind independentă
+```
+
+**Nu autorizez VE, Alpha, Strategy Catalog, AI Trader, LIVE_SHADOW sau brokerul.**
+
+**Manifest:** v2.7.87.

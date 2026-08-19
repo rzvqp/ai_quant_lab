@@ -1,7 +1,7 @@
-# SEGMENTE PIERDUTE — toate segmentele etichetate pe care detectorul nu le-a recunoscut
+# SEGMENTE PIERDUTE — populatia completa de 48 de ferestre
 
-Total: **227** segmente (45 ferestre aliniate). Detectorul a confirmat **zero** segmente RANGE,
-deci fiecare segment RANGE etichetat e pierdut prin definitie; canalele si structurile interne la fel.
+Total **246** segmente. Detectorul a confirmat **zero** segmente RANGE, deci fiecare
+segment RANGE etichetat e pierdut prin definitie; canalele si structurile interne la fel.
 
 | BLIND | start | end | clasa CEO | nivel |
 |---|---|---|---|---|
@@ -44,23 +44,23 @@ deci fiecare segment RANGE etichetat e pierdut prin definitie; canalele si struc
 | `BLIND-008` | 375 | 430 | CHANNEL_UP | MACRO |
 | `BLIND-008` | 430 | 480 | RANGE | MACRO |
 | `BLIND-009` | 0 | 288 | RANGE | MACRO |
-| `BLIND-009` | 0 | 72 | CHANNEL_UP | INTERN |
-| `BLIND-009` | 72 | 110 | CHANNEL_DOWN | INTERN |
-| `BLIND-009` | 110 | 200 | RANGE | INTERN |
-| `BLIND-009` | 200 | 264 | CHANNEL_DOWN | INTERN |
-| `BLIND-009` | 270 | 288 | RANGE | INTERN |
+| `BLIND-009` | 0 | 72 | CHANNEL_UP | INTERNAL |
+| `BLIND-009` | 72 | 110 | CHANNEL_DOWN | INTERNAL |
+| `BLIND-009` | 110 | 200 | RANGE | INTERNAL |
+| `BLIND-009` | 200 | 264 | CHANNEL_DOWN | INTERNAL |
+| `BLIND-009` | 270 | 288 | RANGE | INTERNAL |
 | `BLIND-010` | 18 | 108 | CHANNEL_DOWN | MACRO |
 | `BLIND-010` | 108 | 294 | RANGE | MACRO |
 | `BLIND-010` | 316 | 459 | RANGE | MACRO |
 | `BLIND-011` | 0 | 96 | RANGE | MACRO |
-| `BLIND-011` | 0 | 28 | CHANNEL_UP | INTERN |
-| `BLIND-011` | 28 | 39 | CHANNEL_DOWN | INTERN |
-| `BLIND-011` | 39 | 56 | CHANNEL_UP | INTERN |
-| `BLIND-011` | 56 | 96 | CHANNEL_DOWN | INTERN |
+| `BLIND-011` | 0 | 28 | CHANNEL_UP | INTERNAL |
+| `BLIND-011` | 28 | 39 | CHANNEL_DOWN | INTERNAL |
+| `BLIND-011` | 39 | 56 | CHANNEL_UP | INTERNAL |
+| `BLIND-011` | 56 | 96 | CHANNEL_DOWN | INTERNAL |
 | `BLIND-012` | 0 | 96 | RANGE | MACRO |
-| `BLIND-012` | 0 | 52 | RANGE | INTERN |
-| `BLIND-012` | 58 | 80 | CHANNEL_UP | INTERN |
-| `BLIND-012` | 88 | 96 | RANGE | INTERN |
+| `BLIND-012` | 0 | 52 | RANGE | INTERNAL |
+| `BLIND-012` | 58 | 80 | CHANNEL_UP | INTERNAL |
+| `BLIND-012` | 88 | 96 | RANGE | INTERNAL |
 | `BLIND-013` | 0 | 36 | RANGE | MACRO |
 | `BLIND-013` | 49 | 68 | RANGE | MACRO |
 | `BLIND-013` | 82 | 96 | RANGE | MACRO |
@@ -87,29 +87,29 @@ deci fiecare segment RANGE etichetat e pierdut prin definitie; canalele si struc
 | `BLIND-018` | 365 | 415 | CHANNEL_DOWN | MACRO |
 | `BLIND-018` | 415 | 480 | RANGE | MACRO |
 | `BLIND-019` | 0 | 480 | RANGE | MACRO |
-| `BLIND-019` | 0 | 48 | CHANNEL_UP | INTERN |
-| `BLIND-019` | 48 | 180 | RANGE | INTERN |
-| `BLIND-019` | 180 | 280 | CHANNEL_DOWN | INTERN |
-| `BLIND-019` | 280 | 345 | CHANNEL_UP | INTERN |
-| `BLIND-019` | 345 | 455 | CHANNEL_DOWN | INTERN |
-| `BLIND-019` | 468 | 480 | RANGE | INTERN |
+| `BLIND-019` | 0 | 48 | CHANNEL_UP | INTERNAL |
+| `BLIND-019` | 48 | 180 | RANGE | INTERNAL |
+| `BLIND-019` | 180 | 280 | CHANNEL_DOWN | INTERNAL |
+| `BLIND-019` | 280 | 345 | CHANNEL_UP | INTERNAL |
+| `BLIND-019` | 345 | 455 | CHANNEL_DOWN | INTERNAL |
+| `BLIND-019` | 468 | 480 | RANGE | INTERNAL |
 | `BLIND-020` | 0 | 82 | RANGE | MACRO |
 | `BLIND-020` | 88 | 96 | CHANNEL_DOWN | MACRO |
-| `BLIND-020` | 0 | 34 | CHANNEL_UP | INTERN |
-| `BLIND-020` | 34 | 60 | CHANNEL_DOWN | INTERN |
-| `BLIND-020` | 60 | 82 | RANGE | INTERN |
+| `BLIND-020` | 0 | 34 | CHANNEL_UP | INTERNAL |
+| `BLIND-020` | 34 | 60 | CHANNEL_DOWN | INTERNAL |
+| `BLIND-020` | 60 | 82 | RANGE | INTERNAL |
 | `BLIND-021` | 0 | 48 | RANGE | MACRO |
 | `BLIND-021` | 48 | 160 | CHANNEL_DOWN | MACRO |
 | `BLIND-021` | 174 | 214 | RANGE | MACRO |
 | `BLIND-021` | 224 | 288 | RANGE | MACRO |
 | `BLIND-022` | 0 | 260 | RANGE | MACRO |
 | `BLIND-022` | 274 | 288 | CHANNEL_UP | MACRO |
-| `BLIND-022` | 0 | 38 | CHANNEL_UP | INTERN |
-| `BLIND-022` | 38 | 125 | CHANNEL_DOWN | INTERN |
-| `BLIND-022` | 125 | 155 | CHANNEL_UP | INTERN |
-| `BLIND-022` | 155 | 190 | RANGE | INTERN |
-| `BLIND-022` | 190 | 216 | CHANNEL_UP | INTERN |
-| `BLIND-022` | 216 | 250 | CHANNEL_DOWN | INTERN |
+| `BLIND-022` | 0 | 38 | CHANNEL_UP | INTERNAL |
+| `BLIND-022` | 38 | 125 | CHANNEL_DOWN | INTERNAL |
+| `BLIND-022` | 125 | 155 | CHANNEL_UP | INTERNAL |
+| `BLIND-022` | 155 | 190 | RANGE | INTERNAL |
+| `BLIND-022` | 190 | 216 | CHANNEL_UP | INTERNAL |
+| `BLIND-022` | 216 | 250 | CHANNEL_DOWN | INTERNAL |
 | `BLIND-023` | 0 | 16 | RANGE | MACRO |
 | `BLIND-023` | 20 | 48 | RANGE | MACRO |
 | `BLIND-023` | 48 | 64 | CHANNEL_DOWN | MACRO |
@@ -179,10 +179,10 @@ deci fiecare segment RANGE etichetat e pierdut prin definitie; canalele si struc
 | `BLIND-034` | 90 | 150 | CHANNEL_DOWN | MACRO |
 | `BLIND-034` | 150 | 200 | CHANNEL_DOWN | MACRO |
 | `BLIND-034` | 230 | 480 | RANGE | MACRO |
-| `BLIND-034` | 230 | 290 | CHANNEL_UP | INTERN |
-| `BLIND-034` | 290 | 360 | CHANNEL_UP | INTERN |
-| `BLIND-034` | 360 | 410 | RANGE | INTERN |
-| `BLIND-034` | 410 | 480 | RANGE | INTERN |
+| `BLIND-034` | 230 | 290 | CHANNEL_UP | INTERNAL |
+| `BLIND-034` | 290 | 360 | CHANNEL_UP | INTERNAL |
+| `BLIND-034` | 360 | 410 | RANGE | INTERNAL |
+| `BLIND-034` | 410 | 480 | RANGE | INTERNAL |
 | `BLIND-035` | 0 | 80 | RANGE | MACRO |
 | `BLIND-035` | 80 | 170 | CHANNEL_UP | MACRO |
 | `BLIND-035` | 170 | 240 | RANGE | MACRO |
@@ -194,9 +194,9 @@ deci fiecare segment RANGE etichetat e pierdut prin definitie; canalele si struc
 | `BLIND-036` | 40 | 96 | RANGE | MACRO |
 | `BLIND-037` | 8 | 24 | CHANNEL_UP | MACRO |
 | `BLIND-037` | 24 | 96 | RANGE | MACRO |
-| `BLIND-037` | 24 | 50 | RANGE | INTERN |
-| `BLIND-037` | 50 | 70 | CHANNEL_UP | INTERN |
-| `BLIND-037` | 70 | 96 | RANGE | INTERN |
+| `BLIND-037` | 24 | 50 | RANGE | INTERNAL |
+| `BLIND-037` | 50 | 70 | CHANNEL_UP | INTERNAL |
+| `BLIND-037` | 70 | 96 | RANGE | INTERNAL |
 | `BLIND-038` | 0 | 100 | CHANNEL_UP | MACRO |
 | `BLIND-038` | 128 | 250 | CHANNEL_DOWN | MACRO |
 | `BLIND-038` | 250 | 320 | CHANNEL_DOWN | MACRO |
@@ -232,3 +232,22 @@ deci fiecare segment RANGE etichetat e pierdut prin definitie; canalele si struc
 | `BLIND-045` | 140 | 180 | RANGE | MACRO |
 | `BLIND-045` | 200 | 240 | CHANNEL_UP | MACRO |
 | `BLIND-045` | 240 | 280 | RANGE | MACRO |
+| `BLIND-046` | 0 | 48 | RANGE | MACRO |
+| `BLIND-046` | 48 | 96 | RANGE | MACRO |
+| `BLIND-046` | 96 | 140 | CHANNEL_DOWN | MACRO |
+| `BLIND-046` | 148 | 185 | RANGE | MACRO |
+| `BLIND-046` | 185 | 235 | CHANNEL_DOWN | MACRO |
+| `BLIND-046` | 235 | 280 | RANGE | MACRO |
+| `BLIND-047` | 6 | 48 | CHANNEL_UP | MACRO |
+| `BLIND-047` | 48 | 64 | RANGE | MACRO |
+| `BLIND-047` | 73 | 84 | RANGE | MACRO |
+| `BLIND-047` | 84 | 92 | CHANNEL_DOWN | MACRO |
+| `BLIND-047` | 92 | 96 | RANGE | MACRO |
+| `BLIND-048` | 0 | 35 | CHANNEL_DOWN | MACRO |
+| `BLIND-048` | 35 | 105 | RANGE | MACRO |
+| `BLIND-048` | 125 | 195 | RANGE | MACRO |
+| `BLIND-048` | 195 | 235 | CHANNEL_DOWN | MACRO |
+| `BLIND-048` | 235 | 330 | RANGE | MACRO |
+| `BLIND-048` | 350 | 410 | RANGE | MACRO |
+| `BLIND-048` | 410 | 460 | CHANNEL_UP | MACRO |
+| `BLIND-048` | 460 | 480 | CHANNEL_DOWN | MACRO |
