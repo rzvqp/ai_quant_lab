@@ -3714,4 +3714,48 @@
                SHADOW/broker/trades/6h-regression. Report: RT-RANGE-0007_range_v4_3_real_prototype_f224e7d.md.
                STATE: OPERATIONAL. Next entry [83], prev_hash E82.
   entry_hash:  E82
+
+[83] 2026-08-19
+  prev_hash:   E82
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-3-REPRODUCIBLE-RUNNER
+  freeze_hash: runner 82f27c0 (25 files) over prototype f224e7d / config_id 24f72a60 / contract range-hierarchical-v4.3 / results 62a8fa9c
+  battery_ver: RT-RANGE-0008
+  reviewer:    Red Team
+  detail:      VE REPRODUCIBLE RUN PACKAGE AUDIT (frozen 82f27c0 over f224e7d). VERDICT = ***RANGE_V4_3_
+               REPRODUCIBLE_RUNNER_AUDIT_PASS***. Directly closes RT-RANGE-0007 verdict B + finding #1. No real
+               sealed bars, no SEALED/OOS/escrow/PnL/broker/LIVE_SHADOW. Sub-verdicts: CLEAN_CHECKOUT_
+               REPRODUCIBILITY=PASS, HISTORICAL_SYNTHETIC_RESULT_REPRODUCED (+tags CEO_ASSISTED_SYNTHETIC_
+               CONSTRUCTION_ONLY/CIRCULAR_LABEL_DERIVED_BARS/ZERO_VALIDATION_WEIGHT), INFERENCE_LABEL_ISOLATION=
+               PASS, SCORER_DETECTOR_ISOLATION=PASS, RUNNER_PRE_BLIND_FREEZE_PROTOCOL=PASS. §1 82f27c0 HEAD,
+               local=remote 4 mirrors, 25 files, run_production_pipeline NOT imported, purely additive (no detector/
+               historical file touched). §2 built audit env EXCLUSIVELY from git archive 82f27c0 + fresh venv ->
+               installed+ran from committed content alone. §4 detector git-blob byte-identical to f224e7d;
+               inference re-hashes detector at runtime fail-closed + asserts config_id. §5 ★ ALL 12 FIGURES
+               REPRODUCED EXACTLY from clean checkout (MACRO 57/88 recall 0.648, INTERNAL 2/12 recall 0.167, sweep
+               209/breakout 112/reversal 21/promo 94, funnel 725/151/16/558); regenerated results JSON BYTE-
+               IDENTICAL (LF-normalized 62a8fa9c) to committed, only raw diff = CRLF/LF; remains circular/zero-
+               validation-weight. §6 static isolation clean (inference no labels/scoring; scoring no detector/
+               inference/importlib). §7 MUTATION: AST tests catch 6/12, MISS 6/12 (__import__/exec/subprocess/
+               aliased-submodule-import/getattr-dynamic/neutral-name-path) = test-robustness limit BUT no real
+               contamination path (clean code + dynamic isolation + crypto freeze). §8 DYNAMIC audit (instrumented
+               open/read/subprocess/socket): inference reads ONLY input.json (no labels, no subprocess/net);
+               scoring reads ONLY predictions.json+.sha256 (no detector, no subprocess/net). §9 input fail-closed
+               (NaN/inf/high<low/missing-OHLC/empty/dup-window-id refused). §10 output has no calendar-ts/labels/
+               PnL/paths/secrets; zero_labels_access=True. §11 open-at-end structure INCLUDED in output (start_ts=3
+               end_ts=None confirm_ts=32). §12 ★ FREEZE/TAMPER: predictions.json read-only+SHA-256; bit-flip/bad-
+               sha/wrong-config_id/wrong-commit ALL refused -> blocks post-label prediction modification. §13
+               determinism proven by byte-identical cross-run reproduction (incl tie-breaking). §14 denominators
+               88MACRO/12INTERNAL/26UNRESOLVED-separate, recall bases correct, corrected windows 046=288/047=96/
+               048=480. §15 425/426 tests + mypy --strict CLEAN on runner (inference/scoring/schemas); the 1 fail =
+               SAME RT-0007 #6 mypy-portability artifact (frozen V4.3 test hardcodes 'python', unchanged; VE added
+               no portable runner mypy test). §16 correct freeze order (tests+fingerprints BEFORE commit, contrasts
+               f224e7d); declared fingerprints match committed; no real bars run. 2 NON-BLOCKING findings: (1) AST
+               anti-leakage catches 6/12 mutations (harden it), (2) mypy test still hardcodes 'python'. FAIL
+               conditions (uncommitted dep/leakage/hash-diff/non-reproducible/post-label-prediction-modification)
+               NONE met. AUTHORIZES ONLY RANGE_V4_3_INDEPENDENT_BLIND_EXECUTION_MANDATE_PREPARATION -- NOT running
+               blind now/detector-mod/wheel/Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/trades/6h-regression.
+               Report: RT-RANGE-0008_range_v4_3_reproducible_runner_82f27c0_PASS.md.
+               STATE: OPERATIONAL. Next entry [84], prev_hash E83.
+  entry_hash:  E83
 ```
