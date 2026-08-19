@@ -3578,4 +3578,44 @@
                Report: RT-RANGE-0004_range_v3_semantic_revalidation_0.4.0_034b919_FAIL.md.
                STATE: OPERATIONAL. Next entry [80], prev_hash E79.
   entry_hash:  E79
+
+[80] 2026-08-19
+  prev_hash:   E79
+  event:       VERDICT
+  dc_id:       DC-RANGE-V3-PERF-DELTA-0.4.1
+  freeze_hash: ve_n1_replay-0.4.1 sha256 39673910666e13708b1d4cb7266d1730bb1c9ceea4e0b021a1bf3cfa1f8281f4 (141157 B) / build f9af357 / delivery 7dc2ff9
+  battery_ver: RT-RANGE-0005
+  reviewer:    Red Team
+  detail:      ve_n1_replay 0.4.1 RANGE V3 PERFORMANCE DELTA REVALIDATION (fix for RT-RANGE-0004 §12 / E79).
+               VERDICT = ***RANGE_V3_PERFORMANCE_DELTA_PASS***. Read-only; no artifact/param change; Alpha not
+               started; detector not modified; invariants untouched; LIVE_SHADOW/broker read-only. ALL 13 sections
+               PASS, independently verified via the PUBLIC surface. §1 wheel 39673910==declared==SHA256SUMS==git-
+               bytes; build f9af357/delivery 7dc2ff9; wheel embeds correct prior refs (RT_COMMIT 87cad2c, VERDICT
+               RANGE_V3_SEMANTIC_FAIL, ENTRY E79, §12, FIX_VARIANT A). §2 SURGICAL: only range_semantic_v3_1.py+
+               range_engine_v3_1.py new (+__init__/version additive); N1 0.1.1 + _ai+_det + 0.4.0's OWN
+               range_semantic_v3.py/range_engine_v3.py BYTE-IDENTICAL; normalized producer diff = ONLY the documented
+               single call-site seg.push_close(close) vs seg.closes.append(close) + comments. §3 320/320 tests JUnit
+               from installed wheel, CONSTRUCTION_ONLY preserved. §4 INCREMENTAL OLS (Variant A: Sx/Sxx closed-form
+               exact, Sy/Sxy incremental; eviction algebra Sxy_new=Sxy_old-Sy_old+y_evicted+(n-1)*y_new verified) ==
+               offline oracle at EVERY prefix, all windows 1/2/3/10/96/4000 + 20k-bar eviction @d_min=4000: max abs
+               diff 3.9e-10 (only on 1e9-magnitude adversarial), BIT-EXACT 0.0 on real observe() path -> cannot flip
+               IS_CHANNEL. §5 slope parity bit-level 0.000 via producer. §6 d_min_bars HARDENING: all
+               {-100,-1,0,1.0,5.5,True,False,"96",None,96.0} -> RangeSemanticContractErrorV3 (NOT IndexError); bool
+               rejected despite int-subtype; {1,96,4000,200000} accepted; invalid never constructs an instance / never
+               mutates a valid one. §7 O(1) CONFIRMED: range-producer per-bar FLAT 15.42/15.45/15.26 us at d_min=
+               96/4000/200000 (the ~9h defect at d_min=200000 CLOSED). §8 canonical d_min=96 O(n) 10k/20k=2.06x
+               ~33min <4h (matches VE 30m18s). §9 SEMANTIC PARITY 0.4.0<->0.4.1: 0 mismatches over 116-bar mixed
+               trace; HBL-20 bit-identical (sweep confirmed bar56 not breach52). VE "0/320" = test COUNT not compare
+               count; my 116+71-bar compare corroborates zero divergence. Version identity differs by contract
+               (new producer version), as designed. §10 snapshot V31 refuses 0.2.0/0.3.0/0.3.1/0.4.0/config-mismatch/
+               unknown/None/corrupt atomically; chunk-invariance; works @d_min=200000. §11 D1-D4/K>N-refused/14-states/
+               zero-lookahead re-confirmed on V31 directly. §12 rollback 0.4.1->0.4.0->0.3.1->0.1.1->0.4.1 (version+
+               signature-API+site-packages each). §13 no forbidden imports (stdlib+internal only); 0.4.1 absent from
+               live venv; LIVE_SHADOW Running unchanged; invariants untouched by construction. NOT RUN: mypy (offline
+               tooling limit; VE clean), full 355696 wall-clock (O(n) checkpoints), each historical suite end-to-end
+               (verified install/version/API chain; VE ran 320/237/162/43). PASS CLOSES RT-RANGE-0004 and authorizes
+               ONLY NEW_INDEPENDENT_BLIND_LABEL_BATCH -- NOT Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW cutover/
+               broker/trades. Report: RT-RANGE-0005_range_v3_performance_delta_0.4.1_7dc2ff9_PASS.md.
+               STATE: OPERATIONAL. Next entry [81], prev_hash E80.
+  entry_hash:  E80
 ```
