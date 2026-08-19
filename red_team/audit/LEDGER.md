@@ -3618,4 +3618,50 @@
                broker/trades. Report: RT-RANGE-0005_range_v3_performance_delta_0.4.1_7dc2ff9_PASS.md.
                STATE: OPERATIONAL. Next entry [81], prev_hash E80.
   entry_hash:  E80
+
+[81] 2026-08-19
+  prev_hash:   E80
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-IMPL-PACKAGE-STATIC
+  freeze_hash: package d6e599e / manifest v2.7.94 14d4c22 / fingerprint a5d69e2d0150d7ca2cf750df49f65cfc55b91fa89d13568fa42f81a48f4ee565 / contract range-hierarchical-v4.3 / config_id 24f72a60
+  battery_ver: RT-RANGE-0006
+  reviewer:    Red Team
+  detail:      STATISTICIAN RANGE V4 IMPLEMENTATION PACKAGE STATIC REVIEW (Git-only + harness run).
+               VERDICT = ***RANGE_V4_IMPLEMENTATION_PACKAGE_STATIC_PASS***. No detector implemented, no VE/Statistician
+               modified, no blind corpus run; SEALED/OOS_ACCESS=0. Answers ONLY: is the package complete+unambiguous
+               enough for VE to build the prototype without inventing anything? YES. §1 branch HEAD IS d6e599e,
+               local=remote 4 mirrors, fingerprint a5d69e2d exact; package = doc(314)+harness(409)+adversarial-test(329).
+               §2 DECISIVE version contradiction RESOLVED: normative contract_version="range-hierarchical-v4.3" (doc §2 +
+               harness line 37), singular; v4.3 = v4.2(5a9d5ec)+17 corrections; §10 authorizes ONLY v4.3 under config_id
+               24f72a60; snapshot/schema = single identity (restore keys on contract_version+config_id); "V4_2" survives
+               ONLY in the review-status string + harness FILENAME (non-normative). VE CANNOT choose v4.2 -> no
+               implementable ambiguity -> PASS (naming = non-blocking blemish). §3 VE_CAN_IMPLEMENT_WITHOUT_INVENTION
+               confirmed: §4 matrix 25 reqs each formula/input/output/reason-code/test; all emitters numeric (confirmed_
+               swings, offer_swing, degeneracy_check, evaluate_candidate, Excursion.observe, sweep_reversal_confirmed,
+               promotion_check, assign_level, snapshot/restore, guard_timestamp, Registry). §4 config all FIELDS
+               (d_macro=29/d_internal=12/n_touch=2/K_reentry=22/N_accept=3/K_struct=2/n_external_swings=2/atr_window=14/
+               w_atr=0.80), tol_cluster=s_max=1.60 + sanity_ceiling=1.3952 PROPERTIES (never stored), config_id=SHA over
+               fields+derived+ATR-wheel-sha (39673910=0.4.1); changing any value changes identity; no hidden literal.
+               §5 swing@j+K_struct, clusters separate, center=median, degeneracy KILL-before-duration, circularity broken
+               by type (membership pre-confirm/touch post-confirm; confirm_ts w_atr-independent); old 0.495 null, new
+               1.3952 correct; disjointness sep>2w*atr, at EQUALITY -> ZONES_DEGENERATE (inclusive <=). §6 2 depths
+               (MICRO unrepresentable), DEPTH_LIMIT_EXCEEDED enforced (C14), mapping 88 MACRO+26 UNRESOLVED=114, 12
+               INTERNAL separate. §7 Excursion N_accept=3/reset-on-reentry/K_reentry=22/NOT_YET; reversal window=episode
+               life (C13); K_struct=2 fractal; n_external=2; promotion P1-P4 (2nd swing via P3), slope alone doesn't
+               promote; HBL-20 causal (bar52 pending, sweep@56). §8 evaluate_candidate SINGLE function, priority
+               input->KILL->duration (TOO_SHORT can't mask dead candidate), C13-C17 all present. §9 exactly 29 codes;
+               ★ I INDEPENDENTLY DROVE ALL 29 to emit via public API (0 missing/0 extra) -- stronger than harness list-
+               vs-list check; SLOPE_UNAVAILABLE correctly retracted (C5). §10 ran harness 79 PASS/0 FAIL; mypy --strict
+               HARNESS CLEAN (the oracle); 13 non-vacuity gates each pass+fail. §11 guard_timestamp/role_known_ts>=
+               confirm_ts/snapshot fail-closed on contract_version+config_id; pure-function determinism. §12 50 contrib/
+               25 seg, 93 exclusions, dispersion 0.24-3.93, 78 seg without both bands, construction-only, no BLIND/
+               semantic PASS, SEALED=0, invariants untouched. ★ 3 NON-BLOCKING BLEMISHES (no implementable gap): (1)
+               stale "V4_2" status-string+harness-filename vs normative v4.3; (2) doc says 12 non-vacuity gates, harness
+               runs 13; (3) "mypy --strict 0 erori" true for harness but test file has 9 BENIGN Optional-narrowing errors
+               (tests still 79/0). NOT RUN/possible: detector impl, blind corpus, semantic validation, PnL/SEALED (out of
+               scope). AUTHORIZES ONLY the separate VE-prototype mandate (implement v4.3 under config_id 24f72a60 vs the
+               harness) + a further RT static review -- NOT wheel/Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/
+               trades. Report: RT-RANGE-0006_range_v4_implementation_package_static_d6e599e_PASS.md.
+               STATE: OPERATIONAL. Next entry [82], prev_hash E81.
+  entry_hash:  E81
 ```
