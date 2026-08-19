@@ -652,6 +652,8 @@ class RangeSemanticProducerV43:
         self._active_internal: Structure | None = None
         self._macro_excursion: Excursion | None = None
         self._internal_excursion: Excursion | None = None
+        self._macro_reversal_watch: dict[str, Any] | None = None
+        self._internal_reversal_watch: dict[str, Any] | None = None
         self._pending_up: tuple[int, float] | None = None
         self._pending_dn: tuple[int, float] | None = None
         self._promo_direction: int | None = None
@@ -850,10 +852,27 @@ class RangeSemanticProducerV43:
                 events.append(RangeEventV43(kind=SWEEP_CONFIRMED, bar_index=i, structure_id=st.structure_id,
                                             depth=depth.name, reason_codes=(SWEEP_CONFIRMED,),
                                             not_yet_available=(), boundary=side))
+                # **Găsit, remediat**: `sweep_reversal_confirmed` (C13) era portat fidel și testat DIRECT,
+                # dar nu era apelat NICĂIERI din bucla per-bară -- adică `LIQUIDITY_SWEEP_REVERSAL` nu putea
+                # fi emis NICIODATĂ prin observare reală bară-cu-bară, doar prin apel manual al funcției pure
+                # (descoperit abia acum, verificând EXPLICIT dacă orchestrarea chiar cheamă funcția, nu doar
+                # dacă string-ul constantei apare undeva în sursă). Fereastra reversalului e "viața episodului"
+                # (C13) -- deci excursia rezolvată prin reintrare rămâne "sub observație" (watch separat de
+                # slot-ul de excursie activă, care trebuie golit ca o excursie NOUĂ să poată deschide) până
+                # când fie prețul confirmă reversal-ul (close dincolo de swing-ul de referință de pe partea
+                # OPUSĂ direcției excursiei), fie episodul se închide (REVERSAL_WINDOW_EXPIRED, verificat
+                # dinamic la fiecare bară, nu memorat static la momentul creării watch-ului).
+                ref_side = "upper" if excursion.direction == -1 else "lower"
+                watch = {"excursion": excursion.snapshot(), "structure_id": st.structure_id,
+                         "ref_side": ref_side,
+                         "ref_swing": (st.up.center if ref_side == "upper" else st.dn.center),
+                         "ref_confirm_ts": st.confirm_ts}
                 if depth is Depth.MACRO:
                     self._macro_excursion = None
+                    self._macro_reversal_watch = watch
                 else:
                     self._internal_excursion = None
+                    self._internal_reversal_watch = watch
                 return SWEEP_CONFIRMED
             events.append(RangeEventV43(kind=kind, bar_index=i, structure_id=st.structure_id,
                                         depth=depth.name, reason_codes=(), not_yet_available=nya,
@@ -896,6 +915,43 @@ class RangeSemanticProducerV43:
                                         depth=depth.name, reason_codes=(reason,), not_yet_available=()))
             self._resolve_role_if_watched(st, i)
         return reason
+
+    def _end_ts_for(self, depth: Depth, structure_id: int) -> int | None:
+        """`episode_end_ts` pt. C13 -- verificat DINAMIC la fiecare bară (nu memorat static la creare):
+        None cât timp structura e încă activă (episodul e viu), end_ts real dacă s-a închis între timp
+        (istoric mărginit, maxlen=64) — dacă id-ul nu se mai găsește nicăieri (evacuat din istoricul
+        mărginit înainte ca reversal-ul să se rezolve, extrem de improbabil), tratează fail-closed drept
+        EXPIRAT (nu drept "încă deschis la nesfârșit")."""
+        active = self._active_macro if depth is Depth.MACRO else self._active_internal
+        if active is not None and active.structure_id == structure_id:
+            return None
+        history = self._macro_history if depth is Depth.MACRO else self._internal_history
+        for s in history:
+            if s.structure_id == structure_id:
+                return s.end_ts
+        return -1   # evacuat din istoric -- fail-closed: tratat ca deja expirat, nu ca etern deschis
+
+    def _check_reversal_watch(self, depth: Depth, i: int, close: float, events: list[RangeEventV43]) -> None:
+        watch = self._macro_reversal_watch if depth is Depth.MACRO else self._internal_reversal_watch
+        if watch is None:
+            return
+        ex = Excursion.restore(watch["excursion"])
+        episode_end_ts = self._end_ts_for(depth, watch["structure_id"])
+        ok, reason = sweep_reversal_confirmed(
+            ex, i, close, watch["ref_swing"], watch["ref_confirm_ts"], episode_end_ts)
+        if ok:
+            events.append(RangeEventV43(kind=LIQUIDITY_SWEEP_REVERSAL, bar_index=i,
+                                        structure_id=watch["structure_id"], depth=depth.name,
+                                        reason_codes=(LIQUIDITY_SWEEP_REVERSAL,), not_yet_available=()))
+            if depth is Depth.MACRO:
+                self._macro_reversal_watch = None
+            else:
+                self._internal_reversal_watch = None
+        elif reason == REVERSAL_WINDOW_EXPIRED:
+            if depth is Depth.MACRO:
+                self._macro_reversal_watch = None
+            else:
+                self._internal_reversal_watch = None
 
     # ── rol retrospectiv: succesorul DIRECT confirmă -> rezolvă rolul predecesorului închis prin breakout ──
     def _resolve_role_if_watched(self, successor: Structure, i: int) -> None:
@@ -1008,6 +1064,8 @@ class RangeSemanticProducerV43:
 
         macro_reason = self._step_depth(Depth.MACRO, i, high, low, close, events)
         internal_reason = self._step_depth(Depth.INTERNAL, i, high, low, close, events)
+        self._check_reversal_watch(Depth.MACRO, i, close, events)
+        self._check_reversal_watch(Depth.INTERNAL, i, close, events)
 
         m = self._active_macro
         n = self._active_internal
@@ -1039,6 +1097,9 @@ class RangeSemanticProducerV43:
             "active_internal": self._active_internal.snapshot() if self._active_internal else None,
             "macro_excursion": self._macro_excursion.snapshot() if self._macro_excursion else None,
             "internal_excursion": self._internal_excursion.snapshot() if self._internal_excursion else None,
+            "macro_reversal_watch": dict(self._macro_reversal_watch) if self._macro_reversal_watch else None,
+            "internal_reversal_watch": (dict(self._internal_reversal_watch)
+                                        if self._internal_reversal_watch else None),
             "pending_up": list(self._pending_up) if self._pending_up is not None else None,
             "pending_dn": list(self._pending_dn) if self._pending_dn is not None else None,
             "promo_direction": self._promo_direction, "promo_broken_boundary": self._promo_broken_boundary,
@@ -1065,6 +1126,9 @@ class RangeSemanticProducerV43:
         self._macro_excursion = Excursion.restore(st["macro_excursion"]) if st["macro_excursion"] else None
         self._internal_excursion = (Excursion.restore(st["internal_excursion"])
                                     if st["internal_excursion"] else None)
+        mrw, irw = st.get("macro_reversal_watch"), st.get("internal_reversal_watch")
+        self._macro_reversal_watch = dict(mrw) if mrw else None
+        self._internal_reversal_watch = dict(irw) if irw else None
         pu, pd = st["pending_up"], st["pending_dn"]
         self._pending_up = (pu[0], pu[1]) if pu is not None else None
         self._pending_dn = (pd[0], pd[1]) if pd is not None else None

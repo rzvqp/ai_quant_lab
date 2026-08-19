@@ -659,6 +659,26 @@ def test_hbl20_full_narrative_accumulation() -> None:
     assert original["role_known_ts"] is not None and original["role_known_ts"] > original["end_ts"]
 
 
+def test_hbl20_liquidity_sweep_reversal_reachable_via_observe() -> None:
+    """**Găsit, remediat**: `sweep_reversal_confirmed` (C13) era portat fidel și testat DIRECT (linia 314
+    de mai sus, apelată manual), dar niciodată invocată din bucla per-bară a producătorului -- adică
+    `LIQUIDITY_SWEEP_REVERSAL` nu putea fi emis NICIODATĂ prin observare reală bară-cu-bară, doar prin
+    apel manual al funcției pure. Verificat abia la a doua trecere a mandatului V4.3, exersând EXPLICIT
+    dacă orchestrarea chiar cheamă funcția (nu doar dacă string-ul apare undeva în sursă -- testul AST
+    structural nu poate prinde acest defect, fiindcă funcția pură ÎNSĂȘI referențiază constanta, doar
+    nimeni nu o mai apelează). Fixat cu un "reversal watch" separat de excursia activă (§_check_reversal_watch),
+    populat la exact momentul `SWEEP_CONFIRMED`. Acest test rulează EXACT fixture-ul HBL-20 deja validat
+    mai sus (nu unul nou, izolat) prin `observe()` -- exemplul explicit cerut de mandat: "sweep de
+    lichiditate urmat de mișcare agresivă în direcția opusă"."""
+    bars = legs_bars(_hbl20_legs())
+    prod, out = run43_fixed_atr(bars)
+    all_events = [e for _, _, evs in out for e in evs]
+    reversal_events = [e for e in all_events if e.kind == LIQUIDITY_SWEEP_REVERSAL]
+    assert reversal_events, "LIQUIDITY_SWEEP_REVERSAL trebuie emis prin observe() pe narativul HBL-20 real"
+    sweep_bars = [e.bar_index for e in all_events if e.kind == SWEEP_CONFIRMED and e.depth == "MACRO"]
+    assert min(sweep_bars) < reversal_events[0].bar_index, "reversal-ul urmează sweep-ului, nu invers"
+
+
 def test_hbl20_mirror_distribution() -> None:
     bars = legs_bars(mirror_legs(_hbl20_legs()))
     prod, out = run43_fixed_atr(bars)
@@ -782,3 +802,52 @@ def test_mypy_strict_clean_on_all_touched_files() -> None:
         str(_MODULE_DIR / "range_semantic_v4_3.py"), str(_MODULE_DIR / "range_engine_v4_3.py")],
         capture_output=True, text=True)
     assert "Success" in result.stdout, result.stdout + result.stderr
+
+
+def test_reason_codes_ast_structural_reachability() -> None:
+    """Reachability-ul dinamic (`test_all_29_reason_codes_reachable_via_public_api`) demonstrează că
+    fiecare cod POATE fi produs printr-un apel real -- dar nu demonstrează, prin el însuși, că sursa e
+    structural COTATĂ la fiecare cod dincolo de propria declarație și de tuplul `REASONS_V43`. Un
+    comentariu care ar "documenta" un cod fără ca acesta să apară nicăieri în cod executabil ar trece
+    testul dinamic doar dacă altcineva l-ar fi produs deja pe altă cale -- acest test verifică STRUCTURA
+    sursei direct prin `ast`, nu prin execuție: fiecare din cele 29 de constante trebuie referențiată
+    (ca `ast.Name` cu context Load) cel puțin O DATĂ în afara liniei proprii de declarație și a
+    tuplului `REASONS_V43` -- adică folosită efectiv într-o comparație/return/append/raise reală, nu
+    doar numită. Elimină clasa de defect "cod declarat, niciodată verificat că e și CONECTAT" (mandat
+    §10: 'zero coduri declarate-și-neemise' -- verificat aici la nivel de sursă, nu doar la nivel de
+    comportament observat)."""
+    import ast
+
+    src_path = _MODULE_DIR / "range_semantic_v4_3.py"
+    tree = ast.parse(src_path.read_text(encoding="utf-8"), filename=str(src_path))
+
+    # linia declaratiei proprii (`X = "X"`) si linia tuplului REASONS_V43 -- excluse de la numaratoare,
+    # fiindca ambele ar "exista" chiar daca nimic din restul codului nu le mai foloseste vreodata.
+    declaration_lines: dict[str, int] = {}
+    reasons_tuple_lines: set[int] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            name = node.targets[0].id
+            if name in REASONS_V43 and isinstance(node.value, ast.Constant) and node.value.value == name:
+                declaration_lines[name] = node.lineno
+            if name == "REASONS_V43":
+                reasons_tuple_lines.add(node.lineno)
+                for sub in ast.walk(node.value):
+                    if isinstance(sub, ast.Name):
+                        reasons_tuple_lines.add(sub.lineno)
+
+    load_refs: dict[str, list[int]] = {code: [] for code in REASONS_V43}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and node.id in load_refs:
+            if node.lineno in reasons_tuple_lines:
+                continue
+            if node.lineno == declaration_lines.get(node.id):
+                continue
+            load_refs[node.id].append(node.lineno)
+
+    disconnected = sorted(code for code, refs in load_refs.items() if not refs)
+    assert not disconnected, (
+        f"cod(uri) declarate dar structural NECONECTATE (nicio referință Load în afara "
+        f"declarației/tuplului REASONS_V43): {disconnected}"
+    )
+    assert len(load_refs) == 29, f"REASONS_V43 nu are 29 de elemente: {len(load_refs)}"
