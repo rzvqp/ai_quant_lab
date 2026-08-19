@@ -1,0 +1,220 @@
+{
+  "artifact": "RANGE_V3_BLIND_BATCH_02_PART1_LOCKED_LABELS",
+  "source_pdf": "RANGE_V3_BLIND_BATCH_02_PART1.pdf",
+  "source_window_list_sha256": "d9f77eead2b17283dbdfae750778d2956541fbd00a33053c10249dc1a24442a6",
+  "protocol_commit": "a47e942",
+  "result_commit": "f76a643",
+  "instrument": "XAUUSD",
+  "timeframe": "M15",
+  "part": 1,
+  "windows_locked": 12,
+  "labeling_provenance": {
+    "BLIND-001": "CEO_INDEPENDENT_BLIND_LABEL_WITH_POST_LOCK_ASSISTANT_REVIEW",
+    "BLIND-002_to_BLIND-012": "CEO_ASSISTED_BLIND_REVIEW",
+    "independent_blind_validation_eligible": false,
+    "reason": "Începând cu BLIND-002, asistentul a propus primul clasificarea, iar CEO a confirmat sau corectat."
+  },
+  "semantic_annotation": {
+    "macro_micro_hierarchy": "Un RANGE la scară mare poate conține CHANNEL_UP, CHANNEL_DOWN, sub-range-uri, sweep-uri și breakout-uri locale fără ca regimul principal RANGE să fie anulat.",
+    "future_strategy_requirement": "Structurile interne trebuie păstrate ca oportunități separate pentru viitoarele strategii de execuție în interiorul RANGE-ului."
+  },
+  "labels": [
+    {
+      "id": "BLIND-001",
+      "window_bars": 288,
+      "provenance": "CEO_INDEPENDENT_BLIND_LABEL_WITH_POST_LOCK_ASSISTANT_REVIEW",
+      "confidence": "MEDIUM",
+      "segments": [
+        {"start": 0, "end": 48, "class": "CHANNEL_DOWN"},
+        {"start": 48, "end": 72, "class": "CHANNEL_UP"},
+        {"start": 72, "end": 120, "class": "RANGE", "status": "ENDED"},
+        {"start": 120, "end": 130, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 133, "end": 190, "class": "RANGE", "status": "ENDED"},
+        {"start": 192, "end": 216, "class": "CHANNEL_DOWN"},
+        {"start": 216, "end": 240, "class": "RANGE", "status": "ENDED"},
+        {"start": 240, "end": 266, "class": "RANGE", "status": "ENDED", "entry_event": "BREAKOUT_UP"},
+        {"start": 266, "end": 288, "class": "CHANNEL_DOWN"}
+      ],
+      "notes": "Limitele sunt aproximative; CEO a indicat explicit BREAKOUT_UP la 120–130 și încă un breakout în sus după bara 240."
+    },
+    {
+      "id": "BLIND-002",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "MEDIUM",
+      "segments": [
+        {"start": 0, "end": 49, "class": "CHANNEL_DOWN"},
+        {"start": 49, "end": 56, "class": "TRANSITION"},
+        {"start": 56, "end": 96, "class": "RANGE", "lower": "1262.0–1262.7", "upper": "1265.0–1265.5", "status": "CONTINUES"}
+      ],
+      "events": [{"start": 79, "end": 83, "event": "SWEEP_DOWN"}]
+    },
+    {
+      "id": "BLIND-003",
+      "window_bars": 288,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "MEDIUM",
+      "segments": [
+        {"start": 0, "end": 38, "class": "CHANNEL_UP"},
+        {"start": 38, "end": 70, "class": "CHANNEL_DOWN"},
+        {"start": 70, "end": 98, "class": "RANGE", "lower": "1319.5", "upper": "1322.2"},
+        {"start": 98, "end": 110, "class": "TRANSITION", "event": "BREAKOUT_DOWN"},
+        {"start": 110, "end": 149, "class": "CHANNEL_UP"},
+        {"start": 149, "end": 163, "class": "TRANSITION", "events": ["FAILED_BREAKOUT_DOWN", "SWEEP_DOWN"]},
+        {"start": 163, "end": 224, "class": "RANGE", "lower": "1321.5", "upper": "1324.6"},
+        {"start": 224, "end": 242, "class": "TRANSITION", "event": "BREAKOUT_DOWN"},
+        {"start": 242, "end": 284, "class": "CHANNEL_UP"},
+        {"start": 284, "end": 288, "class": "TRANSITION", "direction": "DOWN", "confirmation": "INSUFFICIENT_BARS"}
+      ]
+    },
+    {
+      "id": "BLIND-004",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "MIXED_HIGH_MEDIUM",
+      "segments": [
+        {"start": 0, "end": 239, "class": "RANGE", "lower": "1688–1691", "upper": "1697–1699", "confidence": "HIGH"},
+        {"start": 239, "end": 260, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 260, "end": 334, "class": "CHANNEL_DOWN"},
+        {"start": 334, "end": 369, "class": "CHANNEL_UP"},
+        {"start": 369, "end": 384, "class": "TRANSITION", "event": "BREAKOUT_UP", "confidence": "HIGH"},
+        {"start": 384, "end": 432, "class": "RANGE", "lower": "1734", "upper": "1740"},
+        {"start": 432, "end": 480, "class": "CHANNEL_DOWN"}
+      ],
+      "events": [{"start": 330, "end": 337, "event": "SWEEP_DOWN"}]
+    },
+    {
+      "id": "BLIND-005",
+      "window_bars": 288,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 288, "class": "RANGE", "lower": "1725.5–1728", "upper": "1745–1747.5", "mid": "1736", "status": "CONTINUES"}
+      ],
+      "events": [{"index_approx": 48, "event": "SWEEP_UP", "confirmation": "POSSIBLE"}],
+      "notes": "Canalele ascendente și descendente vizibile sunt microstructuri interne și nu anulează RANGE-ul principal."
+    },
+    {
+      "id": "BLIND-006",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "MIXED_HIGH_MEDIUM",
+      "segments": [
+        {"start": 0, "end": 49, "class": "CHANNEL_DOWN", "confidence": "HIGH"},
+        {"start": 48, "end": 52, "class": "TRANSITION", "events": ["SWEEP_DOWN", "FAILED_BREAKOUT_DOWN"], "confidence": "HIGH"},
+        {"start": 52, "end": 58, "class": "TRANSITION", "event": "BREAKOUT_UP", "confidence": "HIGH"},
+        {"start": 58, "end": 96, "class": "RANGE", "lower": "1611.5–1612", "upper": "1616–1616.5", "status": "CONTINUES", "confidence": "MEDIUM"}
+      ]
+    },
+    {
+      "id": "BLIND-007",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 49, "class": "CHANNEL_UP"},
+        {"start": 49, "end": 145, "class": "RANGE", "lower": "1327", "upper": "1335"},
+        {"start": 145, "end": 210, "class": "CHANNEL_UP"},
+        {"start": 210, "end": 292, "class": "RANGE", "lower": "1344", "upper": "1351"},
+        {"start": 292, "end": 306, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 306, "end": 368, "class": "RANGE", "lower": "1351", "upper": "1357"},
+        {"start": 368, "end": 378, "class": "TRANSITION", "events": ["SWEEP_UP", "FAILED_BREAKOUT_UP"]},
+        {"start": 378, "end": 393, "class": "TRANSITION", "event": "BREAKOUT_DOWN"},
+        {"start": 393, "end": 438, "class": "CHANNEL_UP", "role": "CORRECTION"},
+        {"start": 438, "end": 480, "class": "CHANNEL_DOWN"}
+      ],
+      "macro": [
+        {"start": 0, "end": 368, "class": "TREND_UP_WITH_INTERNAL_RANGES"},
+        {"start": 368, "end": 393, "class": "TRANSITION"},
+        {"start": 393, "end": 480, "class": "DOWN_STRUCTURE_WITH_CORRECTION"}
+      ]
+    },
+    {
+      "id": "BLIND-008",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 144, "class": "RANGE", "lower": "1888", "upper": "1917"},
+        {"start": 144, "end": 180, "class": "CHANNEL_UP", "entry_event": "BREAKOUT_UP"},
+        {"start": 180, "end": 232, "class": "RANGE", "lower": "1938", "upper": "1952"},
+        {"start": 232, "end": 272, "class": "CHANNEL_UP"},
+        {"start": 272, "end": 340, "class": "RANGE", "lower": "1951", "upper": "1965"},
+        {"start": 340, "end": 375, "class": "TRANSITION", "event": "BREAKOUT_DOWN"},
+        {"start": 375, "end": 430, "class": "CHANNEL_UP", "role": "CORRECTION"},
+        {"start": 430, "end": 480, "class": "RANGE", "lower": "1871", "upper": "1889", "status": "CONTINUES"}
+      ],
+      "events": [{"start": 257, "end": 264, "event": "SWEEP_DOWN"}]
+    },
+    {
+      "id": "BLIND-009",
+      "window_bars": 288,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "MEDIUM_HIGH",
+      "segments": [
+        {"start": 0, "end": 288, "class": "RANGE", "lower": "1672–1678", "upper": "1707–1710", "mid": "1691–1693", "status": "CONTINUES"}
+      ],
+      "internal_structures": [
+        {"start": 0, "end": 72, "class": "CHANNEL_UP"},
+        {"start": 72, "end": 110, "class": "CHANNEL_DOWN"},
+        {"start": 110, "end": 200, "class": "RANGE", "lower": "1687", "upper": "1700"},
+        {"start": 200, "end": 264, "class": "CHANNEL_DOWN"},
+        {"start": 270, "end": 288, "class": "RANGE", "role": "LOCAL_BASE"}
+      ],
+      "events": [
+        {"start": 105, "end": 113, "event": "SWEEP_DOWN"},
+        {"start": 260, "end": 270, "event": "SWEEP_DOWN"}
+      ]
+    },
+    {
+      "id": "BLIND-010",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 18, "class": "TRANSITION", "event": "BREAKOUT_DOWN"},
+        {"start": 18, "end": 108, "class": "CHANNEL_DOWN"},
+        {"start": 108, "end": 294, "class": "RANGE", "lower": "1975–1979", "upper": "1989–1993"},
+        {"start": 294, "end": 316, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 316, "end": 459, "class": "RANGE", "lower": "2030–2032", "upper": "2044–2048"},
+        {"start": 459, "end": 480, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED"}
+      ],
+      "events": [{"start": 375, "end": 384, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"}]
+    },
+    {
+      "id": "BLIND-011",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 96, "class": "RANGE", "lower": "2324–2329", "upper": "2343–2346", "status": "CONTINUES"}
+      ],
+      "internal_structures": [
+        {"start": 0, "end": 28, "class": "CHANNEL_UP"},
+        {"start": 28, "end": 39, "class": "CHANNEL_DOWN"},
+        {"start": 39, "end": 56, "class": "CHANNEL_UP"},
+        {"start": 56, "end": 96, "class": "CHANNEL_DOWN"}
+      ],
+      "events": [{"start": 53, "end": 58, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"}],
+      "causality_note": "Barele de context din dreapta nu au fost folosite pentru a schimba retroactiv eticheta ferestrei centrale."
+    },
+    {
+      "id": "BLIND-012",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 96, "class": "RANGE", "lower": "1932–1935", "upper": "1952–1955", "status": "CONTINUES"}
+      ],
+      "internal_structures": [
+        {"start": 0, "end": 52, "class": "RANGE", "lower": "1942", "upper": "1952"},
+        {"start": 58, "end": 80, "class": "CHANNEL_UP"},
+        {"start": 88, "end": 96, "class": "RANGE", "role": "REENTRY"}
+      ],
+      "events": [
+        {"start": 52, "end": 58, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"},
+        {"start": 80, "end": 88, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"}
+      ]
+    }
+  ]
+}

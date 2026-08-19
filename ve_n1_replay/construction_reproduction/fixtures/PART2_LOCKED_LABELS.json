@@ -1,0 +1,247 @@
+{
+  "artifact": "RANGE_V3_BLIND_BATCH_02_PART2_LOCKED_LABELS",
+  "source_pdf": "RANGE_V3_BLIND_BATCH_02_PART2.pdf",
+  "source_window_list_sha256": "d9f77eead2b17283dbdfae750778d2956541fbd00a33053c10249dc1a24442a6",
+  "protocol_commit": "a47e942",
+  "result_commit": "f76a643",
+  "instrument": "XAUUSD",
+  "timeframe": "M15",
+  "part": 2,
+  "windows_locked": 12,
+  "labeling_provenance": {
+    "BLIND-013_to_BLIND-024": "CEO_ASSISTED_BLIND_REVIEW",
+    "independent_blind_validation_eligible": false,
+    "reason": "Asistentul a propus primul clasificarea, iar CEO a confirmat sau corectat fiecare fereastră."
+  },
+  "semantic_annotation": {
+    "macro_micro_hierarchy": "Un RANGE la scară mare poate conține CHANNEL_UP, CHANNEL_DOWN, sub-range-uri, sweep-uri și breakout-uri locale fără ca regimul principal RANGE să fie anulat.",
+    "liquidity_reversal_pattern": "Un SWEEP al lichidității devine acționabil numai după reintrare și confirmarea ruperii structurii în direcția opusă; bara sweep-ului singură nu este intrare.",
+    "future_strategy_requirement": "Structurile interne și tiparele de liquidity-sweep reversal trebuie păstrate separat pentru viitoarele strategii de execuție."
+  },
+  "labels": [
+    {
+      "id": "BLIND-013",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "MEDIUM_HIGH",
+      "segments": [
+        {"start": 0, "end": 36, "class": "RANGE", "lower": "2350.5", "upper": "2355.5"},
+        {"start": 36, "end": 49, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED"},
+        {"start": 49, "end": 68, "class": "RANGE", "lower": "2341", "upper": "2346"},
+        {"start": 68, "end": 76, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 76, "end": 82, "class": "TRANSITION", "events": ["SWEEP_DOWN", "FAILED_BREAKOUT_DOWN"]},
+        {"start": 82, "end": 96, "class": "RANGE", "lower": "2353", "upper": "2362", "status": "CONTINUES"}
+      ],
+      "events": [{"start": 73, "end": 77, "event": "SWEEP_UP"}]
+    },
+    {
+      "id": "BLIND-014",
+      "window_bars": 288,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 80, "class": "RANGE", "lower": "1663", "upper": "1675"},
+        {"start": 80, "end": 96, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 96, "end": 190, "class": "RANGE", "lower": "1672", "upper": "1683"},
+        {"start": 190, "end": 205, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 205, "end": 241, "class": "RANGE", "lower": "1642", "upper": "1648"},
+        {"start": 241, "end": 280, "class": "CHANNEL_DOWN"},
+        {"start": 284, "end": 288, "class": "TRANSITION", "role": "REENTRY_OR_LOWER_RANGE_FORMING", "confirmation": "INSUFFICIENT_BARS"}
+      ],
+      "events": [{"start": 278, "end": 284, "event": "SWEEP_DOWN"}]
+    },
+    {
+      "id": "BLIND-015",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 250, "class": "RANGE", "lower": "2320-2329", "upper": "2360-2365"},
+        {"start": 250, "end": 334, "class": "CHANNEL_UP"},
+        {"start": 342, "end": 356, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 356, "end": 430, "class": "RANGE", "lower": "2342", "upper": "2368"},
+        {"start": 438, "end": 454, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 454, "end": 480, "class": "RANGE", "lower": "2375", "upper": "2392", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 145, "end": 158, "event": "SWEEP_DOWN"},
+        {"start": 334, "end": 342, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"},
+        {"start": 430, "end": 438, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"}
+      ]
+    },
+    {
+      "id": "BLIND-016",
+      "window_bars": 288,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 80, "class": "RANGE", "lower": "1269-1273", "upper": "1281-1283", "overlay": "CHANNEL_UP"},
+        {"start": 80, "end": 97, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 97, "end": 180, "class": "CHANNEL_DOWN", "acceleration_after": 144},
+        {"start": 180, "end": 270, "class": "RANGE", "lower": "1260-1262", "upper": "1266-1268"},
+        {"start": 281, "end": 288, "class": "RANGE", "role": "REENTRY", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 92, "end": 99, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"},
+        {"start": 270, "end": 281, "event": "SWEEP_DOWN", "secondary": "FAILED_BREAKOUT_DOWN"}
+      ],
+      "notes": "Etichetare ierarhică: RANGE principal cu CHANNEL_UP intern."
+    },
+    {
+      "id": "BLIND-017",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 15, "class": "TRANSITION", "event": "SWEEP_DOWN"},
+        {"start": 15, "end": 95, "class": "CHANNEL_UP"},
+        {"start": 95, "end": 110, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 110, "end": 190, "class": "RANGE", "lower": "1774", "upper": "1782"},
+        {"start": 190, "end": 205, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 205, "end": 260, "class": "RANGE", "lower": "1785", "upper": "1789"},
+        {"start": 260, "end": 275, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 275, "end": 480, "class": "RANGE", "lower": "1775-1778", "upper": "1792-1795", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 418, "end": 430, "event": "SWEEP_DOWN"},
+        {"start": 446, "end": 458, "event": "SWEEP_UP"}
+      ],
+      "macro": [
+        {"start": 0, "end": 275, "class": "TREND_UP_STEPWISE"},
+        {"start": 275, "end": 480, "class": "RANGE"}
+      ]
+    },
+    {
+      "id": "BLIND-018",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 100, "class": "CHANNEL_UP"},
+        {"start": 100, "end": 115, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 115, "end": 142, "class": "CHANNEL_UP"},
+        {"start": 142, "end": 290, "class": "RANGE", "lower": "1568-1572", "upper": "1579-1583"},
+        {"start": 290, "end": 305, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 305, "end": 365, "class": "RANGE", "lower": "1584", "upper": "1590"},
+        {"start": 365, "end": 415, "class": "CHANNEL_DOWN", "entry_event": "BREAKOUT_DOWN"},
+        {"start": 415, "end": 480, "class": "RANGE", "lower": "1554", "upper": "1562", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 202, "end": 214, "event": "SWEEP_DOWN"},
+        {"start": 300, "end": 308, "event": "SWEEP_UP"}
+      ]
+    },
+    {
+      "id": "BLIND-019",
+      "window_bars": 480,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 480, "class": "RANGE", "lower": "1254-1260", "upper": "1269-1273", "status": "CONTINUES"}
+      ],
+      "internal_structures": [
+        {"start": 0, "end": 48, "class": "CHANNEL_UP"},
+        {"start": 48, "end": 180, "class": "RANGE", "lower": "1265", "upper": "1270", "role": "UPPER_SUBRANGE"},
+        {"start": 180, "end": 280, "class": "CHANNEL_DOWN"},
+        {"start": 280, "end": 345, "class": "CHANNEL_UP"},
+        {"start": 345, "end": 455, "class": "CHANNEL_DOWN"},
+        {"start": 468, "end": 480, "class": "RANGE", "role": "REENTRY"}
+      ],
+      "events": [
+        {"start": 335, "end": 345, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"},
+        {"start": 455, "end": 468, "event": "SWEEP_DOWN"}
+      ],
+      "notes": "CEO a confirmat explicit mișcarea laterală macro și validitatea structurilor interne."
+    },
+    {
+      "id": "BLIND-020",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 82, "class": "RANGE", "lower": "1252-1253", "upper": "1256.5-1257"},
+        {"start": 82, "end": 88, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED"},
+        {"start": 88, "end": 96, "class": "CHANNEL_DOWN"}
+      ],
+      "internal_structures": [
+        {"start": 0, "end": 34, "class": "CHANNEL_UP"},
+        {"start": 34, "end": 60, "class": "CHANNEL_DOWN"},
+        {"start": 60, "end": 82, "class": "RANGE", "lower": "1253.3", "upper": "1255.2"}
+      ],
+      "events": [{"start": 32, "end": 36, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"}]
+    },
+    {
+      "id": "BLIND-021",
+      "window_bars": 288,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 48, "class": "RANGE"},
+        {"start": 48, "end": 160, "class": "CHANNEL_DOWN"},
+        {"start": 160, "end": 174, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_STRONG"},
+        {"start": 174, "end": 214, "class": "RANGE", "lower": "2295-2301", "upper": "2309-2313"},
+        {"start": 214, "end": 224, "class": "TRANSITION", "event": "BREAKOUT_UP"},
+        {"start": 224, "end": 288, "class": "RANGE", "lower": "2315-2319", "upper": "2328-2332", "status": "CONTINUES"}
+      ],
+      "events": [
+        {"start": 44, "end": 52, "event": "SWEEP_UP", "secondary": "FAILED_BREAKOUT_UP"},
+        {"start": 192, "end": 205, "event": "SWEEP_DOWN"}
+      ],
+      "correction": "CEO a corectat clasificarea inițială 0-48 din CHANNEL_UP în RANGE."
+    },
+    {
+      "id": "BLIND-022",
+      "window_bars": 288,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 260, "class": "RANGE", "lower": "1794-1798", "upper": "1809-1811"},
+        {"start": 274, "end": 288, "class": "CHANNEL_UP"}
+      ],
+      "internal_structures": [
+        {"start": 0, "end": 38, "class": "CHANNEL_UP"},
+        {"start": 38, "end": 125, "class": "CHANNEL_DOWN"},
+        {"start": 125, "end": 155, "class": "CHANNEL_UP"},
+        {"start": 155, "end": 190, "class": "RANGE"},
+        {"start": 190, "end": 216, "class": "CHANNEL_UP"},
+        {"start": 216, "end": 250, "class": "CHANNEL_DOWN"}
+      ],
+      "events": [
+        {"index_approx": 264, "event": "SWEEP_DOWN", "role": "LIQUIDITY_TAKING_BELOW_LOWS"},
+        {"start": 264, "end": 274, "event": "LIQUIDITY_SWEEP_REVERSAL_BULLISH", "confirmation_sequence": ["REENTRY_IN_RANGE", "BULLISH_STRUCTURE_BREAK", "AGGRESSIVE_BULLISH_DISPLACEMENT"]}
+      ],
+      "causality_note": "Intrarea nu poate fi decisă pe bara sweep-ului; tiparul devine confirmat numai după reintrare și ruperea bullish de structură.",
+      "future_strategy_candidate": "LIQUIDITY_SWEEP_REVERSAL_BULLISH"
+    },
+    {
+      "id": "BLIND-023",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 16, "class": "RANGE"},
+        {"start": 16, "end": 20, "class": "TRANSITION", "event": "BREAKOUT_DOWN", "status": "ACCEPTED_VERY_STRONG"},
+        {"start": 20, "end": 48, "class": "RANGE", "role": "LOWER_RANGE"},
+        {"start": 48, "end": 64, "class": "CHANNEL_DOWN"},
+        {"start": 64, "end": 84, "class": "RANGE"},
+        {"start": 84, "end": 96, "class": "CHANNEL_DOWN", "entry_event": "BREAKOUT_DOWN", "status": "ACCEPTED"}
+      ],
+      "macro": "STEPWISE_BEARISH_RANGE_BREAK_SEQUENCE"
+    },
+    {
+      "id": "BLIND-024",
+      "window_bars": 96,
+      "provenance": "CEO_ASSISTED_BLIND_REVIEW",
+      "confidence": "HIGH",
+      "segments": [
+        {"start": 0, "end": 24, "class": "CHANNEL_DOWN", "intensity": "AGGRESSIVE"},
+        {"start": 24, "end": 36, "class": "RANGE", "role": "LOW_ACCUMULATION"},
+        {"start": 36, "end": 55, "class": "CHANNEL_UP"},
+        {"start": 55, "end": 72, "class": "RANGE", "overlay": "SLIGHT_BULLISH_SLOPE"},
+        {"start": 72, "end": 76, "class": "TRANSITION", "events": ["SWEEP_UP", "FAILED_BREAKOUT_UP"]},
+        {"start": 76, "end": 96, "class": "RANGE", "status": "CONTINUES", "pressure": "BEARISH_AT_END"}
+      ],
+      "macro": "AGGRESSIVE_DROP_LOW_ACCUMULATION_BULLISH_RECOVERY_THEN_CONSOLIDATION"
+    }
+  ]
+}
