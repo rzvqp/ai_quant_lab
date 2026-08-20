@@ -54,7 +54,7 @@
   "contains_no_labels": true,
   "state": {
     "FRESH_BLIND14_SELECTION_FROZEN": true,
-    "FRESH_BLIND14_LABELS_FROZEN": false,
+    "FRESH_BLIND14_LABELS_FROZEN": true,
     "DETECTOR_EXECUTED": false,
     "PREDICTIONS_FROZEN": false,
     "BLIND_SCORE_COMPUTED": false
@@ -144,5 +144,19 @@
       "n_rendered_bars": 144,
       "bars_sha256": "39a076ebc47aa61db2da986861bb58df9cc1dc32906cede186bd27b40e3f745e"
     }
-  ]
+  ],
+  "labels_freeze": {
+    "labels_sha256": "d284fd39ee4ff8e84c4e488a7b6592fbefc714d4cd05c2f7531a18505e54ec38",
+    "session_log_sha256": "44cbc5c8b5a5199bd2eff63379acc2dc38584bb5576fe765b1cec0aa29f3fb94",
+    "labels_payload_id": "payload-2ea635aa7252eb81.bin",
+    "macro_range_segments_total": 24,
+    "windows_without_macro_range": [
+      "FB14-014"
+    ],
+    "amendment_log": "EMPTY",
+    "batch_wide": {
+      "confidence": "NOT_SPECIFIED",
+      "range_episode_state": "NOT_SPECIFIED"
+    }
+  }
 }
