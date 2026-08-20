@@ -41,8 +41,12 @@ def load_frozen_predictions(predictions_dir: Path) -> dict[str, Any]:
     predictions: dict[str, Any] = json.loads(raw_bytes)
     if predictions.get("config_id") != "24f72a60fcde42746d44f098558a745fac0f20b0141865bdbe0359f9cc3826da":
         raise ScoringRefusedError("CONFIG_MISMATCH", f"config_id neașteptat: {predictions.get('config_id')}")
-    if predictions.get("prototype_commit") != "f224e7d":
+    if predictions.get("prototype_commit") != "f224e7d+F1F5":
         raise ScoringRefusedError("COMMIT_MISMATCH", f"prototype_commit neașteptat: {predictions.get('prototype_commit')}")
+    if predictions.get("implementation_fingerprint") != "f1-f5-conformance-2026-08-20":
+        raise ScoringRefusedError(
+            "IMPLEMENTATION_FINGERPRINT_MISMATCH",
+            f"implementation_fingerprint neașteptat: {predictions.get('implementation_fingerprint')}")
     return predictions
 
 

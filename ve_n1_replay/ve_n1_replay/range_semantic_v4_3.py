@@ -40,6 +40,16 @@ RANGE_HIERARCHICAL_V4_3_CONTRACT_VERSION = "range-hierarchical-v4.3"
 RANGE_HIERARCHICAL_V4_3_NORMATIVE_CONFIG_ID = (
     "24f72a60fcde42746d44f098558a745fac0f20b0141865bdbe0359f9cc3826da")
 
+# **F5 (RT-RANGE-0011, `8d71fce`)**: corecția de la linia ~745 schimbă COMPORTAMENTUL detectorului pe
+# calea forming-internal (bandă de re-testare a frontierei MACRO scalată corect prin ATR) fără să schimbe
+# nicio valoare de configurație -- `config_id` rămâne byte-identic (§7 mandat). Asta înseamnă că gardul de
+# fail-closed existent la restore (`contract_version` + `config_id`) NU ar refuza un snapshot PRE-F5 --
+# un pericol real de restore cross-versiune, semnalat explicit de Red Team ("VE must ensure the new code
+# fingerprint participates in snapshot/version gating"). Identitate de IMPLEMENTARE separată de identitate
+# de CONTRACT/CONFIG -- bumped manual la fiecare schimbare de comportament care nu mișcă `config_id`,
+# verificată suplimentar (nu în locul) la `contract_version`/`config_id` în `restore_state`.
+RANGE_HIERARCHICAL_V4_3_IMPLEMENTATION_FINGERPRINT = "f1-f5-conformance-2026-08-20"
+
 __all__ = [
     "ContractErrorV43", "ConfigNotRatifiedErrorV43",
     "Depth", "MacroState", "InternalState", "REASONS_V43", "ROLES_V43",
@@ -48,6 +58,7 @@ __all__ = [
     "degeneracy_check", "evaluate_candidate", "evaluate_candidate_with_n_touch", "offer_swing",
     "assign_level", "promotion_check", "guard_timestamp", "sweep_reversal_confirmed",
     "RANGE_HIERARCHICAL_V4_3_CONTRACT_VERSION", "RANGE_HIERARCHICAL_V4_3_NORMATIVE_CONFIG_ID",
+    "RANGE_HIERARCHICAL_V4_3_IMPLEMENTATION_FINGERPRINT",
 ]
 
 
@@ -740,9 +751,22 @@ class RangeSemanticProducerV43:
         # de frontiera proprie a MACRO-ului pe partea respectivă, tratează-l ca re-testare de frontieră (fără
         # informație nouă), nu ca material pt. candidat nou -- ACEEAȘI toleranță normativă folosită de
         # `Cluster.offer`, nicio valoare inventată.
+        # **F5 (RT-RANGE-0011, conformance fix, nu schimbare semantică)**: `tol_cluster` e un multiplicator
+        # ATR FĂRĂ unitate (`2 × w_atr = 1.60`), exact ca la linia lui `offer_swing` de mai sus
+        # (`cfg.tol_cluster * st.atr_ref`) -- comparat aici DIRECT cu o distanță de preț în USD, fără scalare
+        # prin ATR, trata greșit 1.60 ca 1.60 USD în loc de 1.60×ATR USD (bandă normativă mediană ~2,997 USD
+        # vs 1,600 USD implementat greșit -- bandă normativă mai LARGĂ pe ~87% din bare). Comentariul de mai
+        # sus afirma "ACEEAȘI toleranță ca `Cluster.offer`", dar codul nu implementa acea identitate -- găsit
+        # de Statistician (pachet `870d3f8`), confirmat independent de Red Team (`RT-RANGE-0011`/`8d71fce`).
+        # Corectat prin scalare cu `atr_ref`, mirror exact al liniei 442. ATR indisponibil (`atr_ref is None`)
+        # -> filtrul NU se poate aplica (nicio toleranță absolută calculabilă) -- swing-ul trece la calea
+        # normală de candidat nou, fail-closed spre "nu presupune re-testare", nu spre "presupune re-testare".
+        # Direcția e cunoscută dinainte: bandă mai largă -> filtrul se declanșează MAI des -> MAI puțini
+        # candidați INTERNAL -- decis pe conformitate, nu pe recall (interzis explicit de mandat).
         if forming_internal and self._active_macro is not None:
             boundary = self._active_macro.up.center if is_high else self._active_macro.dn.center
-            if boundary is not None and abs(price - boundary) <= self._cfg.tol_cluster:
+            atr_ref = self._active_macro.atr_ref
+            if boundary is not None and atr_ref is not None and abs(price - boundary) <= self._cfg.tol_cluster * atr_ref:
                 return
         # **Găsit, remediat**: `_pending_up`/`_pending_dn` PĂSTREAZĂ DOAR cel mai RECENT swing respins pe
         # fiecare parte (nu acumulează o listă nemărginită) -- o listă care creștea la nesfârșit putea lega
@@ -1087,10 +1111,14 @@ class RangeSemanticProducerV43:
             config_id=self._cfg.config_id(), contract_version=self._cfg.contract_version)
         return result, events
 
-    # ── snapshot / restore integral (fail-closed pe contract_version + config_id, C9) ──
+    # ── snapshot / restore integral (fail-closed pe contract_version + config_id, C9; +
+    #    implementation_fingerprint din F5 -- config_id NU se schimbă la corecția F5 (nicio valoare
+    #    de configurație nu s-a modificat), deci gardul contract_version+config_id singur NU ar
+    #    refuza un snapshot PRE-F5 -- pericol real de restore cross-versiune, semnalat de Red Team) ──
     def snapshot_state(self) -> dict[str, Any]:
         return {
             "contract_version": self._cfg.contract_version, "config_id": self._cfg.config_id(),
+            "implementation_fingerprint": RANGE_HIERARCHICAL_V4_3_IMPLEMENTATION_FINGERPRINT,
             "n": self._n, "wh": list(self._wh), "wl": list(self._wl), "last_atr": self._last_atr,
             "registry": self._registry.snapshot(),
             "active_macro": self._active_macro.snapshot() if self._active_macro else None,
@@ -1114,7 +1142,9 @@ class RangeSemanticProducerV43:
         }
 
     def restore_state(self, st: dict[str, Any]) -> None:
-        if st.get("contract_version") != self._cfg.contract_version or st.get("config_id") != self._cfg.config_id():
+        if (st.get("contract_version") != self._cfg.contract_version
+                or st.get("config_id") != self._cfg.config_id()
+                or st.get("implementation_fingerprint") != RANGE_HIERARCHICAL_V4_3_IMPLEMENTATION_FINGERPRINT):
             raise ContractErrorV43(SNAPSHOT_CONTRACT_MISMATCH)
         k = self._cfg.K_struct
         self._n = st["n"]

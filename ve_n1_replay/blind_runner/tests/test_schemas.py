@@ -18,9 +18,10 @@ def _valid_input() -> dict:
 
 
 def test_valid_input_passes() -> None:
-    windows = validate_and_normalize_input(_valid_input())
+    windows, events = validate_and_normalize_input(_valid_input())
     assert len(windows) == 1
     assert len(windows[0].bars) == 10
+    assert events == ()
 
 
 @pytest.mark.parametrize("mutate,expected_code", [

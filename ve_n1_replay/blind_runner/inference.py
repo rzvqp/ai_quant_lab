@@ -23,12 +23,19 @@ from typing import Any
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))
 
-FROZEN_PROTOTYPE_COMMIT = "f224e7d"
+# Baza istorică rămâne `f224e7d` (RT-RANGE-0007/0010/0011) -- F1+F5 (RT-RANGE-0011, `8d71fce`) sunt
+# corecții AUTORIZATE peste ea, nu un nou prototip liber. `range_semantic_v4_3.py` se schimbă (F5);
+# `range_engine_v4_3.py` NU (neatins) -- verificat separat mai jos că hash-ul lui rămâne cel din f224e7d.
+# `FROZEN_HASHES`/`FROZEN_CONFIG_ID` sunt actualizate la fingerprintul post-patch (calculat DUPĂ ce
+# implementarea a fost finalizată și testată, nu invers -- disciplina de îngheț învățată din finding-ul
+# de ordine al RT-RANGE-0007).
+FROZEN_PROTOTYPE_COMMIT = "f224e7d+F1F5"
 FROZEN_HASHES = {
-    "range_semantic_v4_3.py": "2aba333c413c484f8ff85c91180e29f852834475d982ab4f4a5c32120ccb238b",
+    "range_semantic_v4_3.py": "70e30b3ad08cc365b2643da4569cb56056673dbd114795621f16b6cf784a7999",
     "range_engine_v4_3.py": "84dac346524591fdfe904cd0dde0f1d8888161cdffe62dcd7129cff6eea1c1f2",
 }
 FROZEN_CONFIG_ID = "24f72a60fcde42746d44f098558a745fac0f20b0141865bdbe0359f9cc3826da"
+FROZEN_IMPLEMENTATION_FINGERPRINT = "f1-f5-conformance-2026-08-20"
 
 
 def _verify_frozen_detector() -> None:
@@ -37,8 +44,9 @@ def _verify_frozen_detector() -> None:
         actual = hashlib.sha256((ve_dir / fname).read_bytes()).hexdigest()
         if actual != expected:
             raise RuntimeError(
-                f"FAIL-CLOSED: {fname} nu e byte-identic cu prototipul înghețat {FROZEN_PROTOTYPE_COMMIT}. "
-                f"Așteptat {expected}, găsit {actual}. Oprire -- inference nu rulează pe un detector modificat."
+                f"FAIL-CLOSED: {fname} nu e byte-identic cu implementarea înghețată "
+                f"{FROZEN_PROTOTYPE_COMMIT}. Așteptat {expected}, găsit {actual}. Oprire -- inference nu "
+                f"rulează pe un detector modificat/nepatch-uit."
             )
 
 
@@ -46,12 +54,16 @@ _verify_frozen_detector()
 
 from schemas import InputValidationError, InputWindow, validate_and_normalize_input  # noqa: E402
 from ve_n1_replay import Bar  # noqa: E402
-from ve_n1_replay.range_semantic_v4_3 import ConfigV43  # noqa: E402
+from ve_n1_replay.range_semantic_v4_3 import (  # noqa: E402
+    RANGE_HIERARCHICAL_V4_3_IMPLEMENTATION_FINGERPRINT as IMPLEMENTATION_FINGERPRINT, ConfigV43,
+)
 from ve_n1_replay.range_engine_v4_3 import RangeSemanticEngineV43  # noqa: E402
 from ve_n1_replay.version import RAW_AXES_BUILDER_IMPL_COMMIT  # noqa: E402
 
 if ConfigV43().config_id() != FROZEN_CONFIG_ID:
     raise RuntimeError("FAIL-CLOSED: config_id runtime diferit de cel înghețat -- oprire.")
+if IMPLEMENTATION_FINGERPRINT != FROZEN_IMPLEMENTATION_FINGERPRINT:
+    raise RuntimeError("FAIL-CLOSED: implementation_fingerprint runtime diferit de cel înghețat -- oprire.")
 
 
 def _sha256_bytes(b: bytes) -> str:
@@ -150,7 +162,7 @@ def run_inference(input_path: Path, output_dir: Path) -> dict[str, Any]:
     except json.JSONDecodeError as exc:
         raise InputValidationError("CORRUPT_FILE", f"input nu e JSON valid: {exc}") from exc
 
-    windows = validate_and_normalize_input(raw)
+    windows, quality_events = validate_and_normalize_input(raw)
 
     # hash-ul barelor NORMALIZATE (dupa validare, nu bytes-ul brut) -- schimbarea unui singur bit
     # in orice bara normalizata schimba acest hash (mandat §10).
@@ -167,6 +179,11 @@ def run_inference(input_path: Path, output_dir: Path) -> dict[str, Any]:
 
     window_outputs = [_run_one_window(w) for w in windows]
 
+    # F1 (mandat §4.4): evenimentele de calitate a inputului -- infrastructură, NU reason codes
+    # semantice RANGE (v. verificarea mecanică în tests/test_f1_ohlc_tolerance.py). `bar_index` e deja
+    # relativ (schemas.py), deci sigur de inclus în output-ul pt. evaluare -- zero timestamp real.
+    input_quality_events = [dc.asdict(ev) for ev in quality_events]
+
     total_bars = sum(w["n_bars"] for w in window_outputs)
     predictions: dict[str, Any] = {
         "prototype_commit": FROZEN_PROTOTYPE_COMMIT,
@@ -174,11 +191,13 @@ def run_inference(input_path: Path, output_dir: Path) -> dict[str, Any]:
         "config_id": FROZEN_CONFIG_ID,
         "code_fingerprint": dict(FROZEN_HASHES),
         "config_fingerprint": FROZEN_CONFIG_ID,
+        "implementation_fingerprint": FROZEN_IMPLEMENTATION_FINGERPRINT,
         "input_bytes_hash": input_bytes_hash,
         "normalized_bars_hash": normalized_bars_hash,
         "n_windows": len(window_outputs),
         "n_bars_total": total_bars,
         "windows": window_outputs,
+        "input_quality_events": input_quality_events,
         "snapshot_restore_markers": [],   # rulare completa, fara fragmentare -- gol dar prezent
     }
 
@@ -201,6 +220,8 @@ def run_inference(input_path: Path, output_dir: Path) -> dict[str, Any]:
         "zero_labels_access": True,
         "zero_sealed_access_in_dev_tests": True,
         "python_version": sys.version.split()[0],
+        "f1_bars_tolerated": len(input_quality_events),
+        "implementation_fingerprint": IMPLEMENTATION_FINGERPRINT,
     }
     manifest_path = output_dir / "predictions.manifest.json"
     manifest_path.write_bytes(json.dumps(manifest, indent=2, sort_keys=True).encode("utf-8"))
