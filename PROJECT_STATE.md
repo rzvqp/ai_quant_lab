@@ -28,6 +28,45 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-V4_4-DESIGN-001 — RANGE V4.4 design & pre-registration (DESIGN ONLY, NO IMPLEMENTATION, NO
+  PARAMETER FISHING, ZERO_VALIDATION_WEIGHT on MB3-001..024, MB3-025..048 never accessed at all this
+  mandate)**, run in parallel with the (not-yet-delivered) Red Team audit of `VE-RANGE-DIAG-001`. Addresses
+  every defect (D1-D7) from that diagnostic with a coherent NEW state machine, not a patch stack. **Core
+  mechanism**: MACRO confirmation gains a 4-signal discrimination gate, computed over a BOUNDED TRAILING
+  window (not the falsified whole-life `normalized_drift`) — Kaufman Efficiency Ratio (`ER≤0.5`, self-
+  normalized, no ATR dependency), traversal count (`≥1` floor, exact minimum UNRESOLVED), Relative Net
+  Displacement (`RND≤1.0`, structure's own width as the unit — the strongest-derived anchor, near-tautological),
+  alternation rate (SUPPORTING only, deliberately non-gating — self-falsification found a real false-reject
+  risk if made a hard gate). New 5-state lifecycle `CANDIDATE→FORMING→CONFIRMED→WEAKENING→TERMINATED` — the
+  `WEAKENING` state is genuinely new (reuses the UNCHANGED `Excursion`/sweep machinery for path (a); adds
+  trailing-window degradation detection for path (b)) and is what stops a confirmed RANGE from persisting
+  after the market resumes trending (D5, previously unaddressed by any V4.3 mechanism). New episode-identity
+  rules (continuation/merge/replacement via the SAME IoU construct the ratified scorer already uses) directly
+  target the 9-structure over-segmentation class (D6) empirically observed in MB3-021 (4 sequential episodes)
+  and MB3-024 (5). Explicit `RANGE_CANDIDATE_PRESENT` non-authoritative event distinguishes "RANGE PRESENT"
+  from "RANGE FIRST CONFIRMED NOW," giving truncated episodes an honest explained-non-confirmation output
+  instead of a silent miss (addresses D7's window-truncation FN class). **11 new reason codes**, all 29
+  existing ones + all existing mechanisms (`degeneracy_check`/`n_touch`/`Cluster`/promotion/nesting/INTERNAL
+  logic/snapshot pattern/ATR provenance) explicitly PRESERVED via a full KEEP/CHANGE matrix — nothing changed
+  without a stated reason. Every numeric parameter either derived from a scale-invariant/self-referential
+  argument (ER_max/RND_max/ALT_MIN) or explicitly marked `UNRESOLVED_PARAMETER` (trailing-window length `W`,
+  min-traversal count, weakening-persistence bound, episode-continuation IoU/gap thresholds) — **zero
+  threshold chosen by testing values against MB3 and picking a winner** (mandate's forbidden-list respected).
+  **20 adversarial scenarios specified** with expected state chronology (mandatory per mandate §15), directly
+  covering the diagnosed failure classes (channel/trend-fits-between-boundaries, sweep-without-termination,
+  internal-rotations-fragmenting-one-episode, truncated/right-censored windows). **Mandatory self-
+  falsification performed and HONEST**: found a real, undissolved false-reject risk (slow drifting-equilibrium
+  range could still exceed RND at any window length) and a real, explicitly-out-of-scope false-accept risk
+  (a violent zero-net-displacement "zigzag" could pass all four gates while not being a clean tradeable range
+  to a human) — neither hidden nor hand-waved away. Full failure-mode closure table covers every D1-D7 defect
+  with mechanism/evidence/response/benefit/risk/adversarial-test/regression-test columns. **Red Team
+  convergence (mandate §22) explicitly NOT performable** — verified (not assumed) that no
+  `RT-RANGE-DIAG-AUDIT-001` exists yet on any of the 4 mirrors as of delivery — so the mandatory convergence
+  table is structurally empty and the formal verdict is **`V4_4_DESIGN_NOT_READY`** (gate-blocked, not
+  defect-blocked: the design itself survived its own falsification pass). Full report
+  `ve_n1_replay/VE_RANGE_V4_4_DESIGN_AND_PREREGISTRATION.md`. No code/config/threshold/V4.3 file touched (only
+  the frozen V4.3 source was READ, for the preservation matrix). Next owner: CEO (schedule the convergence
+  step once Red Team's audit of the diagnostic lands), then Red Team (design review, independent of timing).
 - **VE-RANGE-DIAG-001 — RANGE V4.3 MACRO discrimination diagnostic (DIAGNOSTIC ONLY, ZERO_VALIDATION_WEIGHT,
   NO code/threshold/config changed)**, on the `bc6b9dc` build (RT-RANGE-0013 PASS) against the CEO-assisted
   blind batch `MB3-001..024` (RT-RANGE-MB3-001, `3496b73`/E89: `MB3_MACRO_GENERALIZATION_NOT_SUPPORTED` —
