@@ -40,15 +40,20 @@ RANGE_HIERARCHICAL_V4_3_CONTRACT_VERSION = "range-hierarchical-v4.3"
 RANGE_HIERARCHICAL_V4_3_NORMATIVE_CONFIG_ID = (
     "24f72a60fcde42746d44f098558a745fac0f20b0141865bdbe0359f9cc3826da")
 
-# **F5 (RT-RANGE-0011, `8d71fce`)**: corecția de la linia ~745 schimbă COMPORTAMENTUL detectorului pe
-# calea forming-internal (bandă de re-testare a frontierei MACRO scalată corect prin ATR) fără să schimbe
-# nicio valoare de configurație -- `config_id` rămâne byte-identic (§7 mandat). Asta înseamnă că gardul de
-# fail-closed existent la restore (`contract_version` + `config_id`) NU ar refuza un snapshot PRE-F5 --
-# un pericol real de restore cross-versiune, semnalat explicit de Red Team ("VE must ensure the new code
-# fingerprint participates in snapshot/version gating"). Identitate de IMPLEMENTARE separată de identitate
-# de CONTRACT/CONFIG -- bumped manual la fiecare schimbare de comportament care nu mișcă `config_id`,
-# verificată suplimentar (nu în locul) la `contract_version`/`config_id` în `restore_state`.
-RANGE_HIERARCHICAL_V4_3_IMPLEMENTATION_FINGERPRINT = "f1-f5-conformance-2026-08-20"
+# **F1-ONLY REMEDIATION (RT-RANGE-0012, `892355f`/E87, after RT-RANGE-0011 `8d71fce`)**: the F5 fix that
+# shipped in `69af414` (fingerprint `f1-f5-conformance-2026-08-20`) was CORRECT as a units conversion but
+# was NOT MACRO-isolated in effect: on real bars (real ATR != 1.0) it changed MACRO output (12/48 windows,
+# frozen baseline 62/88 -> 58/88) via shared structure-id counter / INTERNAL->MACRO promotion / shared
+# pending-swing state -- CEO remediation option (b): ship F1 only, REVERT the F5 behavioral line below to
+# its exact pre-F5 form (see `_offer_swing_everywhere`), defer F5 entirely (DEFERRED_RESEARCH_ONLY_NON_
+# BLOCKING). This file is therefore BEHAVIORALLY byte-identical to the pre-F5 `82f27c0`/`f224e7d` detector
+# again -- but NOT byte-identical at the file level (this constant + its snapshot/restore participation
+# stay, deliberately not reverted): a bare revert to `f224e7d`'s bytes would make a stale F1+F5 snapshot
+# (or an even older pre-F1 snapshot) silently restorable here, since `contract_version`+`config_id` alone
+# never moved across ANY of these variants. Implementation identity stays SEPARATE from CONTRACT/CONFIG
+# identity for exactly this reason -- bumped manually on every behavior-relevant change, checked in
+# ADDITION to (not instead of) `contract_version`/`config_id` in `restore_state`.
+RANGE_HIERARCHICAL_V4_3_IMPLEMENTATION_FINGERPRINT = "f1-only-f5-deferred-2026-08-20"
 
 __all__ = [
     "ContractErrorV43", "ConfigNotRatifiedErrorV43",
@@ -751,22 +756,20 @@ class RangeSemanticProducerV43:
         # de frontiera proprie a MACRO-ului pe partea respectivă, tratează-l ca re-testare de frontieră (fără
         # informație nouă), nu ca material pt. candidat nou -- ACEEAȘI toleranță normativă folosită de
         # `Cluster.offer`, nicio valoare inventată.
-        # **F5 (RT-RANGE-0011, conformance fix, nu schimbare semantică)**: `tol_cluster` e un multiplicator
-        # ATR FĂRĂ unitate (`2 × w_atr = 1.60`), exact ca la linia lui `offer_swing` de mai sus
-        # (`cfg.tol_cluster * st.atr_ref`) -- comparat aici DIRECT cu o distanță de preț în USD, fără scalare
-        # prin ATR, trata greșit 1.60 ca 1.60 USD în loc de 1.60×ATR USD (bandă normativă mediană ~2,997 USD
-        # vs 1,600 USD implementat greșit -- bandă normativă mai LARGĂ pe ~87% din bare). Comentariul de mai
-        # sus afirma "ACEEAȘI toleranță ca `Cluster.offer`", dar codul nu implementa acea identitate -- găsit
-        # de Statistician (pachet `870d3f8`), confirmat independent de Red Team (`RT-RANGE-0011`/`8d71fce`).
-        # Corectat prin scalare cu `atr_ref`, mirror exact al liniei 442. ATR indisponibil (`atr_ref is None`)
-        # -> filtrul NU se poate aplica (nicio toleranță absolută calculabilă) -- swing-ul trece la calea
-        # normală de candidat nou, fail-closed spre "nu presupune re-testare", nu spre "presupune re-testare".
-        # Direcția e cunoscută dinainte: bandă mai largă -> filtrul se declanșează MAI des -> MAI puțini
-        # candidați INTERNAL -- decis pe conformitate, nu pe recall (interzis explicit de mandat).
+        # **F5 DEFERRED (RT-RANGE-0012, `892355f`/E87, DEFERRED_RESEARCH_ONLY_NON_BLOCKING)**: a fix was
+        # shipped here in `69af414` scaling this comparison by `atr_ref` (units-correct per RT-RANGE-0011).
+        # Red Team's implementation audit found it was NOT MACRO-isolated in effect on real bars (real ATR
+        # != 1.0): suppressing INTERNAL candidates here also renumbers/reshapes MACRO structures downstream
+        # (shared structure-id counter, INTERNAL->MACRO promotion, shared pending-swing state) -- frozen
+        # MACRO baseline moved 62/88->58/88 on real bars. CEO remediation option (b): ship F1 only, defer
+        # F5 entirely. This line is therefore back to its EXACT pre-F5 form (byte-behaviorally identical to
+        # `82f27c0`/`f224e7d`) -- do not scale by `atr_ref` here again without a redesign that keeps INTERNAL
+        # candidate suppression from ever altering MACRO population/geometry, re-proven on REAL bars (not
+        # just the synthetic `atr=1.0` construction corpus, which makes any `atr_ref` scaling here a no-op
+        # and was exactly why the original F5 MACRO-identity proof was vacuous).
         if forming_internal and self._active_macro is not None:
             boundary = self._active_macro.up.center if is_high else self._active_macro.dn.center
-            atr_ref = self._active_macro.atr_ref
-            if boundary is not None and atr_ref is not None and abs(price - boundary) <= self._cfg.tol_cluster * atr_ref:
+            if boundary is not None and abs(price - boundary) <= self._cfg.tol_cluster:
                 return
         # **Găsit, remediat**: `_pending_up`/`_pending_dn` PĂSTREAZĂ DOAR cel mai RECENT swing respins pe
         # fiecare parte (nu acumulează o listă nemărginită) -- o listă care creștea la nesfârșit putea lega

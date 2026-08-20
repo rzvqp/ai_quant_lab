@@ -28,7 +28,46 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
-- **RANGE HIERARCHICAL V4.3 — mandat "F1 + F5 CONFORMANCE IMPLEMENTATION" (a patra trecere)** —
+- **RANGE HIERARCHICAL V4.3 — mandat "F1-ONLY REMEDIATION AFTER RT-RANGE-0012" (a cincea trecere)** —
+  `RANGE_V4_F1_ONLY_REMEDIATION_READY_FOR_RED_TEAM_AUDIT`, `self_declared_pass=false`. Răspuns direct la
+  **RT-RANGE-0012 = RANGE_V4_F1_F5_IMPLEMENTATION_AUDIT_FAIL** (`892355f`/E87, audit pe `69af414`): F1
+  fost validat COMPLET PASS (inclusiv `F1_ONLY_PATCHED_CLI_PREDICTIONS_MATCH_FREEZE=TRUE`, 48/48, hash
+  `62273c1e…` — poarta pe care VE o raportase `NOT_VERIFIABLE_HERE` în mandatul anterior, acum stabilită
+  direct de Red Team cu acces la escrow), dar **F5 (corect ca UNITĂȚI) a produs o SCURGERE MATERIALĂ în
+  MACRO pe bare reale** — contorul de structure-id partajat MACRO/INTERNAL + promovarea INTERNAL→MACRO +
+  starea pending-swing partajată au propagat suprimările F5 din INTERNAL până în MACRO, mutând baseline-ul
+  înghețat 62/88 (recall 0,705) → 58/88 (0,659) pe 12/48 ferestre reale — deși F5 era izolat de MACRO ca
+  LOCAȚIE de cod, nu ca EFECT. Testul de identitate MACRO al VE (`atr=1,0` exclusiv) declarat **VACUU**:
+  la `atr=1,0`, `tol_cluster×atr_ref=tol_cluster` — F5 devenea no-op exact în punctul testat. CEO a ales
+  remedierea (b): **F1 SINGUR, F5 amânat complet** (`DEFERRED_RESEARCH_ONLY_NON_BLOCKING`, INTERNAL
+  rămâne `RESEARCH_ONLY`/`NON_BLOCKING`). Livrat ca commit NOU (nu amendament la `69af414`, care rămâne
+  istoric neatins): linia gardului de re-testare (`range_semantic_v4_3.py`) revertată CARACTER-CU-CARACTER
+  la forma exactă `82f27c0` (verificat prin `git diff 82f27c0` — linia executabilă nu apare deloc în
+  diff). Infrastructura de fingerprint NU revertată orb (interzis explicit de mandat — un revert complet
+  la bytes-ul `f224e7d` ar fi lăsat restaurabil silențios un snapshot din pachetul RESPINS F1+F5, din
+  moment ce `contract_version`+`config_id` nu s-au schimbat niciodată în nicio variantă) — valoare nouă
+  `f1-only-f5-deferred-2026-08-20`, matrice completă de refuz fail-closed testată (F1-only acceptat;
+  bare-`f224e7d` fără câmp respins; `69af414` RESPINS respins; config/contract mismatch respins; restore
+  atomic). `FROZEN_PROTOTYPE_COMMIT="f224e7d+F1"`, hash nou `098fa144…41fbc` (fișier NU byte-identic cu
+  `f224e7d` — infrastructura de identitate rămâne — dar byte-COMPORTAMENTAL identic, dovedit prin diff
+  complet: singurele diferențe sunt constanta de fingerprint + 2 linii aditive de snapshot, NICIUNA
+  executată în `observe()`). `construction_reproduction/` (Componenta A) verificat REFUZĂ live acest hash
+  nou — pin-ul ține indiferent de câte remedieri urmează. **Dovadă MACRO ne-vacuă** (răspuns direct la
+  vacuitatea găsită): gardul exercitat direct + proiecția MACRO pe 48 ferestre sintetice, sweep la 5
+  valori ATR distincte (0,65/1,0/1,85/3,2/10,0, nu doar 1,0) — ancora la atr=1,0 coincide exact cu cea din
+  mandatul F1+F5 (dovadă că acel punct nu poate distinge F5-prezent de F5-absent), celelalte 4 sunt
+  dovadă nouă. **Poarta MACRO pe bare reale/ATR real rămâne `NOT_VERIFIABLE_HERE`** — verificat explicit
+  că VE tot nu are acces escrow (un director cu formă de escrow există local, DELIBERAT necitit — rolul
+  VE e structural definit să nu-l consume, indiferent de accesibilitatea la nivel de SO); script
+  determinist nou (`verify_macro_identity_vs_baseline.py`) livrat pt. ca Red Team să reproducă automat
+  tabelul lor §1 pe bare reale. **469/469 teste live PASS** (394 `tests/` + 75 `blind_runner/tests/`; 24
+  teste noi înlocuiesc cele 19 șterse din suita F5), mypy `--strict` clean pe 7 fișiere de producție
+  atinse. `tests/test_range_semantic_v4_3.py` neatins. `MACRO_INDEPENDENT_BLIND_PREPARATION_AUTHORIZED
+  = FALSE` — doar Red Team eliberează acest gate. Detaliu complet în
+  `ve_n1_replay/RANGE_V4_F1_ONLY_REMEDIATION_DELIVERY_REPORT.md`. Niciun wheel, nicio bară SEALED/OOS
+  accesată, niciun parametru RANGE recalibrat. Următorul proprietar: Red Team.
+- **RANGE HIERARCHICAL V4.3 — mandat "F1 + F5 CONFORMANCE IMPLEMENTATION" (a patra trecere) — RESPINS
+  de Red Team (RT-RANGE-0012, F5-MACRO-LEAK) — vezi intrarea de mai sus pt. remediere** —
   `RANGE_V4_F1_F5_IMPLEMENTATION_READY_FOR_RED_TEAM_AUDIT`, `self_declared_pass=false`. Autorizat
   EXCLUSIV de RT-RANGE-0011 (`8d71fce`) pt. DOUĂ corecții: **F1** (contract toleranță sub-tick OHLC,
   DOAR în `blind_runner/schemas.py` — `epsilon=min_tick/2=0,005` pt. XAUUSD, comparație

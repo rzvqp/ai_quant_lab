@@ -23,19 +23,22 @@ from typing import Any
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))
 
-# Baza istorică rămâne `f224e7d` (RT-RANGE-0007/0010/0011) -- F1+F5 (RT-RANGE-0011, `8d71fce`) sunt
-# corecții AUTORIZATE peste ea, nu un nou prototip liber. `range_semantic_v4_3.py` se schimbă (F5);
-# `range_engine_v4_3.py` NU (neatins) -- verificat separat mai jos că hash-ul lui rămâne cel din f224e7d.
-# `FROZEN_HASHES`/`FROZEN_CONFIG_ID` sunt actualizate la fingerprintul post-patch (calculat DUPĂ ce
-# implementarea a fost finalizată și testată, nu invers -- disciplina de îngheț învățată din finding-ul
-# de ordine al RT-RANGE-0007).
-FROZEN_PROTOTYPE_COMMIT = "f224e7d+F1F5"
+# Baza istorică rămâne `f224e7d` (RT-RANGE-0007/0010/0011). `69af414` a livrat F1+F5 -- Red Team
+# (RT-RANGE-0012, `892355f`/E87) a găsit F5 material-defect (MACRO leak pe bare reale, 62/88->58/88) și
+# CEO a ales remedierea (b): F1 SINGUR, F5 amânat complet (DEFERRED_RESEARCH_ONLY_NON_BLOCKING). Acest
+# fișier reflectă acum implementarea F1-only: `range_semantic_v4_3.py` e revenit byte-comportamental la
+# forma pre-F5 (linia de gard rămâne NESCALATĂ prin ATR), dar NU byte-identic cu `f224e7d` la nivel de
+# fișier (infrastructura de fingerprint rămâne, deliberat nereverta -- v. comentariul din
+# `range_semantic_v4_3.py`). `range_engine_v4_3.py` rămâne NEATINS (verificat separat mai jos, hash
+# identic cu f224e7d pe tot parcursul). `FROZEN_HASHES`/`FROZEN_IMPLEMENTATION_FINGERPRINT` actualizate
+# la amprenta post-remediere (calculată DUPĂ finalizare+testare, nu invers).
+FROZEN_PROTOTYPE_COMMIT = "f224e7d+F1"
 FROZEN_HASHES = {
-    "range_semantic_v4_3.py": "70e30b3ad08cc365b2643da4569cb56056673dbd114795621f16b6cf784a7999",
+    "range_semantic_v4_3.py": "098fa1445521e5183ab5ddd94caac88fe010159ee283f2f33eca22f701241fbc",
     "range_engine_v4_3.py": "84dac346524591fdfe904cd0dde0f1d8888161cdffe62dcd7129cff6eea1c1f2",
 }
 FROZEN_CONFIG_ID = "24f72a60fcde42746d44f098558a745fac0f20b0141865bdbe0359f9cc3826da"
-FROZEN_IMPLEMENTATION_FINGERPRINT = "f1-f5-conformance-2026-08-20"
+FROZEN_IMPLEMENTATION_FINGERPRINT = "f1-only-f5-deferred-2026-08-20"
 
 
 def _verify_frozen_detector() -> None:
