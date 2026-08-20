@@ -4184,4 +4184,57 @@
                001_focused_design_audit.md.
                STATE: OPERATIONAL. Next entry [92], prev_hash E91.
   entry_hash:  E91
+
+[92] 2026-08-20
+  prev_hash:   E91
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-4-IMPLEMENTATION-AUDIT
+  freeze_hash: VE impl 3bb61cf (parent calib 898f149) / detector range_semantic_v4_4.py blob 833aedfd (67340B) +
+               range_engine_v4_4.py blob 1371444c (9599B) / config_id 23d98c07 / contract range-hierarchical-v4.4 /
+               V4.3 byte-untouched vs bc6b9dc
+  battery_ver: RT-RANGE-V4_4-IMPLEMENTATION-AUDIT-001
+  reviewer:    Red Team
+  detail:      INDEPENDENT STATIC/CONSTRUCTION AUDIT of the frozen RANGE V4.4 implementation (3bb61cf) -- the gate
+               between impl freeze and fresh blind validation. VERDICT = ***V4_4_IMPLEMENTATION_AUDIT_PASS_WITH_
+               NONBLOCKING_NOTES*** + V4_4_FRESH_BLIND_VALIDATION_AUTHORIZED_FOR_CEO_DECISION. PROVENANCE PASS: 9
+               commits exist, ancestry c57d103(freeze)->967222a(protocol)->898f149(calib)->3bb61cf(impl), 3bb61cf
+               parent=898f149 HEAD local=remote x4, no later semantic change. V4.3 PRESERVED: range_semantic_v4_3/
+               range_engine_v4_3/scoring.py byte-identical to bc6b9dc, 3bb61cf touched NO V4.3 file. Impl purely
+               additive (2 new files + 6 test files + report). ALL 25 audit areas PASS, 0 amend, 0 block, each
+               INDEPENDENTLY reproduced (not trusting VE tests): config_id 23d98c07 recomputed from ConfigV44 =
+               frozen 898f149 exact + all 10 calibrated (ER_max0.5/RND_max1.0/ALT_MIN0.5/W29/MIN_TRAV1/ER_weak0.75/
+               RND_weak2.0/WEAK_MAX22/IOU_CONT0.5/GAP_MAX12) + 9 V4.3 params match; fingerprint canonical git-blob
+               sha256 = report (833aedfd/1371444c); ★ PREFIX_CONFIRMATION_INVARIANCE reproduced with my OWN 61-bar
+               prefix in 96/288/480 containers (identical chronology) + no-lookahead (truncate@200==full first-200)
+               + deterministic replay + chunk/snapshot-restart invariance at splits 20/61/150; ★ RESTORE ATOMICITY
+               6 failure modes (wrong config/contract/fingerprint/missing/wrong-type/corrupt-nested) all refused
+               STATE_BEFORE==STATE_AFTER; snapshot identity gates refuse wrong config_id/contract(v4.3)/fingerprint/
+               version; ★ MUTATION TESTING 6/6 CAUGHT (disable ER/RND/traversal gates, remove WEAKENING bound,
+               loosen episode IoU, remove snapshot gate) -- suite goes red each, source restored byte-identical
+               (tests NON-VACUOUS); directional gate ER/traversal/RND hard + alternation SUPPORTING-only (source:
+               T3 returns only on ER/traversal/RND, alternation appends INSUFFICIENT_ALTERNATION_EVIDENCE but never
+               blocks -- fix wired-not-dead = IMPLEMENTATION_FIX_CONSISTENT_WITH_FROZEN_DESIGN) + falsified whole-
+               life normalized_drift>s_max NOT restored as MACRO gate; WEAKENING bounded (mutation-confirmed) dual-
+               trigger T4>T5 deterministic recovery-strict-threshold; EPISODE_MERGED = STRUCTURALLY_UNREACHABLE_BY_
+               FROZEN_INVARIANT (single-active-MACRO forming_macro=_active_macro is None, disclosed, non-blocking =
+               classification A); REASONS_V44=40 (29+11 unique) all reachable except documented MERGE; INTERNAL
+               PARITY my own 300-bar V4.3-vs-V4.4 = 0 divergences; adversarial 22/22 strong assertions; gentle-
+               channel #21 slow-drift + #22 zigzag CONFIRM = KNOWN_LIMITATION_PRESERVED (disclosed calib risk, no
+               retuning/special-case/MB3-exception); 76 V4.4 tests pass + 470 collected + 394 V4.3 baseline rollback
+               green (V4.4 additive/new-namespace, V4.3 24f72a60 unchanged); mypy --strict CLEAN on both V4.4 files;
+               complexity bounded (W-window deque + rolling accumulator + O(1) counters, no per-bar growth); NO MB3
+               CONTAMINATION (detector/engine/tests/report/commit -- only governance not-accessed/sealed strings).
+               3 NON-BLOCKING NOTES: (1) test_mypy_strict_clean_on_all_touched_files fails in fresh venv due to
+               hardcoded 'python' subprocess (RT-0007 #6 artifact in UNCHANGED V4.3 baseline test; V4.4 mypy actually
+               clean) -- not a V4.4 defect; (2) EPISODE_MERGED unreachable-by-invariant (A, non-blocking); (3)
+               gentle-channel/zigzag known limitation preserved (magnitude a question for fresh-blind stage). Minor
+               obs: V4.4 fingerprint covers the 2 V4.4 files; imported V4.3 dep separately pinned bc6b9dc byte-
+               verified untouched (together cover all material files). THIS AUDIT DOES NOT VALIDATE V4.4: no blind
+               execution, no perf number. NEXT (recorded intention only, NOT authorized): fresh 14-window blind
+               batch, independent of all V4.4 design/calib/impl evidence, both-sides-frozen; MB3-025-048 stay sealed/
+               separate. SCOPE: no blind exec/redesign/recalibration/param selection/Strategy Catalog/Alpha/AI
+               Trader/LIVE_SHADOW/broker; 3bb61cf preserved; V4.3 unmodified; changes only in red_team/. Report:
+               RT-RANGE-V4_4-IMPLEMENTATION-AUDIT-001_implementation_audit.md.
+               STATE: OPERATIONAL. Next entry [93], prev_hash E92.
+  entry_hash:  E92
 ```
