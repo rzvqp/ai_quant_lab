@@ -28,6 +28,43 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-V4_4_1-STALE-CANDIDATE-DESIGN-001 — `V4_4_1_STALE_DESIGN_READY_FOR_CALIBRATION`.** CEO
+  authorized a focused design+calibration-plan mandate (no implementation, no numeric parameter selection)
+  building on the traversal diagnostic (`b1dcf92`). **Design**: a new pre-confirmation transition `T-STALE`
+  (`CANDIDATE`/`FORMING → TERMINATED`, reason `STALE_CANDIDATE_ABANDONED`), inserted in `_step_macro`
+  between `T-KILL` and `T2`/`T3` (re-read exact lines this mandate: degeneracy_check 889-892, `zones is
+  None` branch 894-896), applying only to `reached_confirmed=False` structures with an established boundary.
+  **Staleness definition** (chosen after working through 5 candidate concepts, not picked arbitrarily):
+  requires BOTH a minimum count of rejected swing touches AND genuine two-sided alternation in those
+  rejections, within a bounded trailing window — deliberately NOT touch-scarcity-based (would false-positive
+  on legitimately slow/quiet ranges) and NOT price-distance-alone (weaker than the confirmed-structure
+  excursion analogy already used for WEAKENING). **The alternation requirement is the anti-churn mechanism**:
+  a clean one-directional trend's rejected swings are predominantly one-sided, so they never satisfy
+  alternation, protecting against the mandate's named churn risk without any new cooldown parameter. New
+  state: one bounded rejected-touch deque on `StructureV44` (kept structurally separate from the existing
+  accepted-touch `_touch_tags`), reusing `start_ts`/boundary fields already present — no other new state.
+  **Same-bar vs next-bar replacement resolved explicitly (not left open)**: next causal bar only (matches
+  every existing slot-freeing precedent — T-KILL/T8/T9 — none of which replay the triggering bar's own
+  evidence to an immediate successor; avoids same-bar re-entrancy complexity and keeps snapshot/chunk
+  invariance trivial). **Episode-identity interaction resolved via reuse, not a new rule**: calls the
+  existing unmodified `_record_macro_termination_for_episode_identity`; a genuinely stale zone naturally
+  fails IoU-overlap against its replacement (both traced FB14 cases showed 0.000 price-IoU), so
+  CONTINUATION-vs-REPLACEMENT falls out correctly without new logic. Self-falsified against all 16
+  mandate-required scenarios (table in the report) — no counterexample found; two scenarios (trend/stair-step)
+  explicitly protected by the anti-churn property rather than merely "unaffected." Zero touch to ER/RND/
+  traversal/`MIN_TRAVERSALS`/`W`/WEAKENING/INTERNAL — confirmed explicitly section-by-section. 4 new
+  parameters inventoried (rejected-touch window — RATIFIED_REUSE-of-`W` hypothesis; min rejection count —
+  likely CALIBRATED; min alternation count — possibly DERIVED as a floor like `MIN_TRAVERSALS=1`; min
+  candidate age — possibly DERIVED from `n_touch`), none chosen/ranked/swept. Calibration plan designed
+  (synthetic construction + ratified reuse, dual-sided acceptance bar protecting BOTH stale-release AND
+  slow-range-survival, explicit sensitivity/fragility check) — mirrors `898f149`'s own successful protocol,
+  zero FB14/MB3 weight. 10 required tests specified (STALE-1..10) + 1 mutation test disabling the
+  alternation requirement specifically (must reopen the churn risk, proving it's load-bearing not vacuous).
+  Recommended **V4.4.1** versioning; new `contract_version="range-hierarchical-v4.4.1"`, `REASONS_V441`=41
+  (additive), fail-closed snapshot separation via the SAME existing mechanism (no new logic). Full report:
+  `ve_n1_replay/VE_RANGE_V4_4_1_STALE_CANDIDATE_DESIGN.md`. Next owner: CEO (authorize a separate future
+  calibration mandate for the 4 parameters, BEFORE any implementation mandate). NOT authorized: implementation,
+  Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/live trading/V4.4 promotion.
 - **VE-RANGE-V4_4-TRAVERSAL-DIAG-001 — `TRAVERSAL_FAILURE_DIAGNOSED_READY_FOR_FOCUSED_DESIGN`.** Red Team's
   fresh blind batch (`dfebe8f`, RT-RANGE-V4_4-FRESH-BLIND14-VALIDATION-001) found `V4_4_FRESH_BLIND14_
   GENERALIZATION_NOT_SUPPORTED`: H1/H4/H5 PASS (directional FP 13→7, total FP 19→10, precision/F1 up) but
