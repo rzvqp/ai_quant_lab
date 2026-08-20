@@ -3931,4 +3931,60 @@
                Report: RT-RANGE-0011_f1_f4_f5_static_audit.md.
                STATE: OPERATIONAL. Next entry [87], prev_hash E86.
   entry_hash:  E86
+
+[87] 2026-08-20
+  prev_hash:   E86
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-F1-F5-IMPLEMENTATION-AUDIT
+  freeze_hash: VE build 69af414 (parent 82f27c0) / detector post-F5 70e30b3a vs pre-F5 2aba333c / config_id
+               24f72a60 / freeze 46a9576 (1754c86d) / F1-only proj 62273c1e / MACRO baseline 62-of-88->58-of-88
+  battery_ver: RT-RANGE-0012
+  reviewer:    Red Team
+  detail:      STATIC+EXECUTABLE AUDIT of VE's F1+F5 implementation (69af414). VERDICT = ***RANGE_V4_F1_F5_
+               IMPLEMENTATION_AUDIT_FAIL***. All 18 commits exist, local=remote x4; 69af414 on discovery-mk-
+               matrix-v1, parent 82f27c0; audited the exact commit. ★★ MATERIAL DEFECT = F5-MACRO-LEAK: F5
+               changes MACRO on REAL bars. Baseline verified first: pre-F5 detector (2aba333c) re-run on the 48
+               real canonical windows == frozen predictions 46a9576 (1754c86d) EXACTLY 48/48. Then post-F5
+               (70e30b3a) vs pre-F5 same bars/config: MACRO geometry (start/confirm/end/boundaries/reason/ROLE,
+               excl structure_id) differs on 12/48 windows; MACRO-depth events differ on 12/48; MACRO-depth
+               SWEEP 67->59, BREAKOUT 96->93, REVERSAL 7->6, IS_TREND_MACRO(promo) 90->89; ★ FROZEN MACRO
+               BASELINE 62/88 recall 0.705 -> 58/88 recall 0.659 (scored vs labels). Ex BLIND-004: a confirmed
+               MACRO structure role flips TREND_CONTINUATION_CONFIRMED->None + confirm timing shifts. VIOLATES
+               sec.3 (MACRO frozen) + sec.7 (any MACRO diff = FAIL). MECHANISM: F5 line correctly scales by
+               atr_ref + is forming_internal-guarded, but INTERNAL candidate suppression is NOT state-isolated
+               from MACRO -- shared structure-id counter + INTERNAL->MACRO promotion (IS_TREND_MACRO) + shared
+               pending-swing/_active_internal state; on real ATR the normative band tol_cluster*atr_ref (med
+               ~2.997) suppresses many more candidates than the buggy 1.60 USD, propagating into MACRO. F5 is
+               MACRO-isolated in CODE LOCATION, not in EFFECT. ★ WHY VE MISSED IT: test_macro_byte_identity_
+               projection_hash_48_windows runs SYNTHETIC construction windows via observe(atr=1.0) -- with
+               atr_ref=1.0 the fix tol_cluster*atr_ref = tol_cluster*1.0 is an EXACT no-op, so the "973 MACRO
+               events, 0 mismatches" anchor is VACUOUS (identity only where F5 does nothing). NOT bad-faith --
+               VE implemented exactly the RT-0011-authorized line; fault shared (RT-0011 verified the code guard
+               not behavioral propagation -- self-correction logged; VE's test picked the one ATR hiding the
+               effect). Consequence: patched build MACRO != frozen baseline -> CANNOT be frozen. EVERYTHING ELSE
+               PASS: F1 formula eps=min_tick/2=0.005 derived from SYMBOL_MIN_TICK (unknown-symbol fail-closed);
+               value-vs-shifted-boundary verified at float64 edge (close=hi+eps tolerated/+1ULP rejected, both
+               sides); 13 bars reproduced (all close, 9 above/4 below, 96:1/288:6/480:6); F1_OHLC_BYTE_IDENTITY=
+               TRUE (validated bars byte-identical, event carries unmodified original_value); quality event
+               INPUT_OHLC_SUBTICK_TOLERATED = separate input_quality_events channel, outside 29 codes; ★ F1_ONLY_
+               PATCHED_CLI_PREDICTIONS_MATCH_FREEZE=TRUE (F1 validator + pre-F5 detector reproduces 46a9576 semantic
+               projection 48/48, hash 62273c1e -- closes the gate VE reported NOT_VERIFIABLE_HERE); F5 units code
+               correct (line 745 <= tol_cluster*_active_macro.atr_ref, mirror of 442, ATR-unavailable->filter not
+               applied, real non-no-op effect: confirmed internal 25->20); diff scope clean (F1 schemas/inference,
+               F5+fingerprint+snapshot detector [5 hunks +33/-3], scoring.py identity-gate only [prototype_commit->
+               f224e7d+F1F5 + implementation_fingerprint, NOT scoring logic], tests, docs -- NO MACRO-formula/config/
+               d_internal/touch/3rd-level/per-window/48-tuning/scorer-logic/label/escrow/29-code change); F4 semantic
+               absence confirmed; fingerprint (contract_version + config_id 24f72a60 UNCHANGED, implementation_
+               fingerprint f1-f5-conformance-2026-08-20 added); snapshot fail-closed (pre-F5 + wrong-fingerprint
+               refused, correct OK); construction_reproduction pinned f224e7d refuses post-F5 fail-closed (correct);
+               94/94 active tests + mypy strict (but MACRO-identity test vacuous). REMEDIATION (stated not
+               implemented): (a) rework F5 for true MACRO isolation (own id space + no promotion/pending-swing
+               feedback) then re-prove MACRO identity on REAL ATR; or (b) ship F1-ONLY now (proven to preserve
+               62/88) + defer F5; or (c) accept+re-audit a new MACRO baseline (separate larger decision). Each
+               needs a fresh VE delivery + new RT audit before freeze. MACRO_V4_3_BYTE_IDENTITY_AFTER_F5_CONFIRMED
+               =FALSE; RANGE_V4_3_PATCHED_BUILD_FROZEN=FALSE; MACRO_INDEPENDENT_BLIND_PREPARATION_AUTHORIZED=FALSE;
+               INDEPENDENT_SEMANTIC_BLIND=FALSE; VALIDATION_WEIGHT=ZERO; no Wheel/Alpha/AI-Trader/broker. Nothing
+               modified to force result; changes only in red_team/. Report: RT-RANGE-0012_f1_f5_implementation_audit.md.
+               STATE: OPERATIONAL. Next entry [88], prev_hash E87.
+  entry_hash:  E87
 ```
