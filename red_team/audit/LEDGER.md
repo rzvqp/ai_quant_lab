@@ -4134,4 +4134,54 @@
                Changes only in red_team/. Report: RT-RANGE-DIAG-AUDIT-001_v4_3_diagnostic_audit.md.
                STATE: OPERATIONAL. Next entry [91], prev_hash E90.
   entry_hash:  E90
+
+[91] 2026-08-20
+  prev_hash:   E90
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-4-FOCUSED-DESIGN-AUDIT
+  freeze_hash: VE design 236e8e7 + convergence f241698 (branch discovery-mk-matrix-v1) / diagnostic 071fbd7 /
+               RT diag audit 3be88a1 / V4.3 code byte-untouched vs bc6b9dc
+  battery_ver: RT-RANGE-V4_4-DESIGN-AUDIT-001
+  reviewer:    Red Team
+  detail:      FOCUSED INDEPENDENT DESIGN AUDIT of RANGE V4.4 (VE design 236e8e7 + convergence f241698) before
+               implementation/freeze. VERDICT = ***V4_4_DESIGN_AUDIT_PASS_WITH_NONBLOCKING_NOTES*** + V4_4_DESIGN_
+               FREEZE_AUTHORIZED_FOR_CEO_DECISION. PROVENANCE PASS: 4 commits exist, local=remote x4; V4.3 detector/
+               config byte-untouched (empty diff bc6b9dc..f241698 in ve_n1_replay/ve_n1_replay); design-only (2 .md
+               docs, zero code); MB3-025-048 sealed (design references only MB3-007/015/020/021/024 within 001-024
+               diagnostic zero-weight; all 025-048 mentions are sealed/not-accessed statements; no escrow opened by
+               design or audit). AUDIT MATRIX 12/12 PASS, 0 AMEND, 0 BLOCK: (1) state machine complete T1-T9+T-KILL,
+               deterministic priorities (T-KILL=0, T4>T5, AND-recovery/OR-termination), WEAKENING bounded (T9), no
+               sink; (2) directional gate = 4 signals ER/traversal/RND hard + alternation supporting + drift
+               diagnostic; ER genuinely DIFFERENT construction from falsified whole-life normalized_drift (self-
+               normalized, no ATR), falsified naive gate NOT reintroduced, not a disguised single threshold, all
+               causal/O(1); (3) confirmation evidence-gated not time-gated + RANGE_CANDIDATE_PRESENT + NEW acceptance
+               test (identical price-path shape must confirm at same relative bar regardless of window length =
+               operationalizes the MORE_TIME_TO_FIRE fix); range-before-window-start honestly disclosed unsolved;
+               (4) WEAKENING entry T4-excursion/T5-trailing, recovery same gates as confirm, termination T8/T9,
+               bounded, no stale RANGE thru directional shift; (5) episode identity CONTINUATION/MERGE/REPLACEMENT
+               kept SEPARATE from directional (as RT required), over-merge bounded by forced REPLACEMENT after
+               breakout; (6) parameter registry ER_max=0.5/RND_max=1.0/ALT_MIN=0.5 DERIVED + 7 UNRESOLVED + V4.3
+               RATIFIED, NONE CHOSEN_BECAUSE_MB3, config_id correctly NOT computed; (7) TP-preservation matrix
+               HONEST -- central ER/RND gate TP-preservation is a construction HYPOTHESIS explicitly NOT empirically
+               cleared (can't on MB3 without fishing); (8) 3-risk register (slow-drift/zigzag/over-merge) all fail-
+               closed + named test + non-blocking; (9) 20 adversarial scenarios comprehensive, no new scenario (audit
+               found no new failure mode); (10) causality/determinism/bounded-memory/no-contradictory-terminals all
+               hold; (11) snapshot v4.4 fail-closed, config_id after params, 11 additive reason codes, implementation-
+               fingerprint = PROCEDURE not faked value (per mandate); (12) implementation-ready as MECHANISM. VE's
+               convergence resolved its own 3 under-specified details (dual-WEAKENING interaction, episode priority,
+               fingerprint procedure) -- confirmed deterministic. NON-BLOCKING NOTES (preconditions not defects): (1)
+               not runnable until 7 UNRESOLVED params + 2 anchors resolved/validated via pre-registered calibration
+               mandate on UNTOUCHED evidence (never MB3-001-024); (2) TP-preservation UNVALIDATED by design -- core
+               claim (fix 30 directional FP without naive gate's 13/23 TP loss) must be proven on a FRESH independent
+               blind batch (never MB3) before trust; (3) 2 disclosed residual limits (range-before-window, violent
+               zigzag) out-of-scope/fail-closed/acceptable; (4) minor: persistently-directional FORMING lingers (no
+               explicit abandon path) -- impl clarification. REQUIRED SEQUENCE (RT endorses VE plan): CEO freeze ->
+               pre-reg calibration (params+validate on untouched evidence) -> implement additive v4.4 files (V4.3
+               byte-untouched) -> RT static/construction audit -> FRESH blind batch validation (TP-preservation
+               proven/refuted here) -> CEO promotion. Freeze locks the MECHANISM, NOT trust in numbers; no step
+               skippable. SCOPE: no redesign/implementation/threshold/param selection; MB3-025-048 SEALED; MB3-001-024
+               ZERO_VALIDATION_WEIGHT; V4.3 unmodified; changes only in red_team/. Report: RT-RANGE-V4_4-DESIGN-AUDIT-
+               001_focused_design_audit.md.
+               STATE: OPERATIONAL. Next entry [92], prev_hash E91.
+  entry_hash:  E91
 ```
