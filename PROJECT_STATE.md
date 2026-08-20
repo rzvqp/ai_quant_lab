@@ -28,6 +28,54 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-V4_4-CALIBRATION-001 — mechanism frozen, all 7 parameters + 2 anchors resolved,
+  `V4_4_CALIBRATION_PASS_WITH_NONBLOCKING_NOTES`** (3 separate, correctly-sequenced, unamended commits:
+  freeze `c57d103` → precommitted protocol `967222a` → results/registry/verdict `[this commit]`; all pushed +
+  local=remote-verified on all 4 mirrors after EACH commit, not just at the end). Independently re-verified
+  `RT-RANGE-V4_4-DESIGN-AUDIT-001` (`ca550d4`, `statistician-foundation`, local=remote ×4) by reading the full
+  106-line report — confirmed exact unresolved inventory (`W`/`MIN_TRAVERSALS`/`ER_weakening`/
+  `RND_weakening`/`WEAKENING_MAX_BARS`/`IOU_CONTINUE`/`GAP_MAX` + anchors `ER_max`/`RND_max`). **Freeze
+  locks mechanism only** (state machine/transitions/priority/signal-roles/WEAKENING/episode-identity/
+  invariants/snapshot-plan — every element cross-referenced to its exact source in `236e8e7`/`f241698`, none
+  re-derived from memory), explicitly leaves all 9 numeric items open. **Protocol precommitted BEFORE any
+  result-guided selection** (`V4_4_CALIBRATION_PROTOCOL_PRECOMMITTED=TRUE`) — fixed candidate
+  family/selection-method/failure-criterion per parameter, an eligible-evidence hierarchy excluding MB3
+  entirely (checked: no pre-existing non-MB3 calibration corpus exists in this project), and — critically —
+  pre-registered the EXACT shallow-channel decision criteria (correct-rejection/acceptable-ambiguity/
+  blocker/unacceptable-TP-damage) BEFORE the results were treated as final, specifically so that criterion
+  couldn't be reverse-engineered from a desired conclusion. **All 9 items resolved** via synthetic
+  construction (known-ground-truth price paths, not MB3) + analytical/ratified-reuse derivation — zero
+  forced, zero MB3-influenced: `ER_max=0.5`/`RND_max=1.0` (validated not re-derived — natural-midpoint/
+  self-referential anchors), `W=29` (=`d_macro`, ratified reuse), `MIN_TRAVERSALS=1` (floor confirmed exactly
+  right via an `H,H,L,L` touch-order counterexample legal under the existing unchanged `n_touch` gate),
+  `ER_weakening=0.75`/`RND_weakening=2.0` (deliberate hysteresis margins above the confirmation anchors),
+  `WEAKENING_MAX_BARS=22`=`K_reentry`, `IOU_CONTINUE=0.5`/`GAP_MAX=12`=`d_internal` (both ratified-reuse or
+  natural-midpoint). **Shallow-channel finding, disclosed not hidden**: synthetic sweep across 9 required
+  scenarios + a drift-rate sweep + a `W`-neighborhood sweep CONFIRMS (not just re-asserts) a genuine,
+  quantified, reproducible weak-signal blind spot — a gentle channel can show ER/RND comparable to or lower
+  than a clean range. Precisely distinguished from the ALREADY-disclosed false-REJECT risk (slow-drift range
+  wrongly rejected): this is a related but DISTINCT false-ACCEPT risk (gentle channel wrongly accepted).
+  **NOT fixed by retuning** (explicitly refused per protocol's pre-registered no-fishing rule — confirmed via
+  computation that tightening `ER_max` within reasonable bounds doesn't catch it without destroying the
+  required `clean_range`/`noisy_range` cases) — carried forward as a named, reproducible test case for the
+  future fresh-blind-batch stage. Blocker check correctly NOT triggered (`clean_range`/`noisy_range` both
+  pass cleanly with margin — the actual bright-line test). Joint sanity (7 fixed yes/no questions, no
+  scoring): all clear, no `FOUNDATIONAL_CONFLICT`. `IOU_CONTINUE=0.5` validated on both mandate-required
+  cases (internal-rotation→CONTINUE, independent-ranges→REPLACEMENT) + stable across a `{0.4,0.5,0.6}`
+  sensitivity sweep. `W`/`IOU_CONTINUE` both classified `STABLE` (no qualitative flip in tested
+  neighborhoods) — zero `PARAMETER_FRAGILITY_FLAG`s raised. **`config_id()` now legitimately computable**
+  (hashes parameter VALUES, all now resolved — distinct from the `implementation_fingerprint`, which hashes
+  SOURCE CODE and correctly stays uncomputed since no V4.4 code exists) =
+  `23d98c07488913c1c99a7397b2f8791f4727115e04bdefc283fb6bfc4a468969`, via the exact unmodified `ConfigV43`
+  formula. 4 unresolved risks carried forward honestly (weak-signal gap, `RND_weakening`'s weaker derivation,
+  `GAP_MAX`/`WEAKENING_MAX_BARS` lacking full-lifecycle tests, TP-preservation still an undischarged
+  hypothesis) — none blocking, each named/bounded/next-stepped. Full packages:
+  `ve_n1_replay/VE_RANGE_V4_4_DESIGN_FREEZE.md`, `VE_RANGE_V4_4_CALIBRATION_PROTOCOL.md`,
+  `VE_RANGE_V4_4_CALIBRATION_RESULTS.md`. `V4_4_IMPLEMENTATION_AUTHORIZED_FOR_CEO_DECISION` stated per
+  mandate (this mandate does NOT itself authorize implementation). Zero code/V4.3 file changed throughout;
+  `MB3-025→048` never accessed at any point across all 3 commits. Next owner: CEO (implementation
+  authorization decision), then the unchanged Red-Team-endorsed sequence (implement → Red Team static audit
+  → fresh blind batch, never MB3).
 - **VE-RANGE-V4_4-CONVERGENCE-001 — convergence closed, verdict upgraded to
   `V4_4_DESIGN_READY_FOR_RED_TEAM_REVIEW`** (no code/config/V4.3 file touched, `MB3-025..048` never accessed —
   the whole mandate was performable from already-committed artifacts). Independently verified
