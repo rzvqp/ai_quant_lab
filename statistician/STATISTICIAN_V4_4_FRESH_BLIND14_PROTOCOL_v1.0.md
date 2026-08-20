@@ -103,10 +103,38 @@ etichetă, niciun output de detector nu intră în ea.
 TOTAL    = 14
 ```
 
-Matricea comună (bloc × lungime) se completează **determinist**: blocuri în ordinea strâmtorii
-crescătoare (B2, B1, B4), lungimi în ordine descrescătoare (480, 288, 96), fiecare celulă primind
-maximul compatibil cu cotele rămase pe linie și pe coloană. Rezultatul e unic și e recalculabil de
-oricine din acest document.
+### ★ AMENDAMENT 1 la §5 — corectat ÎNAINTE de orice selecție
+
+Regula scrisă inițial („fiecare celulă primește maximul compatibil cu cotele rămase") s-a dovedit
+**degenerată** când am verificat ce produce, înainte de a trage vreo fereastră:
+
+```
+B2 {480: 4, 288: 0, 96: 0}      fiecare lungime ar cădea INTEGRAL
+B1 {480: 0, 288: 5, 96: 0}      într-un singur bloc, deci efectul de
+B4 {480: 0, 288: 0, 96: 5}      lungime ar fi perfect CONFUNDAT cu blocul
+```
+
+Un astfel de plan face imposibilă separarea unui efect de lungime de un efect de perioadă — exact
+comparația per-lungime 96/288/480 pe care §17 o cere. **Regula se înlocuiește**, tot determinist:
+
+```
+round-robin pe blocuri în ordinea CAPACITĂȚII DESCRESCĂTOARE (B4, B1, B2),
+lungimi în ordine descrescătoare (480, 288, 96), pointer continuu între lungimi,
+sărind blocurile a căror cotă s-a epuizat
+```
+
+Rezultat unic, recalculabil de oricine:
+
+```
+B4 {480: 2, 288: 1, 96: 2} = 5
+B1 {480: 1, 288: 2, 96: 2} = 5
+B2 {480: 1, 288: 2, 96: 1} = 4
+sume pe lungime: 480 = 4 · 288 = 5 · 96 = 5
+```
+
+Fiecare lungime apare în **toate cele trei blocuri**. Amendamentul e făcut **înainte de orice
+selecție, randare sau etichetă**, e calculat exclusiv din cote și capacități, și nu poate favoriza
+niciun rezultat — la acest moment nu există niciun rezultat de consultat.
 
 ---
 
