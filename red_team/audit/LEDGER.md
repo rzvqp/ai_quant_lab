@@ -4237,4 +4237,51 @@
                RT-RANGE-V4_4-IMPLEMENTATION-AUDIT-001_implementation_audit.md.
                STATE: OPERATIONAL. Next entry [93], prev_hash E92.
   entry_hash:  E92
+
+[93] 2026-08-21
+  prev_hash:   E92
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-4-FRESH-BLIND14-VALIDATION
+  freeze_hash: V4.3 bc6b9dc(098fa144/24f72a60) vs V4.4 3bb61cf(833aedfd/23d98c07) on FB14 window payload
+               4e6e9fcf / labels d284fd39 / selection 0d86631e / V43 preds a9bf1ef2 / V44 preds 2c247f0c
+  battery_ver: RT-RANGE-V4_4-FRESH-BLIND14-VALIDATION-001
+  reviewer:    Red Team
+  detail:      FIRST SEMANTIC FRESH-BLIND comparative validation of frozen V4.4 vs V4.3 on the 14-window FB14
+               batch. VERDICTS = FB14_INFERENCE_INTEGRITY_PASS + FB14_SCORING_INTEGRITY_PASS + ***V4_4_FRESH_
+               BLIND14_GENERALIZATION_NOT_SUPPORTED***. INTEGRITY: impl+FB14 chains verified local=remote x4;
+               14 windows length 5x96/5x288/4x480 block B1:5/B2:4/B4:5 (B3 EXHAUSTED, documented, consumed by
+               batches 01/02/MB3); amendment 7a2c93d(17:53:04) BEFORE selection 20bf599(17:55:32) = PRESELECTION_
+               METHOD_AMENDMENT_VALID (round-robin fill, MB3-precedent, capacity-driven not result-driven; on
+               parallel branches so git-ancestry N/A, timestamps prove order); labels frozen BEFORE any detector
+               (V4_3/V4_4_EXECUTED=False, PREDICTIONS_EXIST=False); window payload 4e6e9fcf HMAC+1bit+wrong-key,
+               14/14 bars_sha256 reproduced from corpus; labels payload 2ea635aa decrypts to d284fd39; 24 MACRO
+               RANGE segs, FB14-014=0 RANGE (neg control), NOT_SPECIFIED, amendment-log EMPTY; Env A isolated (no
+               labels/scorer, input no MACRO/RANGE fields); predictions frozen BEFORE labels (commit 26abd13, both
+               hashes re-verified Env B); Env B no-detector, ratified scorer unchanged; 2 sub-tick bars tolerated
+               ratified engine path OHLC unmodified; MB3-001-024 not used, MB3-025-048 sealed. PRIMARY (MACRO GT =
+               24 CEO RANGE segs): V4.3 TP15/det34/FP19/dirFP13/FN9/recall0.625/prec0.441/F10.517/IoU-med0.609 vs
+               V4.4 TP12/det22/FP10/dirFP7/FN12/recall0.500/prec0.545/F10.522/IoU-med0.651. ★ H1-H5 GATES (pre-reg
+               e8ce481, SUPPORTED requires ALL primary gates exactly): H1 dir-FP 7<13 PASS; H2 TP 12>=15 FAIL; H3
+               recall 0.500>=0.625 FAIL; H4 total-FP 10<=19 PASS; H5 prec0.545>=0.441 AND F1 0.522>=0.517 AND >=1
+               strict PASS. All testable -> H2+H3 FAIL -> NOT_SUPPORTED. Directional FP decomp: V4.3 {TREND_UP4/
+               CHANNEL_UP5/TREND_DOWN3/TRANSITION1/RANGE6} vs V4.4 {TREND_UP4/CHANNEL_UP2/TREND_DOWN1/RANGE3} --
+               directional 13->7, over-seg 6->3 (V4.4's discrimination WORKS directionally). ★ FAILURE TRACED
+               (§20): 3 genuine RANGE TP lost (0 gained) -- FB14-003[110,216)+[232,288) V4.4 no confirmed struct
+               dominant reason INSUFFICIENT_TRAVERSAL, FB14-012[211,480) IoU0 + INSUFFICIENT_TRAVERSAL -- CEO ranges
+               that oscillate within a sub-band without full UPPER<->LOWER crossings = FALSE-REJECT by the traversal
+               gate (MIN_TRAVERSALS), a NEW mechanism DISTINCT from the disclosed gentle-channel false-accept.
+               Per-length recall 96:1.00/1.00 288:0.45/0.27 480:0.67/0.56 (loss concentrated in longer windows);
+               episode over-seg REDUCED (FB14-007 8->4, FB14-012 6->2, FB14-014 2->1) but over-corrected FB14-003
+               3->0; confirm-delay median ~29 all lengths (MORE_TIME_TO_FIRE fix holds); FB14-014 neg-control FP
+               2->1. This materializes exactly the TP-preservation risk the design + RT-RANGE-V4_4-DESIGN-AUDIT-001
+               flagged as unvalidated-pending-fresh-blind. Small batch (14) -- no pop-wide claim, no p-values/
+               bootstrap (none pre-reg), statement limited to: pre-reg gates not all supported (H1/H4/H5 held, H2/H3
+               did not). NEXT (recommend to CEO, NOT authorized here): pre-registered calibration/review of the
+               TRAVERSAL GATE ONLY (MIN_TRAVERSALS/band-third/W) on evidence never used to derive it (fresh, never
+               MB3/FB14), preserving H1/H4/H5; or accept a precision/recall trade; or hold V4.3 -- CEO decides. No
+               redesign in this mandate. NOT authorized: Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker.
+               Detectors/labels/scorer/escrow unmodified; changes only in red_team/. Reports: RT-RANGE-V4_4-FRESH-
+               BLIND14-VALIDATION-001.md + RT-RANGE-FB14_predictions_freeze.md.
+               STATE: OPERATIONAL. Next entry [94], prev_hash E93.
+  entry_hash:  E93
 ```
