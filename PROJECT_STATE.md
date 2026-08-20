@@ -28,6 +28,39 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-V4_4_1-STALE-CALIBRATION-001 — `V4_4_1_CALIBRATION_PASS_WITH_NONBLOCKING_NOTES`,
+  `V4_4_1_IMPLEMENTATION_AUTHORIZED_FOR_CEO_DECISION`.** Red Team independently audited the T-STALE design
+  (`eeb082e`, `V4_4_1_STALE_DESIGN_AUDIT_PASS_WITH_NONBLOCKING_NOTES`, 17/17 areas PASS, re-verifying
+  insertion point/episode-identity-reuse/next-bar-ordering directly against the real code) and flagged
+  "dual-sided calibratability is unproven" as the principal residual risk. CEO authorized freeze+calibration
+  (3 sequenced, unamended commits, each verified 4-mirror before the next): **freeze** `e2b65bf`
+  (`V4_4_1_T_STALE_MECHANISM_FROZEN=TRUE`, numeric values explicitly NOT frozen, all 15 mechanism elements
+  locked with exact source citations) → **protocol** `8605cb2`
+  (`V4_4_1_CALIBRATION_PROTOCOL_PRECOMMITTED=TRUE`, 4 positive + 10 negative synthetic scenarios, the central
+  dual-sided acceptance bar, one-attempt-per-parameter discipline, precommitted BEFORE any scenario scored)
+  → **results** `[this commit]`. **All 4 parameters RESOLVED, zero UNRESOLVED**: window-length=29
+  (RATIFIED_REUSE of `W`, sensitivity NOT independently discriminated — disclosed limitation, not claimed
+  STABLE); min-rejection-count=4 (RESOLVED_DERIVED = min_alternation+1, proven non-vacuous vs the alternation
+  check); **min-alternation-count=3 (RESOLVED_CALIBRATED — the naive floor-analog of `MIN_TRAVERSALS=1`
+  FAILED at both 1 and 2 on a shallow-channel-with-one-pullback synthetic case, only 3 cleared the full
+  13-scenario battery — classified FRAGILE, not smoothed to STABLE: resolved−1 fails on the slow-range side,
+  resolved+1 fails on the stale-release side; this is the calibration's principal, honestly-disclosed
+  finding, exactly the risk Red Team anticipated)**; min-candidate-age=12 (RESOLVED_DERIVED = `d_internal`,
+  STABLE, directly confirmed at its exact boundary via a dedicated age-sweep test). Anti-churn independently
+  stress-tested beyond the base battery (200-bar one-directional trend, 50 one-sided rejections, ZERO
+  firings throughout) plus a second, newly-articulated anti-churn property found (the age-gate itself
+  rate-limits kill/reform cadence regardless of market character). One scenario-battery gap found and
+  honestly disclosed mid-execution (window-length sensitivity untested by the original battery; one
+  additional construction added, which surfaced a genuine unresolved interpretive ambiguity, itself
+  disclosed rather than forced to an answer). Illustrative `config_id` preview computed via the exact
+  existing formula: `d7b6c0670fbafe2583d49c0ed14046cc2ccb49a7068ffbb349a35962779a1f03` (31 fields, marked
+  explicitly illustrative — no `ConfigV441` class exists, no implementation authorized). Zero FB14/MB3
+  parameter selection (proven, not just asserted); MB3-025→048 sealed throughout. Full reports:
+  `ve_n1_replay/VE_RANGE_V4_4_1_T_STALE_DESIGN_FREEZE.md` +
+  `_STALE_CALIBRATION_PROTOCOL.md` + `_STALE_CALIBRATION_RESULTS.md`. Next owner: CEO (a separate future
+  implementation mandate, which must carry the FRAGILE flag forward as a tracked risk, not a resolved
+  non-issue). NOT authorized: implementation, Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/live
+  trading/V4.4 promotion.
 - **VE-RANGE-V4_4_1-STALE-CANDIDATE-DESIGN-001 — `V4_4_1_STALE_DESIGN_READY_FOR_CALIBRATION`.** CEO
   authorized a focused design+calibration-plan mandate (no implementation, no numeric parameter selection)
   building on the traversal diagnostic (`b1dcf92`). **Design**: a new pre-confirmation transition `T-STALE`
