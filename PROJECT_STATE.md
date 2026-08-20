@@ -28,6 +28,43 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-DIAG-001 — RANGE V4.3 MACRO discrimination diagnostic (DIAGNOSTIC ONLY, ZERO_VALIDATION_WEIGHT,
+  NO code/threshold/config changed)**, on the `bc6b9dc` build (RT-RANGE-0013 PASS) against the CEO-assisted
+  blind batch `MB3-001..024` (RT-RANGE-MB3-001, `3496b73`/E89: `MB3_MACRO_GENERALIZATION_NOT_SUPPORTED` —
+  recall ~stable 0.684 vs RT-0010 0.705, but precision/F1/IoU degraded and detector doesn't discriminate
+  RANGE from CHANNEL/TREND). **Principal defect found (code-traced, not guessed): MACRO confirmation
+  (`evaluate_candidate`/`degeneracy_check`) has NO directional-displacement gate** — only width/duration/
+  touch-count. The needed signal (`Structure.normalized_drift`/`ConfigV43.s_max`) already exists but per its
+  own code comment (line ~1041) was deliberately scoped to INTERNAL-only, as a non-blocking descriptive label
+  (`INT_CHANNEL_UP`/`DOWN`), never extended to MACRO. **39/39 FP decomposed** (independently re-derived,
+  resolving a provenance discrepancy vs the committed report's "FP 36" — traced to a naive vs dedup-aware
+  count, `39` matches this mandate's own CEO citation exactly): 30 directional (14 CHANNEL_UP/8 CHANNEL_DOWN/
+  4 TREND_DOWN/3 TREND_UP/1 TRANSITION) + 9 over-segmentation-on-genuine-RANGE (distinct, less-characterized
+  mechanism — multiple sequential range→breakout episodes vs coarser CEO labeling granularity, NOT simple
+  duplicate detection). **12/12 FN decomposed**: 4 window-truncation (mechanical), 5 touch-count-insufficient,
+  3 zones-degenerate-killed, **0 boundary/IoU-quality failures** — recall loss is 100% about confirmation
+  timing, never confirmed-but-inaccurate geometry. **Length effect (96≪480) quantified as "more time to fire,
+  not better recognition"**: `d_macro=29` warm-up consumes 30% of a 96-bar window's budget vs 6% of 480-bar;
+  matched-structure median confirm-delay at L=480 (77.5 bars) alone EXCEEDS L=96's entire eligible-bar budget
+  (67 bars); all window-truncation FN occur at L=96/288, zero at L=480. **MB3-007/020 (CEO-declared NO MACRO
+  RANGE) traced bar-by-bar**: both show the SAME mechanism directly — persistent directional drift
+  (`slope_at_confirm` clearly signed) satisfying width+duration+touch gates with zero drift check;
+  MB3-020 additionally shows the detector's OWN post-hoc role machinery (`TREND_CONTINUATION_CONFIRMED`)
+  correctly recognizing 2 of its 3 false positives as trend — AFTER already confirming them as RANGE.
+  **Mandatory falsification (§13) applied and the naive fix FAILS it**: `normalized_drift>s_max=1.60` as a
+  hypothetical MACRO gate would reject 63.3% of directional FPs but ALSO 56.5% of genuine matched true
+  positives — comparable collateral damage to benefit, NOT a clean drop-in fix; duration-confound hypothesis
+  for the weak separation explicitly tested and REFUTED (correlation ≈0, not what caused the overlap).
+  Architecture conclusion: **`MULTIPLE_CORRECTIONS_REQUIRED`** (two distinct mechanisms at different
+  evidentiary readiness — dominant/well-characterized directional gap vs secondary/under-characterized
+  over-segmentation), not narrow, not architectural redesign. Candidate V4.4 hypothesis stated narrowly in
+  the report, explicitly **NOT implemented** — no threshold selected, no parameter search performed (mandate
+  §10 respected: diagnostic-only sweeps shown, no winner declared). Cross-validated own instrumentation via
+  0-mismatch bar-by-bar replay of the frozen detector against `predictions.json` before trusting any of the
+  above. `MB3-025→048` never touched (selection metadata's bare 48 IDs were incidentally visible during
+  reconnaissance but never processed beyond confirming the 24-window split). Full report
+  `ve_n1_replay/VE_RANGE_DIAG_001_MACRO_DISCRIMINATION_DIAGNOSTIC.md`. `self_declared_pass=false`. Next
+  owner: CEO (decision on recommended follow-up mandate), then Red Team (11 audit points listed in report).
 - **RANGE HIERARCHICAL V4.3 — mandat "F1-ONLY REMEDIATION AFTER RT-RANGE-0012" (a cincea trecere)** —
   `RANGE_V4_F1_ONLY_REMEDIATION_READY_FOR_RED_TEAM_AUDIT`, `self_declared_pass=false`. Răspuns direct la
   **RT-RANGE-0012 = RANGE_V4_F1_F5_IMPLEMENTATION_AUDIT_FAIL** (`892355f`/E87, audit pe `69af414`): F1
