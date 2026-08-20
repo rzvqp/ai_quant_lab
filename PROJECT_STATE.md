@@ -28,6 +28,39 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-V4_4-IMPLEMENTATION-001 — `V4_4_IMPLEMENTATION_READY_FOR_RED_TEAM_AUDIT`.** Frozen mechanism
+  (`c57d103`) + calibrated registry (`898f149`) converted to production code, additively:
+  `ve_n1_replay/range_semantic_v4_4.py` (67,340 bytes) + `range_engine_v4_4.py` (9,599 bytes), zero V4.3 bytes
+  changed (`git diff HEAD -- range_semantic_v4_3.py range_engine_v4_3.py` = 0 lines). `config_id()` reproduces
+  the frozen `23d98c07…` exactly (no `V4_4_CONFIG_ID_MISMATCH`). Implementation fingerprint
+  `"v4-4-implementation-freeze-2026-08-20"`, source sha256 recorded (combined
+  `b799ec6f…5f85e23`). 40 reason codes (29 V4.3 + 11 new), all 11 new codes mechanically proven reachable via
+  the public API except the ONE documented exception (`EPISODE_MERGED`, structurally unreachable while MACRO
+  stays single-active-at-a-time — proven, not asserted). **76 new tests** (internal-parity ×5, transitions
+  ×27, causality ×7, snapshot-robustness ×14, reason-code-reachability ×2, adversarial-suite ×22 incl.
+  count-check) + full **394-test V4.3 baseline** unaffected = **470/470 passing**, reproduced twice
+  independently post-freeze. mypy --strict clean. 22/22 pre-registered adversarial scenarios pass against
+  frozen expected chronology (`236e8e7` §10 + §12); #21/#22 (slow-drifting-equilibrium, violent-zigzag) both
+  CONFIRM as ranges — the exact already-disclosed, non-blocking risk from `898f149` §7 / `236e8e7` §12,
+  recorded honestly per mandate, not hidden, not "fixed" by undisclosed recalibration. All 6 mandate-named
+  mutations (disable ER gate / remove WEAKENING timeout / reverse gate priority / disable merge / break
+  absolute-vs-relative confirmation timing / accept wrong config snapshot) caught by the suite; file
+  byte-diff-confirmed identical after revert. Rollback test: removing both V4.4 files leaves the 394-test V4.3
+  baseline 100% green (0 errors); restoring V4.4 returns to 470/470. Complexity/memory measured empirically
+  (flat ≈0.006s/200-bar-chunk and flat ≈2000-2100-byte snapshot size across 1,440 varied bars; history deques
+  directly confirmed to cap at `maxlen=64` via a 100-append ring-buffer-eviction check). **Two real bugs found
+  and fixed during construction, before freeze**: (1) `restore_state()` mutated `self` field-by-field in
+  place — a failure partway through left the producer in a mixed old/new state, violating "no partial
+  mutation"; confirmed as an INHERITED V4.3 weakness too (reproduced identically against
+  `RangeSemanticProducerV43`), fixed only in the new V4.4 file via build-into-scratch-then-swap-`__dict__`.
+  (2) `_awaiting_role` restore always reconstructed via plain `Structure.restore()` even for MACRO-origin
+  entries, silently downcasting a `StructureV44` awaiting post-breakout role resolution — fixed to discriminate
+  on `depth`. Plus one disclosed gap-then-fix: `alternation_rate`/`ALT_MIN`/`touches_in_window` were written
+  but never wired into T3 — `INSUFFICIENT_ALTERNATION_EVIDENCE` was defined-but-unreachable; wired in as a
+  non-blocking additional event (alternation stays SUPPORTING_ONLY, mandate §5, never a gate). Full 25-item
+  report: `ve_n1_replay/VE_RANGE_V4_4_IMPLEMENTATION_REPORT.md`. Next owner: Red Team,
+  `RT-RANGE-V4_4-IMPLEMENTATION-AUDIT`. NOT authorized: Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/
+  live trading.
 - **VE-RANGE-V4_4-CALIBRATION-001 — mechanism frozen, all 7 parameters + 2 anchors resolved,
   `V4_4_CALIBRATION_PASS_WITH_NONBLOCKING_NOTES`** (3 separate, correctly-sequenced, unamended commits:
   freeze `c57d103` → precommitted protocol `967222a` → results/registry/verdict `[this commit]`; all pushed +
