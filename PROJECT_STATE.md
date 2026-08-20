@@ -61,6 +61,33 @@ This document is the Git-persisted snapshot of program status; the conversation 
   implementation mandate, which must carry the FRAGILE flag forward as a tracked risk, not a resolved
   non-issue). NOT authorized: implementation, Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/live
   trading/V4.4 promotion.
+- **VE-RANGE-V4_4_1-STALE-IMPLEMENTATION-001 — `V4_4_1_IMPLEMENTATION_READY_FOR_RED_TEAM_AUDIT`.** CEO
+  authorized implementation of the frozen (`e2b65bf`)/calibrated (`9116c2b`) T-STALE mechanism, exactly the
+  4 registered parameters (window=29/min_rejections=4/min_alternation=3/min_age=12), no recalibration. VE
+  built `range_semantic_v4_4_1.py`+`range_engine_v4_4_1.py`: **true subclass** architecture
+  (`ConfigV441(ConfigV44)`/`StructureV441(StructureV44)`/`RangeSemanticProducerV441(RangeSemanticProducerV44)`,
+  empirically verified safe on Python 3.14.6 via standalone probes before committing to the shape — a
+  materially simpler relationship than V4.4's own to V4.3); ~23 producer methods inherited unmodified,
+  exactly 5 overridden (`__init__`, `_offer_swing_everywhere`, `_step_macro`, `snapshot_state`,
+  `restore_state`) + 1 new (`_t_stale_should_fire`); `_kill_macro` reused completely unmodified for
+  termination (simpler than the design doc's own sketch). `config_id()` **inherited unchanged**, computed
+  value `d7b6c0670fbafe2583d49c0ed14046cc2ccb49a7068ffbb349a35962779a1f03` matches the calibration's
+  illustrative preview exactly. `range_semantic_v4_4.py`/`range_engine_v4_4.py`/`range_semantic_v4_3.py`
+  **byte-untouched** (`git diff` = 0 lines). 18 new tests (STALE-1..15 + 1 reachability sub-test + 2
+  supplementary protections found necessary during mutation-testing: confirmed-structure T-STALE immunity,
+  `restore_state` identity refusal) — **488/488 total green** (470 baseline + 18 new), `mypy --strict` clean
+  on both implementation files and the test file. **8 named source mutations, each caused a meaningful
+  failure** (mutations 3/4 — shifting `min_alternation`/`min_rejections` off the calibrated floor — failed
+  even earlier than expected, at module-import time, via the `validate()`-enforced floor raising
+  `ContractErrorV43` automatically through `ConfigV44.__post_init__`); source hash-verified byte-identical
+  after every restore. Rollback proof (files removed → 470/470 baseline unaffected → restored → 488/488
+  again) and complexity/memory proof (`_rejected_touches` strictly bounded at maxlen=64 regardless of
+  rejection count; 20,000-bar stress shows flat 1.02x first-half/second-half timing ratio, no O(n²)) both
+  clean. `min_alternation=3` FRAGILE flag carried forward explicitly (STALE-11/12), not tuned away. Zero
+  FB14/MB3 access; MB3-025→048 still sealed. Full report:
+  `ve_n1_replay/VE_RANGE_V4_4_1_STALE_IMPLEMENTATION_REPORT.md`. Next owner: Red Team
+  (`RT-RANGE-V4_4_1-IMPLEMENTATION-AUDIT-001`). NOT authorized: Strategy Catalog/Alpha/AI
+  Trader/LIVE_SHADOW/broker/live trading/V4.4 promotion; no semantic/fresh-blind validation claimed.
 - **VE-RANGE-V4_4_1-STALE-CANDIDATE-DESIGN-001 — `V4_4_1_STALE_DESIGN_READY_FOR_CALIBRATION`.** CEO
   authorized a focused design+calibration-plan mandate (no implementation, no numeric parameter selection)
   building on the traversal diagnostic (`b1dcf92`). **Design**: a new pre-confirmation transition `T-STALE`
