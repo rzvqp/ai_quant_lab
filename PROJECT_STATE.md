@@ -28,6 +28,44 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-V4_4-TRAVERSAL-DIAG-001 — `TRAVERSAL_FAILURE_DIAGNOSED_READY_FOR_FOCUSED_DESIGN`.** Red Team's
+  fresh blind batch (`dfebe8f`, RT-RANGE-V4_4-FRESH-BLIND14-VALIDATION-001) found `V4_4_FRESH_BLIND14_
+  GENERALIZATION_NOT_SUPPORTED`: H1/H4/H5 PASS (directional FP 13→7, total FP 19→10, precision/F1 up) but
+  H2/H3 FAIL (RANGE TP 15→12, recall 0.625→0.500), all 3 lost TP attributed to `INSUFFICIENT_TRAVERSAL`.
+  CEO authorized a focused, non-implementing diagnostic. **VE reproduced all 3 lost TP exactly** (byte-
+  verified FB14 bars + labels via escrow, config_id/fingerprint cross-checked against `3bb61cf`) and found
+  `INSUFFICIENT_TRAVERSAL` is a **downstream symptom, not the root cause**: in all 3 spans, the same single,
+  never-confirmed macro candidate persists for the ENTIRE span with **zero price-IoU overlap** against the
+  CEO's labeled zone — traversal is computed against a stale, wrong boundary, not a correctly-anchored one.
+  Directly proven the market genuinely rotates throughout (38 and 66 alternating swings detected in the two
+  traced regions respectively) but every swing is rejected by the stale cluster's tolerance check.
+  **Root-cause mechanism** (found by running V4.3 on the identical bars): V4.3's SAME starting candidate
+  (identical swings, same start bar) confirms quickly under V4.3's weaker width+touch+duration-only gate,
+  later breaks out, freeing the slot for a fresh, correctly-anchored candidate (V4.3's actual matched TP,
+  boundary within ~0.001 of the CEO's stated level) — V4.4's discrimination gate (T3) correctly rejects the
+  SAME early candidate (genuinely directional at that point in its life) but nothing ever kills it
+  afterward (`degeneracy_check`, unchanged since V4.3, checks only width/inversion, never staleness), so it
+  blocks `_active_macro` forever. **Classified `TRAVERSAL_FAILURE_CLASS = D — INTERACTION_FAILURE`** (T3 ×
+  the pre-existing, V4.3-inherited candidate-replacement architecture) — not A/B/C: no numeric retuning
+  fixes a wrong-boundary problem, ER/RND aren't independently also failing, no spec-vs-code drift (Red
+  Team's own `845a03c` already independently confirmed T3/degeneracy_check faithfully implement the frozen
+  design). One found-and-superseded methodological error disclosed honestly (first reproduction attempt fed
+  24 bars of render-padding into the detector as pre-context; caught via cross-check against the frozen
+  predictions' exact end_ts values 19/83/111/144, all 4 matched after correcting to canonical-bars-only). A
+  related but distinct, NOT-folded-in observation flagged for a future mandate: forced `EPISODE_REPLACEMENT`
+  (never `CONTINUATION`) after any `BREAKOUT_ACCEPTED`, which may over-fragment a range the CEO describes as
+  continuous through internal deep sweeps. Designed (NOT implemented, NOT parameterized) a candidate
+  correction family — additive unconfirmed-candidate "staleness abandonment," a new LIFECYCLE-role
+  termination pathway parallel to `degeneracy_check`, touching zero of ER/RND/traversal/alternation/
+  WEAKENING/episode-identity/confirmation-timing/snapshot architecture — self-falsified against all 12
+  mandate-required adversarial scenarios (no counterexample found; binding constraint recorded: must be
+  rejection-count-based, not touch-scarcity-based, to avoid penalizing genuinely slow/quiet ranges).
+  Recommended versioning **V4.4.1** (no new state, one new edge into TERMINATED, directional architecture
+  fully untouched) and fresh-evidence plan (analytic/synthetic derivation → fresh blind batch, never FB14/
+  MB3). Zero implementation, zero parameter selection, zero MB3-025→048 access. Full report:
+  `ve_n1_replay/VE_RANGE_V4_4_TRAVERSAL_DIAGNOSTIC.md`. Next owner: CEO (authorize a separate scoped design/
+  calibration mandate for the staleness-abandonment family). NOT authorized: implementation, Strategy
+  Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/live trading/V4.4 promotion.
 - **VE-RANGE-V4_4-IMPLEMENTATION-001 — `V4_4_IMPLEMENTATION_READY_FOR_RED_TEAM_AUDIT`.** Frozen mechanism
   (`c57d103`) + calibrated registry (`898f149`) converted to production code, additively:
   `ve_n1_replay/range_semantic_v4_4.py` (67,340 bytes) + `range_engine_v4_4.py` (9,599 bytes), zero V4.3 bytes
