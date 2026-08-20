@@ -4038,4 +4038,53 @@
                audit.md.
                STATE: OPERATIONAL. Next entry [89], prev_hash E88.
   entry_hash:  E88
+
+[89] 2026-08-20
+  prev_hash:   E88
+  event:       VERDICT
+  dc_id:       DC-RANGE-MB3-001-024-FROZEN-BLIND-EXECUTION
+  freeze_hash: Statistician freeze fddb986 / labels_sha256 6369f5e0 / labels payload ac962530 / window payload
+               b9d0fd72 / selection dd1c8f5f / manifest 1098abd0 / seed 01b77747 / predictions 26a7d461 /
+               detector bc6b9dc(098fa144) config_id 24f72a60 fingerprint f1-only-f5-deferred
+  battery_ver: RT-RANGE-MB3-001
+  reviewer:    Red Team
+  detail:      FIRST CEO-ASSISTED BLIND EXECUTION of the frozen batch MB3-001..024 on the ratified F1-only
+               detector (bc6b9dc, RT-0013 PASS). VERDICTS = ***MB3_FREEZE_INTEGRITY_PASS + MB3_EXECUTION_
+               INTEGRITY_PASS + MB3_MACRO_GENERALIZATION_NOT_SUPPORTED*** + MB3_INTERNAL_F4=NOT_TESTABLE_ON_MB3.
+               Epistemic = CEO_ASSISTED_BLIND_EVALUATION (NOT INDEPENDENT_SEMANTIC_BLIND_PASS). FREEZE INTEGRITY:
+               fddb986 HEAD statistician-foundation local=remote x4; labels_sha256 6369f5e0 (plaintext file,
+               hash-only pre-freeze); labels payload ac962530 + window payload b9d0fd72 content-addressed + HMAC
+               valid + 1-bit/wrong-key refused; labels payload decrypts to 6369f5e0; selection dd1c8f5f/manifest
+               1098abd0/seed 01b77747 bound; 24 windows 8/8/8 length + 6/6/6/6 block; 24/24 bars_sha256 reproduced
+               from canonical corpus (render window recipe); full coverage 0 gaps 0 overlaps; MB3-009 amendment
+               append-only (25 rows/24 windows, original preserved); MB3-007+MB3-020 CEO MACRO-absent (no RANGE
+               seg); detector_state_at_freeze all false (no detector before freeze). EXECUTION INTEGRITY: Env A
+               dynamic-isolated (no label/scorer read, no subprocess/socket; input no label fields), RUN_ATTEMPT=1
+               on exactly 001-024 (6912 bars); F1 tolerated 10 sub-tick bars via ratified validator (OHLC
+               unmodified, quality events separate channel) -> NOT BLOCKED_F1; predictions 26a7d461 frozen read-
+               only + committed BEFORE labels (a6b0eb0, local=remote x4) = MB3_PREDICTIONS_FROZEN_BEFORE_LABEL_
+               ACCESS; Env B scorer-only no-detector, labels_sha256+predictions_sha256 both re-verified, ratified
+               scorer unchanged. RESULTS (MACRO GT = CEO RANGE-class segments, 38 across 22 windows): recall 0.684
+               precision 0.419 F1 0.520 IoU p25/med/p75/max 0.213/0.352/0.501/0.776; TP 26/FN 12/detected 62. By
+               length 96:5/11(0.45) 288:6/12(0.50) 480:15/15(1.00). By block B1 7/10 B2 5/10 B3 7/7 B4 7/11.
+               ★ CLASSIFICATION CONFUSION (material): detector barely discriminates RANGE from CHANNEL/TREND --
+               per-bar in range-state on ~87-90% of CEO CHANNEL bars + ~79-81% of CEO TREND bars; structure-level
+               49/62 confirmed structures TREND-promoted (25 on CEO CHANNEL, 16 on CEO RANGE), only 13 stay RANGE
+               (7 on CEO RANGE); 4 confirmed structures on the 2 CEO-MACRO-absent windows = all FP. Events
+               DIAGNOSTIC-ONLY (no ratified MB3 event-matching rule; detector has no UP/DOWN/FAILED vocabulary).
+               INTERNAL: MB3 labels single-level MACRO-only = ZERO INTERNAL GT -> F4 NOT TESTABLE (detector emitted
+               9 confirmed INTERNAL, no GT). COMPARISON vs RT-0010 (0.705/0.534/0.608/0.439): recall APPROX STABLE
+               (-0.021), precision MATERIALLY DEGRADED (-0.115), F1 -0.088, IoU -0.087. CONFOUND DISCLOSED: RT-0010
+               MACRO GT = LEVEL_MAPPING (88, may incl channels) vs MB3 = RANGE-only (38, stricter) -> recall is the
+               cleaner cross-batch signal; precision/IoU partly confounded. Per sec.8 a single stable metric does
+               NOT establish generalization + discrimination is weak -> generalization NOT AFFIRMATIVELY SUPPORTED
+               (not refuted): recall holds out-of-sample, range/channel/trend discrimination does not. No adaptive
+               intervention (first frozen preds scored, no rerun/threshold/label/scorer change/window exclusion/
+               cherry-pick). MB3-025..048 PRESERVED SEALED (not decrypted for labels [labels file marks them
+               NOT_PART_OF_THIS_BATCH], not scored, detector not run, no tuning). NO promotion authorized (Wheel/
+               Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker). Detector/config/scorer/labels/escrow/windows
+               unmodified; changes only in red_team/. Reports: RT-RANGE-MB3_001_024_blind_execution.md +
+               RT-RANGE-MB3_predictions_freeze.md.
+               STATE: OPERATIONAL. Next entry [90], prev_hash E89.
+  entry_hash:  E89
 ```
