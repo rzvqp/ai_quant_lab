@@ -28,6 +28,41 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+- **VE-RANGE-V4_4-CONVERGENCE-001 — convergence closed, verdict upgraded to
+  `V4_4_DESIGN_READY_FOR_RED_TEAM_REVIEW`** (no code/config/V4.3 file touched, `MB3-025..048` never accessed —
+  the whole mandate was performable from already-committed artifacts). Independently verified
+  `RT-RANGE-DIAG-AUDIT-001` (`3be88a1`, `statistician-foundation`, local=remote ×4) by reading the full 90-line
+  report, not the mandate's own summary: Red Team's OWN independent engine re-run reproduces all 62/62
+  confirmed MB3 structures — a SEPARATE confirmation of the same instrumentation-fidelity claim VE made in
+  `071fbd7`, arrived at independently. **10/10 convergence-matrix rows MATCH, zero conflicts** — Red Team's
+  disposition `V4_3_DIAGNOSTIC_FOUNDATION_CONFIRMED` + explicit "no V4.4 design assumption must change" is
+  confirmed by direct row-by-row comparison, not merely cited. Two genuinely NEW, stronger pieces of evidence
+  incorporated (mechanism unchanged, not a redesign): (1) Red Team directly examined all 9 over-segmentation
+  FP and found the exact detector-episodes-vs-CEO-labels granularity ratios (MB3-015 8-vs-2, MB3-021 7-vs-1,
+  MB3-024 6-vs-2) — stronger motivating evidence for the episode-identity mechanism than VE had; (2) Red Team
+  checked the GT-length/window-length confound VE had disclosed as unchecked (corr=0.40, real) and found it
+  REINFORCES rather than undermines `MORE_TIME_TO_FIRE` — incorporated into the confirmation-budget section
+  with a new falsifiable acceptance test (confirmation timing must depend on accumulated evidence, not on
+  window length, for two scenarios sharing an identical underlying path at different lengths). **Two genuine
+  implementation ambiguities found in VE's own re-review and resolved (not new research — mandate's own
+  §5/§3-amendment-trigger discipline)**: (a) the `WEAKENING` state's two entry paths (excursion-based vs.
+  trailing-window-degradation-based) now have a fully deterministic priority/interaction rule (excursion
+  takes priority for labeling; recovery requires BOTH triggers clear; termination fires on EITHER bound first)
+  plus a new, fully-specified (though `UNRESOLVED_PARAMETER`-valued) `WEAKENING_MAX_BARS` counter; (b)
+  episode-identity's continuation/merge/replacement now has an explicit priority order (MERGE against live
+  structures first, then CONTINUATION against terminated/weakening priors, REPLACEMENT forced after any
+  accepted breakout regardless of zone overlap). Full exact state-transition table (10 rows, every column
+  mandate §5 asked for) now complete and implementable without re-deriving research. Parameter registry
+  reformatted to the exact required columns — still zero MB3-fished values, every constant either
+  scale-invariant/self-referential-derived or explicit `UNRESOLVED_PARAMETER`. Known-risk register confirms
+  both previously-disclosed open risks (slow-drift-equilibrium false-reject; zigzag false-accept) have
+  explicit fail-closed handling + a named test and do NOT block freeze, per the mandate's own stated standard.
+  Implementation-fingerprint PROCEDURE specified (sha256 of finalized source, reusing the exact F1-only-
+  remediation pattern) — no placeholder value generated. Full package
+  `ve_n1_replay/VE_RANGE_V4_4_CONVERGENCE_AND_REVIEW_PACKAGE.md` (extends, does not replace, the original
+  design doc). Per mandate: this verdict authorizes ONLY the next sequence step (independent Red Team focused
+  design audit) — NOT implementation, NOT freeze, NOT threshold selection. Next owner: Red Team (focused
+  design audit), then CEO (freeze decision).
 - **VE-RANGE-V4_4-DESIGN-001 — RANGE V4.4 design & pre-registration (DESIGN ONLY, NO IMPLEMENTATION, NO
   PARAMETER FISHING, ZERO_VALIDATION_WEIGHT on MB3-001..024, MB3-025..048 never accessed at all this
   mandate)**, run in parallel with the (not-yet-delivered) Red Team audit of `VE-RANGE-DIAG-001`. Addresses
