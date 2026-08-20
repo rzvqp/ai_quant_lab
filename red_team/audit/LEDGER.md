@@ -4284,4 +4284,63 @@
                BLIND14-VALIDATION-001.md + RT-RANGE-FB14_predictions_freeze.md.
                STATE: OPERATIONAL. Next entry [94], prev_hash E93.
   entry_hash:  E93
+
+[94] 2026-08-21
+  prev_hash:   E93
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-4-1-STALE-FOCUSED-DESIGN-AUDIT
+  freeze_hash: VE design 9aba9b7 (VE_RANGE_V4_4_1_STALE_CANDIDATE_DESIGN.md) on diagnostic b1dcf92 (parent
+               3bb61cf V4.4 impl) / branch discovery-mk-matrix-v1 / DESIGN-ONLY docs, no .py change / V4.4
+               detector byte-untouched: range_semantic_v4_4.py 833aedfd + range_engine_v4_4.py 1371444c vs 3bb61cf
+  battery_ver: RT-RANGE-V4_4_1-STALE-DESIGN-AUDIT-001
+  reviewer:    Red Team
+  detail:      FOCUSED ADVERSARIAL DESIGN AUDIT of the T-STALE stale-candidate correction (9aba9b7), VE's response
+               to the FB14 TP-preservation failure (E93). VERDICT = ***V4_4_1_STALE_DESIGN_AUDIT_PASS_WITH_
+               NONBLOCKING_NOTES*** + V4_4_1_DESIGN_FREEZE_AND_CALIBRATION_AUTHORIZED_FOR_CEO_DECISION. No redesign,
+               no calibration, no impl, no fresh-blind, no MB3-025-048 access. PROVENANCE PASS: b1dcf92/9aba9b7/
+               dfebe8f exist; ancestry 3bb61cf->b1dcf92(traversal diag)->9aba9b7(stale design)=HEAD; local=remote
+               x4; DESIGN IS DOCS-ONLY (9aba9b7 touches only the design .md, no .py); V4.4 detector byte-untouched
+               (833aedfd/1371444c identical to 3bb61cf); NO parameter chosen; MB3 refs = only MB3-001/MB3-025
+               boundary markers in preservation phrases, zero sealed-window semantics. ROOT_CAUSE_CONFIRMED: I
+               re-verified b1dcf92 -- my E93 blamed INSUFFICIENT_TRAVERSAL, but that is a DOWNSTREAM SYMPTOM; the
+               real cause is a never-confirmed candidate permanently blocking the single active-MACRO slot (same
+               candidate throughout each lost-TP span, 0.000 price-IoU vs CEO zone -- FB14-003 id2 [1687,1720] vs
+               [1724,1742], FB14-012 id7 [2514,2526] vs [2474,2506]; 38+66 genuine alternating swings detected+
+               rejected). Fixing traversal would have loosened a WORKING directional gate for an unrelated lifecycle
+               defect; the design correctly rejects that. 17/17 AUDIT AREAS PASS, 0 amend, 0 block, key claims
+               INDEPENDENTLY VERIFIED IN CODE (not trusting VE line-cites): (§9) _offer_swing_everywhere runs BEFORE
+               _step_macro in observe() -> triggering swing offered-and-consumed before T-STALE fires = NEXT_BAR_
+               REPLACEMENT_VALID no double-use/no lookahead; (§8) T-STALE inserts in _step_macro's zones-is-None
+               (pre-confirmed) branch after T-KILL, disjoint from WEAKENING via reached_confirmed; (§8) _kill_macro
+               (609) already calls _record_macro_termination_for_episode_identity (645) -> EPISODE_IDENTITY_REUSE_
+               VALID, no new rule. STALENESS = SEMANTIC (rejected + ALTERNATING swings), not age/timeout/touch-
+               scarcity/price-distance; age is a gating floor only. ANTI_CHURN_SUPPORTED: the alternation
+               requirement IS the safeguard (one-directional trend rejections are one-sided -> never qualify -> no
+               reform loop), no tuned cooldown introduced. DIRECTIONAL_PROTECTION_PRESERVED: post-T-STALE candidate
+               must independently pass the UNCHANGED _evaluate_macro_formation (ER/traversal/RND) -- "changes WHO is
+               evaluated, never HOW"; no path makes a directional structure confirm -> E93 gains (dirFP13->7/over-
+               seg6->3/prec0.441->0.545) structurally safe. Traversal + ER/RND FROZEN. State minimal: ONE new
+               bounded rejected-touch deque (zone-overlap%/ATR-dist/age-field/counters explicitly rejected).
+               Snapshot: v441_* field, ConfigV441.config_id(), REASONS_V441=41 additive, contract range-hierarchical
+               -v4.4.1, fail-closed cross-version restore via EXISTING mechanism. 4 PARAMS ALL UNRESOLVED_PARAMETER
+               (window-len RATIFIED_REUSE-hyp W=29 / min-rejection-count CALIBRATED / min-alternation-count DERIVED-
+               floor-cand / min-candidate-age DERIVED-cand), none chosen, no hidden 5th. 16 self-falsification
+               scenarios clean (abandon only 8/15/16; protect 1-7/9/11-14); test plan STALE-1..10 + mutation test
+               proving alternation is load-bearing. FAIL_CLOSED_ON_CHURN_OR_SLOW_RANGE_RISK check: NEITHER trip
+               condition met (churn blocked by alternation, slow-range protected by accepted-touch exclusion).
+               CALIBRATION_READY: mechanism specified enough to calibrate without reopening design; §15 plan mirrors
+               898f149 (pre-register, synthetic+ratified-reuse, NOT FB14/MB3, DUAL-SIDED acceptance bar no-
+               averaging, sensitivity+fragility flag, frozen ConfigV441). 4 NON-BLOCKING NOTES (all VE-self-
+               disclosed, none blocks freeze): (1) dual-sided calibratability unproven = principal residual, a
+               CALIBRATION question the next mandate must prove-or-honestly-disclose; (2) min-age floor not derived;
+               (3) episode-identity IoU-continuation argued-not-tested (STALE-2/9 must add IoU check); (4) adjacent
+               forced-EPISODE_REPLACEMENT-after-BREAKOUT over-fragmentation (b1dcf92 §8) out of scope. NEXT (recommend
+               to CEO, NOT authorized here): a SEPARATE calibration mandate for the 4 params (inherit scope boundary
+               + non-loosenable constraints: rejection-count-based-not-scarcity, alternation-gated) BEFORE any impl;
+               then impl; then fresh blind re-validation on evidence never used to calibrate. NOT authorized: impl/
+               calibration/param-selection/fresh-blind/Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/V4.4
+               promotion. Detectors/labels/scorer/escrow unmodified; changes only in red_team/. Report: RT-RANGE-
+               V4_4_1-STALE-DESIGN-AUDIT-001.md.
+               STATE: OPERATIONAL. Next entry [95], prev_hash E94.
+  entry_hash:  E94
 ```
