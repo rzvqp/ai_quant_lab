@@ -3987,4 +3987,55 @@
                modified to force result; changes only in red_team/. Report: RT-RANGE-0012_f1_f5_implementation_audit.md.
                STATE: OPERATIONAL. Next entry [88], prev_hash E87.
   entry_hash:  E87
+
+[88] 2026-08-20
+  prev_hash:   E87
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-F1-ONLY-REMEDIATION-FINAL-PREBLIND-FREEZE
+  freeze_hash: VE build bc6b9dc (parent 69af414, F5 reverted) / detector 098fa144 (exec-code-identical to pre-F5
+               2aba333c) / config_id 24f72a60 / fingerprint f1-only-f5-deferred-2026-08-20 / freeze 46a9576
+               (1754c86d) / full-proj 63ef7551 / MACRO 62-of-88 recall 0.705
+  battery_ver: RT-RANGE-0013
+  reviewer:    Red Team
+  detail:      FINAL PRE-BLIND FREEZE GATE on VE's F1-only remediation bc6b9dc (F5 reverted after RT-0012 FAIL).
+               VERDICT = ***RANGE_V4_F1_ONLY_REMEDIATION_AUDIT_PASS*** + MACRO_INDEPENDENT_BLIND_PREPARATION_
+               AUTHORIZED=TRUE. All commits exist, local=remote x4; bc6b9dc on discovery-mk-matrix-v1, parent
+               69af414; audited the exact commit. Detector AST executable-code diff pre-F5(82f27c0) vs bc6b9dc =
+               EXACTLY 4 changes (fingerprint const + __all__ + snapshot dict key + restore check) -- the entire
+               observe()/candidate-formation path incl the boundary-retest line is executable-IDENTICAL to pre-F5;
+               the rejected F5 scaling (tol_cluster*atr_ref) is ABSENT (back to pre-F5 tol_cluster form). ★ GATE A
+               F5_PRODUCTION_BEHAVIOR_DEFERRED=TRUE (not on comments/unit-test alone -- executable source + real-
+               bar behavior). ★ GATE B F1 exactly valid: schemas.py BYTE-IDENTICAL to RT-0012-audited 69af414
+               (0-line diff); re-confirmed on real corpus -- 13/13824 tolerated all on close, 9above/4below, per-
+               length 96:1/288:6/480:6, eps=min_tick/2=0.005, value-vs-shifted-boundary (hi+eps tol/+1ULP rej,
+               lo-eps tol/-1ULP rej), unknown symbol UNKNOWN_SYMBOL_MIN_TICK fail-closed, INPUT_OHLC_SUBTICK_
+               TOLERATED separate channel outside 29 codes, F1_OHLC_BYTE_IDENTITY=TRUE. ★ GATE C F1_ONLY_PATCHED_
+               PREDICTIONS_MATCH_FREEZE=TRUE: bc6b9dc (F1 validator + F5-reverted detector, REAL ATR) on 48 real
+               sealed windows reproduces frozen pre-F5 46a9576 FULLY 48/48 incl structure-ids, projection hash
+               63ef7551 equal (no synthetic fixtures, no atr=1.0). ★★ GATE D MACRO_REAL_BAR_BEHAVIORAL_DIFFERENCES
+               =0 (rejected F1+F5 had 12/48): MACRO geometry 0 diffs, MACRO event 0 diffs; sweeps/breakouts/
+               reversals/promos 67/96/7/90 = freeze (rejected was 59/93/6/89). ★ GATE E frozen MACRO score
+               RESTORED EXACTLY: 62/88 recall 0.705 precision 0.534 F1 0.608 IoU-med 0.439; does NOT reproduce
+               rejected 58/88 0.659; INTERNAL 1/12 unchanged. ★ GATE F identity/snapshot: fingerprint f1-only-f5-
+               deferred-2026-08-20 (honest label, not f224e7d nor rejected f1-f5-conformance); config_id 24f72a60
+               + contract range-hierarchical-v4.3 UNCHANGED; refusal matrix -- correct F1-only accepted, no-
+               fingerprint/REJECTED-F1+F5-fingerprint/corrupt/wrong-config/wrong-contract ALL refused (no silent
+               compatibility with rejected state). ★ GATE G scorer identity-only (prototype_commit->f224e7d+F1 +
+               fingerprint check, refuses rejected f1-f5-conformance tag; NO formula/denominator/threshold/label/
+               metric change). ★ GATE H 99/99 active tests + mypy strict; F5 test suite DELETED; construction_
+               reproduction pinned f224e7d refuses bc detector fail-closed (historical pin intact); VE's NEW multi-
+               ATR regression NON-VACUOUS (guard-line byte-identical to pre-F5 source + no atr_ref on guard line +
+               5 distinct ATR 0.65/1.0/1.85/3.2/10.0 outcome-identical) -- does NOT repeat the RT-0012 atr=1.0
+               vacuous mistake; decisive real-ATR confirmation done by Red Team (Gates C-E). 1 NON-BLOCKING obs:
+               detector file-hash 098fa144 != pre-F5 2aba333c (fingerprint const + snapshot lines added) but
+               PURELY REPRESENTATIONAL + score/semantics-invariant (proven by 48/48 full real-bar identity + 62/88
+               score) -- mandate explicitly permits. INTERNAL RESEARCH_ONLY_NOT_VALIDATED non-blocking. NO material
+               defect. MACRO_INDEPENDENT_BLIND_PREPARATION_AUTHORIZED=TRUE authorizes ONLY prep+sealing of the new
+               independent MACRO blind batch -- NOT final semantic/blind PASS, NOT Wheel/Strategy Catalog/Alpha/AI
+               Trader/LIVE_SHADOW/broker. INDEPENDENT_SEMANTIC_BLIND=FALSE/VALIDATION_WEIGHT=ZERO. Red Team does NOT
+               prepare the batch under this mandate. Next owner: Statistician/blind-batch prep, separate mandate.
+               Nothing modified to force PASS; changes only in red_team/. Report: RT-RANGE-0013_f1_only_remediation_
+               audit.md.
+               STATE: OPERATIONAL. Next entry [89], prev_hash E88.
+  entry_hash:  E88
 ```
