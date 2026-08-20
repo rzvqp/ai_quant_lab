@@ -4087,4 +4087,51 @@
                RT-RANGE-MB3_predictions_freeze.md.
                STATE: OPERATIONAL. Next entry [90], prev_hash E89.
   entry_hash:  E89
+
+[90] 2026-08-20
+  prev_hash:   E89
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-3-DIAGNOSTIC-DECISIVE-AUDIT
+  freeze_hash: VE diagnostic 071fbd7 (parent bc6b9dc) / detector bc6b9dc(098fa144) config_id 24f72a60 /
+               labels 6369f5e0 / predictions 26a7d461 / re-run cross-val 62/62
+  battery_ver: RT-RANGE-DIAG-AUDIT-001
+  reviewer:    Red Team
+  detail:      FOCUSED PARALLEL AUDIT of VE-RANGE-DIAG-001 (071fbd7) -- are the decisive premises for V4.4 design
+               factually sound? VERDICT = ***V4_3_DIAGNOSTIC_FOUNDATION_CONFIRMED***. Provenance: 071fbd7 HEAD
+               discovery-mk-matrix-v1 local=remote x4, parent bc6b9dc, touches ONLY report+PROJECT_STATE (no
+               detector/config/scorer change); labels 6369f5e0 + predictions 26a7d461 re-hashed match; independent
+               engine re-run reproduces frozen predictions 62/62 structures (sid+confirm_ts) 0 mismatches. ALL 7
+               decisive claims SUPPORTED, reproduced independently from frozen artifacts: (1) 39-FP decomp EXACT =
+               30 directional (CHANNEL_UP 14/CHANNEL_DOWN 8/TREND_DOWN 4/TREND_UP 3/TRANSITION 1) + 9 over-
+               segmentation (RANGE-dominant); FP=39 = scorer false_positives_macro (62 detected - 23 unique
+               matched; 3 detections each best-matched 2 GT) -- VE correctly reconciled my MB3-report's naive 36.
+               (2) 12-FN decomp: 12/12 ALL formation/confirmation-timing, ZERO boundary/IoU misses (VE's finer
+               4-truncation/5-few-touch/3-degenerate split confirmed as all-timing; my coarse heuristic gave 4/8,
+               few-touch-vs-degenerate boundary is minor). (3) DIRECTIONAL-DISCRIMINATION DEFECT code-CONFIRMED:
+               degeneracy_check gates only width (bu-bl)<=2*w_atr*atr_ref; evaluate_candidate adds only touch+
+               duration d_macro; normalized_drift/s_max wired at MACRO NOWHERE, only at INTERNAL line ~1058
+               (INT_CHANNEL_* descriptive label). (4) 96/288/480 = MORE_TIME_TO_FIRE: eligible-after-d_macro=29 =
+               67/259/451 (70/90/94%), matched confirm-delay median 29/36/93, L=480 median 93 EXCEEDS entire L=96
+               eligible budget 67; VE disclosed GT-len/window-len confound unchecked -> I checked: corr 0.40 REAL
+               (mean GT range 34/38/100 by L) but REINFORCES latency not better-recognition. (5) NAIVE DRIFT-GATE
+               FALSIFIED EXACT: drift>s_max=1.60 destroys 13/23 TP(57%) while catching 19/30 directional FP(63%),
+               drift distributions overlap (TP med 1.719 vs FP 1.755) -> SINGLE_DRIFT_GATE_FIX_NOT_JUSTIFIED. (6)
+               MB3-007: 1 struct CHANNEL_DOWN confirm@31 (d_macro clear), CEO all-CHANNEL. (7) MB3-020: 3 structs
+               TREND_DOWN cascade confirm 104/145/261; sid drift 0.73<s_max = genuine local-vs-context ambiguity
+               (VE-disclosed). MISSING-CAUSE SEARCH (state/snapshot/replay/scorer/label-adapter/ATR/F1/boundary/
+               episode/implementation-vs-semantic): NONE found -- 62/62 replay rules out state/snapshot; 39-vs-36
+               fully explained; the 9 over-segmentation independently CONFIRMED as granularity mismatch (all 9
+               overlap a real CEO RANGE seg IoU 0.11-0.41, lost best-IoU tie in windows with 6-8 detector episodes
+               vs 1-2 CEO RANGE labels) -- NOT directional, VE correctly kept separate. VE self-critical +
+               exemplary (falsifies own fix, separates B.2 mechanism, discloses confound). NO V4.4 design
+               assumption must change. V4.4 REQUIREMENTS (RT states, VE owns, all already recognized by VE):
+               address directional gap but NOT via naive drift>s_max (falsified); preserve the 23 TP; treat the
+               9 over-segmentation SEPARATELY (granularity not directional); pre-register + evaluate any feature
+               on UNTOUCHED evidence (MB3-025-048/fresh, never the 39/23); length effect is latency/budget not
+               recognition deficit. SCOPE: no V4.4 design/thresholds/implementation/optimization/INTERNAL-F4/Alpha/
+               Catalog/Wheel/LIVE_SHADOW/broker; MB3-025-048 SEALED (not decrypted/scored/run/tuned); MACRO_
+               INDEPENDENT_BLIND_PREPARATION_AUTHORIZED unaffected; no evidence consumed that changes prior verdicts.
+               Changes only in red_team/. Report: RT-RANGE-DIAG-AUDIT-001_v4_3_diagnostic_audit.md.
+               STATE: OPERATIONAL. Next entry [91], prev_hash E90.
+  entry_hash:  E90
 ```
