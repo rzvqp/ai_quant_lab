@@ -23,6 +23,18 @@ from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
 from ai_trader.mt5_demo_execution.types import SafetyGuardReport
 from ai_trader.strategy_runtime.context_access import MarketContext
 
+LEGACY_TRADING_AUTHORITY_QUARANTINED: bool = True
+"""CEO decision (AI Trader New Brain Architecture mandate, AI-TRADER-NEW-BRAIN-ARCHITECTURE-
+IMPLEMENTATION-001): CAND-0001/CAND-0007/CAND-0019 (`pdh_pdl_demo`/`multi_policy_live`) are
+LEGACY_NON_AUTHORITY for the duration of this mandate -- preserved for audit/rollback/migration
+reference, but their trading authority is disabled. This flag makes the DEMO leg below (the only
+real-`order_send`-capable call reachable through this module) unconditionally unreachable, regardless
+of what any caller passes for `emergency_stop` -- a caller cannot opt back in via a parameter. The
+DRY_RUN leg still runs (no real broker adapter, no real order -- preserves this gate's own testability
+and audit trail). Flipping this back to `False` requires an explicit, reviewed, future CEO-authorized
+code change, never a runtime/env-var toggle -- the same discipline `BrokerOrderSubmissionGate.enabled`
+already established for the New Brain path itself."""
+
 
 @dataclass(frozen=True, slots=True)
 class GatedDemoOutcome:
@@ -67,6 +79,12 @@ def send_after_dry_run_gate(
 
     if id(demo_deps.adapter) != id(demo_adapter):
         raise ValueError("send_after_dry_run_gate: demo_deps.adapter must be the SAME object as demo_adapter")
+
+    if LEGACY_TRADING_AUTHORITY_QUARANTINED:
+        return GatedDemoOutcome(
+            dry_run_result=dry_run_result, demo_result=None, safety_guard_report=safety_guard_report,
+            reason_codes=(rc.LEGACY_TRADING_AUTHORITY_QUARANTINED,),
+        )
 
     demo_result = orchestrate(candidate, market_context, demo_deps, mode=ExecutionMode.DEMO, emergency_stop=emergency_stop, config=config)
     return GatedDemoOutcome(

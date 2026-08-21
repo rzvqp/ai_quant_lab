@@ -15,6 +15,7 @@ import pytest
 from ai_trader.execution_engine.ledger import OrderLedger
 from ai_trader.execution_orchestrator.tests._fixtures import make_deps, make_market_context
 from ai_trader.live_signal_source.types import LiveCandidate
+from ai_trader.mt5_demo_execution import gating
 from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
 from ai_trader.mt5_demo_execution.safety import verify_safety_guards
 from ai_trader.mt5_demo_execution.tests._fixtures import AS_OF, FakeMT5DemoGateway
@@ -31,6 +32,21 @@ from ai_trader.signal_engine.types import Direction
 SYMBOL = "XAUUSD"
 TICK_SIZE = 0.01
 MAGIC_NUMBER = 100_002
+
+
+@pytest.fixture(autouse=True)
+def _legacy_trading_unquarantined_for_lifecycle_tests(monkeypatch: pytest.MonkeyPatch) -> None:
+    """CEO decision (AI Trader New Brain Architecture mandate): CAND-0007/CAND-0019 are
+    LEGACY_NON_AUTHORITY, quarantined by default (`gating.LEGACY_TRADING_AUTHORITY_QUARANTINED = True`).
+    THIS file tests submit -> observe -> close/slippage/audit PIPELINE MECHANICS -- a concern orthogonal
+    to whether these policies should be allowed to trade live today. That safety question is owned and
+    tested exclusively by `mt5_demo_execution/tests/test_gating.py` and
+    `test_legacy_quarantine_ast_guard.py`, whose production-default assertions this fixture never
+    touches (it patches the imported binding only within THIS test module's own monkeypatch scope,
+    undone automatically after each test). Unquarantining here preserves this file's original
+    diagnostic value -- proving the lifecycle machinery itself still works, for audit/rollback purposes
+    -- without weakening the real default."""
+    monkeypatch.setattr(gating, "LEGACY_TRADING_AUTHORITY_QUARANTINED", False)
 
 
 class _FakeFillReader:

@@ -58,6 +58,7 @@ from ai_trader.live_signal_source.producer import CandidateSignalProducer
 from ai_trader.live_signal_source.tests._fixtures import FakeMT5Gateway, RawRate
 from ai_trader.live_signal_source.types import Bar, BarFeedError, LiveCandidate
 from ai_trader.mandate2_readiness.broker_gate import BrokerOrderSubmissionDisabledError, BrokerOrderSubmissionGate
+from ai_trader.mt5_demo_execution import gating
 from ai_trader.mt5_demo_execution.adapter import MT5DemoBrokerAdapter
 from ai_trader.mt5_demo_execution.safety import verify_safety_guards
 from ai_trader.mt5_demo_execution.tests._fixtures import AS_OF, FakeMT5DemoGateway
@@ -180,7 +181,7 @@ def _approved_demo_bundle(tmp_path: Path) -> tuple[DemoDepsBundle, FakeMT5DemoGa
 
 
 def test_08_broker_receives_no_order_when_the_submission_gate_is_disabled_even_for_a_fully_approved_candidate(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The property Mandate 2 must preserve: NOT "NO_TRADE never orders" (trivially true, nothing to
     prove) but "a candidate every upstream stage approved STILL never reaches the broker while
@@ -188,11 +189,16 @@ def test_08_broker_receives_no_order_when_the_submission_gate_is_disabled_even_f
 
     (1) The gate primitive itself, wired the way Mandate 2's integration must wire it -- `authorize()`
         called BEFORE any broker-facing call, never after.
-    (2) The REAL, currently-approved pdh_pdl_demo order pipeline (today's closest analog to a
-        shadow-approved candidate) -- confirming the underlying order WOULD have gone to the broker
-        (`outcome.sent is True`, matching `test_submit_candidate_sends_through_the_existing_demo_pipeline
-        _and_tracks_the_position` in `pdh_pdl_demo/tests/test_orchestration.py`), so the gate in (1) is
-        blocking something real, not a scenario that would have failed anyway."""
+    (2) The REAL pdh_pdl_demo order pipeline (today's closest analog to a shadow-approved candidate) --
+        confirming the underlying order WOULD have gone to the broker, so the gate in (1) is blocking
+        something real, not a scenario that would have failed anyway. pdh_pdl_demo is itself
+        LEGACY_NON_AUTHORITY and quarantined by default since the AI Trader New Brain Architecture
+        mandate (`gating.LEGACY_TRADING_AUTHORITY_QUARANTINED = True`) -- this test locally
+        unquarantines it (monkeypatch, undone automatically after the test) purely to keep this
+        positive control meaningful; it says nothing about pdh_pdl_demo's own production reachability,
+        which `mt5_demo_execution/tests/test_gating.py` and `test_legacy_quarantine_ast_guard.py` own
+        and prove separately."""
+    monkeypatch.setattr(gating, "LEGACY_TRADING_AUTHORITY_QUARANTINED", False)
     gate = BrokerOrderSubmissionGate()  # the only reachable default: disabled
     broker_calls: list[str] = []
 
