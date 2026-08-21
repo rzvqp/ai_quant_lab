@@ -1,0 +1,15 @@
+{
+  "started_at": 1787323175.6361668,
+  "ended_at": 1787344775.9240568,
+  "duration_seconds": 21600.287889957428,
+  "cycles_completed": 40242,
+  "distinct_market_states": 40242,
+  "duplicate_cycles_detected": 0,
+  "exceptions": [],
+  "n1_subprocess_calls": 2013,
+  "n1_subprocess_failures": 0,
+  "ledger_row_count_final": 40242,
+  "ledger_row_count_matches_cycles": true,
+  "peak_traced_memory_bytes": 53859813,
+  "order_send_calls_total": 0
+}

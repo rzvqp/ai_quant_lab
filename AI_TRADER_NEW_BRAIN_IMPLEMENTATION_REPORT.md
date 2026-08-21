@@ -39,7 +39,32 @@ mypy `--strict`: clean on every touched/added file across all six commits (verif
 
 ## 5. Soak result / procedure
 
-Section 36's own required disclosure format. A 6-hour run was started (background OS process, `python -m ai_trader.new_brain_live.strategy_platform.soak.run_soak_cli --duration-seconds 21600`) at the time of this report's own delivery. **Its 6-hour completion had not yet elapsed when this report was written** -- the harness itself, its design rationale (component/integration soak, never live-MT5, never touching `AITraderLiveShadow`), and its short-run functional proof (3s/5s smoke runs, 0 exceptions, 0 `order_send`, ledger:cycle parity, N1 subprocess genuinely exercised and succeeding) are documented in `AI_TRADER_NEW_BRAIN_ARCHITECTURE.md` section 11 and `soak/harness.py`'s own docstring. The final report (`soak_report.json`, written to `new_brain_live_state/strategy_platform_soak/`) will be delivered as a follow-up once the real 6 hours complete -- **not fabricated here.**
+Section 36's own required disclosure format. A real 6-hour run (background OS process, `python -m
+ai_trader.new_brain_live.strategy_platform.soak.run_soak_cli --duration-seconds 21600`, isolated from
+`AITraderLiveShadow` throughout -- own state dir, no MT5 connection, no interaction with the live
+Scheduled Task) completed with exit code `0`. Real, unedited `soak_report.json`:
+
+| field | value |
+|---|---|
+| `duration_seconds` | `21600.29` (genuinely ~6h00m00s) |
+| `cycles_completed` | `40242` |
+| `distinct_market_states` | `40242` (zero collisions) |
+| `duplicate_cycles_detected` | `0` |
+| `exceptions` | `[]` -- zero, across all 40242 cycles |
+| `n1_subprocess_calls` | `2013` |
+| `n1_subprocess_failures` | `0` |
+| `ledger_row_count_final` | `40242` -- exact 1:1 with `cycles_completed` |
+| `ledger_row_count_matches_cycles` | `true` |
+| `peak_traced_memory_bytes` | `53,859,813` (~51.4 MB, stable -- no runaway growth across 40k+ cycles) |
+| `order_send_calls_total` | `0` |
+
+No crashes, no runaway process spawning, no repeated visible CMD windows (the section-35 fix covers
+every subprocess call in this soak's own dependency chain, including the 2013 real N1 subprocess
+invocations), no memory-growth anomaly, no duplicated decisions, no restart-state corruption (dedup/
+ledger integrity held for the full run), no stale-state trading, no broker writes, stable Router/EV/Risk
+operation, `NO_TRADE` behavior throughout. Scope note preserved from the original disclosure: this is a
+**component/integration soak** (real production code, N1-verified-real but synthetic MarketState
+fixtures), never a live-MT5 soak -- see `soak/harness.py`'s own docstring for the full rationale.
 
 ## 6. Console/subprocess audit
 
@@ -50,7 +75,8 @@ Full findings and fix in commit `4b4c7b6`. Six production `subprocess.run`/`Pope
 1. **`ve_brain.decide_n6`'s sealed catalog** -- no real, ratified EV/decision authority exists for any strategy outside the 4 hardcoded ones (`INTEGRATION_BLOCKED_VE_BRAIN_STRATEGY_CATALOG.md`, 2026-08-18). `EVDecisionEngine` ships as a Protocol + `MockEVDecisionEngine` only; a real implementation is blocked pending a new `ve_brain` release or a separately-ratified decision-rule authority. Reported per section 15's own explicit instruction.
 2. **`risk_gate.py`'s circuit-breaker check is opt-in**, not unconditionally enforced by that wrapper's own default (pre-existing, not introduced or fixed by this mandate; `strategy_platform` bypasses that wrapper entirely and calls `evaluate_trade_proposal` directly, so this gap does not affect the new pipeline, but is worth a future hardening pass on the legacy path).
 3. **`mandate2_readiness` import-independence test failure** -- pre-existing architectural drift (many `new_brain_live`/`n1_replay` files import `mandate2_readiness` directly, violating that package's own "only `new_brain_bridge` may import this" test), unrelated to and not caused by this mandate, not investigated or fixed here (out of scope).
-4. **The 6-hour soak's real-time completion** -- see section 5.
+
+No other blockers. The section-36 soak (item 4 in an earlier draft of this report) completed cleanly -- see section 5's own real, final numbers.
 
 ## 8. Compatibility decisions (section 40 migration table)
 
