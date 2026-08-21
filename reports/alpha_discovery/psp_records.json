@@ -1,0 +1,158 @@
+{
+ "records": [
+  {
+   "id": "PSP-P1_firstpull_turn-rr2.0",
+   "m": {
+    "n": 21,
+    "WR": 0.238,
+    "avgR": -0.0574,
+    "medR": -1.039,
+    "pf": 0.919,
+    "b5rem": -0.1594,
+    "b10rem": -0.2719,
+    "top10": 999,
+    "medTP": 104.6,
+    "medSL": 52.3,
+    "temporal": {
+     "2021": [
+      2,
+      0.4
+     ],
+     "2022": [
+      5,
+      -0.435
+     ],
+     "2023": [
+      14,
+      0.012
+     ]
+    }
+   },
+   "status": "FAIL",
+   "vs_immediate": -0.082
+  },
+  {
+   "id": "PSP-P2_failed_reclaim-rr2.0",
+   "m": {
+    "n": 11
+   },
+   "status": "SPARSE"
+  },
+  {
+   "id": "PSP-P3_lower_high-rr2.0",
+   "m": {
+    "n": 19,
+    "WR": 0.211,
+    "avgR": -0.2504,
+    "medR": -1.028,
+    "pf": 0.674,
+    "b5rem": -0.3748,
+    "b10rem": -0.3748,
+    "top10": 999,
+    "medTP": 149.4,
+    "medSL": 74.7,
+    "temporal": {
+     "2021": [
+      1,
+      -1.055
+     ],
+     "2022": [
+      4,
+      -0.275
+     ],
+     "2023": [
+      14,
+      -0.186
+     ]
+    }
+   },
+   "status": "FAIL",
+   "vs_immediate": -0.275
+  },
+  {
+   "id": "PSP-P5_pull_disp-rr2.0",
+   "m": {
+    "n": 11
+   },
+   "status": "SPARSE"
+  },
+  {
+   "id": "PSP-P1_firstpull_turn-rr3.0",
+   "m": {
+    "n": 21,
+    "WR": 0.143,
+    "avgR": -0.356,
+    "medR": -1.044,
+    "pf": 0.587,
+    "b5rem": -0.523,
+    "b10rem": -0.7064,
+    "top10": 999,
+    "medTP": 156.9,
+    "medSL": 52.3,
+    "temporal": {
+     "2021": [
+      2,
+      -1.1
+     ],
+     "2022": [
+      5,
+      -0.235
+     ],
+     "2023": [
+      14,
+      -0.293
+     ]
+    }
+   },
+   "status": "FAIL",
+   "vs_immediate": -0.3382
+  },
+  {
+   "id": "PSP-P2_failed_reclaim-rr3.0",
+   "m": {
+    "n": 11
+   },
+   "status": "SPARSE"
+  },
+  {
+   "id": "PSP-P3_lower_high-rr3.0",
+   "m": {
+    "n": 19,
+    "WR": 0.053,
+    "avgR": -0.353,
+    "medR": -1.029,
+    "pf": 0.571,
+    "b5rem": -0.5387,
+    "b10rem": -0.5387,
+    "top10": 999,
+    "medTP": 224.2,
+    "medSL": 74.7,
+    "temporal": {
+     "2021": [
+      1,
+      -1.055
+     ],
+     "2022": [
+      4,
+      -0.025
+     ],
+     "2023": [
+      14,
+      -0.396
+     ]
+    }
+   },
+   "status": "FAIL",
+   "vs_immediate": -0.3352
+  },
+  {
+   "id": "PSP-P5_pull_disp-rr3.0",
+   "m": {
+    "n": 11
+   },
+   "status": "SPARSE"
+  }
+ ],
+ "parents": 21,
+ "survivors": []
+}
