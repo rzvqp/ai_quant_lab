@@ -433,7 +433,7 @@
     "CAND-G0163",
     "CAND-G0164"
   ],
-  "m_total": 357,
+  "m_total": 363,
   "family_budget": {
     "max_candidates_per_cycle": 4,
     "max_variants_per_hypothesis": 2,
@@ -458,39 +458,39 @@
       "recent_trimmed": 0.3292,
       "recent_gross_EV": 0.4206,
       "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 1.0
+      "surviving_frac": 0.76,
+      "n_variants": 41,
+      "n_surviving": 31
     },
     {
-      "mechanism_id": "trend_up_pullback3|TREND_UP|pullback",
-      "representative": "CAND-G0027",
-      "recent_trimmed": 0.2936,
-      "recent_gross_EV": 0.5549,
-      "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.79
-    },
-    {
-      "mechanism_id": "trend_up_pullback2|TREND_UP|pullback",
-      "representative": "CAND-G0017",
-      "recent_trimmed": 0.1873,
-      "recent_gross_EV": 0.2689,
-      "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.7
-    },
-    {
-      "mechanism_id": "trend_up_continuation|TREND_UP|continuation",
+      "mechanism_id": "TREND_UP|continuation",
       "representative": "CAND-G0168",
       "recent_trimmed": 0.0641,
       "recent_gross_EV": 0.083,
       "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.6
+      "surviving_frac": 0.6,
+      "n_variants": 20,
+      "n_surviving": 12
     },
     {
-      "mechanism_id": "trend_up_momentum|TREND_UP|momentum",
+      "mechanism_id": "TREND_UP|momentum",
       "representative": "CAND-G0059",
       "recent_trimmed": 0.0592,
       "recent_gross_EV": 0.0852,
       "status": "GROSS_ONLY_AWAITING_COST",
-      "surviving_frac": 0.6
+      "surviving_frac": 0.6,
+      "n_variants": 20,
+      "n_surviving": 12
+    },
+    {
+      "mechanism_id": "BREAKOUT_TRANSITION|breakout",
+      "representative": "CAND-G0163",
+      "recent_trimmed": 0.049,
+      "recent_gross_EV": 0.068,
+      "status": "GROSS_ONLY_AWAITING_COST",
+      "surviving_frac": 0.17,
+      "n_variants": 30,
+      "n_surviving": 5
     }
   ],
   "AWAITING_COST_QUEUE": [
@@ -565,11 +565,10 @@
     "note": "changing a snapshot => new run_hash, results NON_COMPARABLE"
   },
   "IMPLEMENTATION_QUEUE": [
-    "EXIT_ON_REGIME_INVALIDATION :: IMPLEMENTATION_BLOCKED_MISSING_PRIMITIVE (no regime-state exit in canonical menu + per-bar N1 regime blocked)",
-    "session-conditioned :: SPEC_READY EVALUATION_DEFERRED (distinctness gate)",
-    "volatility-conditioned :: SPEC_READY EVALUATION_DEFERRED (distinctness gate)",
-    "breakout-continuation :: SPEC_READY DISTINCTNESS_CONTESTED",
-    "compression-to-expansion :: POTENTIAL_DUPLICATE of comp_break"
+    "EXIT_ON_REGIME_INVALIDATION (needs dynamic regime-exit in simulator)",
+    "session-conditioned continuation (needs session eligibility x trend)",
+    "volatility-conditioned trend (needs vol-regime gate)",
+    "acceptance/value-area entries (needs new detector)"
   ],
   "ROUTER_PARITY": {
     "verdict": "REGIME_CLASSIFIER_NONCANONICAL",
@@ -599,5 +598,282 @@
     "rerun_manifest": "reports/N1_RERUN_MANIFEST.json (355 flagged needs_n1_rerun=TRUE; 62 needs_cost_rerun; no rerun executed)",
     "impl_queue_specs": "reports/IMPLEMENTATION_QUEUE_SPECS.md (spec-only, m unchanged)"
   },
-  "m_unchanged_by_specs": true
+  "m_unchanged_by_specs": true,
+  "N1_HANDOFF_RERUN": {
+    "authorization": "RT-N1-0001 N1_HANDOFF_PASS (Red Team 5352570)",
+    "phase1_install": "PASS \u2014 SHA-256 exact (ve_n1_replay 372b35f9, ve_brain edd208ad); isolated venv .alpha_n1_venv; ve_tower NOT importable; hermetic vendored _ai",
+    "phase1_smoke_parity": "PASS \u2014 TREND_UP/DOWN/UNCERTAIN/BOS/live=replay/snapshot-restore/duplicate-idempotent/out-of-order-rejected",
+    "phase2_status": "ALPHA_RERUN_BLOCKED_N1_REPLAY_PERFORMANCE",
+    "blocker": "engine recomputes full history per bar (O(n^2)+); 355696-bar replay ~20+ days, infeasible; measured 2.87/18.3/54.6 ms marginal at history 200/600/1000",
+    "fix_is_feasible": "windowed W>=500 byte-identical to full history (proven) -> an incremental rolling-buffer engine would be O(n*W), exact",
+    "requested": "ve_n1_replay>=0.1.1 incremental bounded-window mode, OR authorization for windowed/long background job",
+    "cost_model_located": "AI_TRADER_SHADOW_COST_MODEL_v1 RATIFIED (BASE 0.05, STRESS 0.24, cfg b7bb9a9aed17a1c8, content 1341f228, SE UNAVAILABLE) \u2014 ready to bind",
+    "reports": [
+      "reports/n1_rerun/N1_INSTALL_AND_PARITY_VERIFICATION.md",
+      "reports/n1_rerun/N1_RERUN_FEASIBILITY_BLOCKER.md"
+    ],
+    "preserved": {
+      "m_total": 357,
+      "hypotheses": 355,
+      "tombstones": 16,
+      "oos_access": 0,
+      "old_results": "NOT promoted/compared/relabeled"
+    }
+  },
+  "STATUS": "ALPHA_HISTORICAL_REREVIEW_WAVE2_COMPLETE",
+  "STATUS_ts": "2026-08-21",
+  "CANONICAL_RERUN": {
+    "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
+    "ledger": {
+      "key": "0ca1ad1f940ebab8",
+      "eval_fp": "64414829e2ea080b",
+      "bars": 355696,
+      "build_s": 1121.9,
+      "zero_lookahead": "OK",
+      "snapshot_restore": "OK",
+      "horizon": 460,
+      "breakout_transition_bars": 0
+    },
+    "total": 355,
+    "evaluated": 341,
+    "blocked_unresolved": 14,
+    "net_verdict": {
+      "ARCHIVE_INSUFFICIENT": 133,
+      "NET_STRUCTURALLY_NEGATIVE_GROSS": 119,
+      "RECENT_REGIME_NET_PROVISIONAL": 41,
+      "CANONICAL_PROVISIONAL_SURVIVOR": 31,
+      "NET_FAT_TAIL_DEPENDENT": 17,
+      "RERUN_BLOCKED_UNRESOLVED_SPEC": 14
+    },
+    "survive_BASE": 72,
+    "survive_BASE_die_STRESS": 6,
+    "shortlist": [
+      "TREND_UP|pullback (G0037 EV_BASE +0.271 STRESS +0.238)",
+      "TREND_UP|continuation (G0184 +0.129)",
+      "TREND_UP|momentum (G0059 +0.116)"
+    ],
+    "cost_model": "AI_TRADER_SHADOW_COST_MODEL_v1 RATIFIED (BASE 0.05 STRESS 0.24, cfg b7bb9a9aed17a1c8)",
+    "m_total_unchanged": 357,
+    "oos_access": 0,
+    "sealed_untouched": true,
+    "report": "reports/n1_rerun/CANONICAL_SCREENING_REPORT.md"
+  },
+  "n_generated_total": 363,
+  "n_guards": 118,
+  "COMBINED_WAVE": {
+    "range_ledger": {
+      "ve_n1_replay_version": "0.2.0",
+      "wheel_sha256": "04b96a8b78b2d09bd8b54bd8044058282c6ab24bf2ac0f2aaec6c1f7a278786f",
+      "ve_brain": "0.1.3",
+      "detector": "61cbd58c",
+      "range_state_contract": "range-state-v1",
+      "range_event_contract": "range-events-v1",
+      "primary_rule": "n_touch=2,tol_atr=0.25,er_max=0.40,d_min_bars=96,n_acceptance=2,width_filter=off,RANGE_STATE_OVER_TREND_PAUSE",
+      "replay_batch_seconds": 2068.3,
+      "zero_lookahead": "OK",
+      "accepted_xor_failed": "OK(0 same-bar)",
+      "reproduced_runs": 2,
+      "occupancy_verified_eras": [
+        "2011-12: 23 EST",
+        "2017-18: 0 EST",
+        "2024: 1 EST"
+      ]
+    },
+    "occupancy": {
+      "established_bars": 23,
+      "established_frac": 6.466e-05,
+      "forming_bars": 355643,
+      "event_counts": {
+        "RANGE_MID": 118,
+        "BREAKOUT_CANDIDATE": 1,
+        "BREAKOUT_ACCEPTED": 1,
+        "BREAKOUT_RETEST": 1,
+        "RANGE_HIGH_REJECTION": 0,
+        "RANGE_LOW_REJECTION": 0,
+        "FAILED_BREAKOUT": 0,
+        "LIQUIDITY_SWEEP_REVERSAL": 0
+      },
+      "n_guards": 118,
+      "accepted_xor_failed_disjoint": true
+    },
+    "n_generated_before": 357,
+    "n_generated_after": 363,
+    "f_families_added": 6,
+    "m_inference_untouched": 26,
+    "breakout_relabeled": 44,
+    "report": "reports/combined_wave/COMBINED_DISCOVERY_REPORT.md"
+  },
+  "ALPHA_DISCOVERY_STAGE1": {
+    "mandate": "ALPHA-DISCOVERY-STAGE1-PLANNING-001",
+    "ve_handoff_consumed": true,
+    "ve_closure": "6120b5d",
+    "v4_4_commit": "3bb61cf",
+    "v4_4_config_id": "23d98c07488913c1c99a7397b2f8791f4727115e04bdefc283fb6bfc4a468969",
+    "v4_4_frozen_verified": "diff 3bb61cf..HEAD empty; config_id match",
+    "states": [
+      "ALPHA_DISCOVERY_STAGE_1_OPEN",
+      "ALPHA_DISCOVERY_STAGE_1_PLAN_READY",
+      "READY_FOR_CEO_ALPHA_WAVE_1_AND_AUTONOMOUS_LOOP_DECISION"
+    ],
+    "n_hypotheses": 17,
+    "regime_classes": [
+      "TREND_UP",
+      "TREND_DOWN",
+      "RANGE",
+      "TRANSITION",
+      "REGIME_INDEPENDENT"
+    ],
+    "wave_1": [
+      "H14 session",
+      "H05 breakdown-acceptance",
+      "H11 displacement+acceptance",
+      "H02 failed-bearish-counter",
+      "H08 boundary-rejection"
+    ],
+    "open_risks": [
+      "STRESS cost def ruling (mandate spread 0.08 vs manifest round-trip 0.24)",
+      "V4.4 CONFIRMED occupancy unknown",
+      "short-side alpha may not exist"
+    ],
+    "executed": false,
+    "broker": "DISABLED",
+    "report": "ALPHA_DISCOVERY_STAGE1_PLAN.md"
+  },
+  "ALPHA_CAMPAIGN": {
+    "mandate": "ALPHA-DISCOVERY-AUTONOMOUS-CAMPAIGN-001",
+    "wave1": "COMPLETE",
+    "wave1_survivors": [
+      "H11 displacement+acceptance"
+    ],
+    "wave1_failed": [
+      "H14",
+      "H05",
+      "H08"
+    ],
+    "wave1_insufficient": [
+      "H02"
+    ],
+    "v44_dev_confirmed_frac": 0.0554,
+    "final_holdout_access": 0,
+    "cost": "RATIFIED BASE 0.05 / STRESS 0.24",
+    "checkpoint": "reports/alpha_discovery/ALPHA_WAVE1_CHECKPOINT.md",
+    "status": "ALPHA_DISCOVERY_AUTONOMOUS_CAMPAIGN_COMPLETE",
+    "total_ids": 35,
+    "early_stopped_at": 35,
+    "hard_max": 200,
+    "robust_survivors": 1,
+    "alpha_candidates": 1,
+    "candidate": "ALPHA_CANDIDATE-001 displacement+acceptance (trend-conditioned, fat-tail caveat)",
+    "families_tested": 17,
+    "validation_consumed": 0,
+    "report": "reports/alpha_discovery/ALPHA_DISCOVERY_AUTONOMOUS_CAMPAIGN_REPORT.md"
+  },
+  "HISTORICAL_INVENTORY": {
+    "mandate": "ALPHA-HISTORICAL-CANDIDATE-INVENTORY-001",
+    "type": "DOCUMENTATION_ONLY",
+    "historical_candidate_count": 45,
+    "s_family": 17,
+    "discovery_candidates": 28,
+    "current_stage1_candidates": 1,
+    "total_known_non_rejected": 33,
+    "worth_reviewing": [
+      "S5 opening-range",
+      "S9 MTF-trend x2",
+      "S20 hybrid",
+      "DC-0003",
+      "DC-0008",
+      "DC-0004(contaminated)",
+      "S1 sweep-MR"
+    ],
+    "do_not_reopen": [
+      "DC-0006/0010/0015/0017/0022/0024/0025 (RT REJECTED)",
+      "6 A_fragile S-family",
+      "C_11418358 val_exp<0"
+    ],
+    "final_holdout_access": 0,
+    "report": "ALPHA_HISTORICAL_CANDIDATE_INVENTORY.md",
+    "next_status": "READY_FOR_CEO_CANDIDATE_PORTFOLIO_REVIEW"
+  },
+  "HISTORICAL_REREVIEW_WAVE1": {
+    "mandate": "ALPHA-HISTORICAL-REREVIEW-WAVE1-001",
+    "survivor": [
+      "S5 opening-range momentum (CONFIRMED, B+0.063/S+0.031, independent of C-001 jaccard 0.026)"
+    ],
+    "fail": [
+      "S1-swing liquidity-sweep MR (B-0.068)"
+    ],
+    "migration_required": [
+      "S9 x2",
+      "S20",
+      "S1-PDH x2",
+      "DC-0003",
+      "DC-0008"
+    ],
+    "governance_paused": [
+      "DC-0004"
+    ],
+    "key_finding": "HTF/PDH S-family native window (2023+) = current VALIDATION partition; clean DEV replay needs HTF-context migration (not executed, no VALIDATION consumed)",
+    "final_holdout_access": 0,
+    "report": "reports/alpha_discovery/ALPHA_HISTORICAL_REREVIEW_WAVE1_REPORT.md",
+    "next": "READY_FOR_CEO_ALPHA_PORTFOLIO_DECISION"
+  },
+  "DEEP_RESEARCH_S5_C001": {
+    "mandate": "ALPHA-PORTFOLIO-S5-C001-DEEP-RESEARCH-001",
+    "S5": "DEEP_RESEARCH_PASS (BASE+0.064/STRESS+0.032; legitimate positive skew best-1%-removed +0.036; DEV+0.062 & CALIB+0.080; regime-agnostic; long-only; independent of C-001)",
+    "candidate001_v1": "DEEP_RESEARCH_FAIL (UNSTABLE_OUTLIER_DEPENDENCE: best-1%-removed -0.058, CALIB -0.030)",
+    "overlap": "INDEPENDENT (jaccard 0.025, daily P&L corr 0.128)",
+    "validation_access": 0,
+    "final_holdout_access": 0,
+    "calibration_used": "2020-01..2022-01",
+    "next": "CANDIDATE_SPECIFICATIONS_READY_FOR_VALIDATION_DECISION (S5 only)",
+    "report": "reports/alpha_discovery/ALPHA_S5_C001_DEEP_RESEARCH_REPORT.md"
+  },
+  "PROTREND_DISCOVERY": {
+    "mandate": "ALPHA-XAUUSD-PROTREND-DISCOVERY-001",
+    "tested": 44,
+    "hard_max": 150,
+    "fast_survivors": [
+      "PT-C-bo50-UP (fails deep tail robustness: best-1%-removed -0.015, outlier-dependent, related to breakout family)"
+    ],
+    "robust_candidates": 0,
+    "cost_fragile": [
+      "PT-C-bo20-UP",
+      "PT-A-pb4-DOWN (B+0.148 gross, STRESS-neg)"
+    ],
+    "key_findings": [
+      "most pro-trend continuation dies at STRESS on M15",
+      "N1 trend gate mostly does not add value",
+      "short-side structurally weaker"
+    ],
+    "s5_remains_only_robust_alpha": true,
+    "validation_access": 0,
+    "final_holdout_access": 0,
+    "report": "reports/alpha_discovery/ALPHA_XAUUSD_PROTREND_DISCOVERY_REPORT.md"
+  },
+  "HISTORICAL_REREVIEW_WAVE2": {
+    "mandate": "ALPHA-HISTORICAL-REREVIEW-WAVE2-001",
+    "integrity": "DEVELOPMENT_POPULATION_INTEGRITY_RECONCILED -- Wave1/DeepResearch used non-gated 160888 (incl 2013-2016 gap); corrected to gated 105255 via VE migration ed57853 (25/25 tests)",
+    "gated_dev_bars": 105255,
+    "sha256_ohlc": "47c9b16ba77bcbaf",
+    "survivors": [
+      "S5 (PASS reproduced, stronger: B+0.089/S+0.055)",
+      "S20 (NEW CONFIRMED: B+0.153/S+0.069)"
+    ],
+    "survivors_independent": "S5 vs S20 jaccard 0.047 INDEPENDENT",
+    "cost_fragile": [
+      "S9 v1",
+      "S1-PDH v1 (B+0.15 STRESS -0.005)",
+      "S1-PDH v2"
+    ],
+    "fail_reproduced": [
+      "Candidate-001 V1 (outlier-dep best1_rem -0.014)",
+      "S1-swing",
+      "S9 v2"
+    ],
+    "s5_status": "S5_DEEP_RESEARCH_PASS_REPRODUCED (firewall lifted -> may proceed to fresh S5 validation)",
+    "validation_access": 0,
+    "final_holdout_access": 0,
+    "report": "reports/alpha_discovery/ALPHA_HISTORICAL_REREVIEW_WAVE2_REPORT.md",
+    "next": "READY_FOR_CEO_ALPHA_PORTFOLIO_DECISION (S5 + S20 to independent validation)"
+  }
 }

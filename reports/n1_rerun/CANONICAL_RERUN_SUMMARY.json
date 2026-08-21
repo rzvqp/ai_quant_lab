@@ -1,0 +1,167 @@
+{
+  "total": 355,
+  "net_verdict_distribution": {
+    "RERUN_BLOCKED_UNRESOLVED_SPEC": 14,
+    "RECENT_REGIME_NET_PROVISIONAL": 41,
+    "NET_STRUCTURALLY_NEGATIVE_GROSS": 119,
+    "NET_FAT_TAIL_DEPENDENT": 17,
+    "ARCHIVE_INSUFFICIENT": 133,
+    "CANONICAL_PROVISIONAL_SURVIVOR": 31
+  },
+  "eliminations": {
+    "NET_STRUCTURALLY_NEGATIVE_GROSS": 119,
+    "COST_BASE_FALSIFIED": 0,
+    "ARCHIVE_INSUFFICIENT_incl_low_power": 133,
+    "NET_FAT_TAIL_DEPENDENT": 17,
+    "RERUN_BLOCKED_UNRESOLVED_SPEC": 14,
+    "RERUN_ERROR": 0,
+    "survive_BASE": 72,
+    "survive_BASE_but_die_STRESS": 6
+  },
+  "shortlist": [
+    {
+      "mechanism_id": "TREND_UP|pullback",
+      "n_variants": 57,
+      "n_surviving": 34,
+      "surviving_frac": 0.6,
+      "representative": "CAND-G0037",
+      "rep_recent_trimmed_BASE": 0.1924,
+      "rep_recent_EV_BASE": 0.2706,
+      "rep_recent_EV_STRESS": 0.2376,
+      "rep_walk_forward": [
+        0.162,
+        0.481,
+        0.161
+      ],
+      "rep_max_dd": -17.91,
+      "rep_best_episode_share": 0.069,
+      "rep_mde_BASE": 0.1738,
+      "rep_hist_transfer_BASE": 0.0167
+    },
+    {
+      "mechanism_id": "TREND_UP|continuation",
+      "n_variants": 35,
+      "n_surviving": 22,
+      "surviving_frac": 0.63,
+      "representative": "CAND-G0184",
+      "rep_recent_trimmed_BASE": 0.0989,
+      "rep_recent_EV_BASE": 0.1285,
+      "rep_recent_EV_STRESS": 0.0936,
+      "rep_walk_forward": [
+        0.061,
+        0.126,
+        0.196
+      ],
+      "rep_max_dd": -31.8,
+      "rep_best_episode_share": 0.062,
+      "rep_mde_BASE": 0.11091,
+      "rep_hist_transfer_BASE": 0.0001
+    },
+    {
+      "mechanism_id": "TREND_UP|momentum",
+      "n_variants": 35,
+      "n_surviving": 16,
+      "surviving_frac": 0.46,
+      "representative": "CAND-G0059",
+      "rep_recent_trimmed_BASE": 0.0858,
+      "rep_recent_EV_BASE": 0.1155,
+      "rep_recent_EV_STRESS": 0.0783,
+      "rep_walk_forward": [
+        -0.019,
+        0.162,
+        0.204
+      ],
+      "rep_max_dd": -35.4,
+      "rep_best_episode_share": 0.065,
+      "rep_mde_BASE": 0.11301,
+      "rep_hist_transfer_BASE": -0.0216
+    }
+  ],
+  "cluster_rank_full": [
+    {
+      "mechanism_id": "TREND_UP|pullback",
+      "n_variants": 57,
+      "n_surviving": 34,
+      "surviving_frac": 0.6,
+      "representative": "CAND-G0037",
+      "rep_recent_trimmed_BASE": 0.1924,
+      "rep_recent_EV_BASE": 0.2706,
+      "rep_recent_EV_STRESS": 0.2376,
+      "rep_walk_forward": [
+        0.162,
+        0.481,
+        0.161
+      ],
+      "rep_max_dd": -17.91,
+      "rep_best_episode_share": 0.069,
+      "rep_mde_BASE": 0.1738,
+      "rep_hist_transfer_BASE": 0.0167
+    },
+    {
+      "mechanism_id": "TREND_UP|continuation",
+      "n_variants": 35,
+      "n_surviving": 22,
+      "surviving_frac": 0.63,
+      "representative": "CAND-G0184",
+      "rep_recent_trimmed_BASE": 0.0989,
+      "rep_recent_EV_BASE": 0.1285,
+      "rep_recent_EV_STRESS": 0.0936,
+      "rep_walk_forward": [
+        0.061,
+        0.126,
+        0.196
+      ],
+      "rep_max_dd": -31.8,
+      "rep_best_episode_share": 0.062,
+      "rep_mde_BASE": 0.11091,
+      "rep_hist_transfer_BASE": 0.0001
+    },
+    {
+      "mechanism_id": "TREND_UP|momentum",
+      "n_variants": 35,
+      "n_surviving": 16,
+      "surviving_frac": 0.46,
+      "representative": "CAND-G0059",
+      "rep_recent_trimmed_BASE": 0.0858,
+      "rep_recent_EV_BASE": 0.1155,
+      "rep_recent_EV_STRESS": 0.0783,
+      "rep_walk_forward": [
+        -0.019,
+        0.162,
+        0.204
+      ],
+      "rep_max_dd": -35.4,
+      "rep_best_episode_share": 0.065,
+      "rep_mde_BASE": 0.11301,
+      "rep_hist_transfer_BASE": -0.0216
+    }
+  ],
+  "diff_vs_old_gross": {
+    "old_gross_survivors": 62,
+    "old_gross_survivors_still_canonical": 44,
+    "old_gross_survivors_lost": 18,
+    "crosstab_old_to_new": {
+      "GROSS_STRUCTURALLY_FALSIFIED -> NET_STRUCTURALLY_NEGATIVE_GROSS": 117,
+      "GROSS_STRUCTURALLY_FALSIFIED -> ARCHIVE_INSUFFICIENT": 113,
+      "RECENT_GROSS_SIGNAL_AWAITING_COST -> RECENT_REGIME_NET_PROVISIONAL": 16,
+      "GROSS_EPISODE_SURVIVOR_AWAITING_COST -> CANONICAL_PROVISIONAL_SURVIVOR": 14,
+      "GROSS_STRUCTURALLY_FALSIFIED -> RECENT_REGIME_NET_PROVISIONAL": 14,
+      "GROSS_STRUCTURALLY_FALSIFIED -> RERUN_BLOCKED_UNRESOLVED_SPEC": 13,
+      "GROSS_FAT_TAIL_DEPENDENT -> ARCHIVE_INSUFFICIENT": 11,
+      "GROSS_STRUCTURALLY_FALSIFIED -> CANONICAL_PROVISIONAL_SURVIVOR": 10,
+      "GROSS_EPISODE_SURVIVOR_AWAITING_COST -> RECENT_REGIME_NET_PROVISIONAL": 8,
+      "GROSS_FAT_TAIL_DEPENDENT -> NET_FAT_TAIL_DEPENDENT": 6,
+      "RECENT_GROSS_SIGNAL_AWAITING_COST -> CANONICAL_PROVISIONAL_SURVIVOR": 6,
+      "GROSS_EPISODE_SURVIVOR_AWAITING_COST -> ARCHIVE_INSUFFICIENT": 6,
+      "GROSS_EPISODE_SURVIVOR_AWAITING_COST -> NET_FAT_TAIL_DEPENDENT": 5,
+      "GROSS_STRUCTURALLY_FALSIFIED -> NET_FAT_TAIL_DEPENDENT": 4,
+      "GROSS_FAT_TAIL_DEPENDENT -> RECENT_REGIME_NET_PROVISIONAL": 3,
+      "RECENT_GROSS_SIGNAL_AWAITING_COST -> ARCHIVE_INSUFFICIENT": 3,
+      "RECENT_GROSS_SIGNAL_AWAITING_COST -> NET_FAT_TAIL_DEPENDENT": 2,
+      "GROSS_EPISODE_SURVIVOR_AWAITING_COST -> RERUN_BLOCKED_UNRESOLVED_SPEC": 1,
+      "RECENT_GROSS_SIGNAL_AWAITING_COST -> NET_STRUCTURALLY_NEGATIVE_GROSS": 1,
+      "GROSS_FAT_TAIL_DEPENDENT -> NET_STRUCTURALLY_NEGATIVE_GROSS": 1,
+      "GROSS_FAT_TAIL_DEPENDENT -> CANONICAL_PROVISIONAL_SURVIVOR": 1
+    }
+  }
+}

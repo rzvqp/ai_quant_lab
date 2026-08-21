@@ -1,0 +1,328 @@
+{
+  "manifest_id": "STAT-MACRO-BLIND-BATCH-03-EXECUTION-SAFE",
+  "batch_id": "RANGE_MACRO_BLIND_LABEL_BATCH_03",
+  "version": "1.0",
+  "published_date": "2026-08-20",
+  "authority": {
+    "rt_range_0013": "cc76dcc",
+    "ve_candidate": "bc6b9dc",
+    "ledger": "E88",
+    "implementation_fingerprint": "f1-only-f5-deferred-2026-08-20"
+  },
+  "protocol": "STAT-RANGE-V3-BLIND-BATCH-02-PROTOCOL-v1.0 + E6",
+  "seed_sha256": "01b7774729f85cdd4b42222582bf795359008e52ac21effcd766833a09ec2628",
+  "sampling_correction": "tightest_block_first + longest_first + uniform_over_feasible (v3, pre-registered 2026-08-20)",
+  "selection_artifact_sha256": "dd1c8f5f99a31fc9eb0e74a9a65f0207623387124a1d858ae4adf412f2a0f5d0",
+  "n_windows": 48,
+  "total_canonical_bars": 13824,
+  "length_histogram": {
+    "96": 16,
+    "288": 16,
+    "480": 16
+  },
+  "bars_sha256_recipe": "bars_sha256_v1 (RT-RANGE-0010, reprodusa 48/48)",
+  "anchor_window": "[r_start, r_end) — fereastra RANDATA, context 24+24",
+  "contains_no_timestamps": true,
+  "contains_no_ohlc": true,
+  "contains_no_canonical_indices": true,
+  "contains_no_labels": true,
+  "state": {
+    "NEW_MACRO_BLIND_BATCH_SELECTED": true,
+    "NEW_MACRO_BLIND_LABELS_FROZEN": false,
+    "NEW_MACRO_BLIND_ESCROW_SEALED": true,
+    "DETECTOR_EXECUTED_ON_NEW_BLIND": false,
+    "PREDICTIONS_FROZEN": false,
+    "BLIND_SCORE_COMPUTED": false,
+    "INDEPENDENT_SEMANTIC_BLIND": "NOT_YET_EXECUTED"
+  },
+  "windows": [
+    {
+      "id": "MB3-001",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "bccc05b397d033523712f909a9a6444cb352bcc4c2f54d52ac17c32d836af5e5"
+    },
+    {
+      "id": "MB3-002",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "c0e8e558c442691283e9a85e9969723f2c42b06622c67510defc651eed09da3f"
+    },
+    {
+      "id": "MB3-003",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "0e5cc536692f3f33eabd27a7589fbe5c455a7ca2acaea416343c1f3004a069d2"
+    },
+    {
+      "id": "MB3-004",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "28dfa641fec07bf06c7b2edeb8212c48bd0c8e81f49e3ff76effca8a26fea017"
+    },
+    {
+      "id": "MB3-005",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "50cab507fa12649d2bcea6a91e15bcec64eaad9a7593ab5d5e6d9ba732278028"
+    },
+    {
+      "id": "MB3-006",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "c086b2c3c76d84be8a666436d0702912d03e87c68f6a041005695bbc091add61"
+    },
+    {
+      "id": "MB3-007",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "1a290b6f5e8bc0fb7962b2fdedcdd0fafe5ef49a0ce1e2a49f3d733fc6d28078"
+    },
+    {
+      "id": "MB3-008",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "42398036e77006ccba6d08704a808e83cd70951d0845b44de2365e3e9d0f286f"
+    },
+    {
+      "id": "MB3-009",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "f6422dc93ed7b5b176e96d6cdb4c4e07028ca4bd9eae042f045af448c73b2240"
+    },
+    {
+      "id": "MB3-010",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "af9e260dba996a7ca844694eaa7637e51bf63b66c58ab3762d8f381f71d7b544"
+    },
+    {
+      "id": "MB3-011",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "7af72969e8fdc83d32309d004f8f137f7c84a338a93887f7f5c307d64a3419c3"
+    },
+    {
+      "id": "MB3-012",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "3c3d94df7459bd3e367e70ab21e4351cf3e11898e3e914a4a5b8169981da62f5"
+    },
+    {
+      "id": "MB3-013",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "d236cd6bc87f3fdc15f0521105ed3b9318bc02077fcfc4d945005b6c76432e0a"
+    },
+    {
+      "id": "MB3-014",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "7a56c4ede3656c630ef3d7ac0bcebc2ba5c2e9d4865df61167897cb452fcbf06"
+    },
+    {
+      "id": "MB3-015",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "59d59f28412aa8213d6da4d14dbced3b39a2a1e6285f62bb7c1f0553f881c29c"
+    },
+    {
+      "id": "MB3-016",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "ebe7ea0c2cb4d6f11d21a29d9e31e0e6932ca1d7c7943677065757dc29a1b999"
+    },
+    {
+      "id": "MB3-017",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "158693ebf1613f92043520982f34e2fe840293be41db83422dfee223aa8d0f36"
+    },
+    {
+      "id": "MB3-018",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "35d1b15dc76f83e8cfc9e302b32f2b23ade15283006d3dcf806119b8cc20df4c"
+    },
+    {
+      "id": "MB3-019",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "aaacf02101d877eebe880f00b91beb644a226516c191bd432c853a3cb877e545"
+    },
+    {
+      "id": "MB3-020",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "17c48d78ce6033d2dab201dc3ba087c1db45a5d2e605e5ed9e738284811d5993"
+    },
+    {
+      "id": "MB3-021",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "80dfe19b565b97bcca43e572446a3f02c726609cda0f199d8a5f3de805d4884b"
+    },
+    {
+      "id": "MB3-022",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "3cc00d5c6a81be352bb5e2696b7c65e9c8b2a8fa19238eb13330d6c983183605"
+    },
+    {
+      "id": "MB3-023",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "edf0a2ac8fbcd62b4cf60463940b82d36953d3f065cf206bb192cd00410bed7f"
+    },
+    {
+      "id": "MB3-024",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "a993bb078244c3cf61bdba9aa6d6201a3c2174f35791d63fa7989eaf1181fdd2"
+    },
+    {
+      "id": "MB3-025",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "da369326e2a20695e2dddbd90905ebd2504dd122aa141ecb0b98c26067d4e286"
+    },
+    {
+      "id": "MB3-026",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "afca5a6c9c2dd4173f238f5c92f31e87237374313ed7db27ae5f13fc066e9825"
+    },
+    {
+      "id": "MB3-027",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "423c24258df906c284eed3d81092b8e0796c9d864252ff099efbb031493b471a"
+    },
+    {
+      "id": "MB3-028",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "5b418a0e47960d780eca7157b485af73b0b67187b257546a5097b113082dfc48"
+    },
+    {
+      "id": "MB3-029",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "5e1488c1b56d8c03e96ca3059d348e9b5d356a534f5a6f256f8c31063fad120c"
+    },
+    {
+      "id": "MB3-030",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "93d2685ab7ca385329c0af16aa3f5d8b89efacc228668ff67c8d5041316647bd"
+    },
+    {
+      "id": "MB3-031",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "592e79a70111e1685187586610a39eae789421ad97868a0a1a439387c1c3cc3b"
+    },
+    {
+      "id": "MB3-032",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "aac7afe030890bd45c6c91485724ad7a16d2849b992a0bdf60c65e6607a5e8d5"
+    },
+    {
+      "id": "MB3-033",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "ada4ce23b1ab472f94c89b5a13f371379a943e3054cc4372004aeb3f11dfd57a"
+    },
+    {
+      "id": "MB3-034",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "d0b0d3900a35ff1cfa385f8718827cddd29147e59709470cb1ab9b1b17bdbb56"
+    },
+    {
+      "id": "MB3-035",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "9cba8e83dabe08800bf553473f1a63218e4b39b4491c43157ca7c34b04e5a120"
+    },
+    {
+      "id": "MB3-036",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "ebf0d601cf6c3f2d9b9160ed938e03e1ce7733ee98d14b61e844e682bd402c0e"
+    },
+    {
+      "id": "MB3-037",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "85cb0e7dc14b8f9eb1aa5af1ef15525914570019228ec32e3af3017a0cf729e3"
+    },
+    {
+      "id": "MB3-038",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "21d1ff65486a8ad0d02357ef1cd4cb48698cd251c75e02bec49fc880f773ca2e"
+    },
+    {
+      "id": "MB3-039",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "bca15bb19fe169285946d898cb447d39ef1b065860c7b2275ffb5522bf13ec06"
+    },
+    {
+      "id": "MB3-040",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "98ee84c201ab59cf8cda13fa6a9f3e3cbaf6c7fd8396f993dcd8e899f6d046a0"
+    },
+    {
+      "id": "MB3-041",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "8901668ac9eefeb7fc5c13a214d13eff587ac8cfc24549b5a2b51ce83f814b13"
+    },
+    {
+      "id": "MB3-042",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "8e10d1a44866dddc3b4b57f1833b178e7467cb8563e8d89bd23535da0866e0bf"
+    },
+    {
+      "id": "MB3-043",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "35e4360510edc7993336ba54cf91e867942414b04396b339ff6615864d79fee7"
+    },
+    {
+      "id": "MB3-044",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "b64821d00f0f8a0036445253aedfa39443600e4010319d733fc02b8edfcd0da9"
+    },
+    {
+      "id": "MB3-045",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "b8125a165b7ad9e8e1224ba62177076c9b356c3433924d99166b3303e6a1545b"
+    },
+    {
+      "id": "MB3-046",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "2821ab658121515b1ffefee89e48abfca84c4c7a802ff23bc71c40dab9b015ad"
+    },
+    {
+      "id": "MB3-047",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "55ac275725c3b46a98a243940eca5e84bb7ac11010b6be17c6fffe9c69d85d72"
+    },
+    {
+      "id": "MB3-048",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "dc571b74d13337c09e6a7cbd7c93550c07d5ec34bcd80eb4d2104e63d1b841bd"
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "manifest_id": "STAT-ESCROW-REPRO-MANIFEST",
+  "version": "1.0",
+  "remediates": "ESCROW-UNREPRODUCIBLE-ANCHOR (Red Team RT-RANGE-0009)",
+  "published_date": "2026-08-19",
+  "source_commits": {
+    "statistician_v43_package": "d6e599e",
+    "statistician_manifest_v2_7_94": "14d4c22",
+    "red_team_static_audit_RT_0006": "2c113ef",
+    "ve_frozen_prototype": "f224e7d",
+    "red_team_prototype_audit_RT_0007": "b7c6fa8",
+    "reproducible_runner": "82f27c0",
+    "red_team_runner_audit_RT_0008": "eb62d3e",
+    "red_team_prerun_protocol_RT_0009": "38daf9b",
+    "red_team_verdict_RT_0009": "e504fcf",
+    "red_team_scrubbed_report": "8e04dd7",
+    "ledger": "E84"
+  },
+  "source_corpus": {
+    "file": "data/market/OANDA_XAUUSD_M15.csv",
+    "sha256": "57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37",
+    "rows": 355696,
+    "git_tracked": true
+  },
+  "canonical_corpus": {
+    "rows": 197094,
+    "discovery_segments": 4,
+    "fingerprint_sha256": "af3bf2f6ffc35ba4c4f4c6da9963c06ff5c99c4952b5ab62d42218cc7b254cf3",
+    "fingerprint_convention": "identica cu bars_sha256_v1, aplicata pe tot corpusul",
+    "schema": [
+      "time:int64 (unix s, UTC)",
+      "open:float64",
+      "high:float64",
+      "low:float64",
+      "close:float64",
+      "volume:int64 (neutilizat de ancora)"
+    ],
+    "builder_version": "canonical_corpus_v1",
+    "loader": {
+      "repo_branch": "alpha-automation-v1",
+      "module": "edge_research/_common.py",
+      "entry": "load",
+      "timeframe_key": "M15_v2",
+      "split_id": "pre_holdout_2025-10-23T09-15-00Z_v1",
+      "cutoff": "2025-10-23T09:15:00Z"
+    },
+    "why_this_repo": "loaderul din ai_quant_lab-wp5b intoarce 130491 bare pentru acelasi timeframe (manifestul lui declara 3 segmente, nu 4); divergenta era deja consemnata in manifestul Statisticianului",
+    "manifest_entry_fingerprint_M15_v2": "5d1cccabc3be9784ab8164ac79303774",
+    "invariant_across_manifest_versions": [
+      "2.7.92",
+      "2.7.93",
+      "2.7.94"
+    ]
+  },
+  "bars_sha256_recipe": {
+    "version": "bars_sha256_v1",
+    "window": "[render_start, render_end) — fereastra RANDATA, semi-deschisa",
+    "field_order": [
+      "high",
+      "low",
+      "open",
+      "close"
+    ],
+    "concatenation": "pe COLOANE, nu intretesere pe randuri",
+    "scaling": "valoare * 1e6, apoi int64 (TRUNCHIERE spre zero)",
+    "bytes": "ndarray.tobytes() — 8 bytes/element, little-endian, ordine C",
+    "digest": "sha256, hex minuscul",
+    "excluded_fields": [
+      "time",
+      "volume",
+      "atr14",
+      "session",
+      "dow"
+    ],
+    "resolution": "1e-6 in pret; o perturbatie de exact 1e-6 poate fi absorbita de rotunjirea float64, de la 2e-6 detectia e ferma (un tick = 1000 unitati)",
+    "settles_open_question": "Red Team §7.2: se hashuieste fereastra RANDATA, nu cea canonica (48/48 vs 0/48)"
+  },
+  "escrow": {
+    "payload_id": "payload-b7e103a3d9b86f72.bin",
+    "payload_sha256_prefix16": "b7e103a3d9b86f72",
+    "payload_bytes": 20906,
+    "location": "IN AFARA Git — se transmite prin argument, nu prin cale codata",
+    "published_anchors_document": "statistician/BLIND_LABEL_BATCH_02_HASHES.md (ai_quant_lab, statistician-foundation)",
+    "n_windows": 48,
+    "total_bars": 13824,
+    "length_histogram": {
+      "96": 16,
+      "288": 16,
+      "480": 16
+    },
+    "corrected_lengths": {
+      "BLIND-046": 288,
+      "BLIND-047": 96,
+      "BLIND-048": 480
+    }
+  },
+  "relation_to_prior_manifests": {
+    "supersedes": null,
+    "supplements": "BLIND_LABEL_BATCH_02_HASHES.md — ancorele NU sunt inlocuite, sunt facute reproductibile",
+    "resealing_performed": false,
+    "anchors_modified": 0
+  },
+  "unreproduced_historical_anchor": {
+    "field": "window_list_sha256",
+    "value_prefix": "d9f77eea",
+    "status": "ISTORIC NEREPRODUCTIBIL — pastrat, NU inlocuit, reteta NU inventata",
+    "blocks_RT_0009_section_4": false
+  },
+  "reproduction_environment": {
+    "date": "2026-08-19",
+    "python": "3.14.6",
+    "platform": "Windows",
+    "numpy_required": true,
+    "clean_checkout_verified": true
+  },
+  "result": {
+    "anchors_reproduced": "48/48",
+    "verifier_exit_code": 0,
+    "tests_passed": 22,
+    "tests_failed": 0
+  },
+  "artefact_hashes": {
+    "canonical_corpus.py": "f300a3e983ff6fc6fb50cb1326af917ad68ed8aa6cc208015e6425caec50f628",
+    "verify_range_v43_escrow.py": "563cd2fe7c180457436d94105501597bb06da3edae19ab3cf3de25971a91f04c",
+    "test_escrow_repro.py": "733093e77e835d355bc64a08f14ad2c27f9b66b267f012a15a671956109fd3e1",
+    "BARS_SHA256_SPEC.md": "35a1638b56d8701f112b83be125cbe39233d694830856a28cc972147b48cddd7",
+    "make_manifest.py": "883a559445419c5c43ea5730988089dfcb42ad00c86bd78f9ec3db4427b4703a"
+  },
+  "package_fingerprint": {
+    "value": "f343d13b91e29aad6abb3e9aef9c4a6bbb54f758b7d60e82f256486f776f39eb",
+    "computed_over": "sha256 peste artefact_hashes serializat sortat; hashurile de artefact sunt LF-normalizate"
+  }
+}

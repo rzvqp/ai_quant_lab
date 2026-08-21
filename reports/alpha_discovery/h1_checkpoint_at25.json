@@ -1,0 +1,42 @@
+{
+  "tag": "at25",
+  "tested": 25,
+  "survived": [
+    "H1-A-pb2-LONG",
+    "H1-B-bo-acc-LONG",
+    "H1-B-bo-raw-LONG",
+    "H1-D-da-w1.0-LONG",
+    "H1-E-comp-LONG",
+    "H1-G-eff-LONG",
+    "H1-H-hllh-LONG",
+    "H1-L-accel-LONG",
+    "H1-A-pb2-SHORT",
+    "H1-B-bo-acc-SHORT",
+    "H1-B-bo-raw-SHORT",
+    "H1-C-bo-retest-SHORT",
+    "H1-D-da-w1.0-SHORT",
+    "H1-D-da-w1.5-SHORT",
+    "H1-E-comp-SHORT",
+    "H1-F-failcnt-SHORT",
+    "H1-G-consec3-SHORT",
+    "H1-G-consec4-SHORT"
+  ],
+  "cost_fragile": 3,
+  "failed": 4,
+  "sparse": 0,
+  "families": {
+    "A_pullback": 4,
+    "B_breakout_accept": 4,
+    "C_breakout_retest": 2,
+    "D_disp_accept": 4,
+    "E_compression": 2,
+    "F_failed_counter": 2,
+    "G_momentum": 5,
+    "H_structure": 1,
+    "L_acceleration": 1
+  },
+  "LONG": 14,
+  "SHORT": 11,
+  "validation_access": 0,
+  "final_holdout_access": 0
+}

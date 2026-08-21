@@ -1,0 +1,27 @@
+{
+  "tag": "at25",
+  "tested": 25,
+  "survived": [
+    "PT-C-bo50-UP"
+  ],
+  "cost_fragile": 2,
+  "failed": 22,
+  "sparse": 0,
+  "families": {
+    "A_pullback": 7,
+    "B_disp_accept": 4,
+    "C_breakout": 4,
+    "D_flag": 1,
+    "E_struct_retest": 1,
+    "F_failed_counter": 1,
+    "G_momentum": 4,
+    "H_vol_expansion": 1,
+    "K_acceleration": 1,
+    "J_session": 1
+  },
+  "LONG": 22,
+  "SHORT": 3,
+  "calibration_used": "on survivors only",
+  "validation_access": 0,
+  "final_holdout_access": 0
+}

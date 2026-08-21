@@ -1,0 +1,36 @@
+{
+ "candidate": "PT-C-bo50-UP (50-bar high breakout, LONG, N1 TREND_UP gated, hold 40)",
+ "baseline": {
+  "BASE": 0.0247,
+  "STRESS": 0.003,
+  "n": 2158,
+  "win": 0.481
+ },
+ "per_block": {
+  "DEV": 0.022,
+  "CALIB": 0.0219
+ },
+ "tail": {
+  "median": -0.026,
+  "top1_share": 1.597,
+  "exp_rem_top1": -0.0149,
+  "exp_rem_top2": -0.0413,
+  "exp_rem_top5": -0.0995
+ },
+ "param_lb": {
+  "40": 0.0236,
+  "50": 0.0247,
+  "60": 0.017,
+  "70": 0.0063
+ },
+ "hold": {
+  "30": 0.0132,
+  "40": 0.0247,
+  "60": 0.0292
+ },
+ "s5_overlap": {
+  "jaccard": 0.09,
+  "simultaneous": 1534,
+  "classification": "INDEPENDENT"
+ }
+}

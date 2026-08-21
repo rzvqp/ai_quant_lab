@@ -1,0 +1,32 @@
+{
+  "tag": "final",
+  "generated": 24,
+  "tested": 24,
+  "failed": 17,
+  "event_sparse": 0,
+  "survivors": [
+    "C-TU-exhaustion",
+    "C-TR-da-w08-a2",
+    "C-TR-da-w10-a2",
+    "C-TR-da-w12-a2",
+    "C-TR-da-w10-a3",
+    "C-TR-volexp",
+    "C-TR-choch"
+  ],
+  "families": {
+    "pullback": 5,
+    "momentum": 2,
+    "continuation": 2,
+    "compression-accel": 2,
+    "exhaustion": 2,
+    "displacement-acceptance": 4,
+    "vol-expansion": 1,
+    "structural-reversal": 1,
+    "boundary-fade": 1,
+    "range-breakout": 1,
+    "vol-asymmetry": 1,
+    "conditional-momentum": 2
+  },
+  "final_holdout_access": 0,
+  "validation_consumed": 0
+}
