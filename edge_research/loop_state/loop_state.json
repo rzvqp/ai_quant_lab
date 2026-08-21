@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "READY_FOR_CEO_ALPHA_SURVIVOR_REVIEW",
+  "STATUS": "ALPHA_HISTORICAL_CANDIDATE_INVENTORY_COMPLETE",
   "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -767,5 +767,31 @@
     "families_tested": 17,
     "validation_consumed": 0,
     "report": "reports/alpha_discovery/ALPHA_DISCOVERY_AUTONOMOUS_CAMPAIGN_REPORT.md"
+  },
+  "HISTORICAL_INVENTORY": {
+    "mandate": "ALPHA-HISTORICAL-CANDIDATE-INVENTORY-001",
+    "type": "DOCUMENTATION_ONLY",
+    "historical_candidate_count": 45,
+    "s_family": 17,
+    "discovery_candidates": 28,
+    "current_stage1_candidates": 1,
+    "total_known_non_rejected": 33,
+    "worth_reviewing": [
+      "S5 opening-range",
+      "S9 MTF-trend x2",
+      "S20 hybrid",
+      "DC-0003",
+      "DC-0008",
+      "DC-0004(contaminated)",
+      "S1 sweep-MR"
+    ],
+    "do_not_reopen": [
+      "DC-0006/0010/0015/0017/0022/0024/0025 (RT REJECTED)",
+      "6 A_fragile S-family",
+      "C_11418358 val_exp<0"
+    ],
+    "final_holdout_access": 0,
+    "report": "ALPHA_HISTORICAL_CANDIDATE_INVENTORY.md",
+    "next_status": "READY_FOR_CEO_CANDIDATE_PORTFOLIO_REVIEW"
   }
 }
