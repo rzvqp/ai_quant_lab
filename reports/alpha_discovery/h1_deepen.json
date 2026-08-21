@@ -1,0 +1,1136 @@
+{
+ "H1-A-pb2-LONG": {
+  "family": "A_pullback",
+  "direction": "LONG",
+  "mechanism": "H1 pullback depth2",
+  "STRESS": {
+   "n": 726,
+   "avg_R": 0.0391,
+   "win": 0.336,
+   "median": -1.042,
+   "pf": 1.058,
+   "best1_rem": -0.0714,
+   "best2_rem": -0.139,
+   "best5_rem": -0.3146,
+   "best10_rem": -0.5012,
+   "top1_share": 2.808,
+   "pb_avg": {
+    "b0": -0.0185,
+    "b1": 0.0895
+   },
+   "by_year": {
+    "2011": 17.9,
+    "2012": -29.6,
+    "2013": 5.4,
+    "2016": 18.2,
+    "2017": 14.8,
+    "2018": 1.7
+   },
+   "max_year_share": 0.64,
+   "med_risk": 2.94
+  },
+  "BASE_tail": {
+   "best5_rem": -0.2422,
+   "best10_rem": -0.4286
+  },
+  "CALIB_stress": {
+   "n": 216,
+   "avg_R": -0.0588
+  },
+  "exec_delay1": {
+   "avg_R": -0.0078
+  },
+  "exec_floor15": {
+   "avg_R": 0.0391
+  },
+  "turnover_per1k": 27.28,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": false,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-B-bo-acc-LONG": {
+  "family": "B_breakout_accept",
+  "direction": "LONG",
+  "mechanism": "H1 20-breakout + acceptance",
+  "STRESS": {
+   "n": 217,
+   "avg_R": 0.0477,
+   "win": 0.535,
+   "median": 0.055,
+   "pf": 1.315,
+   "best1_rem": 0.0319,
+   "best2_rem": 0.0207,
+   "best5_rem": -0.0067,
+   "best10_rem": -0.0454,
+   "top1_share": 0.336,
+   "pb_avg": {
+    "b0": -0.0039,
+    "b1": 0.0969
+   },
+   "by_year": {
+    "2011": -1.4,
+    "2012": 1.6,
+    "2013": -0.6,
+    "2016": 5.5,
+    "2017": 6.4,
+    "2018": -1.1
+   },
+   "max_year_share": 0.619,
+   "med_risk": 18.208
+  },
+  "BASE_tail": {
+   "best5_rem": 0.0048,
+   "best10_rem": -0.034
+  },
+  "CALIB_stress": {
+   "n": 54,
+   "avg_R": -0.0505
+  },
+  "exec_delay1": {
+   "avg_R": 0.0336
+  },
+  "exec_floor15": {
+   "avg_R": 0.0477
+  },
+  "turnover_per1k": 8.15,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-B-bo-raw-LONG": {
+  "family": "B_breakout_accept",
+  "direction": "LONG",
+  "mechanism": "H1 20-breakout raw",
+  "STRESS": {
+   "n": 370,
+   "avg_R": 0.0286,
+   "win": 0.489,
+   "median": -0.013,
+   "pf": 1.147,
+   "best1_rem": 0.0107,
+   "best2_rem": -0.0065,
+   "best5_rem": -0.0463,
+   "best10_rem": -0.0954,
+   "top1_share": 0.629,
+   "pb_avg": {
+    "b0": -0.0088,
+    "b1": 0.0604
+   },
+   "by_year": {
+    "2011": 4.2,
+    "2012": -3.6,
+    "2013": -2.1,
+    "2016": 4.7,
+    "2017": 8.7,
+    "2018": -1.3
+   },
+   "max_year_share": 0.822,
+   "med_risk": 15.646
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0331,
+   "best10_rem": -0.0823
+  },
+  "CALIB_stress": {
+   "n": 92,
+   "avg_R": -0.0863
+  },
+  "exec_delay1": {
+   "avg_R": 0.0194
+  },
+  "exec_floor15": {
+   "avg_R": 0.0286
+  },
+  "turnover_per1k": 13.9,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-D-da-w1.0-LONG": {
+  "family": "D_disp_accept",
+  "direction": "LONG",
+  "mechanism": "H1 disp>=1.0ATR + accept (NEW id)",
+  "STRESS": {
+   "n": 239,
+   "avg_R": 0.0502,
+   "win": 0.473,
+   "median": -0.068,
+   "pf": 1.152,
+   "best1_rem": 0.0162,
+   "best2_rem": -0.0133,
+   "best5_rem": -0.0961,
+   "best10_rem": -0.1894,
+   "top1_share": 0.68,
+   "pb_avg": {
+    "b0": -0.0597,
+    "b1": 0.1521
+   },
+   "by_year": {
+    "2011": 3.7,
+    "2012": -5.5,
+    "2013": -5.1,
+    "2016": 16.1,
+    "2017": 5.9,
+    "2018": -3.2
+   },
+   "max_year_share": 1.343,
+   "med_risk": 9.068
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0711,
+   "best10_rem": -0.1647
+  },
+  "CALIB_stress": {
+   "n": 59,
+   "avg_R": 0.103
+  },
+  "exec_delay1": {
+   "avg_R": -0.038
+  },
+  "exec_floor15": {
+   "avg_R": 0.0502
+  },
+  "turnover_per1k": 8.98,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": false,
+   "exec_ok": false,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-E-comp-LONG": {
+  "family": "E_compression",
+  "direction": "LONG",
+  "mechanism": "H1 compression->expansion",
+  "STRESS": {
+   "n": 206,
+   "avg_R": 0.0481,
+   "win": 0.34,
+   "median": -1.025,
+   "pf": 1.08,
+   "best1_rem": -0.0221,
+   "best2_rem": -0.0874,
+   "best5_rem": -0.2329,
+   "best10_rem": -0.4028,
+   "top1_share": 1.455,
+   "pb_avg": {
+    "b0": -0.1328,
+    "b1": 0.3004
+   },
+   "by_year": {
+    "2011": 4.6,
+    "2012": -17.5,
+    "2013": -3.0,
+    "2016": 9.0,
+    "2017": 21.8,
+    "2018": -4.9
+   },
+   "max_year_share": 2.2,
+   "med_risk": 4.448
+  },
+  "BASE_tail": {
+   "best5_rem": -0.1891,
+   "best10_rem": -0.3597
+  },
+  "CALIB_stress": {
+   "n": 59,
+   "avg_R": -0.162
+  },
+  "exec_delay1": {
+   "avg_R": 0.0284
+  },
+  "exec_floor15": {
+   "avg_R": 0.0481
+  },
+  "turnover_per1k": 7.74,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": false,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-G-eff-LONG": {
+  "family": "G_momentum",
+  "direction": "LONG",
+  "mechanism": "H1 path-efficiency",
+  "STRESS": {
+   "n": 858,
+   "avg_R": 0.0831,
+   "win": 0.441,
+   "median": -0.235,
+   "pf": 1.168,
+   "best1_rem": 0.0242,
+   "best2_rem": -0.0241,
+   "best5_rem": -0.1256,
+   "best10_rem": -0.2644,
+   "top1_share": 0.711,
+   "pb_avg": {
+    "b0": 0.0069,
+    "b1": 0.1475
+   },
+   "by_year": {
+    "2011": 14.8,
+    "2012": -4.6,
+    "2013": -7.5,
+    "2016": 11.1,
+    "2017": 54.4,
+    "2018": 3.1
+   },
+   "max_year_share": 0.763,
+   "med_risk": 3.92
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0739,
+   "best10_rem": -0.2136
+  },
+  "CALIB_stress": {
+   "n": 248,
+   "avg_R": -0.177
+  },
+  "exec_delay1": {
+   "avg_R": 0.0504
+  },
+  "exec_floor15": {
+   "avg_R": 0.0831
+  },
+  "turnover_per1k": 32.24,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-H-hllh-LONG": {
+  "family": "H_structure",
+  "direction": "LONG",
+  "mechanism": "H1 HL/LH structure continuation",
+  "STRESS": {
+   "n": 626,
+   "avg_R": 0.0045,
+   "win": 0.358,
+   "median": -0.671,
+   "pf": 1.008,
+   "best1_rem": -0.081,
+   "best2_rem": -0.1449,
+   "best5_rem": -0.2926,
+   "best10_rem": -0.4464,
+   "top1_share": 19.017,
+   "pb_avg": {
+    "b0": -0.11,
+    "b1": 0.1118
+   },
+   "by_year": {
+    "2011": 0.7,
+    "2012": -11.1,
+    "2013": -23.0,
+    "2016": -3.8,
+    "2017": 29.9,
+    "2018": 9.9
+   },
+   "max_year_share": 10.749,
+   "med_risk": 4.08
+  },
+  "BASE_tail": {
+   "best5_rem": -0.2372,
+   "best10_rem": -0.3916
+  },
+  "CALIB_stress": {
+   "n": 151,
+   "avg_R": -0.0699
+  },
+  "exec_delay1": {
+   "avg_R": -0.0056
+  },
+  "exec_floor15": {
+   "avg_R": 0.0045
+  },
+  "turnover_per1k": 23.52,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": false,
+   "exec_ok": false,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-L-accel-LONG": {
+  "family": "L_acceleration",
+  "direction": "LONG",
+  "mechanism": "H1 trend acceleration",
+  "STRESS": {
+   "n": 217,
+   "avg_R": 0.007,
+   "win": 0.424,
+   "median": -0.213,
+   "pf": 1.015,
+   "best1_rem": -0.0762,
+   "best2_rem": -0.1188,
+   "best5_rem": -0.2133,
+   "best10_rem": -0.325,
+   "top1_share": 11.758,
+   "pb_avg": {
+    "b0": -0.0234,
+    "b1": 0.0316
+   },
+   "by_year": {
+    "2011": -1.7,
+    "2012": 7.3,
+    "2013": -7.8,
+    "2016": -5.5,
+    "2017": 6.3,
+    "2018": 3.0
+   },
+   "max_year_share": 4.762,
+   "med_risk": 6.227
+  },
+  "BASE_tail": {
+   "best5_rem": -0.1687,
+   "best10_rem": -0.2799
+  },
+  "CALIB_stress": {
+   "n": 53,
+   "avg_R": -0.3765
+  },
+  "exec_delay1": {
+   "avg_R": -0.0735
+  },
+  "exec_floor15": {
+   "avg_R": 0.007
+  },
+  "turnover_per1k": 8.15,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": false,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-A-pb2-SHORT": {
+  "family": "A_pullback",
+  "direction": "SHORT",
+  "mechanism": "H1 pullback depth2",
+  "STRESS": {
+   "n": 669,
+   "avg_R": 0.0814,
+   "win": 0.329,
+   "median": -1.042,
+   "pf": 1.118,
+   "best1_rem": -0.0323,
+   "best2_rem": -0.1257,
+   "best5_rem": -0.3154,
+   "best10_rem": -0.5272,
+   "top1_share": 1.394,
+   "pb_avg": {
+    "b0": 0.1458,
+    "b1": 0.0049
+   },
+   "by_year": {
+    "2011": 7.5,
+    "2012": 37.1,
+    "2013": 8.3,
+    "2016": -9.4,
+    "2017": 18.0,
+    "2018": -7.1
+   },
+   "max_year_share": 0.682,
+   "med_risk": 3.096
+  },
+  "BASE_tail": {
+   "best5_rem": -0.2443,
+   "best10_rem": -0.4571
+  },
+  "CALIB_stress": {
+   "n": 158,
+   "avg_R": -0.1267
+  },
+  "exec_delay1": {
+   "avg_R": 0.0167
+  },
+  "exec_floor15": {
+   "avg_R": 0.0814
+  },
+  "turnover_per1k": 25.14,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-B-bo-acc-SHORT": {
+  "family": "B_breakout_accept",
+  "direction": "SHORT",
+  "mechanism": "H1 20-breakout + acceptance",
+  "STRESS": {
+   "n": 179,
+   "avg_R": 0.098,
+   "win": 0.497,
+   "median": -0.002,
+   "pf": 1.634,
+   "best1_rem": 0.0837,
+   "best2_rem": 0.0642,
+   "best5_rem": 0.022,
+   "best10_rem": -0.0279,
+   "top1_share": 0.151,
+   "pb_avg": {
+    "b0": 0.1694,
+    "b1": 0.0076
+   },
+   "by_year": {
+    "2011": 3.6,
+    "2012": 5.8,
+    "2013": 7.5,
+    "2016": 1.1,
+    "2017": -1.0,
+    "2018": 0.5
+   },
+   "max_year_share": 0.43,
+   "med_risk": 17.876
+  },
+  "BASE_tail": {
+   "best5_rem": 0.0332,
+   "best10_rem": -0.0168
+  },
+  "CALIB_stress": {
+   "n": 35,
+   "avg_R": 0.057
+  },
+  "exec_delay1": {
+   "avg_R": 0.1174
+  },
+  "exec_floor15": {
+   "avg_R": 0.098
+  },
+  "turnover_per1k": 6.73,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": true,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "ROBUST"
+ },
+ "H1-B-bo-raw-SHORT": {
+  "family": "B_breakout_accept",
+  "direction": "SHORT",
+  "mechanism": "H1 20-breakout raw",
+  "STRESS": {
+   "n": 319,
+   "avg_R": 0.0703,
+   "win": 0.489,
+   "median": -0.014,
+   "pf": 1.338,
+   "best1_rem": 0.0439,
+   "best2_rem": 0.0243,
+   "best5_rem": -0.0166,
+   "best10_rem": -0.0771,
+   "top1_share": 0.381,
+   "pb_avg": {
+    "b0": 0.1202,
+    "b1": 0.014
+   },
+   "by_year": {
+    "2011": 4.0,
+    "2012": 5.7,
+    "2013": 10.6,
+    "2016": 0.3,
+    "2017": 2.9,
+    "2018": -1.1
+   },
+   "max_year_share": 0.473,
+   "med_risk": 15.055
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0033,
+   "best10_rem": -0.0638
+  },
+  "CALIB_stress": {
+   "n": 63,
+   "avg_R": 0.1561
+  },
+  "exec_delay1": {
+   "avg_R": 0.046
+  },
+  "exec_floor15": {
+   "avg_R": 0.0703
+  },
+  "turnover_per1k": 11.99,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": true,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-C-bo-retest-SHORT": {
+  "family": "C_breakout_retest",
+  "direction": "SHORT",
+  "mechanism": "H1 breakout + retest",
+  "STRESS": {
+   "n": 265,
+   "avg_R": 0.3134,
+   "win": 0.242,
+   "median": -1.084,
+   "pf": 1.379,
+   "best1_rem": 0.1739,
+   "best2_rem": 0.0028,
+   "best5_rem": -0.2702,
+   "best10_rem": -0.5889,
+   "top1_share": 0.449,
+   "pb_avg": {
+    "b0": 0.2597,
+    "b1": 0.3744
+   },
+   "by_year": {
+    "2011": 18.4,
+    "2012": -1.5,
+    "2013": 19.8,
+    "2016": 5.9,
+    "2017": 44.0,
+    "2018": -3.5
+   },
+   "max_year_share": 0.53,
+   "med_risk": 2.095
+  },
+  "BASE_tail": {
+   "best5_rem": -0.1699,
+   "best10_rem": -0.4891
+  },
+  "CALIB_stress": {
+   "n": 50,
+   "avg_R": 0.0808
+  },
+  "exec_delay1": {
+   "avg_R": 0.6313
+  },
+  "exec_floor15": {
+   "avg_R": 0.3134
+  },
+  "turnover_per1k": 9.96,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": true,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-D-da-w1.0-SHORT": {
+  "family": "D_disp_accept",
+  "direction": "SHORT",
+  "mechanism": "H1 disp>=1.0ATR + accept (NEW id)",
+  "STRESS": {
+   "n": 231,
+   "avg_R": 0.001,
+   "win": 0.424,
+   "median": -0.124,
+   "pf": 1.003,
+   "best1_rem": -0.0636,
+   "best2_rem": -0.1101,
+   "best5_rem": -0.1957,
+   "best10_rem": -0.2907,
+   "top1_share": 64.233,
+   "pb_avg": {
+    "b0": 0.0279,
+    "b1": -0.0375
+   },
+   "by_year": {
+    "2011": -4.2,
+    "2012": -16.0,
+    "2013": 24.0,
+    "2016": -8.3,
+    "2017": 6.8,
+    "2018": -2.1
+   },
+   "max_year_share": 104.407,
+   "med_risk": 8.488
+  },
+  "BASE_tail": {
+   "best5_rem": -0.1698,
+   "best10_rem": -0.2651
+  },
+  "CALIB_stress": {
+   "n": 45,
+   "avg_R": 0.0598
+  },
+  "exec_delay1": {
+   "avg_R": -0.0217
+  },
+  "exec_floor15": {
+   "avg_R": 0.001
+  },
+  "turnover_per1k": 8.68,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": false,
+   "exec_ok": false,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-D-da-w1.5-SHORT": {
+  "family": "D_disp_accept",
+  "direction": "SHORT",
+  "mechanism": "H1 disp>=1.5ATR + accept (NEW id)",
+  "STRESS": {
+   "n": 112,
+   "avg_R": 0.0907,
+   "win": 0.509,
+   "median": 0.008,
+   "pf": 1.331,
+   "best1_rem": 0.0576,
+   "best2_rem": 0.0317,
+   "best5_rem": -0.0345,
+   "best10_rem": -0.125,
+   "top1_share": 0.371,
+   "pb_avg": {
+    "b0": 0.1319,
+    "b1": 0.0194
+   },
+   "by_year": {
+    "2011": -0.4,
+    "2012": -5.7,
+    "2013": 15.4,
+    "2016": 0.7,
+    "2017": 0.0,
+    "2018": 0.1
+   },
+   "max_year_share": 1.515,
+   "med_risk": 11.07
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0144,
+   "best10_rem": -0.1052
+  },
+  "CALIB_stress": {
+   "n": 21,
+   "avg_R": 0.0544
+  },
+  "exec_delay1": {
+   "avg_R": 0.0959
+  },
+  "exec_floor15": {
+   "avg_R": 0.0907
+  },
+  "turnover_per1k": 4.21,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-E-comp-SHORT": {
+  "family": "E_compression",
+  "direction": "SHORT",
+  "mechanism": "H1 compression->expansion",
+  "STRESS": {
+   "n": 235,
+   "avg_R": 0.3403,
+   "win": 0.43,
+   "median": -0.696,
+   "pf": 1.63,
+   "best1_rem": 0.2542,
+   "best2_rem": 0.1768,
+   "best5_rem": -0.0138,
+   "best10_rem": -0.2182,
+   "top1_share": 0.259,
+   "pb_avg": {
+    "b0": 0.3736,
+    "b1": 0.2846
+   },
+   "by_year": {
+    "2011": 15.2,
+    "2012": -13.8,
+    "2013": 53.5,
+    "2016": 4.8,
+    "2017": 21.2,
+    "2018": -1.0
+   },
+   "max_year_share": 0.669,
+   "med_risk": 4.392
+  },
+  "BASE_tail": {
+   "best5_rem": 0.031,
+   "best10_rem": -0.1739
+  },
+  "CALIB_stress": {
+   "n": 42,
+   "avg_R": -0.0874
+  },
+  "exec_delay1": {
+   "avg_R": 0.3051
+  },
+  "exec_floor15": {
+   "avg_R": 0.3403
+  },
+  "turnover_per1k": 8.83,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-F-failcnt-SHORT": {
+  "family": "F_failed_counter",
+  "direction": "SHORT",
+  "mechanism": "H1 failed counter-move",
+  "STRESS": {
+   "n": 120,
+   "avg_R": 0.1164,
+   "win": 0.442,
+   "median": -0.237,
+   "pf": 1.223,
+   "best1_rem": 0.0485,
+   "best2_rem": -0.006,
+   "best5_rem": -0.128,
+   "best10_rem": -0.2673,
+   "top1_share": 0.587,
+   "pb_avg": {
+    "b0": 0.0983,
+    "b1": 0.15
+   },
+   "by_year": {
+    "2011": -3.3,
+    "2012": -1.4,
+    "2013": 12.4,
+    "2016": 1.7,
+    "2017": 3.6,
+    "2018": 1.0
+   },
+   "max_year_share": 0.886,
+   "med_risk": 5.822
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0882,
+   "best10_rem": -0.2276
+  },
+  "CALIB_stress": {
+   "n": 31,
+   "avg_R": -0.1885
+  },
+  "exec_delay1": {
+   "avg_R": 0.3248
+  },
+  "exec_floor15": {
+   "avg_R": 0.1164
+  },
+  "turnover_per1k": 4.51,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-G-consec3-SHORT": {
+  "family": "G_momentum",
+  "direction": "SHORT",
+  "mechanism": "H1 3 consecutive closes",
+  "STRESS": {
+   "n": 730,
+   "avg_R": 0.0209,
+   "win": 0.37,
+   "median": -0.527,
+   "pf": 1.037,
+   "best1_rem": -0.0693,
+   "best2_rem": -0.1268,
+   "best5_rem": -0.2495,
+   "best10_rem": -0.4024,
+   "top1_share": 4.282,
+   "pb_avg": {
+    "b0": 0.0855,
+    "b1": -0.0527
+   },
+   "by_year": {
+    "2011": 1.5,
+    "2012": 4.0,
+    "2013": 27.7,
+    "2016": -26.9,
+    "2017": 11.1,
+    "2018": -2.1
+   },
+   "max_year_share": 1.818,
+   "med_risk": 3.997
+  },
+  "BASE_tail": {
+   "best5_rem": -0.1998,
+   "best10_rem": -0.3529
+  },
+  "CALIB_stress": {
+   "n": 154,
+   "avg_R": 0.0427
+  },
+  "exec_delay1": {
+   "avg_R": 0.0969
+  },
+  "exec_floor15": {
+   "avg_R": 0.0209
+  },
+  "turnover_per1k": 27.43,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-G-consec4-SHORT": {
+  "family": "G_momentum",
+  "direction": "SHORT",
+  "mechanism": "H1 4 consecutive closes",
+  "STRESS": {
+   "n": 350,
+   "avg_R": 0.1196,
+   "win": 0.42,
+   "median": -0.489,
+   "pf": 1.225,
+   "best1_rem": 0.0342,
+   "best2_rem": -0.0272,
+   "best5_rem": -0.1405,
+   "best10_rem": -0.2996,
+   "top1_share": 0.716,
+   "pb_avg": {
+    "b0": 0.1874,
+    "b1": 0.0408
+   },
+   "by_year": {
+    "2011": 0.3,
+    "2012": 22.4,
+    "2013": 12.6,
+    "2016": -12.0,
+    "2017": 16.9,
+    "2018": 1.7
+   },
+   "max_year_share": 0.534,
+   "med_risk": 3.79
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0903,
+   "best10_rem": -0.2495
+  },
+  "CALIB_stress": {
+   "n": 74,
+   "avg_R": -0.1737
+  },
+  "exec_delay1": {
+   "avg_R": 0.0905
+  },
+  "exec_floor15": {
+   "avg_R": 0.1196
+  },
+  "turnover_per1k": 13.15,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": true,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-G-eff-SHORT": {
+  "family": "G_momentum",
+  "direction": "SHORT",
+  "mechanism": "H1 path-efficiency",
+  "STRESS": {
+   "n": 806,
+   "avg_R": 0.1853,
+   "win": 0.413,
+   "median": -0.336,
+   "pf": 1.36,
+   "best1_rem": 0.0715,
+   "best2_rem": -0.0018,
+   "best5_rem": -0.1256,
+   "best10_rem": -0.2747,
+   "top1_share": 0.618,
+   "pb_avg": {
+    "b0": 0.2769,
+    "b1": 0.0822
+   },
+   "by_year": {
+    "2011": 14.3,
+    "2012": 21.7,
+    "2013": 82.2,
+    "2016": -5.8,
+    "2017": 30.5,
+    "2018": 6.5
+   },
+   "max_year_share": 0.55,
+   "med_risk": 3.772
+  },
+  "BASE_tail": {
+   "best5_rem": -0.0749,
+   "best10_rem": -0.224
+  },
+  "CALIB_stress": {
+   "n": 164,
+   "avg_R": 0.0499
+  },
+  "exec_delay1": {
+   "avg_R": 0.2898
+  },
+  "exec_floor15": {
+   "avg_R": 0.1853
+  },
+  "turnover_per1k": 30.29,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": true,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-H-hllh-SHORT": {
+  "family": "H_structure",
+  "direction": "SHORT",
+  "mechanism": "H1 HL/LH structure continuation",
+  "STRESS": {
+   "n": 534,
+   "avg_R": 0.1031,
+   "win": 0.397,
+   "median": -0.675,
+   "pf": 1.18,
+   "best1_rem": 0.0072,
+   "best2_rem": -0.0602,
+   "best5_rem": -0.2011,
+   "best10_rem": -0.3637,
+   "top1_share": 0.931,
+   "pb_avg": {
+    "b0": 0.165,
+    "b1": 0.0307
+   },
+   "by_year": {
+    "2011": -8.8,
+    "2012": 23.5,
+    "2013": 32.8,
+    "2016": -13.8,
+    "2017": 13.7,
+    "2018": 7.6
+   },
+   "max_year_share": 0.596,
+   "med_risk": 3.86
+  },
+  "BASE_tail": {
+   "best5_rem": -0.1447,
+   "best10_rem": -0.3072
+  },
+  "CALIB_stress": {
+   "n": 112,
+   "avg_R": -0.0905
+  },
+  "exec_delay1": {
+   "avg_R": 0.0319
+  },
+  "exec_floor15": {
+   "avg_R": 0.1031
+  },
+  "turnover_per1k": 20.07,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": true,
+   "both_blocks_avg_pos": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-L-accel-SHORT": {
+  "family": "L_acceleration",
+  "direction": "SHORT",
+  "mechanism": "H1 trend acceleration",
+  "STRESS": {
+   "n": 203,
+   "avg_R": 0.1114,
+   "win": 0.429,
+   "median": -0.193,
+   "pf": 1.227,
+   "best1_rem": 0.0214,
+   "best2_rem": -0.0469,
+   "best5_rem": -0.1723,
+   "best10_rem": -0.3153,
+   "top1_share": 0.81,
+   "pb_avg": {
+    "b0": 0.3052,
+    "b1": -0.1271
+   },
+   "by_year": {
+    "2011": 16.0,
+    "2012": -9.1,
+    "2013": 27.3,
+    "2016": -12.7,
+    "2017": 1.6,
+    "2018": -0.4
+   },
+   "max_year_share": 1.207,
+   "med_risk": 5.782
+  },
+  "BASE_tail": {
+   "best5_rem": -0.1222,
+   "best10_rem": -0.2647
+  },
+  "CALIB_stress": {
+   "n": 46,
+   "avg_R": -0.2013
+  },
+  "exec_delay1": {
+   "avg_R": 0.3167
+  },
+  "exec_floor15": {
+   "avg_R": 0.1114
+  },
+  "turnover_per1k": 7.63,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks_avg_pos": false,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ }
+}
