@@ -4397,4 +4397,57 @@
                IMPLEMENTATION-AUDIT-001.md.
                STATE: OPERATIONAL. Next entry [96], prev_hash E95.
   entry_hash:  E95
+
+[96] 2026-08-21
+  prev_hash:   E95
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-4-1-FRESH-BLIND14-VALIDATION
+  freeze_hash: V4.4 3bb61cf(config 23d98c07) vs V4.4.1 4ed4eb4(config d7b6c067, params 29/4/3/12) on F441 window
+               payload f66a8752 / labels 8838b8c5(labels_sha256 4112dbce, session_log 577edf29, selection_manifest
+               c8aa83ba) / protocol 4af8ea9 sel 6a62243 labels 0f6f1a9 freeze 2ad5cab / preds V44 2830a712 V441
+               f96054f1 frozen at 778778d
+  battery_ver: RT-RANGE-V4_4_1-FRESH-BLIND14-VALIDATION-001
+  reviewer:    Red Team
+  detail:      FINAL FRESH-BLIND SEMANTIC comparison V4.4 vs V4.4.1 (T-STALE) on the 14-window F441 batch = the
+               V4.4.1 generalization gate. VERDICTS = F441_INFERENCE_INTEGRITY_PASS + F441_SCORING_INTEGRITY_PASS +
+               ***V4_4_1_FRESH_BLIND14_GENERALIZATION_NOT_SUPPORTED***. INTEGRITY: detector chain (3bb61cf/4ed4eb4/
+               6adef91) + F441 chain (protocol 4af8ea9 PRE-COMMITTED 03:28 -> sel 6a62243 03:30 -> labels 0f6f1a9
+               12:07 -> freeze 2ad5cab 12:08) verified local=remote x4; canonical ids reproduced (labels_sha256
+               4112dbce, session_log 577edf29, selection_manifest c8aa83ba, window_payload f66a8752); 14 windows
+               5x96/5x288/4x480 block B4:5/B1:5/B2:4 (B3 exhausted); FB14(E8)+MB3(E7) SEPARATE excluded classes =
+               zero overlap; labels frozen BEFORE detectors (V4_4/V4_4_1_EXECUTED=False, PREDICTIONS_EXIST=False);
+               window payload labels_present=False, 14/14 bars_sha256 reproduced from canonical M15_v2 delivered df
+               (197094 rows, file 57f4ed95); labels payload 8838b8c5 HMAC+1bit+wrong-key refused -> labels_sha256
+               4112dbce, 26 MACRO RANGE, F441-011=0 (natural neg control), NOT_SPECIFIED, AMENDMENT_LOG EMPTY,
+               F441-008 TRANSCRIPTION_NOTE_NON_SEMANTIC; Env A scorer-not-imported/no-labels; predictions frozen
+               (778778d) BEFORE label access, both hashes re-verified fail-closed Env B; Env B detector-not-imported,
+               ratified scorer 664934ab used IDENTICALLY for both; FB14/MB3-001-024 not reused, MB3-025-048 sealed.
+               PRIMARY (MACRO GT=26 CEO RANGE, ratified IoU>0): V4.4 TP15/det22/FP8/dirFP4/FN11/recall0.577/prec
+               0.682/F10.625/IoU-med0.590 vs V4.4.1 TP21/det37/FP16/dirFP5/FN5/recall0.808/prec0.568/F10.667/IoU-med
+               0.529. ★ H1-H5 (pre-reg 4af8ea9, H1/H2 HARD, false-RANGE>missed-RANGE LOCKED): H1 dir-FP 5<=4 FAIL
+               (HARD); H2 total-FP 16<=8 FAIL (HARD); H3 TP 21>=15 PASS; H4 recall 0.808>=0.577 PASS; H5 EVALUABLE
+               (natural stale events in 6/6 recovered windows, recovery MET +9 TP) but violates without-increasing-
+               H1/H2 clause. H1+H2 FAIL -> NOT_SUPPORTED (recall/F1 gain CANNOT compensate under locked error cost).
+               ★ MECHANISM: T-STALE's diagnosis is REAL and recovery WORKS (recall +0.231, 9 genuine stale-blocked
+               RANGE recovered: F441-004x2/005/007/008/010x3/012) BUT the cure is worse under false-RANGE-aversion --
+               DOUBLES false RANGE (H2 8->16) dominated by RANGE-context OVER-SEGMENTATION (FP-RANGE 4->11: freeing
+               the single slot mid-range spawns replacements that confirm as surplus structures), adds a directional
+               FP (H1 4->5), AND destroys 3 genuine V4.4 TP via HARMFUL abandonment (F441-009, F441-014 lost BOTH
+               2->0). T-STALE FIRING AUDIT: 32 fires (12 windows) = 9 beneficial / 17 HARMFUL / 6 neutral. ★ FRAGILE
+               WATCH MATERIALIZED: ALL 32 fires at alternation EXACTLY 3 (the calibrated FRAGILE value, 9116c2b
+               sec5.3) -- entire benefit AND harm ride the exact fragile boundary both prior RT audits flagged.
+               Window-29: rejected-evidence ages 17-91 (median ~39), no single-edge pathology. Per-length: FP
+               explosion in long windows (L=480 FP 2->8 recall 0.500->0.900; L=96 STRICTLY WORSE recall 0.833->0.667).
+               F441-011 neg-control: V4.4 0 / V4.4.1 0 confirmed (2 T-STALE fires, 0 false RANGE created). N=14 no
+               pop claim / no p-values (none pre-reg). CONCLUSION: V4.4.1 as frozen is a REGRESSION not a
+               generalization under the CEO error-cost priority; FROZEN V4.4 REMAINS PREFERABLE. NEXT (recommend to
+               CEO, NOT authorized here): (1) HOLD V4.4 (recommended); or (2) future SEPARATE re-examination of
+               T-STALE trigger STRINGENCY (fires too easily) on evidence never used here (never F441/FB14/MB3),
+               targeting over-seg/harmful-abandonment -- NOT a threshold tweak on this blind; or (3) abandon T-STALE.
+               min_alternation=3 FRAGILE now a CONFIRMED material risk. NOT authorized: redesign/recalibration/
+               Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/orders/live/promotion. Detectors/labels/scorer/
+               escrow unmodified; changes only in red_team/; no post-result adaptation. Reports: RT-RANGE-V4_4_1-
+               FRESH-BLIND14-VALIDATION-001.md + RT-RANGE-F441_predictions_freeze.md.
+               STATE: OPERATIONAL. Next entry [97], prev_hash E96.
+  entry_hash:  E96
 ```
