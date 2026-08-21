@@ -1,0 +1,1524 @@
+{
+ "records": [
+  {
+   "id": "MT-M5-pullback-L",
+   "tf": "M5",
+   "mech": "pullback",
+   "dir": "LONG",
+   "rr": 4.0,
+   "BASE_avg": -0.0234,
+   "STRESS": {
+    "n": 3216,
+    "WR": 0.001,
+    "avg_R": -0.2404,
+    "med_R": -1.165,
+    "pf": 0.744,
+    "best5_rem": -0.4553,
+    "best10_rem": -0.6881,
+    "med_SL_pips": 10.9,
+    "med_TP_pips": 43.7,
+    "pct_TP70": 0.267,
+    "pct_TP80": 0.214,
+    "temporal": {
+     "2021": -0.28,
+     "2022": -0.192,
+     "2023": -0.238
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-pullback-S",
+   "tf": "M5",
+   "mech": "pullback",
+   "dir": "SHORT",
+   "rr": 4.0,
+   "BASE_avg": -0.0254,
+   "STRESS": {
+    "n": 3079,
+    "WR": 0.0,
+    "avg_R": -0.2416,
+    "med_R": -1.168,
+    "pf": 0.743,
+    "best5_rem": -0.4561,
+    "best10_rem": -0.6889,
+    "med_SL_pips": 11.0,
+    "med_TP_pips": 44.0,
+    "pct_TP70": 0.258,
+    "pct_TP80": 0.208,
+    "temporal": {
+     "2021": -0.241,
+     "2022": -0.238,
+     "2023": -0.243
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-breakout-L",
+   "tf": "M5",
+   "mech": "breakout",
+   "dir": "LONG",
+   "rr": 4.0,
+   "BASE_avg": -0.0055,
+   "STRESS": {
+    "n": 1917,
+    "WR": 0.004,
+    "avg_R": -0.0919,
+    "med_R": -1.05,
+    "pf": 0.86,
+    "best5_rem": -0.2998,
+    "best10_rem": -0.4915,
+    "med_SL_pips": 25.5,
+    "med_TP_pips": 101.9,
+    "pct_TP70": 0.758,
+    "pct_TP80": 0.675,
+    "temporal": {
+     "2021": -0.151,
+     "2022": -0.007,
+     "2023": -0.091
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-breakout-S",
+   "tf": "M5",
+   "mech": "breakout",
+   "dir": "SHORT",
+   "rr": 4.0,
+   "BASE_avg": -0.0689,
+   "STRESS": {
+    "n": 1906,
+    "WR": 0.004,
+    "avg_R": -0.1557,
+    "med_R": -1.054,
+    "pf": 0.771,
+    "best5_rem": -0.3683,
+    "best10_rem": -0.5563,
+    "med_SL_pips": 24.9,
+    "med_TP_pips": 99.8,
+    "pct_TP70": 0.749,
+    "pct_TP80": 0.661,
+    "temporal": {
+     "2021": -0.171,
+     "2022": -0.16,
+     "2023": -0.147
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-compression-L",
+   "tf": "M5",
+   "mech": "compression",
+   "dir": "LONG",
+   "rr": 4.0,
+   "BASE_avg": -0.0025,
+   "STRESS": {
+    "n": 1330,
+    "WR": 0.0,
+    "avg_R": -0.1369,
+    "med_R": -1.107,
+    "pf": 0.825,
+    "best5_rem": -0.3464,
+    "best10_rem": -0.5759,
+    "med_SL_pips": 16.2,
+    "med_TP_pips": 65.0,
+    "pct_TP70": 0.456,
+    "pct_TP80": 0.366,
+    "temporal": {
+     "2021": -0.166,
+     "2022": 0.069,
+     "2023": -0.179
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-compression-S",
+   "tf": "M5",
+   "mech": "compression",
+   "dir": "SHORT",
+   "rr": 4.0,
+   "BASE_avg": -0.0928,
+   "STRESS": {
+    "n": 1277,
+    "WR": 0.001,
+    "avg_R": -0.2286,
+    "med_R": -1.112,
+    "pf": 0.716,
+    "best5_rem": -0.4416,
+    "best10_rem": -0.6741,
+    "med_SL_pips": 16.3,
+    "med_TP_pips": 65.3,
+    "pct_TP70": 0.443,
+    "pct_TP80": 0.345,
+    "temporal": {
+     "2021": -0.282,
+     "2022": -0.03,
+     "2023": -0.255
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-momentum-L",
+   "tf": "M5",
+   "mech": "momentum",
+   "dir": "LONG",
+   "rr": 4.0,
+   "BASE_avg": -0.0119,
+   "STRESS": {
+    "n": 3172,
+    "WR": 0.004,
+    "avg_R": -0.118,
+    "med_R": -1.07,
+    "pf": 0.836,
+    "best5_rem": -0.3279,
+    "best10_rem": -0.5395,
+    "med_SL_pips": 21.5,
+    "med_TP_pips": 86.1,
+    "pct_TP70": 0.635,
+    "pct_TP80": 0.546,
+    "temporal": {
+     "2021": -0.204,
+     "2022": -0.06,
+     "2023": -0.097
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-momentum-S",
+   "tf": "M5",
+   "mech": "momentum",
+   "dir": "SHORT",
+   "rr": 4.0,
+   "BASE_avg": -0.0388,
+   "STRESS": {
+    "n": 3172,
+    "WR": 0.003,
+    "avg_R": -0.1479,
+    "med_R": -1.076,
+    "pf": 0.799,
+    "best5_rem": -0.3596,
+    "best10_rem": -0.5799,
+    "med_SL_pips": 20.5,
+    "med_TP_pips": 81.9,
+    "pct_TP70": 0.609,
+    "pct_TP80": 0.515,
+    "temporal": {
+     "2021": -0.183,
+     "2022": -0.207,
+     "2023": -0.115
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-efficiency-L",
+   "tf": "M5",
+   "mech": "efficiency",
+   "dir": "LONG",
+   "rr": 4.0,
+   "BASE_avg": -0.0097,
+   "STRESS": {
+    "n": 1342,
+    "WR": 0.003,
+    "avg_R": -0.126,
+    "med_R": -1.056,
+    "pf": 0.824,
+    "best5_rem": -0.3369,
+    "best10_rem": -0.5486,
+    "med_SL_pips": 24.4,
+    "med_TP_pips": 97.5,
+    "pct_TP70": 0.682,
+    "pct_TP80": 0.606,
+    "temporal": {
+     "2021": -0.204,
+     "2022": -0.076,
+     "2023": -0.106
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-efficiency-S",
+   "tf": "M5",
+   "mech": "efficiency",
+   "dir": "SHORT",
+   "rr": 4.0,
+   "BASE_avg": -0.0861,
+   "STRESS": {
+    "n": 1197,
+    "WR": 0.005,
+    "avg_R": -0.1972,
+    "med_R": -1.062,
+    "pf": 0.729,
+    "best5_rem": -0.4098,
+    "best10_rem": -0.6105,
+    "med_SL_pips": 23.8,
+    "med_TP_pips": 95.4,
+    "pct_TP70": 0.675,
+    "pct_TP80": 0.594,
+    "temporal": {
+     "2021": -0.146,
+     "2022": -0.162,
+     "2023": -0.231
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-dispaccept-L",
+   "tf": "M5",
+   "mech": "dispaccept",
+   "dir": "LONG",
+   "rr": 4.0,
+   "BASE_avg": -0.0235,
+   "STRESS": {
+    "n": 1952,
+    "WR": 0.007,
+    "avg_R": -0.1103,
+    "med_R": -1.053,
+    "pf": 0.837,
+    "best5_rem": -0.3194,
+    "best10_rem": -0.5126,
+    "med_SL_pips": 25.2,
+    "med_TP_pips": 100.9,
+    "pct_TP70": 0.739,
+    "pct_TP80": 0.653,
+    "temporal": {
+     "2021": -0.154,
+     "2022": -0.096,
+     "2023": -0.094
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-dispaccept-S",
+   "tf": "M5",
+   "mech": "dispaccept",
+   "dir": "SHORT",
+   "rr": 4.0,
+   "BASE_avg": -0.0641,
+   "STRESS": {
+    "n": 1956,
+    "WR": 0.003,
+    "avg_R": -0.1513,
+    "med_R": -1.055,
+    "pf": 0.776,
+    "best5_rem": -0.3625,
+    "best10_rem": -0.5469,
+    "med_SL_pips": 24.8,
+    "med_TP_pips": 99.1,
+    "pct_TP70": 0.725,
+    "pct_TP80": 0.64,
+    "temporal": {
+     "2021": -0.159,
+     "2022": -0.199,
+     "2023": -0.133
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-structure-L",
+   "tf": "M5",
+   "mech": "structure",
+   "dir": "LONG",
+   "rr": 4.0,
+   "BASE_avg": 0.0123,
+   "STRESS": {
+    "n": 2726,
+    "WR": 0.003,
+    "avg_R": -0.083,
+    "med_R": -1.057,
+    "pf": 0.878,
+    "best5_rem": -0.2919,
+    "best10_rem": -0.4911,
+    "med_SL_pips": 23.8,
+    "med_TP_pips": 95.1,
+    "pct_TP70": 0.702,
+    "pct_TP80": 0.623,
+    "temporal": {
+     "2021": -0.165,
+     "2022": -0.023,
+     "2023": -0.065
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M5-structure-S",
+   "tf": "M5",
+   "mech": "structure",
+   "dir": "SHORT",
+   "rr": 4.0,
+   "BASE_avg": -0.0579,
+   "STRESS": {
+    "n": 2706,
+    "WR": 0.002,
+    "avg_R": -0.1542,
+    "med_R": -1.064,
+    "pf": 0.779,
+    "best5_rem": -0.3665,
+    "best10_rem": -0.5654,
+    "med_SL_pips": 23.0,
+    "med_TP_pips": 92.1,
+    "pct_TP70": 0.676,
+    "pct_TP80": 0.583,
+    "temporal": {
+     "2021": -0.19,
+     "2022": -0.22,
+     "2023": -0.119
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-pullback-L",
+   "tf": "M15",
+   "mech": "pullback",
+   "dir": "LONG",
+   "rr": 3.0,
+   "BASE_avg": -0.0332,
+   "STRESS": {
+    "n": 1195,
+    "WR": 0.013,
+    "avg_R": -0.1402,
+    "med_R": -1.078,
+    "pf": 0.826,
+    "best5_rem": -0.3003,
+    "best10_rem": -0.4788,
+    "med_SL_pips": 21.9,
+    "med_TP_pips": 65.8,
+    "pct_TP70": 0.464,
+    "pct_TP80": 0.394,
+    "temporal": {
+     "2021": -0.167,
+     "2022": 0.023,
+     "2023": -0.175
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-pullback-S",
+   "tf": "M15",
+   "mech": "pullback",
+   "dir": "SHORT",
+   "rr": 3.0,
+   "BASE_avg": -0.0775,
+   "STRESS": {
+    "n": 1059,
+    "WR": 0.012,
+    "avg_R": -0.1879,
+    "med_R": -1.082,
+    "pf": 0.77,
+    "best5_rem": -0.3492,
+    "best10_rem": -0.529,
+    "med_SL_pips": 21.2,
+    "med_TP_pips": 63.6,
+    "pct_TP70": 0.451,
+    "pct_TP80": 0.374,
+    "temporal": {
+     "2021": -0.146,
+     "2022": -0.258,
+     "2023": -0.186
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-breakout-L",
+   "tf": "M15",
+   "mech": "breakout",
+   "dir": "LONG",
+   "rr": 3.0,
+   "BASE_avg": 0.0288,
+   "STRESS": {
+    "n": 690,
+    "WR": 0.035,
+    "avg_R": -0.0155,
+    "med_R": -1.027,
+    "pf": 0.975,
+    "best5_rem": -0.1725,
+    "best10_rem": -0.347,
+    "med_SL_pips": 48.9,
+    "med_TP_pips": 146.7,
+    "pct_TP70": 0.91,
+    "pct_TP80": 0.858,
+    "temporal": {
+     "2021": -0.147,
+     "2022": -0.057,
+     "2023": 0.056
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-breakout-S",
+   "tf": "M15",
+   "mech": "breakout",
+   "dir": "SHORT",
+   "rr": 3.0,
+   "BASE_avg": -0.1113,
+   "STRESS": {
+    "n": 649,
+    "WR": 0.031,
+    "avg_R": -0.1553,
+    "med_R": -1.03,
+    "pf": 0.753,
+    "best5_rem": -0.3167,
+    "best10_rem": -0.4935,
+    "med_SL_pips": 51.1,
+    "med_TP_pips": 153.2,
+    "pct_TP70": 0.9,
+    "pct_TP80": 0.861,
+    "temporal": {
+     "2021": -0.141,
+     "2022": -0.232,
+     "2023": -0.141
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-compression-L",
+   "tf": "M15",
+   "mech": "compression",
+   "dir": "LONG",
+   "rr": 3.0,
+   "BASE_avg": 0.0093,
+   "STRESS": {
+    "n": 465,
+    "WR": 0.019,
+    "avg_R": -0.0654,
+    "med_R": -1.066,
+    "pf": 0.912,
+    "best5_rem": -0.2229,
+    "best10_rem": -0.3949,
+    "med_SL_pips": 27.0,
+    "med_TP_pips": 81.1,
+    "pct_TP70": 0.649,
+    "pct_TP80": 0.514,
+    "temporal": {
+     "2021": -0.016,
+     "2022": 0.107,
+     "2023": -0.135
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-compression-S",
+   "tf": "M15",
+   "mech": "compression",
+   "dir": "SHORT",
+   "rr": 3.0,
+   "BASE_avg": -0.1815,
+   "STRESS": {
+    "n": 422,
+    "WR": 0.005,
+    "avg_R": -0.2604,
+    "med_R": -1.079,
+    "pf": 0.679,
+    "best5_rem": -0.4278,
+    "best10_rem": -0.6114,
+    "med_SL_pips": 26.3,
+    "med_TP_pips": 78.8,
+    "pct_TP70": 0.597,
+    "pct_TP80": 0.483,
+    "temporal": {
+     "2021": -0.049,
+     "2022": -0.438,
+     "2023": -0.297
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-momentum-L",
+   "tf": "M15",
+   "mech": "momentum",
+   "dir": "LONG",
+   "rr": 3.0,
+   "BASE_avg": 0.0145,
+   "STRESS": {
+    "n": 1121,
+    "WR": 0.033,
+    "avg_R": -0.0397,
+    "med_R": -1.036,
+    "pf": 0.939,
+    "best5_rem": -0.1972,
+    "best10_rem": -0.3703,
+    "med_SL_pips": 41.7,
+    "med_TP_pips": 125.1,
+    "pct_TP70": 0.83,
+    "pct_TP80": 0.776,
+    "temporal": {
+     "2021": -0.157,
+     "2022": 0.086,
+     "2023": -0.023
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-momentum-S",
+   "tf": "M15",
+   "mech": "momentum",
+   "dir": "SHORT",
+   "rr": 3.0,
+   "BASE_avg": -0.0334,
+   "STRESS": {
+    "n": 1122,
+    "WR": 0.024,
+    "avg_R": -0.0916,
+    "med_R": -1.04,
+    "pf": 0.863,
+    "best5_rem": -0.2515,
+    "best10_rem": -0.4271,
+    "med_SL_pips": 37.0,
+    "med_TP_pips": 110.9,
+    "pct_TP70": 0.791,
+    "pct_TP80": 0.714,
+    "temporal": {
+     "2021": -0.009,
+     "2022": -0.164,
+     "2023": -0.105
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-efficiency-L",
+   "tf": "M15",
+   "mech": "efficiency",
+   "dir": "LONG",
+   "rr": 3.0,
+   "BASE_avg": 0.002,
+   "STRESS": {
+    "n": 496,
+    "WR": 0.032,
+    "avg_R": -0.0575,
+    "med_R": -1.025,
+    "pf": 0.909,
+    "best5_rem": -0.2116,
+    "best10_rem": -0.3867,
+    "med_SL_pips": 45.2,
+    "med_TP_pips": 135.7,
+    "pct_TP70": 0.819,
+    "pct_TP80": 0.78,
+    "temporal": {
+     "2021": -0.134,
+     "2022": -0.011,
+     "2023": -0.037
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-efficiency-S",
+   "tf": "M15",
+   "mech": "efficiency",
+   "dir": "SHORT",
+   "rr": 3.0,
+   "BASE_avg": -0.0779,
+   "STRESS": {
+    "n": 449,
+    "WR": 0.038,
+    "avg_R": -0.1322,
+    "med_R": -1.028,
+    "pf": 0.794,
+    "best5_rem": -0.2916,
+    "best10_rem": -0.4652,
+    "med_SL_pips": 51.2,
+    "med_TP_pips": 153.5,
+    "pct_TP70": 0.824,
+    "pct_TP80": 0.8,
+    "temporal": {
+     "2021": -0.072,
+     "2022": -0.293,
+     "2023": -0.116
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-dispaccept-L",
+   "tf": "M15",
+   "mech": "dispaccept",
+   "dir": "LONG",
+   "rr": 3.0,
+   "BASE_avg": 0.0489,
+   "STRESS": {
+    "n": 672,
+    "WR": 0.046,
+    "avg_R": 0.0071,
+    "med_R": -1.027,
+    "pf": 1.012,
+    "best5_rem": -0.1464,
+    "best10_rem": -0.3195,
+    "med_SL_pips": 51.0,
+    "med_TP_pips": 153.0,
+    "pct_TP70": 0.924,
+    "pct_TP80": 0.89,
+    "temporal": {
+     "2021": -0.031,
+     "2022": 0.001,
+     "2023": 0.024
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-M15-dispaccept-S",
+   "tf": "M15",
+   "mech": "dispaccept",
+   "dir": "SHORT",
+   "rr": 3.0,
+   "BASE_avg": -0.0959,
+   "STRESS": {
+    "n": 643,
+    "WR": 0.036,
+    "avg_R": -0.1396,
+    "med_R": -1.031,
+    "pf": 0.78,
+    "best5_rem": -0.3019,
+    "best10_rem": -0.48,
+    "med_SL_pips": 48.9,
+    "med_TP_pips": 146.6,
+    "pct_TP70": 0.922,
+    "pct_TP80": 0.877,
+    "temporal": {
+     "2021": -0.106,
+     "2022": -0.224,
+     "2023": -0.131
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-structure-L",
+   "tf": "M15",
+   "mech": "structure",
+   "dir": "LONG",
+   "rr": 3.0,
+   "BASE_avg": 0.001,
+   "STRESS": {
+    "n": 971,
+    "WR": 0.031,
+    "avg_R": -0.0504,
+    "med_R": -1.033,
+    "pf": 0.921,
+    "best5_rem": -0.2067,
+    "best10_rem": -0.3822,
+    "med_SL_pips": 43.3,
+    "med_TP_pips": 129.9,
+    "pct_TP70": 0.867,
+    "pct_TP80": 0.812,
+    "temporal": {
+     "2021": -0.115,
+     "2022": 0.108,
+     "2023": -0.067
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-M15-structure-S",
+   "tf": "M15",
+   "mech": "structure",
+   "dir": "SHORT",
+   "rr": 3.0,
+   "BASE_avg": -0.047,
+   "STRESS": {
+    "n": 965,
+    "WR": 0.025,
+    "avg_R": -0.0986,
+    "med_R": -1.037,
+    "pf": 0.85,
+    "best5_rem": -0.2585,
+    "best10_rem": -0.4342,
+    "med_SL_pips": 41.4,
+    "med_TP_pips": 124.3,
+    "pct_TP70": 0.859,
+    "pct_TP80": 0.794,
+    "temporal": {
+     "2021": -0.069,
+     "2022": -0.144,
+     "2023": -0.098
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H1-pullback-L",
+   "tf": "H1",
+   "mech": "pullback",
+   "dir": "LONG",
+   "rr": 2.5,
+   "BASE_avg": 0.1689,
+   "STRESS": {
+    "n": 281,
+    "WR": 0.16,
+    "avg_R": 0.1303,
+    "med_R": -1.025,
+    "pf": 1.201,
+    "best5_rem": 0.0072,
+    "best10_rem": -0.1289,
+    "med_SL_pips": 59.3,
+    "med_TP_pips": 148.3,
+    "pct_TP70": 0.879,
+    "pct_TP80": 0.829,
+    "temporal": {
+     "2021": -0.243,
+     "2022": 0.241,
+     "2023": 0.237
+    }
+   },
+   "status": "SURVIVE"
+  },
+  {
+   "id": "MT-H1-pullback-S",
+   "tf": "H1",
+   "mech": "pullback",
+   "dir": "SHORT",
+   "rr": 2.5,
+   "BASE_avg": -0.1051,
+   "STRESS": {
+    "n": 284,
+    "WR": 0.056,
+    "avg_R": -0.154,
+    "med_R": -1.038,
+    "pf": 0.794,
+    "best5_rem": -0.2901,
+    "best10_rem": -0.4396,
+    "med_SL_pips": 44.1,
+    "med_TP_pips": 110.2,
+    "pct_TP70": 0.775,
+    "pct_TP80": 0.711,
+    "temporal": {
+     "2021": -0.111,
+     "2022": -0.692,
+     "2023": -0.015
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H1-breakout-L",
+   "tf": "H1",
+   "mech": "breakout",
+   "dir": "LONG",
+   "rr": 2.5,
+   "BASE_avg": 0.0193,
+   "STRESS": {
+    "n": 174,
+    "WR": 0.144,
+    "avg_R": 0.002,
+    "med_R": -1.011,
+    "pf": 1.003,
+    "best5_rem": -0.1175,
+    "best10_rem": -0.266,
+    "med_SL_pips": 118.3,
+    "med_TP_pips": 295.8,
+    "pct_TP70": 1.0,
+    "pct_TP80": 0.994,
+    "temporal": {
+     "2021": -0.124,
+     "2022": 0.154,
+     "2023": 0.007
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-breakout-S",
+   "tf": "H1",
+   "mech": "breakout",
+   "dir": "SHORT",
+   "rr": 2.5,
+   "BASE_avg": 0.1388,
+   "STRESS": {
+    "n": 146,
+    "WR": 0.13,
+    "avg_R": 0.1206,
+    "med_R": -0.24,
+    "pf": 1.246,
+    "best5_rem": 0.0017,
+    "best10_rem": -0.1293,
+    "med_SL_pips": 119.7,
+    "med_TP_pips": 299.3,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": 0.211,
+     "2022": -0.071,
+     "2023": 0.134
+    }
+   },
+   "status": "SURVIVE"
+  },
+  {
+   "id": "MT-H1-compression-L",
+   "tf": "H1",
+   "mech": "compression",
+   "dir": "LONG",
+   "rr": 2.5,
+   "BASE_avg": 0.1247,
+   "STRESS": {
+    "n": 165,
+    "WR": 0.236,
+    "avg_R": 0.0963,
+    "med_R": -1.026,
+    "pf": 1.144,
+    "best5_rem": -0.0251,
+    "best10_rem": -0.1592,
+    "med_SL_pips": 71.4,
+    "med_TP_pips": 178.6,
+    "pct_TP70": 0.994,
+    "pct_TP80": 0.988,
+    "temporal": {
+     "2021": -0.052,
+     "2022": 0.547,
+     "2023": 0.05
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-compression-S",
+   "tf": "H1",
+   "mech": "compression",
+   "dir": "SHORT",
+   "rr": 2.5,
+   "BASE_avg": -0.1035,
+   "STRESS": {
+    "n": 171,
+    "WR": 0.152,
+    "avg_R": -0.1324,
+    "med_R": -1.028,
+    "pf": 0.819,
+    "best5_rem": -0.2605,
+    "best10_rem": -0.4199,
+    "med_SL_pips": 69.5,
+    "med_TP_pips": 173.7,
+    "pct_TP70": 0.994,
+    "pct_TP80": 0.994,
+    "temporal": {
+     "2021": 0.016,
+     "2022": -0.471,
+     "2023": -0.097
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H1-momentum-L",
+   "tf": "H1",
+   "mech": "momentum",
+   "dir": "LONG",
+   "rr": 2.5,
+   "BASE_avg": 0.1035,
+   "STRESS": {
+    "n": 306,
+    "WR": 0.144,
+    "avg_R": 0.0755,
+    "med_R": -1.015,
+    "pf": 1.126,
+    "best5_rem": -0.0484,
+    "best10_rem": -0.1851,
+    "med_SL_pips": 80.2,
+    "med_TP_pips": 200.6,
+    "pct_TP70": 0.964,
+    "pct_TP80": 0.931,
+    "temporal": {
+     "2021": 0.059,
+     "2022": 0.459,
+     "2023": -0.018
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-momentum-S",
+   "tf": "H1",
+   "mech": "momentum",
+   "dir": "SHORT",
+   "rr": 2.5,
+   "BASE_avg": -0.0206,
+   "STRESS": {
+    "n": 294,
+    "WR": 0.136,
+    "avg_R": -0.048,
+    "med_R": -1.019,
+    "pf": 0.926,
+    "best5_rem": -0.1744,
+    "best10_rem": -0.324,
+    "med_SL_pips": 78.2,
+    "med_TP_pips": 195.5,
+    "pct_TP70": 0.973,
+    "pct_TP80": 0.956,
+    "temporal": {
+     "2021": -0.141,
+     "2022": -0.13,
+     "2023": 0.019
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H1-efficiency-L",
+   "tf": "H1",
+   "mech": "efficiency",
+   "dir": "LONG",
+   "rr": 2.5,
+   "BASE_avg": 0.1189,
+   "STRESS": {
+    "n": 163,
+    "WR": 0.123,
+    "avg_R": 0.0872,
+    "med_R": -1.01,
+    "pf": 1.151,
+    "best5_rem": -0.0363,
+    "best10_rem": -0.1725,
+    "med_SL_pips": 106.8,
+    "med_TP_pips": 267.0,
+    "pct_TP70": 0.896,
+    "pct_TP80": 0.89,
+    "temporal": {
+     "2021": -0.061,
+     "2022": 0.176,
+     "2023": 0.12
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-efficiency-S",
+   "tf": "H1",
+   "mech": "efficiency",
+   "dir": "SHORT",
+   "rr": 2.5,
+   "BASE_avg": 0.0832,
+   "STRESS": {
+    "n": 126,
+    "WR": 0.143,
+    "avg_R": 0.0583,
+    "med_R": -0.878,
+    "pf": 1.103,
+    "best5_rem": -0.0629,
+    "best10_rem": -0.1963,
+    "med_SL_pips": 117.3,
+    "med_TP_pips": 293.3,
+    "pct_TP70": 0.937,
+    "pct_TP80": 0.937,
+    "temporal": {
+     "2021": 0.239,
+     "2022": -0.26,
+     "2023": 0.056
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-dispaccept-L",
+   "tf": "H1",
+   "mech": "dispaccept",
+   "dir": "LONG",
+   "rr": 2.5,
+   "BASE_avg": 0.117,
+   "STRESS": {
+    "n": 171,
+    "WR": 0.181,
+    "avg_R": 0.0989,
+    "med_R": -0.751,
+    "pf": 1.178,
+    "best5_rem": -0.0181,
+    "best10_rem": -0.164,
+    "med_SL_pips": 115.3,
+    "med_TP_pips": 288.3,
+    "pct_TP70": 1.0,
+    "pct_TP80": 0.988,
+    "temporal": {
+     "2021": 0.048,
+     "2022": 0.331,
+     "2023": 0.056
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-dispaccept-S",
+   "tf": "H1",
+   "mech": "dispaccept",
+   "dir": "SHORT",
+   "rr": 2.5,
+   "BASE_avg": 0.0367,
+   "STRESS": {
+    "n": 162,
+    "WR": 0.154,
+    "avg_R": 0.0196,
+    "med_R": -1.01,
+    "pf": 1.034,
+    "best5_rem": -0.1086,
+    "best10_rem": -0.2501,
+    "med_SL_pips": 125.5,
+    "med_TP_pips": 313.8,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.056,
+     "2022": 0.124,
+     "2023": 0.021
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-structure-L",
+   "tf": "H1",
+   "mech": "structure",
+   "dir": "LONG",
+   "rr": 2.5,
+   "BASE_avg": 0.1061,
+   "STRESS": {
+    "n": 269,
+    "WR": 0.167,
+    "avg_R": 0.0811,
+    "med_R": -1.015,
+    "pf": 1.137,
+    "best5_rem": -0.0408,
+    "best10_rem": -0.1752,
+    "med_SL_pips": 84.8,
+    "med_TP_pips": 211.9,
+    "pct_TP70": 0.985,
+    "pct_TP80": 0.978,
+    "temporal": {
+     "2021": 0.173,
+     "2022": 0.276,
+     "2023": -0.017
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H1-structure-S",
+   "tf": "H1",
+   "mech": "structure",
+   "dir": "SHORT",
+   "rr": 2.5,
+   "BASE_avg": -0.0545,
+   "STRESS": {
+    "n": 268,
+    "WR": 0.142,
+    "avg_R": -0.081,
+    "med_R": -1.017,
+    "pf": 0.874,
+    "best5_rem": -0.2115,
+    "best10_rem": -0.3554,
+    "med_SL_pips": 81.5,
+    "med_TP_pips": 203.7,
+    "pct_TP70": 0.966,
+    "pct_TP80": 0.948,
+    "temporal": {
+     "2021": -0.174,
+     "2022": -0.122,
+     "2023": -0.027
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H4-pullback-L",
+   "tf": "H4",
+   "mech": "pullback",
+   "dir": "LONG",
+   "rr": 1.5,
+   "BASE_avg": 0.2721,
+   "STRESS": {
+    "n": 100,
+    "WR": 0.45,
+    "avg_R": 0.2507,
+    "med_R": 0.844,
+    "pf": 1.51,
+    "best5_rem": 0.1822,
+    "best10_rem": 0.1097,
+    "med_SL_pips": 108.7,
+    "med_TP_pips": 163.0,
+    "pct_TP70": 0.93,
+    "pct_TP80": 0.87,
+    "temporal": {
+     "2021": 0.372,
+     "2022": 0.581,
+     "2023": 0.056
+    }
+   },
+   "status": "SURVIVE"
+  },
+  {
+   "id": "MT-H4-pullback-S",
+   "tf": "H4",
+   "mech": "pullback",
+   "dir": "SHORT",
+   "rr": 1.5,
+   "BASE_avg": -0.0801,
+   "STRESS": {
+    "n": 91,
+    "WR": 0.308,
+    "avg_R": -0.1054,
+    "med_R": -1.019,
+    "pf": 0.837,
+    "best5_rem": -0.1787,
+    "best10_rem": -0.2801,
+    "med_SL_pips": 84.4,
+    "med_TP_pips": 126.5,
+    "pct_TP70": 0.835,
+    "pct_TP80": 0.802,
+    "temporal": {
+     "2021": 0.007,
+     "2022": -0.578,
+     "2023": -0.061
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H4-breakout-L",
+   "tf": "H4",
+   "mech": "breakout",
+   "dir": "LONG",
+   "rr": 1.5,
+   "BASE_avg": 0.0714,
+   "STRESS": {
+    "n": 48,
+    "WR": 0.312,
+    "avg_R": 0.0631,
+    "med_R": -0.081,
+    "pf": 1.13,
+    "best5_rem": -0.0054,
+    "best10_rem": -0.0736,
+    "med_SL_pips": 287.9,
+    "med_TP_pips": 431.9,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.275,
+     "2022": -0.009,
+     "2023": 0.208
+    }
+   },
+   "status": "TAIL_FRAGILE"
+  },
+  {
+   "id": "MT-H4-breakout-S",
+   "tf": "H4",
+   "mech": "breakout",
+   "dir": "SHORT",
+   "rr": 1.5,
+   "BASE_avg": -0.0689,
+   "STRESS": {
+    "n": 36,
+    "WR": 0.25,
+    "avg_R": -0.0777,
+    "med_R": -0.573,
+    "pf": 0.849,
+    "best5_rem": -0.1225,
+    "best10_rem": -0.2204,
+    "med_SL_pips": 269.0,
+    "med_TP_pips": 403.5,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": 0.274,
+     "2022": -0.337,
+     "2023": -0.142
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H4-compression-L",
+   "tf": "H4",
+   "mech": "compression",
+   "dir": "LONG",
+   "rr": 1.5,
+   "BASE_avg": 0.1113,
+   "STRESS": {
+    "n": 13,
+    "WR": 0.308,
+    "avg_R": 0.102,
+    "med_R": 0.059,
+    "pf": 1.218,
+    "best5_rem": -0.0139,
+    "best10_rem": -0.0139,
+    "med_SL_pips": 211.0,
+    "med_TP_pips": 316.4,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.277,
+     "2022": 0.232,
+     "2023": 0.374
+    }
+   },
+   "status": "SPARSE"
+  },
+  {
+   "id": "MT-H4-compression-S",
+   "tf": "H4",
+   "mech": "compression",
+   "dir": "SHORT",
+   "rr": 1.5,
+   "BASE_avg": 0.0385,
+   "STRESS": {
+    "n": 12,
+    "WR": 0.417,
+    "avg_R": 0.0267,
+    "med_R": -1.009,
+    "pf": 1.045,
+    "best5_rem": -0.1063,
+    "best10_rem": -0.1063,
+    "med_SL_pips": 147.8,
+    "med_TP_pips": 221.8,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.183,
+     "2022": 1.489,
+     "2023": -0.077
+    }
+   },
+   "status": "SPARSE"
+  },
+  {
+   "id": "MT-H4-momentum-L",
+   "tf": "H4",
+   "mech": "momentum",
+   "dir": "LONG",
+   "rr": 1.5,
+   "BASE_avg": 0.0878,
+   "STRESS": {
+    "n": 92,
+    "WR": 0.391,
+    "avg_R": 0.0763,
+    "med_R": -1.006,
+    "pf": 1.142,
+    "best5_rem": 0.0086,
+    "best10_rem": -0.0807,
+    "med_SL_pips": 183.1,
+    "med_TP_pips": 274.7,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.162,
+     "2022": 0.84,
+     "2023": -0.043
+    }
+   },
+   "status": "SURVIVE"
+  },
+  {
+   "id": "MT-H4-momentum-S",
+   "tf": "H4",
+   "mech": "momentum",
+   "dir": "SHORT",
+   "rr": 1.5,
+   "BASE_avg": -0.1496,
+   "STRESS": {
+    "n": 99,
+    "WR": 0.293,
+    "avg_R": -0.1627,
+    "med_R": -1.01,
+    "pf": 0.744,
+    "best5_rem": -0.2324,
+    "best10_rem": -0.328,
+    "med_SL_pips": 146.3,
+    "med_TP_pips": 219.4,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.308,
+     "2022": -0.351,
+     "2023": -0.033
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H4-efficiency-L",
+   "tf": "H4",
+   "mech": "efficiency",
+   "dir": "LONG",
+   "rr": 1.5,
+   "BASE_avg": 0.3912,
+   "STRESS": {
+    "n": 46,
+    "WR": 0.435,
+    "avg_R": 0.3798,
+    "med_R": 0.515,
+    "pf": 2.007,
+    "best5_rem": 0.3226,
+    "best10_rem": 0.2668,
+    "med_SL_pips": 213.6,
+    "med_TP_pips": 320.5,
+    "pct_TP70": 0.978,
+    "pct_TP80": 0.978,
+    "temporal": {
+     "2021": -0.249,
+     "2022": 0.308,
+     "2023": 0.556
+    }
+   },
+   "status": "SURVIVE"
+  },
+  {
+   "id": "MT-H4-efficiency-S",
+   "tf": "H4",
+   "mech": "efficiency",
+   "dir": "SHORT",
+   "rr": 1.5,
+   "BASE_avg": -0.1535,
+   "STRESS": {
+    "n": 32,
+    "WR": 0.281,
+    "avg_R": -0.1661,
+    "med_R": -1.009,
+    "pf": 0.735,
+    "best5_rem": -0.2196,
+    "best10_rem": -0.3374,
+    "med_SL_pips": 172.5,
+    "med_TP_pips": 258.7,
+    "pct_TP70": 0.969,
+    "pct_TP80": 0.969,
+    "temporal": {
+     "2021": -0.291,
+     "2022": -0.641,
+     "2023": -0.072
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H4-dispaccept-L",
+   "tf": "H4",
+   "mech": "dispaccept",
+   "dir": "LONG",
+   "rr": 1.5,
+   "BASE_avg": 0.2038,
+   "STRESS": {
+    "n": 41,
+    "WR": 0.341,
+    "avg_R": 0.1972,
+    "med_R": -0.07,
+    "pf": 1.477,
+    "best5_rem": 0.1232,
+    "best10_rem": 0.0491,
+    "med_SL_pips": 318.9,
+    "med_TP_pips": 478.4,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": 0.06,
+     "2022": -0.13,
+     "2023": 0.358
+    }
+   },
+   "status": "SURVIVE"
+  },
+  {
+   "id": "MT-H4-dispaccept-S",
+   "tf": "H4",
+   "mech": "dispaccept",
+   "dir": "SHORT",
+   "rr": 1.5,
+   "BASE_avg": -0.1111,
+   "STRESS": {
+    "n": 44,
+    "WR": 0.25,
+    "avg_R": -0.1194,
+    "med_R": -1.006,
+    "pf": 0.792,
+    "best5_rem": -0.1963,
+    "best10_rem": -0.2807,
+    "med_SL_pips": 263.5,
+    "med_TP_pips": 395.2,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.192,
+     "2022": -0.63,
+     "2023": 0.124
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H4-structure-L",
+   "tf": "H4",
+   "mech": "structure",
+   "dir": "LONG",
+   "rr": 1.5,
+   "BASE_avg": -0.0279,
+   "STRESS": {
+    "n": 93,
+    "WR": 0.333,
+    "avg_R": -0.0404,
+    "med_R": -1.01,
+    "pf": 0.929,
+    "best5_rem": -0.1093,
+    "best10_rem": -0.2045,
+    "med_SL_pips": 163.5,
+    "med_TP_pips": 245.3,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": -0.437,
+     "2022": 0.436,
+     "2023": -0.005
+    }
+   },
+   "status": "FAIL"
+  },
+  {
+   "id": "MT-H4-structure-S",
+   "tf": "H4",
+   "mech": "structure",
+   "dir": "SHORT",
+   "rr": 1.5,
+   "BASE_avg": -0.0533,
+   "STRESS": {
+    "n": 82,
+    "WR": 0.293,
+    "avg_R": -0.0662,
+    "med_R": -1.006,
+    "pf": 0.886,
+    "best5_rem": -0.146,
+    "best10_rem": -0.2343,
+    "med_SL_pips": 156.6,
+    "med_TP_pips": 235.0,
+    "pct_TP70": 1.0,
+    "pct_TP80": 1.0,
+    "temporal": {
+     "2021": 0.052,
+     "2022": -0.318,
+     "2023": -0.056
+    }
+   },
+   "status": "FAIL"
+  }
+ ],
+ "survivors": [
+  "MT-H1-pullback-L",
+  "MT-H1-breakout-S",
+  "MT-H4-pullback-L",
+  "MT-H4-momentum-L",
+  "MT-H4-efficiency-L",
+  "MT-H4-dispaccept-L"
+ ]
+}
