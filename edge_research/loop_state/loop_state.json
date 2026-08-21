@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "ALPHA_HISTORICAL_REREVIEW_WAVE1_COMPLETE",
+  "STATUS": "ALPHA_PORTFOLIO_DEEP_RESEARCH_PASS",
   "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -816,5 +816,16 @@
     "final_holdout_access": 0,
     "report": "reports/alpha_discovery/ALPHA_HISTORICAL_REREVIEW_WAVE1_REPORT.md",
     "next": "READY_FOR_CEO_ALPHA_PORTFOLIO_DECISION"
+  },
+  "DEEP_RESEARCH_S5_C001": {
+    "mandate": "ALPHA-PORTFOLIO-S5-C001-DEEP-RESEARCH-001",
+    "S5": "DEEP_RESEARCH_PASS (BASE+0.064/STRESS+0.032; legitimate positive skew best-1%-removed +0.036; DEV+0.062 & CALIB+0.080; regime-agnostic; long-only; independent of C-001)",
+    "candidate001_v1": "DEEP_RESEARCH_FAIL (UNSTABLE_OUTLIER_DEPENDENCE: best-1%-removed -0.058, CALIB -0.030)",
+    "overlap": "INDEPENDENT (jaccard 0.025, daily P&L corr 0.128)",
+    "validation_access": 0,
+    "final_holdout_access": 0,
+    "calibration_used": "2020-01..2022-01",
+    "next": "CANDIDATE_SPECIFICATIONS_READY_FOR_VALIDATION_DECISION (S5 only)",
+    "report": "reports/alpha_discovery/ALPHA_S5_C001_DEEP_RESEARCH_REPORT.md"
   }
 }
