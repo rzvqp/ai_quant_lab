@@ -16,6 +16,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from ai_trader.live_signal_source.bar_feed import LiveBarFeed
 from ai_trader.new_brain_bridge.bridge import TowerDependencies
 from ai_trader.new_brain_bridge.tests.conftest import bos_bull_bars
@@ -323,3 +325,26 @@ def test_nan_in_a_bar_is_rejected_end_to_end_not_silently_propagated(tmp_path: P
         )
     except N1IncrementalWorkerError as exc:
         assert "NaN" in str(exc) or "not JSON compliant" in str(exc) or "ValueError" in str(exc)
+
+
+def test_build_incremental_dual_clock_loop_refuses_to_start_on_pin_verification_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """RT-N1-ENV-SPLIT-0001: the fail-closed startup identity check is the FIRST thing this function
+    does -- proven here by making `verify_pin()` fail and confirming the process never gets far enough
+    to even construct a real `N1IncrementalClient`/gateway call, `gateway`/`session` are never touched
+    (both deliberately `None`, would raise their own AttributeError long before reaching this check if
+    it were ever bypassed)."""
+    monkeypatch.setattr(
+        artifact_pin, "verify_pin",
+        lambda: artifact_pin.PinVerificationResult(
+            ok=False, reason="simulated drift for this test", recorded_sha256="deadbeef",
+            rehashed_sha256=None, wheel_path=None,
+        ),
+    )
+    state_store = SqliteStateStore(tmp_path / "state.db")
+    with pytest.raises(artifact_pin.N1ArtifactIdentityMismatchError, match="N1_VALIDATED_DEPENDENCY_RESTORE_BLOCKED"):
+        build_incremental_dual_clock_loop(
+            None, None, state_store, tmp_path, symbol=SYMBOL,  # type: ignore[arg-type]
+        )
+    state_store.close()

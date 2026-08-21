@@ -1,10 +1,14 @@
 """`N1IncrementalClient` -- the ONLY file in the main AI Trader process/venv allowed to know about the
 isolated N1 replay worker. Never imports `ve_n1_replay`; talks to it exclusively via `subprocess.run`
-against `.alpha_n1_venv`'s own interpreter, one call per invocation, JSON over stdin/stdout. Reconstructs
-`ve_brain.RawAxes`/`ve_brain.EligibilityDecision` from the worker's JSON response using the MAIN venv's
-own `ve_brain` (both venvs pin the identical 0.1.3 wheel, verified in `artifact_pin.py`'s sibling
-identity checks) -- the exact same serialize/deserialize convention `dual_clock.upstream_context.py`
-already established for the bounded hydration path, reused here rather than reinvented."""
+against `.ai_trader_n1_venv`'s own interpreter (AI-Trader-exclusive -- never `.alpha_n1_venv`, see
+`artifact_pin.py`'s environment-split note), one call per invocation, JSON over stdin/stdout.
+Reconstructs `ve_brain.RawAxes`/`ve_brain.EligibilityDecision` from the worker's JSON response using the
+MAIN venv's own `ve_brain` (both venvs pin the identical 0.1.3 wheel, verified in `artifact_pin.py`'s
+sibling identity checks) -- the exact same serialize/deserialize convention `dual_clock.upstream_
+context.py` already established for the bounded hydration path, reused here rather than reinvented.
+Every response's own `artifact` identity block is additionally checked per-call against the pin
+(`artifact_pin.verify_artifact_identity`) -- fail-closed defense-in-depth against the environment
+drifting DURING a long-running process's lifetime, not just at startup."""
 
 from __future__ import annotations
 
@@ -18,7 +22,8 @@ import ve_brain  # type: ignore[import-untyped]
 
 from ai_trader.live_signal_source.types import Bar
 from ai_trader.new_brain_bridge.no_console_window import NO_CONSOLE_WINDOW_CREATIONFLAGS
-from ai_trader.new_brain_live.n1_incremental.artifact_pin import ALPHA_N1_VENV_PYTHON
+from ai_trader.new_brain_live.n1_incremental import artifact_pin
+from ai_trader.new_brain_live.n1_incremental.artifact_pin import AI_TRADER_N1_VENV_PYTHON
 
 _WORKER_SCRIPT = Path(__file__).resolve().parent / "worker_script.py"
 DEFAULT_TIMEOUT_SECONDS = 60.0
@@ -102,7 +107,7 @@ def _result_from_dict(d: dict[str, Any]) -> N1IncrementalResult:
 class N1IncrementalClient:
     def __init__(
         self, *, symbol: str, timeframe: str, bar_interval_seconds: int, implementation_commit: str,
-        venv_python: Path = ALPHA_N1_VENV_PYTHON, timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+        venv_python: Path = AI_TRADER_N1_VENV_PYTHON, timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
         max_staleness_seconds: float | None = None,
     ) -> None:
         self._symbol = symbol
@@ -149,6 +154,26 @@ class N1IncrementalClient:
 
         if not data.get("ok", False):
             raise N1IncrementalWorkerError(f"worker reported an internal error: {data.get('error')}")
+
+        artifact = data.get("artifact")
+        identity_ok, identity_reason = (
+            (False, "worker response carries no 'artifact' identity block")
+            if artifact is None
+            else artifact_pin.verify_artifact_identity(
+                ve_n1_replay_version=artifact.get("ve_n1_replay_version", ""),
+                ai_source_commit=artifact.get("ai_source_commit", ""),
+                detector_submodule_commit=artifact.get("detector_submodule_commit", ""),
+            )
+        )
+        if not identity_ok:
+            # Per-call, fail-closed defense-in-depth (RT-N1-ENV-SPLIT-0001): a venv mutated DURING a
+            # long-running process's lifetime is caught here, not just at startup by verify_pin(). Never
+            # surfaces `result` on a mismatch, regardless of what the worker otherwise computed.
+            return N1IncrementalResponse(
+                rejected=True, rejection_reason=f"ARTIFACT_VERSION_MISMATCH: {identity_reason}",
+                restored_from_snapshot=False, restore_rejected_reason=None, bars_processed=0,
+                result=None, snapshot_blob=None, identity_fingerprint=None,
+            )
 
         result_data = data.get("last_result")
         return N1IncrementalResponse(

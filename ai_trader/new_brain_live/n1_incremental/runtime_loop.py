@@ -1,5 +1,6 @@
 """`N1IncrementalDualClockLoop` -- the final wiring (CEO directive 2026-08-18, RT-N1-0003 `f33e739`):
-N1 incremental hydration (isolated `.alpha_n1_venv` subprocess) -> M15 context-refresh -> M5 decision loop
+N1 incremental hydration (isolated `.ai_trader_n1_venv` subprocess, AI-Trader-exclusive -- see
+`artifact_pin.py`'s environment-split note) -> M15 context-refresh -> M5 decision loop
 (real Tower N2->N3->N4 -> Router->Eligibility->EV->N6 -> Risk -> broker gate BLOCKED), behind an explicit,
 DEFAULT-OFF feature flag.
 
@@ -264,7 +265,19 @@ def build_incremental_dual_clock_loop(
     """Pure composition, mirroring `entrypoint.build_loop`'s own shape for the legacy path -- the SAME
     `state_store`/`DEFAULT_DB_PATH`, `NewBrainTelemetryLog`, `LiveShadowJournal`, and `HeartbeatWriter` a
     legacy-mode process would use, so a future cutover that switches the flag mid-deployment-lineage
-    continues the SAME journal sequence and telemetry log rather than starting a parallel one."""
+    continues the SAME journal sequence and telemetry log rather than starting a parallel one.
+
+    **Fail-closed startup identity check (RT-N1-ENV-SPLIT-0001)**: `artifact_pin.verify_pin()` is
+    checked FIRST, before anything else -- the process must never start against a `.ai_trader_n1_venv`
+    that doesn't hold the exact pinned `0.1.1` artifact. `client.py`'s own per-call check catches drift
+    DURING a run; this one refuses to even begin."""
+    pin_result = artifact_pin.verify_pin()
+    if not pin_result.ok:
+        raise artifact_pin.N1ArtifactIdentityMismatchError(
+            f"N1_VALIDATED_DEPENDENCY_RESTORE_BLOCKED: .ai_trader_n1_venv artifact pin verification "
+            f"failed -- {pin_result.reason}"
+        )
+
     context_store = UpstreamContextStore(state_store)
     snapshot_store = N1IncrementalSnapshotStore(state_store)
     n1_client = N1IncrementalClient(

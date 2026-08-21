@@ -1,5 +1,7 @@
 """N1 incremental integration -- CEO's 7 mandatory tests (2026-08-18), against the REAL installed
-`ve_n1_replay` 0.1.1 artifact via a genuine subprocess call to `.alpha_n1_venv` -- never mocked. This is
+`ve_n1_replay` 0.1.1 artifact via a genuine subprocess call to `.ai_trader_n1_venv` (AI-Trader-exclusive
+since the environment split, `N1_ALPHA_AI_TRADER_RUNTIME_ISOLATION_COMPLETE`, 2026-08-21) -- never
+mocked. This is
 the whole point: proving the Red-Team-cleared engine actually resolves the `N1_HYDRATION_CONDITIONAL`
 blocker end-to-end through the real isolation boundary this package builds, not merely that the client
 code compiles."""

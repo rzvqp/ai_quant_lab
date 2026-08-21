@@ -8,11 +8,20 @@ unbounded swing/break state.
 **Isolation, not installation.** `ve_n1_replay` is never imported into the main AI Trader process or
 venv -- it vendors its own copy of `ai_trader.n1_replay` under a bare namespace package, which would
 collide with THIS repo's own real `ai_trader.n1_replay` if ever imported in the same interpreter
-(confirmed empirically: `ai_trader` is not a real distribution in `.alpha_n1_venv`'s `pip list`, it is
+(confirmed empirically: `ai_trader` is not a real distribution in the isolated venv's `pip list`, it is
 materialized as a side effect of `import ve_n1_replay` itself). `worker_script.py` is the ONLY file in
-this package meant to run under `.alpha_n1_venv`'s own interpreter, launched as a genuinely separate OS
+this package meant to run under the isolated venv's own interpreter, launched as a genuinely separate OS
 process every call (`client.py`'s own `subprocess.run`, never an in-process import) -- so even if the two
 `ai_trader.n1_replay` copies differ, they are never resident in the same `sys.modules` table at once.
+
+**Environment split (CEO decision, AI Trader New Brain Architecture mandate, 2026-08-21,
+`N1_ALPHA_AI_TRADER_RUNTIME_ISOLATION_COMPLETE`)**: this package's isolated venv is `.ai_trader_n1_venv`
+-- AI-Trader-exclusive, holding only the pinned `0.1.1` artifact, never `.alpha_n1_venv` (Alpha
+Discovery's own, separately-authorized environment, which legitimately runs `ve_n1_replay 0.2.0` under
+`RT-RANGE-0002`). The two environments were originally the same physical venv, which caused a real,
+audited version-drift incident (`N1_REPLAY_VERSION_DRIFT_AUDIT.md`) when Alpha's own authorized upgrade
+silently changed what this package's subprocess call would see -- see `artifact_pin.py`'s own docstring
+for the full identity/authorization story.
 
 Status at delivery: built and tested against the real installed 0.1.1 artifact (not a mock), NOT wired
 into `entrypoint.py`'s `main()`/`build_loop()` -- that wiring is the controlled cutover, gated on Red

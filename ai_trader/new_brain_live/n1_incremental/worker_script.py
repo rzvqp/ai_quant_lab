@@ -1,4 +1,5 @@
-"""Runs EXCLUSIVELY under `.alpha_n1_venv`'s own interpreter, as a fresh subprocess per invocation --
+"""Runs EXCLUSIVELY under `.ai_trader_n1_venv`'s own interpreter (AI-Trader-exclusive -- never
+`.alpha_n1_venv`, see `artifact_pin.py`'s environment-split note), as a fresh subprocess per invocation --
 never imported in-process anywhere else. Imports ONLY the standard library and `ve_n1_replay`; never
 `ai_trader.*` (the real one, from this repo) -- this file has no way to reach it, deliberately, so it
 stays safe to run even though `ve_n1_replay` itself vendors a namespace-colliding `ai_trader.n1_replay`
@@ -21,7 +22,8 @@ from typing import Any
 import ve_n1_replay as n1r  # type: ignore[import-not-found]
 """Deliberately unresolvable under the main venv's own mypy run -- `ve_n1_replay` is never installed
 there (see this package's own `__init__.py`). Runtime-verified instead: this exact file is exercised
-end-to-end via a real subprocess call under `.alpha_n1_venv` in `tests/test_client.py`."""
+end-to-end via a real subprocess call under `.ai_trader_n1_venv` in `tests/test_incremental_
+integration.py`."""
 
 
 def _bar_from_dict(d: dict[str, Any]) -> Any:
@@ -100,7 +102,7 @@ def _snapshot_to_blob(snapshot: Any) -> str:
     than reverse-engineer that internal shape (fragile, breaks silently on any future library-internal
     change), this hands the ENTIRE snapshot round-trip to `pickle` -- both the write and the read happen in
     the SAME venv, same `ve_n1_replay`/`ve_brain` versions, every time (this file only ever runs under
-    `.alpha_n1_venv`), so `pickle` is the correct tool here, not a JSON reimplementation of the library's
+    `.ai_trader_n1_venv`), so `pickle` is the correct tool here, not a JSON reimplementation of the library's
     own internal object graph. The blob is opaque to every OTHER file in this repo (`client.py` only ever
     stores and replays it back unchanged) -- never unpickled anywhere outside this one worker process, and
     never sourced from anything other than this same worker's own prior output."""
@@ -133,6 +135,14 @@ def _handle(request: dict[str, Any]) -> dict[str, Any]:
         except (pickle.UnpicklingError, EOFError, AttributeError, ValueError) as exc:
             restore_rejected_reason = f"UnpicklableSnapshot: {type(exc).__name__}: {exc}"
 
+    artifact = {
+        "ve_n1_replay_version": n1r.VE_N1_REPLAY_VERSION, "ai_source_commit": n1r.AI_SOURCE_COMMIT,
+        "detector_submodule_commit": n1r.DETECTOR_SUBMODULE_COMMIT,
+    }
+    """RT-N1-ENV-SPLIT-0001: included on EVERY response, not just the successful path -- the caller's
+    own per-call identity check (`artifact_pin.verify_artifact_identity`) must be able to prove which
+    venv actually answered regardless of outcome, never only when the bars happened to be fresh."""
+
     bars_processed = 0
     last_result = None
     try:
@@ -145,6 +155,7 @@ def _handle(request: dict[str, Any]) -> dict[str, Any]:
             "ok": True, "rejected": True, "rejection_reason": f"{type(exc).__name__}: {exc}",
             "restored_from_snapshot": restored, "restore_rejected_reason": restore_rejected_reason,
             "bars_processed": bars_processed, "last_result": None, "snapshot_blob": None, "identity": None,
+            "artifact": artifact,
         }
 
     wall_clock_now = request.get("wall_clock_now")
@@ -157,7 +168,7 @@ def _handle(request: dict[str, Any]) -> dict[str, Any]:
                 "restored_from_snapshot": restored, "restore_rejected_reason": restore_rejected_reason,
                 "bars_processed": bars_processed,
                 "last_result": None if last_result is None else _result_to_dict(last_result),
-                "snapshot_blob": None, "identity": _identity_to_dict(engine.identity),
+                "snapshot_blob": None, "identity": _identity_to_dict(engine.identity), "artifact": artifact,
             }
 
     snapshot = engine.snapshot()
@@ -167,10 +178,7 @@ def _handle(request: dict[str, Any]) -> dict[str, Any]:
         "bars_processed": bars_processed,
         "last_result": None if last_result is None else _result_to_dict(last_result),
         "snapshot_blob": _snapshot_to_blob(snapshot), "identity": _identity_to_dict(engine.identity),
-        "artifact": {
-            "ve_n1_replay_version": n1r.VE_N1_REPLAY_VERSION, "ai_source_commit": n1r.AI_SOURCE_COMMIT,
-            "detector_submodule_commit": n1r.DETECTOR_SUBMODULE_COMMIT,
-        },
+        "artifact": artifact,
     }
 
 
