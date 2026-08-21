@@ -112,6 +112,14 @@ CEO/Statistician/Red-Team-ratified decision-rule authority for this catalog. `Mo
 ships as the only concrete implementation -- deterministic, test-only, computes no real expected value,
 reads one explicit fixture flag off `TradeHypothesis.expected_edge`.
 
+> **Addendum (mandate `VE-AI-TRADER-GENERIC-EV-AUTHORITY-001`)**: the blocker described above is closed --
+> `real_ev_engine.py`'s `RealEVDecisionEngine` is the separate, versioned decision-rule authority this
+> paragraph anticipated, composing AI-Trader's own `StrategyCatalog` admission gate with `ve_brain`'s
+> public, generic `run_ev`. `ve_brain.decide_n6` and its sealed catalog remain untouched. See
+> `VE_GENERIC_STRATEGY_EV_AUTHORITY_ARCHITECTURE.md` for the full design and
+> `VE_GENERIC_STRATEGY_EV_AUTHORITY_HANDOFF.md` for how a validated strategy reaches it. The paragraph
+> above is left as-written since it accurately records the state of the system before this mandate.
+
 ## 9. Risk Engine
 
 Reused verbatim: `risk_manager_live.engine.evaluate_trade_proposal`. Already fully generic (no

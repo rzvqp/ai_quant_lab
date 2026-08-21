@@ -97,3 +97,12 @@ requires either (a) a new `ve_brain` release that accepts strategies from outsid
 catalog, or (b) a separate, explicitly CEO/Statistician/Red-Team-ratified EV/decision-rule authority
 built for this new catalog. Onboarding a strategy through this document does not, by itself, grant it a
 path to `TRADE_DECISION` -- that is a second, separate, not-yet-authorized mandate.
+
+> **Addendum (mandate `VE-AI-TRADER-GENERIC-EV-AUTHORITY-001`, closes this gap)**: option (b) above has
+> now been built -- `ai_trader/new_brain_live/strategy_platform/real_ev_engine.py`,
+> `RealEVDecisionEngine`. Items 1-10 above are UNCHANGED and remain the starting point for onboarding a
+> strategy; see [`VE_GENERIC_STRATEGY_EV_AUTHORITY_HANDOFF.md`](VE_GENERIC_STRATEGY_EV_AUTHORITY_HANDOFF.md)
+> for the one new step (constructing `RealEVDecisionEngine` and populating
+> `TradeHypothesis.expected_edge`) that now carries a `VALIDATED` `CatalogEntry` the rest of the way to a
+> real `TRADE_DECISION`. This paragraph is left as-written above (rather than rewritten) since it
+> accurately records the state of the system before this mandate.

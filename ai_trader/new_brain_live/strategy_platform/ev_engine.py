@@ -44,7 +44,23 @@ class EVDecision:
             raise ValueError("EVDecision: NO_TRADE must carry at least one reason code")
 
 
+MOCK_EV_ENGINE_VERSION = "mock-ev-engine-v1"
+
+
 class EVDecisionEngine(Protocol):
+    @property
+    def engine_version(self) -> str:
+        """Identifies which engine actually produced a decision (mandate
+        VE-AI-TRADER-GENERIC-EV-AUTHORITY-001 section 10 -- 'no environment/configuration ambiguity
+        between MOCK and REAL AUTHORITY'). Read by `pipeline._fingerprints` and stamped onto every
+        `ShadowLedgerRecord`, so the audit trail always names the engine that actually ran a cycle rather
+        than a module-level constant that could drift out of sync with whichever engine instance was
+        actually passed to `run_cycle`. Declared as a read-only property (not a plain mutable attribute)
+        so both `MockEVDecisionEngine` (a mutable class attribute) and `RealEVDecisionEngine` (a frozen
+        dataclass field) satisfy this Protocol structurally -- a plain `engine_version: str` annotation
+        here would require a SETTABLE attribute, which a frozen dataclass can never provide."""
+        ...
+
     def decide(self, hypothesis: TradeHypothesis) -> EVDecision:
         ...
 
@@ -54,6 +70,8 @@ class MockEVDecisionEngine:
     `expected_edge` dict (`"mock_decision"`, one of `"TRADE"`/`"NO_TRADE"`) -- NOT a computed edge, NOT
     a ranking, a plain labeled echo so mock strategies can drive both branches of the pipeline
     deterministically for testing. Missing or any other value fails closed to NO_TRADE."""
+
+    engine_version: str = MOCK_EV_ENGINE_VERSION
 
     def decide(self, hypothesis: TradeHypothesis) -> EVDecision:
         edge = hypothesis.expected_edge or {}

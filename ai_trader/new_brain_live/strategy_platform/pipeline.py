@@ -21,7 +21,9 @@ from ai_trader.new_brain_live.market_state import MARKET_STATE_SCHEMA_VERSION, M
 from ai_trader.new_brain_live.strategy_platform import reason_codes as rc
 from ai_trader.new_brain_live.strategy_platform.catalog import StrategyCatalog
 from ai_trader.new_brain_live.strategy_platform.dedup import already_processed
-from ai_trader.new_brain_live.strategy_platform.ev_engine import TRADE_DECISION, EVDecision, EVDecisionEngine
+from ai_trader.new_brain_live.strategy_platform.ev_engine import (
+    MOCK_EV_ENGINE_VERSION, TRADE_DECISION, EVDecision, EVDecisionEngine,
+)
 from ai_trader.new_brain_live.strategy_platform.risk_execution_adapter import RiskExecutionDeps, evaluate_and_attempt
 from ai_trader.new_brain_live.strategy_platform.router import RouterOutcome, StrategyRouter
 from ai_trader.new_brain_live.strategy_platform.shadow_ledger import ShadowLedger, ShadowLedgerRecord, StrategyPlatformFingerprints
@@ -29,7 +31,12 @@ from ai_trader.new_brain_live.strategy_platform.shadow_ledger import ShadowLedge
 POLICY_PENDING_VALIDATED_STRATEGY_PORTFOLIO = "POLICY_PENDING_VALIDATED_STRATEGY_PORTFOLIO"
 
 CATALOG_VERSION = "strategy-catalog-v1"
-EV_ENGINE_VERSION = "mock-ev-engine-v1"
+#: Fallback ONLY for the no-EV-engine-yet code paths below (an invalid MarketState, dedup replay, empty
+#: catalog, no eligible strategy, no hypotheses) -- these never touch `ev_engine` at all, so there is no
+#: "actual engine" to name; MOCK_EV_ENGINE_VERSION is a reasonable, disclosed placeholder for a field that
+#: genuinely doesn't apply to that record. Once an `EVDecisionEngine` IS invoked (a cycle that reaches
+#: `ev_engine.decide`), its own `engine_version` is used instead -- see `_fingerprints`'s `ev_engine` arg.
+EV_ENGINE_VERSION = MOCK_EV_ENGINE_VERSION
 RISK_ENGINE_VERSION = "risk_manager_live-v1"
 EXECUTION_ADAPTER_VERSION = "execution_shadow-v1"
 
@@ -42,11 +49,16 @@ class CycleResult:
     duplicate: bool
 
 
-def _fingerprints(market_state: MarketState) -> StrategyPlatformFingerprints:
+def _fingerprints(market_state: MarketState, *, ev_engine_version: str = EV_ENGINE_VERSION) -> StrategyPlatformFingerprints:
+    """`ev_engine_version` defaults to the Mock placeholder for the no-EV-engine-invoked code paths (see
+    the module constant's own comment); every call site AFTER `ev_engine.decide(...)` has actually run
+    passes the real engine's own `ev_engine.engine_version` explicitly (mandate VE-AI-TRADER-GENERIC-EV-
+    AUTHORITY-001 section 10 -- the ledger must never claim an engine other than the one that really ran).
+    """
     return StrategyPlatformFingerprints(
         market_intelligence_fingerprint=market_state.n1_output_fp,
         market_state_schema_version=MARKET_STATE_SCHEMA_VERSION, catalog_version=CATALOG_VERSION,
-        ev_engine_version=EV_ENGINE_VERSION, risk_engine_version=RISK_ENGINE_VERSION,
+        ev_engine_version=ev_engine_version, risk_engine_version=RISK_ENGINE_VERSION,
         execution_adapter_version=EXECUTION_ADAPTER_VERSION,
     )
 
@@ -122,7 +134,7 @@ def run_cycle(
             ev_decisions=tuple((d.hypothesis.strategy_id, d.decision) for d in ev_decisions),
             final_decision="NO_TRADE", final_reason_codes=(rc.EV_BELOW_THRESHOLD,),
             hypothetical_order_intent=None, broker_submission_state="DISABLED_NEVER_REACHED",
-            fingerprints=_fingerprints(market_state),
+            fingerprints=_fingerprints(market_state, ev_engine_version=ev_engine.engine_version),
         )
         ledger.record(record)
         return CycleResult(record=record, router_outcome=outcome, ev_decisions=ev_decisions, duplicate=False)
@@ -135,7 +147,7 @@ def run_cycle(
             ev_decisions=tuple((d.hypothesis.strategy_id, d.decision) for d in ev_decisions),
             final_decision="NO_TRADE", final_reason_codes=(rc.CONFLICT_POLICY_BLOCK, POLICY_PENDING_VALIDATED_STRATEGY_PORTFOLIO),
             hypothetical_order_intent=None, broker_submission_state="DISABLED_NEVER_REACHED",
-            fingerprints=_fingerprints(market_state),
+            fingerprints=_fingerprints(market_state, ev_engine_version=ev_engine.engine_version),
         )
         ledger.record(record)
         return CycleResult(record=record, router_outcome=outcome, ev_decisions=ev_decisions, duplicate=False)
@@ -152,7 +164,8 @@ def run_cycle(
             hypothesis_dedup_keys=dedup_keys,
             ev_decisions=tuple((d.hypothesis.strategy_id, d.decision) for d in ev_decisions),
             final_decision="NO_TRADE", final_reason_codes=(rc.RISK_REJECTED,), hypothetical_order_intent=order_intent,
-            broker_submission_state="DISABLED_NEVER_REACHED", fingerprints=_fingerprints(market_state),
+            broker_submission_state="DISABLED_NEVER_REACHED",
+            fingerprints=_fingerprints(market_state, ev_engine_version=ev_engine.engine_version),
         )
         ledger.record(record)
         return CycleResult(record=record, router_outcome=outcome, ev_decisions=ev_decisions, duplicate=False)
@@ -167,7 +180,8 @@ def run_cycle(
         hypothesis_dedup_keys=dedup_keys,
         ev_decisions=tuple((d.hypothesis.strategy_id, d.decision) for d in ev_decisions),
         final_decision="NO_TRADE", final_reason_codes=(final_reason,), hypothetical_order_intent=order_intent,
-        broker_submission_state=broker_state, fingerprints=_fingerprints(market_state),
+        broker_submission_state=broker_state,
+        fingerprints=_fingerprints(market_state, ev_engine_version=ev_engine.engine_version),
     )
     ledger.record(record)
     return CycleResult(record=record, router_outcome=outcome, ev_decisions=ev_decisions, duplicate=False)
