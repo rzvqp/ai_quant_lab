@@ -4343,4 +4343,58 @@
                V4_4_1-STALE-DESIGN-AUDIT-001.md.
                STATE: OPERATIONAL. Next entry [95], prev_hash E94.
   entry_hash:  E94
+
+[95] 2026-08-21
+  prev_hash:   E94
+  event:       VERDICT
+  dc_id:       DC-RANGE-V4-4-1-STALE-IMPLEMENTATION-AUDIT
+  freeze_hash: VE impl 4ed4eb4 (chain 3bb61cf->b1dcf92->9aba9b7->e2b65bf freeze->8605cb2 protocol->9116c2b calib
+               ->4ed4eb4 impl) / branch discovery-mk-matrix-v1 / new files range_semantic_v4_4_1.py blob ddec2474
+               + range_engine_v4_4_1.py blob 99e284d3 / config_id d7b6c067...a1f03 / contract range-hierarchical
+               -v4.4.1 / V4.4+V4.3+scorer byte-untouched vs 3bb61cf
+  battery_ver: RT-RANGE-V4_4_1-IMPLEMENTATION-AUDIT-001
+  reviewer:    Red Team
+  detail:      INDEPENDENT STATIC/CONSTRUCTION AUDIT of the frozen RANGE V4.4.1 T-STALE implementation (4ed4eb4) --
+               gate between impl freeze and future fresh blind. VERDICT = ***V4_4_1_IMPLEMENTATION_AUDIT_PASS_WITH_
+               NONBLOCKING_NOTES*** + V4_4_1_FRESH_BLIND_VALIDATION_AUTHORIZED_FOR_CEO_DECISION. No redesign/recalib/
+               param-change/FB14/MB3/fresh-blind. PROVENANCE PASS: 9 commits exist, linear VE lineage 3bb61cf->
+               b1dcf92->9aba9b7->e2b65bf->8605cb2->9116c2b->4ed4eb4 (first-parent walk clean), calibration 9116c2b
+               (01:31) BEFORE impl 4ed4eb4 (02:27), 4ed4eb4=HEAD 0-commits-after, local=remote x4. V4_4_BYTE_UNTOUCHED
+               =TRUE: independent git-blob diff 3bb61cf<->4ed4eb4 IDENTICAL for range_semantic_v4_4.py(484bd4fa)/
+               range_engine_v4_4.py(a45b936e)/range_semantic_v4_3.py(a822c78d)/range_engine_v4_3.py(9a6dc728)/
+               scoring.py(664934ab); impl purely additive (2 src + 1 test + report + PROJECT_STATE). ALL 28 AUDIT
+               AREAS PASS, 0 amend, 0 block, EACH INDEPENDENTLY REPRODUCED (not trusting VE green tests): (3) subclass
+               arch confirmed -- ConfigV441/StructureV441/ProducerV441 TRUE subclasses, exactly 5 overrides (__init__/
+               _offer_swing_everywhere/_step_macro/snapshot_state/restore_state) + 1 new (_t_stale_should_fire), no
+               hidden semantic override; (5) RT RECOMPUTED config_id = d7b6c067...a1f03 == frozen 9116c2b registry
+               EXACT (31 fields); (4) params 29/4/3/12 hardcoded, no env/runtime substitution, validate() fail-closes
+               if rejections<alternation+1; (6-12) RT construction probe (built from scratch, NOT VE helpers): age
+               11->F/12->T, rej 3->F/4->T, window-29 strict-> boundary excl, alternation 5-one-sided(0flips)->F / 4rej-
+               2flips->F / 5rej-3flips->T, accepted-swing NOT buffered + far-swing(SWING_OUTSIDE_CLUSTER) buffered +
+               ATR_UNAVAILABLE excluded, confirmed-immune; (14) NEXT_BAR_REPLACEMENT_VALID -- observe() runs
+               _offer_swing_everywhere (lagged swings) BEFORE _step_macro, _kill_macro sets active_macro=None
+               identical to every existing V4.4 termination, no synchronous re-seed, pending clear after fire, RT
+               prefix-invariance green; (16/19) DIRECTIONAL_PROTECTION_PRESERVED -- ER_max0.5/RND_max1.0/MIN_TRAV1/W29
+               unchanged, _evaluate_macro_formation inherited byte-unmodified, no confirmation bypass; (17)
+               anti-churn: RT-GENERATED 200-bar uptrend through real engine = 0 T-STALE fires; (18) SLOW_RANGE_
+               PROTECTION_PASS (accepted touches never buffered); (20/21) confirmed lifecycle + INTERNAL byte-parity
+               disjoint (VE stale10 reproduced); (24) snapshot fail-closed atomic (scratch instance + __dict__ swap,
+               wrong config/contract/fingerprint refused, STATE_BEFORE==STATE_AFTER); (26) RT RERAN suites: 18 stale
+               PASS / 76 V4.4 PASS / 488 full PASS + mypy --strict CLEAN on both new files, no skip/xfail, non-vacuous;
+               (27) RT INDEPENDENTLY applied all 8 mutations at runtime (subclass/config, zero repo edit) = 8/8 CAUGHT
+               (2 via validate() fail-closed at construction); (28) _rejected_touches deque maxlen=64 bounded, O(64)/
+               bar, no unbounded history; (29) rollback -- V4.4/V4.3 do NOT import v4_4_1 (grep 0), V4.4 importable +
+               76/76 green with V4.4.1 present; (30) contamination -- only governance comments, ZERO FB14/MB3 semantic
+               use, MB3-025-048 SEALED. 3 NON-BLOCKING NOTES (none an impl defect): (1) impl fingerprint is a
+               descriptive freeze-label not a source digest (same V4.3/V4.4 convention; integrity actually via git-blob
+               + config_id); (2) min_alternation=3 carries the calibration FRAGILE flag -- faithfully encoded, protected
+               by validate() floor + mutations M1/M2/M3, must be watched at fresh-blind; (3) window-29 sensitivity
+               'not independently discriminated' (disclosed calibration limitation) carried forward. NEXT (recommend to
+               CEO, NOT authorized here): a NEW fresh blind batch independent of V4.4.1 diagnosis/design/calibration/
+               impl/this audit, NOT reusing FB14/MB3-001-024/MB3-025-048; NOT a semantic validation. NOT authorized:
+               fresh-blind exec/Strategy Catalog/Alpha/AI Trader/LIVE_SHADOW/broker/orders/live/V4.4-V4.4.1 promotion.
+               Detectors/labels/scorer/escrow unmodified; changes only in red_team/. Report: RT-RANGE-V4_4_1-
+               IMPLEMENTATION-AUDIT-001.md.
+               STATE: OPERATIONAL. Next entry [96], prev_hash E95.
+  entry_hash:  E95
 ```
