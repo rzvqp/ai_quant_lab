@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "ALPHA_WAVE1_COMPLETE",
+  "STATUS": "READY_FOR_CEO_ALPHA_SURVIVOR_REVIEW",
   "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -756,6 +756,16 @@
     "v44_dev_confirmed_frac": 0.0554,
     "final_holdout_access": 0,
     "cost": "RATIFIED BASE 0.05 / STRESS 0.24",
-    "checkpoint": "reports/alpha_discovery/ALPHA_WAVE1_CHECKPOINT.md"
+    "checkpoint": "reports/alpha_discovery/ALPHA_WAVE1_CHECKPOINT.md",
+    "status": "ALPHA_DISCOVERY_AUTONOMOUS_CAMPAIGN_COMPLETE",
+    "total_ids": 35,
+    "early_stopped_at": 35,
+    "hard_max": 200,
+    "robust_survivors": 1,
+    "alpha_candidates": 1,
+    "candidate": "ALPHA_CANDIDATE-001 displacement+acceptance (trend-conditioned, fat-tail caveat)",
+    "families_tested": 17,
+    "validation_consumed": 0,
+    "report": "reports/alpha_discovery/ALPHA_DISCOVERY_AUTONOMOUS_CAMPAIGN_REPORT.md"
   }
 }

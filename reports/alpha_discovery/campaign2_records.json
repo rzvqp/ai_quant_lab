@@ -1,0 +1,1271 @@
+{
+ "reclassified": [
+  {
+   "id": "C-TU-pullback2",
+   "family": "pullback",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "pullback depth2 continuation LONG",
+   "n_signals": 3704,
+   "GROSS": {
+    "n": 2323,
+    "total_R": 56.44,
+    "avg_R": 0.0243,
+    "win_rate": 0.221,
+    "profit_factor": 1.032,
+    "best_share": 0.611,
+    "temporal_concentration": 2.164,
+    "max_dd_R": -215.57
+   },
+   "BASE": {
+    "n": 2323,
+    "total_R": -41.74,
+    "avg_R": -0.018,
+    "win_rate": 0.221,
+    "profit_factor": 0.978,
+    "best_share": null,
+    "temporal_concentration": 2.809,
+    "max_dd_R": -277.32
+   },
+   "STRESS": {
+    "n": 2323,
+    "total_R": -416.91,
+    "avg_R": -0.1795,
+    "win_rate": 0.214,
+    "profit_factor": 0.809,
+    "best_share": null,
+    "temporal_concentration": 0.376,
+    "max_dd_R": -564.87
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "BASE net<=0 (-0.018) cost-failure",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TU-pullback3",
+   "family": "pullback",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "pullback depth3 continuation LONG",
+   "n_signals": 1397,
+   "GROSS": {
+    "n": 1133,
+    "total_R": 117.64,
+    "avg_R": 0.1038,
+    "win_rate": 0.191,
+    "profit_factor": 1.13,
+    "best_share": 0.221,
+    "temporal_concentration": 0.356,
+    "max_dd_R": -77.16
+   },
+   "BASE": {
+    "n": 1133,
+    "total_R": 67.51,
+    "avg_R": 0.0596,
+    "win_rate": 0.191,
+    "profit_factor": 1.071,
+    "best_share": 0.386,
+    "temporal_concentration": 0.637,
+    "max_dd_R": -87.01
+   },
+   "STRESS": {
+    "n": 1133,
+    "total_R": -125.05,
+    "avg_R": -0.1104,
+    "win_rate": 0.189,
+    "profit_factor": 0.888,
+    "best_share": null,
+    "temporal_concentration": 0.521,
+    "max_dd_R": -191.97
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 0.637>0.6",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TU-pullback4",
+   "family": "pullback",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "pullback depth4 continuation LONG",
+   "n_signals": 405,
+   "GROSS": {
+    "n": 377,
+    "total_R": 86.65,
+    "avg_R": 0.2299,
+    "win_rate": 0.212,
+    "profit_factor": 1.295,
+    "best_share": 0.301,
+    "temporal_concentration": 0.43,
+    "max_dd_R": -36.86
+   },
+   "BASE": {
+    "n": 377,
+    "total_R": 69.25,
+    "avg_R": 0.1837,
+    "win_rate": 0.21,
+    "profit_factor": 1.224,
+    "best_share": 0.376,
+    "temporal_concentration": 0.488,
+    "max_dd_R": -42.77
+   },
+   "STRESS": {
+    "n": 377,
+    "total_R": 3.13,
+    "avg_R": 0.0083,
+    "win_rate": 0.204,
+    "profit_factor": 1.009,
+    "best_share": 8.273,
+    "temporal_concentration": 9.331,
+    "max_dd_R": -72.23
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "single-trade 0.376>0.35",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TU-momentum",
+   "family": "momentum",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "expansion-bar momentum LONG",
+   "n_signals": 3793,
+   "GROSS": {
+    "n": 2266,
+    "total_R": 137.52,
+    "avg_R": 0.0607,
+    "win_rate": 0.226,
+    "profit_factor": 1.08,
+    "best_share": 0.207,
+    "temporal_concentration": 0.546,
+    "max_dd_R": -111.24
+   },
+   "BASE": {
+    "n": 2266,
+    "total_R": 63.81,
+    "avg_R": 0.0282,
+    "win_rate": 0.225,
+    "profit_factor": 1.036,
+    "best_share": 0.445,
+    "temporal_concentration": 1.071,
+    "max_dd_R": -138.06
+   },
+   "STRESS": {
+    "n": 2266,
+    "total_R": -216.28,
+    "avg_R": -0.0954,
+    "win_rate": 0.222,
+    "profit_factor": 0.892,
+    "best_share": null,
+    "temporal_concentration": 0.537,
+    "max_dd_R": -330.19
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 1.071>0.6",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TU-continuation",
+   "family": "continuation",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "fresh 20-high breakout LONG",
+   "n_signals": 5041,
+   "GROSS": {
+    "n": 2496,
+    "total_R": 197.06,
+    "avg_R": 0.0789,
+    "win_rate": 0.132,
+    "profit_factor": 1.092,
+    "best_share": 0.458,
+    "temporal_concentration": 0.635,
+    "max_dd_R": -197.54
+   },
+   "BASE": {
+    "n": 2496,
+    "total_R": 9.63,
+    "avg_R": 0.0039,
+    "win_rate": 0.132,
+    "profit_factor": 1.004,
+    "best_share": 9.349,
+    "temporal_concentration": 15.403,
+    "max_dd_R": -240.56
+   },
+   "STRESS": {
+    "n": 2496,
+    "total_R": -703.51,
+    "avg_R": -0.2819,
+    "win_rate": 0.131,
+    "profit_factor": 0.764,
+    "best_share": null,
+    "temporal_concentration": 0.427,
+    "max_dd_R": -873.17
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 15.403>0.6",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TU-compression",
+   "family": "compression-accel",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "compression->expansion LONG",
+   "n_signals": 1664,
+   "GROSS": {
+    "n": 1042,
+    "total_R": -18.11,
+    "avg_R": -0.0174,
+    "win_rate": 0.227,
+    "profit_factor": 0.977,
+    "best_share": null,
+    "temporal_concentration": 2.826,
+    "max_dd_R": -113.4
+   },
+   "BASE": {
+    "n": 1042,
+    "total_R": -47.11,
+    "avg_R": -0.0452,
+    "win_rate": 0.226,
+    "profit_factor": 0.942,
+    "best_share": null,
+    "temporal_concentration": 1.183,
+    "max_dd_R": -134.72
+   },
+   "STRESS": {
+    "n": 1042,
+    "total_R": -157.3,
+    "avg_R": -0.151,
+    "win_rate": 0.222,
+    "profit_factor": 0.824,
+    "best_share": null,
+    "temporal_concentration": 0.464,
+    "max_dd_R": -215.72
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "gross<=0 (-0.0174)",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TU-exhaustion",
+   "family": "exhaustion",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "exhaustion reversal SHORT",
+   "n_signals": 3756,
+   "GROSS": {
+    "n": 2842,
+    "total_R": 191.72,
+    "avg_R": 0.0675,
+    "win_rate": 0.324,
+    "profit_factor": 1.106,
+    "best_share": 0.123,
+    "temporal_concentration": 0.419,
+    "max_dd_R": -68.94
+   },
+   "BASE": {
+    "n": 2842,
+    "total_R": 108.9,
+    "avg_R": 0.0383,
+    "win_rate": 0.323,
+    "profit_factor": 1.058,
+    "best_share": 0.216,
+    "temporal_concentration": 0.575,
+    "max_dd_R": -95.81
+   },
+   "STRESS": {
+    "n": 2842,
+    "total_R": -205.78,
+    "avg_R": -0.0724,
+    "win_rate": 0.315,
+    "profit_factor": 0.902,
+    "best_share": null,
+    "temporal_concentration": 0.745,
+    "max_dd_R": -270.23
+   },
+   "status": "FAST_FALSIFICATION_PASS",
+   "reason": "gross 0.0675>0 BASE 0.0383>0 stable",
+   "min_sample": 120,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "COST_FRAGILE_STRESS_NEGATIVE"
+  },
+  {
+   "id": "C-TD-pullback2",
+   "family": "pullback",
+   "regime_relationship": "TREND_DOWN_DEPENDENT",
+   "mechanism": "pullback depth2 continuation SHORT",
+   "n_signals": 3722,
+   "GROSS": {
+    "n": 2346,
+    "total_R": 325.8,
+    "avg_R": 0.1389,
+    "win_rate": 0.201,
+    "profit_factor": 1.178,
+    "best_share": 0.273,
+    "temporal_concentration": 0.594,
+    "max_dd_R": -77.14
+   },
+   "BASE": {
+    "n": 2346,
+    "total_R": 229.77,
+    "avg_R": 0.0979,
+    "win_rate": 0.201,
+    "profit_factor": 1.12,
+    "best_share": 0.386,
+    "temporal_concentration": 0.784,
+    "max_dd_R": -111.08
+   },
+   "STRESS": {
+    "n": 2346,
+    "total_R": -134.25,
+    "avg_R": -0.0572,
+    "win_rate": 0.2,
+    "profit_factor": 0.94,
+    "best_share": null,
+    "temporal_concentration": 0.967,
+    "max_dd_R": -262.09
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 0.784>0.6",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TD-pullback3",
+   "family": "pullback",
+   "regime_relationship": "TREND_DOWN_DEPENDENT",
+   "mechanism": "pullback depth3 continuation SHORT",
+   "n_signals": 1422,
+   "GROSS": {
+    "n": 1155,
+    "total_R": 71.63,
+    "avg_R": 0.062,
+    "win_rate": 0.171,
+    "profit_factor": 1.076,
+    "best_share": 0.513,
+    "temporal_concentration": 1.556,
+    "max_dd_R": -88.66
+   },
+   "BASE": {
+    "n": 1155,
+    "total_R": 22.68,
+    "avg_R": 0.0196,
+    "win_rate": 0.171,
+    "profit_factor": 1.023,
+    "best_share": 1.616,
+    "temporal_concentration": 4.184,
+    "max_dd_R": -99.82
+   },
+   "STRESS": {
+    "n": 1155,
+    "total_R": -163.33,
+    "avg_R": -0.1414,
+    "win_rate": 0.171,
+    "profit_factor": 0.858,
+    "best_share": null,
+    "temporal_concentration": 0.709,
+    "max_dd_R": -211.71
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 4.184>0.6",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TD-momentum",
+   "family": "momentum",
+   "regime_relationship": "TREND_DOWN_DEPENDENT",
+   "mechanism": "expansion-bar momentum SHORT",
+   "n_signals": 4000,
+   "GROSS": {
+    "n": 2389,
+    "total_R": 138.13,
+    "avg_R": 0.0578,
+    "win_rate": 0.202,
+    "profit_factor": 1.073,
+    "best_share": 0.283,
+    "temporal_concentration": 0.85,
+    "max_dd_R": -67.61
+   },
+   "BASE": {
+    "n": 2389,
+    "total_R": 63.14,
+    "avg_R": 0.0264,
+    "win_rate": 0.201,
+    "profit_factor": 1.033,
+    "best_share": 0.618,
+    "temporal_concentration": 1.683,
+    "max_dd_R": -91.62
+   },
+   "STRESS": {
+    "n": 2389,
+    "total_R": -221.8,
+    "avg_R": -0.0928,
+    "win_rate": 0.2,
+    "profit_factor": 0.898,
+    "best_share": null,
+    "temporal_concentration": 0.524,
+    "max_dd_R": -245.74
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 1.683>0.6",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TD-continuation",
+   "family": "continuation",
+   "regime_relationship": "TREND_DOWN_DEPENDENT",
+   "mechanism": "fresh 20-low breakdown SHORT",
+   "n_signals": 4676,
+   "GROSS": {
+    "n": 2454,
+    "total_R": 149.67,
+    "avg_R": 0.061,
+    "win_rate": 0.123,
+    "profit_factor": 1.07,
+    "best_share": 0.884,
+    "temporal_concentration": 1.237,
+    "max_dd_R": -161.9
+   },
+   "BASE": {
+    "n": 2454,
+    "total_R": -28.62,
+    "avg_R": -0.0117,
+    "win_rate": 0.123,
+    "profit_factor": 0.988,
+    "best_share": null,
+    "temporal_concentration": 6.246,
+    "max_dd_R": -225.12
+   },
+   "STRESS": {
+    "n": 2452,
+    "total_R": -714.31,
+    "avg_R": -0.2913,
+    "win_rate": 0.122,
+    "profit_factor": 0.755,
+    "best_share": null,
+    "temporal_concentration": 0.456,
+    "max_dd_R": -754.95
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "BASE net<=0 (-0.0117) cost-failure",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TD-compression",
+   "family": "compression-accel",
+   "regime_relationship": "TREND_DOWN_DEPENDENT",
+   "mechanism": "compression->downside expansion SHORT",
+   "n_signals": 1575,
+   "GROSS": {
+    "n": 1013,
+    "total_R": 77.56,
+    "avg_R": 0.0766,
+    "win_rate": 0.23,
+    "profit_factor": 1.101,
+    "best_share": 0.243,
+    "temporal_concentration": 1.175,
+    "max_dd_R": -64.0
+   },
+   "BASE": {
+    "n": 1013,
+    "total_R": 49.55,
+    "avg_R": 0.0489,
+    "win_rate": 0.23,
+    "profit_factor": 1.063,
+    "best_share": 0.38,
+    "temporal_concentration": 1.753,
+    "max_dd_R": -68.49
+   },
+   "STRESS": {
+    "n": 1013,
+    "total_R": -56.87,
+    "avg_R": -0.0561,
+    "win_rate": 0.229,
+    "profit_factor": 0.935,
+    "best_share": null,
+    "temporal_concentration": 1.244,
+    "max_dd_R": -99.14
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 1.753>0.6",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TD-exhaustion",
+   "family": "exhaustion",
+   "regime_relationship": "TREND_DOWN_DEPENDENT",
+   "mechanism": "capitulation reversal LONG",
+   "n_signals": 4008,
+   "GROSS": {
+    "n": 3015,
+    "total_R": 270.07,
+    "avg_R": 0.0896,
+    "win_rate": 0.337,
+    "profit_factor": 1.143,
+    "best_share": 0.158,
+    "temporal_concentration": 0.494,
+    "max_dd_R": -63.66
+   },
+   "BASE": {
+    "n": 3015,
+    "total_R": 188.46,
+    "avg_R": 0.0625,
+    "win_rate": 0.333,
+    "profit_factor": 1.097,
+    "best_share": 0.226,
+    "temporal_concentration": 0.608,
+    "max_dd_R": -71.85
+   },
+   "STRESS": {
+    "n": 3015,
+    "total_R": -121.67,
+    "avg_R": -0.0404,
+    "win_rate": 0.324,
+    "profit_factor": 0.944,
+    "best_share": null,
+    "temporal_concentration": 0.484,
+    "max_dd_R": -248.53
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 0.608>0.6",
+   "min_sample": 120,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-TR-da-w08-a2",
+   "family": "displacement-acceptance",
+   "regime_relationship": "TRANSITION_DEPENDENT",
+   "mechanism": "disp>=0.8ATR + 2-accept",
+   "n_signals": 3563,
+   "GROSS": {
+    "n": 1947,
+    "total_R": 253.96,
+    "avg_R": 0.1304,
+    "win_rate": 0.334,
+    "profit_factor": 1.21,
+    "best_share": 0.091,
+    "temporal_concentration": 0.245,
+    "max_dd_R": -58.12
+   },
+   "BASE": {
+    "n": 1947,
+    "total_R": 222.73,
+    "avg_R": 0.1144,
+    "win_rate": 0.333,
+    "profit_factor": 1.181,
+    "best_share": 0.103,
+    "temporal_concentration": 0.251,
+    "max_dd_R": -65.47
+   },
+   "STRESS": {
+    "n": 1947,
+    "total_R": 104.07,
+    "avg_R": 0.0534,
+    "win_rate": 0.329,
+    "profit_factor": 1.079,
+    "best_share": 0.22,
+    "temporal_concentration": 0.475,
+    "max_dd_R": -98.06
+   },
+   "status": "FAST_FALSIFICATION_PASS",
+   "reason": "gross 0.1304>0 BASE 0.1144>0 stable",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_PASS"
+  },
+  {
+   "id": "C-TR-da-w10-a2",
+   "family": "displacement-acceptance",
+   "regime_relationship": "TRANSITION_DEPENDENT",
+   "mechanism": "disp>=1.0ATR + 2-accept",
+   "n_signals": 3052,
+   "GROSS": {
+    "n": 1778,
+    "total_R": 169.52,
+    "avg_R": 0.0953,
+    "win_rate": 0.336,
+    "profit_factor": 1.155,
+    "best_share": 0.109,
+    "temporal_concentration": 0.296,
+    "max_dd_R": -52.02
+   },
+   "BASE": {
+    "n": 1778,
+    "total_R": 142.56,
+    "avg_R": 0.0802,
+    "win_rate": 0.336,
+    "profit_factor": 1.128,
+    "best_share": 0.13,
+    "temporal_concentration": 0.326,
+    "max_dd_R": -59.5
+   },
+   "STRESS": {
+    "n": 1778,
+    "total_R": 40.12,
+    "avg_R": 0.0226,
+    "win_rate": 0.331,
+    "profit_factor": 1.034,
+    "best_share": 0.459,
+    "temporal_concentration": 1.062,
+    "max_dd_R": -88.51
+   },
+   "status": "FAST_FALSIFICATION_PASS",
+   "reason": "gross 0.0953>0 BASE 0.0802>0 stable",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_PASS"
+  },
+  {
+   "id": "C-TR-da-w12-a2",
+   "family": "displacement-acceptance",
+   "regime_relationship": "TRANSITION_DEPENDENT",
+   "mechanism": "disp>=1.2ATR + 2-accept",
+   "n_signals": 2356,
+   "GROSS": {
+    "n": 1510,
+    "total_R": 140.23,
+    "avg_R": 0.0929,
+    "win_rate": 0.347,
+    "profit_factor": 1.155,
+    "best_share": 0.177,
+    "temporal_concentration": 0.469,
+    "max_dd_R": -67.65
+   },
+   "BASE": {
+    "n": 1510,
+    "total_R": 118.8,
+    "avg_R": 0.0787,
+    "win_rate": 0.346,
+    "profit_factor": 1.129,
+    "best_share": 0.209,
+    "temporal_concentration": 0.529,
+    "max_dd_R": -74.23
+   },
+   "STRESS": {
+    "n": 1510,
+    "total_R": 37.37,
+    "avg_R": 0.0247,
+    "win_rate": 0.341,
+    "profit_factor": 1.038,
+    "best_share": 0.661,
+    "temporal_concentration": 1.412,
+    "max_dd_R": -100.37
+   },
+   "status": "FAST_FALSIFICATION_PASS",
+   "reason": "gross 0.0929>0 BASE 0.0787>0 stable",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_PASS"
+  },
+  {
+   "id": "C-TR-da-w10-a3",
+   "family": "displacement-acceptance",
+   "regime_relationship": "TRANSITION_DEPENDENT",
+   "mechanism": "disp>=1.0ATR + 3-accept",
+   "n_signals": 2568,
+   "GROSS": {
+    "n": 1578,
+    "total_R": 165.68,
+    "avg_R": 0.105,
+    "win_rate": 0.348,
+    "profit_factor": 1.179,
+    "best_share": 0.114,
+    "temporal_concentration": 0.3,
+    "max_dd_R": -49.14
+   },
+   "BASE": {
+    "n": 1578,
+    "total_R": 143.64,
+    "avg_R": 0.091,
+    "win_rate": 0.347,
+    "profit_factor": 1.153,
+    "best_share": 0.131,
+    "temporal_concentration": 0.325,
+    "max_dd_R": -53.18
+   },
+   "STRESS": {
+    "n": 1578,
+    "total_R": 59.91,
+    "avg_R": 0.038,
+    "win_rate": 0.344,
+    "profit_factor": 1.06,
+    "best_share": 0.312,
+    "temporal_concentration": 0.591,
+    "max_dd_R": -74.4
+   },
+   "status": "FAST_FALSIFICATION_PASS",
+   "reason": "gross 0.105>0 BASE 0.091>0 stable",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_PASS"
+  },
+  {
+   "id": "C-TR-volexp",
+   "family": "vol-expansion",
+   "regime_relationship": "TRANSITION_DEPENDENT",
+   "mechanism": "vol expansion from low base",
+   "n_signals": 4078,
+   "GROSS": {
+    "n": 2096,
+    "total_R": 140.82,
+    "avg_R": 0.0672,
+    "win_rate": 0.216,
+    "profit_factor": 1.087,
+    "best_share": 0.139,
+    "temporal_concentration": 0.403,
+    "max_dd_R": -77.28
+   },
+   "BASE": {
+    "n": 2096,
+    "total_R": 79.11,
+    "avg_R": 0.0377,
+    "win_rate": 0.215,
+    "profit_factor": 1.047,
+    "best_share": 0.248,
+    "temporal_concentration": 0.599,
+    "max_dd_R": -81.35
+   },
+   "STRESS": {
+    "n": 2096,
+    "total_R": -155.4,
+    "avg_R": -0.0741,
+    "win_rate": 0.212,
+    "profit_factor": 0.916,
+    "best_share": null,
+    "temporal_concentration": 0.566,
+    "max_dd_R": -212.25
+   },
+   "status": "FAST_FALSIFICATION_PASS",
+   "reason": "gross 0.0672>0 BASE 0.0377>0 stable",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "COST_FRAGILE_STRESS_NEGATIVE"
+  },
+  {
+   "id": "C-TR-choch",
+   "family": "structural-reversal",
+   "regime_relationship": "TRANSITION_DEPENDENT",
+   "mechanism": "N1 CHoCH direction flip",
+   "n_signals": 5667,
+   "GROSS": {
+    "n": 3101,
+    "total_R": 325.3,
+    "avg_R": 0.1049,
+    "win_rate": 0.237,
+    "profit_factor": 1.141,
+    "best_share": 0.154,
+    "temporal_concentration": 0.408,
+    "max_dd_R": -77.38
+   },
+   "BASE": {
+    "n": 3101,
+    "total_R": 239.98,
+    "avg_R": 0.0774,
+    "win_rate": 0.236,
+    "profit_factor": 1.101,
+    "best_share": 0.209,
+    "temporal_concentration": 0.503,
+    "max_dd_R": -99.54
+   },
+   "STRESS": {
+    "n": 3101,
+    "total_R": -84.24,
+    "avg_R": -0.0272,
+    "win_rate": 0.234,
+    "profit_factor": 0.968,
+    "best_share": null,
+    "temporal_concentration": 1.436,
+    "max_dd_R": -230.52
+   },
+   "status": "FAST_FALSIFICATION_PASS",
+   "reason": "gross 0.1049>0 BASE 0.0774>0 stable",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "COST_FRAGILE_STRESS_NEGATIVE"
+  },
+  {
+   "id": "C-R-boundary-mid",
+   "family": "boundary-fade",
+   "regime_relationship": "RANGE_DEPENDENT",
+   "mechanism": "boundary rejection -> mid target",
+   "n_signals": 823,
+   "GROSS": {
+    "n": 553,
+    "total_R": -353546.41,
+    "avg_R": -639.3244,
+    "win_rate": 0.045,
+    "profit_factor": 0.001,
+    "best_share": null,
+    "temporal_concentration": 0.439,
+    "max_dd_R": -352154.24
+   },
+   "BASE": {
+    "n": 553,
+    "total_R": -353588.14,
+    "avg_R": -639.3999,
+    "win_rate": 0.045,
+    "profit_factor": 0.001,
+    "best_share": null,
+    "temporal_concentration": 0.439,
+    "max_dd_R": -352195.52
+   },
+   "STRESS": {
+    "n": 552,
+    "total_R": -349600.06,
+    "avg_R": -633.3334,
+    "win_rate": 0.043,
+    "profit_factor": 0.001,
+    "best_share": null,
+    "temporal_concentration": 0.443,
+    "max_dd_R": -348205.76
+   },
+   "status": "RERUN_ERROR_EXCLUDED",
+   "reason": "opp_liq exit path bug; boundary-fade already tested as H08 (fail)",
+   "min_sample": 100,
+   "data": "DEVELOPMENT 2011-2018"
+  },
+  {
+   "id": "C-R-breakout",
+   "family": "range-breakout",
+   "regime_relationship": "RANGE_DEPENDENT",
+   "mechanism": "accepted breakout out of CONFIRMED range",
+   "n_signals": 316,
+   "GROSS": {
+    "n": 160,
+    "total_R": -13.29,
+    "avg_R": -0.083,
+    "win_rate": 0.081,
+    "profit_factor": 0.909,
+    "best_share": null,
+    "temporal_concentration": 2.411,
+    "max_dd_R": -45.03
+   },
+   "BASE": {
+    "n": 160,
+    "total_R": -23.32,
+    "avg_R": -0.1458,
+    "win_rate": 0.081,
+    "profit_factor": 0.85,
+    "best_share": null,
+    "temporal_concentration": 1.482,
+    "max_dd_R": -48.67
+   },
+   "STRESS": {
+    "n": 160,
+    "total_R": -61.46,
+    "avg_R": -0.3841,
+    "win_rate": 0.081,
+    "profit_factor": 0.679,
+    "best_share": null,
+    "temporal_concentration": 0.718,
+    "max_dd_R": -74.55
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "gross<=0 (-0.083)",
+   "min_sample": 60,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-RI-volasym",
+   "family": "vol-asymmetry",
+   "regime_relationship": "REGIME_INDEPENDENT",
+   "mechanism": "20-bar up/down range asymmetry",
+   "n_signals": 22417,
+   "GROSS": {
+    "n": 4850,
+    "total_R": 45.23,
+    "avg_R": 0.0093,
+    "win_rate": 0.273,
+    "profit_factor": 1.013,
+    "best_share": 0.656,
+    "temporal_concentration": 1.454,
+    "max_dd_R": -152.76
+   },
+   "BASE": {
+    "n": 4850,
+    "total_R": -125.18,
+    "avg_R": -0.0258,
+    "win_rate": 0.27,
+    "profit_factor": 0.965,
+    "best_share": null,
+    "temporal_concentration": 0.647,
+    "max_dd_R": -297.09
+   },
+   "STRESS": {
+    "n": 4850,
+    "total_R": -772.74,
+    "avg_R": -0.1593,
+    "win_rate": 0.262,
+    "profit_factor": 0.809,
+    "best_share": null,
+    "temporal_concentration": 0.296,
+    "max_dd_R": -868.94
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "BASE net<=0 (-0.0258) cost-failure",
+   "min_sample": 300,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-RI-cmom-mid",
+   "family": "conditional-momentum",
+   "regime_relationship": "REGIME_INDEPENDENT",
+   "mechanism": "6-bar momentum in mid-vol band",
+   "n_signals": 56946,
+   "GROSS": {
+    "n": 8615,
+    "total_R": 325.53,
+    "avg_R": 0.0378,
+    "win_rate": 0.216,
+    "profit_factor": 1.049,
+    "best_share": 0.106,
+    "temporal_concentration": 0.455,
+    "max_dd_R": -161.56
+   },
+   "BASE": {
+    "n": 8615,
+    "total_R": 6.62,
+    "avg_R": 0.0008,
+    "win_rate": 0.215,
+    "profit_factor": 1.001,
+    "best_share": 5.214,
+    "temporal_concentration": 19.173,
+    "max_dd_R": -228.91
+   },
+   "STRESS": {
+    "n": 8615,
+    "total_R": -1205.23,
+    "avg_R": -0.1399,
+    "win_rate": 0.212,
+    "profit_factor": 0.847,
+    "best_share": null,
+    "temporal_concentration": 0.327,
+    "max_dd_R": -1309.93
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 19.173>0.6",
+   "min_sample": 250,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  },
+  {
+   "id": "C-RI-cmom-hi",
+   "family": "conditional-momentum",
+   "regime_relationship": "REGIME_INDEPENDENT",
+   "mechanism": "6-bar momentum in high-vol band",
+   "n_signals": 20271,
+   "GROSS": {
+    "n": 3246,
+    "total_R": 90.43,
+    "avg_R": 0.0279,
+    "win_rate": 0.271,
+    "profit_factor": 1.039,
+    "best_share": 0.272,
+    "temporal_concentration": 0.622,
+    "max_dd_R": -77.01
+   },
+   "BASE": {
+    "n": 3246,
+    "total_R": 9.44,
+    "avg_R": 0.0029,
+    "win_rate": 0.27,
+    "profit_factor": 1.004,
+    "best_share": 2.604,
+    "temporal_concentration": 4.051,
+    "max_dd_R": -89.14
+   },
+   "STRESS": {
+    "n": 3246,
+    "total_R": -298.3,
+    "avg_R": -0.0919,
+    "win_rate": 0.266,
+    "profit_factor": 0.885,
+    "best_share": null,
+    "temporal_concentration": 0.41,
+    "max_dd_R": -319.19
+   },
+   "status": "FAST_FALSIFICATION_FAIL",
+   "reason": "temporal-conc 4.051>0.6",
+   "min_sample": 200,
+   "data": "DEVELOPMENT 2011-2018",
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL"
+  }
+ ],
+ "new": [
+  {
+   "id": "C-TU-failedcounter",
+   "family": "failed-counter",
+   "regime_relationship": "TREND_UP_DEPENDENT",
+   "mechanism": "failed bearish break + reclaim LONG",
+   "n_signals": 73,
+   "GROSS": {
+    "n": 73,
+    "avg_R": 0.136,
+    "total_R": 9.93,
+    "win_rate": 0.274,
+    "profit_factor": 1.19,
+    "best_share": 0.874,
+    "temporal_concentration": 1.099
+   },
+   "BASE": {
+    "n": 73,
+    "avg_R": 0.1091,
+    "total_R": 7.96,
+    "win_rate": 0.274,
+    "profit_factor": 1.149,
+    "best_share": 1.085,
+    "temporal_concentration": 1.304
+   },
+   "STRESS": {
+    "n": 73,
+    "avg_R": 0.0067,
+    "total_R": 0.49,
+    "win_rate": 0.274,
+    "profit_factor": 1.008,
+    "best_share": 17.269,
+    "temporal_concentration": 17.086
+   },
+   "status_stress_gated": "INSUFFICIENT_EVIDENCE",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018"
+  },
+  {
+   "id": "C-TD-failedcounter",
+   "family": "failed-counter",
+   "regime_relationship": "TREND_DOWN_DEPENDENT",
+   "mechanism": "failed bullish break + reclaim SHORT",
+   "n_signals": 75,
+   "GROSS": {
+    "n": 75,
+    "avg_R": -0.1615,
+    "total_R": -12.11,
+    "win_rate": 0.213,
+    "profit_factor": 0.785,
+    "best_share": null,
+    "temporal_concentration": 0.699
+   },
+   "BASE": {
+    "n": 75,
+    "avg_R": -0.1905,
+    "total_R": -14.29,
+    "win_rate": 0.2,
+    "profit_factor": 0.754,
+    "best_share": null,
+    "temporal_concentration": 0.599
+   },
+   "STRESS": {
+    "n": 75,
+    "avg_R": -0.3009,
+    "total_R": -22.56,
+    "win_rate": 0.2,
+    "profit_factor": 0.652,
+    "best_share": null,
+    "temporal_concentration": 0.396
+   },
+   "status_stress_gated": "INSUFFICIENT_EVIDENCE",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018"
+  },
+  {
+   "id": "C-RI-gap",
+   "family": "gap",
+   "regime_relationship": "REGIME_INDEPENDENT",
+   "mechanism": "NY-open gap continuation",
+   "n_signals": 0,
+   "GROSS": {
+    "n": 0
+   },
+   "BASE": {
+    "n": 0
+   },
+   "STRESS": {
+    "n": 0
+   },
+   "status_stress_gated": "EVENT_SPARSE",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018"
+  },
+  {
+   "id": "C-TR-multiscale",
+   "family": "multiscale-displacement",
+   "regime_relationship": "TRANSITION_DEPENDENT",
+   "mechanism": "multi-scale displacement + accept",
+   "n_signals": 3295,
+   "GROSS": {
+    "n": 1916,
+    "avg_R": 0.0523,
+    "total_R": 100.28,
+    "win_rate": 0.307,
+    "profit_factor": 1.08,
+    "best_share": 0.301,
+    "temporal_concentration": 1.288
+   },
+   "BASE": {
+    "n": 1916,
+    "avg_R": 0.0351,
+    "total_R": 67.24,
+    "win_rate": 0.306,
+    "profit_factor": 1.053,
+    "best_share": 0.448,
+    "temporal_concentration": 1.852
+   },
+   "STRESS": {
+    "n": 1916,
+    "avg_R": -0.0304,
+    "total_R": -58.31,
+    "win_rate": 0.301,
+    "profit_factor": 0.957,
+    "best_share": null,
+    "temporal_concentration": 1.835
+   },
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018"
+  },
+  {
+   "id": "C-RI-session-trend",
+   "family": "session-regime",
+   "regime_relationship": "MULTI_REGIME",
+   "mechanism": "NY momentum only when N1 trend agrees",
+   "n_signals": 825,
+   "GROSS": {
+    "n": 825,
+    "avg_R": 0.1406,
+    "total_R": 115.98,
+    "win_rate": 0.205,
+    "profit_factor": 1.178,
+    "best_share": 0.275,
+    "temporal_concentration": 0.669
+   },
+   "BASE": {
+    "n": 825,
+    "avg_R": 0.1116,
+    "total_R": 92.07,
+    "win_rate": 0.205,
+    "profit_factor": 1.137,
+    "best_share": 0.347,
+    "temporal_concentration": 0.757
+   },
+   "STRESS": {
+    "n": 825,
+    "avg_R": 0.0015,
+    "total_R": 1.22,
+    "win_rate": 0.2,
+    "profit_factor": 1.002,
+    "best_share": 26.099,
+    "temporal_concentration": 63.806
+   },
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018"
+  },
+  {
+   "id": "C-RI-openrange",
+   "family": "opening-range",
+   "regime_relationship": "REGIME_INDEPENDENT",
+   "mechanism": "NY opening-range breakout",
+   "n_signals": 1011,
+   "GROSS": {
+    "n": 1010,
+    "avg_R": 0.0349,
+    "total_R": 35.23,
+    "win_rate": 0.451,
+    "profit_factor": 1.088,
+    "best_share": 0.221,
+    "temporal_concentration": 0.946
+   },
+   "BASE": {
+    "n": 1010,
+    "avg_R": 0.0265,
+    "total_R": 26.81,
+    "win_rate": 0.448,
+    "profit_factor": 1.066,
+    "best_share": 0.29,
+    "temporal_concentration": 1.203
+   },
+   "STRESS": {
+    "n": 1010,
+    "avg_R": -0.0051,
+    "total_R": -5.19,
+    "win_rate": 0.434,
+    "profit_factor": 0.988,
+    "best_share": null,
+    "temporal_concentration": 5.43
+   },
+   "status_stress_gated": "FAST_FALSIFICATION_FAIL",
+   "min_sample": 150,
+   "data": "DEVELOPMENT 2011-2018"
+  }
+ ],
+ "robustness": {
+  "candidate": "displacement+acceptance (rep C-TR-da-w08-a2)",
+  "hold": 48,
+  "full_BASE": {
+   "n": 1947,
+   "avg_R": 0.1144,
+   "total_R": 222.73,
+   "win_rate": 0.333,
+   "profit_factor": 1.181,
+   "best_share": 0.103,
+   "temporal_concentration": 0.251
+  },
+  "full_STRESS": {
+   "n": 1947,
+   "avg_R": 0.0534,
+   "total_R": 104.07,
+   "win_rate": 0.329,
+   "profit_factor": 1.079,
+   "best_share": 0.22,
+   "temporal_concentration": 0.475
+  },
+  "block1_2011_2013_BASE": {
+   "n": 1000,
+   "avg_R": 0.1454,
+   "total_R": 145.35,
+   "win_rate": 0.323,
+   "profit_factor": 1.227,
+   "best_share": 0.158,
+   "temporal_concentration": 0.385
+  },
+  "block2_2016_2018_BASE": {
+   "n": 947,
+   "avg_R": 0.0817,
+   "total_R": 77.38,
+   "win_rate": 0.344,
+   "profit_factor": 1.13,
+   "best_share": 0.239,
+   "temporal_concentration": 0.697
+  },
+  "param_neighborhood": {
+   "w0.6_a2": 0.1083,
+   "w0.8_a2": 0.1144,
+   "w1.0_a2": 0.0802,
+   "w1.2_a2": 0.0787,
+   "w1.0_a3": 0.091,
+   "w0.8_a3": 0.1035
+  },
+  "best_trade_removed_BASE": -0.0136,
+  "regime_conditioning": {
+   "unconditional_BASE": 0.1144,
+   "trend_only_BASE": 0.1169,
+   "nontrend_only_BASE": -0.1986
+  }
+ }
+}
