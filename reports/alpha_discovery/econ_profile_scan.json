@@ -1,0 +1,164 @@
+{
+ "M15": {
+  "n": 2291,
+  "n_long": 1227,
+  "n_short": 1064,
+  "horizon_bars": 96,
+  "median_SL_usd": 2.31,
+  "median_SL_pips": 23.1,
+  "MFE_pips_P25": 40.1,
+  "MFE_pips_P50": 83.0,
+  "MFE_pips_P75": 153.8,
+  "MAE_pips_P50": 75.1,
+  "MAE_pips_P75": 142.5,
+  "pct_MFE_ge70": 0.562,
+  "pct_MFE_ge80": 0.515,
+  "pct_MFE_ge100": 0.427,
+  "profiles": {
+   "TP70p": {
+    "median_RR": 3.03,
+    "WR_pess": 0.198,
+    "WR_opt": 0.562,
+    "BASE_exp": -0.2416,
+    "STRESS_exp": -0.3442,
+    "best1rem": -0.3349,
+    "n_win": 453,
+    "n_loss": 966,
+    "n_ambig": 835,
+    "n_none": 37
+   },
+   "TP80p": {
+    "median_RR": 3.46,
+    "WR_pess": 0.19,
+    "WR_opt": 0.515,
+    "BASE_exp": -0.1667,
+    "STRESS_exp": -0.2693,
+    "best1rem": -0.2714,
+    "n_win": 436,
+    "n_loss": 1056,
+    "n_ambig": 745,
+    "n_none": 54
+   },
+   "TP100p": {
+    "median_RR": 4.32,
+    "WR_pess": 0.17,
+    "WR_opt": 0.427,
+    "BASE_exp": -0.0271,
+    "STRESS_exp": -0.1297,
+    "best1rem": -0.1544,
+    "n_win": 389,
+    "n_loss": 1211,
+    "n_ambig": 590,
+    "n_none": 101
+   }
+  }
+ },
+ "H1": {
+  "n": 709,
+  "n_long": 396,
+  "n_short": 313,
+  "horizon_bars": 24,
+  "median_SL_usd": 5.11,
+  "median_SL_pips": 51.1,
+  "MFE_pips_P25": 42.6,
+  "MFE_pips_P50": 90.6,
+  "MFE_pips_P75": 161.4,
+  "MAE_pips_P50": 75.8,
+  "MAE_pips_P75": 145.4,
+  "pct_MFE_ge70": 0.602,
+  "pct_MFE_ge80": 0.549,
+  "pct_MFE_ge100": 0.458,
+  "profiles": {
+   "TP70p": {
+    "median_RR": 1.37,
+    "WR_pess": 0.341,
+    "WR_opt": 0.602,
+    "BASE_exp": -0.0792,
+    "STRESS_exp": -0.1248,
+    "best1rem": -0.136,
+    "n_win": 242,
+    "n_loss": 246,
+    "n_ambig": 185,
+    "n_none": 36
+   },
+   "TP80p": {
+    "median_RR": 1.56,
+    "WR_pess": 0.313,
+    "WR_opt": 0.549,
+    "BASE_exp": -0.0121,
+    "STRESS_exp": -0.0577,
+    "best1rem": -0.0754,
+    "n_win": 222,
+    "n_loss": 264,
+    "n_ambig": 167,
+    "n_none": 56
+   },
+   "TP100p": {
+    "median_RR": 1.96,
+    "WR_pess": 0.274,
+    "WR_opt": 0.458,
+    "BASE_exp": 0.1066,
+    "STRESS_exp": 0.061,
+    "best1rem": 0.0307,
+    "n_win": 194,
+    "n_loss": 300,
+    "n_ambig": 131,
+    "n_none": 84
+   }
+  }
+ },
+ "H4": {
+  "n": 203,
+  "n_long": 108,
+  "n_short": 95,
+  "horizon_bars": 6,
+  "median_SL_usd": 9.99,
+  "median_SL_pips": 99.9,
+  "MFE_pips_P25": 44.5,
+  "MFE_pips_P50": 83.0,
+  "MFE_pips_P75": 156.6,
+  "MAE_pips_P50": 65.6,
+  "MAE_pips_P75": 140.3,
+  "pct_MFE_ge70": 0.576,
+  "pct_MFE_ge80": 0.512,
+  "pct_MFE_ge100": 0.429,
+  "profiles": {
+   "TP70p": {
+    "median_RR": 0.7,
+    "WR_pess": 0.453,
+    "WR_opt": 0.576,
+    "BASE_exp": 0.0103,
+    "STRESS_exp": -0.0115,
+    "best1rem": -0.0074,
+    "n_win": 92,
+    "n_loss": 50,
+    "n_ambig": 25,
+    "n_none": 36
+   },
+   "TP80p": {
+    "median_RR": 0.8,
+    "WR_pess": 0.414,
+    "WR_opt": 0.512,
+    "BASE_exp": 0.0502,
+    "STRESS_exp": 0.0284,
+    "best1rem": 0.0304,
+    "n_win": 84,
+    "n_loss": 55,
+    "n_ambig": 20,
+    "n_none": 44
+   },
+   "TP100p": {
+    "median_RR": 1.0,
+    "WR_pess": 0.365,
+    "WR_opt": 0.429,
+    "BASE_exp": 0.1199,
+    "STRESS_exp": 0.0982,
+    "best1rem": 0.0957,
+    "n_win": 74,
+    "n_loss": 62,
+    "n_ambig": 13,
+    "n_none": 54
+   }
+  }
+ }
+}
