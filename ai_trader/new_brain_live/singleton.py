@@ -25,6 +25,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from ai_trader.new_brain_bridge.no_console_window import NO_CONSOLE_WINDOW_CREATIONFLAGS
+
 _ERROR_ALREADY_EXISTS = 183
 MUTEX_NAME = r"Global\AITraderLiveShadowSingleton"
 
@@ -107,7 +109,7 @@ def query_process_command_line(pid: int) -> str | None:
             "powershell", "-NoProfile", "-Command",
             f"(Get-CimInstance Win32_Process -Filter \"ProcessId={pid}\").CommandLine",
         ],
-        capture_output=True, text=True, timeout=15,
+        capture_output=True, text=True, timeout=15, creationflags=NO_CONSOLE_WINDOW_CREATIONFLAGS,
     )
     output = result.stdout.strip()
     return output if output else None

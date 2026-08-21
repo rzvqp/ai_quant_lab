@@ -24,6 +24,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from ai_trader.new_brain_bridge.no_console_window import NO_CONSOLE_WINDOW_CREATIONFLAGS
 from ai_trader.new_brain_bridge.tower_identity_pin import verify_pin
 from ai_trader.new_brain_bridge.tower_protocol import (
     CONNECTION_FAILED,
@@ -139,6 +140,7 @@ class TowerWorkerLauncher:
              "--port", str(requested_port)],
             cwd=str(self._run_dir) if self._run_dir is not None else None, env=env,
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+            creationflags=NO_CONSOLE_WINDOW_CREATIONFLAGS,
         )
         assert self.process.stdin is not None
         secret_line = json.dumps({"session_id": session_id, "session_secret_hex": session_secret.hex()})

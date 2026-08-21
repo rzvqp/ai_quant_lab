@@ -17,6 +17,7 @@ from typing import Any
 import ve_brain  # type: ignore[import-untyped]
 
 from ai_trader.live_signal_source.types import Bar
+from ai_trader.new_brain_bridge.no_console_window import NO_CONSOLE_WINDOW_CREATIONFLAGS
 from ai_trader.new_brain_live.n1_incremental.artifact_pin import ALPHA_N1_VENV_PYTHON
 
 _WORKER_SCRIPT = Path(__file__).resolve().parent / "worker_script.py"
@@ -132,6 +133,7 @@ class N1IncrementalClient:
             proc = subprocess.run(
                 [str(self._venv_python), str(_WORKER_SCRIPT)], input=json.dumps(request),
                 capture_output=True, text=True, timeout=self._timeout_seconds,
+                creationflags=NO_CONSOLE_WINDOW_CREATIONFLAGS,
             )
         except subprocess.TimeoutExpired as exc:
             raise N1IncrementalWorkerError(f"worker timed out after {self._timeout_seconds}s") from exc

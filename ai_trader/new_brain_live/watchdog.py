@@ -24,6 +24,7 @@ from enum import Enum
 from typing import Callable
 
 from ai_trader.new_brain_bridge.authority import DecisionAuthority
+from ai_trader.new_brain_bridge.no_console_window import NO_CONSOLE_WINDOW_CREATIONFLAGS
 from ai_trader.new_brain_live.heartbeat import HeartbeatMonitor, LiveShadowHeartbeat
 from ai_trader.new_brain_live.singleton import ProcessIdentityRecord, verify_process_identity
 from ai_trader.persistent_state.store import SqliteStateStore
@@ -148,7 +149,7 @@ def query_task_state(task_name: str = TASK_NAME) -> dict[str, str] | None:
     try:
         result = subprocess.run(
             ["schtasks", "/Query", "/TN", task_name, "/FO", "LIST", "/V"],
-            capture_output=True, text=True, timeout=15,
+            capture_output=True, text=True, timeout=15, creationflags=NO_CONSOLE_WINDOW_CREATIONFLAGS,
         )
     except (OSError, subprocess.TimeoutExpired):
         return None
@@ -194,5 +195,5 @@ def real_notify(label: str, detail: str) -> None:
             "python", r"C:\Users\MEDION GAMING\tools\notify.py", "AI TRADER WATCHDOG",
             f"{label}: {detail}", "", label,
         ],
-        timeout=20,
+        timeout=20, creationflags=NO_CONSOLE_WINDOW_CREATIONFLAGS,
     )

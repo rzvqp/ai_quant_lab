@@ -49,6 +49,7 @@ from ai_trader.new_brain_bridge.authority import DecisionAuthority, current_auth
 from ai_trader.new_brain_bridge.bridge import TowerDependencies
 from ai_trader.new_brain_bridge.execution_shadow import attempt_shadow_execution
 from ai_trader.new_brain_bridge.fail_safe import BrainUnavailableOutcome, safe_evaluate_bar
+from ai_trader.new_brain_bridge.no_console_window import NO_CONSOLE_WINDOW_CREATIONFLAGS
 from ai_trader.new_brain_bridge.raw_axes_builder import RawAxesBuilder
 from ai_trader.new_brain_bridge.risk_gate import submit_new_brain_candidate
 from ai_trader.new_brain_bridge.telemetry import NewBrainTelemetryLog
@@ -83,7 +84,7 @@ def current_git_commit() -> str:
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--short=7", "HEAD"], cwd=_REPO_ROOT, capture_output=True, text=True,
-            timeout=10,
+            timeout=10, creationflags=NO_CONSOLE_WINDOW_CREATIONFLAGS,
         )
         commit = result.stdout.strip()
         return commit if result.returncode == 0 and commit else "UNKNOWN"
