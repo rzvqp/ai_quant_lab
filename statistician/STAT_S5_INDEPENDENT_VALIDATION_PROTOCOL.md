@@ -117,7 +117,7 @@ VALIDATION propusa            : 2022-12-01 -> 2026-07-27   (86.226 bare)
   bare NICI consumate, NICI sigilate:      0
 ```
 
-> ### ★ CORECȚIE, 2026-08-21 (mandatul S20, raport `1c4a7cf`)
+> ### ★ CORECȚIE, 2026-08-21 (mandatul S20, commit `4d793a7`)
 >
 > Rândul de mai jos folosește definiția de holdout **moștenită** din programul S1–S20
 > (ultimii 20% pozițional, deci `>= 2023-07-24`). Proiectul are însă și o definiție
@@ -129,9 +129,11 @@ VALIDATION propusa            : 2022-12-01 -> 2026-07-27   (86.226 bare)
 > ca întreg conține 22,3% material consumat. Se schimbă doar concluzia despre
 > disponibilitate: există un rest curat substanțial, iar restrângerea la el e decizie CEO.
 
-**Fiecare bară a partiției propuse e ori deja consumată istoric, ori în holdout-ul sigilat.**
-*(afirmație CORECTATĂ mai sus — valabilă doar sub definiția moștenită de holdout)*
-§6 interzice holdout-ul; §5 interzice validarea pe dovezi consumate. **Zero** bare rămân utilizabile.
+*(Afirmația originală — „fiecare bară e ori consumată, ori în holdout-ul sigilat, deci zero
+utilizabile" — e valabilă DOAR sub definiția moștenită de holdout. Vezi corecția de mai sus.)*
+
+§5 interzice validarea pe dovezi consumate, deci partiția **ca întreg** rămâne inutilizabilă;
+restul curat de 52.567 bare e disponibil doar printr-o restrângere decisă de CEO.
 
 Nu improvizez un substitut, nu redefinesc granițele și nu relaxez §6 ca să ajung la o partiție.
 
