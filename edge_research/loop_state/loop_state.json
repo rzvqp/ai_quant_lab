@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "NO_ROBUST_PROTREND_ALPHA_FOUND_IN_CURRENT_SEARCH_SPACE",
+  "STATUS": "ALPHA_HISTORICAL_REREVIEW_WAVE2_COMPLETE",
   "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -849,5 +849,31 @@
     "validation_access": 0,
     "final_holdout_access": 0,
     "report": "reports/alpha_discovery/ALPHA_XAUUSD_PROTREND_DISCOVERY_REPORT.md"
+  },
+  "HISTORICAL_REREVIEW_WAVE2": {
+    "mandate": "ALPHA-HISTORICAL-REREVIEW-WAVE2-001",
+    "integrity": "DEVELOPMENT_POPULATION_INTEGRITY_RECONCILED -- Wave1/DeepResearch used non-gated 160888 (incl 2013-2016 gap); corrected to gated 105255 via VE migration ed57853 (25/25 tests)",
+    "gated_dev_bars": 105255,
+    "sha256_ohlc": "47c9b16ba77bcbaf",
+    "survivors": [
+      "S5 (PASS reproduced, stronger: B+0.089/S+0.055)",
+      "S20 (NEW CONFIRMED: B+0.153/S+0.069)"
+    ],
+    "survivors_independent": "S5 vs S20 jaccard 0.047 INDEPENDENT",
+    "cost_fragile": [
+      "S9 v1",
+      "S1-PDH v1 (B+0.15 STRESS -0.005)",
+      "S1-PDH v2"
+    ],
+    "fail_reproduced": [
+      "Candidate-001 V1 (outlier-dep best1_rem -0.014)",
+      "S1-swing",
+      "S9 v2"
+    ],
+    "s5_status": "S5_DEEP_RESEARCH_PASS_REPRODUCED (firewall lifted -> may proceed to fresh S5 validation)",
+    "validation_access": 0,
+    "final_holdout_access": 0,
+    "report": "reports/alpha_discovery/ALPHA_HISTORICAL_REREVIEW_WAVE2_REPORT.md",
+    "next": "READY_FOR_CEO_ALPHA_PORTFOLIO_DECISION (S5 + S20 to independent validation)"
   }
 }
