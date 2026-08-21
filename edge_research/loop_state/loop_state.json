@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "ALPHA_DISCOVERY_STAGE_1_PLAN_READY",
+  "STATUS": "ALPHA_WAVE1_COMPLETE",
   "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -738,5 +738,24 @@
     "executed": false,
     "broker": "DISABLED",
     "report": "ALPHA_DISCOVERY_STAGE1_PLAN.md"
+  },
+  "ALPHA_CAMPAIGN": {
+    "mandate": "ALPHA-DISCOVERY-AUTONOMOUS-CAMPAIGN-001",
+    "wave1": "COMPLETE",
+    "wave1_survivors": [
+      "H11 displacement+acceptance"
+    ],
+    "wave1_failed": [
+      "H14",
+      "H05",
+      "H08"
+    ],
+    "wave1_insufficient": [
+      "H02"
+    ],
+    "v44_dev_confirmed_frac": 0.0554,
+    "final_holdout_access": 0,
+    "cost": "RATIFIED BASE 0.05 / STRESS 0.24",
+    "checkpoint": "reports/alpha_discovery/ALPHA_WAVE1_CHECKPOINT.md"
   }
 }
