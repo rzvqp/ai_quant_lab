@@ -71,7 +71,7 @@
   "contains_no_labels": true,
   "state": {
     "V4_4_1_FRESH_BLIND14_SELECTION_FROZEN": true,
-    "LABELS_FROZEN": false,
+    "LABELS_FROZEN": true,
     "V4_4_EXECUTED": false,
     "V4_4_1_EXECUTED": false,
     "BLIND_SCORE_COMPUTED": false
@@ -161,5 +161,22 @@
       "n_rendered_bars": 144,
       "bars_sha256": "0690dfb44bc5dcead1dee1f07c767f5fd40795d126e806baf9d79735a7f18cb4"
     }
-  ]
+  ],
+  "labels_freeze": {
+    "labels_sha256": "4112dbce7b49bd91fc7d0d073f266eea0d421f22b9799d18cc0aa4c63c28c508",
+    "session_log_sha256": "577edf298b53b4b91f7b15de1fc401487a365f16b2e38c6206b7bd996b819784",
+    "labels_payload_id": "payload-8838b8c521b5d26d.bin",
+    "macro_range_segments_total": 26,
+    "windows_without_macro_range": [
+      "F441-011"
+    ],
+    "semantic_amendment_log": "EMPTY",
+    "non_semantic_notes": {
+      "F441-008": "TRANSCRIPTION_NOTE_NON_SEMANTIC"
+    },
+    "batch_wide": {
+      "confidence": "NOT_SPECIFIED",
+      "range_episode_state": "NOT_SPECIFIED"
+    }
+  }
 }
