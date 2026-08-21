@@ -28,6 +28,29 @@ This document is the Git-persisted snapshot of program status; the conversation 
   - **0.5.2** (provenance-only; decision unchanged) — N3 `AtrProvenance.atr_value`=`atr14(M15)[i-1]` (the consumed ATR; `atr_value==level.band/0.25`), added `evaluation_index`/`consumed_atr_index`/`consumed_bar_timestamp`. N4 stays `atr14[-1]`. N3 levels + N4 confirmation identical to 0.5.1. Fixes TOWER_CHAIN_ATR. 76 tests. Awaiting Red Team TOWER_CHAIN_ATR.
 
 ## N1 REPLAY (MANDATE N1 CANONICAL REPLAY PACKAGING)
+
+### RANGE program status (CEO-closed 2026-08-21, VE-RANGE-V4_4-RESEARCH-BASELINE-CLOSE-001)
+```
+RANGE ACTIVE DEVELOPMENT: CLOSED
+RANGE RESEARCH BASELINE: V4.4 / 3bb61cf
+RANGE STATUS: FROZEN_CONSERVATIVE_RESEARCH_BASELINE   (NOT FULLY_VALIDATED / NOT GENERALIZATION_PASS / NOT LIVE_READY)
+V4.4.1: NOT_SUPPORTED / ACTIVE DEVELOPMENT CLOSED   (V4_4_1_FRESH_BLIND14_GENERALIZATION_NOT_SUPPORTED, `8e550ae`)
+NEXT PROGRAM OWNER: ALPHA DISCOVERY DEPARTMENT   (not started, not completed by VE)
+```
+CEO selected V4.4 (`3bb61cf`) over V4.4.1 (`4ed4eb4`) on the prospectively-frozen priority
+**false RANGE is more dangerous than missed RANGE**. Red Team's fresh-blind F441 validation (`8e550ae`, 26 CEO
+RANGE ground truth): V4.4 TP15/FP8/dirFP4/recall0.577/precision0.682 vs V4.4.1 TP21/FP16/dirFP5/recall0.808 —
+V4.4.1's two HARD gates (H1 directional-FP, H2 total-FP) both FAILED (T-STALE recovers 9 genuine stale-blocked
+RANGE but over-fires 32×, 17/32 harmful, all at the calibration's own `FRAGILE` alternation=3 boundary — now a
+**confirmed** material risk, not theoretical — doubling false RANGE via over-segmentation and destroying 3
+V4.4 TP via harmful abandonment). V4.4 known limitation (accepted, not fixed): can miss genuine RANGE via
+stale-candidate slot-blocking (`b1dcf92`). Nothing deleted — full V4.4.1 diagnostic/design/calibration/impl/
+audit trail preserved for reproducibility; no further T-STALE tuning without a new CEO mandate. Research-only:
+NOT authorized for Strategy Catalog/AI Trader/LIVE_SHADOW/broker/orders/live trading;
+`BROKER_ORDER_SUBMISSION` stays DISABLED. `MB3-025→048` still sealed. Alpha Discovery handoff artifact:
+`ve_n1_replay/RANGE_V4_4_ALPHA_DISCOVERY_HANDOFF.md`. Closure report:
+`ve_n1_replay/VE_RANGE_V4_4_RESEARCH_BASELINE_CLOSE_REPORT.md`.
+
 - **VE-RANGE-V4_4_1-STALE-CALIBRATION-001 — `V4_4_1_CALIBRATION_PASS_WITH_NONBLOCKING_NOTES`,
   `V4_4_1_IMPLEMENTATION_AUTHORIZED_FOR_CEO_DECISION`.** Red Team independently audited the T-STALE design
   (`eeb082e`, `V4_4_1_STALE_DESIGN_AUDIT_PASS_WITH_NONBLOCKING_NOTES`, 17/17 areas PASS, re-verifying
