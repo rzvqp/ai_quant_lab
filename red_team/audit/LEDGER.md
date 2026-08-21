@@ -4450,4 +4450,47 @@
                FRESH-BLIND14-VALIDATION-001.md + RT-RANGE-F441_predictions_freeze.md.
                STATE: OPERATIONAL. Next entry [97], prev_hash E96.
   entry_hash:  E96
+
+[97] 2026-08-21
+  prev_hash:   E96
+  event:       VERDICT
+  dc_id:       DC-ALPHA-S5-S20-CLEAN-INDEPENDENT-VALIDATION
+  freeze_hash: Statistician freeze ed49c2c (STAT_S5_S20_CLEAN_VALIDATION_FREEZE) / clean population 52572 bars
+               2023-07-24..2025-10-12 (pop_ohlc bac65b1a, timeline 4c9ce7b7, source 57f4ed95) / S5 C_2d587447 rep
+               7472f3d412f2 / S20 C_09d2245b rep 601e20753a4a / HTF ed57853 / trades S5 cd4e8d4a S20 53622efc
+  battery_ver: RT-ALPHA-S5-S20-CLEAN-INDEPENDENT-VALIDATION-001
+  reviewer:    Red Team
+  detail:      INDEPENDENT two-environment validation of frozen Alpha strategies S5 + S20 (SEPARATE verdicts, NO
+               pooling) on the frozen clean 52572-bar population vs Statistician gates A-H. VERDICTS = S5/S20
+               VALIDATION_EXECUTION_MODEL_INTEGRITY_PASS + ***S5 INDEPENDENT_VALIDATION_PASS*** + ***S20 INDEPENDENT_
+               VALIDATION_FAIL (gate G risk)***. EVIDENCE: population verified EXACT -- 52572 bars, pop_ohlc_sha256
+               bac65b1a + timeline_sha256 4c9ce7b7 reproduced (HLOC 1e6 int64 LE), contiguous/inside B4/manifest-
+               gated, >consumed-slice + <Final-Holdout (11d margin), FINAL_HOLDOUT_ACCESS_COUNT=0. EXECUTION-MODEL
+               INTEGRITY: the engine ships mstrat.TICK=0.1 (RT-CODE-A-0007 10x defect used in floor 5*TICK + S5 stop
+               buffer 2*TICK); RT OVERRODE to ratified 0.01 -> floor max(0.05,0.10ATR), BASE RT 0.05 / STRESS RT
+               0.24, min stop max(2spread,0.05,0.10ATR); RT instrumented engine reproduces mstrat.simulate BASE R
+               EXACTLY (allclose, fidelity) -> NO semantic drift; floor-binding 0% both (real stops always exceed
+               floor). Env A produced immutable ledgers frozen BEFORE scoring (S5 cd4e8d4a 295 trades, S20 53622efc
+               553 trades); Env B re-verified hashes fail-closed, no re-execution. ★ GATES: S5 A(295)/B(0.2098)/
+               C(0.1925)/D[0.273,0.153,0.201]/E(best1rm0.1907)/F(delay0.1581)/G(DD-6.44R,loss-1.03R)/H = ALL PASS ->
+               PASS. S20 A(553)/B(0.1485)/C(0.1027)/D[0.202,0.046,0.188]/E(best1rm0.1225)/F(delay0.0876)/H PASS but
+               ***G FAIL: maxDD -23.59R > 15R ceiling*** (maxLoss -1.04R OK; failure is CLUSTERED losses at 32% win
+               rate, not a single oversized loss) -> FAIL. TAIL: both LEGITIMATE_POSITIVE_SKEW (survive best-1%-
+               removed: S5 0.191, S20 0.123; S20 more tail-weighted top1%=0.182). GEOMETRY (RR3 TP=3xrisk, 10pip=
+               $1): NEITHER micro-scalping -- S5 SL med $12.44/124pip TP med $37.32/373pip, 99%/99%/99% TP>=70/80/
+               100pip; S20 SL med $4.75/48pip TP med $14.26/143pip, 92%/86%/75% -- directly satisfies CEO not-micro-
+               scalping preference for both. PROFILE: S5 win0.549/PF1.609/hold-med49; S20 win0.324/PF1.219/hold-med8/
+               median-R negative (tail-paid). CONTAMINATION DISCLOSED (preserved): S5 historical VALIDATION consumed
+               (rep_val_exp 0.17885 into robustness; counterfactual rank stays 1, RR3 unchanged; not blindness-
+               restoring); S20 rep_val_exp 0.08733 influenced family ranking (counterfactual rank 4->6; rep/spec
+               selection val_exp-free) -- S20 fails on clean evidence regardless. INTEGRITY PASS: holdout untouched,
+               no CFG/defective-tick for cost/floor, specs identical to frozen, S20 HTF ed57853-only, no trade
+               deletion post-metrics, no threshold change post-result, NO retuning, NO M5 refinement, NO pooling.
+               RECOMMEND to CEO: S5 = first S-family clean independent PASS, eligible for CEO consideration (NOT
+               promoted here; carry S5-consumption caveat on provenance); S20 = do NOT promote (real edge but breaches
+               risk ceiling), any drawdown/sizing rework is a NEW version on NEW evidence not this frozen candidate/
+               consumed region. NOT authorized: AI Trader integration, Strategy Catalog, broker, live. Changes only in
+               red_team/. Report: RT_S5_S20_CLEAN_INDEPENDENT_VALIDATION_REPORT.md.
+               STATE: OPERATIONAL. Next entry [98], prev_hash E97.
+  entry_hash:  E97
 ```
