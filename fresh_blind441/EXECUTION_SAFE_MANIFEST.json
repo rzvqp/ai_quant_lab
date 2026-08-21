@@ -1,0 +1,165 @@
+{
+  "manifest_id": "STAT-F441-EXECUTION-SAFE",
+  "batch_id": "V4_4_1_FRESH_BLIND14",
+  "version": "1.0",
+  "published_date": "2026-08-20",
+  "epistemic_status": "FRESH_BLIND14_CONFIRMATION_V4_4_1",
+  "protocol_commits": [
+    "4af8ea9"
+  ],
+  "authority": {
+    "rt_audit": "6adef91",
+    "v4_4_1_implementation": "4ed4eb4",
+    "v4_4_reference": "3bb61cf",
+    "config_id_prefix": "d7b6c067"
+  },
+  "seed_sha256": "0a0d0545b935d882a8ff8928e5b6bc6c07c434c6a9570195f44ea185070a7499",
+  "selection_artifact_sha256": "c8aa83baa3e283b4ff6ff774848b44dd94306101e0339089f71a30fcaa2bb7bc",
+  "n_windows": 14,
+  "total_canonical_bars": 3840,
+  "length_histogram": {
+    "96": 5,
+    "288": 5,
+    "480": 4
+  },
+  "block_quota": {
+    "B4": 5,
+    "B1": 5,
+    "B2": 4
+  },
+  "plan_block_by_length": {
+    "B4": {
+      "480": 2,
+      "288": 1,
+      "96": 2
+    },
+    "B1": {
+      "480": 1,
+      "288": 2,
+      "96": 2
+    },
+    "B2": {
+      "480": 1,
+      "288": 2,
+      "96": 1
+    }
+  },
+  "blocks_exhausted": [
+    "B3"
+  ],
+  "exclusion_accounting": {
+    "E1_batch01_24_windows": 29481,
+    "E2_E3_RC_and_construction_control": 6558,
+    "E6_batch02_48_windows": 51365,
+    "TOTAL": 144252,
+    "E7_MB3_all_48_windows": 43337,
+    "E8_FB14_14_windows": 13511
+  },
+  "bars_sha256_recipe": "bars_sha256_v1 (RT-RANGE-0010)",
+  "primary_comparison": {
+    "baseline": "V4.4 3bb61cf",
+    "candidate": "V4.4.1 4ed4eb4 config_id d7b6c067",
+    "hard_gates": [
+      "H1 directional FP",
+      "H2 total FP"
+    ],
+    "error_cost": "FALSE RANGE > MISSED RANGE (CEO)"
+  },
+  "contains_no_timestamps": true,
+  "contains_no_ohlc": true,
+  "contains_no_canonical_indices": true,
+  "contains_no_labels": true,
+  "state": {
+    "V4_4_1_FRESH_BLIND14_SELECTION_FROZEN": true,
+    "LABELS_FROZEN": false,
+    "V4_4_EXECUTED": false,
+    "V4_4_1_EXECUTED": false,
+    "BLIND_SCORE_COMPUTED": false
+  },
+  "windows": [
+    {
+      "id": "F441-001",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "8d33989e4c3528de43728871243c6990706e9e8f0a783f3ba47810f61c109d58"
+    },
+    {
+      "id": "F441-002",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "ce11a825420bd601c1de2b4f5e7d1f8dbef371455eca2ca9e796c8dbed2d655d"
+    },
+    {
+      "id": "F441-003",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "4bd54b8093e2b59f7fb01ee5a3083bb7f4f163ac799a1b0979cc466053a93765"
+    },
+    {
+      "id": "F441-004",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "50e41cf6ac37018bdb8b24f5d1ca696f2f672602105b689cd5bec3cfe87a60a6"
+    },
+    {
+      "id": "F441-005",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "42c844172b54725b76583480d1c0b094274c1868c6c60a80be7de50cf479319f"
+    },
+    {
+      "id": "F441-006",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "0b1b71109899ca835985f5f7bd371bb4d317520fdd2255644a0439c34ee1719e"
+    },
+    {
+      "id": "F441-007",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "8ad37480d4d57d4b78524aac75100239c9386c8b62b3abdf2a5fd21fbb211671"
+    },
+    {
+      "id": "F441-008",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "8fecb865480b5de0535a8c292dbad543b55bcfdc2533216abe762be8c0648f78"
+    },
+    {
+      "id": "F441-009",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "0a2b60463f6bfaac96fd701cfa3148a55400af4a86dea949b65701263bb1fd97"
+    },
+    {
+      "id": "F441-010",
+      "L": 288,
+      "n_rendered_bars": 336,
+      "bars_sha256": "d2ca78ab1232371880812ede6b90523d6a25a951e43ec0e39c18365dca1caede"
+    },
+    {
+      "id": "F441-011",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "4f78001cec7660b0f7a291f97fdc0270a123798764c9376204bd5ec9d7ca9b3e"
+    },
+    {
+      "id": "F441-012",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "278261726d7c290c258b358e891bb530ea8896c44a341c81217f8a64c358476a"
+    },
+    {
+      "id": "F441-013",
+      "L": 480,
+      "n_rendered_bars": 528,
+      "bars_sha256": "92441d167e8071db100ac838d99ab37d889111b2032fc9d8b560dfac1f7fe223"
+    },
+    {
+      "id": "F441-014",
+      "L": 96,
+      "n_rendered_bars": 144,
+      "bars_sha256": "0690dfb44bc5dcead1dee1f07c767f5fd40795d126e806baf9d79735a7f18cb4"
+    }
+  ]
+}
