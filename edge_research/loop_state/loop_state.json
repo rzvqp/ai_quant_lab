@@ -620,8 +620,8 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "ALPHA_COMBINED_DISCOVERY_COMPLETE_AWAITING_STATISTICIAN_REVIEW",
-  "STATUS_ts": "2026-08-18",
+  "STATUS": "ALPHA_DISCOVERY_STAGE_1_PLAN_READY",
+  "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
     "ledger": {
@@ -702,5 +702,41 @@
     "m_inference_untouched": 26,
     "breakout_relabeled": 44,
     "report": "reports/combined_wave/COMBINED_DISCOVERY_REPORT.md"
+  },
+  "ALPHA_DISCOVERY_STAGE1": {
+    "mandate": "ALPHA-DISCOVERY-STAGE1-PLANNING-001",
+    "ve_handoff_consumed": true,
+    "ve_closure": "6120b5d",
+    "v4_4_commit": "3bb61cf",
+    "v4_4_config_id": "23d98c07488913c1c99a7397b2f8791f4727115e04bdefc283fb6bfc4a468969",
+    "v4_4_frozen_verified": "diff 3bb61cf..HEAD empty; config_id match",
+    "states": [
+      "ALPHA_DISCOVERY_STAGE_1_OPEN",
+      "ALPHA_DISCOVERY_STAGE_1_PLAN_READY",
+      "READY_FOR_CEO_ALPHA_WAVE_1_AND_AUTONOMOUS_LOOP_DECISION"
+    ],
+    "n_hypotheses": 17,
+    "regime_classes": [
+      "TREND_UP",
+      "TREND_DOWN",
+      "RANGE",
+      "TRANSITION",
+      "REGIME_INDEPENDENT"
+    ],
+    "wave_1": [
+      "H14 session",
+      "H05 breakdown-acceptance",
+      "H11 displacement+acceptance",
+      "H02 failed-bearish-counter",
+      "H08 boundary-rejection"
+    ],
+    "open_risks": [
+      "STRESS cost def ruling (mandate spread 0.08 vs manifest round-trip 0.24)",
+      "V4.4 CONFIRMED occupancy unknown",
+      "short-side alpha may not exist"
+    ],
+    "executed": false,
+    "broker": "DISABLED",
+    "report": "ALPHA_DISCOVERY_STAGE1_PLAN.md"
   }
 }
