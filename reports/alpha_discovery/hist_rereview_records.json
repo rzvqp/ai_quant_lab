@@ -1,0 +1,347 @@
+{
+ "records": [
+  {
+   "family": "S5",
+   "candidate_id": "C_2d587447",
+   "mechanism": "opening-range momentum NY breakout LONG",
+   "spec": {
+    "session": "ny",
+    "mode": "breakout",
+    "side": "up",
+    "stop": "or_opp",
+    "exit": "rr3"
+   },
+   "n_setups": 7151,
+   "GROSS": {
+    "n": 873,
+    "avg_R": 0.0713,
+    "total_R": 62.24,
+    "win_rate": 0.478,
+    "avg_win": 0.919,
+    "avg_loss": -0.704,
+    "profit_factor": 1.194,
+    "max_dd_R": -16.77,
+    "tail_loss": -1.0,
+    "best_share": 0.048,
+    "top1pct_share": 0.386,
+    "temporal_conc": 0.403,
+    "long_frac": null
+   },
+   "BASE": {
+    "n": 873,
+    "avg_R": 0.0629,
+    "total_R": 54.9,
+    "win_rate": 0.473,
+    "avg_win": 0.92,
+    "avg_loss": -0.706,
+    "profit_factor": 1.169,
+    "max_dd_R": -17.43,
+    "tail_loss": -1.017,
+    "best_share": 0.055,
+    "top1pct_share": 0.436,
+    "temporal_conc": 0.426,
+    "long_frac": null
+   },
+   "STRESS": {
+    "n": 873,
+    "avg_R": 0.031,
+    "total_R": 27.03,
+    "win_rate": 0.462,
+    "avg_win": 0.911,
+    "avg_loss": -0.724,
+    "profit_factor": 1.079,
+    "max_dd_R": -19.93,
+    "tail_loss": -1.082,
+    "best_share": 0.11,
+    "top1pct_share": 0.879,
+    "temporal_conc": 0.625,
+    "long_frac": null
+   },
+   "status": "HISTORICAL_CANDIDATE_CONFIRMED_FOR_DEEPER_RESEARCH",
+   "reason": "gross 0.0713, BASE 0.0629, STRESS 0.031 all>0 stable",
+   "regime_distribution": {
+    "TREND_UP": 0.9,
+    "TREND_DOWN": 0.1,
+    "RANGE_V44": 0.03,
+    "OTHER": 0.0
+   },
+   "historical": {
+    "exp": 0.166,
+    "pf": 1.48,
+    "robust": 2.14,
+    "n": 287
+   },
+   "data": "DEVELOPMENT 2011-2018 (<2018-05)"
+  },
+  {
+   "family": "S9",
+   "candidate_id": "C_0bb5095b",
+   "mechanism": "MTF-trend momentum h4up conf1h=any",
+   "spec": {
+    "c4h": "up",
+    "conf1h": "any",
+    "lb": 20,
+    "stop": "structural",
+    "exit": "rr2"
+   },
+   "n_setups": 0,
+   "GROSS": {
+    "n": 0
+   },
+   "BASE": {
+    "n": 0
+   },
+   "STRESS": {
+    "n": 0
+   },
+   "status": "HISTORICAL_CANDIDATE_IMPLEMENTATION_MIGRATION_REQUIRED",
+   "reason": "HTF/PDH context (h4_trend_up/h1_trend_up/pdh/pdl) unpopulated in DEVELOPMENT (2011-2018); feature coverage begins 2023-01-03 = current VALIDATION window. Faithful DEVELOPMENT replay needs HTF-context recomputation from M15; evaluating on native 2023+ window would consume VALIDATION (forbidden). Not approximated.",
+   "regime_distribution": {},
+   "historical": {
+    "exp": 0.068,
+    "pf": 1.15,
+    "robust": 1.76,
+    "n": 545
+   },
+   "data": "DEVELOPMENT 2011-2018 (<2018-05)"
+  },
+  {
+   "family": "S9",
+   "candidate_id": "C_d008e0a4",
+   "mechanism": "MTF-trend momentum h4up conf1h=align",
+   "spec": {
+    "c4h": "up",
+    "conf1h": "align",
+    "lb": 10,
+    "stop": "structural",
+    "exit": "rr3"
+   },
+   "n_setups": 0,
+   "GROSS": {
+    "n": 0
+   },
+   "BASE": {
+    "n": 0
+   },
+   "STRESS": {
+    "n": 0
+   },
+   "status": "HISTORICAL_CANDIDATE_IMPLEMENTATION_MIGRATION_REQUIRED",
+   "reason": "HTF/PDH context (h4_trend_up/h1_trend_up/pdh/pdl) unpopulated in DEVELOPMENT (2011-2018); feature coverage begins 2023-01-03 = current VALIDATION window. Faithful DEVELOPMENT replay needs HTF-context recomputation from M15; evaluating on native 2023+ window would consume VALIDATION (forbidden). Not approximated.",
+   "regime_distribution": {},
+   "historical": {
+    "exp": 0.063,
+    "pf": 1.12,
+    "robust": 1.51,
+    "n": 512
+   },
+   "data": "DEVELOPMENT 2011-2018 (<2018-05)"
+  },
+  {
+   "family": "S20",
+   "candidate_id": "C_09d2245b",
+   "mechanism": "hybrid sweep+MTF h4up breakout",
+   "spec": {
+    "ctx": "h4up",
+    "trig": "breakout",
+    "lb": 50,
+    "stop": "atr",
+    "exit": "rr3"
+   },
+   "n_setups": 0,
+   "GROSS": {
+    "n": 0
+   },
+   "BASE": {
+    "n": 0
+   },
+   "STRESS": {
+    "n": 0
+   },
+   "status": "HISTORICAL_CANDIDATE_IMPLEMENTATION_MIGRATION_REQUIRED",
+   "reason": "HTF/PDH context (h4_trend_up/h1_trend_up/pdh/pdl) unpopulated in DEVELOPMENT (2011-2018); feature coverage begins 2023-01-03 = current VALIDATION window. Faithful DEVELOPMENT replay needs HTF-context recomputation from M15; evaluating on native 2023+ window would consume VALIDATION (forbidden). Not approximated.",
+   "regime_distribution": {},
+   "historical": {
+    "exp": 0.075,
+    "pf": 1.1,
+    "robust": 1.34,
+    "n": 456
+   },
+   "data": "DEVELOPMENT 2011-2018 (<2018-05)"
+  },
+  {
+   "family": "S1",
+   "candidate_id": "C_dca5629f",
+   "mechanism": "liquidity-sweep MR pdh_pdl side=low LONG",
+   "spec": {
+    "confirm": "consecutive2",
+    "exit": "rr2",
+    "imb": "none",
+    "liq_lb": 20,
+    "liq_ref": "pdh_pdl",
+    "side": "low",
+    "stop": "beyond_sweep",
+    "window": 8
+   },
+   "n_setups": 0,
+   "GROSS": {
+    "n": 0
+   },
+   "BASE": {
+    "n": 0
+   },
+   "STRESS": {
+    "n": 0
+   },
+   "status": "HISTORICAL_CANDIDATE_IMPLEMENTATION_MIGRATION_REQUIRED",
+   "reason": "HTF/PDH context (h4_trend_up/h1_trend_up/pdh/pdl) unpopulated in DEVELOPMENT (2011-2018); feature coverage begins 2023-01-03 = current VALIDATION window. Faithful DEVELOPMENT replay needs HTF-context recomputation from M15; evaluating on native 2023+ window would consume VALIDATION (forbidden). Not approximated.",
+   "regime_distribution": {},
+   "historical": {
+    "exp": 0.032,
+    "pf": 1.05,
+    "robust": 1.22,
+    "n": 399
+   },
+   "data": "DEVELOPMENT 2011-2018 (<2018-05)"
+  },
+  {
+   "family": "S1",
+   "candidate_id": "C_954698b1",
+   "mechanism": "liquidity-sweep MR swing side=low LONG (fvg)",
+   "spec": {
+    "confirm": "close_beyond",
+    "exit": "time",
+    "imb": "fvg",
+    "liq_lb": 20,
+    "liq_ref": "swing",
+    "side": "low",
+    "stop": "beyond_sweep",
+    "window": 8
+   },
+   "n_setups": 528,
+   "GROSS": {
+    "n": 385,
+    "avg_R": -0.0585,
+    "total_R": -22.51,
+    "win_rate": 0.426,
+    "avg_win": 0.793,
+    "avg_loss": -0.69,
+    "profit_factor": 0.852,
+    "max_dd_R": -34.56,
+    "tail_loss": -1.01,
+    "best_share": null,
+    "top1pct_share": null,
+    "temporal_conc": 0.645,
+    "long_frac": null
+   },
+   "BASE": {
+    "n": 385,
+    "avg_R": -0.0675,
+    "total_R": -25.99,
+    "win_rate": 0.423,
+    "avg_win": 0.789,
+    "avg_loss": -0.696,
+    "profit_factor": 0.832,
+    "max_dd_R": -37.81,
+    "tail_loss": -1.078,
+    "best_share": null,
+    "top1pct_share": null,
+    "temporal_conc": 0.538,
+    "long_frac": null
+   },
+   "STRESS": {
+    "n": 385,
+    "avg_R": -0.1018,
+    "total_R": -39.18,
+    "win_rate": 0.392,
+    "avg_win": 0.817,
+    "avg_loss": -0.695,
+    "profit_factor": 0.759,
+    "max_dd_R": -50.18,
+    "tail_loss": -1.151,
+    "best_share": null,
+    "top1pct_share": null,
+    "temporal_conc": 0.344,
+    "long_frac": null
+   },
+   "status": "HISTORICAL_CANDIDATE_FAIL",
+   "reason": "gross<=0 (-0.0585)",
+   "regime_distribution": {
+    "TREND_UP": 0.11,
+    "TREND_DOWN": 0.89,
+    "RANGE_V44": 0.05,
+    "OTHER": 0.0
+   },
+   "historical": {
+    "exp": 0.071,
+    "pf": 1.17,
+    "robust": 1.26,
+    "n": 193
+   },
+   "data": "DEVELOPMENT 2011-2018 (<2018-05)"
+  },
+  {
+   "family": "S1",
+   "candidate_id": "C_9214b37b",
+   "mechanism": "liquidity-sweep MR pdh_pdl side=high SHORT",
+   "spec": {
+    "confirm": "displacement",
+    "exit": "rr3",
+    "imb": "none",
+    "liq_lb": 20,
+    "liq_ref": "pdh_pdl",
+    "side": "high",
+    "stop": "beyond_sweep",
+    "window": 8
+   },
+   "n_setups": 0,
+   "GROSS": {
+    "n": 0
+   },
+   "BASE": {
+    "n": 0
+   },
+   "STRESS": {
+    "n": 0
+   },
+   "status": "HISTORICAL_CANDIDATE_IMPLEMENTATION_MIGRATION_REQUIRED",
+   "reason": "HTF/PDH context (h4_trend_up/h1_trend_up/pdh/pdl) unpopulated in DEVELOPMENT (2011-2018); feature coverage begins 2023-01-03 = current VALIDATION window. Faithful DEVELOPMENT replay needs HTF-context recomputation from M15; evaluating on native 2023+ window would consume VALIDATION (forbidden). Not approximated.",
+   "regime_distribution": {},
+   "historical": {
+    "exp": 0.017,
+    "pf": 1.03,
+    "robust": 1.06,
+    "n": 241
+   },
+   "data": "DEVELOPMENT 2011-2018 (<2018-05)"
+  }
+ ],
+ "s1_range_conditioning": {
+  "S1_all_BASE": {
+   "n": 0
+  },
+  "S1_RANGE_CONFIRMED_BASE": {
+   "n": 0
+  },
+  "S1_not_RANGE_BASE": {
+   "n": 0
+  },
+  "n_in_range": 0,
+  "n_out_range": 0
+ },
+ "overlap_vs_candidate001": {
+  "C_2d587447": {
+   "signal_overlap_with_C001": 321,
+   "jaccard": 0.026,
+   "classification": "INDEPENDENT_ALPHA_SOURCE",
+   "cand001_signals": 5387,
+   "cand_signals": 7151
+  }
+ },
+ "cand001_da_signal_count": 5387,
+ "DC_status": {
+  "DC_0003": "IMPLEMENTATION_MIGRATION_REQUIRED (micro-C/macro-C class boundary never operationalized in frozen spec)",
+  "DC_0008": "IMPLEMENTATION_MIGRATION_REQUIRED (requires M1 multi-minute volume anatomy, absent from M15 DEVELOPMENT data)",
+  "DC_0004": "GOVERNANCE_PAUSED_REQUIRES_FRESH_EVIDENCE (holdout burned; excluded from Wave 1)"
+ }
+}

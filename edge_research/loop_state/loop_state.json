@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "ALPHA_HISTORICAL_CANDIDATE_INVENTORY_COMPLETE",
+  "STATUS": "ALPHA_HISTORICAL_REREVIEW_WAVE1_COMPLETE",
   "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -793,5 +793,28 @@
     "final_holdout_access": 0,
     "report": "ALPHA_HISTORICAL_CANDIDATE_INVENTORY.md",
     "next_status": "READY_FOR_CEO_CANDIDATE_PORTFOLIO_REVIEW"
+  },
+  "HISTORICAL_REREVIEW_WAVE1": {
+    "mandate": "ALPHA-HISTORICAL-REREVIEW-WAVE1-001",
+    "survivor": [
+      "S5 opening-range momentum (CONFIRMED, B+0.063/S+0.031, independent of C-001 jaccard 0.026)"
+    ],
+    "fail": [
+      "S1-swing liquidity-sweep MR (B-0.068)"
+    ],
+    "migration_required": [
+      "S9 x2",
+      "S20",
+      "S1-PDH x2",
+      "DC-0003",
+      "DC-0008"
+    ],
+    "governance_paused": [
+      "DC-0004"
+    ],
+    "key_finding": "HTF/PDH S-family native window (2023+) = current VALIDATION partition; clean DEV replay needs HTF-context migration (not executed, no VALIDATION consumed)",
+    "final_holdout_access": 0,
+    "report": "reports/alpha_discovery/ALPHA_HISTORICAL_REREVIEW_WAVE1_REPORT.md",
+    "next": "READY_FOR_CEO_ALPHA_PORTFOLIO_DECISION"
   }
 }
