@@ -1,0 +1,380 @@
+{
+ "H4-bo-raw-S-rr1.5": {
+  "tf": "H4",
+  "name": "bo-raw-S",
+  "k": 1.5,
+  "STRESS_avg": 0.2876,
+  "WR": 0.44,
+  "n": 125,
+  "best5_rem": 0.2269,
+  "best10_rem": 0.16,
+  "maxYr": 0.354,
+  "pb_avg": {
+   "b0": 0.2306,
+   "b1": 0.5345
+  },
+  "CALIB_avg": 0.1523,
+  "CALIB_n": 20,
+  "exec_delay": 0.2038,
+  "exec_floor": 0.1509,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": true,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "ROBUST"
+ },
+ "H4-bo-raw-S-rr2.0": {
+  "tf": "H4",
+  "name": "bo-raw-S",
+  "k": 2.0,
+  "STRESS_avg": 0.1748,
+  "WR": 0.336,
+  "n": 107,
+  "best5_rem": 0.0858,
+  "best10_rem": -0.0123,
+  "maxYr": 0.958,
+  "pb_avg": {
+   "b0": 0.1056,
+   "b1": 0.4908
+  },
+  "CALIB_avg": 0.0955,
+  "CALIB_n": 17,
+  "exec_delay": 0.1454,
+  "exec_floor": 0.1684,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H4-bo-raw-S-rr3.0": {
+  "tf": "H4",
+  "name": "bo-raw-S",
+  "k": 3.0,
+  "STRESS_avg": 0.2346,
+  "WR": 0.231,
+  "n": 91,
+  "best5_rem": 0.1079,
+  "best10_rem": -0.0674,
+  "maxYr": 0.751,
+  "pb_avg": {
+   "b0": 0.1815,
+   "b1": 0.506
+  },
+  "CALIB_avg": 0.2907,
+  "CALIB_n": 16,
+  "exec_delay": 0.2076,
+  "exec_floor": 0.2599,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H4-bo-raw-S-rr4.0": {
+  "tf": "H4",
+  "name": "bo-raw-S",
+  "k": 4.0,
+  "STRESS_avg": 0.3117,
+  "WR": 0.182,
+  "n": 77,
+  "best5_rem": 0.1628,
+  "best10_rem": -0.0554,
+  "maxYr": 0.853,
+  "pb_avg": {
+   "b0": 0.2989,
+   "b1": 0.4542
+  },
+  "CALIB_avg": 0.1212,
+  "CALIB_n": 14,
+  "exec_delay": 0.2818,
+  "exec_floor": 0.3299,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H4-bo-acc-S-rr1.5": {
+  "tf": "H4",
+  "name": "bo-acc-S",
+  "k": 1.5,
+  "STRESS_avg": 0.172,
+  "WR": 0.439,
+  "n": 57,
+  "best5_rem": 0.1239,
+  "best10_rem": 0.045,
+  "maxYr": 0.924,
+  "pb_avg": {
+   "b0": 0.1262,
+   "b1": 0.3201
+  },
+  "CALIB_avg": 0.1199,
+  "CALIB_n": 11,
+  "exec_delay": 0.0337,
+  "exec_floor": 0.0133,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H4-bo-acc-S-rr2.0": {
+  "tf": "H4",
+  "name": "bo-acc-S",
+  "k": 2.0,
+  "STRESS_avg": 0.1431,
+  "WR": 0.327,
+  "n": 52,
+  "best5_rem": 0.0691,
+  "best10_rem": -0.0535,
+  "maxYr": 1.495,
+  "pb_avg": {
+   "b0": 0.2089,
+   "b1": 0.0647
+  },
+  "CALIB_avg": 0.4841,
+  "CALIB_n": 10,
+  "exec_delay": 0.2413,
+  "exec_floor": 0.1093,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H4-eff-S-rr1.5": {
+  "tf": "H4",
+  "name": "eff-S",
+  "k": 1.5,
+  "STRESS_avg": 0.0921,
+  "WR": 0.444,
+  "n": 187,
+  "best5_rem": 0.0214,
+  "best10_rem": -0.0567,
+  "maxYr": 1.121,
+  "pb_avg": {
+   "b0": 0.1894,
+   "b1": -0.0861
+  },
+  "CALIB_avg": -0.0449,
+  "CALIB_n": 36,
+  "exec_delay": -0.0442,
+  "exec_floor": 0.0902,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": false,
+   "exec_ok": false,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H4-eff-S-rr2.0": {
+  "tf": "H4",
+  "name": "eff-S",
+  "k": 2.0,
+  "STRESS_avg": 0.0705,
+  "WR": 0.361,
+  "n": 166,
+  "best5_rem": -0.0267,
+  "best10_rem": -0.1341,
+  "maxYr": 1.186,
+  "pb_avg": {
+   "b0": 0.1426,
+   "b1": -0.0741
+  },
+  "CALIB_avg": 0.1206,
+  "CALIB_n": 29,
+  "exec_delay": 0.0166,
+  "exec_floor": 0.1063,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks": false,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ },
+ "H4-eff-S-rr3.0": {
+  "tf": "H4",
+  "name": "eff-S",
+  "k": 3.0,
+  "STRESS_avg": 0.2197,
+  "WR": 0.285,
+  "n": 130,
+  "best5_rem": 0.0857,
+  "best10_rem": -0.0877,
+  "maxYr": 0.823,
+  "pb_avg": {
+   "b0": 0.3469,
+   "b1": -0.0322
+  },
+  "CALIB_avg": -0.0297,
+  "CALIB_n": 25,
+  "exec_delay": -0.0288,
+  "exec_floor": 0.0863,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": false,
+   "exec_ok": false,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H4-eff-S-rr4.0": {
+  "tf": "H4",
+  "name": "eff-S",
+  "k": 4.0,
+  "STRESS_avg": 0.2798,
+  "WR": 0.221,
+  "n": 113,
+  "best5_rem": 0.1081,
+  "best10_rem": -0.1197,
+  "maxYr": 0.713,
+  "pb_avg": {
+   "b0": 0.3253,
+   "b1": 0.2189
+  },
+  "CALIB_avg": 0.2207,
+  "CALIB_n": 22,
+  "exec_delay": 0.0025,
+  "exec_floor": 0.1277,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": false,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H1-hllh-S-rr1.5": {
+  "tf": "H1",
+  "name": "hllh-S",
+  "k": 1.5,
+  "STRESS_avg": 0.0154,
+  "WR": 0.222,
+  "n": 500,
+  "best5_rem": -0.062,
+  "best10_rem": -0.1474,
+  "maxYr": 1.657,
+  "pb_avg": {
+   "b0": 0.0525,
+   "b1": 0.0618
+  },
+  "CALIB_avg": -0.2475,
+  "CALIB_n": 93,
+  "exec_delay": 0.0093,
+  "exec_floor": 0.0902,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": false,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "FRAGILE"
+ },
+ "H1-hllh-S-rr2.0": {
+  "tf": "H1",
+  "name": "hllh-S",
+  "k": 2.0,
+  "STRESS_avg": 0.1001,
+  "WR": 0.179,
+  "n": 447,
+  "best5_rem": 0.0016,
+  "best10_rem": -0.106,
+  "maxYr": 0.374,
+  "pb_avg": {
+   "b0": 0.1436,
+   "b1": 0.1383
+  },
+  "CALIB_avg": -0.2868,
+  "CALIB_n": 89,
+  "exec_delay": 0.0293,
+  "exec_floor": 0.1069,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": true,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H1-hllh-S-rr3.0": {
+  "tf": "H1",
+  "name": "hllh-S",
+  "k": 3.0,
+  "STRESS_avg": 0.1868,
+  "WR": 0.115,
+  "n": 384,
+  "best5_rem": 0.0413,
+  "best10_rem": -0.1192,
+  "maxYr": 0.447,
+  "pb_avg": {
+   "b0": 0.2656,
+   "b1": 0.1807
+  },
+  "CALIB_avg": -0.1389,
+  "CALIB_n": 84,
+  "exec_delay": 0.0671,
+  "exec_floor": 0.0494,
+  "flags": {
+   "tail_ok": true,
+   "conc_ok": true,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": false
+  },
+  "verdict": "STRONG_PARTIAL"
+ },
+ "H1-hllh-S-rr4.0": {
+  "tf": "H1",
+  "name": "hllh-S",
+  "k": 4.0,
+  "STRESS_avg": 0.1455,
+  "WR": 0.073,
+  "n": 354,
+  "best5_rem": -0.0477,
+  "best10_rem": -0.2731,
+  "maxYr": 0.573,
+  "pb_avg": {
+   "b0": 0.2109,
+   "b1": 0.1567
+  },
+  "CALIB_avg": 0.033,
+  "CALIB_n": 79,
+  "exec_delay": 0.154,
+  "exec_floor": 0.081,
+  "flags": {
+   "tail_ok": false,
+   "conc_ok": true,
+   "both_blocks": true,
+   "exec_ok": true,
+   "calib_ok": true
+  },
+  "verdict": "FRAGILE"
+ }
+}
