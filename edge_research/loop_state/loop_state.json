@@ -620,7 +620,7 @@
       "old_results": "NOT promoted/compared/relabeled"
     }
   },
-  "STATUS": "ALPHA_PORTFOLIO_DEEP_RESEARCH_PASS",
+  "STATUS": "NO_ROBUST_PROTREND_ALPHA_FOUND_IN_CURRENT_SEARCH_SPACE",
   "STATUS_ts": "2026-08-21",
   "CANONICAL_RERUN": {
     "authorization": "RT-N1-0001 + RT-N1-0002 (N1_INCREMENTAL_PASS 6230ee5)",
@@ -827,5 +827,27 @@
     "calibration_used": "2020-01..2022-01",
     "next": "CANDIDATE_SPECIFICATIONS_READY_FOR_VALIDATION_DECISION (S5 only)",
     "report": "reports/alpha_discovery/ALPHA_S5_C001_DEEP_RESEARCH_REPORT.md"
+  },
+  "PROTREND_DISCOVERY": {
+    "mandate": "ALPHA-XAUUSD-PROTREND-DISCOVERY-001",
+    "tested": 44,
+    "hard_max": 150,
+    "fast_survivors": [
+      "PT-C-bo50-UP (fails deep tail robustness: best-1%-removed -0.015, outlier-dependent, related to breakout family)"
+    ],
+    "robust_candidates": 0,
+    "cost_fragile": [
+      "PT-C-bo20-UP",
+      "PT-A-pb4-DOWN (B+0.148 gross, STRESS-neg)"
+    ],
+    "key_findings": [
+      "most pro-trend continuation dies at STRESS on M15",
+      "N1 trend gate mostly does not add value",
+      "short-side structurally weaker"
+    ],
+    "s5_remains_only_robust_alpha": true,
+    "validation_access": 0,
+    "final_holdout_access": 0,
+    "report": "reports/alpha_discovery/ALPHA_XAUUSD_PROTREND_DISCOVERY_REPORT.md"
   }
 }

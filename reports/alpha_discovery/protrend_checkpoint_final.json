@@ -1,0 +1,27 @@
+{
+  "tag": "final",
+  "tested": 44,
+  "survived": [
+    "PT-C-bo50-UP"
+  ],
+  "cost_fragile": 2,
+  "failed": 40,
+  "sparse": 1,
+  "families": {
+    "A_pullback": 8,
+    "B_disp_accept": 8,
+    "C_breakout": 8,
+    "D_flag": 2,
+    "E_struct_retest": 2,
+    "F_failed_counter": 2,
+    "G_momentum": 8,
+    "H_vol_expansion": 2,
+    "K_acceleration": 2,
+    "J_session": 2
+  },
+  "LONG": 22,
+  "SHORT": 22,
+  "calibration_used": "on survivors only",
+  "validation_access": 0,
+  "final_holdout_access": 0
+}
