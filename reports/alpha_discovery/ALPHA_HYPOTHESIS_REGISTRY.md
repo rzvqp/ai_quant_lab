@@ -1,0 +1,26 @@
+# ALPHA_HYPOTHESIS_REGISTRY
+
+Cumulative hypothesis log for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. Every materially-distinct rule tested, with side, key params, N, verdict. Parameter *variants* (RR/horizon/threshold neighborhoods) are counted as robustness checks of one hypothesis, not as separate hypotheses (§20, §33). Population: gated M5 -> H4/D1, DEV 2021-07-27..2023-12-29, STRESS cost.
+
+## Loop hypotheses (this mandate)
+| # | frontier | hypothesis | side | key params | N | verdict |
+|---|---|---|---|---|---|---|
+| H01 | F1 | compression -> up-release breakout continues | L | W20, box+atr comp, RR{1.5,2,3}, H{42,60} | 25 | FALSIFIED (MFE≈MAE; best10<0; DISC<0) |
+| H02 | F1 | compression -> down-release breakout continues | S | as H01 | 17 | FALSIFIED (avgR<0; DISC−0.52) |
+| H03 | F1 | + D1-alignment filter improves the break | L/S | D1 EMA20>50 subset | 13/7 | FALSIFIED (worse/too few) |
+| H04 | F2 | ATR-extension (ext>E) reverts (short the extended-up) | S | E{2.5,3.0}, RR{1,1.5,2} | 40–52 | FALSIFIED (advFirst 0.80–0.87; avgR<0) |
+| H05 | F2 | ATR-extension reverts (long the extended-down) | L | E{2.5,3.0} | 27–41 | FALSIFIED (best10<0; 2023<0) |
+| H06 | F2 | D1 consecutive-run (>=K days) reverts | L/S | K{4,5} | 5–13 | FALSIFIED (advFirst 0.85–0.92; avgR<0) |
+| H07 | F3 | day-of-week directional drift | both | UTC weekday means | 444d | FALSIFIED (upRate≈0.5; weak) |
+| H08 | F3 | weekly-open gap continuation | dir | ATR stop, RR{1,1.5} | 89 | FALSIFIED (best10−0.07; 2021<0) |
+| H09 | F3 | weekly-open gap fade | dir | as H08 | 89 | FALSIFIED (avgR<0 all) |
+| H10 | F4 | trend-drift per regime onset, horizon payoff | L | H{12,24,42}, 3ATR safety | 65 | NEAR-MISS (H24 clean but fragile; = trend-beta) |
+| H11 | F4 | same, D1-aligned | L | H24 sweet-spot | 38 | NEAR-MISS (posRate .55, allYrs+, but horizon-fragile) |
+| H12 | F4 | trend-drift SHORT per down-regime onset | S | H{12,24,42} | 21–49 | FALSIFIED (regime-locked, best10<0) |
+| **H13** | **F5** | **compression = low-risk re-entry WITH the D1 trend, structural stop** | **L** | **W20,H42,cd20,rr2** | **53** | **SURVIVOR -> READY_FOR_INDEPENDENT_VALIDATION** |
+| H14 | F5 | same, SHORT in D1-downtrend | S | W20,H42,rr{1.5,2,3} | 36 | NOT_SUPPORTED (best10<0; DISC−0.26) |
+
+**Robustness checks on H13 (not separate hypotheses):** W∈{14,20,28}×H∈{30,42,60}×cd∈{12,20}×rr∈{1.5,2.0} full grid (reported in `frontier5_vet.py` output); CALIB 2024 out-of-selection; DISC/CONF 60/40; best-1/5/10%-removed; per-year; overlap-vs-protrend proxy.
+
+## Prior-program lineage (summary — full detail in ALPHA_GRAVEYARD.md)
+60+ materially-distinct hypotheses across ~20 mandates already falsified (intraday fades/breakouts, session/sweep shorts, nested-MTF sequences, probabilistic states, H1/H4 transition, protrend, disp-followthrough, RANGE families, and the 6-family autonomous loop). The survivor H13 must be read against this cumulative search (§20).
