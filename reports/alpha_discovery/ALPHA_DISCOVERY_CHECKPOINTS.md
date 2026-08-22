@@ -183,3 +183,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Deliverable:** `ALPHA_STATE_PATH_BOUNDED_CONCLUSION.md` (whole map + method result + CEO options). Per §26 this is a BOUNDED conclusion with the full information map attached — NOT PRICE_ONLY_ALPHA_IMPOSSIBLE.
 **CEO decision requested:** (1) re-authorize EXOGENOUS with provisioned data (most likely source of a stationary uncorrelated signal; blocked only on data); (2) accept the regime-specific portfolio (S5 + COMP-CONT-L-rr2 + H4-bo-raw-S) with a regime-detection overlay (separate mandate); (3) authorize a genuinely different ratified price-only population. Loop resumes on any.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused at decision point).
+
+---
+
+## CHECKPOINT #16 — 2026-08-22 — NEW mandate: regime-conditional method; causal regime taxonomy FROZEN + reproducible + baselines
+**Authorization:** CEO accepted the regime-conditional finding; issued `ALPHA-XAUUSD-REGIME-CONDITIONAL-STATE-PATH-DISCOVERY-001`. Generalization gate CHANGED: same-regime cross-era (not same-sign across different regimes). DXY/exogenous stays PAUSED (ignore acquisition_staging/dxy). Loop resumed.
+**Foundation (Stage 1) done:** built + FROZE a causal price-only regime taxonomy (`state_regime.py`): UP/DOWN/QUIET/CHOP/TRANSITION from eff/trend/vr (all causal; QUIET is research-local, NOT canonical RANGE; no MI retuning). **Reproducibility EXCELLENT** — every regime occurs 8-34% in EVERY era (2021/2022/2023 + b0/b1), near-identical frequencies; DOWN recurs in all eras (b0 11.9%/b1 11.6%) enabling same-regime cross-era SHORT validation. Regime-conditional path baselines established (`ALPHA_REGIME_PATH_BASELINES.md`): regime BASE rates are stable across eras (DOWN-SHORT ~0.40-0.41 both eras; QUIET-SHORT ~0.40-0.41) — unlike the raw state->path lifts that inverted.
+**Status corrections recorded:** H4-bo-raw-S = INDEPENDENT_VALIDATION_BLOCKED (non-causal legacy D1 filter) -> reference/overlap only. Clean frozen = S5 (validated) + COMP-CONT-L-rr2 (pending).
+**Artifacts:** ALPHA_CAUSAL_REGIME_MAP, ALPHA_REGIME_PATH_BASELINES, ALPHA_REGIME_STATE_INFORMATION_MAP, ALPHA_REGIME_TRANSITION_MAP, ALPHA_REGIME_STRATEGY_REGISTRY.
+**NEXT:** within-regime state discovery — priority DOWN & QUIET regimes (SHORT), where cross-era base rates are most consistent: find causal states lifting SHORT materially above the same-regime base, validate DEV vs b0/b1 same-regime. Then regime transitions (§27). LONG/SHORT separate; material lift + sample honesty + DISC/CONF.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

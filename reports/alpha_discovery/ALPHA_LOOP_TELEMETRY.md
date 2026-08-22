@@ -3,9 +3,9 @@
 Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes CURRENT immediately.
 
 ```
-LOOP_STATUS               = ACTIVE (auto-loop PAUSED — state-path map COMPLETE across 5 families; bounded regime-conditional conclusion; awaiting CEO decision)
-CURRENT_POPULATION        = 2021-2023 native H1 DEV (state-path information mapping); price-only, causal
-CURRENT_FRONTIER          = STATE-PATH MAP COMPLETE (static/transition/path-history/multi-TF/session): no material cross-population-stable non-redundant edge; price-only state->path is REGIME-CONDITIONAL.
+LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: REGIME-CONDITIONAL state->path discovery)
+CURRENT_POPULATION        = 2021-2023 native H1 DEV + b0/b1 (regime-conditional; causal regime taxonomy frozen)
+CURRENT_FRONTIER          = causal REGIME taxonomy FROZEN + reproducible (UP/DOWN/QUIET/CHOP/TRANSITION, 8-34% each in every era) + regime-conditional baselines done
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = CEO-DECISION: (1) EXOGENOUS with provisioned data; (2) accept regime-specific portfolio + regime-detection overlay; (3) another ratified price-only population. See ALPHA_STATE_PATH_BOUNDED_CONCLUSION.md. Loop resumes on any.
+NEXT_FRONTIER             = within-regime state discovery (priority DOWN & QUIET SHORT, same-regime cross-era DEV vs b0/b1), then regime transitions (§27)
 ```
 
 ## Key structural findings (bounded)
