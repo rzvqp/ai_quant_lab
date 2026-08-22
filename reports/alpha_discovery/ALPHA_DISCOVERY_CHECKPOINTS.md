@@ -314,3 +314,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** NO cross-era-stable candidate. Strongest = UP x dipRecovUp -> LONG +0.059 (absorption; DEV-robust all-years + DISC +0.06/CONF +0.06 + coherent mirror) but b0 +0.02 marginal / b1 -0.01 -> era-conditional, fails. DOWN x asymDn short +0.047 fails b1 (flat). Meta-pattern F1-F3: continuation edges work high-vol/trend eras & fail b1; reversal/absorption edges work DEV & fail hist. Binding constraint = b1 low-vol lacks follow-through.
 **NEXT:** Family 4 = HH/HL vs LH/LL structural swing-sequence + wick/body sequence asymmetry (microstructure) conditional on H4 state.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #31 — 2026-08-22 — Family 4 (swing-sequence + wick): only vol-structure cross-era-stable (non-directional); convergence with standalone-M15
+**Screen (`h4m15_swingwick.py`):** M15 HH/HL block structure + wick asymmetry conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** 2 CROSS_STABLE flags but both non-directional: (1) CHOP x HH_LL(expand) short +0.049 = BILATERAL range-expansion (long side also +0.041; CHOP has no directional H4 thesis for §15) = VOL_TIMING_NOT_DIRECTIONAL; (2) UP x uwDom short -0.061 = negative avoidance. Pattern: HH_LL expansion lifts BOTH sides in every state (vol-structure); LH_HL contraction lowers BOTH sides (avoidance). Directional structure (DOWN x LH_LL short +0.050) era-conditional (b1 flat). NO new directional cross-era-stable tradeable candidate.
+**Convergence:** H4-conditioned path-shape REPRODUCES the standalone-M15 bounded conclusion — the only cross-era-stable M15 information is VOLATILITY-STRUCTURE (expansion/contraction), which is non-directional; directional path-edges remain era-conditional.
+**NEXT:** Family 5 = time-since-local-extreme + recent path curvature/acceleration (last univariate path-shape class); then present a BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

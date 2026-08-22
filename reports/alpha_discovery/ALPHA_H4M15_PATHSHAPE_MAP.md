@@ -57,3 +57,15 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 | DOWN x popFadeDn -> S 70/50 | +0.036 | +0.01/+0.06 | +0.01/+0.01 | pop-fade reversal short, small/immaterial |
 | QUIET x popFadeDn -> L 70/50 | +0.039 | +0.06/+0.01 | +0.01/-0.00 | fade-recover long, b0/b1 <0.02 |
 **Verdict:** no cross-era-stable positive candidate. Strongest (UP dipRecovUp LONG +0.059) is DEV-robust + b0-marginal but b1-negative. Meta-pattern across F1-F3: continuation edges work in high-vol/trend eras (b0/DEV) & fail b1; reversal/absorption edges work in DEV & fail hist. Binding constraint = b1 low-vol lacks directional follow-through. PIVOT -> Family 4 (HH/HL structural swing-sequence + wick/body asymmetry).
+
+## Family 4 — swing-sequence (HH/HL) + wick asymmetry (checkpoint #31)
+`h4m15_swingwick.py`. Recent 8-bar block vs prior 8-bar block (HH_HL/LH_LL/HH_LL/LH_HL) + wick asymmetry (uwDom/lwDom). Lift vs same-H4-state base, deduped, cross-era.
+| cell | lift | b0/b1 | read |
+|---|---|---|---|
+| CHOP x HH_LL(expand) -> S 100/70 | +0.049 (CROSS_STABLE) | +0.03/+0.04 | but LONG side also +0.041 -> BILATERAL range-expansion (vol-timing), weak short tilt; CHOP has no directional H4 thesis for §15 architecture -> VOL_TIMING_NOT_DIRECTIONAL |
+| HH_LL(expand) all states | + both sides | + | range-expansion lifts BOTH directions everywhere = vol-structure, not directional |
+| LH_HL(contract) all states | - both sides | - | contraction lowers BOTH sides everywhere = stable AVOIDANCE/low-vol (bilateral) |
+| UP x uwDom(sell-rej) -> S 100/70 | -0.061 (CROSS_STABLE) | -0.04/-0.03 | NEGATIVE avoidance, not a trade |
+| DOWN x LH_LL(downtrend) -> S 100/70 | +0.050 | +0.03/**+0.00** | directional-structure continuation short, b1 flat -> era-conditional, fails |
+| UP x lwDom(buy-rej) -> S 70/50 | +0.057 | +0.03/~+0.02 | borderline b1 + economically incoherent (buy-rej->short) -> not clean |
+**Verdict:** NO new directional cross-era-stable tradeable candidate. The cross-era-stable signals are VOLATILITY-STRUCTURE (HH_LL expansion = bilateral higher P; LH_HL contraction = bilateral avoidance) — non-directional, the M15 analog of the standalone-M15 volatility finding. Directional structure (LH_LL) era-conditional (fails b1). **Convergence: H4-conditioned path-shape REPRODUCES the standalone-M15 result** — only vol-structure is cross-era-stable & it is non-directional. PIVOT -> Family 5 (time-since-extreme + curvature/acceleration = last univariate class) then bounded interim conclusion.
