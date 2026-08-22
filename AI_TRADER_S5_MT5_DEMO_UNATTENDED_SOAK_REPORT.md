@@ -98,6 +98,31 @@ stale weekend market). Final status for this bounded smoke run: `S5_MT5_DEMO_UNA
 `NO_GENUINE_S5_SIGNAL_OBSERVED` -- honest for the ~65-second window actually run, NOT a claim about the
 mandate's real 60-day/20-trade horizon.
 
+## 9a. Deployment: Scheduled Task registered, currently blocked on a real terminal-side condition
+
+Per explicit user confirmation, a Windows Scheduled Task (`AITraderS5MT5DemoSoak`, mirroring the existing
+`AITraderLiveShadow` precedent -- same interpreter, `AtLogOn` trigger, `IgnoreNew` multiple-instances
+policy, auto-restart up to 999 times at 1-minute intervals) was registered and started, running
+`run_soak_live.py` with the mandate's real 60-day default.
+
+**Current state: blocked, not running.** Every connection attempt (from the Scheduled Task and from
+direct, independent manual invocations alike) currently fails identically:
+`mt5.initialize() failed: (-6) Terminal: Authorization failed`, with `terminal_info()` returning `None`.
+The terminal process itself (`terminal64.exe`) is alive and `Responding: True` -- this is not a crashed
+terminal, not a code defect (reproduced from multiple independent process invocations, not specific to
+Task Scheduler), and not something this codebase can safely resolve on its own: per section 39/the
+standing "never invent credentials, never bypass a safety-relevant failure" discipline, no attempt was
+made to re-authenticate, restart the terminal, or otherwise force past this. **This needs the user's own
+attention in the MT5 terminal GUI** (most likely a re-login prompt or an algo-trading permission that
+needs to be re-confirmed interactively) before the soak can actually begin.
+
+The Scheduled Task is left registered and enabled, exactly as confirmed. Its retry behavior is safe
+while blocked: each attempt is bounded (3 quick internal retries), never reaches `order_send`, and is
+now cleanly logged to `new_brain_live_state/s5_mt5_demo_soak/startup_events.log` (added this session,
+see the `89d420e` commit) rather than crashing with a raw traceback under a Scheduled Task's console-less
+context. Once the terminal issue is resolved by the user, the task will pick up and begin the real soak
+automatically on its next scheduled retry -- no further action from this session should be required.
+
 ## 9. What is NOT yet true, and the actual deployment decision this mandate surfaces
 
 No genuine DEMO trade has occurred (market has been closed -- Saturday -- for both this mandate's live
@@ -123,8 +148,13 @@ files**. No new errors.
 
 - `S5_MT5_DEMO_SOAK_INFRASTRUCTURE_IMPLEMENTED`
 - `S5_MT5_DEMO_SOAK_LIVE_SMOKE_VERIFIED` (one real defect found and fixed live, re-verified clean)
-- `S5_MT5_DEMO_UNATTENDED_SOAK_NOT_YET_LAUNCHED` -- the real 60-day/20-trade horizon has not begun;
-  see section 9 and the accompanying deployment question.
+- `S5_MT5_DEMO_SOAK_SCHEDULED_TASK_REGISTERED` (`AITraderS5MT5DemoSoak`, enabled, per explicit user
+  confirmation -- section 9a)
+- `S5_MT5_DEMO_UNATTENDED_SOAK_BLOCKED_ON_TERMINAL_AUTHORIZATION` -- the real 60-day/20-trade horizon has
+  not begun; the connected MT5 terminal currently refuses `mt5.initialize()` with `(-6) Terminal:
+  Authorization failed`, an external condition requiring the user's own attention in the terminal GUI
+  (section 9a). The task is registered, enabled, and will self-start the soak automatically once that is
+  resolved -- no further action from this session should be required.
 
 `BROKER_ORDER_SUBMISSION_DISABLED` (shadow path) remains untouched. No REAL-account path exists anywhere
 in `mt5_demo_bridge/` or `soak/` (unchanged from the prior mandate, re-confirmed: this mandate added zero
