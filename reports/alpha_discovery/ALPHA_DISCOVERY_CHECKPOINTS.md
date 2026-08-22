@@ -133,3 +133,14 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Constructive deliverables:** `ALPHA_EXOGENOUS_EVIDENCE_MAP.md` (class-by-class), `ALPHA_EXOGENOUS_DATA_REQUIREMENTS.md` (exact datasets + coverage/timestamp/vintage spec, priority-ranked; minimal viable = one ratified DXY H1 series over b0/b1 unblocks X1/X3/X4), `ALPHA_EXOGENOUS_FRONTIER_REGISTRY.md` (X1-X6 frozen, BLOCKED_NO_DATA), `ALPHA_EXOGENOUS_HYPOTHESIS_REGISTRY.md` (0 tested).
 **CEO action requested:** provision (via Data Acquisition, ratified) at least one historical exogenous series covering b0/b1 (or 2021-2023) per the requirements spec — a ratified DXY H1 series is the highest-leverage single unblock. Loop resumes immediately on provisioning.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused at genuine data blocker).
+
+---
+
+## CHECKPOINT #11 — 2026-08-22 — state-path method (new mandate); Stage-A univariate information map
+**Authorization:** CEO paused DXY/exogenous; issued `ALPHA-XAUUSD-CAUSAL-STATE-PATH-DISCOVERY-001` — change discovery METHOD to outcome-first state->future-path information mapping (price-only). Loop resumed.
+**Built `state_path.py`:** causal first-passage engine P(+X before -Y) per bar + MFE/MAE, multi-horizon, LONG/SHORT separate, on 2021-2023 native H1 DEV (N=10,168). Raw causal price-state features only (excludes untrusted canonical RANGE/N1-N6 MI). Baselines recorded (`ALPHA_PATH_BASELINES.md`).
+**Stage-A univariate map (`ALPHA_STATE_INFORMATION_MAP.md`):** 10 state vars x 2 sides x 2 horizons on headline P(+100/-70).
+**Key finding:** `trend`=(EMA20-EMA50)/ATR is the dominant causal state — strongly-extended-up = EXHAUSTION: LONG P(+100/-70) drops to 0.313 (-0.105 vs base 0.418) and SHORT P rises to 0.472 (+0.081 vs base 0.391, +21pct, monotone, both horizons). Secondary: vol_ratio/vol_change (high vol favors trend-continuation), effic (monotone SHORT gate). `ST-TREND-EXH` registered PROMISING_UNIVARIATE (potential SHORT diversifier + LONG-avoidance filter; counter to LONG trend-beta so not obviously redundant).
+**Discipline:** promising != confirmed — NOT yet per-year/DISC/CONF-validated (the SHORT lift may be 2022-concentrated). No strategy geometry imposed (§3). No thresholds mined (continuous decile response). MT ledger updated (~40 univariate screens; winner selected by cross-consistency).
+**NEXT:** stability of ST-TREND-EXH (per-year + DISC/CONF + neighboring-region + cross-population b0/b1) + multi-horizon response curve + small interaction (extension x vol/efficiency). Only if it survives -> Stage-C strategy conversion + overlap-vs-frozen.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

@@ -3,9 +3,9 @@
 Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes CURRENT immediately.
 
 ```
-LOOP_STATUS               = ACTIVE (auto-loop PAUSED — EXOGENOUS_DATA_GOVERNANCE_BLOCKER: no authorized exogenous data exists; awaiting data provisioning)
-CURRENT_POPULATION        = EXOGENOUS frontier authorized, but NO exogenous data available (DXY/yields/positioning absent; only 2026 quarantined calendar/news)
-CURRENT_FRONTIER          = X1-X6 defined but BLOCKED_NO_DATA
+LOOP_STATUS               = ACTIVE (auto-loop RESUMED — new mandate: price-only STATE->PATH information method)
+CURRENT_POPULATION        = 2021-2023 native H1 DEV (state-path information mapping); price-only, causal
+CURRENT_FRONTIER          = Stage-A univariate info map DONE -> next: ST-TREND-EXH stability + interactions
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = PROVISION-RATIFIED-EXOGENOUS-DATA (DXY H1 over b0/b1 = highest-leverage unblock; see ALPHA_EXOGENOUS_DATA_REQUIREMENTS.md). Loop resumes on data provisioning.
+NEXT_FRONTIER             = characterize ST-TREND-EXH (per-year/DISC-CONF stability, multi-horizon curve, trend x vol/effic interaction); then Stage-C if it survives
 ```
 
 ## Key structural findings (bounded)
