@@ -14,7 +14,7 @@ from test_range_semantic_v4_3 import KW, legs_bars   # noqa: E402
 
 from ve_n1_replay.range_engine_v4_4 import RangeSemanticEngineV44   # noqa: E402
 from ve_n1_replay.range_engine_vnext import RangeSemanticEngineVNext, RangeSnapshotErrorVNext   # noqa: E402
-from ve_n1_replay.range_semantic_v4_3 import ContractErrorV43, Depth   # noqa: E402
+from ve_n1_replay.range_semantic_v4_3 import ContractErrorV43, Depth, TOO_SHORT_MACRO   # noqa: E402
 from ve_n1_replay.range_semantic_v4_4 import ConfigV44, StructureV44   # noqa: E402
 from ve_n1_replay.range_semantic_vnext import (   # noqa: E402
     CANDIDATE_ABANDONED_PRICE_MOVED_ON, CANDIDATE_SUPERSEDED_BY_MERGE, ConfigVNext,
@@ -489,3 +489,198 @@ def test_vnext10_no_pnl_or_strategy_outcome_field_anywhere() -> None:
             # anywhere here") from the scan -- it explains an absence, it is not a live reference
             body = src.split('"""', 2)[-1] if src.startswith('"""') else src
             assert forbidden not in body.lower(), f"{mod.__name__} must never reference {forbidden!r}"
+
+
+# ═══════════════════════════════════ VNEXT-11: hard-cap structural invariant (remediation
+# VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001) ═══════════════════════════════════
+# Statistician's independent validation (commit `54fa51f`) reproduced cap=3 / active-reached=34 with zero
+# REGISTRY_CAPACITY_REFUSED events: the capacity check at the registry insertion point only gated
+# `action == "REPLACEMENT"`, leaving CONTINUATION free to add candidates past the configured cap without
+# limit. These tests reproduce the exact blocker via the real registry-mutating path
+# (`_offer_swing_everywhere`, never the isolated identity function alone), then verify the fix under every
+# action type and combination the remediation mandate requires.
+
+def test_vnext11_mandatory_continuation_at_capacity_is_refused_not_admitted() -> None:
+    """The Statistician's exact reproduction. cap=3, registry full with 3 spatially distinct candidates, a
+    CONTINUATION-eligible swing pair arrives (matches a recently, non-breakout-terminated zone within
+    GAP_MAX, per the real `_episode_identity_for_new_macro_multi` precedence). Required result: active
+    count stays <=3, REGISTRY_CAPACITY_REFUSED is emitted, no unrelated candidate disappears, and repeating
+    the identical attempt changes nothing (deterministic refusal, not a one-shot check)."""
+    cfg = cfgn(max_active_macro_candidates=3)
+    prod = RangeSemanticProducerVNext(cfg)
+    seeded_macro(prod, structure_id=1, upper=110.0, lower=100.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=2, upper=310.0, lower=300.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=3, upper=510.0, lower=500.0, start_ts=0, cfg=cfg)
+    # simulate a 4th macro (id=99), spatially distinct from 1/2/3, that terminated non-breakout 5 bars ago
+    # -- well within GAP_MAX=12 -- at zone [700,710] (direct-field setup, the same established convention
+    # `seeded_macro` itself already uses for `_active_macros`)
+    prod._last_terminated_macro_zone = (700.0, 710.0)
+    prod._last_terminated_macro_end_ts = 45
+    prod._last_terminated_macro_id = 99
+    prod._last_terminated_macro_end_reason = TOO_SHORT_MACRO
+    events: list[Any] = []
+    # IoU>=0.5 against [700,710] -- the same 0.714 IoU construction proven in test_vnext2c -- and
+    # non-overlapping with macros 1/2/3: CONTINUATION, not MERGE or REPLACEMENT
+    prod._offer_swing_everywhere(50, 712.0, True, events)
+    prod._offer_swing_everywhere(51, 698.0, False, events)
+    assert set(prod._active_macros) == {1, 2, 3}, "no unrelated candidate may disappear"
+    assert len(prod._active_macros) == 3
+    assert any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events)
+    assert not any(e.kind == "EPISODE_CONTINUATION" for e in events), "the refused action must not complete"
+    # determinism: repeating the identical attempt changes nothing
+    events2: list[Any] = []
+    prod._offer_swing_everywhere(52, 712.0, True, events2)
+    prod._offer_swing_everywhere(53, 698.0, False, events2)
+    assert any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events2)
+    assert set(prod._active_macros) == {1, 2, 3}
+    assert len(prod._active_macros) == 3
+
+
+def test_vnext11b_replacement_at_capacity_still_refused_regression_guard() -> None:
+    """The pre-existing REPLACEMENT-at-capacity behavior (already covered by test_vnext4) must survive the
+    remediation unchanged -- an explicit regression guard alongside the new CONTINUATION coverage."""
+    cfg = cfgn(max_active_macro_candidates=3)
+    prod = RangeSemanticProducerVNext(cfg)
+    seeded_macro(prod, structure_id=1, upper=110.0, lower=100.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=2, upper=310.0, lower=300.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=3, upper=510.0, lower=500.0, start_ts=0, cfg=cfg)
+    events: list[Any] = []
+    prod._offer_swing_everywhere(50, 912.0, True, events)
+    prod._offer_swing_everywhere(51, 898.0, False, events)
+    assert any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events)
+    assert set(prod._active_macros) == {1, 2, 3}
+    assert len(prod._active_macros) == 3
+
+
+def test_vnext11c_merge_at_capacity_succeeds_net_zero_registry_size_unchanged() -> None:
+    """MERGE is the one action that frees a slot in the SAME operation (`_supersede_macro` removes the
+    target before the new candidate is inserted) -- it must NOT be refused purely for being at capacity,
+    and the registry must land at exactly the same size, never cap+1."""
+    cfg = cfgn(max_active_macro_candidates=3)
+    prod = RangeSemanticProducerVNext(cfg)
+    # advance the registry counter past 1/2/3 first (test_vnext2c's own established fix for this exact
+    # pitfall) -- otherwise the merge's own new_id() call below would ALSO return 1, silently overwriting
+    # the same dict key rather than proving supersession actually happened
+    for _ in range(3):
+        prod._registry.new_id()
+    seeded_macro(prod, structure_id=1, upper=110.0, lower=100.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=2, upper=310.0, lower=300.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=3, upper=510.0, lower=500.0, start_ts=0, cfg=cfg)
+    events: list[Any] = []
+    # IoU>=0.5 against macro 1's own zone [100,110] -- the same 0.714 construction as test_vnext2c
+    prod._offer_swing_everywhere(50, 112.0, True, events)
+    prod._offer_swing_everywhere(51, 98.0, False, events)
+    assert any(e.kind == "EPISODE_MERGED" for e in events)
+    assert not any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events)
+    assert len(prod._active_macros) == 3
+    assert 1 not in prod._active_macros, "the merge target must be superseded, not left dangling"
+    assert {2, 3} <= set(prod._active_macros)
+
+
+def test_vnext11d_repeated_continuation_attempts_all_refused_deterministically() -> None:
+    """Multiple separate attempts at the SAME capacity-exceeding CONTINUATION, across several bars, must
+    ALL be refused identically -- not admitted on a later attempt due to any accumulated state leak."""
+    cfg = cfgn(max_active_macro_candidates=3)
+    prod = RangeSemanticProducerVNext(cfg)
+    seeded_macro(prod, structure_id=1, upper=110.0, lower=100.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=2, upper=310.0, lower=300.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=3, upper=510.0, lower=500.0, start_ts=0, cfg=cfg)
+    prod._last_terminated_macro_zone = (700.0, 710.0)
+    prod._last_terminated_macro_end_ts = 45
+    prod._last_terminated_macro_id = 99
+    prod._last_terminated_macro_end_reason = TOO_SHORT_MACRO
+    for attempt, (bar_hi, bar_lo) in enumerate([(50, 51), (52, 53), (54, 55)]):
+        events: list[Any] = []
+        prod._offer_swing_everywhere(bar_hi, 712.0, True, events)
+        prod._offer_swing_everywhere(bar_lo, 698.0, False, events)
+        assert any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events), f"attempt {attempt} was not refused"
+        assert set(prod._active_macros) == {1, 2, 3}, f"attempt {attempt} changed the registry"
+
+
+def test_vnext11e_mixed_sequence_invariant_holds_after_every_single_operation() -> None:
+    """A sequence mixing all three action types at/near capacity -- len<=cap must hold after EVERY
+    operation, not just at the end, and a genuinely freed slot must correctly re-admit a new candidate
+    afterward (capacity refusal is not permanent once room exists)."""
+    cfg = cfgn(max_active_macro_candidates=3)
+    prod = RangeSemanticProducerVNext(cfg)
+    # advance the registry counter past 1/2/3 first (test_vnext2c's own established fix) -- step 3 below
+    # merges and would otherwise reuse id 1 for the new structure, masking the supersession assertion
+    for _ in range(3):
+        prod._registry.new_id()
+    seeded_macro(prod, structure_id=1, upper=110.0, lower=100.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=2, upper=310.0, lower=300.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=3, upper=510.0, lower=500.0, start_ts=0, cfg=cfg)
+    assert len(prod._active_macros) <= cfg.max_active_macro_candidates
+
+    # 1) REPLACEMENT attempt at capacity -- refused
+    events1: list[Any] = []
+    prod._offer_swing_everywhere(50, 912.0, True, events1)
+    prod._offer_swing_everywhere(51, 898.0, False, events1)
+    assert any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events1)
+    assert len(prod._active_macros) <= cfg.max_active_macro_candidates
+
+    # 2) CONTINUATION attempt at capacity -- refused
+    prod._last_terminated_macro_zone = (700.0, 710.0)
+    prod._last_terminated_macro_end_ts = 45
+    prod._last_terminated_macro_id = 99
+    prod._last_terminated_macro_end_reason = TOO_SHORT_MACRO
+    events2: list[Any] = []
+    prod._offer_swing_everywhere(52, 712.0, True, events2)
+    prod._offer_swing_everywhere(53, 698.0, False, events2)
+    assert any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events2)
+    assert len(prod._active_macros) <= cfg.max_active_macro_candidates
+
+    # 3) MERGE attempt at capacity -- succeeds, net-zero
+    events3: list[Any] = []
+    prod._offer_swing_everywhere(54, 112.0, True, events3)
+    prod._offer_swing_everywhere(55, 98.0, False, events3)
+    assert any(e.kind == "EPISODE_MERGED" for e in events3)
+    assert 1 not in prod._active_macros
+    assert len(prod._active_macros) == 3
+
+    # 4) a real termination frees a slot -- a subsequent REPLACEMENT now succeeds
+    freed_id = next(iter(set(prod._active_macros) - {2, 3}))   # the id that replaced 1 via merge
+    events4: list[Any] = []
+    prod._kill_macro(freed_id, 56, TOO_SHORT_MACRO, events4)
+    assert len(prod._active_macros) == 2
+    events5: list[Any] = []
+    prod._offer_swing_everywhere(57, 912.0, True, events5)
+    prod._offer_swing_everywhere(58, 898.0, False, events5)
+    assert any(e.kind == "EPISODE_REPLACEMENT" for e in events5)
+    assert not any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events5)
+    assert len(prod._active_macros) == 3
+
+
+def test_vnext11f_snapshot_restore_at_capacity_preserves_exact_registry() -> None:
+    cfg = cfgn(max_active_macro_candidates=3)
+    prod = RangeSemanticProducerVNext(cfg)
+    seeded_macro(prod, structure_id=1, upper=110.0, lower=100.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=2, upper=310.0, lower=300.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=3, upper=510.0, lower=500.0, start_ts=0, cfg=cfg)
+    snap = prod.snapshot_state()
+    restored = RangeSemanticProducerVNext(cfg)
+    restored.restore_state(snap)
+    assert set(restored._active_macros) == {1, 2, 3}
+    assert len(restored._active_macros) == 3
+    for mid in (1, 2, 3):
+        assert restored._active_macros[mid].boundary_upper == prod._active_macros[mid].boundary_upper
+        assert restored._active_macros[mid].boundary_lower == prod._active_macros[mid].boundary_lower
+
+
+def test_vnext11g_post_restore_capacity_still_enforced() -> None:
+    """Capacity refusal must not be a construction-only check -- a producer rebuilt via `restore_state`
+    must refuse an over-cap admission exactly like a freshly-constructed one."""
+    cfg = cfgn(max_active_macro_candidates=3)
+    prod = RangeSemanticProducerVNext(cfg)
+    seeded_macro(prod, structure_id=1, upper=110.0, lower=100.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=2, upper=310.0, lower=300.0, start_ts=0, cfg=cfg)
+    seeded_macro(prod, structure_id=3, upper=510.0, lower=500.0, start_ts=0, cfg=cfg)
+    snap = prod.snapshot_state()
+    restored = RangeSemanticProducerVNext(cfg)
+    restored.restore_state(snap)
+    events: list[Any] = []
+    restored._offer_swing_everywhere(60, 912.0, True, events)
+    restored._offer_swing_everywhere(61, 898.0, False, events)
+    assert any(e.kind == REGISTRY_CAPACITY_REFUSED for e in events)
+    assert len(restored._active_macros) == 3
+    assert set(restored._active_macros) == {1, 2, 3}

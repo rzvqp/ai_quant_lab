@@ -38,7 +38,9 @@
   "pathological_period_2016_2024": {
     "v4_4_confirmed_bars": 0,
     "v4_4_note": "single candidate (macro_id 770, per the v4.5 mandate's own reproduction) occupies the sole active slot 9.7 years, blocking ALL other RANGE activity of any kind",
-    "vnext_confirmed_bars_total": 55713,
+    "vnext_confirmed_bars_total": 62713,
+    "vnext_confirmed_bars_range": "6429-7660 (2022 min, 2018 max)",
+    "correction_note": "VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001 mandate section 13: this total was originally reported as 55713 and the range as 6429-7704 (7704 is 2014's own value, outside this window) -- both were derivation errors, caught by Statistician's independent validation and verified here by direct recomputation from the unchanged per-year data above (vnext_canonical_confirmed_bars_by_year), which was always correct.",
     "vnext_note": "the same candidate still forms and, on its own merits (T3 gate byte-unchanged), still never confirms -- it simply no longer blocks other, spatially distinct candidates from forming and confirming"
   },
   "confirmed_episode_comparison_v4_4_vs_vnext": {

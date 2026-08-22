@@ -439,7 +439,16 @@ class RangeSemanticProducerVNext:
 
         # not contained by any active macro's own INTERNAL slot -- try forming a NEW MACRO candidate
         action, target_id = self._episode_identity_for_new_macro_multi((cand_lo, cand_hi), i)
-        if action == "REPLACEMENT" and len(self._active_macros) >= self._cfg.max_active_macro_candidates:
+        # Structural cap invariant (remediation VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001): the check must
+        # cover every action that nets a NEW entry into `_active_macros`, not just REPLACEMENT. MERGE is
+        # the only action that frees a slot in the SAME operation (`_supersede_macro` below removes
+        # `target_id`), so it alone is exempt -- checked here, structurally, rather than by enumerating
+        # action names, so a future action type is capacity-checked by default unless it demonstrably
+        # frees a slot the same way. CONTINUATION and REPLACEMENT both add a net-new entry with nothing
+        # removed (their predecessor is already absent from `_active_macros`, having terminated earlier),
+        # so both must be refused at capacity exactly like REPLACEMENT always was.
+        frees_a_slot = action == "MERGE" and target_id is not None and target_id in self._active_macros
+        if not frees_a_slot and len(self._active_macros) >= self._cfg.max_active_macro_candidates:
             events.append(RangeEventV43(kind=REGISTRY_CAPACITY_REFUSED, bar_index=i, structure_id=None,
                                         depth=Depth.MACRO.name, reason_codes=(REGISTRY_CAPACITY_REFUSED,),
                                         not_yet_available=()))
@@ -960,4 +969,13 @@ class RangeSemanticProducerVNext:
         self.__dict__ = fresh.__dict__
 
 
-RANGE_HIERARCHICAL_VNEXT_IMPLEMENTATION_FINGERPRINT = "vnext-implementation-freeze-2026-08-22"
+# Bumped by VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001 (was "vnext-implementation-freeze-2026-08-22" at
+# delivered commit bba6310): the registry-capacity check now covers every action that nets a new entry
+# into `_active_macros` (previously REPLACEMENT only, letting CONTINUATION bypass the cap entirely --
+# Statistician's independent validation, commit 54fa51f, reproduced cap=3/active-reached=34). A snapshot
+# taken under the old implementation must not be silently trusted as equivalent to one taken under this
+# fix, so the identity changes even though no RANGE semantic (formation/merge/supersession/abandonment/
+# arbitration/confirmation) was altered. Descriptive label, not a content digest -- matching this
+# project's own established convention (v4.3/v4.4 fingerprint precedent): code identity is independently
+# verifiable via git-blob SHA + `config_id()`, not the fingerprint string itself.
+RANGE_HIERARCHICAL_VNEXT_IMPLEMENTATION_FINGERPRINT = "vnext-implementation-hardcap-remediation-2026-08-22"

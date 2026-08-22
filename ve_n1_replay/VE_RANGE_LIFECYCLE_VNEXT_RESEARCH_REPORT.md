@@ -139,6 +139,13 @@ of any kind, vNext produces sustained, year-over-year CONFIRMED activity at a ra
 other year in the dataset. Single-candidate blocking is removed; the underlying market-structure judgment
 of any one candidate (confirm or not) is untouched.
 
+**Correction (VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001, mandate §13)**: the per-year table above was always
+correct; two DERIVED summary figures elsewhere in this delivery were not. The 2016–2024 range is
+**6,429–7,660** (2022 min, 2018 max — not 6,429–7,704; 7,704 is 2014's own value, outside this window and
+correct on its own row), and the 2016–2024 total is **62,713** (summing the nine rows above — not 55,713).
+Statistician's independent validation caught both; verified here by direct recomputation from the
+unchanged per-year data. Documentation only, no underlying data changed.
+
 ## 8. v4.4 vs vNext — exact CONFIRMED-episode delta (mandate sections 10/12)
 
 Same methodology as the v4.5 mandate's own episode-comparison (matched by start-bar proximity, ≤50 bars):
@@ -301,6 +308,23 @@ artifact is accounted for; the new-confirmation duration distribution is healthy
 **Negative controls: PASS** — dramatically distinct from the 36.9%/12.3%/69.0% rates that closed the v4.5
 mandate.
 
+### 9.6 Matcher parameter sensitivity (disclosed per Statistician's independent validation, commit
+`54fa51f`, mandate `VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001` section 12)
+
+§9.1's coarse start-time-proximity threshold (50 bars, used only to select which 46 of 187 episodes
+warrant the refined per-episode window-overlap investigation) was a chosen, round value — not derived from
+any property of the data or the architecture. Statistician's independent validation found the reported
+premature-kill rate is sensitive to this and other unregistered matching parameters, with plausible values
+across a **2.14%–6.42%** range depending on the exact matcher configuration used, while independently
+confirming that under every parameterization tested, the architectural negative control **remains strongly
+discriminative and materially safer than v4.5** (whose own rates were 36.9%/12.3%/69.0% — even the high
+end of this range is roughly 6x better). Per that validation's own explicit instruction, this is treated
+as a **measurement/documentation limitation of the comparison methodology**, not a reason to retune or
+alter any RANGE lifecycle behavior — no matching parameter, threshold, or semantic was changed in response
+to this finding. A rigorously pre-registered matching protocol (fixing every threshold before measurement,
+not chosen post-hoc for a clean-looking result) is left as an item for independent validation to define,
+not something this VE division should self-select.
+
 ## 10. Causality (mandate section 14)
 
 Every decision reads only the current bar's own OHLC, `atr_ref` as of the current bar, and structure state
@@ -397,7 +421,7 @@ looks good.
 
 | Requirement (mandate §20) | Status | Evidence |
 |---|---|---|
-| Single-candidate blocking removed | **PASS** | §4-5 (deterministic coexistence), §7 (pathological 2016-2024 window: v4.4 = 0 confirmed bars/year throughout; vNext = 6,429-7,704/year) |
+| Single-candidate blocking removed | **PASS** | §4-5 (deterministic coexistence), §7 (pathological 2016-2024 window: v4.4 = 0 confirmed bars/year throughout; vNext = 6,429-7,660/year, 62,713 total) |
 | Genuine slow confirmations preserved | **PASS** | §9.1-9.2: refined true lost-confirmation rate 2.7% (5/187), or 2.14% (4/187) excluding the one non-vNext-specific case — not the 24.6% raw figure, which was 89.1% matching-methodology artifact |
 | No unacceptable confirmation inflation | **PASS** | §9.4: alarming canonical-transition duration statistic fully explained as measurement artifact; genuine per-structure confirmation timing (99.95% at/above the frozen age gate) is healthy and mechanistically consistent with v4.4 |
 | Bounded candidate registry | **PASS** | §6, §12: max concurrent = 4 over the full 15-year history; final cap = 16 (4x measured max); `REGISTRY_CAPACITY_REFUSED` mechanism exists, tested, never destructive (0/187) |
@@ -441,4 +465,23 @@ version's own gate) comes next, not this report.
    gates on, but is a genuine, honestly-disclosed "unbounded state" characteristic in the strict sense of
    mandate §16's own language. Not fixed here — both mechanisms live in shared v4.3 infrastructure outside
    this mandate's authorized scope (§17) — flagged as a well-scoped candidate for a future, separately-
-   authorized mandate, applicable to the entire RANGE lineage, not just vNext.
+   authorized mandate, applicable to the entire RANGE lineage, not just vNext. **Statistician's independent
+   validation (commit `54fa51f`) classified this `REMEDIATION_REQUIRED_BEFORE_PRODUCTION`** — recorded
+   here verbatim, unchanged; per `VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001` §11, this classification is
+   noted, not redesigned, in that remediation.
+8. **Negative-control matcher parameter sensitivity** (§9.6, added by `VE-RANGE-VNEXT-HARD-CAP-
+   REMEDIATION-001` after Statistician's independent validation): the reported true premature-kill rate
+   depends on unregistered matching parameters (e.g. the 50-bar coarse start-time-proximity threshold),
+   with plausible values in a 2.14%–6.42% range — still an order of magnitude below v4.5's own rates under
+   every tested parameterization, but this is a measurement/documentation limitation of the comparison
+   methodology, not something this VE division has resolved. A pre-registered matching protocol is left for
+   independent validation to define.
+9. **This report predates the hard-cap remediation** (`VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001`, commit to
+   be recorded in that mandate's own dedicated report,
+   `VE_RANGE_VNEXT_HARD_CAP_REMEDIATION_REPORT.md`): the registry-capacity check originally covered only
+   `action == "REPLACEMENT"`, letting CONTINUATION add candidates past `max_active_macro_candidates`
+   without limit (Statistician reproduced cap=3/active-reached=34). All measurements in this report were
+   taken from the PRE-remediation implementation; see the remediation report for the fix, its own
+   regression tests, and the full-history equivalence re-verification confirming this report's own
+   quantitative findings are unaffected (production cap=16 was never approached historically — measured
+   max concurrent = 4 — so the newly-covered code path never actually fired in this report's own replay).
