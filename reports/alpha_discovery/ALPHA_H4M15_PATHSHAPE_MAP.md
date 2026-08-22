@@ -79,3 +79,12 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 | QUIET x freshLow -> L 70/50 | +0.039 | +0.04/+0.04 | +0.04/+0.01 | b1 marginal (+0.01), fails |
 | TRANSITION x freshLow -> S 70/50 | +0.033 | +0.03/+0.03 | +0.02/-0.01 | b1 negative, fails |
 **Verdict:** momentum-extreme (freshHigh/Low) signals fail cross-era (b1~0). ONE cross-era-stable candidate: DOWN x decelDn short (+0.050/+0.059, b0+0.06/b1+0.04) — but it is the SAME DOWN-H4-short-continuation MECHANISM as the F2 candidate (ST-H4DN-M15DNIMP-SHALLOW-SHORT), just a different trigger. Registered ST-H4DN-M15-DECELDN-SHORT, PENDING characterization (§14 tradeability + §17 redundancy-vs-F2). Prior from F2: this family's expectancy is era-conditional (tradeable b0, neg b1) -> expect same; verify not assume. NEXT: characterize, then BOUNDED INTERIM CONCLUSION.
+
+## Family 5 candidate CHARACTERIZED (checkpoint #33) — NOT tradeable + REDUNDANT with F2
+`h4m15_deceldn_char.py`. ST-H4DN-M15-DECELDN-SHORT, structural stop = recent swing high (med 47/64/30p).
+| era | best avgR | verdict |
+|---|---|---|
+| b0 | +0.161 (rr3) / +0.019 (rr1) | tradeable |
+| DEV | -0.010 (rr3) w/ 2022 -0.35 | net-negative |
+| b1 | +0.061 (rr3) / -0.011 (rr2) | marginal/breakeven |
+**§17 redundancy vs F2:** DEV day-overlap = 62/62 (100%), 36 shared bars -> SAME DOWN-H4 short-continuation events = REDUNDANT_EXISTING_ALPHA. **Verdict:** NOT frozen (era-conditional expectancy + redundant w/ F2). Confirms: the DOWN-H4-short-continuation family has era-conditional expectancy AND its triggers (impulse-shallow, decel) are mutually redundant (same days). No distinct new strategy. NEXT: complete §21 budget (bounded transition/sequence map + small interactions) then BOUNDED INTERIM CONCLUSION.

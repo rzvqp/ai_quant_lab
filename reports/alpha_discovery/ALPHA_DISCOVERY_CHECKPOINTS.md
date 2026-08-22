@@ -331,3 +331,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** momentum-extreme signals fail cross-era (b1~0). ONE cross-era-stable candidate: **DOWN x decelDn -> SHORT +0.050/+0.059** (DISC+0.05/CONF+0.05, b0+0.06/b1+0.04 — survives incl b1; coherent mirrors). BUT it is the SAME DOWN-H4-short-continuation MECHANISM as the F2 candidate ST-H4DN-M15DNIMP-SHALLOW-SHORT (different trigger). Registered ST-H4DN-M15-DECELDN-SHORT (pending characterization).
 **NEXT:** characterize ST-H4DN-M15-DECELDN-SHORT (§14-15 structural-stop net STRESS cross-era + §17 redundancy: event-day overlap vs F2). Prior from F2: expectancy era-conditional (tradeable b0, neg b1) + likely redundant -> expect not-a-survivor; verify not assume. THEN present BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #33 — 2026-08-22 — ST-H4DN-M15-DECELDN-SHORT: NOT tradeable + REDUNDANT with F2 (not frozen)
+**Characterization (`h4m15_deceldn_char.py`, §14/§15/§17):** structural stop = recent 8-bar swing high (med 47/64/30p DEV/b0/b1); net STRESS cross-era + event-overlap vs F2.
+**Result:** tradeable ONLY in b0 (+0.019..+0.161); DEV net-negative (best -0.010, 2022 -0.35); b1 marginal (+0.009..-0.011) -> era-conditional, same as F2. **§17 redundancy: 100% DEV day-overlap with F2 (62/62 days, 36 shared bars)** -> same DOWN-H4 short-continuation events = REDUNDANT_EXISTING_ALPHA. NOT frozen on two independent grounds.
+**Interpretation:** the DOWN-H4 short-continuation family has era-conditional EXPECTANCY (tradeable high-vol/trend eras only) AND its distinct triggers (impulse-shallow F2, decel F5) are MUTUALLY REDUNDANT (fire on the same days) -> not multiple distinct strategies, one era-conditional mechanism.
+**NEXT:** complete §21 budget — bounded M15 path-shape TRANSITION/sequence map + a small number of interpretable INTERACTIONS conditional on H4 — then present a BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
