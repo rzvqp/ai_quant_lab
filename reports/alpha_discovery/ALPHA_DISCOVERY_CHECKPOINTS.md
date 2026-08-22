@@ -272,3 +272,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **M15 frontier status:** baselines + univariate states + transitions + session ALL systematically completed (§27). No tradeable cross-era-stable non-redundant standalone M15 edge exists. => BOUNDED M15 CONCLUSION written (`ALPHA_M15_BOUNDED_CONCLUSION.md`): the only cross-era-stable M15 information is volatility (timing/filter), which does NOT convert to standalone directional alpha; M15's evidenced role is a causal TRIGGER under a frozen HTF edge (COMP-CONT-L / S5), matching the CEO economic-profile directive.
 **CEO DECISION REQUESTED (A/B/C):** A(rec)=pivot M15 to trigger-under-HTF-edge (test M15 vol-timing improving frozen HTF LONG entry); B=extend M15 to path-SHAPE/H4-conditioned axis; C=accept bounded negative, return to HTF/trigger track. Loop paused at this genuine decision point.
 **Global status:** `ALPHA_M15_STANDALONE_FRONTIER_BOUNDED` — awaiting CEO A/B/C.
+
+---
+
+## CHECKPOINT #26 — 2026-08-22 — NEW MANDATE (Decision B): H4 parent-state taxonomy FROZEN + per-state M15 base rates
+**Mandate:** ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001. §3-4 foundation.
+**Done (`h4_parent.py`):** froze causal H4 parent-state taxonomy (reused frozen regime() on the causal H4 frame; QUIET = research-local neutral, NOT canonical RANGE, §4); aligned H4 state to M15 causally (last-closed H4 bar); established per-H4-state M15 first-passage BASE RATES (P(+50/-50,+70/-50,+100/-70,+100/-100) L/S + adverse-first + MFE/MAE med/P75/P90), DEV/b0/b1, event-deduped with RAW/EffN/unique-days/independent-H4-episodes. Contract frozen in `ALPHA_H4_PARENT_STATE_CONTRACT.md`.
+**Key facts locked in:** (1) all 5 H4 states have EffN>=500 in every era -> same-H4-state cross-era gate (§10) viable for all; (2) absolute base rates strongly era-dependent (b1 low-vol compresses all P + MFE/MAE) -> only WITHIN-state/era LIFTS are comparable (§8); (3) instantaneous H4 state alone = era-dependent directional bias (UP DEV short-favor/b1 long; DOWN DEV long/b0 short; QUIET symmetric) -> NOT standalone cross-era alpha. The open question: does M15 PATH-SHAPE conditional on H4 add cross-era-stable lift over these baselines?
+**NEXT:** first M15 path-shape family (directional run-length / persistence-vs-alternation, window 4/8) conditional on each H4 state, lift vs per-state/era base rate, L/S separate, event-deduped, cross-era gate.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (new frontier).
