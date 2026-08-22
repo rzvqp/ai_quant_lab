@@ -392,3 +392,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Population/validity:** stable distribution across all 5 eras (b0/b1/2021/2022/2023), every mode sufficient N + episodes (cross-era gate viable); corrections shorter-duration than primary impulses; transition matrix shows sticky primary backbone (BULL_CORRECTION returns to PRIMARY_BULL, rarely flips to bear) -> §4 confirmed.
 **NEXT (§10):** FIRST structural-event family ONLY — LIQUIDITY EVENT -> RECLAIM/FAILURE -> DISPLACEMENT -> FUTURE PATH — M15 events conditioned on the frozen H4 mode, information-first, mandatory decomposition (mode base -> +event -> +reclaim -> +displacement), L/S separate, event-deduped, cross-era within same mode.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (mode->event architecture).
+
+---
+
+## CHECKPOINT #40 — 2026-08-22 — Liquidity-event family first cut: DISPLACEMENT is the informative component; 2 mode-conditional cross-era leads
+**Screen (`liquidity_event.py`):** mechanical M15 liquidity event (sweep recent 20-bar swing -> reclaim -> displacement) conditioned on the FROZEN H4 mode; mandatory decomposition MODE base -> +evt -> +rcl -> +disp, P(+70/-50) 8h, directed side (sell->L/buy->S), event-deduped, per era (b0/b1/2021/2022/2023).
+**Key finding (validates §13/§14):** the DISPLACEMENT component carries the information, NOT the raw sweep — +evt lifts ~0/inconsistent, +disp adds the most across cells. The CEO's core hypothesis (edge is in the post-event response) is supported.
+**Two mode-conditional cross-era-consistent leads (b0+b1 same sign, disp-driven):** BEAR_CORRECTION + sell-sweep+reclaim+disp -> LONG (+0.144 b0 / +0.045 b1); BULL_CORRECTION + buy-sweep+reclaim+disp -> SHORT (+0.064 b0 / +0.046 b1). Both = "sweep + displacement continues the correction" — specialist (mode-conditional) signals. Counter-trend cells (PRIMARY_BULL buy->S) fail 2023. Disp-N small (31-44/era); b1 low-vol base. LEADS not survivors.
+**NEXT:** deepen the 2 correction leads — more eras (relaxed-N 2023) + +100/-70 label + explicit winner-vs-loser (reclaim vs no-reclaim) + event-N honesty (unique days/H4 episodes) + tradeability with structural stop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
