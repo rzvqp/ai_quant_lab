@@ -38,3 +38,12 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 | QUIET x impUp16&shallow -> S 100/70 | +0.049 | +0.05/+0.04 | **-0.03/-0.02** | REVERSES cross-era -> era-transient, fails |
 | UP x impUp16&shallow -> S 70/50 | +0.031 | +0.04/+0.02 | +0.02/+0.00 | weak, b1~0 |
 **Verdict:** Family 2 yields the FIRST cross-era-stable positive candidate of this mandate: DOWN-H4 + M15 down-impulse-shallow-retrace -> SHORT continuation (survives DISC/CONF + b0 + b1 + neighboring-window + coherent mirror). Registered ST-H4DN-M15DNIMP-SHALLOW-SHORT, PENDING full §8/§14/§15 characterization + tradeability (structural stop, not the research bracket) + §17 independence vs S5/COMP-CONT-L. NOTE: the +0.055 research-bracket lift is INFORMATION, not yet tradeable expectancy.
+
+## Family 2 candidate CHARACTERIZED (checkpoint #29) — NOT a tradeable survivor
+`h4m15_dnimp_char.py`. ST-H4DN-M15DNIMP-SHALLOW-SHORT, structural stop = recent 8-bar M15 swing high (med 42/62/30p DEV/b0/b1). Net STRESS expectancy:
+| era | best avgR | WR | best10 | verdict |
+|---|---|---|---|---|
+| b0 (strong-downtrend, high-vol) | +0.200 (rr3) / +0.089 (rr1) | .43-.55 | ~0 to -0.11 | **tradeable** |
+| DEV 2021-2023 | -0.015 (rr3) | .38-.48 | -0.18..-0.36 | breakeven-negative (losing 2022, DISC/CONF disagree) |
+| b1 (low-vol) | -0.020 (rr3) | .38-.52 | -0.15..-0.35 | negative |
+**Verdict:** tradeable ONLY in the b0 high-vol strong-downtrend era; net-negative DEV+b1 -> EXPECTANCY is era-conditional though the relative INFO lift was cross-era-stable. Root cause: DOWN-state base rate + follow-through scale with era volatility (b1 MFE med 32p vs b0 59p), so a stable +0.03 hit-rate lift converts to positive expectancy only where absolute moves are large. Fails robust-survivor bar (§22); NOT frozen; NOT rescued by vol-sub-cutting (would re-tune frozen H4 taxonomy, §3). **Central lesson: cross-era-stable relative info != cross-era-stable tradeable expectancy.** PIVOT -> Family 3 (recovery-after-adverse / successive MFE-MAE asymmetry / volatility-expansion->controlled-retracement).

@@ -297,3 +297,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** FIRST cross-era-stable positive candidate of the mandate. **DOWN x impDn8&shallow -> SHORT +70/-50 = +0.055** (DISC +0.03/CONF +0.08; b0 +0.04/b1 +0.03 — survives incl b1 low-vol era; per-yr 2021 +0.12/2023 +0.05; +100/-70 & W=16 neighbor also +; coherent mirror). Registered ST-H4DN-M15DNIMP-SHALLOW-SHORT (INFO_CROSS_STABLE_PENDING_CHARACTERIZATION). Note: the research-bracket lift is INFORMATION, not yet tradeable expectancy. Other cells fail (QUIET impUp16 short reverses on b0/b1 = era-transient).
 **NEXT (characterization):** §8 full outcome distribution; §14-15 STRUCTURAL-STOP strategy (recent M15 swing high / ATR from observed MAE, NO forced RR), net STRESS expectancy cross-era DEV/b0/b1 event-deduped; §16 frequency; §17 independence vs S5/COMP-CONT-L. If net-positive + non-redundant -> Stage-C freeze + notify CEO; else record + continue path-shape families.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #29 — 2026-08-22 — ST-H4DN-M15DNIMP-SHALLOW-SHORT characterized: NOT a tradeable survivor (expectancy era-conditional)
+**Characterization (`h4m15_dnimp_char.py`, §8/§14/§15/§16/§17):** structural stop = recent 8-bar M15 swing high (med 42/62/30p DEV/b0/b1 — genuine, not tight); net STRESS expectancy cross-era, event-deduped, predeclared rr set (no mining).
+**Result:** tradeable ONLY in b0 (strong-downtrend high-vol: avgR +0.089..+0.200, best10 ~0); DEV breakeven-negative (best rr3.0 -0.015, DISC -0.047/CONF +0.032 disagree, losing 2022); b1 negative (-0.02..-0.05, best10 -0.15..-0.35). The cross-era-stable RELATIVE info lift does NOT convert to cross-era-stable EXPECTANCY — DOWN-state base rate + follow-through scale with era volatility (b1 MFE med 32p vs b0 59p). Fails robust-survivor bar (§22); NOT frozen; NOT rescued by vol-sub-cutting DOWN (would re-tune frozen H4 taxonomy, §3). Independence vs COMP-CONT-L: 4/72 shared-days, opposite direction (non-redundant, moot).
+**Central lesson (recorded):** cross-era-stable relative INFORMATION != cross-era-stable tradeable EXPECTANCY; absolute expectancy is gated by era volatility/follow-through even when the relative lift is stable.
+**NEXT:** Family 3 = recovery-after-adverse-excursion / successive MFE-MAE asymmetry / volatility-expansion->controlled-retracement, conditional on H4 state.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
