@@ -419,3 +419,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Radar:** R2 (reversal negative regularity), R1 (displacement is the informative component), R3 (correction modes least-negative, b1 worst).
 **NEXT (§14 mandatory, in-family):** CONTINUATION / acceptance branch — sweep + NO reclaim (acceptance beyond) + same-direction displacement -> continuation (sellside->SHORT-down, buyside->LONG-up), structural stop = broken swing level (reclaim = fail), per mode cross-era. Continuous loop, no pause.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #43 — 2026-08-22 — Liquidity CONTINUATION branch NEGATIVE -> S1 family BOUNDED (CEO next-family selection)
+**Screen (`liquidity_cont.py`):** multi-bar sweep + acceptance (no reclaim) + same-dir displacement -> continuation, structural stop = opposite extreme, net STRESS per mode x era. Net-NEGATIVE all 6 modes x both sides cross-era; least-bad = trend-aligned continuation (PRIMARY_BEAR short b0 +0.075, PRIMARY_BULL long 2023 ~breakeven); scattered positives are single-era outliers.
+**S1 CONCLUSION (`ALPHA_LIQUIDITY_FAMILY_CONCLUSION.md`):** liquidity-sweep family produces NO robust cross-era specialist in EITHER reversal (CASE A) or continuation (CASE B) branch, in any mode. Displacement carries path INFORMATION (R1) but not net-positive expectancy after STRESS cost. Comprehensive negative.
+**Radar R4:** trend-aligned continuation least-negative; robust direction is WITH the primary trend (consistent w/ frozen COMP-CONT-L/S5).
+**Backlog:** S1 -> BOUNDED_NEGATIVE. Recommended next = S10 Displacement Continuation.
+**CEO DECISION (pause condition #5):** select next structural family. Recommendation S10; alternatives S7 (Trend Pullback, prove independence vs COMP-CONT-L), S4 (Vol Compression->Expansion).
+**Global status:** `ALPHA_S1_LIQUIDITY_FAMILY_BOUNDED` — awaiting CEO next-family selection.
