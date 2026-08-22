@@ -44,3 +44,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **What I did NOT do (anti-overfit, §4/§11):** did not mine thresholds after mechanism failure; did not manufacture a SHORT or a frequency edge; did not promote the CALIB-positive-but-DEV-negative F7 (that would be CALIB-fishing); did not clone LONG trend-beta.
 
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`. Frozen pending-validation: `COMP-CONT-L-rr2`. Next productive frontier is CEO-authorization-gated per the two options above; awaiting a data-scope decision to continue with a non-redundant prior, rather than spend search budget on near-zero-prior price-only tests on the exhausted population.
+
+---
+
+## CHECKPOINT #3 — 2026-08-22 — external S2/S4 priority replication (both NOT_SUPPORTED)
+**Priority frontier:** independently formalize + falsify two externally-supplied strategies (S2 range breakout, S4 sweep reversal). External win-rates (52%/67%/"9/9") treated as non-evidence; rules FROZEN in `EXTERNAL_RULE_MAPPING.md` before results.
+**Hypotheses:** H19–H28 (10). **Verdicts:** `S2_NOT_SUPPORTED`, `S4_NOT_SUPPORTED`, `S4_TREND_ALIGNED_SUBFAMILY_NOT_SUPPORTED`.
+**Key findings:** S2 gold false-breaks close-based boxes (advFirst 0.72-0.89), free-path & volume increments make it WORSE; S4 reclaims fail (advFirst 0.84-0.91), tight stops noise-stopped, overlays don't rescue; the predeclared "golden pattern" trend-aligned subfamily is the WORST cell. Full report: `ALPHA_EXTERNAL_S2_S4_INDEPENDENT_TEST_REPORT.md`.
+**Data:** gated M5 -> M15/H1/H4/D1 DEV; causal (next-bar-open, close_time HTF, shifted levels); no non-causal D1/H4 merge; M1/news excluded; CALIB untouched (nothing reached robustness). Deliverables: `s2_test.py`, `s4_test.py`, `external_common.py`, `EXTERNAL_RULE_MAPPING.md`.
+**Action (§38):** both graveyarded with lessons; no freeze (no survivor); continuous loop CONTINUES. No parameter rescue / reinterpretation. Frozen pending-validation remains `COMP-CONT-L-rr2`. The standing data-scope decision point (Checkpoint #2: DIFFERENT_PRICE_ONLY_POPULATION or EXOGENOUS, both CEO-authorization-gated) is unchanged — the external replication did not open a new authorized price-only frontier with a positive prior.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

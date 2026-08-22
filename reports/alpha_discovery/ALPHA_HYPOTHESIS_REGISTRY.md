@@ -26,6 +26,21 @@ Cumulative hypothesis log for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. Every
 
 **Note on H17/CALIB:** CALIB 2024 was +0.33 for H17 but **DEV is negative** — a positive robustness-population number on a DEV-failing rule is noise, NOT an edge. Selection gate = DEV-robust first; H17 fails it. Recorded to prevent CALIB-fishing.
 
+## External-replication hypotheses (priority mandate ALPHA-XAUUSD-EXTERNAL-S2-S4-INDEPENDENT-TEST-001)
+Rules FROZEN in `EXTERNAL_RULE_MAPPING.md` before results. External win-rates are non-evidence.
+| # | family | hypothesis | side | key params (frozen) | N range | verdict |
+|---|---|---|---|---|---|---|
+| H19 | S2 | close-based box + close-beyond breakout continues (entry A) | L/S | H1/H4, W5, 3 box defs, no-chase $4 | 82–1095 | FALSIFIED (advFirst 0.72-0.89; best10<0; yr+ never) |
+| H20 | S2 | + first-retest entry (B) improves | L/S | retest window 20 | 66–869 | FALSIFIED (less-bad, still <0; lowers freq only) |
+| H21 | S2 | + free-path (>=100p clear) increment | L/S | prior swing obstacle | subset | FALSIFIED (WORSE than base) |
+| H22 | S2 | + 1.3x volume increment | L/S | aggregated-M5 vol | subset | FALSIFIED (WORSE than base) |
+| H23 | S4 | M5 sweep+reclaim of >=1-day level reverses (BASE) | L/S | PDH/PDL, H4-swing, H1-24, SL sweep+/-$0.50 | 433–688 | FALSIFIED (advFirst 0.84-0.91; best5/10<0) |
+| H24 | S4 | + reclaim quality (upper/lower third) | L/S | closepos>=0.66 | 276–428 | FALSIFIED (marginal, gate-fail; delay-fragile) |
+| H25 | S4 | + anti-fade (exclude pre-sweep pressure) | L/S | 12-bar approach slope | 111–235 | FALSIFIED (pressure-sweeps ARE worse, but no positive edge) |
+| H26 | S4 | TREND-ALIGNED "golden pattern" (causal D1) | L/S | D1 EMA20/50 via close_time | 236–341 | FALSIFIED — the WORST subfamily; "9/9" not reproducible |
+| H27 | S4 | +1-bar delay degradation | L/S | entry+1 | — | degrades every cell (no base edge to protect) |
+| H28 | S4 | invalidation exit (M5 close beyond sweep extreme) | L/S | thesis-negation | — | does not rescue (all <0) |
+
 **Robustness checks on H13 (not separate hypotheses):** W∈{14,20,28}×H∈{30,42,60}×cd∈{12,20}×rr∈{1.5,2.0} full grid (reported in `frontier5_vet.py` output); CALIB 2024 out-of-selection; DISC/CONF 60/40; best-1/5/10%-removed; per-year; overlap-vs-protrend proxy.
 
 ## Prior-program lineage (summary — full detail in ALPHA_GRAVEYARD.md)

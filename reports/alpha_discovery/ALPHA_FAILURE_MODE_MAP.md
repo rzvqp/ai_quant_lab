@@ -16,3 +16,11 @@ Accumulated causal lessons — used to choose each next frontier by the *demonst
 | 9 | **Compression inside a trend is a genuine edge** (POSITIVE lesson) | F5: MFE 1.35R>MAE 1.03R, best10>0, CALIB+ | volatility-state × HTF-trend is the productive interaction; the ONE thing that survived — candidate frozen |
 
 **Root cause (bounded, §37):** on the 2021–2023 gated population, price-only edges survive **only** as LONG trend-continuation harnessing the dominant uptrend; the productive remaining directions (a robust SHORT, a genuinely uncorrelated mechanism) likely need either a **different evidence population** or **exogenous data** — both require CEO authorization (recorded as `EXOGENOUS_FRONTIER_REQUIRES_CEO_AUTHORIZATION`, §18). This is NOT a claim of universal impossibility (§37) — only a bounded conclusion for tested price-only frontiers on this population.
+
+## External-replication lessons (S2/S4)
+| # | lesson | evidence |
+|---|---|---|
+| 10 | **External win-rates are not reproducible under causal/cost-robust standards** | S2 ~52% / S4 ~67% / "9/9" claims -> frozen faithful formalization is adverse-first dominated, best-k%-removed<0. Small-sample/discretionary/execution-overlay P&L does not survive path-first + STRESS + DISC/CONF. |
+| 11 | **"Golden" trend-aligned sweep is the WORST, not the best** | sweeping support in an uptrend then long = buying a dip that continues down first (advFirst 0.91); the confident external subfamily inverts under honest testing. |
+| 12 | **Execution overlays cannot rescue a wrong-path parent** | S4 +quality / invalidation / anti-fade / +1bar all fail; §26 honored (kill the parent). |
+| 13 | **External "obstacle/volume" filters can be anti-predictive** | S2 free-path and 1.3x-volume increments make expectancy WORSE — an externally-plausible filter is not a causal edge. |
