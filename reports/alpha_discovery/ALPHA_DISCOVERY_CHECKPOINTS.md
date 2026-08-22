@@ -264,3 +264,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Registered:** ST-M15-NY-HIGHVOL-SHORT (CANDIDATE_PENDING_TRADEABILITY). Opposite direction to frozen COMP-CONT-L -> non-redundant.
 **NEXT (decisive):** tradeability characterization of NY-session high-vol->SHORT — any geometry (fixed brackets / structural ATR stop, §19) net-positive STRESS expectancy cross-era (DEV+b0+b1), event-deduped? If yes -> Stage-C freeze (REGIME/STATE_SPECIFIC_FROZEN_PENDING_INDEPENDENT_VALIDATION) + notify CEO. If no -> bounded M15 conclusion + CEO decision (§27).
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #25 — 2026-08-22 — NY-session high-vol-short NOT tradeable -> BOUNDED M15 CONCLUSION (CEO decision requested)
+**Decisive tradeability (`state_m15_ny_hvshort.py`):** NY-session high-vol M15 SHORT across 4 fixed brackets + 9 structural ATR stops x 3 eras (DEV/b0/b1), STRESS, event-deduped. ALL net-NEGATIVE (best DEV avgR -0.034 w/ losing 2022 -0.16; b0 -0.021; b1 -0.088); best10 -0.15..-0.38 everywhere -> carried by outliers, no robust core. The +0.070 cross-era-stable P-lift is REAL info but does NOT convert to tradeable expectancy. ST-M15-NY-HIGHVOL-SHORT = INFO_CONFIRMED_CROSS_ERA_NOT_TRADEABLE (not frozen).
+**M15 frontier status:** baselines + univariate states + transitions + session ALL systematically completed (§27). No tradeable cross-era-stable non-redundant standalone M15 edge exists. => BOUNDED M15 CONCLUSION written (`ALPHA_M15_BOUNDED_CONCLUSION.md`): the only cross-era-stable M15 information is volatility (timing/filter), which does NOT convert to standalone directional alpha; M15's evidenced role is a causal TRIGGER under a frozen HTF edge (COMP-CONT-L / S5), matching the CEO economic-profile directive.
+**CEO DECISION REQUESTED (A/B/C):** A(rec)=pivot M15 to trigger-under-HTF-edge (test M15 vol-timing improving frozen HTF LONG entry); B=extend M15 to path-SHAPE/H4-conditioned axis; C=accept bounded negative, return to HTF/trigger track. Loop paused at this genuine decision point.
+**Global status:** `ALPHA_M15_STANDALONE_FRONTIER_BOUNDED` — awaiting CEO A/B/C.
