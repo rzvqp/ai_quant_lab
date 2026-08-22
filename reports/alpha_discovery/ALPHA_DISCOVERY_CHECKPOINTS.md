@@ -211,3 +211,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Deliverable:** `ALPHA_REGIME_CONDITIONAL_BOUNDED_CONCLUSION.md` (method + findings + CEO options).
 **CEO decision requested:** (1) send COMP-CONT-L-rr2 to independent validation (now doubly-confirmed); (2) re-authorize exogenous with provisioned data (DXY staging appeared); (3) accept regime-specific portfolio + regime-router overlay. Loop resumes on any.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused at decision point).
+
+---
+
+## CHECKPOINT #19 — 2026-08-22 — NEW M15 mandate; Stage-1 M15 path baselines (engine + foundation)
+**Authorization:** CEO issued `ALPHA-XAUUSD-M15-CAUSAL-STATE-PATH-DISCOVERY-001` — apply the information-first state->path method to M15 (H1 map bounded; M15 only ever tested via named patterns). DXY stays PAUSED. Loop resumed.
+**Stage 1 done:** built causal M15 first-passage engine (`state_path_m15.py`, sorted-threshold pointer) + unconditional path baselines (`ALPHA_M15_PATH_BASELINES.md`) on 2021-2023 gated M15 (N=40,649) + historical b0/b1 M15 (52k each; governance-proven, 2024+ excluded). Findings: M15 LONG/SHORT base rates near-SYMMETRIC (unlike H1 long-bias); natural excursion MFE/MAE med ~44-52p (b0/2021-23), ~31p (b1) -> structural M15 stop ~50-70p, NOT tight (§19); base rates strongly era-dependent (b1 much quieter) -> same-regime-conditional baselines required.
+**NEXT:** M15 univariate state info map (efficiency/displacement/vol/compression/pullback/path-cleanliness/MFE-MAE-asymmetry) for P(+70/-50) & P(+100/-70) lift over regime-conditional base + same-regime cross-era + event-dedup; then M15 TRANSITIONS (§8 priority: low-vol->expansion, inefficient->directional, etc.); H1/H4 causal context conditioning; session-conditioned (vs session base). LONG/SHORT separate. No named patterns, no tight-stop forcing.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

@@ -20,3 +20,5 @@ Cumulative search lineage for the state-path method (§15, §21).
 
 - **UP/CHOP LONG + regime-transition screens:** 7 LONG states x 2 regimes + 8 transitions, same-regime/same-transition cross-era gate. Only same-transition-cross-era-stable positive = QUIET->UP LONG (tiny N + REDUNDANT w/ COMP-CONT-L). No new non-redundant edge. REGIME + TRANSITION SWEEP COMPLETE.
 - **Regime-conditional method total:** taxonomy (5 regimes) + baselines + within-regime states (DOWN/QUIET SHORT, UP/CHOP LONG, ~30 states) + 8 transitions. 1 stable positive = the already-frozen COMP-CONT-L edge (re-discovered). Bounded conclusion in ALPHA_REGIME_CONDITIONAL_BOUNDED_CONCLUSION.md.
+
+- **M15 mandate Stage 1 (baselines):** built causal M15 first-passage engine (state_path_m15.py) + unconditional baselines on 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each). M15 L/S near-symmetric; natural excursion ~44-52p; base rates era-dependent. No states screened yet. Next: M15 univariate state info map + M15 transitions (§8 priority) with same-regime cross-era gate + event-dedup.
