@@ -358,3 +358,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Foundation finding:** corr(past DXY 4h return, XAUUSD forward 24h return) ~= 0 in every era (b0 -0.027/b1 -0.000/y2123 +0.004) -> the DXY<->gold inverse relationship is CONTEMPORANEOUS (shared-driver, simultaneous), NOT predictive from past DXY to future gold. The mandate's real question (does causal/lagged DXY add INCREMENTAL info about future XAUUSD path) is thus non-trivial; naive lagged DXY-return alone carries no edge.
 **NEXT:** Stage A DXY information map — DXY state (impulse/accel/efficiency/vol/dist) -> XAUUSD P(+50/-50,+70/-50,+100/-70,+100/-100) path lift vs XAUUSD parent-state base, L/S separate, lag curve {0,1,2,4}, cross-era, event-deduped; then §7 incremental-over-price-only test.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (DXY frontier).
+
+---
+
+## CHECKPOINT #36 — 2026-08-22 — Stage A DXY univariate map: no cross-era-stable info; DXY<->gold relationship INVERTS in 2021-2023
+**Screen (`dxy_infomap.py`):** DXY state (impulse/accel/efficiency) -> XAUUSD P(+70/-50 & +100/-70) path lift vs era-global XAUUSD base, directed side (§13), lag {0,1,2,4}H, cross-era b0/b1/y2123, event-deduped (6h), H=24h.
+**Result:** NO cross-era-stable univariate DXY directional information. Lifts small (<=0.04, consistent w/ ~0 linear corr). Most coherent signal = persistent DXY efficiency -> inverse XAUUSD path: +0.02..+0.03 in b0/b1 (classic inverse) but **REVERSES to -0.02..-0.04 in 2021-2023** (inflation/safe-haven regime where gold & USD rose together). DXY's directional link to gold is REGIME-CONDITIONAL, not stationary. Lag curve decays from lag0 (no better lag).
+**NEXT:** X3 divergence (XAUUSD NOT reacting to DXY as expected -> continuation/reversal info?) + §7 incremental-over-XAUUSD-parent test + small XAUUSD-state x DXY-state interactions, before the bounded DXY conclusion. Do NOT conclude DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED until X3 + incremental + interactions done (§20).
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

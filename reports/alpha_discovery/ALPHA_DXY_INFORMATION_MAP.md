@@ -10,3 +10,15 @@ Mandate `ALPHA-XAUUSD-DXY-CAUSAL-INCREMENTAL-INFORMATION-001`. Causal DXY state 
 - X2 DXY acceleration/deceleration (more info than level/direction?).
 - X3 XAUUSD/DXY disagreement (divergence -> continuation or reversal?).
 (no DXY trading rules until information survives §16)
+
+## Stage A — univariate DXY -> XAUUSD path map (checkpoint #36)
+`dxy_infomap.py`. DXY state (impulse/accel/efficiency, USD strength vs weakness) -> XAUUSD P(+70/-50 & +100/-70) lift vs era-global XAUUSD base, directed hypothesis side (§13), lag {0,1,2,4}H, cross-era, deduped (6h). H=24h.
+| DXY state -> side | b0 | b1 | y2123 | read |
+|---|---|---|---|---|
+| dxyImpUp -> S | +0.036 | -0.009 | +0.013 | b1 flips -> not stable |
+| dxyImpDn -> L | +0.023 | +0.017 | -0.001 | y2123 ~0 -> fails |
+| dxyAccUp/Dn | ~0 | ~0 | ~0 | no info |
+| **dxyEffUp -> S** | +0.022 | +0.023 | **-0.022** | inverse in b0/b1, **REVERSES 2021-2023** |
+| **dxyEffDn -> L** | +0.025 | +0.033 | **-0.039** | inverse in b0/b1, **REVERSES 2021-2023** |
+Lag curve: lift decays from lag0 (l0 strongest, l2/l4 weaker) — no better lag; effect weak throughout.
+**Finding:** NO cross-era-stable univariate DXY directional information. The classic inverse-DXY->gold signal (persistent DXY efficiency) holds in 2011-2018 (b0/b1, +0.02..+0.03) but **INVERTS in the 2021-2023 inflation/safe-haven regime (-0.02..-0.04)** — gold & USD rose together. DXY's directional link to gold is REGIME-CONDITIONAL, not stationary (same program-wide pattern, now on the exogenous axis). Lifts are small (<=0.04) consistent with ~0 linear corr. NEXT: X3 divergence (XAUUSD/DXY disagreement) + §7 incremental-over-price-only test + interactions before any conclusion.

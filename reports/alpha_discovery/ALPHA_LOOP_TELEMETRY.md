@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = NEW MANDATE (Decision A): DXY causal axis. Cycle 1 froze the DXY->XAUUSD causal aligner + verified coverage == ratified report. Foundation: past DXY return ~0 corr w/ XAUUSD fwd return (inverse relationship is contemporaneous, not predictive).
+CURRENT_FRONTIER          = DXY Stage A univariate map: NO cross-era-stable DXY directional info. Classic inverse-DXY->gold signal holds b0/b1 but INVERTS in 2021-2023 (regime-conditional). Lifts <=0.04.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = Stage A DXY information map (DXY state -> XAUUSD path lift vs price-only parent base, lag curve, cross-era) + §7 incremental-over-price-only test
+NEXT_FRONTIER             = X3 divergence (XAUUSD/DXY disagreement) + §7 incremental-over-XAUUSD-parent test + interactions; then bounded DXY conclusion
 ```
 
 ## Key structural findings (bounded)

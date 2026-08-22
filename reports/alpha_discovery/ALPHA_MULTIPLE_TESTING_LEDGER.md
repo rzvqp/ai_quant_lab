@@ -56,3 +56,5 @@ Cumulative search lineage for the state-path method (§15, §21).
 
 ## Mandate ALPHA-XAUUSD-DXY-CAUSAL-INCREMENTAL-INFORMATION-001 (Decision A — exogenous DXY axis)
 - **Cycle 1 foundation (`dxy_data.py`):** causal loader/aligner for ratified ICE DXY H1 <-> XAUUSD H1 (_from_M15_v2). Coverage verified == ratified report (97.4/97.8/99.9% same-hour), causal-leak assertion passes. Predeclared DXY feature set (8 features) + lag set {0,1,2,4}H frozen. Sanity: corr(past DXY 4h ret, XAUUSD fwd 24h ret) ~0 all eras -> DXY<->gold inverse is CONTEMPORANEOUS not predictive. Foundation only, no information map yet.
+
+- **Stage A univariate (`dxy_infomap.py`):** 6 DXY states (impulse/accel/efficiency x up/dn) x directed side x 5 labels x lag {0,1,2,4} x 3 eras, lift vs XAUUSD era base, deduped. NO cross-era-stable univariate DXY directional info. Strongest coherent = persistent DXY efficiency -> inverse XAUUSD path, +0.02..+0.03 in b0/b1 but REVERSES -0.02..-0.04 in 2021-2023 (regime inversion, inflation/safe-haven era). Lag decays from lag0. Lifts <=0.04. NEXT = X3 divergence + §7 incremental test + interactions.
