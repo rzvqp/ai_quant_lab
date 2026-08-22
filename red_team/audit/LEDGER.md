@@ -4493,4 +4493,49 @@
                red_team/. Report: RT_S5_S20_CLEAN_INDEPENDENT_VALIDATION_REPORT.md.
                STATE: OPERATIONAL. Next entry [98], prev_hash E97.
   entry_hash:  E97
+
+[98] 2026-08-22
+  prev_hash:   E97
+  event:       VERDICT
+  dc_id:       DC-S5-EV-ESCROW-AGGREGATE-EXTRACTION
+  freeze_hash: frozen S5 validation ledger cd4e8d4a (from RT-ALPHA-S5-S20 633bd5da) / EV contract audited at
+               Statistician e54a2a5 (ve_brain real-ev-expected-edge-v1) / AI Trader onboarding c30b056 / artifact
+               S5_VALIDATED_EV_AGGREGATES_V1 fingerprint fe6eaf9f
+  battery_ver: RT-S5-EV-ESCROW-AGGREGATE-EXTRACTION-001
+  reviewer:    Red Team
+  detail:      Privacy-preserving aggregate extraction of the REAL EV empirical-Bayes contract inputs from the
+               EXACT frozen S5 validation ledger cd4e8d4a. VERDICTS = ***S5_ESCROW_EV_AGGREGATES_EXTRACTED*** (exact,
+               internally proven) + ***S5_ESCROW_AGGREGATE_BRACKET_FAIL*** (n_stop=84 outside Statistician bracket
+               [99,147]); READY_FOR_STATISTICAL_VERIFICATION WITHHELD. LEDGER IDENTITY MATCH (sha256 cd4e8d4a);
+               strategy C_2d587447/S5 spec exact; validation 633bd5da PASS; population 52572 pop_ohlc bac65b1a;
+               cost TICK0.01/BASE0.05/STRESS0.24 -- no identity fail. EXIT SEMANTICS recovered from ve_brain code
+               (NOT natural language): contract consumes n/n_target/n_horizon/sum_horizon_r (n_stop implicit =
+               n-nt-nh); ★ CRITICAL R-SEMANTICS: sealed _ev_core formula ev = p_t*rr - p_s*1.0 + p_h*e_x_h -
+               cost_over_r uses GROSS rr=+3.0, stop=-1.0, and subtracts round-trip cost ONCE separately via
+               cost_over_r -> sum_horizon_r MUST be GROSS (pre-cost); BASE/STRESS-net would double-count cost. No
+               S5_EV_EXIT_SEMANTICS_MISMATCH. AGGREGATES (gross): n=295, n_target=15, n_horizon=196, n_stop=84,
+               sum_horizon_r=+102.2125344478 (E[X|h]=+0.5215). COUNT INTEGRITY: all>=0, sum to 295, direct stop-
+               count=implicit=84, finite. SEMANTICS CROSS-CHECK EXACT: exit-price HORIZON=196 == holding==49
+               count=196; targets fill exactly +3.0 gross (15/15), stops exactly -1.0 gross (84/84). R
+               RECONSTRUCTION CONTRACT-EXACT: 3.0*15 - 84 + 102.2125 = 63.2125 == sum(R_gross)=63.2125, residual
+               9.2e-14. Published cross: BASE avg 0.2098 (=~0.210), WR 162/295=0.549 (winners=15 target+147 pos-
+               horizon; losers=84 stop+49 neg-horizon=133). ★ BRACKET: n_target 15 in [0,54] PASS; n_horizon 196 in
+               [148,196] PASS (at ceiling); n_stop 84 NOT in [99,147] FAIL. ROOT CAUSE = BRACKET MIS-DERIVED, LEDGER
+               RIGHT: Statistician's n_stop>=99 floor was really an n_LOSERS>=99 bound (satisfied: 133 losers);
+               49 of 133 losers are NEGATIVE-HORIZON exits, so n_stop=84. Equivalently at n_horizon=196 (their own
+               ceiling, hit exactly) n_stop>=99 forces n_target<=0 contradicting n_target=15 -- floor+ceiling jointly
+               infeasible for any n_target>0. Per mandate sec7 fail-closed: values NOT altered, halt on BRACKET_FAIL;
+               extraction proven correct so reconciliation is on the Statistician bracket not re-extraction. COST
+               IDENTITY: BASE/STRESS totals 0.05/0.24 authoritative; internal spread-vs-slip decomposition NOT
+               uniquely identified (spread folded into slippage) -- not invented. PRIVACY: aggregates ONLY, zero
+               individual trades/timestamps/prices/rows exposed, escrow boundary intact. ARTIFACT S5_VALIDATED_EV_
+               AGGREGATES_V1 emitted with status BRACKET_FAIL_PENDING_STATISTICIAN_RECONCILIATION, fingerprint
+               fe6eaf9f (deterministic over identity+counts+sum). NO runtime wiring / AI Trader / RealEVDecisionEngine
+               / StrategyCatalog / S5 plugin / risk / execution / broker change; no retuning; no revalidation; no
+               CALIB/2025+/new-holdout; only frozen cd4e8d4a. RECOMMEND to CEO/Statistician: reconcile the n_stop
+               bracket (floor conflated total-losers with stops); on reconciliation the IDENTICAL artifact promotes to
+               READY without changing any value. Changes only in red_team/. Report: RT_S5_EV_ESCROW_AGGREGATE_
+               EXTRACTION_REPORT.md.
+               STATE: OPERATIONAL. Next entry [99], prev_hash E98.
+  entry_hash:  E98
 ```
