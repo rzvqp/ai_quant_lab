@@ -72,3 +72,5 @@ Causal `hist_m15_data.py` (governance-proven slice). Overlap-checked vs frozen c
 |---|---|---|---|---|---|---|
 | H39 | M15-F1 | displacement->first-pullback->resume, H4-up gated | L | ND8 breakout+expansion, pullback W8, rr{1,1.5,2} | 841 | FALSIFIED (WRt 0.16, avgR<0, best10<0, maxDD -79R) |
 | H40 | M15-F1 | same, H4-down gated | S | mirror | 799 | FALSIFIED (marginal +, best10<0, CONF<0, b1 neg, 2013-driven ~ redundant) |
+| H41 | M15-F2 | session impulse->reset->second-leg (London & NY) | L/S | OR8, second-push beyond impulse ext | 245-453 | FALSIFIED (WRt 0.02-0.16, best10<0, reset-stop noise-stopped) |
+| H42 | M15-F3 | break->acceptance(K3)->first-retest | L/S | ND8 break, 3-bar hold, retest, rr{1,1.5,2} | 785-876 | FALSIFIED (WRt 0.03-0.06, 19-20p stop noise-stopped, best10<0) |

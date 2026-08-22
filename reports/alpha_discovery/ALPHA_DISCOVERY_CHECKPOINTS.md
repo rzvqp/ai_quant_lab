@@ -111,3 +111,15 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Finding:** high-frequency (~16/mo) but LONG dead (WRt 0.16) and SHORT marginal-but-fails-gate (best10<0, CONF<0, block-inconsistent, 2013-bear-driven ~ redundant). **Intraday tight stops (47-52p) are noise-stopped even in b0/b1's trending regimes -> the 2021-23 intraday exhaustion is a STRUCTURAL noise/stop property, not regime-specific (answers §5's regime-dependence question: intraday continuation is NOT regime-rescued).** Failure-map #20.
 **Action:** loop CONTINUES. NEXT_FRONTIER = M15-F2 (session-based: session impulse->reset->second leg, §7E — b0/b1 session behavior untested; a genuinely different intraday structure). Frozen pending-validation still COMP-CONT-L-rr2.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #9 — 2026-08-22 — HISTORICAL_M15_PRICE_ONLY_FRONTIER_EXHAUSTED -> CEO decision point (auto-loop PAUSED, program ACTIVE)
+**Frontiers:** M15-F2 (session impulse->reset->second-leg, London/NY), M15-F3 (break->acceptance->first-retest). **Hypotheses:** H41, H42. Both **CLOSED_NO_ROBUST_ALPHA**.
+**M15 frontier summary (3 genuinely-distinct classes, all NOT robust):** F1 displacement-pullback (WRt 0.16, tight 47p noise-stopped), F2 session-2nd-leg (WRt 0.02-0.16, 39-54p stop noise-stopped), F3 break-accept-retest (WRt 0.03-0.06, 19-20p stop noise-stopped). Same signature across all: intraday tight stops noise-stopped, best10<0, regime-independent.
+**Decisive structural conclusion (§23, NOT universal impossibility):** `HISTORICAL_M15_PRICE_ONLY_FRONTIER_EXHAUSTED`. Any M15 mechanism uses TIGHT intraday stops (noise-stopped -> dead) OR WIDE swing stops (-> REDUNDANT with the frozen H4 edges COMP-CONT-L / H4-bo-raw-S). Intraday alpha is NOT regime-dependent in the way hoped (§5 answered: the 2021-23 intraday exhaustion is structural noise/stop, confirmed on b0/b1). No NEW non-redundant robust price-only alpha on M15.
+**Full authorized price-only space now covered:** 2021-23 native (11 frontiers -> COMP-CONT-L-rr2), historical b0/b1 SWING (HF1-HF6 -> none new; only frozen H4-bo-raw-S robust), historical b0/b1 INTRADAY M15 (F1-F3 -> none, structural noise wall). **19 frontiers / 42 hypotheses this loop; 1 new independent survivor (COMP-CONT-L-rr2).**
+**`EXOGENOUS_FRONTIER_REMAINS_NEXT_HIGH_PRIORITY_OPTION`** — repeatedly identified as gold's likely true driver and the natural home for an uncorrelated strategy; CEO-authorization-gated (§22/§23).
+**CEO decision requested:** (a) authorize `EXOGENOUS_FRONTIER`; (b) point Alpha at another genuinely-different authorized price-only population/data object; (c) accept portfolio as-is (S5 validated + COMP-CONT-L-rr2 & H4-bo-raw-S pending independent validation) and hold. Loop resumes on (a)/(b).
+**Per §23, auto-loop PAUSED at this governance-gated decision point; global program ACTIVE.** No mining of M15 variants (structural wall makes them near-zero-prior); no self-authorized exogenous use.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused, awaiting decision).

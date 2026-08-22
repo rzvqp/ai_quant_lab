@@ -48,3 +48,8 @@ Falsified mechanisms — **do not re-run without genuinely new information (§4,
 
 ## Historical INTRADAY M15 frontiers — CLOSED
 - **M15-F1 displacement->first-pullback->resume** (both sides, H4-regime-gated): LONG dead (WRt 0.16, intraday pullback rarely reaches 1R, tight 47p stop noise-stopped); SHORT marginal-but-fails-gate (best10<0, CONF<0, block-inconsistent, positivity concentrated in 2013 bear = H4-bo-raw-S episode). **Intraday tight stops are noise-stopped even in b0/b1's trending regimes -> the regime shift does NOT rescue intraday continuation (the 2021-23 intraday exhaustion is structural, not regime-specific).** Do NOT reopen displacement-pullback on M15.
+
+## Historical INTRADAY M15 frontiers F2/F3 — CLOSED; M15 price-only EXHAUSTED
+- **M15-F2 session impulse->reset->second-leg** (London/NY, both sides): DEAD (WRt 0.02-0.16, best10<0; reset stop 39-54p noise-stopped).
+- **M15-F3 break->acceptance->first-retest** (both sides): DEAD (WRt 0.03-0.06; the retest gives a tight 19-20p stop that is noise-stopped before reaching target; acceptance filter did not help).
+- **STRUCTURAL CONCLUSION — `HISTORICAL_M15_PRICE_ONLY_FRONTIER_EXHAUSTED`:** across 3 genuinely-distinct M15 classes (continuation-pullback, session-2nd-leg, break-accept-retest) the intraday noise/stop wall is decisive and regime-independent. Any M15 mechanism uses TIGHT intraday stops (noise-stopped -> dead) or WIDE swing stops (-> REDUNDANT with the frozen H4 edges COMP-CONT-L/H4-bo-raw-S). No NEW non-redundant robust price-only alpha exists on M15. Do NOT reopen M15 price-only without a materially new idea.
