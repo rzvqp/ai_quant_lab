@@ -9,3 +9,7 @@ Causal STATES that survive the information-first gates (mandate `ALPHA-XAUUSD-CA
 | ST-EFFIC-SHORT-GATE | directional efficiency low/negative | monotone SHORT gate (high up-effic kills shorts) | INFO_NOTED — candidate SHORT filter (interaction), not standalone |
 
 **Priority:** ST-TREND-EXH (a potential SHORT diversifier + LONG-avoidance filter) — the single highest-information causal state found. Independence vs frozen: it is COUNTER to LONG trend-beta (fires when extended, not on compression) -> not obviously redundant with COMP-CONT-L; overlap-check required at Stage C.
+
+| ST-UPEFF-DROP-FILTER | up-efficiency (effic) high at t-6 then <0.1 at t (trend-drive fading) | LONG P(+100/-70) lift -0.069 STABLE (DISC -0.088/CONF -0.041; 2021 -0.054/2023 -0.099) | **STABLE_FILTER (LONG-avoidance)** — not a standalone trade (negative signal); re-encodes trend-drive presence (COMP-CONT-L territory); cannot apply to frozen strategies (§21/§24). Recorded, not promoted. |
+
+**Transition family verdict:** no stable POSITIVE tradeable path-lift; the one stable signal is a LONG-avoidance filter. Both static-state and transition families now mapped -> next: path-history / multi-TF / session-conditioned states.

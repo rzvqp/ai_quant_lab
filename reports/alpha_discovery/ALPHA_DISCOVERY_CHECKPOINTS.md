@@ -154,3 +154,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **NEXT:** state-TRANSITION family (§8) — build A(t-k)->B(t) transition screens with the first-passage path outcome AND DISC/CONF + cross-population FROM THE OUTSET (test stability early to avoid another in-sample-only candidate). Also map baselines on b0/b1 for cross-pop context.
 **Not a blocker (§26):** the causal-state information space is still being mapped; this is one static-state family closed.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #13 — 2026-08-22 — state-TRANSITION family screened (stability built-in); no positive tradeable edge
+**Screen:** 9 causal transitions A(t-6)->B(t) x 2 sides on 2021-2023 H1 DEV, headline P(+100/-70) H48, with per-year + DISC/CONF stability evaluated IN the screen (`state_transitions.py`) — applying the ST-TREND-EXH lesson to avoid another in-sample-only candidate.
+**Result:** the ONLY stable transition is `T3 up-efficiency->drop` = a LONG-AVOIDANCE FILTER (lift -0.069, DISC -0.088/CONF -0.041, per-year negative) — a stable negative signal, NOT a standalone tradeable edge, and it re-encodes trend-drive presence (COMP-CONT-L territory). Every apparent POSITIVE edge (T9-S trend-weaken, T5-L accept-up, T3-S) is a regime transient (DISC->CONF inversion or single-year); T8-S promising both-halves-positive but N=91, 2023-only (insufficient).
+**Conclusion:** no stable POSITIVE tradeable path-lift from static states (ST-TREND-EXH) or transitions on 2021-2023 H1. The stable price-only state information reduces to "trend-drive presence" (already exploited by COMP-CONT-L). NOT price-only-impossible (§26) — 2 of several state families mapped.
+**NEXT:** PATH-HISTORY states (causal MFE/MAE-so-far, recent realized asymmetry before decision) — a genuinely different information class (§5 "MFE/MAE history available before decision"); then multi-TF / session-conditioned states. Cross-population b0/b1 for any stable positive.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
