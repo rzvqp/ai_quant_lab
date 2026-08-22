@@ -37,3 +37,5 @@ Cumulative search lineage for the state-path method (§15, §21).
 
 ## Mandate ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001 (Decision B)
 - **Cycle 1 foundation (`h4_parent.py`):** froze causal H4 parent-state taxonomy (reused frozen state_regime.regime() on H4; QUIET=research-local neutral, NOT canonical RANGE) + per-H4-state M15 first-passage base rates (P(+50/-50,+70/-50,+100/-70,+100/-100) L/S + MFE/MAE + adverse-first), DEV/b0/b1, event-deduped (RAW/EffN/days/H4-episodes). NO outcome-driven state tuning. All 5 states EffN>=500 each era. Foundation only — no candidate tested yet; the base rates are the §8 comparison denominators for all subsequent path-shape lifts.
+
+- **Family 1 (run-length/persistence, `h4m15_runlen.py`):** 5 H4 states x 9 descriptors x 2 sides x 2 targets, lift vs same-H4-state base, deduped, DISC/CONF+per-year+b0+b1. NO cross-era-stable positive tradeable lift. Only cross-stable cell = QUIET x runUp>=4 short -0.055 (negative avoidance + per-year flip). Strongest positive DOWN x persistDn short +0.059 fails b1 (era-conditional continuation). Pullback-in-trend hypothesis NOT supported. PIVOT to Family 2.

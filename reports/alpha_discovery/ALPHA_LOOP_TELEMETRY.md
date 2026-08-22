@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = NEW MANDATE (Decision B): H4-conditioned M15 path-shape. Cycle 1 froze H4 parent-state taxonomy + per-state M15 base rates (all states EffN>=500/era; instantaneous H4 state = era-dependent directional bias).
+CURRENT_FRONTIER          = H4-conditioned M15 path-shape Family 1 (run-length/persistence): NO cross-era-stable positive lift. Continuation shorts era-conditional (fail b1); pullback-in-trend not supported.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = M15 path-shape families conditional on H4 state (run-length/persistence first), lift vs per-H4-state/era base rate, L/S separate, event-deduped, same-H4-state cross-era gate
+NEXT_FRONTIER             = Family 2 = impulse->retracement geometry (impulse magnitude + retracement depth) conditional on H4 state; then recovery-after-adverse + MFE/MAE asymmetry
 ```
 
 ## Key structural findings (bounded)

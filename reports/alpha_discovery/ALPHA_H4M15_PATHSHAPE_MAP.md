@@ -16,3 +16,14 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 8. failed directional sequence / recent curvature
 
 (no named strategies until information survives §14)
+
+## Family 1 — run-length / persistence-vs-alternation (checkpoint #27)
+`h4m15_runlen.py`. Descriptors: signed run-length (>=3,>=4 up/dn), path-efficiency pe8 (persistUp/persistDn/altern), pe4 (cleanUp/cleanDn). Cross each H4 state x descriptor x side x {70/50,100/70}; lift vs same-H4-state deduped base; DEV DISC/CONF + per-year + b0 + b1. **Result: NO cross-era-stable POSITIVE tradeable lift.**
+| cell | lift | D/C | b0/b1 | read |
+|---|---|---|---|---|
+| QUIET x runUp>=4 -> S 70/50 | -0.055 | -0.02/-0.11 | -0.02/-0.03 | only CROSS_STABLE flag, but NEGATIVE (short-avoidance) + per-year sign flip (2021 +0.02 / 2023 -0.09) -> weak, not a trade |
+| DOWN x persistDn -> S 100/70 | +0.059 | +0.08/+0.04 | +0.03/**-0.00** | strongest positive; era-conditional continuation, **b1 absent** -> fails cross-era |
+| UP x runUp>=3 -> S 70/50 | +0.048 | +0.10/**-0.03** | +0.02/+0.02 | DISC/CONF disagree (fails firewall); mean-revert/exhaustion in DEV-disc only |
+| DOWN x cleanUp -> L 70/50 | +0.045 | +0.04/+0.05 | +0.01/+0.01 | positive all cells but b0/b1 <0.02 (immaterial) |
+| UP x runDn>=4 -> L 70/50 | -0.037 | | +0.04/-0.02 | "pullback-in-uptrend -> LONG" NOT supported (negative) |
+**Verdict:** run-length/persistence adds no cross-era-stable positive directional lift over the H4-state base. Continuation edges (DOWN persistDn short) remain era-conditional (fail b1 low-vol era); mean-reversion/exhaustion signals weak/DISC-CONF-inconsistent; pullback-in-trend not supported. PIVOT -> Family 2 (impulse->retracement geometry / retracement depth).

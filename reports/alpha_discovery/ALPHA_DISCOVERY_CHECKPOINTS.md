@@ -281,3 +281,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Key facts locked in:** (1) all 5 H4 states have EffN>=500 in every era -> same-H4-state cross-era gate (§10) viable for all; (2) absolute base rates strongly era-dependent (b1 low-vol compresses all P + MFE/MAE) -> only WITHIN-state/era LIFTS are comparable (§8); (3) instantaneous H4 state alone = era-dependent directional bias (UP DEV short-favor/b1 long; DOWN DEV long/b0 short; QUIET symmetric) -> NOT standalone cross-era alpha. The open question: does M15 PATH-SHAPE conditional on H4 add cross-era-stable lift over these baselines?
 **NEXT:** first M15 path-shape family (directional run-length / persistence-vs-alternation, window 4/8) conditional on each H4 state, lift vs per-state/era base rate, L/S separate, event-deduped, cross-era gate.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (new frontier).
+
+---
+
+## CHECKPOINT #27 — 2026-08-22 — Family 1 (run-length/persistence): no cross-era-stable positive lift over H4-state base
+**Screen (`h4m15_runlen.py`):** M15 signed run-length + path-persistence (pe8/pe4) conditional on each H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state deduped base, L/S separate, DEV DISC/CONF + per-year + b0 + b1, event-deduped.
+**Result:** NO cross-era-stable positive tradeable lift. Only CROSS_STABLE = QUIET x runUp>=4 short -0.055 (a NEGATIVE short-avoidance signal, + within-DEV per-year sign flip -> weak). Strongest positive = DOWN x persistDn short +100/-70 +0.059 (D/C/b0 positive) but b1 ~0 -> era-conditional continuation, fails cross-era. "Pullback-in-uptrend -> LONG" NOT supported (UP x runDn LONG negative). Continuation shorts era-conditional (fail b1 low-vol), consistent with program-wide finding.
+**NEXT:** Family 2 = impulse -> retracement geometry (recent impulse magnitude + retracement depth relative to it) conditional on H4 state; then recovery-after-adverse & MFE/MAE-asymmetry families.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
