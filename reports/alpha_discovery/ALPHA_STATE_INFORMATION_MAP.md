@@ -23,3 +23,11 @@ Stage-A univariate state->future-path information (mandate `ALPHA-XAUUSD-CAUSAL-
 - Small interaction: trend-extension x vol-state / x efficiency (§7, <=3 conditions).
 - Cross-population check on b0/b1 where compatible.
 Only a state surviving material lift + stability advances to Stage C (strategy). Ranked by INFORMATION, not P&L (§16).
+
+## VALIDATION RESULT — ST-TREND-EXH KILLED (stability firewall, §13/§14)
+The dominant univariate signal does NOT survive stability (`state_validate.py`):
+- **DISC/CONF:** DISC lift +0.081 -> **CONF lift -0.076** (SHORT information INVERTS out-of-sample). Decisive kill (§14).
+- **Per-year (lift over same-year base):** 2021 +0.074, 2022 +0.122, **2023 -0.029**. 2021-22-concentrated, inverts 2023.
+- **Cross-population b0/b1:** SHORT lift -0.001 / -0.032 (no generalization). LONG-avoidance side also ~0 cross-pop.
+- DEV-wide extended-region lift is small (+0.022); the "0.472" was the extreme top decile only. Interactions (ext x low-vol +0.062, ext x effic<0 +0.071) sharpen the SAME in-sample 2021-22 effect -> inherit the instability.
+**Conclusion:** the single most-informative STATIC univariate causal state carries only a 2021-22 regime-transient, NOT stable path information. Method worked (flagged -> validated -> rejected). PIVOT to state TRANSITIONS (§8, next family) and other populations' baselines. This is NOT "price-only impossible" (§26) — the causal-state information space is still being mapped.

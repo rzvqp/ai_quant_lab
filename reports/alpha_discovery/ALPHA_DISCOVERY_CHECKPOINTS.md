@@ -144,3 +144,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Discipline:** promising != confirmed — NOT yet per-year/DISC/CONF-validated (the SHORT lift may be 2022-concentrated). No strategy geometry imposed (§3). No thresholds mined (continuous decile response). MT ledger updated (~40 univariate screens; winner selected by cross-consistency).
 **NEXT:** stability of ST-TREND-EXH (per-year + DISC/CONF + neighboring-region + cross-population b0/b1) + multi-horizon response curve + small interaction (extension x vol/efficiency). Only if it survives -> Stage-C strategy conversion + overlap-vs-frozen.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #12 — 2026-08-22 — ST-TREND-EXH validated -> KILLED (stability firewall); pivot to transitions
+**Rigorous validation of the Stage-A univariate winner** (`state_validate.py`): per-year, DISC/CONF, multi-horizon, neighboring thresholds, cross-population b0/b1, interactions.
+**Verdict: `INFO_UNSTABLE_KILLED`.** DISC lift +0.081 -> **CONF lift -0.076** (SHORT information INVERTS out-of-sample; decisive §14 kill). Per-year 2021 +0.074 / 2022 +0.122 / **2023 -0.029** (2021-22 transient). Cross-pop b0 -0.001 / b1 -0.032 (no generalization). DEV-wide lift small (+0.022); the "0.472" was the extreme top decile; interactions sharpen the same in-sample effect.
+**Interpretation:** the single most-informative STATIC univariate causal price-state on 2021-2023 H1 carries only a 2021-22 regime-transient, not stable path information. The METHOD worked (flag -> validate -> reject); the stability firewall did its job. No strategy built (info-first gate not passed, §16/§13).
+**NEXT:** state-TRANSITION family (§8) — build A(t-k)->B(t) transition screens with the first-passage path outcome AND DISC/CONF + cross-population FROM THE OUTSET (test stability early to avoid another in-sample-only candidate). Also map baselines on b0/b1 for cross-pop context.
+**Not a blocker (§26):** the causal-state information space is still being mapped; this is one static-state family closed.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

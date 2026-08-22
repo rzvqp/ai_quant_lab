@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — new mandate: price-only STATE->PATH information method)
 CURRENT_POPULATION        = 2021-2023 native H1 DEV (state-path information mapping); price-only, causal
-CURRENT_FRONTIER          = Stage-A univariate info map DONE -> next: ST-TREND-EXH stability + interactions
+CURRENT_FRONTIER          = ST-TREND-EXH KILLED (DISC->CONF inversion, no cross-pop) -> next: state TRANSITIONS
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = characterize ST-TREND-EXH (per-year/DISC-CONF stability, multi-horizon curve, trend x vol/effic interaction); then Stage-C if it survives
+NEXT_FRONTIER             = state-TRANSITION family (A(t-k)->B(t)) with DISC/CONF + cross-pop stability from the outset; then next state family
 ```
 
 ## Key structural findings (bounded)

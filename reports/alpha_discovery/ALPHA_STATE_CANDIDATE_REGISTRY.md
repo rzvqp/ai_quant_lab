@@ -4,7 +4,7 @@ Causal STATES that survive the information-first gates (mandate `ALPHA-XAUUSD-CA
 
 | STATE_ID | definition (causal) | headline info (univariate, DEV) | status |
 |---|---|---|---|
-| ST-TREND-EXH | trend=(EMA20-EMA50)/ATR in the top decile (strongly extended up) on H1 | SHORT P(+100/-70)=0.472 vs base 0.391 (+0.081, +21pct, mono +0.50); LONG P drops to 0.313 (-0.105) | **PROMISING_UNIVARIATE** — needs per-year + DISC/CONF stability (may be 2022-concentrated); then interaction w/ vol/efficiency; then Stage-C conversion |
+| ST-TREND-EXH | trend=(EMA20-EMA50)/ATR in the top decile (strongly extended up) on H1 | SHORT P(+100/-70)=0.472 vs base 0.391 (+0.081, +21pct, mono +0.50); LONG P drops to 0.313 (-0.105) | **INFO_UNSTABLE_KILLED** — fails stability: DISC +0.081 -> CONF -0.076 (inverts OOS); per-year 2021 +0.074/2022 +0.122/**2023 -0.029**; cross-pop b0 -0.001/b1 -0.032 (no generalization). A 2021-22 regime transient, not stable info. |
 | ST-VOL-CONT | vol_ratio / vol_change high (rising volatility) on H1 | favors prevailing-trend continuation (LONG +, SHORT -) | INFO_NOTED — likely REDUNDANT with LONG trend-beta; test as a FILTER/interaction, not standalone |
 | ST-EFFIC-SHORT-GATE | directional efficiency low/negative | monotone SHORT gate (high up-effic kills shorts) | INFO_NOTED — candidate SHORT filter (interaction), not standalone |
 
