@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = Liquidity-event family first cut: DISPLACEMENT is the informative component (validates §13). 2 mode-conditional cross-era leads: BEAR_CORRECTION sweep-disp->L (+0.144/+0.045), BULL_CORRECTION sweep-disp->S (+0.064/+0.046).
+CURRENT_FRONTIER          = 2 single-bar liquidity leads FAIL deepening (rare ~2/mo + structural stop too tight 16-30p + not cross-era-robust; first-cut disp lift = small-N noise). Root = single-bar event formulation.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = deepen the 2 correction liquidity leads (more eras + +100/-70 + winner-vs-loser reclaim-vs-noreclaim + event-N honesty + tradeability w/ structural stop)
+NEXT_FRONTIER             = one predeclared multi-bar liquidity-SEQUENCE reformulation (sweep+reclaim then displacement over K bars, structural stop w/ room); re-test mode-conditional; else bounded liquidity conclusion
 ```
 
 ## Key structural findings (bounded)

@@ -401,3 +401,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Two mode-conditional cross-era-consistent leads (b0+b1 same sign, disp-driven):** BEAR_CORRECTION + sell-sweep+reclaim+disp -> LONG (+0.144 b0 / +0.045 b1); BULL_CORRECTION + buy-sweep+reclaim+disp -> SHORT (+0.064 b0 / +0.046 b1). Both = "sweep + displacement continues the correction" — specialist (mode-conditional) signals. Counter-trend cells (PRIMARY_BULL buy->S) fail 2023. Disp-N small (31-44/era); b1 low-vol base. LEADS not survivors.
 **NEXT:** deepen the 2 correction leads — more eras (relaxed-N 2023) + +100/-70 label + explicit winner-vs-loser (reclaim vs no-reclaim) + event-N honesty (unique days/H4 episodes) + tradeability with structural stop.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #41 — 2026-08-22 — Two single-bar liquidity leads FAIL deepening (rare + tight-stop + not cross-era-robust)
+**Deepening (`liquidity_deepen.py`, §14/§18/§20/§21/§22):** winner-vs-loser + full labels + event-N honesty + tradeability with structural stop (swept swing extreme).
+**Result:** BOTH leads fail. Lead A (BEAR_CORRECTION sweep->L): b0 rr1.0 +0.136 but SL only 23p (tight), b1 NEGATIVE -> not cross-era-robust. Lead B (BULL_CORRECTION sweep->S): b0 NEGATIVE (-0.21..-0.29) despite P-lift (reversal short run over by bull primary), b1 marginal. Both ~2 eff/mo (too rare for a desirable specialist §25). Winner-loser non-monotonic (reclaim-only often < base) -> first-cut disp lift was small-N noise. Structural stop = swept extreme is TOO TIGHT (16-30p) when sweep+reclaim+displacement forced onto ONE M15 bar (§21 tight-stop fragility).
+**Root cause:** event FORMULATION, not necessarily the hypothesis — the CEO sequence (sweep->reclaim->DISPLACEMENT->path) is inherently MULTI-BAR; the single-bar collapse made it rare + tight-stopped.
+**NEXT (one predeclared reformulation, §12-13, NOT mining):** multi-bar liquidity SEQUENCE — sweep+reclaim on bar t, displacement over next K bars, entry after displacement confirms, structural stop at swept extreme (with room); re-test the mode-conditional decomposition + winner-loser + tradeability cross-era. If still no robust specialist -> bounded liquidity-family conclusion.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

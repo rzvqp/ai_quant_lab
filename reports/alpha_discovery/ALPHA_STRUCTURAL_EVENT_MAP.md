@@ -19,3 +19,12 @@ Mandate `ALPHA-XAUUSD-HIERARCHICAL-MODE-STRUCTURAL-EVENT-DISCOVERY-001`. Archite
 | BULL_CORRECTION + buy-sweep+reclaim+disp -> S | +0.064 (n37) | +0.046 (n31) | bearish pullback in bull: sweep highs + bear displacement -> pullback continues down |
 Counter-trend cells (PRIMARY_BULL buy->S b0 +0.070 but 2023 -0.012) fail cross-era. b1 base rates low-vol-depressed (only relative lift comparable). Disp-level N small (31-44/era). LEADS not survivors.
 **NEXT:** deepen the 2 correction leads — more eras (relaxed-N 2023), +100/-70 label, explicit winner-vs-loser (reclaim vs no-reclaim), event-N honesty (unique days/H4 episodes), then tradeability with structural stop.
+
+## Two single-bar leads deepened — FAIL (checkpoint #41)
+`liquidity_deepen.py`. §14 winner-loser + §18 labels/MFE-MAE + §20 event-N + §21-22 tradeability (structural stop = swept swing extreme).
+| lead | b0 tradeable | b1 tradeable | freq | verdict |
+|---|---|---|---|---|
+| A: BEAR_CORRECTION sweep+reclaim+disp -> L | rr1.0 +0.136 (best10 +0.03) but SL only 23p (tight) | NEGATIVE (-0.10..-0.19) | ~2/mo | fails: b1 neg + tight stop + rare |
+| B: BULL_CORRECTION sweep+reclaim+disp -> S | NEGATIVE (-0.21..-0.29) | marginal (rr2 +0.059) | ~2/mo | fails: b0 neg + rare |
+**Problems:** (1) single-bar sweep+reclaim+displacement is RARE (~2 eff/mo; 6-23 raw events/yr gated); (2) structural stop = swept extreme is TOO TIGHT (16-30p med) when all 3 components on one M15 bar -> tight-stop fragility (§21); (3) NOT cross-era-robust within mode (A +b0/-b1, B -b0/+b1); winner-loser non-monotonic (reclaim-only often < base) = first-cut disp lift was small-N noise.
+**Root cause = event FORMULATION, not necessarily the hypothesis:** the CEO sequence (sweep->reclaim->DISPLACEMENT->path) is inherently MULTI-BAR; collapsing onto one bar made it rare + tight-stopped. NEXT (one predeclared reformulation, §12-13, not mining): multi-bar liquidity SEQUENCE — sweep+reclaim on bar t, displacement over next K bars, entry after displacement confirms, structural stop at swept extreme (now with room), then re-test mode-conditional decomposition.
