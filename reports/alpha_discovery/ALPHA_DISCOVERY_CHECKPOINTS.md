@@ -429,3 +429,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Backlog:** S1 -> BOUNDED_NEGATIVE. Recommended next = S10 Displacement Continuation.
 **CEO DECISION (pause condition #5):** select next structural family. Recommendation S10; alternatives S7 (Trend Pullback, prove independence vs COMP-CONT-L), S4 (Vol Compression->Expansion).
 **Global status:** `ALPHA_S1_LIQUIDITY_FAMILY_BOUNDED` — awaiting CEO next-family selection.
+
+---
+
+## CHECKPOINT #44 — 2026-08-23 — S10 displacement decomposition: cross-era-CONSISTENT positive P-lift (mode-aligned)
+**Mandate:** ALPHA-XAUUSD-S10-DISPLACEMENT-CONTINUATION-001 (CEO selected S10). §19 audit: prior impulse-continuation tests NOT under frozen mode taxonomy -> NOT_COMPARABLE (distinct experiment).
+**Screen (`displacement_info.py`, §6):** MODE base -> +DISP -> +DISP+ACCEPT, mode-aligned displacement (body>0.7ATR, close far-quartile, range>1.2ATR), P(+70/-50) 8h lift vs same-mode base, deduped, per era.
+**Result (POSITIVE):** mode-aligned displacement continuation shows cross-era-CONSISTENT positive P-lift in several cells: PRIMARY_BULL bull-disp->L (all 5 eras +0.001..+0.053), BULL_CORRECTION bear-disp->S corr-continue (all 5 eras +0.003..+0.053), BEAR_CORRECTION bear-disp->S primary-resume (b0/b1/2021/2023 +0.022..+0.139), PRIMARY_BEAR bear-disp->S (all but marginal 2022). Displacement is the signal; ACCEPTANCE mixed. Validates R1+R4. First frontier w/ cross-era-consistent positive info.
+**Radar R5:** mode-aligned displacement continuation = cross-era-consistent positive P-lift (short-side/trend-continuation most consistent).
+**NEXT:** controlled-retracement + failure branch + tradeability (structural stop = displacement origin) for the consistent cells; independence vs COMP-CONT-L. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

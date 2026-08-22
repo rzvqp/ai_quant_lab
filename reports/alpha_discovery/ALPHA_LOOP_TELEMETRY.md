@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = S1 LIQUIDITY family BOUNDED (reversal #42 + continuation #43 both net-neg all 6 modes cross-era). Displacement informative (R1) but not net-positive after cost. No robust specialist.
+CURRENT_FRONTIER          = S10 Displacement Continuation. Cycle 1 decomposition: mode-aligned displacement shows cross-era-CONSISTENT positive P-lift (PRIMARY_BULL bull-disp->L; BULL/BEAR_CORRECTION bear-disp->S). Displacement is the signal; acceptance mixed. Tradeability next.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = CEO selects next family (S1 bounded). Recommend S10 Displacement Continuation; alt S7 Trend Pullback / S4 Vol Compression-Expansion.
+NEXT_FRONTIER             = S10 controlled-retracement + failure branch + tradeability (structural stop=displacement origin) for the consistent cells; independence vs COMP-CONT-L
 ```
 
 ## Key structural findings (bounded)

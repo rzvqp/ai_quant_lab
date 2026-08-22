@@ -31,3 +31,15 @@ Counter-trend cells (PRIMARY_BULL buy->S b0 +0.070 but 2023 -0.012) fail cross-e
 
 ## Multi-bar sequence — REVERSAL branch NEGATIVE all modes cross-era (checkpoint #42)
 `liquidity_seq.py`. Multi-bar sweep->reclaim->displacement (6-bar window), structural stop = swept extreme over sequence (healthy 20-41p), net STRESS per mode x side x era. Events plentiful (26-599). **Result: net-NEGATIVE in ALL 6 modes x both sides, cross-era.** Only positive cells = isolated single-era small-N outliers (BULL_CORR sell->L 2022 +0.45; TRANSITION short 2023 +0.08) that fail cross-era. The reversal reading of the liquidity mechanism carries NO tradeable edge. Multi-bar reformulation fixed frequency + stop-tightness but confirmed the reversal hypothesis is empirically false here (§14 "don't assume textbook"). NEXT (§14 mandatory): CONTINUATION/acceptance branch (sweep + NO reclaim + same-dir displacement -> continuation).
+
+## S10 Displacement Continuation — §6 decomposition (checkpoint #44)
+`displacement_info.py`. MODE base -> +DISP -> +DISP+ACCEPT, mode-aligned, P(+70/-50) 8h lift, deduped, per era. §19 audit: prior impulse/displacement tests (H4-M15 path-shape mandate) NOT under frozen market-mode taxonomy -> NOT_COMPARABLE_TO_CURRENT_ARCHITECTURE (distinct experiment).
+**Cross-era-CONSISTENT positive cells (all eras w/ sufficient N):**
+| mode + disp -> side | b0 | b1 | 2021 | 2022 | 2023 |
+|---|---|---|---|---|---|
+| PRIMARY_BULL + bull-disp -> L | +0.001 | +0.053 | +0.018 | +0.017 | +0.042 |
+| BULL_CORRECTION + bear-disp -> S (corr-continue) | +0.020 | +0.003 | +0.053 | +0.014 | +0.039 |
+| BEAR_CORRECTION + bear-disp -> S (primary-resume) | +0.037 | +0.022 | +0.066 | thin | +0.139 |
+| PRIMARY_BEAR + bear-disp -> S | +0.030 | +0.031 | +0.095 | -0.003 | +0.043 |
+Displacement is the signal; ACCEPTANCE component MIXED (adds in 2021, hurts in 2022/some NEUTRAL). NEUTRAL bear-disp->S inconsistent (2021 -0.082). Short-side continuations most consistent. Validates R1 (displacement informative) + R4 (trend-aligned continuation). Lifts +0.02..+0.14 (info); tradeability net-of-cost = NEXT.
+**NEXT (§8/§9/§14-16):** add CONTROLLED RETRACEMENT + FAILURE branch (hold vs fail, shallow vs deep) + tradeability with STRUCTURAL stop (displacement origin) for the consistent cells; §17 independence vs COMP-CONT-L (esp PRIMARY_BULL long).
