@@ -62,3 +62,6 @@ Cumulative search lineage for the state-path method (§15, §21).
 - **X3 divergence + §7 incremental (`dxy_divergence_incremental.py`):** X3 (gold-not-reacting divergence, DISC-thresholded) flips sign b0 vs b1 -> not stable. §7 incremental (persistent DXY dir over XAUUSD parent regime): b0/b1 small POSITIVE increment (+0.02..+0.06, NON-redundant) but INVERTS in y2123. DXY incremental info is REAL in 2011-2018 but regime-conditional (inverts 2021-2023) -> fails material+stable. NEXT = DXY transitions then bounded conclusion.
 
 - **DXY transitions (`dxy_transitions.py`):** 4 DXY A->B transitions (impulse-exhaustion, reversal) x directed side x 3 eras. NO cross-era-stable transition (usdUpExhaust->L +0.037/+0.044 b1/y2123 but ~0 b0; usdRevDn->L flips b0 vs b1). §20 order complete. -> bounded DXY conclusion.
+
+## Mandate ALPHA-XAUUSD-HIERARCHICAL-MODE-STRUCTURAL-EVENT-DISCOVERY-001 (architecture reset — mode->event->specialist)
+- **Cycle 1 (`market_mode.py`):** froze MARKET_OPERATING_MODE_V1 (price-only causal H4; 6 modes via two-scale primary backbone P=30 vs immediate I=6; separates PRIMARY_BEAR from BULL_CORRECTION per §4). Population stable across b0/b1/2021/2022/2023, all modes sufficient N/episodes; transition matrix economically coherent (sticky primary, corrections return to primary). NO P&L in taxonomy. Foundation only — no events yet.
