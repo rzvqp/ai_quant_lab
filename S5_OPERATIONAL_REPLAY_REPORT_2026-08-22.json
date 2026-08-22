@@ -1,0 +1,92 @@
+{
+  "started_at": 1787392938.6801846,
+  "ended_at": 1787393242.0317893,
+  "duration_seconds": 303.3516047000885,
+  "days_simulated": 40,
+  "primary": {
+    "cycles_completed": 1273,
+    "duplicates_within_primary": 0,
+    "hypotheses_created": 20,
+    "ev_evaluations": 20,
+    "trade_decisions": 20,
+    "no_trade_and_final_reason_distribution": {
+      "NO_STRATEGY_SIGNAL": 1253,
+      "BROKER_DISABLED": 20
+    },
+    "exceptions": [],
+    "exception_count": 0,
+    "positive_path_cycle_count": 20,
+    "positive_path_market_timestamps": [
+      57600,
+      230400,
+      403200,
+      576000,
+      748800,
+      921600,
+      1094400,
+      1267200,
+      1440000,
+      1612800,
+      1785600,
+      1958400,
+      2131200,
+      2304000,
+      2476800,
+      2649600,
+      2822400,
+      2995200,
+      3168000,
+      3340800
+    ],
+    "first_market_timestamp": 53100,
+    "last_market_timestamp": 3444300,
+    "cycle_latency_ms": {
+      "mean_ms": 5.235184210561837,
+      "median_ms": 7.673999993130565,
+      "p95_ms": 8.343400026205927,
+      "max_ms": 30.48389998730272,
+      "min_ms": 1.0658999672159553
+    },
+    "ledger_row_count": 1273
+  },
+  "restart": {
+    "ledger_row_count_at_open": 1273,
+    "ledger_row_count_after_replay": 1273,
+    "row_count_unchanged": true,
+    "cycles_completed_should_be_zero": 0,
+    "duplicates_detected_should_equal_primary_ledger_rows": 1273,
+    "exceptions": [],
+    "exception_count": 0
+  },
+  "dedup_proof": {
+    "duplicate_hypotheses": 0,
+    "duplicate_decisions": 0,
+    "duplicate_shadow_orders": 0
+  },
+  "latency_microbenchmark": {
+    "strategy_evaluate": {
+      "mean_ms": 0.012367501331027597,
+      "median_ms": 0.011699972674250603,
+      "p95_ms": 0.017900019884109497,
+      "max_ms": 0.024600012693554163,
+      "min_ms": 0.009000010322779417
+    },
+    "real_ev_decide": {
+      "mean_ms": 1.939107500074897,
+      "median_ms": 1.906349993078038,
+      "p95_ms": 2.1587000228464603,
+      "max_ms": 2.5215999921783805,
+      "min_ms": 1.8268999992869794
+    },
+    "risk_and_shadow_execution": {
+      "mean_ms": 0.11319150042254478,
+      "median_ms": 0.10764997568912804,
+      "p95_ms": 0.1517999917268753,
+      "max_ms": 0.2440999960526824,
+      "min_ms": 0.08459994569420815
+    }
+  },
+  "order_send_calls_total": 0,
+  "broker_gate_enabled": false,
+  "ev_engine_version_confirmed": "real-ev-engine-v1"
+}
