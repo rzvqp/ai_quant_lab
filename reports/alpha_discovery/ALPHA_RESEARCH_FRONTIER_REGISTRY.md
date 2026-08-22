@@ -43,3 +43,13 @@ Data population for this loop unless noted: **gated native-M5 -> M15/H1/H4/D1 ca
 Selection order = highest information given accumulated evidence: gold 2021-2023 is trend-dominated (fades die, breakouts whipsaw at intraday stops). F1 harnesses the trend but with a genuinely new *volatility-regime* trigger and swing-scale structural stops (where noise/stop ratio is smaller) — the horizon the prior program never converted. F2 tests the opposite (reversion) under strict over-extension conditioning. F3 tests a non-price information class.
 
 **A frontier is CLOSED when its bounded hypothesis budget (default <=6 rules / family, ~10-20 hypotheses) is exhausted without a robust survivor; then the loop pivots automatically (§33, §43). A CLOSED frontier is not a program stop.**
+
+---
+
+## HISTORICAL DIFFERENT-POPULATION FRONTIERS (CEO auth DIFFERENT_PRICE_ONLY_POPULATION, causal `hist_data.py`)
+Population = `_from_M15_v2` b0 (2011-2013 incl 2013 bear) + b1 (2016-2018), DISCOVERY_CONSUMED (usable for NEW discovery, NOT validation, §4). Causal HTF (FEATURE_AVAILABLE_AT<=DECISION_TIME); 2024+ PROTECTED excluded. See `ALPHA_EVIDENCE_CONSUMPTION_MAP.md`.
+
+| FRONTIER_ID | economic question | regime targeted | mechanism | status |
+|---|---|---|---|---|
+| HF1-COMPSHORT | does compression-timed SHORT continuation (COMP-CONT-L mirror) pay in a real D1 downtrend? | bearish (2013) | compression-timed short, structural stop | **CLOSED_NO_ROBUST_ALPHA** — positive only 2013 @ rr3 (tail-carried best10<0), block-inconsistent (b0+/b1-), RR-fragile |
+| HF2-RANGEFADE | does range mean-reversion pay where a GENUINE range exists (2011-2012)? | range | fade the range extremes, stop beyond boundary | **CLOSED_NO_ROBUST_ALPHA** — wrong-way (MAE>>MFE, advF 0.80), best10<0, both blocks negative |

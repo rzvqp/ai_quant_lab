@@ -24,3 +24,9 @@ Accumulated causal lessons — used to choose each next frontier by the *demonst
 | 11 | **"Golden" trend-aligned sweep is the WORST, not the best** | sweeping support in an uptrend then long = buying a dip that continues down first (advFirst 0.91); the confident external subfamily inverts under honest testing. |
 | 12 | **Execution overlays cannot rescue a wrong-path parent** | S4 +quality / invalidation / anti-fade / +1bar all fail; §26 honored (kill the parent). |
 | 13 | **External "obstacle/volume" filters can be anti-predictive** | S2 free-path and 1.3x-volume increments make expectancy WORSE — an externally-plausible filter is not a causal edge. |
+
+## Historical different-population lessons
+| # | lesson | evidence |
+|---|---|---|
+| 14 | **A different (bearish) regime makes SHORT less-dead but not robust by itself** | HF1: 2013 bear yields positive short only at rr3, tail-carried (best10<0), block-inconsistent. The regime shift is necessary but not sufficient; the robust bearish edge is a specific breakout mechanism (H4-bo-raw-S), not generic short-continuation. |
+| 15 | **Range mean-reversion is dead even in a GENUINE range** | HF2: 2011-2012 real-range fade still MAE>>MFE, best10<0. The 2021-2023 range-death was not merely "no real range" — H4 range-fade with structural stops fails on a real range too. |

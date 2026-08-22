@@ -54,3 +54,14 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Data:** gated M5 -> M15/H1/H4/D1 DEV; causal (next-bar-open, close_time HTF, shifted levels); no non-causal D1/H4 merge; M1/news excluded; CALIB untouched (nothing reached robustness). Deliverables: `s2_test.py`, `s4_test.py`, `external_common.py`, `EXTERNAL_RULE_MAPPING.md`.
 **Action (§38):** both graveyarded with lessons; no freeze (no survivor); continuous loop CONTINUES. No parameter rescue / reinterpretation. Frozen pending-validation remains `COMP-CONT-L-rr2`. The standing data-scope decision point (Checkpoint #2: DIFFERENT_PRICE_ONLY_POPULATION or EXOGENOUS, both CEO-authorization-gated) is unchanged — the external replication did not open a new authorized price-only frontier with a positive prior.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #4 — 2026-08-22 — DIFFERENT_PRICE_ONLY_POPULATION authorized; historical b0/b1 opened
+**Authorization:** CEO opened `DIFFERENT_PRICE_ONLY_POPULATION` (exogenous still closed). Resumed native /loop immediately.
+**Setup (governance-first):** mechanically inventoried historical XAUUSD; wrote `ALPHA_EVIDENCE_CONSUMPTION_MAP.md` classifying every region; built a **separately-versioned CAUSAL loader `hist_data.py`** (HTF usable only after its bar fully closes; FEATURE_AVAILABLE_AT<=DECISION_TIME; asserted) — the legacy non-causal D1->H4 merge is NOT used; 2024+ PROTECTED excluded by assertion. Discovery territory = b0(2011-2013 incl 2013 bear)+b1(2016-2018), DISCOVERY_CONSUMED -> new-mechanism discovery only, NOT validation (§4).
+**Frontiers this cycle:** HF1 (compression-timed SHORT continuation in D1 downtrend), HF2 (range mean-reversion in real range). **Hypotheses:** H29, H30. Both **CLOSED_NO_ROBUST_ALPHA**.
+**Findings:** HF1 — bearish regime makes SHORT *less-dead* (2013 +0.52 @rr3) but NOT robust (tail-carried best10<0, block-inconsistent b0+/b1-, RR-fragile). HF2 — range-fade DEAD even in a genuine range (MAE>>MFE, best10<0). Failure-map lessons #14-15.
+**Action (§16, §23):** both graveyarded with lessons; no freeze; loop CONTINUES immediately. Frozen pending-validation still COMP-CONT-L-rr2. Reporting/commit/telemetry are not terminal.
+**Telemetry:** `ALPHA_LOOP_TELEMETRY.md`. NEXT_FRONTIER = HF3 (bearish breakdown-momentum trailing / downtrend pullback-short, distinct from H4-bo-raw-S & HF1) — runs next cycle.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

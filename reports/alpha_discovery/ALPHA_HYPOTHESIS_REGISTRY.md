@@ -45,3 +45,10 @@ Rules FROZEN in `EXTERNAL_RULE_MAPPING.md` before results. External win-rates ar
 
 ## Prior-program lineage (summary — full detail in ALPHA_GRAVEYARD.md)
 60+ materially-distinct hypotheses across ~20 mandates already falsified (intraday fades/breakouts, session/sweep shorts, nested-MTF sequences, probabilistic states, H1/H4 transition, protrend, disp-followthrough, RANGE families, and the 6-family autonomous loop). The survivor H13 must be read against this cumulative search (§20).
+
+## Historical different-population hypotheses (CEO auth DIFFERENT_PRICE_ONLY_POPULATION)
+Causal `hist_data.py`, b0+b1 DISCOVERY_CONSUMED (NOT validation).
+| # | frontier | hypothesis | side | key params | N | verdict |
+|---|---|---|---|---|---|---|
+| H29 | HF1 | compression-timed continuation in confirmed D1 downtrend | S | W20,H42,rr{1.5,2,3}, D1 EMA20<50 causal | 107 | FALSIFIED (2013-only @rr3, best10<0, b0+/b1-, RR-fragile) |
+| H30 | HF2 | fade range extremes in causal RANGE regime (real range) | L/S | WB30, touch 0.1*height, stop beyond boundary | 75/81 | FALSIFIED (MAE>>MFE, best10<0, both blocks neg) |
