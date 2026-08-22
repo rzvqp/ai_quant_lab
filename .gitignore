@@ -22,3 +22,6 @@ acquisition_staging/news/monitor_state.json
 acquisition_staging/news/news_monitor.log
 acquisition_staging/dxy/pull_dxy.log
 acquisition_staging/dxy/pull_dxy.log.err
+
+# swing research regenerable cache
+reports/alpha_discovery/__swing_cache__/
