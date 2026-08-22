@@ -255,3 +255,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **M15 map status:** volatility is the only cross-era-stable M15 information (high-vol -> down-bias; quiet -> targets unreached; highvol-stab -> avoid long) but none converts to tradeable positive alpha (univariate not tradeable; DOWN-parent short fails b1; transitions only avoidance). Deeper states (displacement/pullback/path-cleanliness/wick) were covered in the univariate map (only vol cross-stable). SESSION-conditioned = last untested family.
 **NEXT:** session-conditioned M15 (state lift vs SESSION base, §13, cross-era + event-dedup); then present a BOUNDED M15 conclusion (whole M15 map) + CEO decision, §27 (NOT before session done).
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #24 — 2026-08-22 — Session-conditioned M15 (§13): NY-session high-vol->SHORT survives b1 (first directional cross-era-stable M15 candidate)
+**Screen (`state_m15_session.py`):** session structural bias + session-open burst + high-vol-short concentration, all vs SESSION base, event-deduped, cross-era b0/b1.
+**Findings:** (1) London bilateral +0.086L/+0.126S cross-stable = range-expansion (small consistent short tilt); Off 21-24 bilateral depression = stable avoidance filter. (2) NY-open first hour +0.173L/+0.162S cross-stable = volatility-timing burst. (3) **NY-session high-vol->SHORT +0.070 (b0+0.08/b1+0.05) = S_CROSS_STABLE — the FIRST directional M15 signal to survive the b1 gate**, because SESSION conditioning captures the mechanism where DOWN-parent conditioning failed b1.
+**Registered:** ST-M15-NY-HIGHVOL-SHORT (CANDIDATE_PENDING_TRADEABILITY). Opposite direction to frozen COMP-CONT-L -> non-redundant.
+**NEXT (decisive):** tradeability characterization of NY-session high-vol->SHORT — any geometry (fixed brackets / structural ATR stop, §19) net-positive STRESS expectancy cross-era (DEV+b0+b1), event-deduped? If yes -> Stage-C freeze (REGIME/STATE_SPECIFIC_FROZEN_PENDING_INDEPENDENT_VALIDATION) + notify CEO. If no -> bounded M15 conclusion + CEO decision (§27).
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

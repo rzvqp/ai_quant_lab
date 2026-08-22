@@ -24,3 +24,9 @@ Causal STATES that survive the information-first gates (mandate `ALPHA-XAUUSD-CA
 ## M15 mandate candidates
 - **ST-M15-HIGHVOL-SHORT** (univariate) — high/rising M15 vol -> SHORT. CROSS-ERA-STABLE INFO (+0.058 P(+70/-50)) but **STABLE_INFO_NOT_TRADEABLE**: no geometry net-positive cross-era (DEV neg, b1 neg, b0 marginal +0.03). The lift is real but sub-breakeven.
 - **ST-M15-HIGHVOL-SHORT-DOWNPARENT** — high-vol M15 short in H1 DOWN parent regime. DEV +0.112 (2.0ATR rr1.0, best10 +0.015, 14.7tpm); b0 sign-confirmed (+0.03..+0.13, best10<0); **b1 CONTRADICTS (all neg)**. Status **REGIME_SPECIFIC_INFO_NOT_CROSS_ERA_STABLE** — fails same-regime cross-era (works in genuine-downtrend eras DEV/b0, fails in b1 uptrend-corrections). NOT frozen. Closest new-SHORT near-miss; a causal 'genuine-downtrend' regime def is a future direction (must not be P&L-fit).
+
+## ST-M15-NY-HIGHVOL-SHORT (candidate — pending tradeability)
+- **State:** M15 high/rising volatility (vr>1.3 OR vc>1.2) occurring in the NY session (13-21 UTC) -> SHORT.
+- **Evidence:** P(+70/-50) 8h SHORT lift vs NY session base = +0.070 DEV, b0 +0.08, b1 +0.05 (all same-sign, all >=0.02, event-deduped). FIRST directional M15 signal to survive the b1 cross-era gate (DOWN-parent conditioning failed b1; session conditioning passes it).
+- **Why it may be causal:** NY-session volatility bursts (US open + macro releases) carry a consistent short skew on XAUUSD across eras — a session/liquidity mechanism, not a regime-fitted one.
+- **Status:** CANDIDATE_PENDING_TRADEABILITY. Next: does any geometry (fixed brackets / structural ATR stop, §19 no tight-forcing) yield net-positive STRESS expectancy, cross-era (DEV+b0+b1), event-deduped? Opposite direction to frozen COMP-CONT-L (LONG H4) -> non-redundant regardless. If net-positive+cross-era-stable+sample-honest -> Stage-C freeze + notify CEO.
