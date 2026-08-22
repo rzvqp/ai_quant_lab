@@ -4538,4 +4538,40 @@
                EXTRACTION_REPORT.md.
                STATE: OPERATIONAL. Next entry [99], prev_hash E98.
   entry_hash:  E98
+
+[99] 2026-08-22
+  prev_hash:   E98
+  event:       VERDICT
+  dc_id:       DC-S5-EV-AGGREGATE-RESTAMP
+  freeze_hash: artifact S5_VALIDATED_EV_AGGREGATES_V1 (RT 8228ded) / Statistician reconciliation 9cfcc5f / ledger
+               cd4e8d4a / evidence_fingerprint 9ca6e2bd / artifact_fingerprint fe6eaf9f -> ff1384a2
+  battery_ver: RT-S5-EV-AGGREGATE-RESTAMP-001
+  reviewer:    Red Team
+  detail:      Status re-stamp of the existing S5_VALIDATED_EV_AGGREGATES_V1 artifact after the Statistician
+               reconciliation PASS. VERDICTS = ***S5_ESCROW_EV_AGGREGATES_VERIFIED*** + ***S5_VALIDATED_EV_
+               AGGREGATES_READY_FOR_RUNTIME_PACKAGING***. NO value change, NO ledger re-extraction, NO new stats, NO
+               AI Trader change. STATISTICIAN RECONCILIATION (STAT-S5-EV-AGGREGATE-RECONCILIATION-001, 9cfcc5f,
+               present on branch) issued S5_EV_AGGREGATE_RECONCILIATION_PASS + S5_CANONICAL_EV_EVIDENCE_SUPPORTED +
+               S5_EV_EVIDENCE_READY_FOR_RUNTIME_PACKAGING and FORMALLY WITHDREW the erroneous n_stop>=99 floor,
+               stating verbatim "the bracket failure was mine, not Red Team's" -- confirming RT's E98 root cause
+               EXACTLY (the 1.03-per-losing-trade bound constrained n_LOSERS>=99 not n_stop; n_stop<=n_losers so it
+               places no lower bound on n_stop; actual n_losers=133 satisfied+vacuous). AGGREGATE IDENTITY VERIFIED
+               UNCHANGED (byte-for-byte vs E98): n=295, n_target=15, n_horizon=196, n_stop=84 (derived), sum_horizon_r
+               =+102.2125344478 GROSS. COUNT INTEGRITY: 15+196+84=295, nt+nh=211<=295, all int/nonneg/finite. R
+               SEMANTICS UNCHANGED = GROSS (ve_brain deducts round-trip cost once separately via cost_over_r; target
+               +3R/stop -1R/horizon E[R|h] all gross); NO conversion to net. WITHDRAWN BRACKET: n_stop>=99 floor is
+               NOT an active validation condition, must not be reinstated; decomposition accepted TARGET15/HORIZON196
+               (pos147/neg49)/STOP84, winners162/losers133/WR0.549. FINGERPRINT (mandate sec7): V1 design keeps status
+               INSIDE the fingerprinted payload, so status re-stamp changes canonical bytes -> NEW fingerprint
+               produced+documented: OLD fe6eaf9f -> NEW ff1384a2 (reason: status BRACKET_FAIL_PENDING->READY_FOR_
+               RUNTIME_PACKAGING + reconciliation ref 9cfcc5f + withdrawal note added; ALL economic values byte-
+               identical). ADDED a STABLE evidence_fingerprint=9ca6e2bd over economic-evidence-ONLY (identities +
+               counts + sum_horizon_r), invariant to status re-stamps, changes iff evidence changes -- no economic
+               evidence altered to preserve any fingerprint. PRIVACY: aggregates only, zero individual trades/rows
+               exposed, escrow boundary intact. RUNTIME HANDOFF: READY_FOR_RUNTIME_PACKAGING to a SEPARATE CEO-
+               authorized engineering mandate; NO runtime wiring here (RealEVDecisionEngine/AI Trader/S5 plugin/
+               StrategyCatalog/Risk/Execution/MT5/broker untouched). Changes only in red_team/. Report: RT_S5_EV_
+               AGGREGATE_RESTAMP_REPORT.md.
+               STATE: OPERATIONAL. Next entry [100], prev_hash E99.
+  entry_hash:  E99
 ```
