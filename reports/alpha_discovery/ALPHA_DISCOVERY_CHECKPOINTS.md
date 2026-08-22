@@ -246,3 +246,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Verdict: REGIME_SPECIFIC_INFO_NOT_CROSS_ERA_STABLE** — fails same-regime cross-era (§9). High-vol-short works when DOWN = genuine downtrend (DEV/b0 2013 bear) but fails when DOWN = correction in uptrend (b1). Consistent with the program-wide finding that price-only shorts are genuine-downtrend-specific. NOT frozen (b1 contradicts + b0 tail-carried). A sharper causal genuine-downtrend regime def MIGHT rescue it but would be P&L-fitting if defined post-hoc (§28) -> not pursued.
 **NEXT (do not stop, §29):** M15 TRANSITIONS (§8: low-vol->expansion, inefficient->directional, extension->loss-of-continuation, pullback->renewed-efficiency) + deeper M15 states (displacement/pullback/path-cleanliness) + session-conditioned, all event-deduped + same-era cross-population gate.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #23 — 2026-08-22 — M15 transition family: no positive tradeable transition (only highvol->stab LONG-avoidance)
+**Screen (`state_m15_transitions.py`):** 10 causal M15 transitions A(t-8)->B(t) -> P(+70/-50) lift, event-deduped, per-year + DISC/CONF + cross-era b0/b1.
+**Result:** only CROSS_STABLE = highvol->stabilization -> LONG -0.068 (avoidance filter, not a trade). Every apparent positive transition fails cross-era (extUp->pullback S +0.039 but b0/b1 invert) or immaterial. No material cross-era-stable positive tradeable M15 transition.
+**M15 map status:** volatility is the only cross-era-stable M15 information (high-vol -> down-bias; quiet -> targets unreached; highvol-stab -> avoid long) but none converts to tradeable positive alpha (univariate not tradeable; DOWN-parent short fails b1; transitions only avoidance). Deeper states (displacement/pullback/path-cleanliness/wick) were covered in the univariate map (only vol cross-stable). SESSION-conditioned = last untested family.
+**NEXT:** session-conditioned M15 (state lift vs SESSION base, §13, cross-era + event-dedup); then present a BOUNDED M15 conclusion (whole M15 map) + CEO decision, §27 (NOT before session done).
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

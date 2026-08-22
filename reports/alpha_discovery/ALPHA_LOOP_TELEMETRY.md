@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = DOWN-parent high-vol-short FAILS same-regime cross-era (DEV+ b0+ but b1 contradicts) -> REGIME_SPECIFIC_INFO_NOT_CROSS_ERA_STABLE, not frozen. Shorts are genuine-downtrend-specific.
+CURRENT_FRONTIER          = M15 transition family screened: no positive tradeable transition (only highvol->stab LONG-avoidance cross-stable). M15 stable info = volatility, non-tradeable.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = M15 TRANSITIONS (§8) + deeper M15 states (displacement/pullback/path-cleanliness) + session-conditioned, event-deduped + same-era cross-population gate
+NEXT_FRONTIER             = session-conditioned M15 (vs session base) = last untested family; then bounded M15 conclusion + CEO decision (§27)
 ```
 
 ## Key structural findings (bounded)
