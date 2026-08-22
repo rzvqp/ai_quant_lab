@@ -36,3 +36,5 @@ Accumulated causal lessons — used to choose each next frontier by the *demonst
 
 | 18 | **Mean-reversion is dead on b0/b1 in both directions** | HF2 fade + HF5 capitulation/spike all advF>0.75, best10<0 | reversion is not a price-only edge on 2011-2018 either; the 2021-23 down-spike-reversion was a bid-market artifact, not a portable edge. |
 | 19 | **b0/b1 major SWING mechanism classes explored -> only the frozen H4-bo-raw-S is robust** | HF1-HF5: bearish-short (saturated/redundant), range-fade (dead), long-reversion (dead), long-trend (redundant) | authorized different-population price-only space is approaching bounded exhaustion for NEW non-redundant robust alpha; exogenous frontier is the CEO-gated next lever. |
+
+| 20 | **Intraday noise defeats tight stops REGARDLESS of regime** | M15-F1 b0/b1: WRt 0.16-0.22, best10<0, both sides fail despite trending regimes (2013 bear, 2016-17) | the 2021-23 intraday exhaustion is a STRUCTURAL noise/stop property, not regime-specific; intraday price-only continuation with M15-scale stops does not survive. Higher-frequency intraday alpha via tight structural stops is unlikely price-only. |

@@ -65,3 +65,10 @@ Causal `hist_data.py`, b0+b1 DISCOVERY_CONSUMED (NOT validation).
 
 | H37 | HF6 | D1 overnight/gap continuation & fade | dir | \|gap\|>0.3*atr_ma | 0 | NOT_TESTABLE (synthesized D1 has no gaps: open==prior close) |
 | H38 | HF6 | day-after-big-day continuation & fade | dir | range>1.5*atr_ma, prior-body dir | 124 | NEAR-MISS/FALSIFIED (cont rr1.5 +0.132 both blocks+ but best10<0, 2018<0; fade weak) |
+
+## Historical INTRADAY M15 hypotheses (CEO auth INTRADAY_HISTORICAL_M15, b0/b1)
+Causal `hist_m15_data.py` (governance-proven slice). Overlap-checked vs frozen candidates.
+| # | frontier | hypothesis | side | key params | N | verdict |
+|---|---|---|---|---|---|---|
+| H39 | M15-F1 | displacement->first-pullback->resume, H4-up gated | L | ND8 breakout+expansion, pullback W8, rr{1,1.5,2} | 841 | FALSIFIED (WRt 0.16, avgR<0, best10<0, maxDD -79R) |
+| H40 | M15-F1 | same, H4-down gated | S | mirror | 799 | FALSIFIED (marginal +, best10<0, CONF<0, b1 neg, 2013-driven ~ redundant) |

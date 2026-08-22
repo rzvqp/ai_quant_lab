@@ -3,17 +3,17 @@
 Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes CURRENT immediately.
 
 ```
-LOOP_STATUS               = ACTIVE (auto-loop PAUSED at CEO data-scope decision point)
-CURRENT_POPULATION        = historical _from_M15_v2 b0(2011-2013)+b1(2016-2018)  [DISCOVERY_CONSUMED, causal hist_data.py]
-CURRENT_FRONTIER          = none (authorized price-only space exhausted; awaiting CEO data-scope decision)
+LOOP_STATUS               = ACTIVE (auto-loop RESUMED — INTRADAY_HISTORICAL_M15 authorized)
+CURRENT_POPULATION        = historical RAW M15 b0+b1 (governance-proven slice, causal hist_m15_data.py)
+CURRENT_FRONTIER          = (cycle boundary) -> next = M15-F2
 CURRENT_HYPOTHESIS        = -
-TOTAL_FRONTIERS_TESTED    = 15  (F1-F7, F-EXT-S2, F-EXT-S4, HF1-HF6)
-TOTAL_HYPOTHESES_TESTED   = 38  (H01-H38)
+TOTAL_FRONTIERS_TESTED    = 16  (F1-F7, F-EXT-S2, F-EXT-S4, HF1-HF6, M15-F1)
+TOTAL_HYPOTHESES_TESTED   = 40  (H01-H40)
 TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks, not separate hypotheses)
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = CEO-DATA-SCOPE-DECISION (exogenous frontier | M15-intraday-historical governance-resolve | other authorized population | hold). Loop resumes on authorization.
+NEXT_FRONTIER             = M15-F2 (session impulse->reset->second leg on b0/b1 M15, §7E). Then further M15 classes (high-vol expansion, transition-onset) as warranted.
 ```
 
 ## Key structural findings (bounded)

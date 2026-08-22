@@ -57,3 +57,12 @@ Population = `_from_M15_v2` b0 (2011-2013 incl 2013 bear) + b1 (2016-2018), DISC
 | HF4-TRANSHORT | does a RANGE->TREND_DOWN transition-onset short pay (distinct event class)? | bearish/transition | transition-onset short, structural swing stop | **ROBUST-BUT-REDUNDANT** — clears gates (best10 +0.075, both blocks+, advF 0.47, allYr+ @rr3, maxDD -4.1R) BUT `REDUNDANT_WITH_H4_BO_RAW_S` (85% of trades within 3d of a frozen H4-bo-raw-S entry). NOT frozen (would duplicate frozen candidate, §9/§30). |
 | HF5-LONGREV | does counter-trend LONG reversion (capitulation / down-spike fade) pay in the bear? | counter-trend / mean-reversion | oversold-bounce LONG; down-spike fade LONG | **CLOSED_NO_ROBUST_ALPHA** — both dead (advF 0.78-0.87, MAE>>MFE, best10<0, both blocks neg); down-spikes DON'T revert on b0/b1 (unlike 2021-23 bid market) |
 | HF6-TEMPORAL | does D1 overnight/gap or day-after-big-day directional structure pay? | temporal-structural | D1 gap cont/fade; day-after-big-day cont/fade | **CLOSED** — gap `NOT_TESTABLE` (synthesized D1 has no gaps, open==prior close); day-after-big-day continuation near-miss (rr1.5 +0.132 both blocks+ but best10<0, 2018 neg) |
+
+---
+
+## HISTORICAL INTRADAY M15 FRONTIERS (CEO auth INTRADAY_HISTORICAL_M15, causal `hist_m15_data.py`, b0/b1 governance-proven slice)
+Raw M15 sliced to b0(2011-2013)+b1(2016-2018) BEFORE features; ZERO protected/CALIB/gap rows (asserted). Causal H1/H4/D1 aggregated from the same slice (close_time<=decision_time). Goal: test whether intraday alpha is regime-dependent + find higher-frequency INDEPENDENT alpha. Overlap-checked vs H4-bo-raw-S / COMP-CONT-L.
+
+| FRONTIER_ID | economic question | class | status |
+|---|---|---|---|
+| M15-F1-DISPPB | does M15 displacement->first-pullback->resumption continue (regime-gated)? | B (displacement+pullback) | **CLOSED_NO_ROBUST_ALPHA** — LONG dead (WRt 0.16, best10<0); SHORT marginal but tail-carried (best10<0, CONF<0, block-inconsistent, 2013-bear-driven ~ redundant). Intraday tight stops (47-52p) noise-stopped even in trending b0/b1 -> regime does NOT rescue intraday |

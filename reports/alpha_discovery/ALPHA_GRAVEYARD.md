@@ -45,3 +45,6 @@ Falsified mechanisms — **do not re-run without genuinely new information (§4,
 ## Historical b0/b1 temporal (HF6) — CLOSED
 - **HF6 D1 gap**: `NOT_TESTABLE` — the `_from_M15_v2` D1 bars are continuously synthesized (open == prior close), so there are no overnight gaps to trade. Honest data-structural note.
 - **HF6 day-after-big-day continuation**: NEAR-MISS (rr1.5 avgR +0.132, both blocks+) but best-10%-removed<0 and 2018 negative -> fails gate. Fade weak. Not robust.
+
+## Historical INTRADAY M15 frontiers — CLOSED
+- **M15-F1 displacement->first-pullback->resume** (both sides, H4-regime-gated): LONG dead (WRt 0.16, intraday pullback rarely reaches 1R, tight 47p stop noise-stopped); SHORT marginal-but-fails-gate (best10<0, CONF<0, block-inconsistent, positivity concentrated in 2013 bear = H4-bo-raw-S episode). **Intraday tight stops are noise-stopped even in b0/b1's trending regimes -> the regime shift does NOT rescue intraday continuation (the 2021-23 intraday exhaustion is structural, not regime-specific).** Do NOT reopen displacement-pullback on M15.

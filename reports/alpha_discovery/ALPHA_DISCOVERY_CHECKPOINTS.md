@@ -101,3 +101,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Decision (§36 governance-gated, mandate-authorized pause):** continuing on the authorized price-only space would be mining low-prior b0/b1 variants (forbidden §17) or launching the governance-unresolved M15-intraday sub-program without authorization. So the auto-loop is **PAUSED at this decision point**; the **global program remains ACTIVE** for CEO redirection. Not a claim of impossibility — a bounded statement that the *authorized price-only* space is exhausted of NEW non-redundant robust alpha.
 **CEO decision requested:** (a) authorize `EXOGENOUS_FRONTIER`; (b) authorize `INTRADAY_HISTORICAL_M15` for b0/b1 discovery (resolve the raw-M15 governance question); (c) point Alpha at another authorized price-only population; or (d) accept the portfolio as-is (S5 validated + COMP-CONT-L-rr2 & H4-bo-raw-S pending independent validation) and hold. On any of (a)-(c) the loop resumes immediately.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused, awaiting data-scope decision).
+
+---
+
+## CHECKPOINT #8 — 2026-08-22 — INTRADAY_HISTORICAL_M15 authorized; loader governance-proven; M15-F1 closed
+**Authorization:** CEO authorized `INTRADAY_HISTORICAL_M15` on b0/b1 (exogenous still prohibited). Loop resumed immediately.
+**Governance-first (§2-§4):** built `hist_m15_data.py` — reads RAW M15 but SLICES b0+b1 BEFORE features; **governance boundary PROVEN** (105,255 rows: b0 52,404 + b1 52,851; 2011-07-26..2018-04-06; ZERO protected/CALIB/gap/outside rows, asserted -> else DATA_GOVERNANCE_BLOCKER). Causal H1/H4/D1 aggregated from the same slice (close_time<=decision_time; coverage 1.0). Legacy merge NOT used.
+**Frontier:** M15-F1 displacement->first-pullback->resumption (both sides, H4-regime-gated). **Hypotheses:** H39, H40. **CLOSED_NO_ROBUST_ALPHA.**
+**Finding:** high-frequency (~16/mo) but LONG dead (WRt 0.16) and SHORT marginal-but-fails-gate (best10<0, CONF<0, block-inconsistent, 2013-bear-driven ~ redundant). **Intraday tight stops (47-52p) are noise-stopped even in b0/b1's trending regimes -> the 2021-23 intraday exhaustion is a STRUCTURAL noise/stop property, not regime-specific (answers §5's regime-dependence question: intraday continuation is NOT regime-rescued).** Failure-map #20.
+**Action:** loop CONTINUES. NEXT_FRONTIER = M15-F2 (session-based: session impulse->reset->second leg, §7E — b0/b1 session behavior untested; a genuinely different intraday structure). Frozen pending-validation still COMP-CONT-L-rr2.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
