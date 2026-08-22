@@ -1,0 +1,60 @@
+{
+ "mandate": "STAT-RANGE-LIFECYCLE-VNEXT-INDEPENDENT-VALIDATION-001",
+ "method": "Independent matcher; VE's implementation NOT reused. Every one of the 187 real v4.4 confirmations matched against vNext's full 12,813-structure history by time-window overlap AND zone overlap, with forward merge/continuation chain following.",
+ "v44_confirmed_episodes": 187,
+ "vnext_confirmed_structures": 4092,
+ "primary_setting": {
+  "time_tolerance_bars": 0,
+  "zone_overlap": "any (IoU>0)",
+  "PRESERVED_same_structure_id": 0,
+  "CONFIRMED_under_different_identity": 173,
+  "CONFIRMED_via_merge_or_continuation_chain": 2,
+  "GENUINELY_LOST": 12,
+  "true_premature_kill_rate": "12/187 = 6.42%"
+ },
+ "VE_published": "5/187 = 2.7%  (or 4/187 = 2.14%)",
+ "sensitivity_grid": {
+  "tol0_iou0.0": 12,
+  "tol0_iou0.1": 15,
+  "tol0_iou0.3": 34,
+  "tol29_iou0.0": 8,
+  "tol29_iou0.1": 11,
+  "tol29_iou0.3": 29,
+  "tol100_iou0.0": 4,
+  "tol100_iou0.1": 6,
+  "tol100_iou0.3": 20,
+  "tol500_iou0.0": 0,
+  "tol500_iou0.1": 2,
+  "tol500_iou0.3": 12,
+  "tol2000_iou0.0": 0,
+  "tol2000_iou0.1": 0,
+  "tol2000_iou0.3": 4
+ },
+ "sensitivity_finding": "The rate spans 0.00% - 18.18% across defensible matcher settings. VE's figure is reproduced EXACTLY at time_tolerance=100 bars with any zone overlap (4/187 = 2.14%), i.e. it is one point in a monotone family, not an identified quantity. The sensitivity was not disclosed in VE's report.",
+ "defensible_core": "2.14% - 6.42% (the IoU>0 family). The 18.18% endpoint requires IoU>0.3, which penalises legitimate re-forming (a merged candidate restarts with only 2 swings so its zone is narrower than its predecessor's) and is judged over-strict.",
+ "placebo_control": {
+  "purpose": "test whether the matcher discriminates or merely reads a base rate (vNext emits 21.9x more confirmations than v4.4)",
+  "real_match_rate": "80.2% - 100.0%",
+  "time_shifted_placebo": "2.1% - 17.1%",
+  "zone_shuffled_placebo": "2.7% - 20.9%",
+  "discrimination": "+75.9% to +90.4% at every setting",
+  "conclusion": "MY OWN base-rate-contamination hypothesis is REFUTED by this test. The matcher genuinely measures correspondence. VE's matching APPROACH is sound; only the undisclosed tolerance sensitivity is at issue."
+ },
+ "mechanism_attribution": {
+  "price_abandonment_present": 11,
+  "merge_supersession_present": 0,
+  "capacity_refusal_present": 0,
+  "legacy_ZONES_DEGENERATE_present": 6,
+  "note": "merge 0/187 and capacity 0/187 INDEPENDENTLY CONFIRM VE exactly. Abandonment is the dominant contributor, as VE disclosed."
+ },
+ "comparison_to_v4_5": {
+  "v4_5_rates": [
+   "36.9%",
+   "12.3%",
+   "69.0%"
+  ],
+  "vnext_range": "2.14% - 6.42%",
+  "verdict": "vNext is materially safer than v4.5 at EVERY setting in the defensible core, not merely at VE's chosen one. VE's section-21 conclusion HOLDS under independent, stricter measurement."
+ },
+ "detail": []
+}

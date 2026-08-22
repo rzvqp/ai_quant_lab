@@ -1,0 +1,32 @@
+{
+ "mandate": "STAT-RANGE-LIFECYCLE-VNEXT-INDEPENDENT-VALIDATION-001",
+ "environment": {
+  "python": "3.14.6",
+  "mypy": "2.3.0",
+  "data_csv": "OANDA_XAUUSD_M15.csv",
+  "data_sha256": "57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37",
+  "data_bars": 355696,
+  "data_span": "2011-07-26T16:30:00Z .. 2026-07-27T16:15:00Z",
+  "warmup": "full file from the first bar -- no arbitrary replay start date",
+  "commit": "bba6310bd30caf5ca26c46a90a0f714461a8ddbc",
+  "v44_config_id": "23d98c07488913c1c99a7397b2f8791f4727115e04bdefc283fb6bfc4a468969",
+  "vnext_config_id": "3f2f7ba6bef59d689f96424424e3f0378ffe10ff6f64ecd6bd3ec40e53322c22",
+  "vnext_contract": "range-hierarchical-vnext-multicandidate-v1",
+  "vnext_impl_fingerprint": "vnext-implementation-freeze-2026-08-22 (HAND-WRITTEN CONSTANT, not a content hash)"
+ },
+ "v4_4_confirmed_bars_by_year": {
+  "2011": 946,
+  "2012": 1226,
+  "2013": 2394,
+  "2014": 1933,
+  "2015": 1357,
+  "2025": 686,
+  "2026": 24
+ },
+ "v4_4_confirmed_bars_total": 8566,
+ "v4_4_ok_range_macro_events": 187,
+ "v4_4_canonical_id_transitions": 293,
+ "pathology_2016_2024_confirmed_bars": 0,
+ "reproduction_vs_VE": "EXACT -- every per-year value identical to VE RANGE_VNEXT_LIFECYCLE_DIAGNOSTICS.json",
+ "verdict": "V4_4_PATHOLOGY_INDEPENDENTLY_REPRODUCED"
+}

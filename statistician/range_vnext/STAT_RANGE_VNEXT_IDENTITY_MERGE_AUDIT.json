@@ -1,0 +1,55 @@
+{
+ "mandate": "STAT-RANGE-LIFECYCLE-VNEXT-INDEPENDENT-VALIDATION-001",
+ "id_allocation": {
+  "mechanism": "Registry.new_id() strictly monotonic; Registry._dead refuses reuse (DEAD_ID_REUSE_REFUSED)",
+  "id_collision": "STRUCTURALLY IMPOSSIBLE",
+  "candidate_overwrite": "NONE - every admission uses a fresh id",
+  "verified_structures_v44": 426,
+  "verified_structures_vnext": 12813,
+  "duplicate_ids_observed": 0
+ },
+ "merge_semantics": {
+  "observed_EPISODE_MERGED": 361,
+  "observed_CANDIDATE_SUPERSEDED_BY_MERGE_macro": 361,
+  "v44_EPISODE_MERGED_over_full_history": 0,
+  "dead_code_claim": "VERIFIED - v4.4's MERGE branch fires 0 times in 15 years; vNext makes it reachable (361)",
+  "implementation": "MERGE allocates a NEW StructureV44 with start_ts=cand_start and only the 2 pending swings; the merged-into candidate is superseded. Accumulated touches and elapsed age are DISCARDED.",
+  "faithfulness": "Matches v4.4's own MERGE branch semantics exactly (v4.4 also builds a fresh structure and overwrites the slot). Inherited, not invented.",
+  "consequence": "MERGE RESETS the formation clock rather than inheriting it - conservative, not permissive.",
+  "causal_interpretability": "preserved via continued_from_id / predecessor_id chaining"
+ },
+ "formation_age_gate": {
+  "frozen_d_macro": 29,
+  "vnext": {
+   "n": 4092,
+   "min_age": 29,
+   "p1": 29,
+   "median": 29,
+   "max": 649,
+   "below_gate": 0,
+   "below_gate_pct": "0.0000%"
+  },
+  "v44": {
+   "n": 187,
+   "min_age": 29,
+   "p1": 29,
+   "median": 36,
+   "max": 16658,
+   "below_gate": 0
+  },
+  "merge_or_continuation_born_confirmations": {
+   "n": 346,
+   "min_age": 29,
+   "below_gate": 0
+  },
+  "verdict": "PASS - not one confirmation in 4,092 occurs below the frozen gate. Identity inheritance via merge/continuation does NOT bypass it.",
+  "correction_of_VE": "VE reported '99.95% at/above the frozen age gate', implying about 2 below. I measure ZERO below. VE's own figure was pessimistic; the gate is perfectly held."
+ },
+ "canonical_selection_churn": {
+  "vnext_genuine_OK_RANGE_MACRO": 4092,
+  "vnext_canonical_id_transitions": 5812,
+  "v44_genuine": 187,
+  "v44_transitions": 293,
+  "finding": "transitions exceed genuine confirmations in BOTH engines, so churn is not a vNext artifact; but no transition-based count may be reported as a confirmation count. VE's separation is correct and I confirm it."
+ }
+}

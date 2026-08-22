@@ -1,0 +1,80 @@
+{
+ "mandate": "STAT-RANGE-LIFECYCLE-VNEXT-INDEPENDENT-VALIDATION-001",
+ "environment": {
+  "python": "3.14.6",
+  "mypy": "2.3.0",
+  "data_csv": "OANDA_XAUUSD_M15.csv",
+  "data_sha256": "57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37",
+  "data_bars": 355696,
+  "data_span": "2011-07-26T16:30:00Z .. 2026-07-27T16:15:00Z",
+  "warmup": "full file from the first bar -- no arbitrary replay start date",
+  "commit": "bba6310bd30caf5ca26c46a90a0f714461a8ddbc",
+  "v44_config_id": "23d98c07488913c1c99a7397b2f8791f4727115e04bdefc283fb6bfc4a468969",
+  "vnext_config_id": "3f2f7ba6bef59d689f96424424e3f0378ffe10ff6f64ecd6bd3ec40e53322c22",
+  "vnext_contract": "range-hierarchical-vnext-multicandidate-v1",
+  "vnext_impl_fingerprint": "vnext-implementation-freeze-2026-08-22 (HAND-WRITTEN CONSTANT, not a content hash)"
+ },
+ "latency_us_vnext": {
+  "mean": 6020.8,
+  "median": 5284.8,
+  "p95": 9873.7,
+  "p99": 10968.5,
+  "max": 78545.5
+ },
+ "latency_us_v44": {
+  "mean": 5981.9,
+  "median": 5239.2,
+  "p95": 9861.3,
+  "p99": 10961.6,
+  "max": 112375.9
+ },
+ "latency_note": "measured WITH my per-bar structure-capture overhead; VE's isolated figure (mean 5322.8us) is the cleaner number. M15 budget = 900,000,000us/bar -> ~5 orders of magnitude of headroom at every percentile including max.",
+ "snapshot_growth_independent_measurement": {
+  "window": "bars 10,000 -> 60,000, identical for both engines",
+  "vnext_bytes": {
+   "10000": 234044,
+   "20000": 338926,
+   "30000": 426032,
+   "40000": 534281,
+   "50000": 642016,
+   "60000": 758494
+  },
+  "v44_bytes": {
+   "10000": 128431,
+   "20000": 163429,
+   "30000": 220052,
+   "40000": 256642,
+   "50000": 307309,
+   "60000": 337497
+  },
+  "vnext_registry_dead": {
+   "10000": 401,
+   "30000": 1210,
+   "60000": 2301
+  },
+  "vnext_awaiting_role": {
+   "10000": 92,
+   "30000": 237,
+   "60000": 475
+  },
+  "v44_registry_dead": {
+   "10000": 60,
+   "30000": 143,
+   "60000": 318
+  },
+  "v44_awaiting_role": {
+   "10000": 14,
+   "30000": 45,
+   "60000": 90
+  },
+  "active_macros_during_window": "0-1 throughout -- growth is NOT active-state explosion",
+  "growth_bytes_per_bar_vnext": 10.49,
+  "growth_bytes_per_bar_v44": 4.18,
+  "ratio": 2.5,
+  "deceleration_note": "my early-window rate (10.49 B/bar) exceeds VE's stated ~4 B/bar, but VE's own checkpoints (419,699B@100k -> 1,430,940B@355,696) give 3.96 B/bar over the LATER stretch. Growth decelerates; both measurements are correct for their windows and my early-window extrapolation overstates the endpoint.",
+  "root_cause_verified": "Registry._dead and _awaiting_role, both present verbatim in v4.3/v4.4 -- VE's attribution CONFIRMED. _macro_history is genuinely bounded (deque maxlen=64) and is NOT a contributor.",
+  "determinism_impact": "NONE -- restart determinism verified separately at 0 mismatches",
+  "severity_classification": "REMEDIATION_REQUIRED_BEFORE_PRODUCTION",
+  "severity_reasoning": "~1.43 MB over 15 years is operationally trivial for M15 and does not threaten this validation. But the state is monotonic with no eviction and snapshot/restore is on the restart critical path, so an indefinitely-running live engine has unbounded serialization state. Not VALIDATION_BLOCKING; must not ship to production unfixed. Inherited from v4.3/v4.4, so remediation is lineage-wide, not vNext-specific."
+ }
+}

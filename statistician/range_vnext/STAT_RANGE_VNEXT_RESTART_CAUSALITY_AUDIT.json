@@ -1,0 +1,60 @@
+{
+ "mandate": "STAT-RANGE-LIFECYCLE-VNEXT-INDEPENDENT-VALIDATION-001",
+ "restart_determinism": {
+  "test": "12,000-bar continuous replay vs snapshot at bar 7,000 -> restore -> resume",
+  "compared_per_bar": [
+   "macro_id",
+   "macro_state",
+   "macro_reason",
+   "active_macro_count",
+   "active_macro_ids",
+   "boundary_upper",
+   "boundary_lower",
+   "regime",
+   "full event tuple (kind,depth,structure_id)"
+  ],
+  "mismatching_bars": 0,
+  "double_restart_test": "snapshot at 3,000 -> restore -> snapshot at 6,500 -> restore -> resume to 12,000",
+  "double_restart_mismatching_bars": 0,
+  "snapshot_bytes_at_bar_7000": 193888,
+  "verdict": "PASS - no hidden in-memory-only behaviour"
+ },
+ "snapshot_contract": {
+  "guard": "restore_state raises SNAPSHOT_CONTRACT_MISMATCH on contract_version / config_id / implementation_fingerprint mismatch",
+  "weakness": "implementation_fingerprint is the HAND-WRITTEN CONSTANT 'vnext-implementation-freeze-2026-08-22', not a content hash. An edited implementation would still accept an old snapshot. The guard names an integrity property it does not enforce.",
+  "severity": "INFORMATIONAL - reported, not fixed"
+ },
+ "causality": {
+  "observe_ordering": [
+   "atr applied to active structures",
+   "confirmed swings offered",
+   "closes pushed",
+   "per-candidate step (deterministic sorted order, safe against concurrent removal)",
+   "reversal watches",
+   "price-abandonment retirement",
+   "internal step",
+   "canonical selection"
+  ],
+  "future_bar_leakage": "NONE FOUND - every operation reads only bar i OHLC/ATR plus prior state",
+  "determinism": "all iteration via sorted(); ties broken by lowest structure_id",
+  "supersession_causality": {
+   "uses_only_current_bar": true,
+   "uses_frozen_threshold": "tol_cluster * atr_ref (v4.4 value 1.6, unchanged)",
+   "never_fires_on_isolated_candidate": true,
+   "skips_confirmed_candidates": true,
+   "confirmed_structures_ended_by_abandonment": 0,
+   "age_timeout_test": {
+    "abandoned_lifetimes_median": 27,
+    "p95": 94,
+    "max": 2120,
+    "fired_before_age_gate_pct": "54.50%",
+    "conclusion": "NOT an age timeout in disguise - lifetimes are dispersed, not clustered at a fixed age"
+   },
+   "contribution": {
+    "share_of_all_terminations": "32.06%",
+    "total_events": 4108
+   }
+  },
+  "warmup_sensitivity": "controlled - replay starts at the first bar of the canonical file (2011-07-26); no arbitrary start date"
+ }
+}
