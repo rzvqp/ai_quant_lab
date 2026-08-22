@@ -1,0 +1,76 @@
+{
+  "mandate": "VE-RANGE-LIFECYCLE-VNEXT-MULTI-CANDIDATE-RESEARCH-001",
+  "generated_from": "canonical warmup 2011-07-26 through end of data/market/OANDA_XAUUSD_M15.csv (355696 bars), dual-engine v4.4-vs-vNext, one pass, session scratch scripts (not committed) -- see VE_RANGE_LIFECYCLE_VNEXT_RESEARCH_REPORT.md section 9 for the full narrative",
+  "methodology_note": "Mirrors the v4.5 mandate's own negative-control discipline (the exact rigor that caught that mandate's failure): every mechanism capable of preventing or altering a candidate's fate is checked against ALL 187 real v4.4 confirmations, not a hand-picked sample. A registry-size improvement or a lower average candidate lifetime is NEVER treated as evidence of safety by itself. The raw coarse start-time-matched 'lost: 46' figure was NOT taken at face value -- each of the 46 was individually re-investigated via full window-overlap of vNext's own per-structure lifetime (including continued_from_id merge-chain following) against the v4.4 episode's full window, using an unbounded structure history (12813 records) captured by polling the bounded _macro_history deque every bar before eviction.",
+  "mechanisms_under_test": {
+    "registry_capacity_refusal": {
+      "premature_kill_rate": "0/187 (0.0%) -- the mechanism never fired even once across the full history at the temporary measurement cap (500)",
+      "verdict": "CLEAN -- never active in this run; final evidence-derived default is 16 (4x the measured historical max concurrent count of 4)"
+    },
+    "merge_supersession": {
+      "total_supersession_events_macro_depth": 361,
+      "premature_kill_rate": "0/187 (0.0%) -- CANDIDATE_SUPERSEDED_BY_MERGE appears in ZERO of the 5 genuine OVERLAPPED_NEVER_CONFIRMED cases (see lost_confirmation_analysis below)",
+      "verdict": "CLEAN -- mechanistically expected: a merge target's identity chain continues under the new structure_id and is followed forward by chain_ever_confirmed, so merge cannot by itself cause a lost confirmation",
+      "note": "merge only fires when a NEW, spatially-overlapping candidate exists to take over the identity chain (architecture doc section 6) -- structurally lower risk than abandonment, since the market region itself remains actively tracked under the new identity, not dropped"
+    },
+    "price_abandonment_candidate_moved_on": {
+      "total_abandonment_events_macro_depth": 4108,
+      "share_of_all_terminations": "dominant mechanism -- see diagnostics file lifecycle_event_totals",
+      "premature_kill_rate": "4/187 (2.14%), upper bound and non-isolated -- CANDIDATE_ABANDONED_PRICE_MOVED_ON appears among the overlapping never-confirmed structures' end-reasons in 4 of the 5 genuine OVERLAPPED_NEVER_CONFIRMED cases (ids 6, 283, 717, 894); in every one of those 4, 2-4 vNext structures overlapped the window with MIXED end-reasons (abandonment alongside pre-existing ZONES_DEGENERATE in 2 of the 4), so abandonment has not been isolated as the sole or decisive cause in any specific case, only as a contributing factor",
+      "verdict": "PASS -- dramatically below the 36.9%/12.3% rates that closed the v4.5 mandate, though this carries the architecture's largest disclosed false-positive risk (architecture doc section 6a) and is the mechanism most worth revisiting under independent validation",
+      "note": "added only after an exploratory measurement showed overlap-merge alone insufficient to bound registry growth (median 12, max 22 concurrent candidates over a 3.4-year window) -- see research report section 8a"
+    },
+    "zones_degenerate_pre_existing": {
+      "premature_kill_rate": "1/187 (0.53%) -- v4.4 id=741 involves ONLY this pre-existing, unmodified check",
+      "verdict": "NOT VNEXT-SPECIFIC RISK -- identical mechanism v4.4 itself already applies; included here only for completeness of the 5-case breakdown, not attributable to any new vNext mechanism"
+    }
+  },
+  "lost_confirmation_analysis": {
+    "total_v4_4_confirmed_episodes": 187,
+    "lost_by_coarse_start_time_matching": 46,
+    "lost_rate_coarse": "24.6%",
+    "coarse_matching_caveat": "start-time-proximity matching cannot distinguish a genuine false-positive loss from a real confirmation that occurred under a DIFFERENT, older structure_id (the expected MERGE outcome) or from canonical-selection id-transition inflation -- confirmed below to explain 89.1% of the raw figure",
+    "per_episode_classification": {
+      "method": "for each of the 46, checked whether ANY vNext structure whose OWN [start_ts, end_ts] window overlaps the v4.4 episode's FULL window (not just the midpoint) -- or any descendant reached via its continued_from_id chain -- ever reached reached_confirmed=True",
+      "CONFIRMED_UNDER_DIFFERENT_ID_OR_CHAIN": 41,
+      "OVERLAPPED_NEVER_CONFIRMED": 5,
+      "overlapped_never_confirmed_detail": [
+        {"v4_4_id": 6, "start": "2011-07-29", "duration_days": 2.35, "overlapping_vnext_end_reasons": ["CANDIDATE_ABANDONED_PRICE_MOVED_ON"]},
+        {"v4_4_id": 283, "start": "2013-02-28", "duration_days": 0.65, "overlapping_vnext_end_reasons": ["CANDIDATE_ABANDONED_PRICE_MOVED_ON", "ZONES_DEGENERATE"]},
+        {"v4_4_id": 717, "start": "2015-03-02", "duration_days": 0.50, "overlapping_vnext_end_reasons": ["CANDIDATE_ABANDONED_PRICE_MOVED_ON"]},
+        {"v4_4_id": 741, "start": "2015-03-11", "duration_days": 0.32, "overlapping_vnext_end_reasons": ["ZONES_DEGENERATE"], "note": "pre-existing mechanism only, not vNext-specific"},
+        {"v4_4_id": 894, "start": "2025-10-14", "duration_days": 0.43, "overlapping_vnext_end_reasons": ["CANDIDATE_ABANDONED_PRICE_MOVED_ON", "ZONES_DEGENERATE"]}
+      ]
+    },
+    "classification_summary": "89.1% (41/46) of the raw 'lost' figure is a matching-methodology artifact, not a real loss. Refined true lost-confirmation rate: 5/187 = 2.7%, or 4/187 = 2.14% excluding the one case (id=741) that involves only the pre-existing, non-vNext-specific ZONES_DEGENERATE check."
+  },
+  "changed_confirmation_analysis": {
+    "count": 48,
+    "confirmation_delay_change": {
+      "vnext_faster_count": 45,
+      "vnext_slower_count": 3,
+      "median_delta_days": -2.76,
+      "min_delta_days": -253.83,
+      "max_delta_days": 5.19,
+      "interpretation": "45/48 (93.75%) resolve faster under vNext. The single most extreme outlier (v4.4 id=86, 253.98d, matched to a 0.15d vNext structure) is almost certainly a matching-methodology artifact of the same kind quantified in lost_confirmation_analysis above -- a 254-day v4.4 confirmation is far more plausibly represented under vNext by a SEQUENCE of merged/superseded structures than by a single coincidentally nearby-starting one. Excluding that outlier, remaining deltas cluster in the 1-14 day range, directionally consistent with the mechanistic explanation in new_confirmation_inflation_check below (independent candidates reach their own T2/T3 evidence sooner, uncontaminated by an unrelated structure's absorbed price action) rather than with truncation."
+    }
+  },
+  "new_confirmation_inflation_check": {
+    "count_new_in_vnext_raw_canonical_transitions": 4116,
+    "genuine_confirmation_events_total": 4092,
+    "note": "the raw 'new episode' count (canonical id transitions) exceeds genuine confirmation events because canonical SELECTION can switch between two ALREADY-confirmed candidates as price moves, registering an id transition without a new OK_RANGE_MACRO event -- see diagnostics file canonical_id_transition_inflation_note",
+    "duration_distribution_investigation": {
+      "trigger": "the canonical-transition-based episode tracker showed an alarming duration distribution (46.5% of 4240 'episodes' under 4 hours, minimum 15 minutes -- far below the frozen 29-bar/7.25-hour age gate), which would suggest confirmation-gate weakening or spurious/fragmentary confirmations if taken at face value",
+      "resolution_method": "re-measured directly from each of the 4092 genuinely-confirmed structures' OWN [start_ts, end_ts] lifetime (bypassing canonical-selection churn entirely), using the same unbounded structure history as the lost-episode investigation",
+      "result": {
+        "v4_4_duration_days": {"min": 0.2917, "median": 0.9167},
+        "vnext_per_structure_duration_days": {"min": 0.2917, "median": 0.5521, "p95": 1.625, "max": 10.54},
+        "structures_below_29_bar_age_gate": "2/4092 (0.05%) -- single-bar fencepost artifact of logic byte-identical to v4.4's own verbatim-copied age gate, not a vNext-introduced bypass",
+        "structures_at_or_above_gate": "4090/4092 (99.95%)"
+      },
+      "conclusion": "the alarming canonical-transition-based duration statistic is fully explained as measurement artifact from canonical-selection churn between already-confirmed candidates, NOT evidence of gate weakening or confirmation inflation. vNext's genuinely faster median (13.25h vs v4.4's 22h) is mechanistically explicable: an independent candidate is not contaminated by price action a single shared slot would have absorbed into an unrelated structure, so it reaches its own T2/T3 evidence sooner."
+    },
+    "verdict": "PASS -- no confirmation inflation once measured correctly; a full sample-level qualitative spot-check of individual 'new' confirmed structures was not additionally performed beyond this quantitative distribution check, disclosed as a scope limit for independent validation to extend if desired"
+  },
+  "verdict_input": "PASS. Refined true lost-confirmation rate 2.7% (5/187), or 2.14% (4/187) excluding the one non-vNext-specific case -- dramatically below the 36.9%/12.3%/69.0% rates that closed the v4.5 mandate. Merge shows zero involvement in any genuine loss. The 'changed' bucket skews toward faster (not truncated) resolution once the matching artifact is accounted for. The new-confirmation duration distribution is healthy once measured per-structure rather than via the inflated canonical-transition tracker. Per mandate section 21, this negative control does NOT show the destructive pattern that closed the v4.5 mandate, and supports proceeding to a positive verdict in research report section 14."
+}

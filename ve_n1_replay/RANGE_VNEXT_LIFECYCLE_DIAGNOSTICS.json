@@ -1,0 +1,66 @@
+{
+  "mandate": "VE-RANGE-LIFECYCLE-VNEXT-MULTI-CANDIDATE-RESEARCH-001",
+  "generated_from": "canonical warmup 2011-07-26 through end of data/market/OANDA_XAUUSD_M15.csv (355696 bars), dual-engine v4.4-vs-vNext, one pass, session scratch scripts (not committed) -- see VE_RANGE_LIFECYCLE_VNEXT_RESEARCH_REPORT.md for the full narrative and methodology",
+  "total_bars": 355696,
+  "registry_occupancy": {
+    "min": 0,
+    "median": 1,
+    "p95": 2,
+    "p99": 2,
+    "max": 4,
+    "bars_with_zero_active_count": 28075,
+    "bars_with_zero_active_pct": 7.89,
+    "bars_with_more_than_one_active_count": 73229,
+    "bars_with_more_than_one_active_pct": 20.59,
+    "longest_continuous_zero_active_bars": 45,
+    "longest_continuous_zero_active_days": 0.47
+  },
+  "lifecycle_event_totals": {
+    "births": 12813,
+    "merges": 361,
+    "supersessions_by_merge_macro_depth": 361,
+    "abandonments_price_moved_on_macro_depth": 4108,
+    "registry_capacity_refusals": 0,
+    "registry_capacity_refusal_note": "measured with a temporary generous cap (500) so this run's own registry-size distribution was not shaped by the cap being measured; never once reached. Final evidence-derived default (research report section 12): 16 (4x the measured historical max concurrent count of 4)",
+    "genuine_confirmation_events_ok_range_macro": 4092
+  },
+  "v4_4_confirmed_bars_by_year": {
+    "2011": 946, "2012": 1226, "2013": 2394, "2014": 1933, "2015": 1357,
+    "2016": 0, "2017": 0, "2018": 0, "2019": 0, "2020": 0, "2021": 0, "2022": 0, "2023": 0, "2024": 0,
+    "2025": 686, "2026_partial": 24
+  },
+  "vnext_canonical_confirmed_bars_by_year": {
+    "2011": 2745, "2012": 7077, "2013": 6802, "2014": 7704, "2015": 7603,
+    "2016": 6717, "2017": 7068, "2018": 7660, "2019": 6595, "2020": 7537,
+    "2021": 6743, "2022": 6429, "2023": 7237, "2024": 6727,
+    "2025": 5952, "2026_partial": 3597
+  },
+  "pathological_period_2016_2024": {
+    "v4_4_confirmed_bars": 0,
+    "v4_4_note": "single candidate (macro_id 770, per the v4.5 mandate's own reproduction) occupies the sole active slot 9.7 years, blocking ALL other RANGE activity of any kind",
+    "vnext_confirmed_bars_total": 55713,
+    "vnext_note": "the same candidate still forms and, on its own merits (T3 gate byte-unchanged), still never confirms -- it simply no longer blocks other, spatially distinct candidates from forming and confirming"
+  },
+  "confirmed_episode_comparison_v4_4_vs_vnext": {
+    "v4_4_total_confirmed_episodes": 187,
+    "vnext_total_confirmed_canonical_id_transitions": 4240,
+    "vnext_genuine_confirmation_events": 4092,
+    "canonical_id_transition_inflation_note": "4240 exceeds 4092 because canonical selection can switch between two ALREADY-confirmed candidates as price moves, registering an id transition without a new OK_RANGE_MACRO event",
+    "matched_by_start_bar_proximity_le_50_bars": {
+      "preserved_same_start_duration_within_1_day": 93,
+      "changed_same_start_different_duration": 48,
+      "lost_no_match": 46,
+      "new_in_vnext_no_v4_4_correspondence": 4116
+    },
+    "lost_episode_investigation": "RESOLVED -- refined window-overlap investigation (not just start-time matching) found 41/46 (89.1%) of the raw 'lost' figure is a matching-methodology artifact (genuine confirmation under a different structure_id or merge-chain); only 5/46 (10.9%) are genuine OVERLAPPED_NEVER_CONFIRMED, and only 4 of those show the new price-abandonment mechanism as a contributing (non-isolated) factor. Refined true lost-confirmation rate: 2.7% (5/187), or 2.14% (4/187) excluding the one non-vNext-specific ZONES_DEGENERATE-only case. Full detail in RANGE_VNEXT_NEGATIVE_CONTROL_REPORT.json and research report section 9."
+  },
+  "performance": {
+    "status": "MEASURED -- full canonical history, isolated single-engine run, 355696 bars",
+    "per_bar_latency_microseconds": {"mean": 5322.8, "median": 4848.3, "p95": 7885.1, "p99": 14112.5, "max": 64718.4},
+    "throughput_bars_per_sec": 187,
+    "latency_vs_live_budget_note": "one new M15 bar arrives every 900 seconds live; measured latency is roughly 5 orders of magnitude below that budget at every percentile including the max outlier -- not a practical concern",
+    "restart_serialization_size_bytes": {"at_bar_100000": 419699, "at_bar_200000": 823811, "at_bar_300000": 1206793, "at_bar_355696": 1430940},
+    "restart_serialization_growth_finding": "grows with TOTAL BARS PROCESSED (~4 bytes/bar), not with active registry occupancy (which stayed at 1-2 concurrent candidates throughout this stretch). Root-caused to Registry._dead (range_semantic_v4_3.py, a documented never-reuse-a-dead-id contract) and _awaiting_role (a dict of full structure snapshots, cleared only when a specific later CONTINUATION-born candidate references the exact id AND reaches full confirmation -- a narrow condition most terminated candidates never satisfy). BOTH mechanisms exist verbatim in range_semantic_v4_3.py and range_semantic_v4_4.py -- inherited, not introduced by this mandate -- and were never previously measurable at scale because v4.4's single-candidate regime creates far fewer total lifetime candidates (187 confirmed episodes) over the same period than vNext's multi-candidate design (12813 macro-depth births alone). Practically negligible at the measured rate (~140 KB/year, low single-digit MB over decades) and does NOT affect the ACTIVE registry bound (proven bounded: max 4 observed, hard cap 16) that mandate section 20 actually gates on. NOT fixed in this mandate -- both mechanisms live in shared v4.3 infrastructure outside this mandate's authorized scope (section 17) -- flagged as a disclosed limitation (research report section 14, item 7) and a well-scoped candidate for a future, separately-authorized mandate applicable to the entire RANGE lineage.",
+    "os_level_rss_measurement_note": "the ctypes/GetProcessMemoryInfo-based OS RSS measurement taken during this run was defective (constant 0.0 MB at every checkpoint) -- disclosed as a measurement-tooling bug, not silently dropped. A corrected, stdlib-only tracemalloc-based cross-check was run separately; see research report section 12 for its result if completed before delivery."
+  }
+}
