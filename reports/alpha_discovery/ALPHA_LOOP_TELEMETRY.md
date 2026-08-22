@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = M15 Stage-1 baselines done (near-symmetric L/S, natural excursion ~44-52p, era-dependent). Next: M15 state info map + transitions.
+CURRENT_FRONTIER          = M15 state info map: FIRST cross-era-stable signal = high/rising-vol -> M15 SHORT bias (+0.058, all eras, directional). STABLE_INFO_TRADEABILITY_TBD (P 0.32 < breakeven).
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = M15 univariate state info map + M15 TRANSITIONS (§8) with regime-conditional base + same-regime cross-era + event-dedup; H1/H4 context; session-conditioned
+NEXT_FRONTIER             = characterize high-vol M15 SHORT tradeability (expectancy across RR after cost, effective-N, parent-regime concentration, overlap); M15 transitions; H1/H4 + session conditioning
 ```
 
 ## Key structural findings (bounded)

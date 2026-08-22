@@ -20,3 +20,6 @@ Causal STATES that survive the information-first gates (mandate `ALPHA-XAUUSD-CA
 ## Status corrections (CEO mandate ALPHA-XAUUSD-REGIME-CONDITIONAL-STATE-PATH-DISCOVERY-001)
 - **H4-bo-raw-S: INDEPENDENT_VALIDATION_BLOCKED** (PACKAGE_REPRODUCIBLE + NON_CAUSAL_LEGACY_D1_FILTER_CONFIRMED). NOT a validated/pending portfolio strategy; reference/overlap artifact only. Clean frozen objects = S5 (validated) + COMP-CONT-L-rr2 (pending).
 - **Method shift:** generalization gate is now SAME-REGIME cross-era (not same-sign across different regimes). A regime-conditional edge is valid if the regime is causal+frozen+pre-entry and the edge is stable across distinct occurrences of that regime.
+
+## M15 mandate candidates
+- **ST-M15-HIGHVOL-SHORT** — high/rising M15 volatility (ATR>1.3x norm OR vc>1.2) -> SHORT. **CROSS-ERA-STABLE INFO** (lift +0.05-0.058 P(+70/-50), same-sign all years + b0 + b1, directional: LONG not lifted). FIRST cross-era-stable directional price-only signal in the program. Status: **STABLE_INFO_TRADEABILITY_TBD** (abs P 0.32 < breakeven at +70/-50; find profitable geometry next). NOT yet a candidate.
