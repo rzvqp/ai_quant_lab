@@ -10,10 +10,12 @@ Run: python -m pytest ai_trader/new_brain_live/strategy_platform/tests/test_real
 
 from __future__ import annotations
 
+import ast
 import dataclasses
+import inspect
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 import ve_brain  # type: ignore[import-untyped]
@@ -129,6 +131,169 @@ def test_decode_probability_inputs_well_formed() -> None:
 ])
 def test_decode_probability_inputs_rejects_malformed(edge: dict[str, Any] | None) -> None:
     assert _decode_probability_inputs(edge) is None
+
+
+# ═══ fail-closed hardening (mandate VE-S5-REAL-EV-RUNTIME-PACKAGING-001 sections 3-5/16) -- both defects
+# independently confirmed OPEN by the Statistician via direct execution of this exact function, section 15
+# of STAT_S5_EV_AGGREGATE_RECONCILIATION_REPORT.md (commit 9cfcc5f) ═══
+
+_BASE_EDGE: dict[str, float | str | None] = {
+    "edge_schema": "real-ev-expected-edge-v1", "n": 295.0, "n_target": 15.0, "n_horizon": 196.0,
+    "sum_horizon_r": 102.2125344478, "credibility": 0.80,
+}
+
+
+def test_decode_sane_baseline_still_accepted() -> None:
+    """Sanity anchor: the exact Statistician-cited baseline (n=295/15/196/+102.2125) still decodes -- the
+    hardening below must reject only genuinely bad inputs, never this one."""
+    assert _decode_probability_inputs(dict(_BASE_EDGE)) is not None
+
+
+@pytest.mark.parametrize("bad_sum", [float("nan"), float("inf"), float("-inf")])
+def test_decode_rejects_non_finite_sum_horizon_r(bad_sum: float) -> None:
+    """Defect A, reproduced with the Statistician's own exact repro shape (9cfcc5f section 15A)."""
+    edge = {**_BASE_EDGE, "sum_horizon_r": bad_sum}
+    assert _decode_probability_inputs(edge) is None
+
+
+def test_decode_rejects_impossible_count_geometry_matches_statistician_repro() -> None:
+    """Defect B, reproduced with the Statistician's OWN exact repro values (9cfcc5f section 15B):
+    n=10, n_target=8, n_horizon=9 -> n_target+n_horizon=17 > n=10, implied n_stop=-7."""
+    edge: dict[str, float | str | None] = {"edge_schema": "real-ev-expected-edge-v1", "n": 10.0, "n_target": 8.0,
+                                            "n_horizon": 9.0, "sum_horizon_r": 1.0, "credibility": 0.80}
+    assert _decode_probability_inputs(edge) is None
+
+
+@pytest.mark.parametrize("field,value", [
+    ("n_target", 296.0),   # n_target alone > n=295
+    ("n_horizon", 296.0),  # n_horizon alone > n=295
+])
+def test_decode_rejects_single_count_exceeding_n(field: str, value: float) -> None:
+    edge = {**_BASE_EDGE, field: value}
+    assert _decode_probability_inputs(edge) is None
+
+
+def test_decode_rejects_n_target_plus_n_horizon_exactly_one_over_n() -> None:
+    """Boundary: n_target + n_horizon == n is VALID (n_stop == 0, a legitimate "never stopped out"
+    population); == n + 1 must be rejected. Tests the boundary precisely, not just a grossly invalid case."""
+    edge_ok = {**_BASE_EDGE, "n": 211.0, "n_target": 15.0, "n_horizon": 196.0}  # 15+196 == 211 exactly
+    assert _decode_probability_inputs(edge_ok) is not None
+    edge_bad = {**_BASE_EDGE, "n": 210.0, "n_target": 15.0, "n_horizon": 196.0}  # 15+196 == 211 > 210
+    assert _decode_probability_inputs(edge_bad) is None
+
+
+@pytest.mark.parametrize("field", ["n", "n_target", "n_horizon"])
+def test_decode_rejects_negative_counts(field: str) -> None:
+    edge = {**_BASE_EDGE, field: -1.0}
+    assert _decode_probability_inputs(edge) is None
+
+
+@pytest.mark.parametrize("field", ["n", "n_target", "n_horizon"])
+def test_decode_rejects_fractional_counts(field: str) -> None:
+    """Mandate section 5 -- a fractional count must be REJECTED, never silently truncated
+    (`int(294.7) == 294` would otherwise corrupt the evidence without any signal)."""
+    edge = {**_BASE_EDGE, field: 294.7}
+    assert _decode_probability_inputs(edge) is None
+
+
+@pytest.mark.parametrize("field", ["n", "n_target", "n_horizon"])
+def test_decode_rejects_boolean_masquerading_as_count(field: str) -> None:
+    """Mandate section 5 -- `bool` is a Python `int` subclass; `int(True) == 1` must not silently pass."""
+    edge = {**_BASE_EDGE, field: True}
+    assert _decode_probability_inputs(edge) is None
+
+
+@pytest.mark.parametrize("bad_n", [float("inf"), float("-inf")])
+def test_decode_rejects_non_finite_n_without_crashing(bad_n: float) -> None:
+    """Pre-hardening, `int(float('inf'))` raises `OverflowError`, which the old `except (KeyError,
+    TypeError, ValueError)` clause did NOT catch -- this would have CRASHED decide() instead of failing
+    closed. Proves it now fails closed (returns None) instead of raising."""
+    edge = {**_BASE_EDGE, "n": bad_n}
+    assert _decode_probability_inputs(edge) is None  # must not raise
+
+
+def test_decode_rejects_bool_credibility() -> None:
+    edge = {**_BASE_EDGE, "credibility": True}
+    assert _decode_probability_inputs(edge) is None
+
+
+# ═══ evidence identity binding (mandate section 9) -- generic: exercised here via the pre-existing
+# future-strategy fixture, no S5-specific code anywhere in real_ev_engine.py or this test ═══
+
+def test_evidence_without_identity_keys_is_unaffected_backward_compat() -> None:
+    """The pre-existing fixture's edge (5 keys only, no evidence_* keys) must decide EXACTLY as it did
+    before this mandate -- proves the new identity-binding check is opt-in, not a regression."""
+    ms, catalog, pos, _ = _catalog_and_state()
+    h = _h(pos, ms)
+    assert not any(k.startswith("evidence_") for k in (h.expected_edge or {}))
+    d = _engine(catalog, ms).decide(h)
+    assert d.decision == TRADE_DECISION
+    assert d.evidence_fingerprint == ""  # no evidence package declared -> "" (mandate section 20/23)
+
+
+@pytest.mark.parametrize("field,bad_value", [
+    ("evidence_strategy_id", "not-the-real-strategy-id"),
+    ("evidence_strategy_version", "not-the-real-version"),
+    ("evidence_implementation_fingerprint", "TAMPERED-IMPL-FINGERPRINT"),
+    ("evidence_config_fingerprint", "TAMPERED-CONFIG-FINGERPRINT"),
+])
+def test_evidence_identity_mismatch_fails_closed(field: str, bad_value: str) -> None:
+    ms, catalog, pos, _ = _catalog_and_state()
+    h = _h(pos, ms)
+    entry = catalog.lookup(pos.strategy_id, pos.strategy_version)
+    assert entry is not None
+    tampered_edge = {
+        **(h.expected_edge or {}), "evidence_strategy_id": entry.strategy_id,
+        "evidence_strategy_version": entry.strategy_version,
+        "evidence_implementation_fingerprint": entry.implementation_fingerprint,
+        "evidence_config_fingerprint": entry.config_fingerprint,
+        field: bad_value,  # tamper exactly one binding field
+    }
+    tampered = dataclasses.replace(h, expected_edge=tampered_edge)
+    d = _engine(catalog, ms).decide(tampered)
+    assert d.decision == NO_TRADE
+    assert d.reason_codes == (rc.EVIDENCE_IDENTITY_MISMATCH,)
+
+
+@pytest.mark.parametrize("field,bad_value", [
+    ("evidence_cost_model_id", "not-the-real-cost-model-id"),
+    ("evidence_round_trip_price", 999.0),
+])
+def test_evidence_cost_identity_mismatch_fails_closed(field: str, bad_value: float | str) -> None:
+    ms, catalog, pos, _ = _catalog_and_state()
+    h = _h(pos, ms)
+    tampered_edge: dict[str, float | str | None] = {
+        **(h.expected_edge or {}), "evidence_cost_model_id": _COST.cost_model_id,
+        "evidence_round_trip_price": _COST.full_spread_price + _COST.entry_slippage_price + _COST.exit_slippage_price,
+        field: bad_value,
+    }
+    tampered = dataclasses.replace(h, expected_edge=tampered_edge)
+    d = _engine(catalog, ms).decide(tampered)
+    assert d.decision == NO_TRADE
+    assert d.reason_codes == (rc.EVIDENCE_COST_IDENTITY_MISMATCH,)
+
+
+def test_evidence_identity_matching_all_fields_still_reaches_trade_decision() -> None:
+    """Positive control for the two tests above: correctly-bound evidence identity (matching the real
+    catalog entry and cost model exactly) must NOT be rejected -- proves the check is a real gate, not one
+    that rejects everything."""
+    ms, catalog, pos, _ = _catalog_and_state()
+    h = _h(pos, ms)
+    entry = catalog.lookup(pos.strategy_id, pos.strategy_version)
+    assert entry is not None
+    bound_edge = {
+        **(h.expected_edge or {}), "evidence_strategy_id": entry.strategy_id,
+        "evidence_strategy_version": entry.strategy_version,
+        "evidence_implementation_fingerprint": entry.implementation_fingerprint,
+        "evidence_config_fingerprint": entry.config_fingerprint,
+        "evidence_cost_model_id": _COST.cost_model_id,
+        "evidence_round_trip_price": _COST.full_spread_price + _COST.entry_slippage_price + _COST.exit_slippage_price,
+        "evidence_fingerprint": "test-evidence-fp-abc123",
+    }
+    bound = dataclasses.replace(h, expected_edge=bound_edge)
+    d = _engine(catalog, ms).decide(bound)
+    assert d.decision == TRADE_DECISION
+    assert d.evidence_fingerprint == "test-evidence-fp-abc123"  # propagated for audit (section 20/23)
 
 
 # ═══════════════════════════════════ fail-closed: admission (mandate section 14) ═══════════════════════════════════
@@ -347,18 +512,52 @@ def test_future_strategy_negative_edge_reaches_real_no_trade() -> None:
     assert d.reason_codes == (rc.NEGATIVE_EXPECTED_VALUE,)
 
 
+def _strip_leading_docstring(body: list[ast.stmt]) -> list[ast.stmt]:
+    if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) \
+            and isinstance(body[0].value.value, str):
+        return body[1:]
+    return body
+
+
+class _DocstringStripper(ast.NodeTransformer):
+    """Strips the leading bare-string `Expr` (the docstring) from the module itself AND every
+    function/async-function/class def anywhere in the tree -- not just the module's own top-level one.
+    Explanatory prose (module OR function/class docstrings) legitimately names strategy ids/mandate ids
+    when documenting why this module is unrelated to them; only executable logic is checked below."""
+
+    def _visit_body_owner(self, node: ast.Module | ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef) -> ast.AST:
+        self.generic_visit(node)
+        node.body = _strip_leading_docstring(node.body)
+        return node
+
+    def visit_Module(self, node: ast.Module) -> ast.AST:
+        return self._visit_body_owner(node)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.AST:
+        return self._visit_body_owner(node)
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AST:
+        return self._visit_body_owner(node)
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> ast.AST:
+        return self._visit_body_owner(node)
+
+
+def _strip_all_docstrings(tree: ast.AST) -> ast.AST:
+    # NodeTransformer.visit() is typed Any in typeshed (visitor return type is inherently dynamic) --
+    # cast, don't silently let Any escape this function's own declared -> ast.AST return type.
+    return cast(ast.AST, ast.fix_missing_locations(_DocstringStripper().visit(tree)))
+
+
 def test_no_strategy_id_branch_exists_in_real_ev_engine_source() -> None:
     """Mechanical proof (not just a claim) that no strategy-specific branch exists: grep the real module's
-    own CODE (module docstring excluded -- it explains, in prose, why ve_brain's sealed strategies and this
-    module are unrelated, which is expected and correct to document, not a branch) for the fixture/mock
-    strategy id literals -- they must not appear anywhere a real conditional branch could reference them."""
-    import ast
-    import inspect
-
+    own CODE (every docstring excluded -- module, function, AND class -- since explanatory prose
+    legitimately discusses these names, which is expected and correct to document, not a branch) for the
+    fixture/mock strategy id literals -- they must not appear anywhere a real conditional branch could
+    reference them."""
     import ai_trader.new_brain_live.strategy_platform.real_ev_engine as mod
     tree = ast.parse(inspect.getsource(mod))
-    code_without_docstring = ast.unparse(ast.fix_missing_locations(
-        ast.Module(body=tree.body[1:] if isinstance(tree.body[0], ast.Expr) else tree.body, type_ignores=[])))
+    code_without_docstring = ast.unparse(_strip_all_docstrings(tree))
     for forbidden in ("FIXTURE_FUTURE_VALIDATED_STRATEGY", "MOCK_LONG_ON_FIXED_FIXTURE", "trend_pullback",
                      "range_fade", "trend_shadow", "trend_experimental", "S5"):
         assert forbidden not in code_without_docstring, \
@@ -413,15 +612,12 @@ def test_ve_brain_decide_n6_four_strategies_unchanged(strategy_id: str, strategy
 
 
 def test_real_ev_engine_module_never_imports_or_calls_decide_n6() -> None:
-    """Module docstring excluded (it explains, in prose, that ve_brain.decide_n6 exists and why this module
-    deliberately does not call it -- documenting that is correct; the CODE itself must never reference it)."""
-    import ast
-    import inspect
-
+    """Every docstring excluded -- module, function, AND class (it explains, in prose, that
+    ve_brain.decide_n6 exists and why this module deliberately does not call it -- documenting that is
+    correct; the CODE itself must never reference it)."""
     import ai_trader.new_brain_live.strategy_platform.real_ev_engine as mod
     tree = ast.parse(inspect.getsource(mod))
-    code_without_docstring = ast.unparse(ast.fix_missing_locations(
-        ast.Module(body=tree.body[1:] if isinstance(tree.body[0], ast.Expr) else tree.body, type_ignores=[])))
+    code_without_docstring = ast.unparse(_strip_all_docstrings(tree))
     assert "decide_n6" not in code_without_docstring, \
         "real_ev_engine.py's CODE must never reference ve_brain.decide_n6 -- separate path"
 
@@ -441,7 +637,7 @@ def test_full_shadow_pipeline_real_trade_decision_blocked_at_broker_gate(tmp_pat
     )
     assert result.record.final_decision == "NO_TRADE"
     assert result.record.final_reason_codes == (rc.BROKER_DISABLED,)
-    assert result.record.ev_decisions == ((pos.strategy_id, TRADE_DECISION),)
+    assert result.record.ev_decisions == ((pos.strategy_id, TRADE_DECISION, ""),)  # "" -- no evidence package (mandate VE-S5-REAL-EV-RUNTIME-PACKAGING-001)
     assert result.record.broker_submission_state.startswith("BLOCKED_AT_GATE:")
     assert result.record.fingerprints.ev_engine_version == REAL_EV_ENGINE_VERSION  # the FIX under test
 
@@ -458,7 +654,7 @@ def test_full_shadow_pipeline_negative_edge_no_trade(tmp_path: Path) -> None:
         router=StrategyRouter(),
     )
     assert result.record.final_decision == "NO_TRADE"
-    assert result.record.ev_decisions == ((neg.strategy_id, NO_TRADE),)
+    assert result.record.ev_decisions == ((neg.strategy_id, NO_TRADE, ""),)  # "" -- no evidence package (mandate VE-S5-REAL-EV-RUNTIME-PACKAGING-001)
     assert result.record.fingerprints.ev_engine_version == REAL_EV_ENGINE_VERSION
 
 

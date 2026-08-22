@@ -122,3 +122,16 @@ path to `TRADE_DECISION` -- that is a second, separate, not-yet-authorized manda
 > the correct order relative to the M15 context-refresh cycle, exactly as `RawAxesBuilder.observe(bar)`
 > already establishes the precedent for. S5 itself remains un-wired into any live loop -- shadow/fixture
 > use only, per this mandate's own explicit scope.
+
+> **Addendum 3 (mandate `VE-S5-REAL-EV-RUNTIME-PACKAGING-001`)**: at Addendum 2's time, S5 reached
+> `RealEVDecisionEngine` but honestly resolved `MISSING_PROBABILITY_INPUTS` -- its real 295-trade ledger
+> is sealed escrow, so `expected_edge` was `None`, never invented. That gap is now closed: verified
+> AGGREGATE evidence (four raw counters, never a scalar win-rate, extracted without opening the escrow)
+> is packaged via `s5_ev_evidence.py`'s `S5_REAL_EV_EVIDENCE_V1` and now flows through S5's own
+> `evaluate()`. For the canonical breakout geometry this genuinely resolves `TRADE_DECISION` through the
+> real, unmodified `ve_brain.run_ev` -- see
+> [`VE_S5_REAL_EV_RUNTIME_PACKAGING_REPORT.md`](VE_S5_REAL_EV_RUNTIME_PACKAGING_REPORT.md) and
+> [`S5_REAL_EV_RUNTIME_EVIDENCE_CONTRACT.md`](S5_REAL_EV_RUNTIME_EVIDENCE_CONTRACT.md) for the full
+> evidence lineage, the generic (non-S5-specific) identity-binding mechanism a future strategy reuses
+> identically, and two fail-open decoder defects this mandate also fixed. S5 remains shadow/fixture-only
+> -- broker submission is still structurally disabled.

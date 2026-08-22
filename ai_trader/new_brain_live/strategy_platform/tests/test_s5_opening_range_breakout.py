@@ -15,6 +15,7 @@ from ai_trader.live_signal_source.types import Bar
 from ai_trader.new_brain_bridge.raw_axes_builder import RawAxesBuilder
 from ai_trader.new_brain_live.dual_clock.upstream_context import build_context
 from ai_trader.new_brain_live.market_state import MarketState
+from ai_trader.new_brain_live.strategy_platform.s5_ev_evidence import S5_REAL_EV_EVIDENCE_V1
 from ai_trader.new_brain_live.strategy_platform.s5_opening_range_breakout import (
     CONFIG_FINGERPRINT,
     ENTRY_WINDOW_FIRST_BIS,
@@ -108,7 +109,9 @@ def test_setup_recognized_breakout_produces_correct_hypothesis() -> None:
     assert hypothesis.exit_specification == f"rr:{RR_TARGET}"
     assert hypothesis.max_hold == MAX_HOLD_BARS
     assert hypothesis.strategy_config_fingerprint == CONFIG_FINGERPRINT
-    assert hypothesis.expected_edge is None  # honestly disclosed -- see module docstring
+    # mandate VE-S5-REAL-EV-RUNTIME-PACKAGING-001: expected_edge now carries the verified evidence
+    # package (never a scalar WR/avg-R, never invented -- see s5_ev_evidence.py's own citation trail).
+    assert hypothesis.expected_edge == S5_REAL_EV_EVIDENCE_V1.to_expected_edge()
     risk = hypothesis.intended_entry - hypothesis.invalidation
     implied_target = hypothesis.intended_entry + RR_TARGET * risk
     assert abs(implied_target - (2052.0 + 3.0 * (2052.0 - 2039.98))) < 1e-9

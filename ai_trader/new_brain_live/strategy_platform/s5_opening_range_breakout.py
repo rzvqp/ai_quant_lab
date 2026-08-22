@@ -9,8 +9,11 @@
   identical in `ai_quant_lab/red_team/audit/LEDGER.md` entry [97]).
 - Verdict: `INDEPENDENT_VALIDATION_PASS`, all gates A-H, `RT-ALPHA-S5-S20-CLEAN-INDEPENDENT-VALIDATION-001`
   (E97, commit `633bd5da`), on the Statistician's frozen clean 52,572-bar population. Frozen trade
-  ledger hash `cd4e8d4a...` (295 trades) -- see the onboarding report for why that ledger's raw rows are
-  NOT available to this repository (off-git escrow), and what that means for `expected_edge` below.
+  ledger hash `cd4e8d4a...` (295 trades) -- the ledger's raw rows are NOT available to this repository
+  (sealed off-git escrow, `escrow_red_team/`) and never will be; what IS available, as of mandate
+  `VE-S5-REAL-EV-RUNTIME-PACKAGING-001`, is a verified AGGREGATE evidence package (four raw counters,
+  never a scalar win-rate/expected-R) extracted by Red Team (`8228ded`) and reconciled by the Statistician
+  (`9cfcc5f`) -- see `s5_ev_evidence.py` and `expected_edge` below.
 - Engine: `code/mstrat.py`'s `s5_setups`/`simulate` (`ai_quant_lab` repo) -- the ONE shared backtester
   every S-family strategy runs through. Every formula below is copied from that function, not
   reconstructed from the RT report's prose alone.
@@ -60,6 +63,7 @@ import dataclasses
 from ai_trader.live_signal_source.types import Bar
 from ai_trader.new_brain_live.market_state import market_state_identity
 from ai_trader.new_brain_live.strategy_platform.catalog import CatalogEntry, StrategyStatus
+from ai_trader.new_brain_live.strategy_platform.s5_ev_evidence import S5_REAL_EV_EVIDENCE_V1
 from ai_trader.new_brain_live.strategy_platform.strategy_protocol import StrategyEvaluationInput
 from ai_trader.new_brain_live.strategy_platform.trade_hypothesis import TradeHypothesis
 from ai_trader.signal_engine.types import Direction
@@ -178,8 +182,10 @@ class S5OpeningRangeBreakoutLong:
             direction=Direction.LONG, signal_timestamp=state.market_timestamp,
             eligible_entry_timestamp=state.market_timestamp, entry_type="MARKET", intended_entry=entry,
             invalidation=stop, exit_specification=f"rr:{RR_TARGET}", max_hold=MAX_HOLD_BARS,
-            expected_edge=None,  # see AI_TRADER_S5_ONBOARDING_REPORT.md -- the real n/n_target/n_horizon
-            # breakdown is not accessible (frozen ledger is off-git escrow, hash-only); never invented.
+            # Statistician/Red-Team-verified aggregate evidence (mandate VE-S5-REAL-EV-RUNTIME-PACKAGING-001)
+            # -- never the raw ledger (sealed escrow), never a scalar WR/avg-R (both explicitly proven, by
+            # the Statistician, to falsify n_target by >=3x for this rr3 geometry -- see s5_ev_evidence.py).
+            expected_edge=S5_REAL_EV_EVIDENCE_V1.to_expected_edge(),
             reason_codes=("S5_OPENING_RANGE_BREAKOUT",), market_state_identity=market_state_identity(state),
             strategy_config_fingerprint=CONFIG_FINGERPRINT, research_validation_identity=VALIDATION_PROVENANCE,
             provenance="s5_opening_range_breakout.py",

@@ -46,17 +46,37 @@ SCOPE NOTE on `StrategyStatus`: only `VALIDATED` entries (mirroring `ve_brain`'s
 of `ve_brain`'s three-way `SHADOW_TRADE_CANDIDATE`, so any non-VALIDATED status (including a future
 ALPHA_CANDIDATE/shadow-analysis tier) resolves to `NO_TRADE`/`NO_ELIGIBLE_STRATEGY` here rather than
 inventing a new EVDecision value the rest of the pipeline was never built to handle.
+
+FAIL-CLOSED HARDENING (mandate `VE-S5-REAL-EV-RUNTIME-PACKAGING-001`, sections 3-4): the Statistician
+independently confirmed, by executing this module's own `_decode_probability_inputs` in isolation
+(`e54a2a5`/`9cfcc5f`), two fail-OPEN defects that pre-date that mandate: (A) a non-finite `sum_horizon_r`
+(`NaN`/`+inf`/`-inf`) decoded to a "VALID" `ProbabilityInputs` and propagated a `NaN` EV -- fail-closed
+only "by luck" of IEEE-754 comparison semantics, not by design; (B) an impossible count decomposition
+(`n_target + n_horizon > n`, implying a negative `n_stop`) also decoded as "VALID" -- `ve_brain._ev_core.
+ev_from_terms`'s own `if p_s < 0.0: p_s = 0.0` clamp then silently absorbed the corruption into a
+plausible-looking but INFLATED EV (the more dangerous of the two: it fails open quietly). Both are fixed in
+`_decode_probability_inputs` below, rejecting BEFORE either bad value ever reaches `ve_brain.run_ev` --
+`ve_brain._ev_core` itself is sealed and was never a candidate for modification.
+
+EVIDENCE IDENTITY BINDING (same mandate, section 9): a validated evidence package (e.g.
+`s5_ev_evidence.S5_REAL_EV_EVIDENCE_V1`) renders itself into `expected_edge` via `ValidatedEVEvidence.
+to_expected_edge()`, which adds OPTIONAL `evidence_*` keys alongside the five original ones. When present,
+`decide()` cross-checks them generically against `entry`/`self.cost_model` -- the two real, independent
+sources of truth already in scope -- before the evidence is trusted; no S5-specific code exists here, any
+future strategy's evidence package gets the identical check. A payload lacking these optional keys (e.g.
+the pre-existing fixture's) is unaffected and validates exactly as it always has.
 """
 
 from __future__ import annotations
 
 import dataclasses
+import math
 
 import ve_brain  # type: ignore[import-untyped]
 
 from ai_trader.new_brain_live.market_state import MarketState, market_state_identity
 from ai_trader.new_brain_live.strategy_platform import reason_codes as rc
-from ai_trader.new_brain_live.strategy_platform.catalog import StrategyCatalog, StrategyStatus
+from ai_trader.new_brain_live.strategy_platform.catalog import CatalogEntry, StrategyCatalog, StrategyStatus
 from ai_trader.new_brain_live.strategy_platform.ev_engine import NO_TRADE, TRADE_DECISION, EVDecision
 from ai_trader.new_brain_live.strategy_platform.trade_hypothesis import TradeHypothesis
 
@@ -114,8 +134,24 @@ def _verify_ve_brain_installed() -> None:
             f"check; re-verify (regression + new equivalence tests) before adding a new version here.")
 
 
-def _no_trade(hypothesis: TradeHypothesis, *reasons: str) -> EVDecision:
-    return EVDecision(hypothesis=hypothesis, decision=NO_TRADE, reason_codes=tuple(reasons) or (rc.EV_BELOW_THRESHOLD,))
+def _no_trade(hypothesis: TradeHypothesis, *reasons: str, evidence_fingerprint: str = "") -> EVDecision:
+    return EVDecision(hypothesis=hypothesis, decision=NO_TRADE, reason_codes=tuple(reasons) or (rc.EV_BELOW_THRESHOLD,),
+                       evidence_fingerprint=evidence_fingerprint)
+
+
+def _decode_count(raw: object) -> int | None:
+    """Decode one count field (`n`/`n_target`/`n_horizon`). Rejects: `bool` (a Python `int` subclass --
+    `int(True) == 1` would otherwise silently coerce a stray boolean into a count, mandate section 5);
+    any non-`int`/`float` type; a non-finite float (`+inf`/`-inf`/`NaN` -- `int(float('inf'))` raises
+    `OverflowError`, which the PRE-hardening code's `except (KeyError, TypeError, ValueError)` did NOT
+    catch, a latent crash-instead-of-fail-closed bug fixed here too); and a FRACTIONAL float (e.g. `294.7`)
+    -- `int(294.7) == 294` would otherwise silently truncate corrupt evidence rather than reject it
+    (mandate section 5 "do not silently coerce corrupt evidence")."""
+    if isinstance(raw, bool) or not isinstance(raw, (int, float)):
+        return None
+    if isinstance(raw, float) and (not math.isfinite(raw) or not raw.is_integer()):
+        return None
+    return int(raw)
 
 
 def _decode_probability_inputs(expected_edge: dict[str, float | str | None] | None) -> "ve_brain.ProbabilityInputs | None":
@@ -125,23 +161,76 @@ def _decode_probability_inputs(expected_edge: dict[str, float | str | None] | No
     the one extensibility point `TradeHypothesis` already has, since that dataclass is itself frozen/out
     of this mandate's scope to modify). Requires `edge_schema == EXPECTED_EDGE_SCHEMA_VERSION` plus the 5
     numeric fields; anything else (missing, wrong schema, wrong types) returns None -- the caller then
-    fails closed to MISSING_PROBABILITY_INPUTS, exactly `ve_brain.run_ev`'s own 'never invented' discipline."""
+    fails closed to MISSING_PROBABILITY_INPUTS, exactly `ve_brain.run_ev`'s own 'never invented' discipline.
+
+    HARDENED (mandate `VE-S5-REAL-EV-RUNTIME-PACKAGING-001` sections 3-4, see module docstring): rejects
+    non-finite `sum_horizon_r` (Defect A) and impossible count geometry `n_target + n_horizon > n`
+    (Defect B) BEFORE either can reach `ve_brain.run_ev` -- both previously decoded as "VALID"."""
     if not expected_edge:
         return None
     if expected_edge.get("edge_schema") != EXPECTED_EDGE_SCHEMA_VERSION:
         return None
-    try:
-        n = int(expected_edge["n"])  # type: ignore[arg-type]
-        n_target = int(expected_edge["n_target"])  # type: ignore[arg-type]
-        n_horizon = int(expected_edge["n_horizon"])  # type: ignore[arg-type]
-        sum_horizon_r = float(expected_edge["sum_horizon_r"])  # type: ignore[arg-type]
-        credibility = float(expected_edge.get("credibility", 0.80))  # type: ignore[arg-type]
-    except (KeyError, TypeError, ValueError):
+
+    n = _decode_count(expected_edge.get("n"))
+    n_target = _decode_count(expected_edge.get("n_target"))
+    n_horizon = _decode_count(expected_edge.get("n_horizon"))
+    if n is None or n_target is None or n_horizon is None:
         return None
-    if n < 0 or n_target < 0 or n_horizon < 0 or not (0.0 < credibility < 1.0):
+    if n < 0 or n_target < 0 or n_horizon < 0:
         return None
+    if n_target + n_horizon > n:
+        # Defect B: an impossible decomposition implying a negative n_stop = n - n_target - n_horizon.
+        # ve_brain._ev_core.ev_from_terms clamps the resulting p_s to 0.0 rather than rejecting -- fail
+        # closed HERE, before that sealed clamp ever gets a chance to inflate the EV.
+        return None
+
+    raw_sum = expected_edge.get("sum_horizon_r")
+    if isinstance(raw_sum, bool) or not isinstance(raw_sum, (int, float)):
+        return None
+    sum_horizon_r = float(raw_sum)
+    if not math.isfinite(sum_horizon_r):
+        # Defect A: NaN/+-inf must never reach ve_brain.run_ev. Explicit math.isfinite(), not an implicit
+        # `sum_horizon_r == sum_horizon_r` NaN-comparison trick -- "do not rely on IEEE comparison
+        # behavior to fail accidentally" (mandate section 3's own instruction).
+        return None
+
+    raw_credibility = expected_edge.get("credibility", 0.80)
+    if isinstance(raw_credibility, bool) or not isinstance(raw_credibility, (int, float)):
+        return None
+    credibility = float(raw_credibility)
+    if not math.isfinite(credibility) or not (0.0 < credibility < 1.0):
+        return None
+
     cell = ve_brain.OutcomeCell(n=n, n_target=n_target, n_horizon=n_horizon, sum_horizon_R=sum_horizon_r)
     return ve_brain.ProbabilityInputs(hierarchy=(ve_brain.HierarchyLevel(cell=cell),), credibility=credibility)
+
+
+def _verify_evidence_identity(hypothesis: TradeHypothesis, *, entry: "CatalogEntry", cost_model: CostModel) -> str | None:
+    """Generic evidence-identity-binding check (mandate section 9) -- NO strategy-specific code: cross-
+    checks whatever `evidence_*` keys `expected_edge` happens to declare against the two real, independent
+    sources of truth `decide()` already has (the looked-up `CatalogEntry`, `self.cost_model`). A payload
+    declaring none of these optional keys (e.g. the pre-existing generic fixture's) is unaffected -- this
+    returns None (no mismatch) for it exactly as before this mandate.
+
+    Returns a reason code string on mismatch, or None if the binding is consistent (or not declared)."""
+    edge = hypothesis.expected_edge or {}
+    if any(k in edge for k in ("evidence_strategy_id", "evidence_strategy_version",
+                                "evidence_implementation_fingerprint", "evidence_config_fingerprint")):
+        if (edge.get("evidence_strategy_id") != entry.strategy_id
+                or edge.get("evidence_strategy_version") != entry.strategy_version
+                or edge.get("evidence_implementation_fingerprint") != entry.implementation_fingerprint
+                or edge.get("evidence_config_fingerprint") != entry.config_fingerprint):
+            return rc.EVIDENCE_IDENTITY_MISMATCH
+    if any(k in edge for k in ("evidence_cost_model_id", "evidence_round_trip_price")):
+        if edge.get("evidence_cost_model_id") != cost_model.cost_model_id:
+            return rc.EVIDENCE_COST_IDENTITY_MISMATCH
+        declared_rt = edge.get("evidence_round_trip_price")
+        if isinstance(declared_rt, bool) or not isinstance(declared_rt, (int, float)):
+            return rc.EVIDENCE_COST_IDENTITY_MISMATCH
+        actual_rt = cost_model.full_spread_price + cost_model.entry_slippage_price + cost_model.exit_slippage_price
+        if abs(float(declared_rt) - actual_rt) > 1e-9:
+            return rc.EVIDENCE_COST_IDENTITY_MISMATCH
+    return None
 
 
 @dataclasses.dataclass(frozen=True, slots=True, kw_only=True)
@@ -216,6 +305,16 @@ class RealEVDecisionEngine:
 
         probability_inputs = _decode_probability_inputs(hypothesis.expected_edge)
 
+        # 6.5) evidence identity binding (mandate VE-S5-REAL-EV-RUNTIME-PACKAGING-001 section 9) -- see
+        # module docstring / _verify_evidence_identity's own docstring. Generic: no strategy-specific code.
+        mismatch = _verify_evidence_identity(hypothesis, entry=entry, cost_model=self.cost_model)
+        # Audit trail (mandate section 20/23): record WHICH evidence package was attempted regardless of
+        # whether it ultimately decoded/passed -- deliberately independent of `mismatch`/decode success, so
+        # a rejected evidence package is still traceable to its own identity, not silently anonymized.
+        evidence_fp = str((hypothesis.expected_edge or {}).get("evidence_fingerprint") or "")
+        if mismatch is not None:
+            return _no_trade(hypothesis, mismatch, evidence_fingerprint=evidence_fp)
+
         regime_fp = ve_brain.regime_fingerprint(axes)
         data_id = ve_brain.data_identity(
             symbol=self.market_state.symbol, timeframe=self.market_state.timeframe,
@@ -255,16 +354,16 @@ class RealEVDecisionEngine:
         try:
             ve_brain.validate_request(req)
         except ve_brain.SchemaValidationError:
-            return _no_trade(hypothesis, rc.SCHEMA_VALIDATION_FAILED)
+            return _no_trade(hypothesis, rc.SCHEMA_VALIDATION_FAILED, evidence_fingerprint=evidence_fp)
 
         if req.holding_window < 1:
-            return _no_trade(hypothesis, rc.SCHEMA_VALIDATION_FAILED)
+            return _no_trade(hypothesis, rc.SCHEMA_VALIDATION_FAILED, evidence_fingerprint=evidence_fp)
         if req.atr <= 0.0:
-            return _no_trade(hypothesis, rc.SCHEMA_VALIDATION_FAILED)
+            return _no_trade(hypothesis, rc.SCHEMA_VALIDATION_FAILED, evidence_fingerprint=evidence_fp)
 
         # 7) the REAL, ratified EV computation -- reused verbatim, never reinvented.
         if probability_inputs is None:
-            return _no_trade(hypothesis, rc.MISSING_PROBABILITY_INPUTS)
+            return _no_trade(hypothesis, rc.MISSING_PROBABILITY_INPUTS, evidence_fingerprint=evidence_fp)
         outcome = ve_brain.run_ev(req)
         if not outcome.enter:
             # ve_brain._ev_core.Reason's own .value strings (verified directly against source, not guessed):
@@ -272,9 +371,10 @@ class RealEVDecisionEngine:
             # "no_trade_missing_input" (unreachable here -- already gated above by probability_inputs is
             # None). Neither raw string is in strategy_platform's registered vocabulary -- map, don't leak.
             mapped = rc.NEGATIVE_EXPECTED_VALUE if outcome.reason == "no_trade_ev_lcb_not_positive" else rc.INFEASIBLE_GEOMETRY
-            return _no_trade(hypothesis, mapped)
+            return _no_trade(hypothesis, mapped, evidence_fingerprint=evidence_fp)
 
-        return EVDecision(hypothesis=hypothesis, decision=TRADE_DECISION, reason_codes=(rc.REAL_EV_VALIDATED_EDGE,))
+        return EVDecision(hypothesis=hypothesis, decision=TRADE_DECISION, reason_codes=(rc.REAL_EV_VALIDATED_EDGE,),
+                           evidence_fingerprint=evidence_fp)
 
 
 def _parse_exit_specification(spec: str) -> tuple[str | None, float | None]:

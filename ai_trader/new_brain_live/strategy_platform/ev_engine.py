@@ -36,6 +36,12 @@ class EVDecision:
     hypothesis: TradeHypothesis
     decision: str  # TRADE_DECISION | NO_TRADE
     reason_codes: tuple[str, ...]
+    #: Empty string = no validated evidence package was involved (Mock, a fixture, or a strategy still
+    #: honestly at expected_edge=None). Non-empty = the stable evidence_fingerprint of the validated
+    #: evidence package actually consumed (mandate VE-S5-REAL-EV-RUNTIME-PACKAGING-001 section 20/23 --
+    #: "no ambiguity between synthetic test evidence and validated real evidence"). Set by whichever engine
+    #: produced this decision; never guessed downstream.
+    evidence_fingerprint: str = ""
 
     def __post_init__(self) -> None:
         if self.decision not in (TRADE_DECISION, NO_TRADE):

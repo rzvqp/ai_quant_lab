@@ -33,7 +33,15 @@ class ShadowLedgerRecord:
     ineligible: tuple[tuple[str, str], ...]  # (strategy_id, reason_code)
     invalid_output: tuple[tuple[str, str], ...] = ()  # (strategy_id, error) -- section 37 "INVALID STRATEGY OUTPUT"
     hypothesis_dedup_keys: tuple[str, ...]  # "strategy_id|instrument|market_state_identity", one per hypothesis produced
-    ev_decisions: tuple[tuple[str, str], ...]  # (strategy_id, "TRADE_DECISION"|"NO_TRADE")
+    #: (strategy_id, "TRADE_DECISION"|"NO_TRADE", evidence_fingerprint). Third element added by mandate
+    #: VE-S5-REAL-EV-RUNTIME-PACKAGING-001 section 20/23 -- "" when no validated evidence package was
+    #: involved (Mock, a fixture, or an honest expected_edge=None), the evidence's own stable fingerprint
+    #: otherwise, so a ledger row can never leave it ambiguous which evidence (if any) actually drove a
+    #: decision. `_serialize`/`_deserialize` are tuple-arity-generic and need no change for this; a ledger
+    #: row persisted before this field existed would deserialize as a 2-tuple -- nothing in this codebase
+    #: destructures `ev_decisions` with a fixed-arity unpack, so this is non-breaking, and no live/
+    #: production ledger predates this change (BROKER_ORDER_SUBMISSION has never been enabled).
+    ev_decisions: tuple[tuple[str, str, str], ...]
     final_decision: str  # "TRADE" | "NO_TRADE"
     final_reason_codes: tuple[str, ...]
     hypothetical_order_intent: str | None  # "strategy_id|instrument|direction|entry|stop", None if NO_TRADE
