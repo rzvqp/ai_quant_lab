@@ -30,3 +30,6 @@ Accumulated causal lessons — used to choose each next frontier by the *demonst
 |---|---|---|
 | 14 | **A different (bearish) regime makes SHORT less-dead but not robust by itself** | HF1: 2013 bear yields positive short only at rr3, tail-carried (best10<0), block-inconsistent. The regime shift is necessary but not sufficient; the robust bearish edge is a specific breakout mechanism (H4-bo-raw-S), not generic short-continuation. |
 | 15 | **Range mean-reversion is dead even in a GENUINE range** | HF2: 2011-2012 real-range fade still MAE>>MFE, best10<0. The 2021-2023 range-death was not merely "no real range" — H4 range-fade with structural stops fails on a real range too. |
+
+| 16 | **Bearish-short on b0/b1 is SATURATED by the frozen H4-bo-raw-S event** | HF1/HF3/HF4 all re-find the same down-legs; HF4 (robust internally) overlaps H4-bo-raw-S 85% within 3d | new bearish-short *triggers* on b0/b1 are REDUNDANT; the ONE robust bearish edge is the frozen downside-break event. Overlap-vs-frozen (§21) is mandatory before calling any same-population same-direction signal "new". |
+| 17 | **A signal can pass every internal gate and still be non-alpha (redundant)** | HF4 clears best10/blocks/DISC-CONF/path yet is 85% the frozen candidate | robustness gates prove an edge is REAL, not that it is INDEPENDENT; independence needs the overlap check. |

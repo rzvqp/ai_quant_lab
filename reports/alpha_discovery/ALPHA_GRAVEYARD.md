@@ -32,3 +32,8 @@ Falsified mechanisms — **do not re-run without genuinely new information (§4,
 ## Historical different-population frontiers (b0 2011-2013 + b1 2016-2018, causal) — CLOSED
 - **HF1 compression-timed SHORT continuation in D1 downtrend**: the bearish regime is *less dead* than 2021-2023 (2013 +0.52 @ rr3) but NOT robust — positive only in the single 2013 crash leg at high RR, best-10%-removed<0 (tail-carried), block-inconsistent (b0 +0.22 / b1 -0.27), RR-fragile (only rr3). The robust bearish edge on this population is H4-bo-raw-S (raw breakout) — compression-timing does not replicate it. Do NOT reopen.
 - **HF2 range mean-reversion (fade extremes)**: DEAD even where a GENUINE range exists (2011-2012). Fading the top/bottom gets run over (MAE>>MFE, advF 0.75-0.80), best10<0, both blocks negative. Range boundaries not respected enough at H4 with structural stops. Extends the range/mean-reversion graveyard to the historical range regime. Do NOT reopen.
+
+## Historical b0/b1 bearish frontiers (HF3/HF4) — CLOSED
+- **HF3-A pullback-to-falling-EMA short**: NEAR-MISS (both blocks positive @rr2, avgR +0.109) but tail-carried (best10<0) and year-inconsistent (2012/2017<0). Not robust.
+- **HF3-B breakdown-momentum trailing short**: DEAD (avgR<0, best10<0).
+- **HF4 transition-onset short**: ROBUST on internal gates but **REDUNDANT_WITH_H4_BO_RAW_S** — 85% of trades within 3 days of a frozen H4-bo-raw-S entry (same-day 53%). Two triggers (20-bar-low breakdown vs TREND_DOWN transition-onset) capture the SAME bearish episodes in b0/b1. NOT frozen (would duplicate the frozen candidate, §9/§30). Also CALIB-flat + delay-sensitive. **Do NOT reopen bearish-short trigger variants on b0/b1 — the frontier is saturated by the frozen H4-bo-raw-S event.**

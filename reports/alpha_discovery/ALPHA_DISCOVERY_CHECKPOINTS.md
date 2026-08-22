@@ -65,3 +65,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Action (§16, §23):** both graveyarded with lessons; no freeze; loop CONTINUES immediately. Frozen pending-validation still COMP-CONT-L-rr2. Reporting/commit/telemetry are not terminal.
 **Telemetry:** `ALPHA_LOOP_TELEMETRY.md`. NEXT_FRONTIER = HF3 (bearish breakdown-momentum trailing / downtrend pullback-short, distinct from H4-bo-raw-S & HF1) — runs next cycle.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #5 — 2026-08-22 — historical b0/b1 bearish frontiers (HF3/HF4); HF4 robust-but-REDUNDANT
+**Frontiers:** HF3 (pullback-EMA short + breakdown-momentum trailing), HF4 (transition-onset short + full vet). **Hypotheses:** H31-H34.
+**HF3:** A pullback-EMA short = NEAR-MISS (both blocks+ @rr2 but best10<0, 2012/2017<0); B breakdown-momentum = DEAD.
+**HF4 transition-onset short:** clears ALL internal gates — avgR +0.270 STRESS, PF 1.62, best5 +0.177, **best10 +0.075**, both blocks+ (b0 +0.09/b1 +0.57), DISC +0.16/CONF +0.44, allYr+ @rr3, maxDD -4.1R, favorable path (advF 0.47), neighborhood STABLE (all-positive grid), survives +1bar (+0.10). BUT **overlap vs frozen H4-bo-raw-S = 85% within 3d (same-day 53%)** -> `REDUNDANT_WITH_H4_BO_RAW_S`. Per §9/§30 NOT frozen (would duplicate the frozen candidate). Also CALIB-flat (+0.005) + delay-sensitive.
+**Lessons (failure-map #16-17):** bearish-short on b0/b1 is SATURATED by the frozen H4-bo-raw-S event (multiple triggers converge on the same down-legs); a signal can pass every robustness gate yet be non-alpha (redundant) — independence needs the overlap check, not just the gates.
+**Action:** HF3 graveyarded; HF4 recorded REDUNDANT (not frozen); loop CONTINUES. Frozen pending-validation still COMP-CONT-L-rr2. NEXT_FRONTIER = HF5 (counter-trend long-reversion after capitulation / high-vol event alpha — genuinely different, low prior). 
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

@@ -52,3 +52,10 @@ Causal `hist_data.py`, b0+b1 DISCOVERY_CONSUMED (NOT validation).
 |---|---|---|---|---|---|---|
 | H29 | HF1 | compression-timed continuation in confirmed D1 downtrend | S | W20,H42,rr{1.5,2,3}, D1 EMA20<50 causal | 107 | FALSIFIED (2013-only @rr3, best10<0, b0+/b1-, RR-fragile) |
 | H30 | HF2 | fade range extremes in causal RANGE regime (real range) | L/S | WB30, touch 0.1*height, stop beyond boundary | 75/81 | FALSIFIED (MAE>>MFE, best10<0, both blocks neg) |
+
+| H31 | HF3 | pullback-to-falling-EMA short in D1 downtrend | S | rally into falling H4 EMA20, fail, resume; rr{1.5,2,3} | 106 | NEAR-MISS (both blocks+ @rr2 but best10<0, 2012/2017<0, DISC~0) |
+| H32 | HF3 | breakdown-momentum short with chandelier trailing | S | new-10-low+expansion+close-lower-third, trail{2,3}ATR | 66 | FALSIFIED (avgR<0, best10<0, DISC<0) |
+| H33 | HF4 | RANGE->TREND_DOWN transition-onset short | S | onset+D1-not-up, swing stop, rr{1.5,2,3}; W{6,10,14} cd{6,10} | 59-64 | ROBUST (best10>0, both blocks+, advF 0.47, allYr+@rr3, maxDD -4.1R, neighborhood stable, survives +1bar) |
+| H34 | HF4 | overlap of H33 vs frozen H4-bo-raw-S | S | trade-day + within-3d | — | **REDUNDANT_WITH_H4_BO_RAW_S** (same-day 53%, within-3d 85%) -> NOT an independent candidate, NOT frozen |
+
+**Note H33/H34:** HF4 is the first genuinely-robust bearish signal on b0/b1 (clears best-10%-removed + both-blocks + DISC/CONF + allYr@rr3 + favorable path), but the overlap check (§21) proves it re-discovers the SAME bearish event as the frozen H4-bo-raw-S (85% within 3d). Per §9/§30 it is classified REDUNDANT and NOT frozen. CALIB 2020-21 readout was flat (+0.005) and it is delay-sensitive (+0.27->+0.10 @ +1bar) — additional honest caveats. Conclusion: the robust bearish price-only edge on b0/b1 IS the frozen H4-bo-raw-S downside-break event; multiple triggers converge on it -> bearish-short frontier on b0/b1 is SATURATED by the frozen candidate.
