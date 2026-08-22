@@ -228,3 +228,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Honest caveat:** lift is stable but MODEST — high-vol SHORT P(+70/-50)=0.32 < 0.417 breakeven for that label. Stable INFORMATION; tradeability not yet established.
 **NEXT:** characterize high/rising-vol SHORT expectancy across RR/targets (find net-positive geometry after STRESS cost, §18-19), effective-N/opportunities, same-regime recurrence, overlap vs frozen; sharpen via M15 transitions (low-vol->expansion) + H1/H4 context (does high-vol-short concentrate in a parent regime?) + session. If no RR is net-positive -> STABLE_INFO_NOT_TRADEABLE + continue. Do NOT force geometry.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #21 — 2026-08-22 — ST-M15-HIGHVOL-SHORT: univariate NOT tradeable; DOWN-parent-regime LEAD (+0.102 DEV)
+**Characterization (`state_m15_highvol.py`, STRESS, event-deduped):** fixed brackets + structural ATR stops on DEV+b0+b1.
+**Univariate = STABLE_INFO_NOT_TRADEABLE:** no geometry net-positive cross-era (DEV all neg, b1 all neg, b0 marginal +0.03). The stable +0.058 lift is sub-breakeven (P 0.32).
+**LEAD:** high-vol-short CONDITIONED on H1 DOWN parent regime = +0.102 avgR DEV (WR .48, N=239, best10 -0.048 slightly tail-carried); UP/QUIET/CHOP/TRANSITION parents negative; raw down-disp interaction doesn't help. Economically high-vol confirms downtrend. `ST-M15-HIGHVOL-SHORT-DOWNPARENT` = LEAD_CROSS_ERA_TBD.
+**NEXT:** DECISIVE same-regime cross-era check — DOWN-parent high-vol-short on b0/b1 (b0 has 2013 bear DOWN; b1 has little DOWN -> possibly INSUFFICIENT_SAME_REGIME_EVIDENCE). If material + cross-era-stable + non-redundant + sample-honest -> Stage-C freeze (REGIME-SPECIFIC SHORT candidate); else record honestly and continue to M15 transitions + other M15 states. Guarded: H1 DOWN shorts were era-unstable.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

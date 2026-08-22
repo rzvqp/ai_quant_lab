@@ -17,3 +17,9 @@ Mandate `ALPHA-XAUUSD-M15-CAUSAL-STATE-PATH-DISCOVERY-001`. Univariate M15 state
 
 ## Tradeability status (HONEST — not yet a strategy)
 The lift is STABLE but MODEST: high-vol SHORT P(+70/-50)=0.32, still below the 0.417 breakeven for that 1.4:1 label. **Stable INFORMATION, tradeability TBD.** NEXT: characterize high-vol/rising-vol SHORT expectancy across RR/targets (find the geometry where it is net-positive after STRESS cost, §18-19), event-deduped effective-N/opportunities, same-regime recurrence, overlap vs frozen; only then Stage-C. If no RR yields material positive expectancy, record as STABLE_INFO_NOT_TRADEABLE and continue (M15 transitions + H1/H4 conditioning may sharpen it).
+
+## Tradeability of ST-M15-HIGHVOL-SHORT (`state_m15_highvol.py`, STRESS, event-deduped)
+**Univariate = NOT tradeable.** No fixed bracket or structural ATR stop is net-positive cross-era:
+- DEV: all avgR negative (best +70/-50 -0.017; struct best -0.042). b0: marginally positive (+70/-50 +0.030). b1: all negative (-0.035..-0.21).
+- The stable +0.058 P(+70/-50) lift raises P to 0.32 -> still below breakeven; expectancy stays <=0. `STABLE_INFO_NOT_TRADEABLE` at the univariate level.
+**LEAD — parent-regime conditioning:** high-vol-short conditioned on the causal H1 **DOWN** parent regime is POSITIVE on DEV (struct 1.5ATR rr1.5): **avgR +0.102, WR 0.48, N=239** (best10 -0.048 slightly tail-carried). UP -0.027 / QUIET -0.167 / CHOP -0.090 / TRANSITION -0.091 all negative; raw down-displacement interaction -0.037 (doesn't help). Economically: high volatility CONFIRMS an existing downtrend. `ST-M15-HIGHVOL-SHORT-DOWNPARENT` = LEAD, cross-era TBD (same-regime DOWN-parent high-vol-short on b0/b1 — decisive; note H1 DOWN shorts were era-unstable, and b1 has little DOWN regime -> possible INSUFFICIENT_SAME_REGIME_EVIDENCE).
