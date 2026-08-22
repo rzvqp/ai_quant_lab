@@ -69,3 +69,13 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 | DOWN x LH_LL(downtrend) -> S 100/70 | +0.050 | +0.03/**+0.00** | directional-structure continuation short, b1 flat -> era-conditional, fails |
 | UP x lwDom(buy-rej) -> S 70/50 | +0.057 | +0.03/~+0.02 | borderline b1 + economically incoherent (buy-rej->short) -> not clean |
 **Verdict:** NO new directional cross-era-stable tradeable candidate. The cross-era-stable signals are VOLATILITY-STRUCTURE (HH_LL expansion = bilateral higher P; LH_HL contraction = bilateral avoidance) — non-directional, the M15 analog of the standalone-M15 volatility finding. Directional structure (LH_LL) era-conditional (fails b1). **Convergence: H4-conditioned path-shape REPRODUCES the standalone-M15 result** — only vol-structure is cross-era-stable & it is non-directional. PIVOT -> Family 5 (time-since-extreme + curvature/acceleration = last univariate class) then bounded interim conclusion.
+
+## Family 5 — fresh-extreme (momentum) + curvature/acceleration (checkpoint #32)
+`h4m15_curvature.py`. freshHigh/Low (current bar makes 8-bar extreme) + accel/decel (4-bar velocity now vs prior). Lift vs same-H4-state base, deduped, cross-era.
+| cell | lift | D/C | b0/b1 | read |
+|---|---|---|---|---|
+| **DOWN x decelDn -> S 70/50** | **+0.050** (CROSS_STABLE) | +0.05/+0.05 | **+0.06/+0.04** | 2nd cross-era-stable INFO candidate; DOWN-H4 short continuation after a pause/decel; +100/-70 also +0.059; coherent mirrors. SAME MECHANISM FAMILY as F2 impDn-shallow -> characterize + check redundancy |
+| UP x freshHigh -> L 100/70 | +0.041 | +0.02/+0.07 | +0.01/+0.00 | momentum long, b0/b1 ~0 -> fails cross-era |
+| QUIET x freshLow -> L 70/50 | +0.039 | +0.04/+0.04 | +0.04/+0.01 | b1 marginal (+0.01), fails |
+| TRANSITION x freshLow -> S 70/50 | +0.033 | +0.03/+0.03 | +0.02/-0.01 | b1 negative, fails |
+**Verdict:** momentum-extreme (freshHigh/Low) signals fail cross-era (b1~0). ONE cross-era-stable candidate: DOWN x decelDn short (+0.050/+0.059, b0+0.06/b1+0.04) — but it is the SAME DOWN-H4-short-continuation MECHANISM as the F2 candidate (ST-H4DN-M15DNIMP-SHALLOW-SHORT), just a different trigger. Registered ST-H4DN-M15-DECELDN-SHORT, PENDING characterization (§14 tradeability + §17 redundancy-vs-F2). Prior from F2: this family's expectancy is era-conditional (tradeable b0, neg b1) -> expect same; verify not assume. NEXT: characterize, then BOUNDED INTERIM CONCLUSION.

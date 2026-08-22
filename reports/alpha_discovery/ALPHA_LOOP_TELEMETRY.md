@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = Family 4 (swing-sequence + wick): only vol-STRUCTURE cross-era-stable (HH_LL expansion=bilateral, LH_HL contraction=avoidance), NON-directional. Convergence w/ standalone-M15. No new directional candidate.
+CURRENT_FRONTIER          = Family 5 (fresh-extreme + curvature): 2nd cross-era-stable candidate = DOWN x decelDn short +0.050 (b0+0.06/b1+0.04) but SAME DOWN-short-continuation family as F2. Registered ST-H4DN-M15-DECELDN-SHORT.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = Family 5 = time-since-extreme + path curvature/acceleration (last univariate class); then BOUNDED INTERIM CONCLUSION on H4-M15 path-shape frontier for CEO review
+NEXT_FRONTIER             = characterize ST-H4DN-M15-DECELDN-SHORT (tradeability net STRESS cross-era + redundancy-vs-F2); THEN bounded interim conclusion for CEO review
 ```
 
 ## Key structural findings (bounded)

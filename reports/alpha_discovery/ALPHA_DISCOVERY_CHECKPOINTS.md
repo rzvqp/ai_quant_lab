@@ -323,3 +323,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Convergence:** H4-conditioned path-shape REPRODUCES the standalone-M15 bounded conclusion — the only cross-era-stable M15 information is VOLATILITY-STRUCTURE (expansion/contraction), which is non-directional; directional path-edges remain era-conditional.
 **NEXT:** Family 5 = time-since-local-extreme + recent path curvature/acceleration (last univariate path-shape class); then present a BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #32 — 2026-08-22 — Family 5 (fresh-extreme + curvature): 2nd cross-era-stable candidate (DOWN x decelDn short, same family as F2)
+**Screen (`h4m15_curvature.py`):** M15 fresh 8-bar extreme (momentum) + 4-bar velocity accel/decel conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** momentum-extreme signals fail cross-era (b1~0). ONE cross-era-stable candidate: **DOWN x decelDn -> SHORT +0.050/+0.059** (DISC+0.05/CONF+0.05, b0+0.06/b1+0.04 — survives incl b1; coherent mirrors). BUT it is the SAME DOWN-H4-short-continuation MECHANISM as the F2 candidate ST-H4DN-M15DNIMP-SHALLOW-SHORT (different trigger). Registered ST-H4DN-M15-DECELDN-SHORT (pending characterization).
+**NEXT:** characterize ST-H4DN-M15-DECELDN-SHORT (§14-15 structural-stop net STRESS cross-era + §17 redundancy: event-day overlap vs F2). Prior from F2: expectancy era-conditional (tradeable b0, neg b1) + likely redundant -> expect not-a-survivor; verify not assume. THEN present BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
