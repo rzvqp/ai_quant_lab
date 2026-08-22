@@ -47,3 +47,13 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 | DEV 2021-2023 | -0.015 (rr3) | .38-.48 | -0.18..-0.36 | breakeven-negative (losing 2022, DISC/CONF disagree) |
 | b1 (low-vol) | -0.020 (rr3) | .38-.52 | -0.15..-0.35 | negative |
 **Verdict:** tradeable ONLY in the b0 high-vol strong-downtrend era; net-negative DEV+b1 -> EXPECTANCY is era-conditional though the relative INFO lift was cross-era-stable. Root cause: DOWN-state base rate + follow-through scale with era volatility (b1 MFE med 32p vs b0 59p), so a stable +0.03 hit-rate lift converts to positive expectancy only where absolute moves are large. Fails robust-survivor bar (§22); NOT frozen; NOT rescued by vol-sub-cutting (would re-tune frozen H4 taxonomy, §3). **Central lesson: cross-era-stable relative info != cross-era-stable tradeable expectancy.** PIVOT -> Family 3 (recovery-after-adverse / successive MFE-MAE asymmetry / volatility-expansion->controlled-retracement).
+
+## Family 3 — recovery / MFE-MAE asymmetry / vol-expansion->calm (checkpoint #30)
+`h4m15_recovery.py`. Descriptors: dipRecovUp (deep dip recovered to/above start=absorption), popFadeDn (pop faded=reversal), asymUp/asymDn (intrabar excursion asymmetry over W=8), volExpCalmUp/Dn (expansion then calm=continuation). Lift vs same-H4-state base, deduped, cross-era. **Result: NO cross-era-stable candidate.**
+| cell | lift | D/C | b0/b1 | read |
+|---|---|---|---|---|
+| UP x dipRecovUp -> L 70/50 | +0.059 | +0.06/+0.06 | +0.02/**-0.01** | absorption long, DEV-robust (all years +, coherent mirror) but b1 negative -> era-conditional, fails |
+| DOWN x asymDn -> S 70/50 | +0.047 | +0.05/+0.04 | +0.02/**+0.00** | sellers-won-intrabar short, b1 flat -> fails |
+| DOWN x popFadeDn -> S 70/50 | +0.036 | +0.01/+0.06 | +0.01/+0.01 | pop-fade reversal short, small/immaterial |
+| QUIET x popFadeDn -> L 70/50 | +0.039 | +0.06/+0.01 | +0.01/-0.00 | fade-recover long, b0/b1 <0.02 |
+**Verdict:** no cross-era-stable positive candidate. Strongest (UP dipRecovUp LONG +0.059) is DEV-robust + b0-marginal but b1-negative. Meta-pattern across F1-F3: continuation edges work in high-vol/trend eras (b0/DEV) & fail b1; reversal/absorption edges work in DEV & fail hist. Binding constraint = b1 low-vol lacks directional follow-through. PIVOT -> Family 4 (HH/HL structural swing-sequence + wick/body asymmetry).

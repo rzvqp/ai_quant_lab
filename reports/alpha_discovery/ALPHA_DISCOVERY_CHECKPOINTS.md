@@ -306,3 +306,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Central lesson (recorded):** cross-era-stable relative INFORMATION != cross-era-stable tradeable EXPECTANCY; absolute expectancy is gated by era volatility/follow-through even when the relative lift is stable.
 **NEXT:** Family 3 = recovery-after-adverse-excursion / successive MFE-MAE asymmetry / volatility-expansion->controlled-retracement, conditional on H4 state.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #30 — 2026-08-22 — Family 3 (recovery/asymmetry/vol-exp-calm): no cross-era-stable candidate
+**Screen (`h4m15_recovery.py`):** M15 dip-recover/pop-fade + intrabar MFE-MAE asymmetry + vol-expansion->calm conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** NO cross-era-stable candidate. Strongest = UP x dipRecovUp -> LONG +0.059 (absorption; DEV-robust all-years + DISC +0.06/CONF +0.06 + coherent mirror) but b0 +0.02 marginal / b1 -0.01 -> era-conditional, fails. DOWN x asymDn short +0.047 fails b1 (flat). Meta-pattern F1-F3: continuation edges work high-vol/trend eras & fail b1; reversal/absorption edges work DEV & fail hist. Binding constraint = b1 low-vol lacks follow-through.
+**NEXT:** Family 4 = HH/HL vs LH/LL structural swing-sequence + wick/body sequence asymmetry (microstructure) conditional on H4 state.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = ST-H4DN-M15DNIMP-SHALLOW-SHORT characterized: NOT a tradeable survivor (expectancy era-conditional — tradeable b0 only, net-neg DEV/b1). Lesson: cross-era-stable info != cross-era-stable expectancy.
+CURRENT_FRONTIER          = Family 3 (recovery/asymmetry/vol-exp-calm): no cross-era-stable candidate (UP dipRecovUp LONG +0.059 fails b1). Meta-pattern: b1 low-vol lacks follow-through, binds all path-edges.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = Family 3 = recovery-after-adverse / successive MFE-MAE asymmetry / vol-expansion->controlled-retracement, conditional on H4 state
+NEXT_FRONTIER             = Family 4 = HH/HL structural swing-sequence + wick/body sequence asymmetry conditional on H4 state
 ```
 
 ## Key structural findings (bounded)
