@@ -27,3 +27,14 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 | DOWN x cleanUp -> L 70/50 | +0.045 | +0.04/+0.05 | +0.01/+0.01 | positive all cells but b0/b1 <0.02 (immaterial) |
 | UP x runDn>=4 -> L 70/50 | -0.037 | | +0.04/-0.02 | "pullback-in-uptrend -> LONG" NOT supported (negative) |
 **Verdict:** run-length/persistence adds no cross-era-stable positive directional lift over the H4-state base. Continuation edges (DOWN persistDn short) remain era-conditional (fail b1 low-vol era); mean-reversion/exhaustion signals weak/DISC-CONF-inconsistent; pullback-in-trend not supported. PIVOT -> Family 2 (impulse->retracement geometry / retracement depth).
+
+## Family 2 — impulse -> retracement geometry (checkpoint #28) — FIRST CROSS-ERA-STABLE CANDIDATE
+`h4m15_impretr.py`. Descriptors: impulse magnitude (ATR-norm, W=8/16) x retracement depth (close position in window range): shallow (near extreme=continuation geom) vs deep (bounced=reversal geom). Lift vs same-H4-state base, deduped, cross-era.
+| cell | lift | D/C | b0/b1 | read |
+|---|---|---|---|---|
+| **DOWN x impDn8&shallow -> S 70/50** | **+0.055** | +0.03/+0.08 | **+0.04/+0.03** | **CROSS_STABLE incl b1** — down-impulse continuation short in DOWN H4; per-yr 2021 +0.12/2023 +0.05; +100/-70 also + (b0+0.04/b1+0.02) |
+| DOWN x impDn16&shallow -> S 70/50 | +0.040 | -0.00/+0.07 | +0.03/+0.03 | same mechanism neighboring window (b0/b1 +) -> definition-stable support |
+| DOWN x impUp8/16&shallow -> S | -0.054/-0.088 | neg | mixed | coherent MIRROR: counter-trend bounce makes shorts worse (mechanism-consistent) |
+| QUIET x impUp16&shallow -> S 100/70 | +0.049 | +0.05/+0.04 | **-0.03/-0.02** | REVERSES cross-era -> era-transient, fails |
+| UP x impUp16&shallow -> S 70/50 | +0.031 | +0.04/+0.02 | +0.02/+0.00 | weak, b1~0 |
+**Verdict:** Family 2 yields the FIRST cross-era-stable positive candidate of this mandate: DOWN-H4 + M15 down-impulse-shallow-retrace -> SHORT continuation (survives DISC/CONF + b0 + b1 + neighboring-window + coherent mirror). Registered ST-H4DN-M15DNIMP-SHALLOW-SHORT, PENDING full §8/§14/§15 characterization + tradeability (structural stop, not the research bracket) + §17 independence vs S5/COMP-CONT-L. NOTE: the +0.055 research-bracket lift is INFORMATION, not yet tradeable expectancy.

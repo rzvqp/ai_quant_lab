@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = H4-conditioned M15 path-shape Family 1 (run-length/persistence): NO cross-era-stable positive lift. Continuation shorts era-conditional (fail b1); pullback-in-trend not supported.
+CURRENT_FRONTIER          = H4-M15 path-shape Family 2 (impulse->retracement geometry): FIRST cross-era-stable candidate = DOWN-H4 down-impulse-shallow -> SHORT +0.055 (b0+0.04/b1+0.03, survives incl b1). Registered ST-H4DN-M15DNIMP-SHALLOW-SHORT.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = Family 2 = impulse->retracement geometry (impulse magnitude + retracement depth) conditional on H4 state; then recovery-after-adverse + MFE/MAE asymmetry
+NEXT_FRONTIER             = CHARACTERIZE ST-H4DN-M15DNIMP-SHALLOW-SHORT (§8 outcome dist + §14-15 structural-stop net STRESS cross-era + §16 freq + §17 independence vs S5/COMP-CONT-L); freeze if net-positive+non-redundant
 ```
 
 ## Key structural findings (bounded)

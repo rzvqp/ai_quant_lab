@@ -289,3 +289,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** NO cross-era-stable positive tradeable lift. Only CROSS_STABLE = QUIET x runUp>=4 short -0.055 (a NEGATIVE short-avoidance signal, + within-DEV per-year sign flip -> weak). Strongest positive = DOWN x persistDn short +100/-70 +0.059 (D/C/b0 positive) but b1 ~0 -> era-conditional continuation, fails cross-era. "Pullback-in-uptrend -> LONG" NOT supported (UP x runDn LONG negative). Continuation shorts era-conditional (fail b1 low-vol), consistent with program-wide finding.
 **NEXT:** Family 2 = impulse -> retracement geometry (recent impulse magnitude + retracement depth relative to it) conditional on H4 state; then recovery-after-adverse & MFE/MAE-asymmetry families.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #28 — 2026-08-22 — Family 2 (impulse->retracement geometry): FIRST cross-era-stable candidate (DOWN-H4 down-impulse-shallow -> SHORT)
+**Screen (`h4m15_impretr.py`):** M15 impulse magnitude (W=8/16, ATR-norm) x retracement depth (shallow=continuation / deep=reversal) conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** FIRST cross-era-stable positive candidate of the mandate. **DOWN x impDn8&shallow -> SHORT +70/-50 = +0.055** (DISC +0.03/CONF +0.08; b0 +0.04/b1 +0.03 — survives incl b1 low-vol era; per-yr 2021 +0.12/2023 +0.05; +100/-70 & W=16 neighbor also +; coherent mirror). Registered ST-H4DN-M15DNIMP-SHALLOW-SHORT (INFO_CROSS_STABLE_PENDING_CHARACTERIZATION). Note: the research-bracket lift is INFORMATION, not yet tradeable expectancy. Other cells fail (QUIET impUp16 short reverses on b0/b1 = era-transient).
+**NEXT (characterization):** §8 full outcome distribution; §14-15 STRUCTURAL-STOP strategy (recent M15 swing high / ATR from observed MAE, NO forced RR), net STRESS expectancy cross-era DEV/b0/b1 event-deduped; §16 frequency; §17 independence vs S5/COMP-CONT-L. If net-positive + non-redundant -> Stage-C freeze + notify CEO; else record + continue path-shape families.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
