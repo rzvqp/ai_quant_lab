@@ -123,3 +123,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **CEO decision requested:** (a) authorize `EXOGENOUS_FRONTIER`; (b) point Alpha at another genuinely-different authorized price-only population/data object; (c) accept portfolio as-is (S5 validated + COMP-CONT-L-rr2 & H4-bo-raw-S pending independent validation) and hold. Loop resumes on (a)/(b).
 **Per §23, auto-loop PAUSED at this governance-gated decision point; global program ACTIVE.** No mining of M15 variants (structural wall makes them near-zero-prior); no self-authorized exogenous use.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused, awaiting decision).
+
+---
+
+## CHECKPOINT #10 — 2026-08-22 — EXOGENOUS_FRONTIER authorized; DXY gate FAILED -> EXOGENOUS_DATA_GOVERNANCE_BLOCKER (auto-loop paused, program ACTIVE)
+**Authorization:** CEO authorized `EXOGENOUS_FRONTIER` (new mandate `ALPHA-XAUUSD-EXOGENOUS-CONTINUOUS-LOOP-001`). Addendum: DXY DATA AVAILABILITY GATE before any DXY hypothesis.
+**Gate result (mechanical inventory of the entire authorized data environment):** `DXY_DATA_NOT_AVAILABLE`. No DXY / yields / real-yields / curve / rate-expectations / COT / fund-flow data exists anywhere. Only exogenous data present = `ff_calendar_2026-W32` (99 rows, 2026) + `NEWS_LEDGER.csv` (506 rows, ~2026-08) -> 2026 protected-future, quarantined/unratified, ZERO overlap with any authorized XAUUSD research period. Double-blocked.
+**Verdict:** `EXOGENOUS_DATA_GOVERNANCE_BLOCKER` (§27 genuine blocker) — no authorized exogenous research can be performed without fabricating/substituting data (forbidden §3/§4/addendum) or using protected+quarantined+non-overlapping data. NOT a claim that exogenous alpha is impossible; the DATA to test it does not yet exist in the authorized environment.
+**Constructive deliverables:** `ALPHA_EXOGENOUS_EVIDENCE_MAP.md` (class-by-class), `ALPHA_EXOGENOUS_DATA_REQUIREMENTS.md` (exact datasets + coverage/timestamp/vintage spec, priority-ranked; minimal viable = one ratified DXY H1 series over b0/b1 unblocks X1/X3/X4), `ALPHA_EXOGENOUS_FRONTIER_REGISTRY.md` (X1-X6 frozen, BLOCKED_NO_DATA), `ALPHA_EXOGENOUS_HYPOTHESIS_REGISTRY.md` (0 tested).
+**CEO action requested:** provision (via Data Acquisition, ratified) at least one historical exogenous series covering b0/b1 (or 2021-2023) per the requirements spec — a ratified DXY H1 series is the highest-leverage single unblock. Loop resumes immediately on provisioning.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused at genuine data blocker).

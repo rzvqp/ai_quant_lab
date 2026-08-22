@@ -3,9 +3,9 @@
 Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes CURRENT immediately.
 
 ```
-LOOP_STATUS               = ACTIVE (auto-loop PAUSED — HISTORICAL_M15_PRICE_ONLY_FRONTIER_EXHAUSTED; awaiting CEO decision)
-CURRENT_POPULATION        = historical RAW M15 b0+b1 (governance-proven slice, causal hist_m15_data.py)
-CURRENT_FRONTIER          = none (M15 price-only exhausted; authorized price-only space covered)
+LOOP_STATUS               = ACTIVE (auto-loop PAUSED — EXOGENOUS_DATA_GOVERNANCE_BLOCKER: no authorized exogenous data exists; awaiting data provisioning)
+CURRENT_POPULATION        = EXOGENOUS frontier authorized, but NO exogenous data available (DXY/yields/positioning absent; only 2026 quarantined calendar/news)
+CURRENT_FRONTIER          = X1-X6 defined but BLOCKED_NO_DATA
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = CEO-DECISION: (a) authorize EXOGENOUS_FRONTIER (highest prior); (b) another authorized price-only population/data object; (c) hold. Loop resumes on (a)/(b).
+NEXT_FRONTIER             = PROVISION-RATIFIED-EXOGENOUS-DATA (DXY H1 over b0/b1 = highest-leverage unblock; see ALPHA_EXOGENOUS_DATA_REQUIREMENTS.md). Loop resumes on data provisioning.
 ```
 
 ## Key structural findings (bounded)
