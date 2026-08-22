@@ -439,3 +439,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Radar R5:** mode-aligned displacement continuation = cross-era-consistent positive P-lift (short-side/trend-continuation most consistent).
 **NEXT:** controlled-retracement + failure branch + tradeability (structural stop = displacement origin) for the consistent cells; independence vs COMP-CONT-L. Continuous loop.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #45 — 2026-08-23 — S10: FAILURE branch is the edge (HOLD ~3x FAIL); immediate entry NOT tradeable
+**Screen (`displacement_trade.py`, §9/§14/§15/§16):** immediate continuation entry at displacement bar (structural stop = disp origin), net STRESS per cell x era + FAILURE branch (origin reclaimed within 4 bars?).
+**Result:** (1) FAILURE branch STRONGLY informative cross-era ALL cells: displacement+HOLD has ~3x the P(+70/-50) of displacement+FAIL (e.g. b0 C1 0.37/0.11, C4 0.48/0.15; 2021 C1 0.37/0.04; 2023 C1 0.47/0.15). The HOLD/acceptance is the edge (§14 winner-vs-loser), NOT the raw displacement. (2) IMMEDIATE entry (before hold known) is net-NEGATIVE all cells/eras under STRESS (best C4 2023/2021 rr2 +0.02/+0.075) — because it includes the FAIL cases that crater; stops also tightish (16-30p).
+**Radar R6:** displacement HOLD-vs-FAIL = strongest discriminator (~3x), cross-era. -> the tradeable edge requires entering AFTER hold is confirmed (controlled retracement), exactly the CEO §14 architecture.
+**NEXT:** CONTROLLED-RETRACEMENT entry — after displacement, wait for a pullback that HOLDS the origin, enter on resumption; structural stop = origin/pullback extreme; net STRESS cross-era for the consistent cells. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
