@@ -41,3 +41,7 @@ Falsified mechanisms — **do not re-run without genuinely new information (§4,
 ## Historical b0/b1 counter-trend LONG reversion (HF5) — CLOSED
 - **HF5-A capitulation LONG** (oversold flush + up-close): DEAD (advF 0.78-0.83, MAE>>MFE, best10<0, b1 badly neg). Buying oversold flushes in the bear gets run over; the tiny positive cells are n=3 (2011).
 - **HF5-B down-spike reversion LONG** (fade big down bar): DEAD (N=221, advF 0.87, best10<0, maxDD -62R). **Regime-dependent finding: down-spikes REVERT in the 2021-23 structurally-bid market (F6) but CONTINUE on b0/b1** — the reversion edge is a property of the 2021-23 bid, not universal. Mean-reversion is now dead on b0/b1 in BOTH directions (HF2 fade + HF5).
+
+## Historical b0/b1 temporal (HF6) — CLOSED
+- **HF6 D1 gap**: `NOT_TESTABLE` — the `_from_M15_v2` D1 bars are continuously synthesized (open == prior close), so there are no overnight gaps to trade. Honest data-structural note.
+- **HF6 day-after-big-day continuation**: NEAR-MISS (rr1.5 avgR +0.132, both blocks+) but best-10%-removed<0 and 2018 negative -> fails gate. Fade weak. Not robust.

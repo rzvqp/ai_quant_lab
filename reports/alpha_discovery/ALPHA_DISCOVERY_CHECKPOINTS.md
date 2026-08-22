@@ -85,3 +85,19 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Authorized price-only discovery territory remaining:** 2021-23 native (exhausted); b0/b1 (major SWING classes now explored); 2014-15/2019 MISSING; 2020-21 CALIB readout-only; 2024-25 PROTECTED. Genuinely-distinct untested price-only angles on b0/b1 are thin (temporal/gap, position-horizon) and low-prior; further same-class variants would be mining (forbidden §17).
 **Action:** loop CONTINUES (mandate: negatives are not blockers). NEXT_FRONTIER = HF6 (D1 overnight/gap directional on b0/b1 — a genuinely different temporal-structural class, low prior). If HF6 also fails, the honest signal to CEO is that the authorized price-only space is exhausted of new non-redundant robust alpha and the **exogenous frontier (CEO-gated) is the productive next lever** — surfaced for a CEO data-scope decision, loop still ACTIVE.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #7 — 2026-08-22 — HF6 closed; AUTHORIZED PRICE-ONLY SPACE EXHAUSTED -> CEO DATA-SCOPE DECISION POINT (auto-loop PAUSED, program ACTIVE)
+**Frontier:** HF6 (D1 gap NOT_TESTABLE — synthesized D1 has no gaps; day-after-big-day continuation near-miss best10<0/2018<0). **Hypotheses:** H37, H38.
+**Bounded exhaustion (§37, NOT universal impossibility):** across the FULL authorized price-only space —
+  - **2021-2023 native (M5->M15/H1/H4/D1):** 11 frontiers (F1-F7 + external S2/S4) -> ONE new robust survivor `COMP-CONT-L-rr2` (LONG); SHORT/range/reversion/temporal/faster-LONG dead.
+  - **historical b0/b1 (H1/H4/D1 causal):** 6 frontiers (HF1-HF6) covering bearish-short (compression/pullback/breakdown/transition), range-fade, counter-trend long-reversion (capitulation/spike), temporal/gap, day-after-big-day -> NO new non-redundant robust alpha; the only robust bearish edge is the frozen H4-bo-raw-S (new triggers redundant with it, HF4 85%-within-3d); long-trend-onset redundant with TR-rng2trend-L.
+  **Total: 17 frontiers / 38 hypotheses / ~250 configs this loop; 1 new independent survivor (COMP-CONT-L-rr2).**
+**Remaining price-only options (all require a CEO data-scope decision — I will not self-authorize):**
+  1. `INTRADAY_HISTORICAL_M15` on b0/b1 — AVAILABLE (raw M15 ~52k bars each) but GOVERNANCE-UNRESOLVED (raw M15 vs ratified `_from_M15_v2`; file bleeds into PROTECTED 2024+); LOW prior (intraday exhausted on 2021-2023).
+  2. A genuinely different authorized price-only population — none obviously available in the repo beyond the above.
+  3. `EXOGENOUS_FRONTIER` (DXY/yields/positioning/news) — repeatedly identified as gold's likely true driver; **the highest-prior productive lever for NEW diversifying alpha**, but CEO-authorization-gated (§22).
+**Decision (§36 governance-gated, mandate-authorized pause):** continuing on the authorized price-only space would be mining low-prior b0/b1 variants (forbidden §17) or launching the governance-unresolved M15-intraday sub-program without authorization. So the auto-loop is **PAUSED at this decision point**; the **global program remains ACTIVE** for CEO redirection. Not a claim of impossibility — a bounded statement that the *authorized price-only* space is exhausted of NEW non-redundant robust alpha.
+**CEO decision requested:** (a) authorize `EXOGENOUS_FRONTIER`; (b) authorize `INTRADAY_HISTORICAL_M15` for b0/b1 discovery (resolve the raw-M15 governance question); (c) point Alpha at another authorized price-only population; or (d) accept the portfolio as-is (S5 validated + COMP-CONT-L-rr2 & H4-bo-raw-S pending independent validation) and hold. On any of (a)-(c) the loop resumes immediately.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused, awaiting data-scope decision).

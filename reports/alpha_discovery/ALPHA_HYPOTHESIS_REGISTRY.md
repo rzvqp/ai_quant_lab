@@ -62,3 +62,6 @@ Causal `hist_data.py`, b0+b1 DISCOVERY_CONSUMED (NOT validation).
 
 | H35 | HF5 | capitulation LONG (oversold flush + up-close) | L | ext<-{2,2.5}, ALL/D1down, rr{1.5,2,3} | 27-85 | FALSIFIED (advF 0.78-0.83, MAE>>MFE, best10<0, b1 neg) |
 | H36 | HF5 | down-spike reversion LONG (fade big down bar) | L | tr>1.8atr_ma, close lower-third | 221 | FALSIFIED (advF 0.87, best10<0, maxDD -62R; spikes don't revert on b0/b1) |
+
+| H37 | HF6 | D1 overnight/gap continuation & fade | dir | \|gap\|>0.3*atr_ma | 0 | NOT_TESTABLE (synthesized D1 has no gaps: open==prior close) |
+| H38 | HF6 | day-after-big-day continuation & fade | dir | range>1.5*atr_ma, prior-body dir | 124 | NEAR-MISS/FALSIFIED (cont rr1.5 +0.132 both blocks+ but best10<0, 2018<0; fade weak) |
