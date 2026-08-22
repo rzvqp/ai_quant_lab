@@ -1,0 +1,19 @@
+{
+  "started_at": 1787350916.2148745,
+  "ended_at": 1787381856.5627098,
+  "duration_seconds": 30940.347835302353,
+  "days_simulated": 500,
+  "cycles_completed": 15993,
+  "breakout_days": 250,
+  "real_ev_engine_confirmations": 250,
+  "missing_probability_inputs_count": 0,
+  "no_strategy_signal_count": 15743,
+  "other_reason_counts": {
+    "EV_BELOW_THRESHOLD": 250
+  },
+  "duplicate_cycles_detected": 0,
+  "exceptions": [],
+  "ledger_row_count_final": 15993,
+  "ledger_row_count_matches_cycles": true,
+  "order_send_calls_total": 0
+}

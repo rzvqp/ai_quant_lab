@@ -106,3 +106,19 @@ path to `TRADE_DECISION` -- that is a second, separate, not-yet-authorized manda
 > `TradeHypothesis.expected_edge`) that now carries a `VALIDATED` `CatalogEntry` the rest of the way to a
 > real `TRADE_DECISION`. This paragraph is left as-written above (rather than rewritten) since it
 > accurately records the state of the system before this mandate.
+
+> **Addendum 2 (mandate `AI-TRADER-S5-CANONICAL-ONBOARDING-001`, first real strategy onboarded through
+> this exact contract)**: S5 (`s5_c_2d587447_opening_range_breakout_long`,
+> `ai_trader/new_brain_live/strategy_platform/s5_opening_range_breakout.py`) is the first strategy to walk
+> items 1-10 above end to end with real, cited validation evidence (`AI_TRADER_S5_ONBOARDING_REPORT.md`
+> has the full identity/provenance/fidelity trail). One genuine, disclosed nuance this first real
+> onboarding surfaced, worth knowing before onboarding the next strategy: a strategy whose `MarketState`
+> alone is insufficient to determine its own setup (S5 needs the opening range's raw high/low, tracked
+> across several bars, which `MarketState` deliberately does not carry) may need its own additional,
+> stateful public method beyond the bare `Strategy` protocol's one required `evaluate()` (S5's own
+> `observe_bar(bar)`) -- this is allowed (the protocol's "one method" is a MINIMUM surface, not an upper
+> bound) and does not require any change to `StrategyEvaluationInput`, `router.py`, or any other generic
+> module; whoever wires such a strategy into a live loop is responsible for calling its extra method(s) in
+> the correct order relative to the M15 context-refresh cycle, exactly as `RawAxesBuilder.observe(bar)`
+> already establishes the precedent for. S5 itself remains un-wired into any live loop -- shadow/fixture
+> use only, per this mandate's own explicit scope.
