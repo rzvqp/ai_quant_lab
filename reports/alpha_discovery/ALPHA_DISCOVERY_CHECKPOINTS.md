@@ -410,3 +410,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Root cause:** event FORMULATION, not necessarily the hypothesis — the CEO sequence (sweep->reclaim->DISPLACEMENT->path) is inherently MULTI-BAR; the single-bar collapse made it rare + tight-stopped.
 **NEXT (one predeclared reformulation, §12-13, NOT mining):** multi-bar liquidity SEQUENCE — sweep+reclaim on bar t, displacement over next K bars, entry after displacement confirms, structural stop at swept extreme (with room); re-test the mode-conditional decomposition + winner-loser + tradeability cross-era. If still no robust specialist -> bounded liquidity-family conclusion.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #42 — 2026-08-22 — Liquidity multi-bar REVERSAL branch: NEGATIVE all modes cross-era
+**Screen (`liquidity_seq.py`):** multi-bar sweep->reclaim->displacement reversal (predeclared reformulation), structural stop = swept extreme (healthy 20-41p), net STRESS per mode x side x era, events plentiful (26-599).
+**Result:** net-NEGATIVE in ALL 6 H4 modes x both sides, cross-era. Only positives = single-era small-N outliers (BULL_CORR sell->L 2022 +0.45; TRANSITION short 2023 +0.08) failing cross-era. The multi-bar reformulation fixed the frequency + tight-stop problems but decisively confirmed the REVERSAL reading of the liquidity mechanism has no cross-era tradeable edge in any mode (§14 "don't assume textbook").
+**Radar:** R2 (reversal negative regularity), R1 (displacement is the informative component), R3 (correction modes least-negative, b1 worst).
+**NEXT (§14 mandatory, in-family):** CONTINUATION / acceptance branch — sweep + NO reclaim (acceptance beyond) + same-direction displacement -> continuation (sellside->SHORT-down, buyside->LONG-up), structural stop = broken swing level (reclaim = fail), per mode cross-era. Continuous loop, no pause.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
