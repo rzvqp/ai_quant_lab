@@ -1,0 +1,38 @@
+{
+  "xauusd_reference": "data\\market\\OANDA_XAUUSD_H1_from_M15_v2.csv",
+  "by_block": {
+    "DXY_B0_RESEARCH_SLICE": {
+      "dxy_start": "2011-07-26T17:00:00Z",
+      "dxy_end": "2013-09-27T16:00:00Z",
+      "xauusd_start": "2011-07-26T17:00:00Z",
+      "xauusd_end": "2013-09-27T15:00:00Z",
+      "dxy_h1_hours": 13267,
+      "xauusd_h1_hours": 13397,
+      "overlapping_h1_hours": 13053,
+      "coverage_pct_of_xauusd": 97.4,
+      "missing_overlap_hours": 344
+    },
+    "DXY_B1_RESEARCH_SLICE": {
+      "dxy_start": "2016-01-11T09:00:00Z",
+      "dxy_end": "2018-04-06T11:00:00Z",
+      "xauusd_start": "2016-01-11T09:00:00Z",
+      "xauusd_end": "2018-04-06T10:00:00Z",
+      "dxy_h1_hours": 13583,
+      "xauusd_h1_hours": 13213,
+      "overlapping_h1_hours": 12918,
+      "coverage_pct_of_xauusd": 97.8,
+      "missing_overlap_hours": 295
+    },
+    "DXY_2021_2023_RESEARCH_SLICE": {
+      "dxy_start": "2021-07-27T00:00:00Z",
+      "dxy_end": "2023-12-29T21:00:00Z",
+      "xauusd_start": "2021-07-27T00:00:00Z",
+      "xauusd_end": "2023-12-29T21:00:00Z",
+      "dxy_h1_hours": 14846,
+      "xauusd_h1_hours": 6777,
+      "overlapping_h1_hours": 6772,
+      "coverage_pct_of_xauusd": 99.9,
+      "missing_overlap_hours": 5
+    }
+  }
+}

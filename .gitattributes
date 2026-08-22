@@ -13,3 +13,4 @@ data/market/OANDA_XAUUSD_H1_from_M15_v2.csv -text
 acquisition_staging/calendar/captures/**/*.csv -text
 acquisition_staging/calendar/captures/**/*.json -text
 acquisition_staging/calendar/captures/**/*.xml -text
+acquisition_staging/dxy/*.csv -text
