@@ -5,15 +5,15 @@ Status: RETEST_ELIGIBLE / REQUIRES_NEW_MECHANISM / FROZEN_REFERENCE / IN_PROGRES
 | S | family | status | note |
 |---|---|---|---|
 | S1 | Liquidity Sweep (reversal+continuation) | BOUNDED_NEGATIVE | BOTH branches net-neg all 6 modes cross-era (#42/#43); displacement informative (R1) but not net-positive after cost; no robust specialist |
-| S2 | Failed Breakout / Failed Sweep | RETEST_ELIGIBLE | closely tied to S1 continuation branch |
+| S2 | Failed Breakout / Failed Sweep | RECOMMENDED_NEXT | R6: displacement/breakout FAILURE is a ~3x discriminator -> trade the failure/reversal side (distinct from bounded continuation families) |
 | S3 | Breakout Retest Continuation | RETEST_ELIGIBLE | |
-| S4 | Volatility Compression Expansion | RETEST_ELIGIBLE | partially seen (M15 expansion cross-era-stable but bilateral) |
+| S4 | Volatility Compression Expansion | ALT_NEXT | vol-expansion cross-era-stable; conditioned on directional mode + HOLD filter may exceed breakeven (breakout target > continuation retest) |
 | S5 | Opening Range Breakout | RETEST_ELIGIBLE | session-open burst seen (M15 NY-open bilateral) |
 | S6 | Session Transition | RETEST_ELIGIBLE | |
 | S7 | Trend Pullback | RETEST_ELIGIBLE | COMP-CONT-L (frozen) is a pullback/continuation edge; correction modes relevant |
 | S8 | Mean Reversion | RETEST_ELIGIBLE | |
 | S9 | Multi-Timeframe Alignment | RETEST_ELIGIBLE | H4-M15 path-shape bounded (regime-conditional) |
-| S10 | Displacement Continuation | RECOMMENDED_NEXT | R1+R4: displacement informative & trend-aligned continuation least-bad -> test pure mode-aligned displacement continuation (not sweep-gated) |
+| S10 | Displacement Continuation | BOUNDED_NEGATIVE | displacement carries cross-era-CONSISTENT positive INFO (#44) + HOLD~3x discriminator (#45/R6) but no tradeable entry converts net-positive (#47); pullback-fill candidate FALSIFIED as sim artifact |
 | S11 | Structure Break Reversal | RETEST_ELIGIBLE | |
 | S12 | Range Rotation | RETEST_ELIGIBLE | NEUTRAL_ROTATION mode available |
 | S13 | Liquidity Void / Imbalance Fill | RETEST_ELIGIBLE | |

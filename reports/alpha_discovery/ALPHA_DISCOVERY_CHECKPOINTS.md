@@ -457,3 +457,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **CAUTION:** magnitude high after a long negative string -> PROVISIONAL. Prime suspicion: same-bar win allowed on the fill bar (optimistic). Radar R7.
 **NEXT (rigorous verification, continuous loop):** re-run pullback-fill with STRICT rule (resolve target only from bar AFTER fill; stop-first), + DISC/CONF split + event-N honesty (unique days/H4 episodes) + frequency (tpm) + §17 independence vs COMP-CONT-L (C1 long likely overlaps). Only if it survives -> Stage-C characterization/freeze.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #47 — 2026-08-23 — S10 pullback-fill FALSIFIED (sim artifact) -> S10 BOUNDED_NEGATIVE (CEO next-family)
+**Strict verification (`displacement_verify.py`):** realistic causal fill (no same-bar target win; fill+stop-same-bar=loss; target from next bar; stop-first). The provisional +0.5..+0.8 pullback-fill edge was a SIMULATION ARTIFACT -> under strict fill, net-NEGATIVE all cells/eras (avgR -0.14..-0.72). No false positive frozen (skeptical verification worked).
+**S10 CONCLUSION (`ALPHA_S10_FAMILY_CONCLUSION.md`):** displacement carries the program's cleanest cross-era-CONSISTENT positive INFORMATION (#44) + strong HOLD-vs-FAIL discriminator (~3x, R6), but the absolute continuation P (~0.40 on +70/-50 for HOLD) is just below breakeven and NO entry geometry (immediate/hold/pullback-fill) converts net-positive after cost. BOUNDED_NEGATIVE; 0 survivors. Reinforces program-wide finding: real cross-era-stable INFO != net-positive tradeable expectancy.
+**Radar:** R5 (displacement info) + R6 (HOLD 3x) KEPT (genuine); R7 FALSIFIED (artifact) + methodological flag.
+**Backlog:** S10 -> BOUNDED_NEGATIVE. Recommended next = S2 Failed Breakout (R6: failure is highly informative -> trade the reversal side); alt S4 Vol Compression->Expansion.
+**CEO DECISION (pause #5):** select next structural family. Recommendation S2; alt S4/S7.
+**Global status:** `ALPHA_S10_FAMILY_BOUNDED` — awaiting CEO next-family selection.
