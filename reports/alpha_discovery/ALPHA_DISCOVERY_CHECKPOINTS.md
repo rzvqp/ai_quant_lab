@@ -75,3 +75,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Lessons (failure-map #16-17):** bearish-short on b0/b1 is SATURATED by the frozen H4-bo-raw-S event (multiple triggers converge on the same down-legs); a signal can pass every robustness gate yet be non-alpha (redundant) — independence needs the overlap check, not just the gates.
 **Action:** HF3 graveyarded; HF4 recorded REDUNDANT (not frozen); loop CONTINUES. Frozen pending-validation still COMP-CONT-L-rr2. NEXT_FRONTIER = HF5 (counter-trend long-reversion after capitulation / high-vol event alpha — genuinely different, low prior). 
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #6 — 2026-08-22 — HF5 dead; b0/b1 bounded near-exhaustion assessment
+**Frontier:** HF5 (counter-trend LONG reversion: capitulation-bounce + down-spike-fade). **Hypotheses:** H35, H36. Both **CLOSED_NO_ROBUST_ALPHA**.
+**Finding:** mean-reversion dead on b0/b1 in both directions; down-spike reversion is a 2021-23 bid-market artifact (continues on b0/b1). 
+**Bounded assessment (§37, NOT universal impossibility):** across 5 historical SWING frontiers (HF1-HF5) covering bearish-short (compression/pullback/breakdown/transition), range mean-reversion, and counter-trend long-reversion, **the ONLY robust price-only edge on b0/b1 is the already-frozen H4-bo-raw-S short event** (new bearish-short triggers are redundant with it; long-trend-onset is redundant with TR-rng2trend-L). No NEW non-redundant robust price-only alpha emerged.
+**Authorized price-only discovery territory remaining:** 2021-23 native (exhausted); b0/b1 (major SWING classes now explored); 2014-15/2019 MISSING; 2020-21 CALIB readout-only; 2024-25 PROTECTED. Genuinely-distinct untested price-only angles on b0/b1 are thin (temporal/gap, position-horizon) and low-prior; further same-class variants would be mining (forbidden §17).
+**Action:** loop CONTINUES (mandate: negatives are not blockers). NEXT_FRONTIER = HF6 (D1 overnight/gap directional on b0/b1 — a genuinely different temporal-structural class, low prior). If HF6 also fails, the honest signal to CEO is that the authorized price-only space is exhausted of new non-redundant robust alpha and the **exogenous frontier (CEO-gated) is the productive next lever** — surfaced for a CEO data-scope decision, loop still ACTIVE.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

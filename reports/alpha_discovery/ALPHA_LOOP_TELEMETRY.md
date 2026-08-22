@@ -5,15 +5,15 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE
 CURRENT_POPULATION        = historical _from_M15_v2 b0(2011-2013)+b1(2016-2018)  [DISCOVERY_CONSUMED, causal hist_data.py]
-CURRENT_FRONTIER          = (cycle boundary) -> next = HF5
+CURRENT_FRONTIER          = (cycle boundary) -> next = HF6
 CURRENT_HYPOTHESIS        = -
-TOTAL_FRONTIERS_TESTED    = 13  (F1-F7, F-EXT-S2, F-EXT-S4, HF1, HF2, HF3, HF4)
-TOTAL_HYPOTHESES_TESTED   = 34  (H01-H34)
+TOTAL_FRONTIERS_TESTED    = 14  (F1-F7, F-EXT-S2, F-EXT-S4, HF1-HF5)
+TOTAL_HYPOTHESES_TESTED   = 36  (H01-H36)
 TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks, not separate hypotheses)
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = HF5 — long mean-reversion after capitulation (counter-trend LONG in the bear, distinct from trend-beta AND from the H4-bo-raw-S short event) and/or high-volatility event alpha on b0/b1
+NEXT_FRONTIER             = HF6 — D1 overnight/gap directional on b0/b1 (temporal-structural class, low prior). If dead: b0/b1 exhausted of new non-redundant robust alpha -> exogenous frontier (CEO-gated) is the next lever
 ```
 
 ## Key structural findings (bounded)

@@ -37,3 +37,7 @@ Falsified mechanisms — **do not re-run without genuinely new information (§4,
 - **HF3-A pullback-to-falling-EMA short**: NEAR-MISS (both blocks positive @rr2, avgR +0.109) but tail-carried (best10<0) and year-inconsistent (2012/2017<0). Not robust.
 - **HF3-B breakdown-momentum trailing short**: DEAD (avgR<0, best10<0).
 - **HF4 transition-onset short**: ROBUST on internal gates but **REDUNDANT_WITH_H4_BO_RAW_S** — 85% of trades within 3 days of a frozen H4-bo-raw-S entry (same-day 53%). Two triggers (20-bar-low breakdown vs TREND_DOWN transition-onset) capture the SAME bearish episodes in b0/b1. NOT frozen (would duplicate the frozen candidate, §9/§30). Also CALIB-flat + delay-sensitive. **Do NOT reopen bearish-short trigger variants on b0/b1 — the frontier is saturated by the frozen H4-bo-raw-S event.**
+
+## Historical b0/b1 counter-trend LONG reversion (HF5) — CLOSED
+- **HF5-A capitulation LONG** (oversold flush + up-close): DEAD (advF 0.78-0.83, MAE>>MFE, best10<0, b1 badly neg). Buying oversold flushes in the bear gets run over; the tiny positive cells are n=3 (2011).
+- **HF5-B down-spike reversion LONG** (fade big down bar): DEAD (N=221, advF 0.87, best10<0, maxDD -62R). **Regime-dependent finding: down-spikes REVERT in the 2021-23 structurally-bid market (F6) but CONTINUE on b0/b1** — the reversion edge is a property of the 2021-23 bid, not universal. Mean-reversion is now dead on b0/b1 in BOTH directions (HF2 fade + HF5).

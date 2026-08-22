@@ -59,3 +59,6 @@ Causal `hist_data.py`, b0+b1 DISCOVERY_CONSUMED (NOT validation).
 | H34 | HF4 | overlap of H33 vs frozen H4-bo-raw-S | S | trade-day + within-3d | — | **REDUNDANT_WITH_H4_BO_RAW_S** (same-day 53%, within-3d 85%) -> NOT an independent candidate, NOT frozen |
 
 **Note H33/H34:** HF4 is the first genuinely-robust bearish signal on b0/b1 (clears best-10%-removed + both-blocks + DISC/CONF + allYr@rr3 + favorable path), but the overlap check (§21) proves it re-discovers the SAME bearish event as the frozen H4-bo-raw-S (85% within 3d). Per §9/§30 it is classified REDUNDANT and NOT frozen. CALIB 2020-21 readout was flat (+0.005) and it is delay-sensitive (+0.27->+0.10 @ +1bar) — additional honest caveats. Conclusion: the robust bearish price-only edge on b0/b1 IS the frozen H4-bo-raw-S downside-break event; multiple triggers converge on it -> bearish-short frontier on b0/b1 is SATURATED by the frozen candidate.
+
+| H35 | HF5 | capitulation LONG (oversold flush + up-close) | L | ext<-{2,2.5}, ALL/D1down, rr{1.5,2,3} | 27-85 | FALSIFIED (advF 0.78-0.83, MAE>>MFE, best10<0, b1 neg) |
+| H36 | HF5 | down-spike reversion LONG (fade big down bar) | L | tr>1.8atr_ma, close lower-third | 221 | FALSIFIED (advF 0.87, best10<0, maxDD -62R; spikes don't revert on b0/b1) |
