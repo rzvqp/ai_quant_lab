@@ -193,3 +193,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Artifacts:** ALPHA_CAUSAL_REGIME_MAP, ALPHA_REGIME_PATH_BASELINES, ALPHA_REGIME_STATE_INFORMATION_MAP, ALPHA_REGIME_TRANSITION_MAP, ALPHA_REGIME_STRATEGY_REGISTRY.
 **NEXT:** within-regime state discovery — priority DOWN & QUIET regimes (SHORT), where cross-era base rates are most consistent: find causal states lifting SHORT materially above the same-regime base, validate DEV vs b0/b1 same-regime. Then regime transitions (§27). LONG/SHORT separate; material lift + sample honesty + DISC/CONF.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #17 — 2026-08-22 — within-regime SHORT discovery (DOWN, QUIET): no material same-regime-stable edge
+**Screen:** 8 causal states x 2 priority regimes (DOWN, QUIET) SHORT, DEV lift over same-regime base + within-regime DISC/CONF + per-year + SAME-REGIME cross-era b0/b1 (`state_regime_discover.py`).
+**Result:** strongest = DOWN + falling-vol -> SHORT +0.097 DEV (all 3 years positive, DISC +0.11/CONF +0.08 — flawless within-period) BUT same-regime cross-era FAILS (b0 -0.029, b1 -0.001). QUIET fresh-down-impulse same-sign across all eras (+0.032/+0.042/+0.013) but IMMATERIAL (<0.04) + 2021-inconsistent. No material same-regime-stable SHORT candidate.
+**Deepened meta-finding:** state->path lifts are era-dependent EVEN WITHIN a fixed causal regime. Same-regime cross-era is a strict, genuine generalization gate; within-period stability (even flawless across all years + DISC/CONF) remains insufficient.
+**NEXT (do not stop, §30):** UP/CHOP regimes LONG + regime-TRANSITION family (§27, boundary A->B — may hold more path info than persistent states). Same-regime / same-transition cross-era gate throughout.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

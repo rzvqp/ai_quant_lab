@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: REGIME-CONDITIONAL state->path discovery)
 CURRENT_POPULATION        = 2021-2023 native H1 DEV + b0/b1 (regime-conditional; causal regime taxonomy frozen)
-CURRENT_FRONTIER          = causal REGIME taxonomy FROZEN + reproducible (UP/DOWN/QUIET/CHOP/TRANSITION, 8-34% each in every era) + regime-conditional baselines done
+CURRENT_FRONTIER          = within-regime SHORT (DOWN,QUIET): no material same-regime-stable edge (DOWN+falling-vol +0.097 DEV but fails cross-era). State->path era-dependent even within a fixed regime.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = within-regime state discovery (priority DOWN & QUIET SHORT, same-regime cross-era DEV vs b0/b1), then regime transitions (§27)
+NEXT_FRONTIER             = UP/CHOP LONG within-regime + regime-TRANSITION family (§27, boundary A->B) with same-transition cross-era gate
 ```
 
 ## Key structural findings (bounded)
