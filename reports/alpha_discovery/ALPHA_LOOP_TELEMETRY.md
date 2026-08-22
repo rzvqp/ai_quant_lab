@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = DXY X3 divergence + §7 incremental: DXY incremental info is REAL (non-redundant) in 2011-2018 but INVERTS in 2021-2023 -> regime-conditional, fails material+stable. X3 divergence flips across eras.
+CURRENT_FRONTIER          = DXY frontier BOUNDED (§20 complete). DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED as a STABLE edge: real non-redundant info in 2011-2018 but INVERTS in 2021-2023 (non-stationary). Mechanism: DXY reflects the real-yield regime, not the driver.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = bounded DXY transitions (complete §20 order) then BOUNDED DXY CONCLUSION + CEO decision
+NEXT_FRONTIER             = CEO DECISION A/B/C/D on ALPHA_DXY_BOUNDED_CONCLUSION.md (A accept DXY negative + C authorize REAL-YIELDS axis recommended). Loop paused at decision point.
 ```
 
 ## Key structural findings (bounded)

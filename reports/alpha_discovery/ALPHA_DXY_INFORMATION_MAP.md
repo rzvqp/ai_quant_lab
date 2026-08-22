@@ -35,3 +35,13 @@ Divergence signal flips across eras; y2123 DISC/CONF inconsistent. NOT cross-era
 - dxyEffDn->L increment within XAUUSD parent: b0/b1 small POSITIVE (+0.01..+0.06 most regimes) = NOT purely redundant w/ XAUUSD trend; but y2123 REVERSES (UP -0.034/CHOP -0.021/TRANSITION -0.061).
 - dxyEffUp->S increment: b0/b1 small positive except UP regime strongly negative (-0.065/-0.061 = don't fight XAUUSD uptrend, an XAUUSD effect); y2123 mixed-negative.
 **Decisive finding:** DXY adds GENUINE (non-redundant) incremental info over XAUUSD parent state in 2011-2018, but it INVERTS in 2021-2023 (inflation/safe-haven regime). => DXY incremental information is REAL but REGIME-CONDITIONAL / non-stationary -> fails the MATERIAL+STABLE requirement (§1/§15). NEXT: bounded DXY transitions (complete §20 order) then bounded DXY conclusion.
+
+## DXY transitions (§20 completion, checkpoint #38)
+`dxy_transitions.py`. DXY A(4h)->B(now): USD impulse-exhaustion + USD reversal -> XAUUSD P(+70/-50) lift vs era base, directed side, cross-era.
+| transition | b0 | b1 | y2123 | read |
+|---|---|---|---|---|
+| usdUpExhaust -> L | +0.009 | +0.037 | +0.044 | b0 <0.02 -> not stable (works b1/y2123 only) |
+| usdDnExhaust -> S | -0.019 | -0.005 | +0.009 | tiny/mixed |
+| usdRevUp -> S | ~0 | ~0 | ~0 | no info |
+| usdRevDn -> L | -0.030 | +0.019 | +0.008 | b0 opposite -> not stable |
+**Verdict:** NO cross-era-stable DXY transition. §20 order complete (univariate + transitions + interactions/incremental). -> BOUNDED DXY CONCLUSION (see ALPHA_DXY_BOUNDED_CONCLUSION.md).

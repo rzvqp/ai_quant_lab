@@ -375,3 +375,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Decisive:** DXY carries GENUINE (non-redundant) incremental info about XAUUSD path in 2011-2018, but it is REGIME-CONDITIONAL and INVERTS in the 2021-2023 inflation/safe-haven regime -> fails the MATERIAL+STABLE requirement (§1/§15). Same non-stationarity the whole program found, now on the exogenous axis.
 **NEXT:** bounded DXY transitions (DXY accel->decel / reversal sequences) to complete the §20 order; then present the BOUNDED DXY CONCLUSION (likely DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED as a STABLE edge) + CEO decision.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #38 — 2026-08-22 — DXY transitions -> §20 complete -> BOUNDED DXY CONCLUSION (CEO decision A/B/C/D)
+**DXY transitions (`dxy_transitions.py`):** USD impulse-exhaustion + reversal -> XAUUSD path lift, cross-era. NO cross-era-stable transition (usdUpExhaust->L +0.037/+0.044 b1/y2123 but ~0 b0; usdRevDn->L flips b0 vs b1). §20 order complete.
+**BOUNDED DXY CONCLUSION (`ALPHA_DXY_BOUNDED_CONCLUSION.md`):** DXY carries GENUINE non-redundant incremental info about XAUUSD path in 2011-2018 (§7: +0.02..+0.06 over parent, NOT redundant) but it INVERTS in 2021-2023 (inflation/safe-haven regime; classic inverse DXY<->gold flipped). Univariate/divergence/transitions all confirm no cross-era-stable sign. => `DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED` as a STABLE/tradeable edge (not "uninformative" — real but non-stationary; recent regime carries inverted sign). Mechanism: DXY is an endogenous output of the real-yield/monetary regime, not the primitive driver -> cannot be cross-era-stable alone. Exogenous-axis confirmation of the program-wide result.
+**CEO DECISION A/B/C/D:** A(rec) accept the bounded DXY negative; C(rec next) authorize REAL-YIELDS axis (mandate deferred yields "until DXY determined" — now determined; 2021-2023 inversion is a real-yield signature); B regime-gated DXY (rejected — recent regime inverted, no stable gate); D price-only M15-trigger-under-HTF-edge fallback. Loop paused at decision point.
+**Global status:** `ALPHA_DXY_FRONTIER_BOUNDED` — awaiting CEO A/B/C/D.
