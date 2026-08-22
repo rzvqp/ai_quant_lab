@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: M15 causal state->path discovery)
 CURRENT_POPULATION        = M15: 2021-2023 gated M15 (N=40,649) + b0/b1 M15 (52k each, governance-proven); H1/H4 causal context
-CURRENT_FRONTIER          = ST-H4DN-M15-DECELDN-SHORT characterized: NOT tradeable (era-conditional, b0 only) + REDUNDANT with F2 (100% day-overlap). DOWN-short family = 1 era-conditional mechanism, triggers mutually redundant.
+CURRENT_FRONTIER          = H4-M15 path-shape frontier BOUNDED (§21 complete: 5 univariate families + transitions + interactions). NO robust non-redundant cross-era-tradeable new strategy. Only vol-structure cross-era-stable (non-directional); directional mechanism era-conditional.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = complete §21 budget = bounded M15 path-shape TRANSITION/sequence map + small interpretable INTERACTIONS conditional on H4; THEN bounded interim conclusion for CEO review
+NEXT_FRONTIER             = CEO DECISION A/B/C/D on ALPHA_H4M15_BOUNDED_CONCLUSION.md (A rec: open EXOGENOUS/DXY axis; C: M15-trigger-under-HTF-edge). Loop paused at decision point.
 ```
 
 ## Key structural findings (bounded)

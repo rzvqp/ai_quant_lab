@@ -340,3 +340,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Interpretation:** the DOWN-H4 short-continuation family has era-conditional EXPECTANCY (tradeable high-vol/trend eras only) AND its distinct triggers (impulse-shallow F2, decel F5) are MUTUALLY REDUNDANT (fire on the same days) -> not multiple distinct strategies, one era-conditional mechanism.
 **NEXT:** complete §21 budget — bounded M15 path-shape TRANSITION/sequence map + a small number of interpretable INTERACTIONS conditional on H4 — then present a BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #34 — 2026-08-22 — §21 budget complete -> BOUNDED H4-M15 CONCLUSION (CEO decision A/B/C/D requested)
+**§21 completion (`h4m15_trans_interact.py`):** M15 path-shape transitions (squeeze->release, pullback->resume) + interactions conditional on H4. squeeze-release UP->L +0.107 but thin(EffN 72)/CONF-na/b1-flat; DOWN->S b1-negative; pullback-resume zero-info; interactions marginal EXCEPT LH_LL&decel@DOWN->S +0.055 cross-stable = 3rd trigger of the SAME DOWN-H4-short mechanism (not independent, §18 no-cloning). NO new candidate.
+**Frontier bounded:** univariate 5 families + transition map + interactions ALL completed. NO robust non-redundant cross-era-tradeable NEW price-only strategy emerged.
+**Central result:** only cross-era-stable M15 info = VOLATILITY-STRUCTURE (non-directional); the one cross-era-stable-INFO directional mechanism (DOWN-H4 short continuation) has era-conditional EXPECTANCY (tradeable b0 only) + mutually-redundant triggers -> one era-conditional mechanism, not a strategy. Binding constraint = b1 low-vol lacks follow-through. Convergent across THREE methods (standalone M15, regime state-path, H4-M15 path-shape): cross-era-stable price-only INFO is non-directional; cross-era-stable directional EXPECTANCY does not exist price-only. `ALPHA_H4M15_BOUNDED_CONCLUSION.md` written.
+**CEO DECISION A/B/C/D:** A(rec)=open EXOGENOUS axis (authorize bounded DXY causal study); B=deploy DOWN-H4 short as regime-gated module (non-stationary); C=M15 as trigger under frozen HTF edge; D=non-directional vol-timing study. Loop paused at decision point.
+**Global status:** `ALPHA_H4M15_PATHSHAPE_FRONTIER_BOUNDED` — awaiting CEO A/B/C/D.

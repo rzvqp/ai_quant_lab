@@ -88,3 +88,14 @@ Mandate `ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001`. M15 multi-bar PATH-SHAPE
 | DEV | -0.010 (rr3) w/ 2022 -0.35 | net-negative |
 | b1 | +0.061 (rr3) / -0.011 (rr2) | marginal/breakeven |
 **§17 redundancy vs F2:** DEV day-overlap = 62/62 (100%), 36 shared bars -> SAME DOWN-H4 short-continuation events = REDUNDANT_EXISTING_ALPHA. **Verdict:** NOT frozen (era-conditional expectancy + redundant w/ F2). Confirms: the DOWN-H4-short-continuation family has era-conditional expectancy AND its triggers (impulse-shallow, decel) are mutually redundant (same days). No distinct new strategy. NEXT: complete §21 budget (bounded transition/sequence map + small interactions) then BOUNDED INTERIM CONCLUSION.
+
+## §21 completion — transitions + interactions (checkpoint #34)
+`h4m15_trans_interact.py`. Transitions: squeeze->release (contraction 8-ago -> expansion now) by H4 dir; pullback->resume. Interactions: H4 + 2 M15 descriptors.
+| cell | DEV lift | b0/b1 | read |
+|---|---|---|---|
+| sqRelease@UP -> L 70/50 | +0.107 (EffN 72) | +0.05/**+0.00** | thin + CONF na + b1 flat -> not cross-stable |
+| sqRelease@DOWN -> S | +0.013..+0.056 | +0.07/**-0.04** | b1 negative -> fails |
+| pullResume@UP/DOWN | ~+0.00 | ~0 | no info |
+| IX freshHi&clean@UP -> L | +0.029/+0.035 | +0.01/+0.01 | DISC~0/CONF+0.07 disagree, marginal -> fails |
+| IX LH_LL&decel@DOWN -> S 100/70 | +0.055 (CROSS_STABLE) | +0.03/+0.03 | SAME DOWN-H4-short-continuation mechanism (3rd trigger) -> NOT independent (§18 no-cloning), no re-characterization |
+**Verdict:** §21 budget complete (univariate 5 families + transitions + interactions). NO new robust non-redundant cross-era-tradeable directional candidate. Transitions add nothing cross-era-stable & directional; the sole cross-stable interaction is a 3rd trigger of the already-resolved DOWN-H4-short mechanism. -> BOUNDED INTERIM CONCLUSION (see ALPHA_H4M15_BOUNDED_CONCLUSION.md).
