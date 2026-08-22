@@ -448,3 +448,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Radar R6:** displacement HOLD-vs-FAIL = strongest discriminator (~3x), cross-era. -> the tradeable edge requires entering AFTER hold is confirmed (controlled retracement), exactly the CEO §14 architecture.
 **NEXT:** CONTROLLED-RETRACEMENT entry — after displacement, wait for a pullback that HOLDS the origin, enter on resumption; structural stop = origin/pullback extreme; net STRESS cross-era for the consistent cells. Continuous loop.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #46 — 2026-08-23 — S10: hold-MARKET entry negative; PULLBACK-FILL entry strongly positive (PROVISIONAL)
+**Screens:** `displacement_retrace.py` (hold-confirmed market entry) + `displacement_pullback.py` (limit pullback-fill entry).
+**Result:** (1) hold-confirmed MARKET entry (enter 2 bars after displacement, stop=origin) net-NEGATIVE all cells cross-era — entering late at market surrenders the move. (2) **PULLBACK-FILL entry (limit @61.8% of displacement, stop=origin, target=retest extreme) is STRONGLY POSITIVE and cross-era-consistent** in all 4 cells: f0.618 rr1.5 C1(PRIMARY_BULL→L) b0 +0.53/b1 +0.54/2021 +0.71/2022 +0.83/2023 +0.71; C4(PRIMARY_BEAR→S) all 5 eras +0.48..+0.67; C2/C3 positive b0/b1/2023. The canonical 'buy the deep retrace, target the retest' geometry.
+**CAUTION:** magnitude high after a long negative string -> PROVISIONAL. Prime suspicion: same-bar win allowed on the fill bar (optimistic). Radar R7.
+**NEXT (rigorous verification, continuous loop):** re-run pullback-fill with STRICT rule (resolve target only from bar AFTER fill; stop-first), + DISC/CONF split + event-N honesty (unique days/H4 episodes) + frequency (tpm) + §17 independence vs COMP-CONT-L (C1 long likely overlaps). Only if it survives -> Stage-C characterization/freeze.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
