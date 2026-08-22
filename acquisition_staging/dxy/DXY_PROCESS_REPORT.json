@@ -1,0 +1,327 @@
+{
+  "mandate": "DATA-ACQ-DXY-H1-HISTORICAL-RATIFIED-001",
+  "instrument": {
+    "provider": "ICE (Intercontinental Exchange US)",
+    "provider_symbol": "ICEUS:DXY",
+    "resolved_feed": "ICEUS_DLY:DXY (delayed)",
+    "definition": "official ICE U.S. Dollar Index (cash/index, NOT DX futures)",
+    "type": "index",
+    "volume": "none supplied (cash index); volume column structurally 0, not fabricated"
+  },
+  "timeframe": "H1",
+  "bar_time_convention": "bar time = bar OPEN time (UTC epoch); close = open+3600s; FEATURE_AVAILABLE_TIME = close",
+  "source_method": "TradingView Desktop replay-walk (CDP), overlapping-window backward walk (pull_dxy_h1.mjs)",
+  "RAW_QA": {
+    "label": "RAW (as acquired)",
+    "bars": 76007,
+    "first": "2011-07-14T23:00:00Z",
+    "last": "2024-01-05T00:00:00Z",
+    "duplicates": 0,
+    "monotonic_strict": true,
+    "off_grid_timestamps": 0,
+    "ohlc_constraint_violations": 0,
+    "nonpositive_price_bars": 0,
+    "weekend_gaps": 654,
+    "intra_week_gaps": 50,
+    "present": 76007,
+    "nominal_grid": 109370,
+    "missing_slots": 33363,
+    "accounting_invariant_ok": true,
+    "continuity_pct": 69.5,
+    "longest_intra_week_gaps": [
+      {
+        "from": "2013-12-31T22:00:00Z",
+        "to": "2014-01-02T00:00:00Z",
+        "hours": 26.0
+      },
+      {
+        "from": "2014-12-31T22:00:00Z",
+        "to": "2015-01-02T00:00:00Z",
+        "hours": 26.0
+      },
+      {
+        "from": "2011-11-23T23:00:00Z",
+        "to": "2011-11-25T00:00:00Z",
+        "hours": 25.0
+      },
+      {
+        "from": "2012-07-03T22:00:00Z",
+        "to": "2012-07-04T23:00:00Z",
+        "hours": 25.0
+      },
+      {
+        "from": "2012-11-21T23:00:00Z",
+        "to": "2012-11-23T00:00:00Z",
+        "hours": 25.0
+      }
+    ]
+  },
+  "RAW_sha256": "7e112b9d8b3cd667117f59a76211a187bf3ae55fa74a69620c56a41ad768a6f0",
+  "NORMALIZED_QA": {
+    "label": "NORMALIZED research region (<=2023-12-31)",
+    "bars": 75934,
+    "first": "2011-07-14T23:00:00Z",
+    "last": "2023-12-29T21:00:00Z",
+    "duplicates": 0,
+    "monotonic_strict": true,
+    "off_grid_timestamps": 0,
+    "ohlc_constraint_violations": 0,
+    "nonpositive_price_bars": 0,
+    "weekend_gaps": 653,
+    "intra_week_gaps": 50,
+    "present": 75934,
+    "nominal_grid": 109223,
+    "missing_slots": 33289,
+    "accounting_invariant_ok": true,
+    "continuity_pct": 69.5,
+    "longest_intra_week_gaps": [
+      {
+        "from": "2013-12-31T22:00:00Z",
+        "to": "2014-01-02T00:00:00Z",
+        "hours": 26.0
+      },
+      {
+        "from": "2014-12-31T22:00:00Z",
+        "to": "2015-01-02T00:00:00Z",
+        "hours": 26.0
+      },
+      {
+        "from": "2011-11-23T23:00:00Z",
+        "to": "2011-11-25T00:00:00Z",
+        "hours": 25.0
+      },
+      {
+        "from": "2012-07-03T22:00:00Z",
+        "to": "2012-07-04T23:00:00Z",
+        "hours": 25.0
+      },
+      {
+        "from": "2012-11-21T23:00:00Z",
+        "to": "2012-11-23T00:00:00Z",
+        "hours": 25.0
+      }
+    ]
+  },
+  "NORMALIZED_sha256": "8b8cf4dd5a0c71d784712fe22887674f22a986bd31c6cb0fe22f45c1d064fc5f",
+  "PROTECTED_head_2024": {
+    "bars": 73,
+    "range": "2024-01-02T00:00:00Z .. 2024-01-05T00:00:00Z",
+    "classification": "PROTECTED \u2014 physically acquired as upper-bound margin (absorbs the provisional replay-cursor bar); EXCLUDED from NORMALIZED and every research slice"
+  },
+  "research_slices": {
+    "DXY_B0_RESEARCH_SLICE": {
+      "bounds_utc": [
+        "2011-07-26T16:30:00Z",
+        "2013-09-27T16:45:00Z"
+      ],
+      "bounds_epoch": [
+        1311697800,
+        1380300300
+      ],
+      "bars": 13267,
+      "first": "2011-07-26T17:00:00Z",
+      "last": "2013-09-27T16:00:00Z",
+      "sha256": "86f1d337f22262eb0265e05959ce7f8689f0cf24df6673ddc6fef18f822f6cf9",
+      "qa": {
+        "label": "DXY_B0_RESEARCH_SLICE",
+        "bars": 13267,
+        "first": "2011-07-26T17:00:00Z",
+        "last": "2013-09-27T16:00:00Z",
+        "duplicates": 0,
+        "monotonic_strict": true,
+        "off_grid_timestamps": 0,
+        "ohlc_constraint_violations": 0,
+        "nonpositive_price_bars": 0,
+        "weekend_gaps": 114,
+        "intra_week_gaps": 13,
+        "present": 13267,
+        "nominal_grid": 19056,
+        "missing_slots": 5789,
+        "accounting_invariant_ok": true,
+        "continuity_pct": 69.6,
+        "longest_intra_week_gaps": [
+          {
+            "from": "2011-11-23T23:00:00Z",
+            "to": "2011-11-25T00:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2012-07-03T22:00:00Z",
+            "to": "2012-07-04T23:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2012-11-21T23:00:00Z",
+            "to": "2012-11-23T00:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2012-12-24T23:00:00Z",
+            "to": "2012-12-26T00:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2012-12-31T23:00:00Z",
+            "to": "2013-01-02T00:00:00Z",
+            "hours": 25.0
+          }
+        ]
+      }
+    },
+    "DXY_B1_RESEARCH_SLICE": {
+      "bounds_utc": [
+        "2016-01-11T09:00:00Z",
+        "2018-04-06T11:52:00Z"
+      ],
+      "bounds_epoch": [
+        1452502800,
+        1523015520
+      ],
+      "bars": 13583,
+      "first": "2016-01-11T09:00:00Z",
+      "last": "2018-04-06T11:00:00Z",
+      "sha256": "7e057857a8a4907110579ddc9bd040198681b6dbba9bb65779c6d61eccd15f67",
+      "qa": {
+        "label": "DXY_B1_RESEARCH_SLICE",
+        "bars": 13583,
+        "first": "2016-01-11T09:00:00Z",
+        "last": "2018-04-06T11:00:00Z",
+        "duplicates": 0,
+        "monotonic_strict": true,
+        "off_grid_timestamps": 0,
+        "ohlc_constraint_violations": 0,
+        "nonpositive_price_bars": 0,
+        "weekend_gaps": 117,
+        "intra_week_gaps": 11,
+        "present": 13583,
+        "nominal_grid": 19587,
+        "missing_slots": 6004,
+        "accounting_invariant_ok": true,
+        "continuity_pct": 69.3,
+        "longest_intra_week_gaps": [
+          {
+            "from": "2016-11-23T23:00:00Z",
+            "to": "2016-11-25T00:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2017-07-03T22:00:00Z",
+            "to": "2017-07-04T23:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2017-11-22T23:00:00Z",
+            "to": "2017-11-24T00:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2016-01-28T23:00:00Z",
+            "to": "2016-01-29T02:00:00Z",
+            "hours": 3.0
+          },
+          {
+            "from": "2016-07-14T04:00:00Z",
+            "to": "2016-07-14T07:00:00Z",
+            "hours": 3.0
+          }
+        ]
+      }
+    },
+    "DXY_2021_2023_RESEARCH_SLICE": {
+      "bounds_utc": [
+        "2021-07-27T00:00:00Z",
+        "2023-12-30T00:00:00Z"
+      ],
+      "bounds_epoch": [
+        1627344000,
+        1703894400
+      ],
+      "bars": 14846,
+      "first": "2021-07-27T00:00:00Z",
+      "last": "2023-12-29T21:00:00Z",
+      "sha256": "3d445992d88c9ef287aef91d58f7a0e7232ce5e865655310b6a3b346be7c4b22",
+      "qa": {
+        "label": "DXY_2021_2023_RESEARCH_SLICE",
+        "bars": 14846,
+        "first": "2021-07-27T00:00:00Z",
+        "last": "2023-12-29T21:00:00Z",
+        "duplicates": 0,
+        "monotonic_strict": true,
+        "off_grid_timestamps": 0,
+        "ohlc_constraint_violations": 0,
+        "nonpositive_price_bars": 0,
+        "weekend_gaps": 126,
+        "intra_week_gaps": 4,
+        "present": 14846,
+        "nominal_grid": 21262,
+        "missing_slots": 6416,
+        "accounting_invariant_ok": true,
+        "continuity_pct": 69.8,
+        "longest_intra_week_gaps": [
+          {
+            "from": "2021-11-24T23:00:00Z",
+            "to": "2021-11-26T00:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2022-11-23T23:00:00Z",
+            "to": "2022-11-25T00:00:00Z",
+            "hours": 25.0
+          },
+          {
+            "from": "2021-11-15T21:00:00Z",
+            "to": "2021-11-16T00:00:00Z",
+            "hours": 3.0
+          },
+          {
+            "from": "2023-12-05T05:00:00Z",
+            "to": "2023-12-05T08:00:00Z",
+            "hours": 3.0
+          }
+        ]
+      }
+    }
+  },
+  "cross_market_overlap": {
+    "xauusd_reference": "data\\market\\OANDA_XAUUSD_H1_from_M15_v2.csv",
+    "by_block": {
+      "DXY_B0_RESEARCH_SLICE": {
+        "dxy_start": "2011-07-26T17:00:00Z",
+        "dxy_end": "2013-09-27T16:00:00Z",
+        "xauusd_start": "2011-07-26T17:00:00Z",
+        "xauusd_end": "2013-09-27T15:00:00Z",
+        "dxy_h1_hours": 13267,
+        "xauusd_h1_hours": 13397,
+        "overlapping_h1_hours": 13053,
+        "coverage_pct_of_xauusd": 97.4,
+        "missing_overlap_hours": 344
+      },
+      "DXY_B1_RESEARCH_SLICE": {
+        "dxy_start": "2016-01-11T09:00:00Z",
+        "dxy_end": "2018-04-06T11:00:00Z",
+        "xauusd_start": "2016-01-11T09:00:00Z",
+        "xauusd_end": "2018-04-06T10:00:00Z",
+        "dxy_h1_hours": 13583,
+        "xauusd_h1_hours": 13213,
+        "overlapping_h1_hours": 12918,
+        "coverage_pct_of_xauusd": 97.8,
+        "missing_overlap_hours": 295
+      },
+      "DXY_2021_2023_RESEARCH_SLICE": {
+        "dxy_start": "2021-07-27T00:00:00Z",
+        "dxy_end": "2023-12-29T21:00:00Z",
+        "xauusd_start": "2021-07-27T00:00:00Z",
+        "xauusd_end": "2023-12-29T21:00:00Z",
+        "dxy_h1_hours": 14846,
+        "xauusd_h1_hours": 6777,
+        "overlapping_h1_hours": 6772,
+        "coverage_pct_of_xauusd": 99.9,
+        "missing_overlap_hours": 5
+      }
+    }
+  },
+  "code_fingerprints": {
+    "pull_dxy_h1.mjs": "4d828595991b9e76b224b15531050cc1816e85e551fd41881a31a1800937d6ef",
+    "dxy_process.py": "5161c9606c537dbe16ee4e7a9495e504bb9ddcf64cae4aac397b5c6bbfb33408"
+  }
+}

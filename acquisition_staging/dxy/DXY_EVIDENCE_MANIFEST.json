@@ -1,0 +1,54 @@
+{
+  "mandate": "DATA-ACQ-DXY-H1-HISTORICAL-RATIFIED-001",
+  "note": "Data Acquisition provisions data and classifies regions; it does NOT assign strategy-validation status.",
+  "regions": [
+    {
+      "name": "DXY_B0",
+      "utc": [
+        "2011-07-26T16:30:00Z",
+        "2013-09-27T16:45:00Z"
+      ],
+      "class": "AVAILABLE_FOR_DISCOVERY"
+    },
+    {
+      "name": "DXY_B1",
+      "utc": [
+        "2016-01-11T09:00:00Z",
+        "2018-04-06T11:52:00Z"
+      ],
+      "class": "AVAILABLE_FOR_DISCOVERY"
+    },
+    {
+      "name": "DXY_2021_2023",
+      "utc": [
+        "2021-07-27T00:00:00Z",
+        "2023-12-30T00:00:00Z"
+      ],
+      "class": "AVAILABLE_FOR_DISCOVERY"
+    },
+    {
+      "name": "DXY_between_blocks_2013_2016_2018_2021",
+      "utc": [
+        "2013-09-27",
+        "2021-07-27"
+      ],
+      "class": "AVAILABLE_FOR_DISCOVERY_gaps_between_named_blocks (continuous DXY exists; not a named research block \u2014 use only under explicit governance)"
+    },
+    {
+      "name": "DXY_2024_plus",
+      "utc": [
+        "2024-01-01",
+        "present"
+      ],
+      "class": "PROTECTED (not delivered; the ~4-day 2024 head in RAW is excluded from NORMALIZED/slices)"
+    },
+    {
+      "name": "DXY_pre_2011_07_14",
+      "utc": [
+        "<2011-07-14",
+        ""
+      ],
+      "class": "MISSING (source floor; ICE DXY H1 on TradingView begins 2011-07-14)"
+    }
+  ]
+}
