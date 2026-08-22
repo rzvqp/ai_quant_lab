@@ -11,6 +11,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import sys
+import time
 from pathlib import Path
 
 from ai_trader.execution_engine.adapters.connection import BrokerCredentials
@@ -44,46 +45,73 @@ def _risk_execution_deps(*, equity: float) -> RiskExecutionDeps:
     return RiskExecutionDeps(account=account, portfolio=portfolio, instrument=instrument, risk_context=risk_context, risk_config=config)
 
 
+def _log_startup_event(state_dir: Path, message: str) -> None:
+    """Appends one line to `startup_events.log` -- diagnosability for a Scheduled-Task-launched process
+    with no attached console (mandate section 28/29: never a credential, always local-only)."""
+    state_dir.mkdir(parents=True, exist_ok=True)
+    with (state_dir / "startup_events.log").open("a", encoding="utf-8") as f:
+        f.write(f"{int(time.time())} {message}\n")
+
+
 def main() -> int:
     max_calendar_days = float(sys.argv[1]) if len(sys.argv) > 1 else 60.0
+    repo_root = Path(__file__).resolve().parents[5]
+    state_dir = repo_root / "new_brain_live_state" / "s5_mt5_demo_soak"
+
     gateway = RealMT5BridgeGateway()
     config = MT5DemoConfig(max_order_volume=1.0, expected_server="FusionMarkets-Demo")
     adapter = MT5DemoBrokerAdapter(gateway=gateway, config=config, credentials=BrokerCredentials())
 
-    connect_result = adapter.connect()
+    try:
+        connect_result = adapter.connect()
+    except Exception as exc:  # noqa: BLE001 -- a Scheduled Task run has no console; never crash silently
+        _log_startup_event(state_dir, f"CONNECT_EXCEPTION: {type(exc).__name__}: {exc}")
+        print(json.dumps({"status": "S5_MT5_DEMO_CONNECTION_BLOCKED", "reason": str(exc)}))
+        return 1
     if not connect_result.accepted:
+        _log_startup_event(state_dir, f"CONNECT_REFUSED: {connect_result.reason}")
         print(json.dumps({"status": "S5_MT5_DEMO_CONNECTION_BLOCKED", "reason": connect_result.reason}))
         return 1
     status = adapter.status()
     if status.account_is_demo is not True:
         adapter.disconnect()
+        _log_startup_event(state_dir, f"SAFETY_FAIL: account_trade_mode={status.account_trade_mode!r}")
         print(json.dumps({"status": "S5_MT5_DEMO_SAFETY_FAIL"}))
         return 2
+    _log_startup_event(state_dir, f"CONNECTED: server={status.server} trade_mode={status.account_trade_mode}")
     print("ACCOUNT_PROOF:", json.dumps({"trade_mode": str(status.account_trade_mode), "server": status.server, "algo_trading_status": str(status.algo_trading_status)}))
 
     equity_info = gateway.account_info()
     equity = float(equity_info.equity) if equity_info is not None and getattr(equity_info, "equity", None) is not None else 10_000.0
 
-    repo_root = Path(__file__).resolve().parents[5]
-    state_dir = repo_root / "new_brain_live_state" / "s5_mt5_demo_soak"
     state_dir.mkdir(parents=True, exist_ok=True)
     exec_store = SqliteStateStore(state_dir / "execution_ledger.db")
     shadow_store = SqliteStateStore(state_dir / "shadow_ledger.db")
     safety_store = SqliteStateStore(state_dir / "safety_events.db")
 
-    report = run_soak(
-        adapter=adapter, gateway=gateway, config=config, execution_ledger=MT5ExecutionLedger(exec_store),
-        shadow_ledger=ShadowLedger(shadow_store), risk_execution_deps=_risk_execution_deps(equity=equity),
-        cost_model=CostModel(cost_model_id="AI_TRADER_SHADOW_COST_MODEL_v1", full_spread_price=0.0, entry_slippage_price=0.12, exit_slippage_price=0.12),
-        safety_monitor=SafetyMonitor(safety_store), symbol=SYMBOL, state_dir=state_dir, poll_interval_seconds=5.0,
-        termination=SoakTerminationConfig(max_calendar_days=max_calendar_days),
-    )
-    print("SOAK_REPORT:", json.dumps(dataclasses.asdict(report)))
-    exec_store.close()
-    shadow_store.close()
-    safety_store.close()
-    adapter.disconnect()
-    return 0
+    try:
+        report = run_soak(
+            adapter=adapter, gateway=gateway, config=config, execution_ledger=MT5ExecutionLedger(exec_store),
+            shadow_ledger=ShadowLedger(shadow_store), risk_execution_deps=_risk_execution_deps(equity=equity),
+            cost_model=CostModel(cost_model_id="AI_TRADER_SHADOW_COST_MODEL_v1", full_spread_price=0.0, entry_slippage_price=0.12, exit_slippage_price=0.12),
+            safety_monitor=SafetyMonitor(safety_store), symbol=SYMBOL, state_dir=state_dir, poll_interval_seconds=5.0,
+            termination=SoakTerminationConfig(max_calendar_days=max_calendar_days),
+        )
+        print("SOAK_REPORT:", json.dumps(dataclasses.asdict(report)))
+        exit_code = 0
+    except Exception as exc:  # noqa: BLE001 -- catastrophic setup failure (e.g. the warmup fetch itself
+        # raising) must never crash silently with no record -- Task Scheduler restarts this process, so
+        # the NEXT run's startup reconciliation is what actually protects against duplicate submission,
+        # not this process staying alive; logging here is purely for diagnosability.
+        _log_startup_event(state_dir, f"SOAK_EXCEPTION: {type(exc).__name__}: {exc}")
+        print(json.dumps({"status": "S5_MT5_DEMO_UNATTENDED_SOAK_BLOCKED", "reason": str(exc)}))
+        exit_code = 3
+    finally:
+        exec_store.close()
+        shadow_store.close()
+        safety_store.close()
+        adapter.disconnect()
+    return exit_code
 
 
 if __name__ == "__main__":
