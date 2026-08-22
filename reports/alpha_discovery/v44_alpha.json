@@ -1,0 +1,1 @@
+{"config_id": "23d98c07488913c1c99a7397b2f8791f4727115e04bdefc283fb6bfc4a468969", "contract_version": "range-hierarchical-v4.4", "n1_commit": "21ae632", "warmup_from": "2011-07-26 16:30:00+00:00", "collect_from": "2021-07-27 00:00:00+00:00", "collect_to": "2023-12-29 23:59:00+00:00", "total_bars": 154927, "alpha_confirmed_bars": 0, "confirmed": [], "build_seconds": 851.5}
