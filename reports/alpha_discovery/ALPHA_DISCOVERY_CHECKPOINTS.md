@@ -366,3 +366,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** NO cross-era-stable univariate DXY directional information. Lifts small (<=0.04, consistent w/ ~0 linear corr). Most coherent signal = persistent DXY efficiency -> inverse XAUUSD path: +0.02..+0.03 in b0/b1 (classic inverse) but **REVERSES to -0.02..-0.04 in 2021-2023** (inflation/safe-haven regime where gold & USD rose together). DXY's directional link to gold is REGIME-CONDITIONAL, not stationary. Lag curve decays from lag0 (no better lag).
 **NEXT:** X3 divergence (XAUUSD NOT reacting to DXY as expected -> continuation/reversal info?) + §7 incremental-over-XAUUSD-parent test + small XAUUSD-state x DXY-state interactions, before the bounded DXY conclusion. Do NOT conclude DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED until X3 + incremental + interactions done (§20).
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #37 — 2026-08-22 — DXY X3 divergence + §7 incremental: incremental info REAL but regime-conditional (inverts 2021-2023)
+**Screen (`dxy_divergence_incremental.py`):** X3 divergence (gold not reacting to material DXY move, DXY threshold from DISC only) + §7 incremental (persistent DXY direction OVER XAUUSD parent regime), cross-era, deduped, H=24h.
+**Result:** X3 divergence flips sign across eras (div_bull L +0.029 b0 / -0.053 b1; div_bear S -0.046 b0 / +0.050 b1) -> not stable. §7 incremental (CRITICAL gate): DXY direction adds SMALL POSITIVE increment over XAUUSD parent in b0/b1 (+0.02..+0.06, so NOT purely redundant with XAUUSD trend) but INVERTS in 2021-2023 (dxyEffDn->L UP -0.034/TRANSITION -0.061). The only cross-era-coherent piece (DXY-strength-in-XAUUSD-UP -> shorts worse) is an XAUUSD-trend effect, not new DXY info.
+**Decisive:** DXY carries GENUINE (non-redundant) incremental info about XAUUSD path in 2011-2018, but it is REGIME-CONDITIONAL and INVERTS in the 2021-2023 inflation/safe-haven regime -> fails the MATERIAL+STABLE requirement (§1/§15). Same non-stationarity the whole program found, now on the exogenous axis.
+**NEXT:** bounded DXY transitions (DXY accel->decel / reversal sequences) to complete the §20 order; then present the BOUNDED DXY CONCLUSION (likely DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED as a STABLE edge) + CEO decision.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

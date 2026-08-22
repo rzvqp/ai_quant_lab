@@ -22,3 +22,16 @@ Mandate `ALPHA-XAUUSD-DXY-CAUSAL-INCREMENTAL-INFORMATION-001`. Causal DXY state 
 | **dxyEffDn -> L** | +0.025 | +0.033 | **-0.039** | inverse in b0/b1, **REVERSES 2021-2023** |
 Lag curve: lift decays from lag0 (l0 strongest, l2/l4 weaker) — no better lag; effect weak throughout.
 **Finding:** NO cross-era-stable univariate DXY directional information. The classic inverse-DXY->gold signal (persistent DXY efficiency) holds in 2011-2018 (b0/b1, +0.02..+0.03) but **INVERTS in the 2021-2023 inflation/safe-haven regime (-0.02..-0.04)** — gold & USD rose together. DXY's directional link to gold is REGIME-CONDITIONAL, not stationary (same program-wide pattern, now on the exogenous axis). Lifts are small (<=0.04) consistent with ~0 linear corr. NEXT: X3 divergence (XAUUSD/DXY disagreement) + §7 incremental-over-price-only test + interactions before any conclusion.
+
+## X3 divergence + §7 incremental test (checkpoint #37)
+`dxy_divergence_incremental.py`.
+### X3 divergence (gold NOT reacting to a material DXY move; DXY threshold from DISC only)
+| cell | b0 | b1 | y2123 | read |
+|---|---|---|---|---|
+| div_bull -> L | +0.029 | -0.053 | +0.019 | b1 reverses -> not stable |
+| div_bear -> S | -0.046 | +0.050 | -0.009 | b0/b1 OPPOSITE signs -> not stable |
+Divergence signal flips across eras; y2123 DISC/CONF inconsistent. NOT cross-era-stable.
+### §7 incremental (persistent DXY direction OVER XAUUSD parent regime) — the CRITICAL gate
+- dxyEffDn->L increment within XAUUSD parent: b0/b1 small POSITIVE (+0.01..+0.06 most regimes) = NOT purely redundant w/ XAUUSD trend; but y2123 REVERSES (UP -0.034/CHOP -0.021/TRANSITION -0.061).
+- dxyEffUp->S increment: b0/b1 small positive except UP regime strongly negative (-0.065/-0.061 = don't fight XAUUSD uptrend, an XAUUSD effect); y2123 mixed-negative.
+**Decisive finding:** DXY adds GENUINE (non-redundant) incremental info over XAUUSD parent state in 2011-2018, but it INVERTS in 2021-2023 (inflation/safe-haven regime). => DXY incremental information is REAL but REGIME-CONDITIONAL / non-stationary -> fails the MATERIAL+STABLE requirement (§1/§15). NEXT: bounded DXY transitions (complete §20 order) then bounded DXY conclusion.
