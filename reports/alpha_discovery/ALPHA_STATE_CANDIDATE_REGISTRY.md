@@ -13,3 +13,7 @@ Causal STATES that survive the information-first gates (mandate `ALPHA-XAUUSD-CA
 | ST-UPEFF-DROP-FILTER | up-efficiency (effic) high at t-6 then <0.1 at t (trend-drive fading) | LONG P(+100/-70) lift -0.069 STABLE (DISC -0.088/CONF -0.041; 2021 -0.054/2023 -0.099) | **STABLE_FILTER (LONG-avoidance)** — not a standalone trade (negative signal); re-encodes trend-drive presence (COMP-CONT-L territory); cannot apply to frozen strategies (§21/§24). Recorded, not promoted. |
 
 **Transition family verdict:** no stable POSITIVE tradeable path-lift; the one stable signal is a LONG-avoidance filter. Both static-state and transition families now mapped -> next: path-history / multi-TF / session-conditioned states.
+
+| ST-CLEAN-EXH-SHORT | clean recent advance near highs (realized-eff>0.3-0.5 & pullback<0.5 ATR) -> SHORT | DEV within-period STABLE +0.039 (all years + DISC/CONF); LONG-avoidance side -0.156 | **XPOP_UNSTABLE_KILLED** — cross-population INVERTS (b0/b1 SHORT lift -0.009 to -0.052). A 2021-2023 bid-market-regime property, not general. First stable-positive DEV signal, correctly killed by cross-population. |
+
+**Meta-finding:** state->path relationships are REGIME-CONDITIONAL — within-period stability (per-year+DISC/CONF) is necessary but NOT sufficient; cross-population is the decisive gate. Three families mapped (static/transition/path-history); all within-period-stable signals fail cross-population.

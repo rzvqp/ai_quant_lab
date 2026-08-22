@@ -163,3 +163,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Conclusion:** no stable POSITIVE tradeable path-lift from static states (ST-TREND-EXH) or transitions on 2021-2023 H1. The stable price-only state information reduces to "trend-drive presence" (already exploited by COMP-CONT-L). NOT price-only-impossible (§26) — 2 of several state families mapped.
 **NEXT:** PATH-HISTORY states (causal MFE/MAE-so-far, recent realized asymmetry before decision) — a genuinely different information class (§5 "MFE/MAE history available before decision"); then multi-TF / session-conditioned states. Cross-population b0/b1 for any stable positive.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #14 — 2026-08-22 — path-history family: first stable-positive DEV signal -> KILLED by cross-population; REGIME-CONDITIONAL meta-finding
+**Screen:** 10 causal path-history states (realized-eff, pullback-depth, MFE/MAE-so-far, asymmetry, time-since-new-extreme) x 2 sides on 2021-2023 H1 DEV, headline P(+100/-70) H48, per-year + DISC/CONF stability in-screen (`state_pathhist.py`).
+**Found:** the "clean recent advance near highs -> exhaustion" family is within-DEV STABLE — clean_up/shallowPB_up SHORT +0.035/+0.039 (all years + DISC/CONF), LONG-avoidance -0.156. **First stable POSITIVE tradeable lift in the whole state program.**
+**Cross-population (b0/b1) — DECISIVE KILL (`state_pathhist_xpop.py`):** lift INVERTS (b0 -0.009/-0.026; b1 -0.044/-0.052). The signal is a 2021-2023 bid-market-regime property, not general.
+**META-FINDING:** causal price-state->path relationships on XAUUSD are **REGIME-CONDITIONAL, not stationary**. A signal can pass the full within-period gate (per-year + DISC/CONF) yet INVERT cross-regime. Within-period per-year splits share the macro-regime -> within-period stability is necessary but NOT sufficient; **cross-population is the decisive generalization test.** Explains why general price-only alpha is elusive and why the frozen survivors are regime-specific. This is the honest map (§26).
+**NEXT:** multi-TF state family (H4/D1 causal state conditioning H1 path) + session-conditioned states — with cross-population as a first-class gate from the outset. After that the causal-state information space is substantially mapped; a bounded, evidence-backed conclusion (regime-conditional non-stationarity) can be presented to CEO.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.

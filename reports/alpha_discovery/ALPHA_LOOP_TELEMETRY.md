@@ -5,7 +5,7 @@ Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes
 ```
 LOOP_STATUS               = ACTIVE (auto-loop RESUMED — new mandate: price-only STATE->PATH information method)
 CURRENT_POPULATION        = 2021-2023 native H1 DEV (state-path information mapping); price-only, causal
-CURRENT_FRONTIER          = state-TRANSITION family screened -> no positive tradeable edge (1 stable LONG-avoidance filter) -> next: PATH-HISTORY states
+CURRENT_FRONTIER          = path-history family: first stable-positive DEV signal (clean-advance exhaustion SHORT +0.039) KILLED by cross-population (inverts on b0/b1). META: state->path is REGIME-CONDITIONAL.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = PATH-HISTORY state family (causal MFE/MAE-so-far / recent realized asymmetry before decision), then multi-TF / session-conditioned states
+NEXT_FRONTIER             = multi-TF states (H4/D1 conditioning H1 path) + session-conditioned states, with cross-population as a first-class gate; then bounded regime-conditional conclusion to CEO
 ```
 
 ## Key structural findings (bounded)
