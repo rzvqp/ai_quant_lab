@@ -3,9 +3,9 @@
 Updated each loop cycle. Whenever CURRENT_FRONTIER closes, NEXT_FRONTIER becomes CURRENT immediately.
 
 ```
-LOOP_STATUS               = ACTIVE (auto-loop RESUMED — NEW mandate: REGIME-CONDITIONAL state->path discovery)
+LOOP_STATUS               = ACTIVE (auto-loop PAUSED — regime+transition sweep COMPLETE; only stable edge = frozen COMP-CONT-L; awaiting CEO decision)
 CURRENT_POPULATION        = 2021-2023 native H1 DEV + b0/b1 (regime-conditional; causal regime taxonomy frozen)
-CURRENT_FRONTIER          = within-regime SHORT (DOWN,QUIET): no material same-regime-stable edge (DOWN+falling-vol +0.097 DEV but fails cross-era). State->path era-dependent even within a fixed regime.
+CURRENT_FRONTIER          = REGIME + TRANSITION SWEEP COMPLETE: only same-transition-cross-era-stable positive = QUIET->UP LONG = REDUNDANT with frozen COMP-CONT-L (re-discovered). No new non-redundant edge.
 CURRENT_HYPOTHESIS        = -
 TOTAL_FRONTIERS_TESTED    = 19  (F1-F7, F-EXT-S2/S4, HF1-HF6, M15-F1/F2/F3)
 TOTAL_HYPOTHESES_TESTED   = 42  (H01-H42)
@@ -13,7 +13,7 @@ TOTAL_STRATEGY_CONFIGS    = ~230+ (RR/H/W/def/side variants as robustness checks
 TOTAL_FROZEN_PENDING_VAL  = 1   (COMP-CONT-L-rr2 @ 4082c5c)   [+ H4-bo-raw-S in its own separate validation workflow]
 DATA_REGIONS_CONSUMED     = 2021-2023 native DEV (exhausted); historical b0+b1 (this population); CALIB readouts. 2024+ PROTECTED untouched.
 EXOGENOUS_FRONTIER        = CLOSED (requires CEO authorization)
-NEXT_FRONTIER             = UP/CHOP LONG within-regime + regime-TRANSITION family (§27, boundary A->B) with same-transition cross-era gate
+NEXT_FRONTIER             = CEO-DECISION: (1) send COMP-CONT-L-rr2 to independent validation (doubly-confirmed); (2) exogenous with data; (3) accept regime-specific portfolio + regime-router. See ALPHA_REGIME_CONDITIONAL_BOUNDED_CONCLUSION.md.
 ```
 
 ## Key structural findings (bounded)

@@ -202,3 +202,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Deepened meta-finding:** state->path lifts are era-dependent EVEN WITHIN a fixed causal regime. Same-regime cross-era is a strict, genuine generalization gate; within-period stability (even flawless across all years + DISC/CONF) remains insufficient.
 **NEXT (do not stop, §30):** UP/CHOP regimes LONG + regime-TRANSITION family (§27, boundary A->B — may hold more path info than persistent states). Same-regime / same-transition cross-era gate throughout.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #18 — 2026-08-22 — regime + transition sweep COMPLETE; only stable edge = the frozen COMP-CONT-L (re-discovered) -> CEO decision (auto-loop paused, program ACTIVE)
+**Completed:** UP/CHOP LONG within-regime + 8-transition family (§27). **Only same-transition-cross-era-STABLE positive = QUIET->UP LONG (+0.099 DEV/+0.048 b0b1)** — but tiny N (40/72, §16) AND REDUNDANT with COMP-CONT-L (compression->uptrend thesis). Every other regime/transition signal is regime-transient (fails same-regime cross-era), a stable avoidance filter, immaterial, or insufficient-N.
+**Central conclusion (bounded, §26):** NO new non-redundant material same-regime(-transition)-stable price-only edge. The one stable positive is the already-frozen COMP-CONT-L edge -> the regime-conditional method INDEPENDENTLY CONFIRMS COMP-CONT-L as a genuine QUIET->UP regime-transition LONG. Deeper result: price-only state->path is era-dependent EVEN WITHIN a fixed causal regime (a regime label is insufficient for portability). NOT price-only-impossible.
+**Deliverable:** `ALPHA_REGIME_CONDITIONAL_BOUNDED_CONCLUSION.md` (method + findings + CEO options).
+**CEO decision requested:** (1) send COMP-CONT-L-rr2 to independent validation (now doubly-confirmed); (2) re-authorize exogenous with provisioned data (DXY staging appeared); (3) accept regime-specific portfolio + regime-router overlay. Loop resumes on any.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused at decision point).

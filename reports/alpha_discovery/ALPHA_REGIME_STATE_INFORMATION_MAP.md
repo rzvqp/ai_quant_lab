@@ -13,3 +13,6 @@ DOWN SHORT base: DEV 0.413 / b0 0.439 / b1 0.364. QUIET SHORT base: DEV 0.403 / 
 | QUIET | fresh_down_imp | +0.032 | +/+ | 2021 -0.06 | b0 +0.042/b1 +0.013 (same-sign!) | same-sign cross-era but IMMATERIAL (<0.04) + 2021-inconsistent |
 | QUIET | bounced_top / deep_below | -0.046 / -0.066 | mixed | mixed | invert | not stable |
 **Verdict:** NO material same-regime-stable SHORT signal in DOWN/QUIET. Key deepening of the meta-finding: **even WITHIN the same causal regime, state->path lifts are era-dependent** — the strongest within-DEV regime-conditional signal (DOWN+falling-vol +0.097, flawless within-period across all years + DISC/CONF) still FAILS same-regime cross-era (b0 -0.029). The only same-sign-cross-era effects (QUIET fresh-down-imp) are economically immaterial (<0.04). Same-regime cross-era is a genuine, strict gate.
+
+## UP & CHOP regime LONG screen
+UP LONG base DEV 0.376: no stable positive (rising_vol +0.022 but b1 -0.044 inverts). CHOP LONG base 0.436: falling_vol -0.041 STABLE (b0 -0.022/b1 -0.044) = LONG-AVOIDANCE filter (not a trade); rest flat. No new stable positive LONG in UP/CHOP.
