@@ -26,3 +26,5 @@ Cumulative search lineage for the state-path method (§15, §21).
 - **M15 univariate state map:** 16 causal M15 states x 2 sides -> P(+70/-50) 8h lift, event-deduped, per-year+DISC/CONF+cross-era. FIRST cross-era-stable signals found: all volatility-based; the directional one = high/rising-vol -> M15 SHORT bias (+0.058, stable all eras, LONG not lifted). Stable INFO; tradeability TBD (P 0.32 < breakeven). Next: expectancy/geometry characterization + M15 transitions + H1/H4 conditioning.
 
 - **M15 high-vol-short tradeability:** fixed brackets (4) + structural ATR stops (3x3) on DEV+b0+b1, event-deduped + parent-regime split (5) + down-disp interaction. Univariate NOT tradeable cross-era (STABLE_INFO_NOT_TRADEABLE). Lead: DOWN-parent-regime high-vol-short +0.102 DEV -> cross-era check pending. No candidate frozen.
+
+- **DOWN-parent high-vol-short cross-era (decisive):** DEV +0.112 (best10+), b0 sign-confirmed (+, best10<0), b1 CONTRADICTS (neg). REGIME_SPECIFIC_INFO_NOT_CROSS_ERA_STABLE -> not frozen. Confirms shorts are genuine-downtrend-specific (b1 uptrend-corrections fail). No candidate. Next: M15 transitions + deeper M15 states.

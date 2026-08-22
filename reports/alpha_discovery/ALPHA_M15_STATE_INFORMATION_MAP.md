@@ -23,3 +23,10 @@ The lift is STABLE but MODEST: high-vol SHORT P(+70/-50)=0.32, still below the 0
 - DEV: all avgR negative (best +70/-50 -0.017; struct best -0.042). b0: marginally positive (+70/-50 +0.030). b1: all negative (-0.035..-0.21).
 - The stable +0.058 P(+70/-50) lift raises P to 0.32 -> still below breakeven; expectancy stays <=0. `STABLE_INFO_NOT_TRADEABLE` at the univariate level.
 **LEAD — parent-regime conditioning:** high-vol-short conditioned on the causal H1 **DOWN** parent regime is POSITIVE on DEV (struct 1.5ATR rr1.5): **avgR +0.102, WR 0.48, N=239** (best10 -0.048 slightly tail-carried). UP -0.027 / QUIET -0.167 / CHOP -0.090 / TRANSITION -0.091 all negative; raw down-displacement interaction -0.037 (doesn't help). Economically: high volatility CONFIRMS an existing downtrend. `ST-M15-HIGHVOL-SHORT-DOWNPARENT` = LEAD, cross-era TBD (same-regime DOWN-parent high-vol-short on b0/b1 — decisive; note H1 DOWN shorts were era-unstable, and b1 has little DOWN regime -> possible INSUFFICIENT_SAME_REGIME_EVIDENCE).
+
+## DECISIVE cross-era check: ST-M15-HIGHVOL-SHORT-DOWNPARENT (`state_m15_downparent.py`)
+DOWN-parent high-vol M15 short (STRESS, event-deduped, struct ATR stops):
+- **DEV (N=293):** positive. Best struct 2.0ATR rr1.0: avgR +0.112, WR 0.56, best5 +0.066, **best10 +0.015** (not tail-carried), 14.7 tpm, 120 unique days, session-spread. Per-year 2021 +0.20/2022 -0.01/2023 +0.04; DISC +0.099/CONF +0.026.
+- **b0 2011-2013 (N=469):** SIGN CONFIRMED (avgR +0.025..+0.130) but best10 negative (tail-carried).
+- **b1 2016-2018 (N=392): CONTRADICTS — all geometries negative (-0.11..-0.15).**
+**Verdict: `REGIME_SPECIFIC_INFO_NOT_CROSS_ERA_STABLE`.** Fails the same-regime cross-era gate (b1 DOWN-parent contradicts). Economic reading: high-vol-short works when DOWN reflects a GENUINE downtrend (DEV/b0 2013 bear) but fails when DOWN is a correction inside an uptrend (b1 shorts bought). Confirms the program-wide finding that shorts are genuine-downtrend-specific. NOT frozen. (A sharper 'genuine-downtrend' regime def might rescue b1 but defining it after seeing b1 fail = P&L-driven regime-fitting, forbidden -> not pursued.)

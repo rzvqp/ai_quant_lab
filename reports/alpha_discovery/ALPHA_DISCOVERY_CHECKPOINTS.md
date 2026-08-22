@@ -237,3 +237,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **LEAD:** high-vol-short CONDITIONED on H1 DOWN parent regime = +0.102 avgR DEV (WR .48, N=239, best10 -0.048 slightly tail-carried); UP/QUIET/CHOP/TRANSITION parents negative; raw down-disp interaction doesn't help. Economically high-vol confirms downtrend. `ST-M15-HIGHVOL-SHORT-DOWNPARENT` = LEAD_CROSS_ERA_TBD.
 **NEXT:** DECISIVE same-regime cross-era check — DOWN-parent high-vol-short on b0/b1 (b0 has 2013 bear DOWN; b1 has little DOWN -> possibly INSUFFICIENT_SAME_REGIME_EVIDENCE). If material + cross-era-stable + non-redundant + sample-honest -> Stage-C freeze (REGIME-SPECIFIC SHORT candidate); else record honestly and continue to M15 transitions + other M15 states. Guarded: H1 DOWN shorts were era-unstable.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #22 — 2026-08-22 — DOWN-parent high-vol-short FAILS same-regime cross-era (b1 contradicts) -> not frozen
+**Decisive check (`state_m15_downparent.py`):** DOWN-parent high-vol M15 short, STRESS, event-deduped.
+- DEV (N=293): positive, best 2.0ATR rr1.0 avgR +0.112 WR .56 best10 +0.015 (14.7 tpm). b0 (N=469): sign-confirmed (+0.03..+0.13) but best10<0. **b1 (N=392): CONTRADICTS (all neg -0.11..-0.15).**
+**Verdict: REGIME_SPECIFIC_INFO_NOT_CROSS_ERA_STABLE** — fails same-regime cross-era (§9). High-vol-short works when DOWN = genuine downtrend (DEV/b0 2013 bear) but fails when DOWN = correction in uptrend (b1). Consistent with the program-wide finding that price-only shorts are genuine-downtrend-specific. NOT frozen (b1 contradicts + b0 tail-carried). A sharper causal genuine-downtrend regime def MIGHT rescue it but would be P&L-fitting if defined post-hoc (§28) -> not pursued.
+**NEXT (do not stop, §29):** M15 TRANSITIONS (§8: low-vol->expansion, inefficient->directional, extension->loss-of-continuation, pullback->renewed-efficiency) + deeper M15 states (displacement/pullback/path-cleanliness) + session-conditioned, all event-deduped + same-era cross-population gate.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
