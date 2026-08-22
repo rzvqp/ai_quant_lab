@@ -8,6 +8,8 @@ Falsified mechanisms — **do not re-run without genuinely new information (§4,
 - **F3 temporal/calendar** (day-of-week drift; weekly-open gap continuation & fade): DOW too weak (upRate≈0.5); gap-continuation best-10%-removed<0 and 2021<0. DEAD.
 - **F5 SHORT** (compression continuation in D1-downtrend): regime-locked, best-10%-removed<0, DISC<0. NOT_SUPPORTED. (LONG side survived — see candidate.)
 - **F4** is NOT graveyard: it is a documented **near-miss that maps onto the already-frozen LONG trend-beta** (kept as evidence, not a new strategy).
+- **F6 down-expansion crash-momentum SHORT** (trailing ride, both un-gated and D1-down-gated): DEAD — gold's fast down-spikes **REVERT (get bought)**, not continue; posRate 0.29, all years negative incl 2022, best-10%-removed<0. The mirror confirmation of the structurally-bid market. Adds a 7th falsified SHORT mechanism class.
+- **F7 prior-day-high breakout continuation LONG** (frequency-diversifier attempt): DEAD on DEV — tight 56p stop noise-stopped (advFirst 0.73), avgR<0, best10<0, all years<0. Faster/higher-frequency LONG events revert to the intraday tight-stop failure mode; only the SWING-scale wide-structural-stop LONG survives. (CALIB-positive but DEV-negative = noise, not selected.)
 
 ## Prior program (pre-existing reports in reports/alpha_discovery/ — CLOSED)
 - Intraday **mean-reversion fades** of extremes — trend runs them over.

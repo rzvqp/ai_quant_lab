@@ -19,6 +19,12 @@ Cumulative hypothesis log for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. Every
 | H12 | F4 | trend-drift SHORT per down-regime onset | S | H{12,24,42} | 21–49 | FALSIFIED (regime-locked, best10<0) |
 | **H13** | **F5** | **compression = low-risk re-entry WITH the D1 trend, structural stop** | **L** | **W20,H42,cd20,rr2** | **53** | **SURVIVOR -> READY_FOR_INDEPENDENT_VALIDATION** |
 | H14 | F5 | same, SHORT in D1-downtrend | S | W20,H42,rr{1.5,2,3} | 36 | NOT_SUPPORTED (best10<0; DISC−0.26) |
+| H15 | F6 | down-expansion crash-bar momentum continues (trailing ride) | S | N10, tr>1.3atr, close<0.33, trail{2,3}ATR | 69 | FALSIFIED (down-spikes REVERT; all yrs<0 incl 2022; best10<0) |
+| H16 | F6 | same, gated to D1-downtrend | S | trail{2,3}ATR | 29 | FALSIFIED (avgR<0; 2022 −0.69/−0.95) |
+| H17 | F7 | prior-day-high breakout continuation (frequency LONG) | L | first close>PDH, D1-up, rr{1.5,2} | 74 | FALSIFIED (DEV avgR<0, best10<0, advFirst 0.73 noise-stopped) |
+| H18 | F7 | overlap of H17 vs frozen COMP-CONT-L | L | trade-day Jaccard | — | 0.19 (low) but moot — H17 not robust |
+
+**Note on H17/CALIB:** CALIB 2024 was +0.33 for H17 but **DEV is negative** — a positive robustness-population number on a DEV-failing rule is noise, NOT an edge. Selection gate = DEV-robust first; H17 fails it. Recorded to prevent CALIB-fishing.
 
 **Robustness checks on H13 (not separate hypotheses):** W∈{14,20,28}×H∈{30,42,60}×cd∈{12,20}×rr∈{1.5,2.0} full grid (reported in `frontier5_vet.py` output); CALIB 2024 out-of-selection; DISC/CONF 60/40; best-1/5/10%-removed; per-year; overlap-vs-protrend proxy.
 
