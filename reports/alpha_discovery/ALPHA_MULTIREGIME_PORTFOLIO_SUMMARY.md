@@ -79,3 +79,8 @@ regime-direction(6) / cross-scale-divergence(CRS-1 works, BLS-1 fails) / accepta
 sweep-reversal(fail) / range fade+pullback+breakout(fail) / volume-displacement(informs, no standalone edge). ALL confirm the
 robust result: the ONLY tradeable XAUUSD price-only specialists are S5 (long/breakout) and CRS-1 (short/high-vol-down cross-scale
 divergence). Every fade/reversal/regime-direction/long-continuation mechanism fails (R19 momentum-dominance + R20 era-trend).
+
+## POST-CAUSAL-REPAIR RESUMPTION (verified infra, VE PASS 91b7415)
+Gap-behavior mechanism (genuinely-new, pure OHLC, no like_at): gaps>=0.5ATR rare (203up/92dn, ~6yrs). gap-up continuation +0.137
+(tail-dependent best10rm -0.065, thin), gap-dn continuation -0.125, gap-fill fails both, weekend-gap-fill fails. Up-drift-bias
+asymmetry, not tradeable. No survivor. Corrected portfolio unchanged: S5 only. Discovery continues on the now-verified runner.
