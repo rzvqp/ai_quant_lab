@@ -1,7 +1,7 @@
 # CRS-1 — XAUUSD Current-Regime Cross-Scale H4-Divergence Fade (SHORT)
 
-**Status: `FROZEN_PENDING_INDEPENDENT_VALIDATION_CURRENT_REGIME`**
-First `CURRENT_REGIME_SURVIVOR` (frontier CR-13). NOT self-promoted. NOT sent to AI Trader. Awaits independent Statistician + Red Team validation before any production consideration. New identity per CEO §10 (survivors get new identities).
+**Status: `FROZEN_PENDING_INDEPENDENT_VALIDATION_CURRENT_REGIME` → `ROUTED_TO_RED_TEAM` (CEO routing 2026-08-23)**
+First `CURRENT_REGIME_SURVIVOR` (frontier CR-13). NOT self-promoted. NOT sent to AI Trader. Registered in `CANDIDATE_QUEUE.md` as **CAND-CRS1, NEW → Red Team** (separate multiple-testing family from the MK/detector line). Awaits independent Red Team (Phase A) then Statistician validation before any production consideration. Alpha continues discovery in parallel. New identity per CEO §10 (survivors get new identities).
 
 Mandate: ALPHA-XAUUSD-CURRENT-REGIME-SPECIALIST-DISCOVERY-001. Price-only XAUUSD. Discovered 2026-08-23.
 
