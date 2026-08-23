@@ -50,3 +50,18 @@ session inheritance/lead-lag (no edge), hazard/time-in-state (era-entangled), se
 = era-trend, non-generalizing) + R26 (volatility predictable, direction not). **S5 (structural direction-supplying opening-range
 breakout in a liquid window) remains the SINGULAR tradeable XAUUSD price+volume edge.** Genuinely-distinct next frontiers need
 either new authorized data (finer M5 / exogenous — governance gate) or a genuinely-novel mechanism concept beyond this repertoire.
+
+## Frontier I — autocorrelation-adaptive meta-strategy (autocorr_adaptive.py) : no edge
+The market's own rolling lag-1 return autocorrelation does NOT predict whether momentum or reversion works next: adaptive
+sided-fwdRet negative all partitions (-0.015/-0.055/-0.044); tradeable combined -0.104, every partition negative. Even the
+meta-level (regime-switch by persistence character) fails. 12th post-repair frontier, no edge.
+
+## DOMAIN-EXHAUSTION CONCLUSION (price+volume, single-instrument, causally verified)
+The authorized XAUUSD price+volume single-instrument mechanism space is now EXHAUSTIVELY covered — standard TA/microstructure
+repertoire (trend/reversion/breakout/volatility/volume/structure/cross-scale/reference-level/session/hazard/seasonality) PLUS a
+meta-representation (autocorrelation-adaptive) PLUS the full prior campaign (universal A-J, current-regime CR-1..15 causal-replayed,
+6-regime multi-regime, RANGE vNext lifecycle, unsupervised morphology). S5 (structural direction-supplying NY opening-range
+breakout) is the SINGULAR tradeable edge. Deep causes: R20 (direction = era-trend, non-generalizing) + R26 (volatility predictable,
+direction not). Genuinely-distinct further frontiers require NEW AUTHORIZED DATA (finer M5 / exogenous DXY-yields-news — CEO
+governance gate) or a genuinely-novel mechanism concept beyond the standard+meta repertoire. Not a stop for 'negative/comprehensive';
+a hypothesis-space boundary of the authorized domain.
