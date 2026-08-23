@@ -32,7 +32,7 @@ Mandate `ALPHA-XAUUSD-CAUSAL-MORPHOLOGY-DISCOVERY-001`: discover recurring event
 Multi-day/session unsupervised morphology = future spaces if warranted (hand-authored versions already bounded: Batch D/E/J).
 
 ## Multiplicity ledger (morphology)
-- Spaces run: A(M15), B(H1), C(H4). K=12 each. 1 clustering fit per space (DISC=b0+b1). Total 36 archetypes examined. Fixed seed, fixed K, fixed feature set, DISC-only fit — all preserved. 0 promoted to strategy.
+- Spaces run: A(M15), B(H1), C(H4) bar-structure (K=12 each) + D(session-geometry, K=10). 1 clustering fit per space (DISC=b0+b1). Total 46 archetypes examined. Fixed seed(7), fixed K, fixed feature set, DISC-only fit — all preserved. 0 promoted to strategy.
 - No re-fit after seeing forward paths (no post-hoc redesign; §10). Any future re-fit = new identity + new ledger entry.
 
 ## Governance
