@@ -1,0 +1,9 @@
+# ALPHA_FRONTIER_LEDGER — post-R26 autonomous frontiers (R26 lens: structural events supplying a path-surviving direction)
+
+Running ledger of autonomously-selected frontiers (L onward). Each: preregistered, executed on the ratified sb screen / passage, cross-era. Commit/telegram batched (administrative, non-blocking). Closed families NOT reopened.
+
+| frontier | mechanism (R26 rationale) | result | verdict |
+|---|---|---|---|
+| L | Failed-auction REJECTION at a fresh extreme (new 20-bar high + weak close → short; mirror long). Direction resolved by rejection structure; liquidity swept behind = path rationale. | REJECT_newhigh_S −0.149 (b1/DEV/CAL neg); REJECT_newlow_L −0.102 (all neg). Just counter-momentum (R19). | BOUNDED_NEGATIVE |
+| M | PATH-SURVIVAL study (R26 direct): displacement (direction-resolving) continuation asym + adverse-first per session×vol-exp, cross-era. | **NY adverse-first materially lower (af ~0.35-0.55) than Asia/Lon (~0.65-0.72), all eras** → path-survival IS liquidity/session-driven (why S5=NY works). BUT even best cell (NY/exp) directional asym small (+0.02..+0.07) and CAL-flips → path-survival necessary NOT sufficient; direction still era-trend. No cross-era-stable directional cell. | BOUNDED_NEGATIVE (+ R27 refinement) |
+| N | SERIAL DEPENDENCE: return autocorrelation across horizons (1..192 bars), cross-era. Distinct lens (not event-based). | All |corr|<0.05 and era-inconsistent (k=48: +0.084/-0.006/+0.021/+0.080). No cross-era-stable momentum or mean-reversion at the return level. | BOUNDED_NEGATIVE (return-level direction = era-trend/noise, R20) |
