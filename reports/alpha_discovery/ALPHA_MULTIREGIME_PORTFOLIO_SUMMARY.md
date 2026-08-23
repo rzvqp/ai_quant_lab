@@ -46,3 +46,12 @@ uptrend dips don't reliably bounce. Confirms CRS-1 is genuinely a down-correctio
 Mirror of the validated acceptance-short. avgR -0.118 all-context (15/16 neg yrs), D1-up -0.117 (16/16 neg), high-vol -0.038
 (DISC -0.124). Long-side acceptance does NOT work: upside breakout-retests get faded. Confirms LONG side has NO edge except S5
 (BLS-1 dip-buy, ALS-1 acceptance-above, all regime-longs fail). Asymmetry: down-acceptance is a tail-reducer, up-acceptance fails.
+
+## SWR-1 liquidity-sweep reversal — FAIL (both directions, all gatings)
+Sweep-hi short / sweep-lo long (failed-breakout wick rejection): avgR -0.15..-0.26, 14-15/16 neg years, best-10%rm -0.38..-0.50.
+Sweeps CONTINUE (momentum), they don't reverse (R19 momentum-dominance). Dead mechanism.
+
+## Mechanism-space coverage this program: ~10 distinct classes, all confirm S5+CRS-1 only
+regime-direction(6 regimes), cross-scale-divergence(CRS-1 short works / BLS-1 long fails), acceptance(short=tail-reducer near-miss
+/ long fails), sweep-reversal(fail), range fade/pullback/breakout(fail). NEW UNTAPPED DIMENSION = VOLUME (all prior mechanisms
+OHLC-only; tick-volume is intrinsic to the price feed, within price-only). Pivoting to volume-based mechanisms next.
