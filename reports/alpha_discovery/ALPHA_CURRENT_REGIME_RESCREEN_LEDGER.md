@@ -1,3 +1,13 @@
+# ⛔ SUPERSEDED BY CAUSAL REPLAY (VE-CURRENT-REGIME-TEMPORAL-CAUSALITY-REPAIR-001, commit 91b7415; Statistician STAT-CRS1-INDEPENDENT-REVIEW-FDR-001)
+
+**`TAINTED_EVIDENCE_DO_NOT_USE_FOR_SELECTION`.** Every result below was produced through `cur_screen.like_at`, which had a temporal LOOKAHEAD: it floored an M15 entry to its OWN H4 bucket's start and read a regime label computed from that bucket's CLOSE (knowable up to 240 min later; median ~135 min; 100% of entries). CAUSAL REPLAY (cur_replay_harness.py -> cur_replay_manifest_output.txt) with the repaired `cur_data.causal_bucket_asof`:
+- **CRS-1 (CR-13): avgR +0.4507 -> +0.0669** (p 3.2e-08 -> 0.243); skepticism gate now FAILS (worst min-partition over year-drops +0.196 -> **-0.152**). **CRS-1 = STATISTICAL_VALIDATION_FAIL. CURRENT_REGIME_SURVIVOR = 0.**
+- CR-15 confluence (H1-up&H4-up) +0.498 -> -0.034 (collapsed). All CR-13 verdicts -> NOT a survivor.
+- CR-6 ordering: P(downFirst) 0.515 -> 0.502 (the 'ordering too weak to trade' DIAGNOSTIC holds; negatives stay negative — lookahead only inflated the one false positive, CRS-1).
+**NET after causal repair: no current-regime tradeable survivor exists; the sole apparent edge (CRS-1) was a lookahead artifact.** The negative/diagnostic conclusions (no tradeable directional edge, ordering ceiling, era-dependence) survive but must be cited from the CAUSAL numbers only. Historical text below retained for provenance, NOT for decisions. S5 unaffected (never used like_at).
+
+---
+
 # ALPHA_CURRENT_REGIME_RESCREEN_LEDGER — Phase 3/4 (first pass)
 
 Mandate `ALPHA-XAUUSD-CURRENT-REGIME-SPECIALIST-DISCOVERY-001`. Re-screen of eligible candidates on `CURRENT_LIKE_POPULATION_V1` (frozen, fp c8f5a809), exact frozen defs (§8 no retuning), STRESS cost, time-partitioned DISC(≤2021)/CONF(2022-24)/OOS(2025-26). Non-current-like periods = DIAGNOSTIC only (§4). Harness `cur_screen.py`. Old cross-era verdicts remain historically valid.

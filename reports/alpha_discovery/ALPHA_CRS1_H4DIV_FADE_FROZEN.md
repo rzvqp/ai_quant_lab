@@ -1,7 +1,7 @@
 # CRS-1 — XAUUSD Current-Regime Cross-Scale H4-Divergence Fade (SHORT)
 
-**Status: `FROZEN_PENDING_INDEPENDENT_VALIDATION_CURRENT_REGIME` → `ROUTED_TO_RED_TEAM` (CEO routing 2026-08-23)**
-First `CURRENT_REGIME_SURVIVOR` (frontier CR-13). NOT self-promoted. NOT sent to AI Trader. Registered in `CANDIDATE_QUEUE.md` as **CAND-CRS1, NEW → Red Team** (separate multiple-testing family from the MK/detector line). Awaits independent Red Team (Phase A) then Statistician validation before any production consideration. Alpha continues discovery in parallel. New identity per CEO §10 (survivors get new identities).
+**Status: `STATISTICAL_VALIDATION_FAIL` (2026-08-23) — INVALIDATED, not a portfolio edge, not DEMO-eligible.**
+⛔ The Statistician (STAT-CRS1-INDEPENDENT-REVIEW-FDR-001) + VE causality repair (commit 91b7415) found the entire evidence below was produced through a temporal LOOKAHEAD in `cur_screen.like_at` (M15 entry read a regime label from its own not-yet-closed H4 bucket; ≤240 min ahead, 100% of entries). **CAUSAL REPLAY collapses CRS-1 from avgR +0.4507 (p 3.2e-08) to +0.0669 (p 0.243)**, and it now FAILS the skepticism gate (worst min-partition over year-drops = −0.152). ~85% of the apparent edge was look-ahead. **CRS-1 FAIL is final for this frozen identity. CURRENT_REGIME_SURVIVOR = 0.** The definitions were NOT altered to recover performance (forbidden). All numbers below are TAINTED — retained for provenance only. S5 is unaffected. Any genuinely new post-repair result gets a fresh identity under normal governance.
 
 Mandate: ALPHA-XAUUSD-CURRENT-REGIME-SPECIALIST-DISCOVERY-001. Price-only XAUUSD. Discovered 2026-08-23.
 

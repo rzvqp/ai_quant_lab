@@ -1,3 +1,15 @@
+# ⚠ CORRECTION (CEO EMERGENCY STATE 2026-08-23): CRS-1 is INVALIDATED — portfolio is S5 ONLY
+
+Every "S5 + CRS-1" / "CRS-1 (high-vol correction)" statement in this file is SUPERSEDED. CRS-1 = STATISTICAL_VALIDATION_FAIL
+(temporal lookahead in `cur_screen.like_at`; causal replay +0.4507->+0.0669, fails gate; commit 91b7415 / Statistician
+STAT-CRS1-INDEPENDENT-REVIEW-FDR-001). **CURRENT_REGIME_SURVIVOR = 0. The only independently-validated XAUUSD edge is S5.**
+This multi-regime taxonomy (RANGE/HIGHVOL_BULL/LOWVOL_BULL/MIDVOL_BEAR/MIDVOL_BULL/LOWVOL_BEAR + BLS-1/ALS-1/SWR-1/VOL-1) is
+VE-confirmed + grep-confirmed CAUSAL (none call like_at, all built on merge_asof/close_time) -> its conclusions STAND: no
+regime-gated survivor here either. So the corrected portfolio = S5 active; NO_TRADE / no validated specialist in every regime.
+The 'cross-scale divergence' meta-claim below was evidenced by CRS-1 and is now WITHDRAWN as tainted.
+
+---
+
 # Multi-Regime Specialist Portfolio — Summary (regimes #1-#6, single-axis causal taxonomy COVERED)
 
 Mandate: MULTI-REGIME SPECIALIST PORTFOLIO (CEO 2026-08-23). Causal H4 taxonomy = TREND{up/down/range} x VOL{low/mid/high},
