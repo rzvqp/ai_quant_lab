@@ -495,3 +495,11 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** (1) NO stable directional alpha — directional resolution FLIPS cross-era (PRIMARY_BULL EXP_UP directional-toward-SHORT b0 / directional-toward-LONG b1; negative 2021/2023); lifts small (<=0.06), mostly weak. (2) §14 payoff rationale FALSIFIED — MFE med ~= MAE med everywhere (ratio ~0.85-1.0); NO larger/better natural payoff vs S1/S10/S2 (buying after a big expansion bar -> adverse excursion as large as favorable). (3) prior bilateral-vol finding partly holds; mode-conditioning does NOT create direction.
 **Radar R9.** NEXT: verify HOLD/FAIL (§12) + larger payoff horizons (§13, +100..+200) — unlikely to rescue (MFE med ~40p) — then bound S4. Continuous loop.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #51 — 2026-08-23 — S4 HOLD/FAIL + tradeability: primary cells era-trend-leak; correction-resume cells (C3/C4) promising
+**Screen (`s4_hold.py`, §12/§13/§18-20):** mode-aligned directional expansion, HOLD vs FAIL, HOLD-confirmed entry, structural stop = compression origin, net STRESS.
+**Result:** (1) HOLD/FAIL discriminator TRANSFERS to S4 (HOLD>FAIL continuation P cross-era; R6 confirmed here). (2) PRIMARY continuation cells SIGN-REVERSE across eras (C1 bull b0 -0.14/b1 +0.21; C2 bear b0 +0.18/b1 -0.09 -> anti-correlated = era-trend leakage, FAIL §15 same-mode sign-reversal). (3) CORRECTION-RESUMPTION cells positive both dense eras: C3 BULL_CORR+bull-exp->L b0 +0.13/b1 +0.09; C4 BEAR_CORR+bear-exp->S b0 +0.07/b1 +0.21 (HOLD-filtered, structural stop) — the correction-resolves-to-primary specialist thesis; but gated 2021-2023 thin (n<30) -> cross-era unconfirmed.
+**Radar R10.** NEXT (§26/§28 adversarial verification, NOT freeze yet): C3/C4 with pooled-DEV N, DISC/CONF, cross-era, session clustering (§24), redundancy vs COMP-CONT-L/S5 (§23). Remember S10 false positive. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
