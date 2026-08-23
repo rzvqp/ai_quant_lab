@@ -280,3 +280,19 @@ decision: BUY −0.15 beats SELL −0.28 (era-trend), both negative; SELL×nearZ
 regime direction, no zone condition, and neither trade side is net-positive.** The top-down zone-reaction reader has no edge in ANY
 regime — the strongest possible negative, consistent across chronological, pooled, and per-regime views. Mandate item "which mechanisms
 are regime-specific": answer = none, for this reading. S5 remains the ONLY validated edge.
+
+## CHoCH COUNTER-BIAS TEST (2026-08-24) — structural failure carries ZERO directional info
+`chrono_choch.py`: 18,825 ratified MK-01 CHoCH events, trade the failure direction. **P2R=0.334 = the EXACT driftless null.**
+ALL net −0.239; AGAINST-BIAS (structure fails vs H4 regime) P2R=0.329 net −0.252; WITH-BIAS 0.340 net −0.221. Every era negative;
+per-year net>0 0-1/16; tail/LOYO/2x/neighbor all negative. A change-of-character is pure directional noise, in BOTH decision
+directions. **VERDICT: FAIL.**
+
+## DEFINITIVE CHRONOLOGICAL CONCLUSION (directional discovery space exhausted)
+Tested exhaustively, all causal + cost-gated: (1) 56-branch quant taxonomy -> S5 only; (2) predefined SMC morphology -> null;
+(3) top-down zone-reaction reading, random + chronological, ALL regimes -> net-negative everywhere (23/27 quarters, no profitable
+regime); (4) broadened structural observation -> null; (5) counter-bias-on-structural-failure (CHoCH) -> EXACT null 0.334;
+(6) two preregistered candidates (ASREJ-1, WUZ-1) -> both cost-rejected by the full gate. **No decision rule, structural trigger,
+regime, or direction yields a directional edge after costs.** XAUUSD M15 DIRECTION is efficient (unpredictable); the ONLY validated
+edge is S5 (NY opening-range breakout, which self-supplies direction from a time-anchored breakout). Consistent with R26: VOLATILITY/
+range is the predictable component, DIRECTION is not. This is a strong, exhaustive, cost-verified negative established by 6 independent
+methods across both decision directions.
