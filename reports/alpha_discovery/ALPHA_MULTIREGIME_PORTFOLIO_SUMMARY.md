@@ -84,3 +84,8 @@ divergence). Every fade/reversal/regime-direction/long-continuation mechanism fa
 Gap-behavior mechanism (genuinely-new, pure OHLC, no like_at): gaps>=0.5ATR rare (203up/92dn, ~6yrs). gap-up continuation +0.137
 (tail-dependent best10rm -0.065, thin), gap-dn continuation -0.125, gap-fill fails both, weekend-gap-fill fails. Up-drift-bias
 asymmetry, not tradeable. No survivor. Corrected portfolio unchanged: S5 only. Discovery continues on the now-verified runner.
+
+## POST-REPAIR resumption batch 2 (verified causal infra): volume family fully covered, no survivor
+- VOL-BREAKOUT (volume-filtered structural breakout): high-vol breakout net-negative (DISC -0.103/CONF -0.049; breakouts fail after cost even w/ volume), low-vol control worse (-0.178) -> volume filters but not standalone. S5-redundancy: HV up-breakout 12-16 UTC 0.35 (broad, not pure S5).
+- VOL-CLIMAX exhaustion (vz>=3 at extreme -> reversal): reversion fails both ways (-0.11/-0.10), continuation control also neg (climaxes mildly continue, not reverse). No survivor.
+Volume family (VOL-1 displacement + vol-breakout + vol-climax) = volume genuinely RANKS continuation quality (high>low, consistently) but never yields a standalone tradeable edge. Corrected portfolio unchanged: S5 the only independently-validated XAUUSD edge; current-regime survivor 0; multi-regime 0.
