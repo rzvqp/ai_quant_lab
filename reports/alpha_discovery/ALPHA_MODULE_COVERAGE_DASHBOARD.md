@@ -8,7 +8,7 @@ REGISTRY_V1 (4 per module). Updated after every materially-completed branch. Pos
 ```
 M01 TREND          ███████░░░ 75%  (3/4)  survivor:0            → next: persistence-hold sizing
 M02 PULLBACK       ███████░░░ 75%  (3/4)  near-miss RESOLVED    → next: Fib/measured retrace
-M03 BREAKOUT       ██████████ 100% (4/4)  SURVIVOR: S5 (IVAL)   → complete (S5 validated)
+M03 BREAKOUT       ██████████ 100% (4/4)  own-survivor:0 (S5=M07) → complete; S5 uses breakout mechanic (secondary)
 M04 RANGE          ███████░░░ 75%  (3/4)  survivor:0            → next: range-rotation
 M05 LIQUIDITY      ██░░░░░░░░ 25%  (1/4)  survivor:0  OPEN      → next: strict pool→sweep→reclaim (MK-02)
 M06 VOLATILITY     ███████░░░ 75%  (3/4)  info-only non-direc.  → next: vol-regime mean-reversion
@@ -16,8 +16,8 @@ M07 SESSION        ███████░░░ 75%  (3/4)  SURVIVOR: S5 (IVAL
 M08 AUCTION        █████░░░░░ 50%  (2/4)  survivor:0           → next: value-migration + reclaim (causal)
 M09 CROSS-SCALE    ████░░░░░░ 38%  (1.5/4) OPEN (CRS-1 invalid) → next: causal confluence-amplification
 M10 TRANSITION     █████░░░░░ 50%  (2/4)  survivor:0  OPEN      → next: MK-01 CHoCH/BOS transition EVENTS
-M11 HAZARD         █████░░░░░ 50%  (2/4)  survivor:0  OPEN      → next: duration-in-state + survival
-M12 EVENT-SEQUENCE █████░░░░░ 50%  (2/4)  survivor:0  OPEN      → next: sweep→reclaim→retest→hold (gated)
+M11 HAZARD         ███████░░░ 75%  (3/4)  survivor:0           → next: survival-without-invalidation
+M12 EVENT-SEQUENCE █████░░░░░ 50%  (2/4)  survivor:0           → next: sweep→reclaim→retest (needs pools), multi-leg
 M13 IMBALANCE/FVG  █████░░░░░ 50%  (2/4)  survivor:0           → next: BPR + FVG-stack/density
 M14 ORDER-BLOCK    █████░░░░░ 50%  (2/4)  survivor:0           → next: OB-mitigation + demand-zone reentry
 ```
@@ -27,7 +27,7 @@ M14 ORDER-BLOCK    █████░░░░░ 50%  (2/4)  survivor:0        
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | M01 trend | 75% | HIGH | 4 | 1 | 0 | 3 | 3 | 0 | 0 | 0 | persistence-hold sizing |
 | M02 pullback | 75% | HIGH | 4 | 1 | 0 | 3 | 3 | 0(resolved) | 0 | 0 | Fib/measured retrace |
-| M03 breakout | 100% | HIGH | 4 | 0 | 0 | 4 | 3 | 0 | 1 | **1 (S5)** | — (complete) |
+| M03 breakout | 100% | HIGH | 4 | 0 | 0 | 4 | 3 | 0 | 0 | 0 (S5=M07 secondary) | — (complete) |
 | M04 range | 75% | HIGH | 4 | 1 | 0 | 3 | 3 | 0 | 0 | 0 | range-rotation |
 | M05 liquidity | 25% | MED | 4 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | strict pool→sweep→reclaim |
 | M06 volatility | 75% | HIGH | 4 | 1 | 0 | 3 | 3(non-dir) | 0 | 0 | 0 | vol-regime mean-reversion |
@@ -35,9 +35,9 @@ M14 ORDER-BLOCK    █████░░░░░ 50%  (2/4)  survivor:0        
 | M08 auction | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | value-migration + reclaim (causal) |
 | M09 cross-scale | 38% | MED | 4 | 2 | 1 | 1 | 1 | 0 | 0 | 0 | causal confluence-amplification |
 | M10 transition | 50% | MED | 4 | 1 | 1 | 2 | 2 | 0 | 0 | 0 | MK-01 CHoCH/BOS transition events |
-| M11 hazard | 50% | MED | 4 | 2 | 0 | 2 | 1 | 0 | 0 | 0 | duration-in-state + survival |
+| M11 hazard | 75% | HIGH | 4 | 1 | 0 | 3 | 2 | 0 | 0 | 0 | survival-without-invalidation |
 | M12 event-seq | 50% | MED | 4 | 2 | 0 | 2 | 1 | 0 | 0 | 0 | sweep→reclaim→retest→hold |
 | M13 imbalance/FVG | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | BPR + FVG-stack/density |
 | M14 order-block | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | OB-mitigation + demand-zone reentry |
 
-**Aggregate:** 14 modules, 56 branches, ~34 materially covered ≈ **61% overall coverage**. Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. Highest-value OPEN branches (lowest coverage + distinct primitive + Alpha-unrun): **M05 liquidity (25%), M09 cross-scale (38%), M08/M10/M11/M12/M14 (50%)**. NOTE: all DIRECTIONAL-polarity branches tested (FVG/OB/reference/cross-scale) resolve in the ERA-TREND (R20) — remaining hope is NON-directional/structural branches (hazard-duration, gated sequences, session-transition). No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
+**Aggregate:** 14 modules, 56 branches, ~35 materially covered ≈ **63% overall coverage**. Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. Highest-value OPEN branches (lowest coverage + distinct primitive + Alpha-unrun): **M05 liquidity (25%), M09 cross-scale (38%), M08/M10/M11/M12/M14 (50%)**. NOTE: all DIRECTIONAL-polarity branches tested (FVG/OB/reference/cross-scale) resolve in the ERA-TREND (R20) — remaining hope is NON-directional/structural branches (hazard-duration, gated sequences, session-transition). No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
