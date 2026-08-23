@@ -1,5 +1,11 @@
 # VE_RANGE_VNEXT_HARD_CAP_REMEDIATION_REPORT
 
+> **STATUS UPDATE (2026-08-23): this remediation has since been independently revalidated and CEO-ratified.**
+> See [`RANGE_VNEXT_RESEARCH_RATIFICATION_AND_HANDOFF.md`](RANGE_VNEXT_RESEARCH_RATIFICATION_AND_HANDOFF.md)
+> for the full chain (Statistician `90b572e` → Red Team `986cba8` → `RANGE_LIFECYCLE_VNEXT_RESEARCH_RATIFIED`)
+> and current consumption guidance. This report is preserved unmodified below as the original record of the
+> remediation itself.
+
 **Mandate**: `VE-RANGE-VNEXT-HARD-CAP-REMEDIATION-001`
 **Repo**: `ai_quant_lab-wp5b`, branch `discovery-mk-matrix-v1`
 **Source audit**: Statistician independent validation, commit `54fa51f` — verdict

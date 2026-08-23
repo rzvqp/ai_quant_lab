@@ -1,5 +1,14 @@
 # VE_RANGE_LIFECYCLE_VNEXT_RESEARCH_REPORT
 
+> **STATUS UPDATE (2026-08-23): this report's own verdict below has since been SUPERSEDED by full research
+> ratification.** The candidate was independently revalidated after a real bug was found and fixed (see
+> `VE_RANGE_VNEXT_HARD_CAP_REMEDIATION_REPORT.md`), then passed Statistician's and Red Team's own
+> independent validation, then CEO-ratified. Current authoritative status:
+> `RANGE_LIFECYCLE_VNEXT_RESEARCH_RATIFIED` — see
+> [`RANGE_VNEXT_RESEARCH_RATIFICATION_AND_HANDOFF.md`](RANGE_VNEXT_RESEARCH_RATIFICATION_AND_HANDOFF.md)
+> for the full chain and current consumption guidance. This report is preserved unmodified below as the
+> original historical record of the delivered-not-yet-revalidated `bba6310` state.
+
 **Mandate**: `VE-RANGE-LIFECYCLE-VNEXT-MULTI-CANDIDATE-RESEARCH-001`
 **Repo**: `ai_quant_lab-wp5b`, branch `discovery-mk-matrix-v1`
 **Architecture**: [`VE_RANGE_LIFECYCLE_VNEXT_ARCHITECTURE.md`](VE_RANGE_LIFECYCLE_VNEXT_ARCHITECTURE.md)
