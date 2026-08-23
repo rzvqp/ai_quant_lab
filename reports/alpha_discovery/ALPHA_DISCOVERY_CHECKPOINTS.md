@@ -486,3 +486,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Backlog:** S2 -> BOUNDED_NEGATIVE. Recommended next = S4 Volatility Compression->Expansion (STRUCTURALLY distinct vol-regime, larger natural target); alt S18 Time-of-Day / S16 Prev-Day-Levels.
 **CEO DECISION (pause #5):** select next structural family.
 **Global status:** `ALPHA_S2_FAMILY_BOUNDED` — awaiting CEO next-family selection.
+
+---
+
+## CHECKPOINT #50 — 2026-08-23 — S4 compression->expansion decomposition: no stable directional alpha, no payoff advantage
+**Mandate:** ALPHA-XAUUSD-S4-VOLATILITY-COMPRESSION-EXPANSION-001 (CEO selected S4). §3 audit: prior compression/expansion work (M15 path-shape HH_LL/LH_HL) = NO_MODE_CONDITIONING / NOT_COMPARABLE (bilateral, not mode-conditioned, no payoff characterization) -> distinct experiment.
+**Screen (`s4_compexp.py`, §8/§9/§14):** mechanical compression (range-box <0.7*box_ma + vr<0.9) -> directional expansion (close breaks compression envelope with range>1.3 ATR), per frozen H4 mode; BOTH long & short future-path lift + MFE/MAE.
+**Result:** (1) NO stable directional alpha — directional resolution FLIPS cross-era (PRIMARY_BULL EXP_UP directional-toward-SHORT b0 / directional-toward-LONG b1; negative 2021/2023); lifts small (<=0.06), mostly weak. (2) §14 payoff rationale FALSIFIED — MFE med ~= MAE med everywhere (ratio ~0.85-1.0); NO larger/better natural payoff vs S1/S10/S2 (buying after a big expansion bar -> adverse excursion as large as favorable). (3) prior bilateral-vol finding partly holds; mode-conditioning does NOT create direction.
+**Radar R9.** NEXT: verify HOLD/FAIL (§12) + larger payoff horizons (§13, +100..+200) — unlikely to rescue (MFE med ~40p) — then bound S4. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
