@@ -25,5 +25,12 @@ Events fired at healthy rates across all eras (per era: OK_RANGE_MACRO ~130-610,
 - **Phase 5 / S5-independence not reached**: nothing cleared the information bar, so there is no candidate to convert or to test for S5-redundancy.
 - Value retained: RANGE lifecycle STATE (CONFIRMED vs WEAKENING vs trend) remains a potential non-directional structural CONTEXT/filter, but it is not a standalone directional edge — consistent with R12 (structure/vol = timing, not direction).
 
+## Phase 5 — tradeability confirmation (`range_strategy.py`)
+Tested the one sign-stable event (BREAKOUT_ACCEPTED-upper→LONG) + mirror as strategies (ratified sb, STRESS, structural range-boundary stop, cross-era):
+- BO_up→L, stop=broken boundary (tight retest-fail): poolR **−1.19**, all eras negative (−2.31 b0) — tight boundary stop = whipsaw destruction.
+- BO_up→L, stop=far boundary (wide full-range): poolR **+0.05**, pos 2/3 — b0 +0.10 / b1 +0.16 but **DEV −0.10** → fails cross-era, immaterial, thin (N=130).
+- BO_dn→S: −0.66 (wide) / era-flipping (tight).
+Even the sign-stable info signal does NOT convert to a robust tradeable edge. RANGE bounded-negative confirmed at Phase 2 (info) AND Phase 5 (tradeability). S5-independence not reached (nothing survived).
+
 ## Radar R23
 RANGE vNext lifecycle events carry only era-trend-dependent directional asymmetry (SWEEP_up short 2011-18 → long 2021-24; OK_MACRO bear-lean → bull-lean); the richer multi-candidate structure does NOT escape the R20 limitation. RANGE frontier BOUNDED_NEGATIVE at the information level. The one sign-stable event (accepted-upside-escape → mild long) is immaterial (gold long-bias). Next: continue novel-event discovery.
