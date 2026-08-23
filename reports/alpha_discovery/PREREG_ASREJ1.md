@@ -27,5 +27,8 @@ effective-N · entry delay · neighbor robustness · dedup · regime specificity
 **Promotion requires surviving ALL.** Given gross expectancy ≈ +0.16R/trade (thin), rejection under costs is the expected outcome;
 that would be a clean negative, not a failure of process. If it survives → FROZEN_PENDING_INDEPENDENT_VALIDATION → CANDIDATE_QUEUE.
 
-## Status
-PREREGISTERED 2026-08-24. Next: mechanize (`asrej1.py`) + run the gate. No promotion, no P&L claim, until the gate returns.
+## Status — CLOSED: QUANT-FALSIFICATION FAIL (2026-08-24)
+Mechanized `asrej1.py` (full-history, 499 signals, next-bar-open entry). **P2R=0.345** (below discovery 0.387 — mechanization
+shrinkage), gross **+0.034R**, **net −0.206R** after STRESS cost. FAILS ALL gate dimensions: DISC/CONF/OOS net all negative
+(−0.246/−0.115/−0.266); tail −0.206; 2×cost −0.446; per-year net>0 only 2/12; LOYO worst −0.249; entry-delay −0.246; all 4
+neighbor variants negative. **VERDICT: FAIL (cost-rejected). CLOSED, not promoted.** Clean negative — the gate worked. S5 unchanged.

@@ -126,3 +126,12 @@ each candle and freezes when ANY structural event appears in a directional conte
   -> LONG, 2R:1R. MILD (gross expectancy ~+0.16R/trade), likely trend/era-flavored; **NOT promoted** — next = mechanize + FULL quant
   gate (costs/STRESS/2x/tail/LOYO/LOEO/effN/delay/neighbor/dedup/regime/portfolio-vs-S5). Rejection under costs is the expected, clean
   outcome. No P&L claim until the gate returns.
+
+### ASREJ-1 MECHANIZE + FALSIFY (2026-08-24) — CLEAN NEGATIVE (cost-rejected)
+`asrej1.py` full-history deterministic scan (499 signals): P2R=**0.345** (discovery 0.387 did NOT hold on the deterministic
+full-history signal set with next-bar-open entry — classic discovery->mechanize shrinkage), gross **+0.034R/trade**, **net −0.206R**
+(STRESS 0.24). FAILS every gate: DISC/CONF/OOS net all negative; tail −0.206; 2×cost −0.446; per-year net>0 2/12; LOYO worst −0.249;
+entry-delay −0.246; neighbor(×4) all negative. **VERDICT: FAIL — CLOSED, not promoted.** First full discovery->preregister->mechanize
+->falsify cycle completed with a clean, honest negative. The blind-forward pipeline works end-to-end; costs correctly kill a thin
+gross edge. S5 remains the ONLY validated edge. LESSON: discovery-stage P2R (episode-sampled, close-entry) overstates the deterministic
+full-history mechanized signal — always mechanize + gate before believing a cell.
