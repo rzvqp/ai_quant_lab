@@ -42,6 +42,10 @@ each module has been taken through the pipeline.
 
 ## Honest status
 The single "100% coverage" claim is retired. Correct reading: **the QUANT_TESTED stage is complete; the VISUAL_FORWARD_EXPLORED and
-MORPHOLOGIES_IDENTIFIED stages have just begun** and are the current work. Blind-forward batch 1 found no morphology above baseline.
-S5 remains the sole edge across every method tried. Next: broaden the morphology grammar + accumulate ≥50–100 blind obs per fine
-morphology, then mechanize only what recurs above the §11 baseline.
+MORPHOLOGIES_IDENTIFIED stages have just begun** and are the current work.
+
+**CEO correction (2026-08-24):** BFSD-BATCH-1 (predefined SMC trend-pullback-zone) was **one negative hypothesis test only** — it is
+NOT open-ended discovery and does NOT support "no morphology qualifies" or "campaign confirmed." The real campaign is engine v2:
+canonical N1–N3 state (verified present, see N1_N6_PRESENCE_REPORT.md) + primitive-agnostic structural symbols, morphology EMERGES
+from observed recurring sequences, outcomes conditioned by N1 regime (**regime specialists valid; era-stability NOT required**). S5
+remains the only *validated* edge; that is a statement about validation to date, not a claim that morphology discovery is exhausted.

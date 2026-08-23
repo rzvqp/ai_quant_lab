@@ -19,7 +19,14 @@ after §12 mechanize + §13 full quant-falsification.
   EXP_DIR, MORPH, EXPECT. (N1–N6 market_intelligence = context-only, unratified → deferred; price-structure stands in, disclosed.)
 
 ## Batch log
-### BFSD-BATCH-1 (2026-08-23) — top-down trend-pullback-to-zone morphology
+> **SCOPE CORRECTION (CEO 2026-08-24):** BFSD-BATCH-1 below is **ONE negative hypothesis test of a PREDEFINED SMC morphology**
+> (H4→H1-pullback→M15-zone-reaction). It is **NOT** open-ended morphology discovery, and it does **NOT** justify "no morphology
+> qualifies" or "whole campaign confirmed." A predefined setup was imposed rather than letting structure emerge. Retained only as a
+> single negative datapoint. Also: **era-stability is NOT required** — regime specialists are valid; conditioning is by N1 regime,
+> not by cross-era invariance. True open-ended agnostic discovery (canonical N1–N3 state + primitive-agnostic descriptors, morphology
+> emergence via observed recurring sequences) is the actual campaign — engine v2 (see below).
+
+### BFSD-BATCH-1 (2026-08-23) — PREDEFINED-SETUP hypothesis test (trend-pullback-to-zone), NOT discovery
 - **60 episodes × 400 candles** replayed strictly one-at-a-time (24,000 candle-steps); **599 frozen setups** (329 LONG / 270 SHORT),
   seeded/stratified; cooldown 16 candles. Zones: bull/bear FVG, bull/bear OB, PDH/PDL (all knowable≤T).
 - **Outcome (post-replay, 2R:1R bracket; analytic driftless null P2R=0.333):**
@@ -30,9 +37,10 @@ after §12 mechanize + §13 full quant-falsification.
   Full frozen morphology (H4+H1-pullback+M15-zone-reaction) = LONG 0.301 / SHORT 0.352. **INCREMENTAL: LONG −0.051 / SHORT +0.009.**
   → The elaborate SMC zone/reaction/pullback morphology adds **≈0 information over coarse H4 context**, and H4 context itself barely
   clears the driftless null.
-- **VERDICT: no morphology promoted to MECHANIZE.** Under genuine strict candle-by-candle blind observation, top-down SMC structure
-  does not carry directional information above baseline — consistent with the full quant-screen campaign (directional primitives →
-  era-trend; structural → coinflip). S5 remains the sole edge.
+- **VERDICT (SCOPED):** THIS PREDEFINED SMC setup adds no information above the H4-context baseline in this batch → not promoted.
+  This is a single negative hypothesis test, **NOT** a claim about morphology in general and **NOT** "campaign confirmed." Open-ended
+  emergent discovery has not yet been run (that is engine v2). S5 remains the only *validated* edge to date; nothing here changes that
+  either way.
 - **Morphology identified (classified, not promoted):** `MORPH = H4{trend}|{phase}|H1{trend}|{phase}|{zone}|{session}` — the
   "HTF-trend + LTF-correction + zone-reaction continuation" family. Recurs abundantly (n=599) but information ≈ baseline.
 
