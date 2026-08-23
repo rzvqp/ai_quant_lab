@@ -8,16 +8,27 @@ import numpy as np, pandas as pd
 import cur_data as CD, swing_base as sb
 from batch_a import orb, _hr_day, _mk
 from frontier_p import ny_pm_disp
-_M=None; _LK=None
+_M=None; _LK=None; _LK_STARTS=None
 def _load():
-    global _M,_LK
+    global _M,_LK,_LK_STARTS
     if _M is None:
         _M=CD.load_m15()
         lk=pd.read_parquet("__cur_cache__/current_like_h4.parquet"); _LK=dict(zip(lk["time"].to_numpy().astype(np.int64), lk["like"].to_numpy()))
+        _LK_STARTS=np.asarray(sorted(_LK.keys()),np.int64)
     return _M,_LK
 def like_at(times):
-    _,LK=_load(); h4=(np.asarray(times,np.int64)//14400)*14400
-    return np.array([bool(LK.get(int(t),False)) for t in h4])
+    """Causally-aligned lookup (VE-CURRENT-REGIME-TEMPORAL-CAUSALITY-REPAIR-001): `current_like_h4.parquet`
+    (built by sig_build.py) keys its `like` flag by each H4 bucket's own START timestamp, but that flag is
+    computed from descriptors (vol_norm/vol_rel/effic/ddfh/ret60) that all depend on the bucket's own
+    CLOSE -- only knowable once the bucket closes, up to 4h after its start. Looking it up by the CURRENT
+    bucket (as this function did before the repair) let an M15 entry see a regime label from a bar that,
+    from that entry's own point of view, had not closed yet (confirmed lookahead: 100% of tested entries,
+    median ~135min, max 240min -- CRS1_STATISTICAL_VALIDATION_FAIL). Uses the single canonical alignment
+    contract (cur_data.causal_bucket_asof) so this shift is defined in exactly one place and correctly
+    carries forward the last-known label across session/weekend gaps (a fixed one-bucket-back arithmetic
+    shift would silently name a bucket that never traded across a gap and default to `False` instead)."""
+    _load(); h4=CD.causal_bucket_asof(times, _LK_STARTS, "H4")
+    return np.array([bool(_LK.get(int(t),False)) for t in h4])
 
 def rescreen(name, sigfn, side, rr, H, cool=8):
     m,_=_load(); idx,sl=sigfn(m); idx=np.asarray(idx); sl=np.asarray(sl,float)

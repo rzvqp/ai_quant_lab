@@ -1,0 +1,263 @@
+
+====================================================================================================
+CR-1 (first-pass re-screen)  [cur_screen.main()]
+====================================================================================================
+CURRENT-REGIME RE-SCREEN (Phase 3/4). Exact frozen defs, STRESS, current-like partition. Non-cur=DIAGNOSTIC.
+
+[ORB_NY_L (S5 anchor)] side=L rr3.0 totalN=3371
+    CUR-LIKE(all)   : n=  414 avgR=+0.016
+      DISC<=2021    : n=  268 avgR=+0.036
+      CONF 22-24    : n=   90 avgR=-0.091
+      OOS 25-26     : n=   56 avgR=+0.096
+    DIAG non-cur    : n= 2957 avgR=+0.070
+    -> not a current-regime survivor (DISC +0.036, CONF -0.091, CUR-all +0.016)
+
+[NYpm_disp_L(15-21) [Frontier P]] side=L rr2.0 totalN=2162
+    CUR-LIKE(all)   : n=  304 avgR=-0.104
+      DISC<=2021    : n=  196 avgR=-0.185
+      CONF 22-24    : n=   60 avgR=-0.287
+      OOS 25-26     : n=   48 avgR=+0.454
+    DIAG non-cur    : n= 1858 avgR=-0.066
+    -> not a current-regime survivor (DISC -0.185, CONF -0.287, CUR-all -0.104)
+
+[NYpm_comp_L(13-21) [Frontier Q]] side=L rr2.0 totalN=5154
+    CUR-LIKE(all)   : n=  737 avgR=-0.264
+      DISC<=2021    : n=  452 avgR=-0.296
+      CONF 22-24    : n=  175 avgR=-0.333
+      OOS 25-26     : n=  110 avgR=-0.023
+    DIAG non-cur    : n= 4417 avgR=-0.433
+    -> not a current-regime survivor (DISC -0.296, CONF -0.333, CUR-all -0.264)
+
+--- PHASE 4 seed: REVERSION/FADE (cross-era-negative; hypothesized current-regime=corrective specialists) ---
+
+[MR_ext_L (2sigma SMA100)] side=L rr2.0 totalN=15573
+    CUR-LIKE(all)   : n= 2345 avgR=-0.620
+      DISC<=2021    : n= 1505 avgR=-0.756
+      CONF 22-24    : n=  497 avgR=-0.436
+      OOS 25-26     : n=  343 avgR=-0.290
+    DIAG non-cur    : n=13228 avgR=-0.820
+    -> not a current-regime survivor (DISC -0.756, CONF -0.436, CUR-all -0.620)
+
+[MR_ext_S (2sigma SMA100)] side=S rr2.0 totalN=17286
+    CUR-LIKE(all)   : n= 1780 avgR=-0.819
+      DISC<=2021    : n= 1126 avgR=-1.013
+      CONF 22-24    : n=  390 avgR=-0.474
+      OOS 25-26     : n=  264 avgR=-0.501
+    DIAG non-cur    : n=15506 avgR=-0.815
+    -> not a current-regime survivor (DISC -1.013, CONF -0.474, CUR-all -0.819)
+
+[RANGE_fade_L] side=L rr2.0 totalN=4435
+    CUR-LIKE(all)   : n=  553 avgR=-0.166
+      DISC<=2021    : n=  329 avgR=-0.159
+      CONF 22-24    : n=  134 avgR=-0.191
+      OOS 25-26     : n=   90 avgR=-0.150
+    DIAG non-cur    : n= 3882 avgR=-0.250
+    -> not a current-regime survivor (DISC -0.159, CONF -0.191, CUR-all -0.166)
+
+[RANGE_fade_S] side=S rr2.0 totalN=5143
+    CUR-LIKE(all)   : n=  635 avgR=-0.183
+      DISC<=2021    : n=  396 avgR=-0.152
+      CONF 22-24    : n=  116 avgR=-0.351
+      OOS 25-26     : n=  123 avgR=-0.122
+    DIAG non-cur    : n= 4508 avgR=-0.339
+    -> not a current-regime survivor (DISC -0.152, CONF -0.351, CUR-all -0.183)
+
+[REJECT_newhigh_S] side=S rr2.0 totalN=5762
+    CUR-LIKE(all)   : n=  683 avgR=-0.021
+      DISC<=2021    : n=  423 avgR=-0.031
+      CONF 22-24    : n=  148 avgR=-0.009
+      OOS 25-26     : n=  112 avgR=-0.001
+    DIAG non-cur    : n= 5079 avgR=-0.145
+    -> not a current-regime survivor (DISC -0.031, CONF -0.009, CUR-all -0.021)
+
+--- PHASE 4b: SHORT-CONTINUATION aligned with the current DOWN-correction (R4 trend-aligned) ---
+
+[SB_break_S (Donchian breakdown)] side=S rr2.0 totalN=11481
+    CUR-LIKE(all)   : n= 1505 avgR=-0.002
+      DISC<=2021    : n=  908 avgR=-0.014
+      CONF 22-24    : n=  358 avgR=-0.006
+      OOS 25-26     : n=  239 avgR=+0.050
+    DIAG non-cur    : n= 9976 avgR=-0.067
+    -> not a current-regime survivor (DISC -0.014, CONF -0.006, CUR-all -0.002)
+
+[SB_break_S_rr3] side=S rr3.0 totalN=11481
+    CUR-LIKE(all)   : n= 1505 avgR=-0.004
+      DISC<=2021    : n=  908 avgR=-0.019
+      CONF 22-24    : n=  358 avgR=-0.007
+      OOS 25-26     : n=  239 avgR=+0.055
+    DIAG non-cur    : n= 9976 avgR=-0.065
+    -> not a current-regime survivor (DISC -0.019, CONF -0.007, CUR-all -0.004)
+
+[DISP_dn_S (displacement-down)] side=S rr2.0 totalN=14063
+    CUR-LIKE(all)   : n= 1772 avgR=-0.067
+      DISC<=2021    : n= 1131 avgR=-0.101
+      CONF 22-24    : n=  375 avgR=-0.056
+      OOS 25-26     : n=  266 avgR=+0.062
+    DIAG non-cur    : n=12291 avgR=-0.148
+    -> not a current-regime survivor (DISC -0.101, CONF -0.056, CUR-all -0.067)
+
+[DISP_dn_S_rr3] side=S rr3.0 totalN=14063
+    CUR-LIKE(all)   : n= 1772 avgR=-0.029
+      DISC<=2021    : n= 1131 avgR=-0.079
+      CONF 22-24    : n=  375 avgR=+0.017
+      OOS 25-26     : n=  266 avgR=+0.122
+    DIAG non-cur    : n=12291 avgR=-0.142
+    -> not a current-regime survivor (DISC -0.079, CONF +0.017, CUR-all -0.029)
+
+--- status=OK (via runpy, no main())  wall=9.68s ---
+
+====================================================================================================
+CR-1 (phase4b p4)  [cur_p4.main()]
+====================================================================================================
+CURRENT-REGIME Phase 4: SHORT-RALLY (fade counter-trend bounce to EMA in down-context). current-like partition.
+
+[SHORT_RALLY_ema20_rr2] side=S rr2.0 totalN=10688
+    CUR-LIKE(all)   : n= 1550 avgR=-0.255
+      DISC<=2021    : n= 1006 avgR=-0.310
+      CONF 22-24    : n=  325 avgR=-0.248
+      OOS 25-26     : n=  219 avgR=-0.010
+    DIAG non-cur    : n= 9138 avgR=-0.350
+    -> not a current-regime survivor (DISC -0.310, CONF -0.248, CUR-all -0.255)
+
+[SHORT_RALLY_ema20_rr3] side=S rr3.0 totalN=10688
+    CUR-LIKE(all)   : n= 1550 avgR=-0.220
+      DISC<=2021    : n= 1006 avgR=-0.267
+      CONF 22-24    : n=  325 avgR=-0.223
+      OOS 25-26     : n=  219 avgR=-0.002
+    DIAG non-cur    : n= 9138 avgR=-0.306
+    -> not a current-regime survivor (DISC -0.267, CONF -0.223, CUR-all -0.220)
+
+[SHORT_RALLY_ema50_rr2] side=S rr2.0 totalN=7010
+    CUR-LIKE(all)   : n=  975 avgR=-0.216
+      DISC<=2021    : n=  662 avgR=-0.304
+      CONF 22-24    : n=  179 avgR=-0.157
+      OOS 25-26     : n=  134 avgR=+0.139
+    DIAG non-cur    : n= 6035 avgR=-0.366
+    -> not a current-regime survivor (DISC -0.304, CONF -0.157, CUR-all -0.216)
+
+[SHORT_RALLY_ema50_rr3] side=S rr3.0 totalN=7010
+    CUR-LIKE(all)   : n=  975 avgR=-0.176
+      DISC<=2021    : n=  662 avgR=-0.277
+      CONF 22-24    : n=  179 avgR=-0.173
+      OOS 25-26     : n=  134 avgR=+0.319
+    DIAG non-cur    : n= 6035 avgR=-0.334
+    -> not a current-regime survivor (DISC -0.277, CONF -0.173, CUR-all -0.176)
+
+--- status=OK (via runpy, no main())  wall=2.20s ---
+
+====================================================================================================
+CR-1 (phase4b p5)  [cur_p5.main()]
+====================================================================================================
+CURRENT-REGIME Phase 4: aligned-SHORT structural events on FROZEN current-like (no rescue).
+
+[ORB_NY_S (S5 short mirror) rr3] side=S rr3.0 totalN=3332
+    CUR-LIKE(all)   : n=  481 avgR=-0.055
+      DISC<=2021    : n=  310 avgR=-0.104
+      CONF 22-24    : n=  106 avgR=-0.069
+      OOS 25-26     : n=   65 avgR=+0.206
+    DIAG non-cur    : n= 2851 avgR=-0.068
+    -> not a current-regime survivor (DISC -0.104, CONF -0.069, CUR-all -0.055)
+
+[ORB_NY_S rr2] side=S rr2.0 totalN=3332
+    CUR-LIKE(all)   : n=  481 avgR=-0.071
+      DISC<=2021    : n=  310 avgR=-0.124
+      CONF 22-24    : n=  106 avgR=-0.048
+      OOS 25-26     : n=   65 avgR=+0.146
+    DIAG non-cur    : n= 2851 avgR=-0.072
+    -> not a current-regime survivor (DISC -0.124, CONF -0.048, CUR-all -0.071)
+
+[ORB_LON_S rr2] side=S rr2.0 totalN=3728
+    CUR-LIKE(all)   : n=  516 avgR=+0.115
+      DISC<=2021    : n=  335 avgR=+0.084
+      CONF 22-24    : n=  102 avgR=+0.025
+      OOS 25-26     : n=   79 avgR=+0.367
+    DIAG non-cur    : n= 3212 avgR=-0.035
+    -> CURRENT_REGIME_SURVIVOR-candidate (DISC +0.084, CONF +0.025, CUR-all +0.115)
+
+[ORB_NY_S_wide rr3] side=S rr3.0 totalN=3332
+    CUR-LIKE(all)   : n=  481 avgR=-0.061
+      DISC<=2021    : n=  310 avgR=-0.092
+      CONF 22-24    : n=  106 avgR=-0.070
+      OOS 25-26     : n=   65 avgR=+0.104
+    DIAG non-cur    : n= 2851 avgR=-0.060
+    -> not a current-regime survivor (DISC -0.092, CONF -0.070, CUR-all -0.061)
+
+--- status=OK (via runpy, no main())  wall=5.30s ---
+
+====================================================================================================
+CR-1 (payoff-asym p6)  [cur_p6.main()]
+====================================================================================================
+CURRENT-REGIME SHORT specialist (asymmetric payoff from measured down-excursion). current-like partition.
+
+[SHORT_regime_ema20 rr2 (1.5ATR stop)] side=S rr2.0 totalN=11970
+    CUR-LIKE(all)   : n= 1509 avgR=-0.078
+      DISC<=2021    : n=  977 avgR=-0.127
+      CONF 22-24    : n=  321 avgR=-0.043
+      OOS 25-26     : n=  211 avgR=+0.100
+    DIAG non-cur    : n=10461 avgR=-0.117
+    -> not a current-regime survivor (DISC -0.127, CONF -0.043, CUR-all -0.078)
+
+[SHORT_regime_ema20 rr2.5] side=S rr2.5 totalN=11970
+    CUR-LIKE(all)   : n= 1509 avgR=-0.087
+      DISC<=2021    : n=  977 avgR=-0.153
+      CONF 22-24    : n=  321 avgR=+0.000
+      OOS 25-26     : n=  211 avgR=+0.084
+    DIAG non-cur    : n=10461 avgR=-0.108
+    -> not a current-regime survivor (DISC -0.153, CONF +0.000, CUR-all -0.087)
+
+[SHORT_regime_ema50 rr2] side=S rr2.0 totalN=10422
+    CUR-LIKE(all)   : n= 1374 avgR=-0.061
+      DISC<=2021    : n=  887 avgR=-0.098
+      CONF 22-24    : n=  297 avgR=+0.019
+      OOS 25-26     : n=  190 avgR=-0.013
+    DIAG non-cur    : n= 9048 avgR=-0.119
+    -> not a current-regime survivor (DISC -0.098, CONF +0.019, CUR-all -0.061)
+
+[SHORT_plain rr2 (regime=signal)] side=S rr2.0 totalN=14821
+    CUR-LIKE(all)   : n= 1893 avgR=-0.082
+      DISC<=2021    : n= 1217 avgR=-0.108
+      CONF 22-24    : n=  400 avgR=-0.006
+      OOS 25-26     : n=  276 avgR=-0.077
+    DIAG non-cur    : n=12928 avgR=-0.113
+    -> not a current-regime survivor (DISC -0.108, CONF -0.006, CUR-all -0.082)
+
+--- status=OK (via runpy, no main())  wall=2.91s ---
+
+====================================================================================================
+CR-1 (payoff-asym p7)  [cur_p7.main()]
+====================================================================================================
+CURRENT-REGIME wide-stop/time-exit SHORT (capture net down-drift with path survival). current-like partition.
+
+[SHORT_wide 3ATR rr3 H96] side=S rr3.0 totalN=11970
+    CUR-LIKE(all)   : n= 1509 avgR=+0.075
+      DISC<=2021    : n=  977 avgR=+0.020
+      CONF 22-24    : n=  321 avgR=+0.123
+      OOS 25-26     : n=  211 avgR=+0.254
+    DIAG non-cur    : n=10461 avgR=-0.052
+    -> CURRENT_REGIME_SURVIVOR-candidate (DISC +0.020, CONF +0.123, CUR-all +0.075)
+
+[SHORT_wide 4ATR rr3 H96] side=S rr3.0 totalN=11970
+    CUR-LIKE(all)   : n= 1509 avgR=+0.074
+      DISC<=2021    : n=  977 avgR=+0.033
+      CONF 22-24    : n=  321 avgR=+0.082
+      OOS 25-26     : n=  211 avgR=+0.249
+    DIAG non-cur    : n=10461 avgR=-0.039
+    -> CURRENT_REGIME_SURVIVOR-candidate (DISC +0.033, CONF +0.082, CUR-all +0.074)
+
+[SHORT_wide 3ATR rr3 H192(2day)] side=S rr3.0 totalN=6595
+    CUR-LIKE(all)   : n=  828 avgR=+0.034
+      DISC<=2021    : n=  537 avgR=-0.000
+      CONF 22-24    : n=  175 avgR=+0.062
+      OOS 25-26     : n=  116 avgR=+0.152
+    DIAG non-cur    : n= 5767 avgR=-0.026
+    -> not a current-regime survivor (DISC -0.000, CONF +0.062, CUR-all +0.034)
+
+[SHORT_wide 4ATR rr4 H192] side=S rr4.0 totalN=6595
+    CUR-LIKE(all)   : n=  828 avgR=+0.075
+      DISC<=2021    : n=  537 avgR=+0.074
+      CONF 22-24    : n=  175 avgR=-0.039
+      OOS 25-26     : n=  116 avgR=+0.249
+    DIAG non-cur    : n= 5767 avgR=-0.038
+    -> not a current-regime survivor (DISC +0.074, CONF -0.039, CUR-all +0.075)
+
+--- status=OK (via runpy, no main())  wall=3.24s ---
