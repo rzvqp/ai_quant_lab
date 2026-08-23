@@ -257,3 +257,18 @@ Each quarter: hypotheses from readings RESOLVED by quarter-end (no leakage); pre
   BEARISH|weak_down|nearZone: held 1 forward-quarter(s); lineage [('2022-Q3', np.float64(0.588), 51), ('2025-Q2', np.float64(0.455), 33), ('2026-Q1', np.float64(0.487), 39)]
   BULLISH|weak_up|noZone: held 1 forward-quarter(s); lineage [('2025-Q1', np.float64(0.567), 30)]
   BEARISH|down|nearZone: held 0 forward-quarter(s); lineage [('2022-Q2', np.float64(0.455), 33)]
+## WUZ-1 MECHANIZE + FALSIFY (2026-08-24) — the one forward-surviving cell, CLEAN NEGATIVE
+`chrono_wuz1.py`: BULLISH|{up,weak_up}|nearZone LONG (buy uptrend-regime pullback to a demand zone). Full-history 3,728 signals:
+P2R=0.358, gross +0.073R, **net −0.167R** (STRESS 0.24). FAIL all gate dims: DISC/CONF/OOS net −0.250/−0.143/−0.073 (negative every era;
+OOS gross +0.167 but costs erase it); tail −0.167; 2×cost −0.407; per-year net>0 3/16; LOYO worst −0.186; entry-delay −0.172; neighbors
+negative. **VERDICT: FAIL (cost-rejected). CLOSED.** Even the single best chronologically forward-surviving cell has no edge after costs.
+
+## CHRONOLOGICAL CAMPAIGN VERDICT (first full pass, 2020-Q1 → 2026-Q3)
+- Top-down N-node zone-reaction reader: **net-negative in 23/27 quarters** (mean −0.246R/trade); quarterly edge non-persistent
+  (lag-1 autocorr +0.11). The occasional positive quarter does not carry forward.
+- Walk-forward forward-testing (no leakage, versioned lineage): only `BULLISH|weak_up|nearZone` held ≥3 forward quarters; mechanized
+  as WUZ-1 → FAILS the full quant gate under costs.
+- **Conclusion:** across quant screens (56 branches), predefined SMC, canonical top-down reading (random + chronological), broadened
+  structural observation, and 2 preregistered candidates (ASREJ-1, WUZ-1) both fully falsified — **no robust directional edge exists at
+  M15 beyond S5.** S5 (NY opening-range breakout, direction self-supplied) remains the ONLY validated edge. Costs are the consistent
+  killer of thin gross tendencies. This is a strong, honest negative, established by five independent methods.
