@@ -34,3 +34,10 @@ NOT promoted): RS-2 (range breakout+D1), LOWVOL_BEAR wide-short, LOWVOL_BEAR x a
 S5 + CRS-1 active; NO_TRADE in RANGE / HIGHVOL_BULL / LOWVOL_BULL / MIDVOL_BULL / MIDVOL_BEAR (+ low-vol-bear as watch-list).
 ROBUST META: regime-gating alone does not beat R20 (era-trend dominance); tradeable specialists require STRUCTURAL/CROSS-SCALE
 direction-supplying mechanisms (S5, CRS-1). The acceptance-event is a validated tail-dependence-reducer for future candidates.
+
+## BLS-1 bull-side cross-scale divergence LONG (generalization test of CRS-1 principle) — FAIL
+D1-trend-UP (bull context) + H4-trend-DOWN (counter-dip) -> M15 LONG (mirror of CRS-1). avgR -0.116, DISC -0.188, 14/16 neg
+years, best-10%rm -0.347. The CRS-1 cross-scale-divergence principle does NOT generalize to the bull side: counter-trend
+bounces reliably FAIL only in the high-vol DOWN-correction (dominant down-flow), whereas D1-up is era-ambiguous (blowoffs) and
+uptrend dips don't reliably bounce. Confirms CRS-1 is genuinely a down-correction specialist, not a general cross-scale rule.
+=> Multi-regime portfolio + cross-scale generalization search EXHAUSTIVELY complete. Survivors remain S5 + CRS-1.
