@@ -25,3 +25,5 @@ acquisition_staging/dxy/pull_dxy.log.err
 
 # swing research regenerable cache
 reports/alpha_discovery/__swing_cache__/
+
+reports/alpha_discovery/__range_cache__/
