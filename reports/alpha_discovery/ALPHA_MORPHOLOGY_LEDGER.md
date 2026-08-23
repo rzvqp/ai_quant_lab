@@ -116,3 +116,13 @@ each candle and freezes when ANY structural event appears in a directional conte
   candidate regressed at higher n).
 - **VERDICT (scoped):** broadening the observation did NOT surface a robust edge; overall at/below null. One coherent watch-candidate
   under accumulation. No promotion. S5 unchanged as the only validated edge.
+
+### BFSD4-BATCH-2 GROWN (2026-08-24, 8 seeds, 3,911 unique OOS readings) — watch-candidate held -> ASREJ-1 PREREGISTERED
+- Overall P2R=**0.297** (below null); broadened reader loses on average (conditional cells only).
+- Watch-candidate `BULLISH|up|REJ_low|nearZone|AS`: n=81->**124**, P2R=0.407->**0.387** — HELD (mild regression), **+0.054 over null
+  0.333**, era spread D33/C39/**O52** (OOS-heavy). Companion `up|REJ_high|nearZone|AS` n=90/0.389. First cell to hold above base past
+  n>=100 across eras.
+- **-> PREREGISTERED as ASREJ-1** (see `PREREG_ASREJ1.md`): up-H4-regime + H1-long + rejection-of-lows at a demand N3 zone in Asia
+  -> LONG, 2R:1R. MILD (gross expectancy ~+0.16R/trade), likely trend/era-flavored; **NOT promoted** — next = mechanize + FULL quant
+  gate (costs/STRESS/2x/tail/LOYO/LOEO/effN/delay/neighbor/dedup/regime/portfolio-vs-S5). Rejection under costs is the expected, clean
+  outcome. No P&L claim until the gate returns.
