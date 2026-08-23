@@ -4574,4 +4574,53 @@
                AGGREGATE_RESTAMP_REPORT.md.
                STATE: OPERATIONAL. Next entry [100], prev_hash E99.
   entry_hash:  E99
+
+[100] 2026-08-23
+  prev_hash:   E99
+  event:       VERDICT
+  dc_id:       DC-RANGE-VNEXT-FINAL-ADVERSARIAL-VALIDATION
+  freeze_hash: VE vNext original bba6310 / STAT FAIL 54fa51f / VE remediation fa36324 (HEAD, 22-line hard-cap +
+               fingerprint) / STAT revalidation PASS 90b572e / branch discovery-mk-matrix-v1 / v4.3+v4.4 untouched
+  battery_ver: RT-RANGE-VNEXT-FINAL-ADVERSARIAL-VALIDATION-001
+  reviewer:    Red Team
+  detail:      FINAL INDEPENDENT ADVERSARIAL VALIDATION of the remediated RANGE lifecycle vNext multi-candidate
+               (fa36324). VERDICT = ***RANGE_LIFECYCLE_VNEXT_RED_TEAM_PASS*** + ***RANGE_LIFECYCLE_VNEXT_RESEARCH_
+               RATIFICATION_READY*** (NOT production/new-brain/live/AI-Trader; v4.4 remains canonical baseline).
+               Critical gates INDEPENDENTLY CONSTRUCTED (not re-running VE/STAT). §3 identity: HEAD=fa36324 parent
+               bba6310, local=remote x4, v4.3/v4.4 untouched (empty diff), 22-line change = only the cap-check
+               condition (REPLACEMENT-only -> structural `not frees_a_slot`) + fingerprint bump, zero RANGE-semantic
+               drift. ★ §4 gate A PRE-FIX DEFECT REPRODUCED: forced CONTINUATION-at-capacity through the REAL
+               bba6310 insertion path violates cap (1->2,2->3,3->4, zero refusals; repeated->active=14). §6 gate C:
+               single runtime net-add (line 486 gated by 451); other writes = empty ctor + .pop removals + restore
+               (bounded by snapshot); CLASS of action-specific-gate-escape closed structurally. §5 gate B: forced
+               REPLACEMENT+CONTINUATION refused at cap 1/2/3, MERGE net-zero, incl. post-snapshot-restore -- ZERO
+               cap violations. ★ §7 gate D MERGE_NET_ZERO_PROVEN: _supersede_macro pops target (306) BEFORE insert
+               (486), len cap->cap-1->cap, no transient cap+1; STALE-target MERGE cannot bypass (guard requires
+               target_id in _active_macros -> refused). §8 gate E: refused candidate no evict/mutate/ghost, exactly
+               one REGISTRY_CAPACITY_REFUSED structure_id=None, deterministic. ★ §9 gate F FULL-HISTORY (355696 bars,
+               N1 atr14, dual-engine one pass): PRE==POST BYTE-IDENTICAL, 0 divergence bars -> ZERO REMEDIATION
+               DRIFT (structurally guaranteed: changed condition only bites when len>=cap; historical max active=4
+               << run-cap 500 -> new path never fires). Absolute vs reference: births 12813 EXACT, merges 361 EXACT,
+               genuine confirmations 4092 EXACT, refusals 0 EXACT, max active 4 EXACT, early confirmations 0 EXACT;
+               2 secondary aggregates differ (abandonments 4152 vs 4108 +1% marginal atr-sensitivity; per-year
+               confirmed-BARS higher = tally convention since genuine confirmations match exactly) -- both pre==post
+               identical, EXPLAINED, NOT remediation drift. §11 gate G AGE GATE: 0 early confirmations (age<d_macro
+               =29), EXACT. §12 gate H causality: runtime uses confirmed(lagged) swings + current/past state only,
+               offline matching separate; corroborated by prefix-invariance. §13 gate I restart determinism:
+               continuous == snapshot->restore->resume IDENTICAL, at-capacity restore re-enforces cap. §14 gate J:
+               pre-fix snapshot REJECTED by post-fix and vice versa (SNAPSHOT_CONTRACT_MISMATCH), same-version
+               accepted; descriptive fingerprint = procedural/integrity limitation only (git-blob+config_id are the
+               real identity). §K: multi-candidate solves the v4.4 single-slot pathology (2016-2024 v4.4 0 confirmed
+               bars/9yr vs vNext thousands every year). §16 negative control: the remediation's capacity-refusal has
+               0/187 (0.0%) premature-kill (never fired historically); broader vNext preserves slow structures far
+               better than rejected v4.5 (36.9%/12.3%), matcher-sensitive 2.14-6.42% disclosed not uniquely
+               identified. §17 abandonment: never on sole candidate (len<2 guard), spatial not temporal -> NOT a
+               disguised age timeout. §18: cap structural under hostile forced sequences, bounded/deterministic. §19:
+               554/554 tests pass (matches VE ref), no env failure here. §20 corrected figures confirmed (62713 not
+               55713; 6429-7660 not 6429-7704). §M gate: _dead/_awaiting_role growth = PRODUCTION_HARDENING not
+               RESEARCH_CORRECTNESS -> classification B, does NOT block research ratification (not repaired). ALL 13
+               material gates PASS, no blocker found. NOT authorized: production/New Brain/live/AI Trader/integration.
+               Changes only in red_team/. Report: RT-RANGE-VNEXT-FINAL-ADVERSARIAL-VALIDATION-001.md.
+               STATE: OPERATIONAL. Next entry [101], prev_hash E100.
+  entry_hash:  E100
 ```
