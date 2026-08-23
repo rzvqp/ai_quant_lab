@@ -18,8 +18,8 @@ M09 CROSS-SCALE    ████░░░░░░ 38%  (1.5/4) OPEN (CRS-1 inval
 M10 TRANSITION     █████░░░░░ 50%  (2/4)  survivor:0  OPEN      → next: MK-01 CHoCH/BOS transition EVENTS
 M11 HAZARD         ███████░░░ 75%  (3/4)  survivor:0           → next: survival-without-invalidation
 M12 EVENT-SEQUENCE █████░░░░░ 50%  (2/4)  survivor:0           → next: sweep→reclaim→retest (needs pools), multi-leg
-M13 IMBALANCE/FVG  █████░░░░░ 50%  (2/4)  survivor:0           → next: BPR + FVG-stack/density
-M14 ORDER-BLOCK    █████░░░░░ 50%  (2/4)  survivor:0           → next: OB-mitigation + demand-zone reentry
+M13 IMBALANCE/FVG  ██████████ 100% (4/4)  survivor:0  BNEG      → complete (BPR/stack era-trend-confounded)
+M14 ORDER-BLOCK    ██████████ 100% (4/4)  survivor:0  BNEG      → complete (all 4 OB branches era-split)
 ```
 
 ## Machine-readable coverage table
@@ -37,7 +37,7 @@ M14 ORDER-BLOCK    █████░░░░░ 50%  (2/4)  survivor:0        
 | M10 transition | 50% | MED | 4 | 1 | 1 | 2 | 2 | 0 | 0 | 0 | MK-01 CHoCH/BOS transition events |
 | M11 hazard | 75% | HIGH | 4 | 1 | 0 | 3 | 2 | 0 | 0 | 0 | survival-without-invalidation |
 | M12 event-seq | 50% | MED | 4 | 2 | 0 | 2 | 1 | 0 | 0 | 0 | sweep→reclaim→retest→hold |
-| M13 imbalance/FVG | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | BPR + FVG-stack/density |
-| M14 order-block | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | OB-mitigation + demand-zone reentry |
+| M13 imbalance/FVG | 100% | HIGH | 4 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | — (complete, BNEG) |
+| M14 order-block | 100% | HIGH | 4 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | — (complete, BNEG) |
 
-**Aggregate:** 14 modules, 56 branches, ~37 materially covered ≈ **66% overall coverage** (1 branch — M05 equal-H/L — structurally D2-limited by the ratified detector). Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. Highest-value OPEN branches (lowest coverage + distinct primitive + Alpha-unrun): **M05 liquidity (25%), M09 cross-scale (38%), M08/M10/M11/M12/M14 (50%)**. NOTE: all DIRECTIONAL-polarity branches tested (FVG/OB/reference/cross-scale) resolve in the ERA-TREND (R20) — remaining hope is NON-directional/structural branches (hazard-duration, gated sequences, session-transition). No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
+**Aggregate:** 14 modules, 56 branches, ~41 materially covered ≈ **73% overall coverage** (1 branch — M05 equal-H/L — structurally D2-limited by the ratified detector). Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. M13 & M14 (both ratified MK primitives) now COMPLETE + bounded-negative. Highest-value OPEN branches: **M09 cross-scale (38%), M05/M08/M10/M12 (50%)**. NOTE: all DIRECTIONAL-polarity branches tested (FVG/OB/reference/cross-scale) resolve in the ERA-TREND (R20) — remaining hope is NON-directional/structural branches (hazard-duration, gated sequences, session-transition). No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
