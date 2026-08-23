@@ -30,3 +30,17 @@ No clean CURRENT_REGIME_SURVIVOR yet. The lead is **short-continuation aligned w
 ## First-pass current-regime conclusion
 The current market (high-vol post-blowoff DOWN-correction) is a HARD regime: no simple mechanism has robust edge across the full frozen current-like population. S5 (breakout-long) is naturally OFF; reversion/fade negative; short-rally negative; short-breakdown is a recent-current-like edge (2022+) but not full-current-like-robust. **Best lead: down-correction SHORT-BREAKDOWN (SB_break_S rr3)**, positive across the 2 recent independent current-like corrections (2022 +0.067, 2025-26 +0.123).
 **Next step (legitimate, mechanical, NOT P&L-fit):** SIGNATURE_V2 — refine the current-like definition to distinguish the recent post-parabolic high-price correction from older high-vol episodes (e.g., add an absolute-price-regime or prior-parabolic-run descriptor), re-freeze, and re-screen. Then continue Phase 4 discovery on the tightened current-like. Forward MT5 DEMO remains the true validation for any current-regime specialist (rebase addendum). S5/frozen objects untouched.
+
+## CORRECTION — SIGNATURE_V2 NOT pursued (§8 integrity)
+My earlier "SIGNATURE_V2 next step" is WITHDRAWN: refining the frozen signature AFTER seeing that short-breakdown works recently-but-not-older would be a P&L-DRIVEN post-hoc rescue (forbidden §8/§5, signature must be frozen before P&L). SIGNATURE_V1 stays frozen. No signature tuning to make a candidate pass.
+
+## Phase 4b — aligned-SHORT structural events on FROZEN current-like (cur_p5.py; no rescue)
+- **ORB_NY_S (S5 short mirror) rr3/rr2**: current-like -0.074 (DISC -0.138, CONF -0.034, OOS +0.166). Recent-only, not robust.
+- **ORB_LON_S rr2**: +0.118 (DISC +0.143, CONF -0.051, OOS +0.235) — DISC+OOS positive but CONF NEGATIVE = inconsistent across partitions.
+- **ORB_NY_S_wide rr3**: negative.
+
+## COMPREHENSIVE FIRST-PASS CONCLUSION (current-regime)
+Across the full first pass (breakout L/S, reversion, fade, short-rally, short-breakdown, opening-range L/S, displacement L/S), **NO mechanism is robust across all current-like partitions (DISC+CONF+OOS all positive)** on the frozen CURRENT_LIKE_POPULATION_V1. Every candidate has >=1 current-like partition negative. **The current high-vol post-blowoff DOWN-correction is a genuinely HARD regime with no robust directional specialist.**
+- This is the §12 causal OFF-switch working as DESIGNED: the frozen signature identifies a regime where the portfolio should be LIGHT/OFF. S5 is naturally off (its edge is trending regimes) and RE-ACTIVATES on transition back to a trending signature.
+- Best (non-qualifying) lead remains down-correction SHORT-BREAKDOWN, positive only in recent current-like (2022+) — a candidate for FORWARD MT5 DEMO observation (not a frozen survivor).
+- **CURRENT_REGIME_SURVIVOR bucket: empty (first pass).** Honest, decision-relevant: in the current market the right posture is reduced exposure / await regime transition, not force a specialist. Discovery continues (new mechanism classes) but the hard-regime finding stands as the first-pass result.
