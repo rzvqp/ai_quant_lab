@@ -15,8 +15,8 @@ M06 VOLATILITY     ███████░░░ 75%  (3/4)  info-only non-dire
 M07 SESSION        ███████░░░ 75%  (3/4)  SURVIVOR: S5 (IVAL)   → next: session-transition behavior
 M08 AUCTION        █████░░░░░ 50%  (2/4)  survivor:0           → next: value-migration + reclaim (causal)
 M09 CROSS-SCALE    ████░░░░░░ 38%  (1.5/4) OPEN (CRS-1 invalid) → next: causal confluence-amplification
-M10 TRANSITION     █████░░░░░ 50%  (2/4)  survivor:0  OPEN      → next: MK-01 CHoCH/BOS transition EVENTS
-M11 HAZARD         ███████░░░ 75%  (3/4)  survivor:0           → next: survival-without-invalidation
+M10 TRANSITION     ██████████ 100% (4/4)  survivor:0  BNEG      → complete (CHoCH/BOS events era-split)
+M11 HAZARD         ██████████ 100% (4/4)  survivor:0  BNEG      → complete (survival P(up1st) flat ~0.48)
 M12 EVENT-SEQUENCE █████░░░░░ 50%  (2/4)  survivor:0           → next: sweep→reclaim→retest (needs pools), multi-leg
 M13 IMBALANCE/FVG  ██████████ 100% (4/4)  survivor:0  BNEG      → complete (BPR/stack era-trend-confounded)
 M14 ORDER-BLOCK    ██████████ 100% (4/4)  survivor:0  BNEG      → complete (all 4 OB branches era-split)
@@ -34,10 +34,10 @@ M14 ORDER-BLOCK    ██████████ 100% (4/4)  survivor:0  BNEG  
 | M07 session | 75% | HIGH | 4 | 1 | 0 | 3 | 2 | 0 | 1 | **1 (S5)** | session-transition behavior |
 | M08 auction | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | value-migration + reclaim (causal) |
 | M09 cross-scale | 38% | MED | 4 | 2 | 1 | 1 | 1 | 0 | 0 | 0 | causal confluence-amplification |
-| M10 transition | 50% | MED | 4 | 1 | 1 | 2 | 2 | 0 | 0 | 0 | MK-01 CHoCH/BOS transition events |
-| M11 hazard | 75% | HIGH | 4 | 1 | 0 | 3 | 2 | 0 | 0 | 0 | survival-without-invalidation |
+| M10 transition | 100% | HIGH | 4 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | — (complete, BNEG) |
+| M11 hazard | 100% | HIGH | 4 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | — (complete, BNEG) |
 | M12 event-seq | 50% | MED | 4 | 2 | 0 | 2 | 1 | 0 | 0 | 0 | sweep→reclaim→retest→hold |
 | M13 imbalance/FVG | 100% | HIGH | 4 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | — (complete, BNEG) |
 | M14 order-block | 100% | HIGH | 4 | 0 | 0 | 4 | 4 | 0 | 0 | 0 | — (complete, BNEG) |
 
-**Aggregate:** 14 modules, 56 branches, ~41 materially covered ≈ **73% overall coverage** (1 branch — M05 equal-H/L — structurally D2-limited by the ratified detector). Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. M13 & M14 (both ratified MK primitives) now COMPLETE + bounded-negative. Highest-value OPEN branches: **M09 cross-scale (38%), M05/M08/M10/M12 (50%)**. NOTE: all DIRECTIONAL-polarity branches tested (FVG/OB/reference/cross-scale) resolve in the ERA-TREND (R20) — remaining hope is NON-directional/structural branches (hazard-duration, gated sequences, session-transition). No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
+**Aggregate:** 14 modules, 56 branches, ~43 materially covered ≈ **77% overall coverage** (1 branch — M05 equal-H/L — structurally D2-limited by the ratified detector). Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. M10/M11/M13/M14 now COMPLETE + bounded-negative. Highest-value OPEN branches: **M09 cross-scale (38%), M05/M08/M12 (50%)**. NOTE: all DIRECTIONAL-polarity branches tested (FVG/OB/reference/cross-scale) resolve in the ERA-TREND (R20) — remaining hope is NON-directional/structural branches (hazard-duration, gated sequences, session-transition). No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
