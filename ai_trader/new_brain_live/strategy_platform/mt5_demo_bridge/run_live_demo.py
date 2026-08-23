@@ -53,7 +53,19 @@ def _risk_execution_deps(*, equity: float) -> RiskExecutionDeps:
 def main() -> int:
     max_duration_seconds = float(sys.argv[1]) if len(sys.argv) > 1 else 90.0
     gateway = RealMT5BridgeGateway()
-    config = MT5DemoConfig(max_order_volume=1.0, expected_server="FusionMarkets-Demo")
+
+    # mandate AI-TRADER-MT5-NEW-ACCOUNT-READINESS-001 section 3: the CURRENT MT5 terminal state is
+    # authoritative -- never a hardcoded/previous-account server literal. A bare, unpinned probe
+    # discovers whatever account is CURRENTLY logged in; expected_server is then pinned to that
+    # observed value for the rest of this process's own lifetime (still a real safety net -- it still
+    # catches a mid-session account switch, just never a stale one from a prior mandate's account).
+    probe_ok = gateway.initialize()
+    observed_server = None
+    if probe_ok:
+        probe_info = gateway.account_info()
+        observed_server = str(probe_info.server) if probe_info is not None and getattr(probe_info, "server", None) is not None else None
+
+    config = MT5DemoConfig(max_order_volume=1.0, expected_server=observed_server)
     adapter = MT5DemoBrokerAdapter(gateway=gateway, config=config, credentials=BrokerCredentials())
 
     connect_result = adapter.connect()

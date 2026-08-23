@@ -59,7 +59,20 @@ def main() -> int:
     state_dir = repo_root / "new_brain_live_state" / "s5_mt5_demo_soak"
 
     gateway = RealMT5BridgeGateway()
-    config = MT5DemoConfig(max_order_volume=1.0, expected_server="FusionMarkets-Demo")
+
+    # mandate AI-TRADER-MT5-NEW-ACCOUNT-READINESS-001 section 3: bind to whatever account is CURRENTLY
+    # logged in, never a previous mandate's hardcoded server literal -- see run_live_demo.py's own
+    # identical comment for the full rationale.
+    try:
+        probe_ok = gateway.initialize()
+    except Exception:  # noqa: BLE001 -- a failed probe just means no pin is possible; connect() below still runs and reports the real failure
+        probe_ok = False
+    observed_server = None
+    if probe_ok:
+        probe_info = gateway.account_info()
+        observed_server = str(probe_info.server) if probe_info is not None and getattr(probe_info, "server", None) is not None else None
+
+    config = MT5DemoConfig(max_order_volume=1.0, expected_server=observed_server)
     adapter = MT5DemoBrokerAdapter(gateway=gateway, config=config, credentials=BrokerCredentials())
 
     try:

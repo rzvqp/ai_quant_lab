@@ -41,7 +41,7 @@ class FakeMT5BridgeGateway:
     ) -> None:
         now = tick_time if tick_time is not None else time.time()
         self.terminal_info_result: Any = SimpleNamespace(connected=True, trade_allowed=algo_trading_enabled, build=6090)
-        self.account_info_result: Any = SimpleNamespace(trade_mode=account_trade_mode, trade_allowed=True, server=is_demo_server, equity=equity)
+        self.account_info_result: Any = SimpleNamespace(trade_mode=account_trade_mode, trade_allowed=True, server=is_demo_server, equity=equity, login=10000001, currency="USD")
         self._symbols = ("XAUUSD", "EURUSD")
         self._symbol_info = {
             "XAUUSD": SimpleNamespace(
