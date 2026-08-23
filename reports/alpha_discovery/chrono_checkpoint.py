@@ -6,7 +6,8 @@ are versioned; survival across multiple future quarters is tracked. NO retrospec
 import sys, json, numpy as np, pandas as pd
 sys.path.insert(0, r"C:\Users\MEDION GAMING\ai_quant_lab-wp5b\code")
 import cur_data as CD
-NULL=0.333; COST=0.24; HMAX=300; MIN_N=40; PROMISE=0.40
+NULL=0.333; COST=0.24; HMAX=300; MIN_N=30; PROMISE=0.45
+def COARSE(r): return f"{r['STRUCTURAL_BIAS']}|{r['N1_DIR']}|{r['NEAR_ZONE']}"
 def qkey(y,mo): return f"{y}-Q{(mo-1)//3+1}"
 def qnext(q):
     y,qq=int(q[:4]),int(q[-1]); return f"{y+1}-Q1" if qq==4 else f"{y}-Q{qq+1}"
@@ -28,10 +29,10 @@ def main():
         Rr=2.0 if ftgt<fstop else -1.0
         q=dict(r); q["R"]=Rr; q["WIN"]=Rr>0; q["RES_Q"]=qkey(yq[res_i],mq[res_i]); out.append(q)
     quarters=sorted(set(r["QUARTER"] for r in out))
-    def cells(rows,minn=MIN_N):
+    def cells(rows,minn=MIN_N,keyf=None):
         from collections import defaultdict
         d=defaultdict(list)
-        for r in rows: d[r["SIG"]].append(r)
+        for r in rows: d[(keyf(r) if keyf else r["SIG"])].append(r)
         return {k:v for k,v in d.items() if len(v)>=minn}
     P2=lambda rows: (np.mean([r["WIN"] for r in rows]) if rows else float('nan'))
     NET=lambda rows: (np.mean([r["R"]-COST for r in rows]) if rows else float('nan'))
@@ -40,12 +41,14 @@ def main():
     hyp_lineage={}  # sig -> list of (quarter_discovered, p2r, n)
     prev_hyps={}    # sig -> (p2r, n) frozen at previous checkpoint
     survival={}     # sig -> consecutive forward-quarters holding above base
+    qseries=[]      # (quarter, n, base_P2R, net) — the non-stationarity headline
     for q in quarters:
         inq=[r for r in out if r["QUARTER"]==q]
         # discovery uses only readings RESOLVED by end of q (RES_Q <= q)
         disc=[r for r in inq if r["RES_Q"]<=q]
-        base=P2(disc); nb=len(disc)
-        lines.append(f"\n## Checkpoint {q}  (frozen readings in-quarter={len(inq)}, resolved-by-Q={nb}, base P2R={base:.3f} net={NET(disc):+.3f})")
+        base=P2(disc); nb=len(disc); qnet=NET(disc)
+        qseries.append((q,nb,base,qnet))
+        lines.append(f"\n## Checkpoint {q}  (frozen readings in-quarter={len(inq)}, resolved-by-Q={nb}, base P2R={base:.3f} net={qnet:+.3f})")
         # (11) regime behavior
         from collections import Counter,defaultdict
         reg=defaultdict(list)
@@ -57,10 +60,10 @@ def main():
         sells=sorted([(k,len(v),P2(v)) for k,v in cl.items() if "BEARISH" in k],key=lambda x:-x[2])[:4]
         lines.append("  - BUY cells (top): "+("; ".join(f"{k} P2R={p:.2f}(n{nn})" for k,nn,p in buys) if buys else "none n>=20"))
         lines.append("  - SELL cells (top): "+("; ".join(f"{k} P2R={p:.2f}(n{nn})" for k,nn,p in sells) if sells else "none n>=20"))
-        # (10) promising hypotheses (this quarter) -> versioned
-        newhyps={}
-        for k,v in cl.items():
-            if len(v)>=MIN_N and P2(v)>=PROMISE:
+        # (10) promising hypotheses (this quarter, COARSE key regime×bias×zone) -> versioned
+        clc=cells(disc,minn=MIN_N,keyf=COARSE); newhyps={}
+        for k,v in clc.items():
+            if P2(v)>=PROMISE:
                 newhyps[k]=(P2(v),len(v)); hyp_lineage.setdefault(k,[]).append((q,round(P2(v),3),len(v)))
         lines.append(f"  - promising hypotheses (P2R>={PROMISE}, n>={MIN_N}): "+("; ".join(f"{k}={p:.2f}(n{nn})_V[{q}]" for k,(p,nn) in newhyps.items()) if newhyps else "NONE"))
         # (9) failed ideas
@@ -73,7 +76,7 @@ def main():
         if prev_hyps:
             ft=[]
             for k,(p_prev,n_prev) in prev_hyps.items():
-                cur=[r for r in inq if r["SIG"]==k]
+                cur=[r for r in inq if COARSE(r)==k]
                 if len(cur)>=15:
                     pf=P2(cur); held=pf>=base and pf>=NULL
                     survival[k]=survival.get(k,0)+ (1 if held else 0)
@@ -84,6 +87,15 @@ def main():
         else:
             lines.append("  - FORWARD-TEST: (no previous checkpoint)")
         prev_hyps=newhyps
+    # HEADLINE: quarterly non-stationarity of the reader's edge
+    nets=np.array([x[3] for x in qseries]); bases=np.array([x[2] for x in qseries])
+    pos=np.mean(nets>0); ac1=float(np.corrcoef(nets[:-1],nets[1:])[0,1]) if len(nets)>2 else float('nan')
+    signpers=float(np.mean(np.sign(nets[:-1])==np.sign(nets[1:]))) if len(nets)>2 else float('nan')
+    head=["\n## HEADLINE — quarterly non-stationarity (walk-forward reader edge)",
+          f"  quarters={len(qseries)} mean_net={nets.mean():+.3f} std_net={nets.std():.3f} %positive_quarters={pos:.0%}",
+          f"  lag-1 autocorr(net)={ac1:+.2f} (>0 => good quarter predicts next; ~0 => no persistence) sign-persistence={signpers:.0%}",
+          "  per-quarter net: "+" ".join(f"{qq[0]}:{qq[3]:+.2f}" for qq in qseries)]
+    lines[2:2]=head  # insert headline near top
     # survivors across multiple quarters
     lines.append("\n## Multi-quarter survival (forward-quarters a hypothesis held above base)")
     surv=sorted(survival.items(),key=lambda x:-x[1])

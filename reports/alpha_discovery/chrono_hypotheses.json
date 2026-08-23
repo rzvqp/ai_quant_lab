@@ -1,0 +1,91 @@
+{
+ "lineage": {
+  "BULLISH|up|nearZone": [
+   [
+    "2020-Q1",
+    0.597,
+    72
+   ],
+   [
+    "2020-Q3",
+    0.484,
+    62
+   ],
+   [
+    "2025-Q3",
+    0.464,
+    56
+   ]
+  ],
+  "BULLISH|weak_up|nearZone": [
+   [
+    "2020-Q1",
+    0.474,
+    38
+   ],
+   [
+    "2020-Q3",
+    0.585,
+    41
+   ],
+   [
+    "2024-Q2",
+    0.462,
+    65
+   ],
+   [
+    "2024-Q3",
+    0.488,
+    82
+   ],
+   [
+    "2025-Q4",
+    0.608,
+    74
+   ],
+   [
+    "2026-Q1",
+    0.486,
+    70
+   ]
+  ],
+  "BEARISH|down|nearZone": [
+   [
+    "2022-Q2",
+    0.455,
+    33
+   ]
+  ],
+  "BEARISH|weak_down|nearZone": [
+   [
+    "2022-Q3",
+    0.588,
+    51
+   ],
+   [
+    "2025-Q2",
+    0.455,
+    33
+   ],
+   [
+    "2026-Q1",
+    0.487,
+    39
+   ]
+  ],
+  "BULLISH|weak_up|noZone": [
+   [
+    "2025-Q1",
+    0.567,
+    30
+   ]
+  ]
+ },
+ "survival": {
+  "BULLISH|up|nearZone": 1,
+  "BULLISH|weak_up|nearZone": 3,
+  "BEARISH|down|nearZone": 0,
+  "BEARISH|weak_down|nearZone": 1,
+  "BULLISH|weak_up|noZone": 1
+ }
+}
