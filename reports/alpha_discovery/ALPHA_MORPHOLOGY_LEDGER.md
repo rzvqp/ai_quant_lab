@@ -50,3 +50,24 @@ after §12 mechanize + §13 full quant-falsification.
 - Accumulate toward ≥50–100 blind observations **per fine morphology** (more episodes / broader strata) before any cluster verdict.
 - Any cluster with era-stable P2R materially above the §11 baseline → PREREGISTER → mechanize → full quant gate (§13).
 - If a genuinely new mechanism emerges outside the 14 modules → flag **POTENTIAL_NEW_MODULE** for CEO (do not self-invent).
+
+### BFSD3-BATCH-1 (2026-08-24) — PRIMARY method: top-down canonical N-node candle-by-candle READING ledger
+Engine `bfsd3_engine.py` (self-contained, N1/N2 computed LIVE + memoized per HTF bar — no cache). STRICT candle-by-candle,
+top-down N1(regime/H4)->N2(bias/H1)->N3(zone map/M15, live)->N4 status(M5 2021+ only)->N6 decision + ENTRY_READINESS 0-100;
+freeze actionable BEFORE next candle; NO outcome at freeze. Morphology NOT imposed/mined here. Scorer `bfsd3_score.py` (secondary).
+- **54 episodes / 21,600 candles / decisions BUY 278 · SELL 175 · NO_TRADE 21,147 / 453 frozen actionable readings** (mostly
+  NO_TRADE = context rarely justified looking, as intended). Full schema per record (N1/N2/N3/N4-status/N6/bias/readiness/zone/
+  invalidation/expected-next/confidence). N4 available 194/453 (2021+).
+- **Outcomes (2R:1R; null P2R=0.333):** OVERALL **P2R=0.358** (marginal over null), P1R=0.501; BUY 0.349 / SELL 0.371.
+- **READINESS CALIBRATION (key finding):** the top-down readiness score is **NOT monotone / anti-predictive at the top** —
+  bins [50,60)=0.375, [60,70)=0.363, [70,80)=0.385, **[80,101)=0.258** (highest readiness = worst, below null). The naive
+  canonical-alignment readiness (N1 strength × N2 magnitude × zone proximity) does not predict success and must be recalibrated
+  from outcomes (this stage), never trusted as constructed.
+- **EMERGENT MORPHOLOGY (clustered from the frozen reading ledger, not imposed):** one cluster reached n>=25 —
+  **`BULLISH|weak_up|normal|long|DISCOUNT|ASIA` -> P2R=0.562 (d=+0.205 vs base), n=32, era D19/C5/O8.**
+  Regime-specialist candidate: Asia-session pullback into a DISCOUNT confluence zone during a weak-up H4 regime with H1 long bias.
+  **UNDER-POWERED (n=32, D-era-heavy) -> NOT a verdict.** This is the first morphology surfaced by open-ended top-down discovery
+  that the quant screens + the predefined-SMC test did not flag. **Action: ACCUMULATE more blind observations of this regime
+  (Asia × weak-up × discount) toward n>=50-100 before preregister/mechanize.**
+- **VERDICT (scoped):** top-down canonical reading is marginally above null overall; readiness anti-calibrated; ONE under-powered
+  emergent regime-specialist candidate to accumulate. No promotion yet. S5 unchanged as the only *validated* edge.
