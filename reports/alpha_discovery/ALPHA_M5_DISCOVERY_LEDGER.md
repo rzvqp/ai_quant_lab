@@ -21,3 +21,22 @@ value was 100% lookahead. (Rigor note: same overlap-lookahead class the Statisti
 M5 path info, measured causally, is marginal-to-null: M5-1 momentum-onset timing gives a small real adverse-first gain (+0.02)
 but the delayed-entry RR penalty cancels it (tradeable delta -0.012); M5-2 acceptance/hold is causally null. Finer resolution
 relocates the same ~coinflip ordering; it does not create era-independent DIRECTION (R20). M5 cannot fix what M15 could not.
+
+## Frontier M5-3 — pullback-completion entry + M5-structural stop (m5_f3.py) : REJECT (tighter stop worse, §7 guard)
+M5-structural (micro-high) stop avgR -0.109 vs same-entry ATR-stop control -0.061 (medStop 2.78 vs 3.83 USD) — the tighter M5
+stop is hit MORE (micro-high doesn't hold), worse not better. §7 guard rejects (tighter-fitting, not informational). Both fail
+(setup era-dependent CONF -0.18/-0.21). M5-structural stops carry no incremental path-survival information here.
+
+## Frontier M5-4 — M15 coil-breakout + M5 displacement-confirmation (m5_f4.py) : no robust M5 info
+Causal (entry at M5-displacement bar, outcome forward). P(target-first) BASE 0.484 -> M5-DISP 0.500 (coinflip), delta not robust
+(DISC -0.004 / CONF +0.039 / OOS +0.040). M5 displacement does not reliably separate real breakout from fakeout across partitions.
+
+## M5 FIRST-BATCH CONCLUSION (M5-1..M5-4; substrate ready + causal-audited)
+Native M5 substrate is verified + causally aligned (H4->H1->M15->M5, strict nominal-close, 0 leak). Four info-first frontiers
+covering the main M5-value hypotheses — momentum-onset entry-timing (M5-1: +0.02 adverse-first but tradeable worse via RR penalty),
+acceptance/hold (M5-2: causally null, circularity caught), structural-stop/path-survival (M5-3: tighter stop worse, §7-rejected),
+displacement-confirmation (M5-4: coinflip, not robust) — ALL show M5 path information is MARGINAL-to-NULL causally and does NOT
+convert a higher-TF setup into a tradeable edge. ROOT: the binding constraint is HIGHER-TF DIRECTION (era-dependent, R20), which
+lives above the entry layer; M5 (a finer entry/path layer) relocates the ~coinflip ordering but cannot create era-independent
+direction. BOUNDED conclusion (not universal): no M5-incremental edge found in the hypotheses tested; substrate remains available
+for any future setup that first demonstrates an era-robust higher-TF direction (which price+volume has not, except S5).
