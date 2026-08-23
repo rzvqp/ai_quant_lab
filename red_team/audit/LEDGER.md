@@ -4623,4 +4623,47 @@
                Changes only in red_team/. Report: RT-RANGE-VNEXT-FINAL-ADVERSARIAL-VALIDATION-001.md.
                STATE: OPERATIONAL. Next entry [101], prev_hash E100.
   entry_hash:  E100
+
+[101] 2026-08-23
+  prev_hash:   E100
+  event:       VERDICT
+  dc_id:       DC-CRS1-CURRENT-REGIME-INDEPENDENT-VALIDATION
+  freeze_hash: CAND-CRS1/CRS-1 frozen (ALPHA_CRS1_H4DIV_FADE_FROZEN.md) / signature c8f5a8091e22aec1 / population
+               3030 H4 bars 12.6% / repo alpha-automation-v1 HEAD 6436bc2 local=remote x4 / data 57f4ed95 thru
+               2026-07-27
+  battery_ver: RT-CRS1-CURRENT-REGIME-INDEPENDENT-VALIDATION-001
+  reviewer:    Red Team
+  detail:      INDEPENDENT ADVERSARIAL VALIDATION of the frozen current-regime candidate CRS-1 (XAUUSD cross-scale
+               H4-divergence fade, SHORT). VERDICT = ***CRS1_INDEPENDENT_RED_TEAM_PASS*** + READY_FOR_STATISTICIAN_
+               INDEPENDENT_REVIEW. Reconstructed from repo (not Alpha narrative); local=remote x4. ★ §2 PRIMARY
+               DECISIVE (signature causality): descriptors CAUSAL (atr/close, vol_rel, 20-bar effic, ddfh shift(1),
+               ret60 -- no return/MFE/MAE/PnL) BUT classification NON-CAUSAL -- sig_build.py:24 mu/sd = FULL-CORPUS
+               2011-2026 mean/std + line 28 threshold = 12th pctl of full-history distances -> every historical
+               bar's current-like membership uses FUTURE distribution info. Under §2 literal this is the leakage
+               concern. MATERIALITY (independently measured, §15 requires not auto-fail): membership ~89% ROBUST to
+               removing recent regime from normalization (Jaccard 0.883-0.890, per-year <=2pt); and the EDGE SURVIVES
+               causal (<=2021) normalization -- re-ran exact CRS-1: avgR +0.363 (from +0.451), all partitions +
+               (D+0.364/C+0.256/O+0.409), tail best10%rm +0.186; DISC edge lives in 2011-2021 high-vol corrections
+               independent of the 2026 anchor. -> full-corpus normalization modestly inflates (~20%) but does NOT
+               create the edge -> NOT CRS1_SIGNATURE_CAUSALITY_FAIL; carried as DISCLOSED LIMITATION (Alpha disclosed
+               it, asked RT to verify -- verified). §4 population reproduced EXACT (3030/12.6%/thr1.77/fingerprint
+               c8f5a809/centroid match). §5/§6 metrics reproduced EXACT: N=298 avgR+0.4507 PF1.87 WR0.507, DISC
+               +0.4246(n193)/CONF +0.3671(n35)/OOS +0.5647(n70), best1%rm+0.4403 best10%rm+0.2857, 13/14yr+, 2xcost
+               +0.394 -- NO fabrication. §7 tail: top-1 trade=1.99R=1% of total (rr2 caps wins), top-10=15%; drop
+               2020 ->+0.412, drop 2020+2026 ->+0.418(n184) -- NOT crash-concentrated. §8 temporal: all partitions +,
+               13/14yr+, LOYO >=+0.41, multi-regime. §9 effective-N: 298 trades / 214 H4 episodes (1.39/ep), below
+               headline but healthy multi-regime, no collapse. §10 delay: +0 +0.451 / +1 +0.427 / +2 +0.324 all
+               partitions + -- robust not knife-edge. §11 cost: 2xSTRESS +0.394 price-level. §12 mechanism-specificity
+               A/B/C INDEPENDENTLY CONFIRMED: A current-like∧H4-UP +0.451>0, B current-like∧H4-DOWN -0.075<0
+               (n2538), C outside∧H4-UP -0.123<0 (n11785) -> cross-scale divergence, not generic short beta. §13 S5:
+               entry hours broad, NY-open 8%, no S5-clone (full return-corr = Statistician stage). §14 NO RETUNING:
+               frozen spec = current-like∧H4-UP only, NO H1 condition (H1+H4 stronger but correctly NOT folded in).
+               §16 multiple-testing: 1 survivor from ~13 CR frontiers + ~12 mechanisms (9 FP rejected), distinct
+               family, disclosed -- FDR is Statistician stage. DISCLOSED LIMITATIONS to Statistician/DEMO: in-sample
+               normalization (~20% inflation, DEMO is true untouched conf), OOS 25-26 not clean holdout (regime =
+               2026-defined; DISC 2011-2021 is leakage-free evidence), CONF thin n35, ATR stop, ~20 trades/yr sparse.
+               NOT modified/repaired/optimized. NOT authorized: AI Trader/Strategy Catalog/DEMO/broker (CEO-gated).
+               Changes only in red_team/. Report: RT-CRS1-CURRENT-REGIME-INDEPENDENT-VALIDATION-001.md.
+               STATE: OPERATIONAL. Next entry [102], prev_hash E101.
+  entry_hash:  E101
 ```
