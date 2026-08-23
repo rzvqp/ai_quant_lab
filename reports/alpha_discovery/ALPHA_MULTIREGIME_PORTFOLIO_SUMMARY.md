@@ -55,3 +55,15 @@ Sweeps CONTINUE (momentum), they don't reverse (R19 momentum-dominance). Dead me
 regime-direction(6 regimes), cross-scale-divergence(CRS-1 short works / BLS-1 long fails), acceptance(short=tail-reducer near-miss
 / long fails), sweep-reversal(fail), range fade/pullback/breakout(fail). NEW UNTAPPED DIMENSION = VOLUME (all prior mechanisms
 OHLC-only; tick-volume is intrinsic to the price feed, within price-only). Pivoting to volume-based mechanisms next.
+
+## VOL-1 volume-confirmed displacement (NEW volume dimension) — FAIL, but volume INFORMS
+Tick-volume valid (median 555, wide dist). High-vol displacement continuation loses LESS than low-vol (up -0.068 vs -0.181;
+dn -0.086 vs -0.243) -> volume genuinely ranks continuation quality (high>low), but standalone displacement-continuation still
+fails DISC (momentum-continuation fails after cost except S5). Volume is a real informative FILTER, not a standalone edge.
+Applying volume as a rescue-filter to near-misses = forbidden post-hoc mining, not done.
+
+## MECHANISM SPACE EXHAUSTED (this program): ~11 distinct classes across PRICE + VOLUME, both directions
+regime-direction(6) / cross-scale-divergence(CRS-1 works, BLS-1 fails) / acceptance(short tail-reducer, long fails) /
+sweep-reversal(fail) / range fade+pullback+breakout(fail) / volume-displacement(informs, no standalone edge). ALL confirm the
+robust result: the ONLY tradeable XAUUSD price-only specialists are S5 (long/breakout) and CRS-1 (short/high-vol-down cross-scale
+divergence). Every fade/reversal/regime-direction/long-continuation mechanism fails (R19 momentum-dominance + R20 era-trend).
