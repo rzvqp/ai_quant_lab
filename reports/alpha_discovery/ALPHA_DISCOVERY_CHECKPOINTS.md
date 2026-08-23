@@ -476,3 +476,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** failed-break reversal info WEAK + inconsistent. +break/+WICKfail small/mixed all modes (WICKfail reproduces S1 -> REDUNDANT_WITH_S1). CLOSE-beyond failure RARE (n<40 gated eras). The only material lift comes from adding an OPPOSITE DISPLACEMENT after the failure (PRIMARY_BULL UP->S +0.078 b0/+0.082 b1; PRIMARY_BEAR DN->L +0.075 b0/+0.087 b1) -> i.e. the DISPLACEMENT is the signal (R1/R6), NOT the failure of acceptance; and it re-triggers the already-bounded S10 displacement mechanism. Rare + 2023 mixed -> not cross-era-consistent.
 **Radar R8.** NEXT: strict-realism tradeability of the failed-break+opp cells (structural stop = break extreme) — likely negative/redundant -> S2 bounded. Continuous loop.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #49 — 2026-08-23 — S2 tradeability thin/inconsistent -> S2 BOUNDED_NEGATIVE (CEO next-family)
+**Screen (`s2_trade.py`, §17/§18/§19):** failed-break+opposite-displacement reversal, strict next-bar entry, structural stop = break extreme, net STRESS per mode x era.
+**Result:** THIN + RARE (gated 2021/2022 = ZERO qualifying cells) and NOT cross-era-consistent (PRIMARY_BEAR failedUP->S +0.08 b0/+0.26 b1/mixed 2023; PRIMARY_BULL failedDN->L neg-b0/pos-b1/pos-2023). Isolated strong single-era b1 values (+0.26/+0.32) do not replicate -> rejected by §26 skepticism gate. Combined with #48 (weak info, displacement-not-failure is the signal), S2 has no robust specialist.
+**S2 CONCLUSION (`ALPHA_S2_FAMILY_CONCLUSION.md`):** BOUNDED_NEGATIVE, 0 survivors. Failure-of-acceptance is NOT the edge; the only signal is the (S10-bounded) opposite displacement. Meta-pattern S1/S10/S2 all bounded-neg: every price-SHAPE mechanism (continuation + reversal) hits the same breakeven wall — real INFO, sub-breakeven expectancy after cost.
+**Backlog:** S2 -> BOUNDED_NEGATIVE. Recommended next = S4 Volatility Compression->Expansion (STRUCTURALLY distinct vol-regime, larger natural target); alt S18 Time-of-Day / S16 Prev-Day-Levels.
+**CEO DECISION (pause #5):** select next structural family.
+**Global status:** `ALPHA_S2_FAMILY_BOUNDED` — awaiting CEO next-family selection.
