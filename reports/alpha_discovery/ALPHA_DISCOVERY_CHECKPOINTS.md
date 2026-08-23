@@ -503,3 +503,13 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Result:** (1) HOLD/FAIL discriminator TRANSFERS to S4 (HOLD>FAIL continuation P cross-era; R6 confirmed here). (2) PRIMARY continuation cells SIGN-REVERSE across eras (C1 bull b0 -0.14/b1 +0.21; C2 bear b0 +0.18/b1 -0.09 -> anti-correlated = era-trend leakage, FAIL §15 same-mode sign-reversal). (3) CORRECTION-RESUMPTION cells positive both dense eras: C3 BULL_CORR+bull-exp->L b0 +0.13/b1 +0.09; C4 BEAR_CORR+bear-exp->S b0 +0.07/b1 +0.21 (HOLD-filtered, structural stop) — the correction-resolves-to-primary specialist thesis; but gated 2021-2023 thin (n<30) -> cross-era unconfirmed.
 **Radar R10.** NEXT (§26/§28 adversarial verification, NOT freeze yet): C3/C4 with pooled-DEV N, DISC/CONF, cross-era, session clustering (§24), redundancy vs COMP-CONT-L/S5 (§23). Remember S10 false positive. Continuous loop.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #52 — 2026-08-23 — S4 candidates are SESSION ARTIFACT -> S4 BOUNDED_NEGATIVE (CEO next-family)
+**Adversarial verification (`s4_verify.py`, §26/§28):** C3/C4 correction-resumption cells with neighbor-stability + DISC/CONF + session + cross-era. **FATAL:** both ~65-77% ASIA-session concentrated (compression fires in quiet Asia -> session/liquidity artifact, §24); C4 sign-REVERSES in y2123 (avgR -0.19, DISC -0.44, fail §15); C3 survives sign test + neighbor-stable but Asia-confounded + y2123 CONF negative. Neither is a clean non-artifact S4 specialist. Skepticism gate worked (as with S10).
+**S4 CONCLUSION (`ALPHA_S4_FAMILY_CONCLUSION.md`):** BOUNDED_NEGATIVE, 0 survivors. Compression->expansion = bilateral/VOLATILITY_TIMING, not directional (mode-conditioning doesn't fix direction; primary cells era-trend-leak); §14 payoff rationale FALSIFIED (MFE~=MAE); correction-resume apparent edge = Asia-session artifact.
+**Radar R11:** Asia-session compression = genuine lead for S18. Backlog S4->BOUNDED_NEGATIVE; S18 RECOMMENDED_NEXT.
+**Meta S1/S10/S2/S4 all bounded-neg:** price-shape + vol-regime mechanisms all fail to yield a robust cross-era specialist; frozen S5/COMP-CONT-L remain the only robust price-only edges.
+**CEO DECISION (pause #5):** select next family. Recommendation S18 Time-of-Day (R11-motivated); alt S16/S17 levels, S8 mean-reversion.
+**Global status:** `ALPHA_S4_FAMILY_BOUNDED` — awaiting CEO next-family selection.
