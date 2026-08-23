@@ -36,9 +36,9 @@ each module has been taken through the pipeline.
 - **VISUAL_FORWARD_EXPLORED:** started (BFSD-BATCH-1). Touched M01/M02/M08/M09/M13/M14 via the trend-pullback-to-zone morphology
   (they supply the H4/H1 context, pullback leg, and M15 zones). M03/M04/M05/M06/M07/M10/M11/M12 not yet blind-forward explored —
   they need their own morphology grammars (sweep→reclaim→retest for M05/M12; compression→failed-break→expansion for M06/M03/M10; etc.).
-- **MORPHOLOGIES_IDENTIFIED:** (a) predefined SMC family (n=599) ≈ baseline (retained as one negative test). (b) BFSD3 open-ended
-  top-down reading surfaced ONE emergent regime-specialist CANDIDATE: `BULLISH|weak_up|normal|long|DISCOUNT|ASIA` P2R=0.562 (n=32,
-  under-powered) — accumulate to n>=50-100 before verdict. Readiness score found anti-calibrated (recalibrate from outcomes).
+- **MORPHOLOGIES_IDENTIFIED:** (a) predefined SMC family (n=599) ≈ baseline (retained as one negative test). (b) BFSD3 top-down reading (2,004 blind readings) surfaced a candidate that REGRESSED to base with n (0.562@32 -> 0.389@126);
+  overall P2R=0.326 (~null); readiness robustly anti-calibrated (0.342->0.293). NO specialist survives this reading rule yet. Next:
+  broaden emergent grammar (full per-candle stream + richer structural events).
 - **MECHANIZED:** S5 only (pre-existing).  **DEEP_VALIDATED:** S5 only.  **SURVIVORS:** S5 only.
 
 ## Honest status

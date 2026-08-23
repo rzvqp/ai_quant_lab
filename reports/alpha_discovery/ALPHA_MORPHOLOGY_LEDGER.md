@@ -86,3 +86,17 @@ Appended seeds 2025 + 777 to BFSD3-BATCH-1, deduped by candle T -> ~1,269 unique
   accumulation before any mechanize decision.
 - **VERDICT (scoped):** as blind observations accumulate, emergent candidates regress toward base; no robust specialist yet. One
   mild persistent tendency (Asia-discount-BUY) under continued accumulation. Readiness score anti-calibrated. No promotion. S5 unchanged.
+
+### BFSD3-BATCH-3 (2026-08-24) — FULL ACCUMULATION VERDICT (5 seeds, 2,004 unique blind readings)
+- **Candidate FULLY REGRESSED to base:** `BULLISH|weak_up|normal|long|disc|AS` n=32->82->126, P2R=**0.562->0.451->0.389**
+  (now only +0.063 over base). The 0.562 was small-sample noise; no edge survives accumulation. Other Asia-discount-BUY cells split
+  around base (up|normal 0.400 n65; high_choppy 0.155 n58; compressed 0.270 n74) — net ~base, no specialist.
+- **Top-down reading overall = NULL:** OVERALL P2R=**0.326** (~null 0.333), BUY 0.318 / SELL 0.339, over 2,004 blind actionable readings.
+- **Readiness ROBUSTLY ANTI-CALIBRATED (monotone, full scale):** 0.342->0.336->0.319->**0.293** (top bin n=335). The naive canonical
+  readiness (N1 strength × N2 magnitude × zone proximity) is mildly ANTI-predictive — a stable, reproducible design finding.
+- **SCOPED VERDICT:** the FIRST full pass of the PRIMARY top-down N-node reading (N6 decision = price interacting with nearest
+  confluence zone in the N1/N2 bias direction) carries NO edge, and its emergent candidate regressed to base. This is a statement
+  about THIS decision rule + zone-reaction reading, NOT a global "no morphology exists." S5 remains the only validated edge.
+- **NEXT (broaden emergence):** the current N6 fires only on nearest-zone interaction; broaden the reading so richer morphologies can
+  emerge (record the FULL per-candle decision/structure stream, add structural events beyond zone-tap: displacement, failed-break,
+  reclaim, acceptance-shift), then re-cluster. Keep accumulating; promote only a cell that stays materially above base at n>=100.
