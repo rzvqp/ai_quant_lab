@@ -41,3 +41,8 @@ years, best-10%rm -0.347. The CRS-1 cross-scale-divergence principle does NOT ge
 bounces reliably FAIL only in the high-vol DOWN-correction (dominant down-flow), whereas D1-up is era-ambiguous (blowoffs) and
 uptrend dips don't reliably bounce. Confirms CRS-1 is genuinely a down-correction specialist, not a general cross-scale rule.
 => Multi-regime portfolio + cross-scale generalization search EXHAUSTIVELY complete. Survivors remain S5 + CRS-1.
+
+## ALS-1 long acceptance-above (resistance-break retest-HOLD -> long) — FAIL
+Mirror of the validated acceptance-short. avgR -0.118 all-context (15/16 neg yrs), D1-up -0.117 (16/16 neg), high-vol -0.038
+(DISC -0.124). Long-side acceptance does NOT work: upside breakout-retests get faded. Confirms LONG side has NO edge except S5
+(BLS-1 dip-buy, ALS-1 acceptance-above, all regime-longs fail). Asymmetry: down-acceptance is a tail-reducer, up-acceptance fails.
