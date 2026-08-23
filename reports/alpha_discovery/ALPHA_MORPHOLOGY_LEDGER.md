@@ -100,3 +100,19 @@ Appended seeds 2025 + 777 to BFSD3-BATCH-1, deduped by candle T -> ~1,269 unique
 - **NEXT (broaden emergence):** the current N6 fires only on nearest-zone interaction; broaden the reading so richer morphologies can
   emerge (record the FULL per-candle decision/structure stream, add structural events beyond zone-tap: displacement, failed-break,
   reclaim, acceptance-shift), then re-cluster. Keep accumulating; promote only a cell that stays materially above base at n>=100.
+
+### BFSD4-BATCH-2 (2026-08-24) — BROADENED observation, OUT-OF-SAMPLE (Batch-1 frozen, no retuning)
+New engine `bfsd4_engine.py`: reader now OBSERVES + tags displacement/break/failed-break(sweep)/rejection/compression/expansion at
+each candle and freezes when ANY structural event appears in a directional context (tags recorded, NOT setup gates). New seeds
+111/222/333/444 -> new ledger `reading_ledger_b2.jsonl` (Batch-1 untouched). 2,154 unique out-of-sample frozen readings. Scorer
+`bfsd4_score.py` (secondary).
+- **Overall P2R=0.302 (~/below null 0.333)**; BUY 0.315 / SELL 0.281. The broadened reader has NO overall edge.
+- **No structural TRIGGER carries edge:** DISP_up +0.053(n93, =momentum), REJ_low +0.011(n695), SWEEP_up +0.009, BREAK_up +0.002,
+  REJ_high +0.001; SHORT-side NEGATIVE (BREAK_dn -0.047, DISP_dn -0.105) = era-trend (shorts fade in a rising instrument).
+- **Emergent cells (n>=25) top at 0.40-0.43** but only ~+0.07-0.10 over true null and INCONSISTENT: `BULLISH|up|REJ_low|nearZone|AS`
+  n=81 P2R=0.407 (era-spread D26/C26/O29) WORKS, but its `weak_up` sibling n=86 P2R=0.267 FAILS. Small-n flyers both signs.
+- **WATCH-CANDIDATE (accumulate, do NOT promote):** `BULLISH|up|REJ_low|nearZone|AS` — up-H4-regime + rejection-of-lows at a demand
+  zone in Asia -> BUY; coherent mechanism, n=81, 0.407, spread across eras. Decisive n>=100 accumulation test pending (Batch-1's
+  candidate regressed at higher n).
+- **VERDICT (scoped):** broadening the observation did NOT surface a robust edge; overall at/below null. One coherent watch-candidate
+  under accumulation. No promotion. S5 unchanged as the only validated edge.
