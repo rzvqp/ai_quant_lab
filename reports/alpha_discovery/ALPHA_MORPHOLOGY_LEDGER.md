@@ -71,3 +71,18 @@ freeze actionable BEFORE next candle; NO outcome at freeze. Morphology NOT impos
   (Asia × weak-up × discount) toward n>=50-100 before preregister/mechanize.**
 - **VERDICT (scoped):** top-down canonical reading is marginally above null overall; readiness anti-calibrated; ONE under-powered
   emergent regime-specialist candidate to accumulate. No promotion yet. S5 unchanged as the only *validated* edge.
+
+### BFSD3-BATCH-2 (2026-08-24) — ACCUMULATION (3 seeds, deduped by candle) — candidate REGRESSED
+Appended seeds 2025 + 777 to BFSD3-BATCH-1, deduped by candle T -> ~1,269 unique frozen top-down readings. base P2R=0.338 (~null).
+- **The emergent candidate REGRESSED toward base as n grew:** `BULLISH|weak_up|normal|long|disc|AS` 0.562(n32) -> **0.451(n82)**
+  (+0.205 -> +0.113 over base). The initial 0.562 was mostly small-sample noise; classic regression-to-the-mean. Still modestly
+  above base, present all eras (D34/C19/O29) — a MILD tendency, not a strong specialist.
+- **READINESS now robustly ANTI-CALIBRATED (monotone decreasing):** bins [50,60)=0.359 [60,70)=0.341 [70,80)=0.329 [80,101)=0.315
+  (top bin n=203). The naive canonical readiness (N1 strength × N2 mag × zone proximity) is mildly ANTI-predictive -> must be
+  inverted/discarded, never used as constructed. (Robust design finding.)
+- **No strong regime specialist at adequate n.** Top-|d| clusters are all n~27 noise flyers (both signs: BEARISH|weak_down|compressed|
+  short|prem|AS 0.556 n27; BULLISH|weak_up|high_choppy|long|disc|AS 0.171 n35). The only PERSISTENT family = **Asia-DISCOUNT-BUY in
+  up/weak_up normal-vol** (~0.44 P2R across n~120 combined, +~0.10 over base) — a mild, era-spread regime tendency worth further
+  accumulation before any mechanize decision.
+- **VERDICT (scoped):** as blind observations accumulate, emergent candidates regress toward base; no robust specialist yet. One
+  mild persistent tendency (Asia-discount-BUY) under continued accumulation. Readiness score anti-calibrated. No promotion. S5 unchanged.

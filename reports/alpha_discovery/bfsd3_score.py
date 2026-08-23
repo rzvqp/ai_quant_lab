@@ -23,6 +23,12 @@ def main():
     m=CD.load_m15(); h=m["high"].to_numpy(); l=m["low"].to_numpy(); atr=m["atr"].to_numpy(); n=len(m)
     P=r"C:\Users\MEDION GAMING\ai_quant_lab-alpha-automation\reports\alpha_discovery\reading_ledger.jsonl"
     recs=[json.loads(x) for x in open(P,encoding="utf-8")]
+    seen=set(); dd=[]
+    for r in recs:
+        if r["T"] in seen: continue
+        seen.add(r["T"]); dd.append(r)
+    print(f"(dedup by candle T: {len(recs)} raw -> {len(dd)} unique)")
+    recs=dd
     out=[]
     for r in recs:
         T=r["T"]; s=r["EXP_DIR"]

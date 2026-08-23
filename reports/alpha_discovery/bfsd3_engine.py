@@ -72,7 +72,9 @@ def main():
         ba=min(1.0,abs(mag)/8.0); pr=max(0.0,1.0-dist_atr/2.0)
         return int(round(100*(0.35*ds+0.25*ba+0.40*pr)))
     # episode sampling (stratified/seeded by era x session x CHEAP trend proxy — NO N1/N2 during stratification)
-    rng=np.random.default_rng(20260824)
+    SEED=int(sys.argv[1]) if len(sys.argv)>1 else 20260824
+    APPEND=(len(sys.argv)>2 and sys.argv[2]=="append")
+    rng=np.random.default_rng(SEED)
     e20=m["ema20"].to_numpy(); e50=m["ema50"].to_numpy(); e200=pd.Series(c).ewm(span=200,adjust=False).mean().to_numpy()
     def tproxy(i):
         if e20[i]>e50[i] and c[i]>e200[i]: return "up"
@@ -122,9 +124,9 @@ def main():
                 CONFIDENCE=round(rd/100.0,2),
                 SIG=f"{bias}|{d}|{vol}|{b}|{'disc' if pa<ref else 'prem'}|{session(T)}"))
     outp=r"C:\Users\MEDION GAMING\ai_quant_lab-alpha-automation\reports\alpha_discovery\reading_ledger.jsonl"
-    with open(outp,"w",encoding="utf-8") as f:
+    with open(outp,"a" if APPEND else "w",encoding="utf-8") as f:
         for r in frozen: f.write(json.dumps(r)+"\n")
-    print(f"BFSD3-ENGINE (top-down N-node reading, live N1/N2): episodes={len(es)} candles={candles} decisions={dec_ct} frozen_actionable={len(frozen)}")
+    print(f"BFSD3-ENGINE (seed={SEED} append={APPEND}): episodes={len(es)} candles={candles} decisions={dec_ct} frozen_actionable={len(frozen)}")
     print(f"  N4 available frozen: {sum(1 for r in frozen if r['N4_STATUS']=='available')}/{len(frozen)} | reg_cache={len(reg_cache)} bias_cache={len(bias_cache)}")
     print(f"  wrote {outp} — NO outcome here. Run bfsd3_score.py next.")
     for r in frozen[:4]: print("  FROZEN:",r["TS"],r["N6_DECISION"],"rd",r["ENTRY_READINESS"],r["STRUCTURAL_BIAS"],"N1",r["N1_DIR"],"N2",r["N2_BIAS"])
