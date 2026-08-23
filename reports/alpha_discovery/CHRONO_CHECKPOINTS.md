@@ -272,3 +272,11 @@ negative. **VERDICT: FAIL (cost-rejected). CLOSED.** Even the single best chrono
   structural observation, and 2 preregistered candidates (ASREJ-1, WUZ-1) both fully falsified — **no robust directional edge exists at
   M15 beyond S5.** S5 (NY opening-range breakout, direction self-supplied) remains the ONLY validated edge. Costs are the consistent
   killer of thin gross tendencies. This is a strong, honest negative, established by five independent methods.
+
+## REGIME-CONDITIONAL (pooled 4,231 chrono readings) — NO PROFITABLE REGIME
+Net R/trade by regime state (STRESS 0.24 cost): EVERY cell negative. Best = BULLISH×high_choppy −0.044 (n657, closest to breakeven);
+BULLISH×high_directional −0.130; BEARISH×high_choppy −0.374 (worst). By vol alone: high_choppy −0.163 … low −0.284 (all neg). By
+decision: BUY −0.15 beats SELL −0.28 (era-trend), both negative; SELL×nearZone worst (−0.336). Overall −0.204. **No volatility state, no
+regime direction, no zone condition, and neither trade side is net-positive.** The top-down zone-reaction reader has no edge in ANY
+regime — the strongest possible negative, consistent across chronological, pooled, and per-regime views. Mandate item "which mechanisms
+are regime-specific": answer = none, for this reading. S5 remains the ONLY validated edge.
