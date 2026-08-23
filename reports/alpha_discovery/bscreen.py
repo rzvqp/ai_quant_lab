@@ -29,6 +29,12 @@ def build_eras():
           ("DEV",sm,sm["is_dev"].to_numpy()),("CAL",sm,sm["is_cal"].to_numpy())]
     return eras
 
+def build_eras_tf(tf):
+    """Eras for an arbitrary timeframe (H1/H4): b0/b1 (2011-18, hist_data) + DEV/CAL (2021-24, swing_base)."""
+    h=hd._load(tf); s=sb.build_frames()[tf]
+    return [("b0",h,h["is_b0"].to_numpy()),("b1",h,h["is_b1"].to_numpy()),
+            ("DEV",s,s["is_dev"].to_numpy()),("CAL",s,s["is_cal"].to_numpy())]
+
 def _sess_hist(t_entry):
     hr=pd.Series(pd.to_datetime(t_entry,unit="s",utc=True)).dt.hour.to_numpy()
     tot=max(len(hr),1)
@@ -41,7 +47,7 @@ def _best_removed(r,frac):
 
 def screen_one(hyp, eras, verbose=True):
     name=hyp["name"]; side=hyp["side"]; rr=hyp.get("rr",2.0); H=hyp.get("horizon",48); cool=hyp.get("cool",8)
-    per=[]; allR=[]; allT=[]
+    per=[]; allR=[]; allT=[]; eraR={}
     for tag,fr,mask in eras:
         idx,sl=hyp["signal"](fr)
         if idx is None or len(idx)==0: per.append((tag,0,np.nan,np.nan,np.nan,np.nan,np.nan)); continue
@@ -58,7 +64,7 @@ def screen_one(hyp, eras, verbose=True):
         r=tr["R"].to_numpy(); rg=tr["gross_R"].to_numpy()
         avg=float(r.mean()); avgg=float(rg.mean()); pf=sb._pf(r); wr=float((r>0).mean()); med=float(np.median(r))
         per.append((tag,len(tr),avg,avgg,pf,wr,med))
-        allR.append(r); allT.append(tr["t_entry"].to_numpy())
+        allR.append(r); allT.append(tr["t_entry"].to_numpy()); eraR[tag]=r
     # pooled
     R=np.concatenate(allR) if allR else np.array([]); T=np.concatenate(allT) if allT else np.array([])
     used=[p for p in per if p[1]>=NMIN]
@@ -68,11 +74,18 @@ def screen_one(hyp, eras, verbose=True):
     best10=_best_removed(R,0.10); best1=_best_removed(R,0.01)
     sess=_sess_hist(T) if pooledN else {}
     maxsess=max(sess.values()) if sess else 0.0
+    # era-concentration (best-block removal, §13/§28): pooled without the single best era must stay positive
+    eblk={t:float(v.mean()) for t,v in eraR.items() if len(v)>=15}
+    if len(eblk)>=2:
+        bt=max(eblk,key=eblk.get); rem=[v for t,v in eraR.items() if t!=bt]
+        pooled_wo=float(np.concatenate(rem).mean()) if rem else np.nan
+    else: pooled_wo=np.nan
     # verdict
     if pooledN<POOL_MIN or posN<2: verdict="ELIM:INSUFFICIENT_N"
     elif pooled<=0: verdict="ELIM:NEG_STRESS"
     elif pos>=1 and neg_strong>=1: verdict="ELIM:SIGN_REVERSAL"
-    elif not np.isfinite(best1) or best1<=0: verdict="ELIM:TAIL_ONLY"  # S5 gate-E: best-1%-removed>0 (best10 too harsh for high-RR)
+    elif not np.isfinite(best1) or best1<=0.02: verdict="ELIM:IMMATERIAL"  # S5 gate-E: best-1%-removed materially >0 (best10 too harsh for high-RR)
+    elif np.isfinite(pooled_wo) and pooled_wo<=0.02: verdict="ELIM:ERA_CONCENTRATION"  # edge collapses without its best era (era-trend leakage)
     elif pos==posN: verdict="SURVIVOR"+("*" if pooled>0.05 else "")
     elif pos>=posN-1 and pooled>0: verdict="SURVIVOR-weak"
     else: verdict="ELIM:INCONSISTENT"

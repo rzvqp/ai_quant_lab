@@ -16,6 +16,20 @@ Cumulative class-level negatives under **modern governance** (ratified STRESS co
 | SESSION-TIME (fixed hour) | TOD_NYopen_L (A14), S18 dir | MODERN_FALSIFIED | Batch A −0.65; R12 | session=vol-timing not directional; clock ≠ edge |
 | SESSION opening-range (non-NY / short) | ORB_LON L/S, ORB_NY_S (A2-A4) | MODERN_FALSIFIED | Batch A | ORB edge is NY+long-specific (=S5) |
 
+## Batch B/C additions (untested classes + timeframe study)
+| info class | mechanisms | modern verdict | evidence |
+|---|---|---|---|
+| STRUCTURE-BREAK (BOS/Donchian) | SB_break M15/H1/H4 | MODERN_NEGATIVE (near-breakeven L, era-inconsistent) | Batch B −0.015; Batch C H1 +0.021 breakeven (DISC−, 2024-only), H4 sign-reversal |
+| RANGE-ROTATION | RANGE_fade L/S | MODERN_NEGATIVE (Asia-concentrated) | Batch B −0.26/−0.34, ~52% Asia |
+| MOMENTUM / HOLD-DISPLACEMENT (R6) | HOLDdisp L/S | MODERN_NEGATIVE | Batch B −0.22/−0.33 (info≠expectancy, =S10) |
+| MULTI-TIMEFRAME alignment | MTF_align_L | MODERN_NEGATIVE (near-breakeven) | Batch B −0.026 |
+| EXHAUSTION (streak fade) | STREAKfade L/S | MODERN_NEGATIVE (CATASTROPHIC −2.6R) | Batch B; counter-momentum destroyed (R4) |
+| VOLATILITY-ONSET | VOLonset L/S | MODERN_NEGATIVE (NY-session artifact) | Batch B −0.03/−0.07; Batch C H1 +0.051 = 72% NY artifact |
+| TREND-CONTINUATION (trend-filtered breakout) | TREND_break L/S H1/H4 | MODERN_NEGATIVE (ERA-TREND LEAKAGE) | Batch C: short-cont +0.111 but b0-bear-dominated, CONF≈0, 2024 neg |
+| NARROW-RANGE breakout | NR_break L/S | MODERN_NEGATIVE | Batch B −0.22/−0.26 |
+
+**Dominant failure mode for directional continuation = ERA-TREND LEAKAGE:** a directional breakout/continuation "works" in the era whose trend matches its side (short-cont in the 2011-13 bear, long-cont in the 2023-24 bull), then flips → SIGN_REVERSAL / CONF≈0 across the full multi-era set. Only S5's session-open STRUCTURE escapes this (regime-agnostic, all 4 eras +).
+
 ## SURVIVING price-only edges (modern bar)
 - **S5 (NY opening-range breakout, LONG, rr3)** — validated A-H; now also cross-era-positive 2011-2018 (Batch A). FROZEN.
 - **COMP-CONT-L-rr2** — FROZEN pending validation.
