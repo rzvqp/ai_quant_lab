@@ -19,7 +19,7 @@ M10 TRANSITION     █████░░░░░ 50%  (2/4)  survivor:0  OPEN  
 M11 HAZARD         █████░░░░░ 50%  (2/4)  survivor:0  OPEN      → next: duration-in-state + survival
 M12 EVENT-SEQUENCE █████░░░░░ 50%  (2/4)  survivor:0  OPEN      → next: sweep→reclaim→retest→hold (gated)
 M13 IMBALANCE/FVG  █████░░░░░ 50%  (2/4)  survivor:0           → next: BPR + FVG-stack/density
-M14 ORDER-BLOCK    ██░░░░░░░░ 25%  (1/4)  survivor:0  OPEN      → next: OB-rejection/mitigation (Mod.5)
+M14 ORDER-BLOCK    █████░░░░░ 50%  (2/4)  survivor:0           → next: OB-mitigation + demand-zone reentry
 ```
 
 ## Machine-readable coverage table
@@ -38,6 +38,6 @@ M14 ORDER-BLOCK    ██░░░░░░░░ 25%  (1/4)  survivor:0  OPEN  
 | M11 hazard | 50% | MED | 4 | 2 | 0 | 2 | 1 | 0 | 0 | 0 | duration-in-state + survival |
 | M12 event-seq | 50% | MED | 4 | 2 | 0 | 2 | 1 | 0 | 0 | 0 | sweep→reclaim→retest→hold |
 | M13 imbalance/FVG | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | BPR + FVG-stack/density |
-| M14 order-block | 25% | LOW-MED | 4 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | OB-rejection/mitigation |
+| M14 order-block | 50% | MED | 4 | 2 | 0 | 2 | 2 | 0 | 0 | 0 | OB-mitigation + demand-zone reentry |
 
-**Aggregate:** 14 modules, 56 branches, ~33 materially covered ≈ **59% overall coverage**. Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. Highest-value OPEN branches (lowest coverage + distinct primitive + Alpha-unrun): **M14 order-block (25%), M05 liquidity (25%), M09 cross-scale (38%)**. No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
+**Aggregate:** 14 modules, 56 branches, ~34 materially covered ≈ **61% overall coverage**. Survivors: 1 (S5, IVAL, in M03/M07). No robust survivor found in any other module yet. Highest-value OPEN branches (lowest coverage + distinct primitive + Alpha-unrun): **M05 liquidity (25%), M09 cross-scale (38%), M08/M10/M11/M12/M14 (50%)**. NOTE: all DIRECTIONAL-polarity branches tested (FVG/OB/reference/cross-scale) resolve in the ERA-TREND (R20) — remaining hope is NON-directional/structural branches (hazard-duration, gated sequences, session-transition). No "exhausted" claim is valid without this dashboard (denominator exists, open branches listed).
