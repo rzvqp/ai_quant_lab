@@ -3,6 +3,11 @@
 Mandate: CANONICAL_MODULE_DEFINITION_DRAFT (CEO 2026-08-23). Definition task only — NO discovery, NO P&L, NO hypotheses tested.
 `EXISTING_AUTHORITATIVE_CONTENT` and `ALPHA_PROPOSED_CANONICAL_DEFINITION` are separated; CEO ratifies. Deliver-then-stop.
 
+> **GOVERNANCE RATIFICATION STATUS (CEO PARTIAL RATIFICATION, 2026-08-23):**
+> **RATIFIED CANONICAL V1 — do not modify without new governance:** `M01_RATIFIED · M02_RATIFIED · M03_RATIFIED · M06_RATIFIED · M07_RATIFIED · M13_RATIFIED`.
+> **PENDING (CEO_ARBITRATION_REQUIRED — see ALPHA_MODULE_ARBITRATION_PACKAGE_V1.md):** M04, M05, M08, M09, M10, M11, M12, M14.
+> No discovery authorized in any module yet.
+
 **Governing rules encoded here:** TIMEFRAME_IS_NOT_MODULE · M5_IS_NOT_MODULE · every hypothesis has ONE PRIMARY_MECHANISM_MODULE
 (the source of expected edge); other modules are CONDITIONER/TRIGGER/CONTEXT/EXECUTION. Overlap is allowed; boundaries are explicit.
 Sub-mechanism branches are the future discovery DENOMINATOR and must be economically distinct (NOT split by RR/lookback/threshold/timeframe).
