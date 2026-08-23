@@ -467,3 +467,12 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **Backlog:** S10 -> BOUNDED_NEGATIVE. Recommended next = S2 Failed Breakout (R6: failure is highly informative -> trade the reversal side); alt S4 Vol Compression->Expansion.
 **CEO DECISION (pause #5):** select next structural family. Recommendation S2; alt S4/S7.
 **Global status:** `ALPHA_S10_FAMILY_BOUNDED` — awaiting CEO next-family selection.
+
+---
+
+## CHECKPOINT #48 — 2026-08-23 — S2 §9 decomposition: failed-break reversal info weak/rare; signal is displacement, not failure
+**Mandate:** ALPHA-XAUUSD-S2-FAILED-BREAKOUT-FAILED-SWEEP-001 (CEO selected S2). §21 audit: WICK/penetration failure = S1_EQUIVALENT (S1 bounded-neg); CLOSE-beyond failure = the NEW mechanism.
+**Screen (`s2_failbreak.py`, §6/§9):** structural level = 20-bar swing; SEPARATE WICK-failure (~S1) vs CLOSE-beyond-failure (close beyond then lose it, decision at next close, causal); reversal direction (failed UP->SHORT / failed DN->LONG); decomposition MODE base -> +break -> +WICKfail -> +CLOSEfail -> +CLOSEfail+opposite-displacement; P(+70/-50 reversal) lift vs same-mode base, per era, deduped.
+**Result:** failed-break reversal info WEAK + inconsistent. +break/+WICKfail small/mixed all modes (WICKfail reproduces S1 -> REDUNDANT_WITH_S1). CLOSE-beyond failure RARE (n<40 gated eras). The only material lift comes from adding an OPPOSITE DISPLACEMENT after the failure (PRIMARY_BULL UP->S +0.078 b0/+0.082 b1; PRIMARY_BEAR DN->L +0.075 b0/+0.087 b1) -> i.e. the DISPLACEMENT is the signal (R1/R6), NOT the failure of acceptance; and it re-triggers the already-bounded S10 displacement mechanism. Rare + 2023 mixed -> not cross-era-consistent.
+**Radar R8.** NEXT: strict-realism tradeability of the failed-break+opp cells (structural stop = break extreme) — likely negative/redundant -> S2 bounded. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
