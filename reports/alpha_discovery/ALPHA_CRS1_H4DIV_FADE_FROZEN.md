@@ -40,4 +40,7 @@ Inside a high-vol post-blowoff DOWN-correction (current-like), a counter-trend *
 ## Reproduce
 `cur_cr13.py` (info), `cur_cr13_trade.py` (tradeable + neighbor), `cur_cr13_verify.py` (full skepticism gate). Data: wp5b OANDA_XAUUSD_M15.csv through 2026-07-27.
 
+## Label-dependency (robustness probe, cur_cr13_robust.py)
+CRS-1's regime gate (current-like / SIGNATURE_V1) is LOAD-BEARING: one preregistered label-free proxy (H4 down-slope + elevated vol + bounce) is near-disjoint from current-like (12/254 overlap) and the entry LOSES on it (avgR -0.167). The entry is therefore SPECIFIC to the current-like structure (by design for a regime specialist), but the edge is demonstrated ONLY under the specific SIGNATURE_V1 label; a naive structural proxy does not substitute. Red Team: verify the global-percentile label for any leakage (descriptors are backward-looking -> argued no forward leak, independent check warranted). Not fished for a confirming proxy.
+
 Provenance fingerprint (rule string): CRS1|curlike&H4up|SHORT|SL=1.5ATR|rr=2.0|H=96|STRESS0.24|dedup16
