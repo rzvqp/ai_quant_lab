@@ -1,0 +1,360 @@
+C:\Users\MEDION GAMING\ai_quant_lab-alpha-automation\reports\alpha_discovery\batch_a.py:12: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  return t.dt.hour.to_numpy(), t.dt.floor("D").astype("int64").to_numpy(), t.dt.to_period("W").astype(str).to_numpy()
+C:\Users\MEDION GAMING\ai_quant_lab-alpha-automation\reports\alpha_discovery\cur_cr13_robust.py:36: RuntimeWarning: Mean of empty slice
+  print(f"  {name}: N={len(r)} avgR={r.mean():+.4f} PF={sb._pf(r):.2f} WR={(r>0).mean():.3f} best10%rm={sr[:-k10].mean():+.4f} | D {d.mean():+.3f}(n{len(d)}) C {cf.mean():+.3f}(n{len(cf)}) O {oos.mean():+.3f}(n{len(oos)}) -> {'HOLDS' if surv else 'weaker'}")
+C:\Users\MEDION GAMING\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+
+====================================================================================================
+CR-1 (first-pass re-screen)  [cur_screen.main()]
+====================================================================================================
+
+--- status=SKIPPED_NO_ENTRY_POINT  wall=0.00s ---
+
+====================================================================================================
+CR-1 (info-first a)  [cur_info.main()]
+====================================================================================================
+Current-regime INFO: P(down 1.5ATR before up 1.5ATR) = down-bias. current-like partitioned. baseline 0.5 = symmetric.
+  CUR-LIKE(all)   : n= 44780 P(down-first)=0.506
+    DISC<=2021    : n= 28685 P(down-first)=0.499
+    CONF 22-24    : n=  9611 P(down-first)=0.526
+    OOS 25-26     : n=  6484 P(down-first)=0.508
+  DIAG non-cur    : n=310459 P(down-first)=0.501
+--- status=OK  wall=2.11s ---
+
+====================================================================================================
+CR-1 (info-first b)  [cur_info2.main()]
+====================================================================================================
+P(down-first) | ALL-cur / DISC / CONF / OOS  (>=0.55 all = concentrated down-bias)
+  ALL current-like: 0.506(n44780)  0.499(n28685)  0.526(n9611)  0.508(n6484)
+  H4dn(ema20<50)  : 0.505(n24965)  0.492(n16064)  0.526(n5288)  0.531(n3613)
+  dn-mom(6bar)    : 0.501(n22331)  0.488(n14249)  0.524(n4849)  0.526(n3233)
+  at-resistance   : 0.513(n3566)  0.545(n2098)  0.503(n803)  0.427(n665)
+  vol-expansion   : 0.518(n22381)  0.512(n14100)  0.534(n5137)  0.517(n3144)
+  dnctx&atres     : 0.516(n1311)  0.544(n823)  0.489(n274)  0.439(n214)
+  dnctx&dnmom     : 0.501(n13616)  0.484(n8620)  0.523(n2962)  0.538(n2034)
+--- status=OK  wall=1.82s ---
+
+====================================================================================================
+CR-1 (info-first c)  [cur_info3.main()]
+====================================================================================================
+Forward 24h excursion (ATR): median UP vs DOWN, and down-minus-up. current-like partitioned. >0 = down bigger.
+  CUR-LIKE(all)   : n= 44813 up=4.35 down=4.74 down-up=+0.385
+    DISC<=2021    : n= 28741 up=4.34 down=4.77 down-up=+0.431
+    CONF 22-24    : n=  9618 up=4.25 down=4.69 down-up=+0.440
+    OOS 25-26     : n=  6454 up=4.57 down=4.67 down-up=+0.098
+  DIAG non-cur    : n=310774 up=4.86 down=4.74 down-up=-0.116
+--- status=OK  wall=0.47s ---
+
+====================================================================================================
+CR-1 (skepticism gate)  [cur_verify.main()]
+====================================================================================================
+SHORT_wide 4ATR rr3 H96 (current-like): N=1509 avgR=+0.074
+  per-year (current-like): {2011: (0.326, 66), 2012: (-0.01, 84), 2013: (0.247, 178), 2014: (-0.042, 106), 2015: (0.087, 154), 2016: (-0.115, 107), 2017: (-0.254, 18), 2018: (-0.885, 5), 2019: (-0.735, 33), 2020: (-0.008, 102), 2021: (0.041, 124), 2022: (0.269, 183), 2023: (-0.08, 57), 2024: (-0.228, 81), 2025: (-0.322, 73), 2026: (0.551, 138)}
+  best-1%-removed=+0.044  best-10%-removed=-0.247  maxWin=3.00 PF=1.13 WR=0.39
+
+  NO-FILTER (pure regime short) N=1893 avgR=+0.058 DISC(<=2021)=+0.065 CONF(22-24)=+0.010 OOS(25+)=+0.097
+  S5 same-day overlap: 35% (S5 is long/NY-breakout; this is wide-stop regime-short -> direction-opposite)
+--- status=OK  wall=3.73s ---
+
+====================================================================================================
+CR-1 (phase4b p4)  [cur_p4.main()]
+====================================================================================================
+
+--- status=SKIPPED_NO_ENTRY_POINT  wall=0.00s ---
+
+====================================================================================================
+CR-1 (phase4b p5)  [cur_p5.main()]
+====================================================================================================
+
+--- status=SKIPPED_NO_ENTRY_POINT  wall=0.00s ---
+
+====================================================================================================
+CR-1 (payoff-asym p6)  [cur_p6.main()]
+====================================================================================================
+
+--- status=SKIPPED_NO_ENTRY_POINT  wall=0.00s ---
+
+====================================================================================================
+CR-1 (payoff-asym p7)  [cur_p7.main()]
+====================================================================================================
+
+--- status=SKIPPED_NO_ENTRY_POINT  wall=0.00s ---
+
+====================================================================================================
+CR-1 (confirmed-downtrend p8)  [cur_p8.main()]
+====================================================================================================
+CONFIRMED_DOWNTREND short (close<20dMA & MA declining), wide 4ATR rr3 H96, STRESS.
+  regime coverage: 33.9% of bars | trades N=5293 avgR=-0.067 PF=0.89 WR=0.34
+  per-year: {2011: (0.098, 178), 2012: (0.004, 403), 2013: (0.117, 582), 2014: (-0.033, 418), 2015: (0.068, 460), 2016: (-0.096, 329), 2017: (-0.27, 288), 2018: (-0.052, 460), 2019: (-0.212, 320), 2020: (-0.143, 219), 2021: (-0.077, 403), 2022: (-0.05, 385), 2023: (-0.195, 309), 2024: (-0.509, 199), 2025: (-0.428, 77), 2026: (0.079, 263)}
+  best-1%-removed=-0.097  best-10%-removed=-0.402
+  episodes: <=2016 +0.031(n2370) | 2017-2022 -0.121(n2075) | 2023+ -0.205(n848)
+--- status=OK  wall=0.77s ---
+
+====================================================================================================
+CR-2 (lower-high)  [cur_cr2.main()]
+====================================================================================================
+FRONTIER CR-2: confirmed LOWER-HIGH in current-like -> forward path (info-first). down>up + low adverse-first = concentrated.
+  [current-like BASELINE]     : n=44813 up=4.35 dn=4.74 dn-up=+0.38 P(downFirst)=0.502
+  [LOWER-HIGH x current-like] : n= 1266 up=4.70 dn=5.07 dn-up=+0.37 P(downFirst)=0.515
+    LH DISC<=2021: n=  818 up=4.75 dn=5.08 dn-up=+0.33 P(downFirst)=0.510
+    LH CONF 22-24: n=  272 up=4.63 dn=4.88 dn-up=+0.25 P(downFirst)=0.509
+    LH OOS 25-26 : n=  176 up=4.58 dn=5.20 dn-up=+0.62 P(downFirst)=0.551
+  [LOWER-HIGH x NON-cur DIAG] : n= 8170 up=5.25 dn=5.20 dn-up=-0.05 P(downFirst)=0.493
+--- status=OK  wall=1.81s ---
+
+====================================================================================================
+CR-3 (vol-expansion-down info)  [cur_cr3.main()]
+====================================================================================================
+FRONTIER CR-3: VOL-EXPANSION-DOWN ignition in current-like -> forward path (info-first).
+  [current-like BASELINE]      : n=44813 up=4.35 dn=4.74 dn-up=+0.38 P(downFirst)=0.502
+  [VOLEXP-DN x current-like]   : n=  565 up=4.91 dn=5.41 dn-up=+0.50 P(downFirst)=0.497
+    VEDN DISC<=2021: n=  355 up=4.91 dn=5.30 dn-up=+0.38 P(downFirst)=0.499
+    VEDN CONF 22-24: n=  116 up=4.79 dn=5.93 dn-up=+1.14 P(downFirst)=0.517
+    VEDN OOS 25-26 : n=   94 up=4.88 dn=5.09 dn-up=+0.21 P(downFirst)=0.468
+  [VOLEXP-DN x NON-cur DIAG]   : n= 4043 up=5.46 dn=5.66 dn-up=+0.20 P(downFirst)=0.509
+--- status=OK  wall=1.83s ---
+
+====================================================================================================
+CR-3 (vol-expansion-down trade)  [cur_cr3_trade.main()]
+====================================================================================================
+CR-3 VOLEXP-DN wide-short (current-like): N=524 avgR=+0.132 PF=1.22 WR=0.39
+  per-year: {2011: (0.538, 19), 2012: (0.077, 29), 2013: (0.253, 54), 2014: (-0.303, 35), 2015: (0.405, 45), 2016: (-0.454, 35), 2017: (-0.113, 6), 2018: (-1.045, 3), 2019: (-0.371, 8), 2020: (0.236, 45), 2021: (0.108, 44), 2022: (0.191, 60), 2023: (0.395, 24), 2024: (-0.092, 25), 2025: (-0.324, 36), 2026: (0.638, 56)}
+  best-1%-removed=+0.105  best-10%-removed=-0.182
+  DISC<=2021 +0.082(n323) | CONF 22-24 +0.171(n109) | OOS 25+ +0.262(n92)
+  -> NOT a survivor (tail-dependent or partition-negative)
+--- status=OK  wall=0.65s ---
+
+====================================================================================================
+CR-4 (capitulation-bounce)  [cur_cr4.main()]
+====================================================================================================
+FRONTIER CR-4: CAPITULATION (fell>=2.5ATR/6bar) in current-like -> forward path (info-first, LONG bounce).
+  [current-like BASELINE]      : n=44813 up=4.35 dn=4.74 up-dn=-0.38 P(upFirst)=0.498
+  [CAPITULATION x current-like]: n= 2249 up=4.22 dn=4.43 up-dn=-0.21 P(upFirst)=0.493
+    CAP DISC<=2021: n= 1471 up=4.37 dn=4.53 up-dn=-0.16 P(upFirst)=0.500
+    CAP CONF 22-24: n=  481 up=4.09 dn=4.14 up-dn=-0.05 P(upFirst)=0.496
+    CAP OOS 25-26 : n=  297 up=3.57 dn=4.46 up-dn=-0.90 P(upFirst)=0.458
+  [CAPITULATION x NON-cur DIAG]: n=15650 up=4.51 dn=4.50 up-dn=+0.01 P(upFirst)=0.513
+--- status=OK  wall=1.81s ---
+
+====================================================================================================
+CR-5 (broken-support retest)  [cur_cr5.main()]
+====================================================================================================
+FRONTIER CR-5: broken-support RETEST-FAILURE (acceptance below) in current-like -> forward path (info-first).
+  down>up + LOW adverse-first (P(downFirst) high) = the bounce already resolved -> less tail-dependent.
+  [current-like BASELINE]         : n=44813 up=4.35 dn=4.74 dn-up=+0.38 P(downFirst)=0.502 frac>=1ATRdn=0.88
+  [RETEST-FAIL x current-like]    : n=  850 up=3.79 dn=4.63 dn-up=+0.85 P(downFirst)=0.494 frac>=1ATRdn=0.88
+    RF DISC<=2021: n=  530 up=3.66 dn=4.93 dn-up=+1.27 P(downFirst)=0.495 frac>=1ATRdn=0.89
+    RF CONF 22-24: n=  200 up=4.40 dn=4.05 dn-up=-0.35 P(downFirst)=0.470 frac>=1ATRdn=0.85
+    RF OOS 25-26 : n=  120 up=4.72 dn=4.62 dn-up=-0.10 P(downFirst)=0.525 frac>=1ATRdn=0.87
+  [RETEST-FAIL x NON-cur DIAG]    : n= 5913 up=4.57 dn=4.80 dn-up=+0.23 P(downFirst)=0.496 frac>=1ATRdn=0.87
+--- status=OK  wall=2.19s ---
+
+====================================================================================================
+CR-6 (session-inheritance info)  [cur_cr6.main()]
+====================================================================================================
+FRONTIER CR-6: intraday ordering in current-like. Looking for a window with P(downFirst) robustly > 0.5.
+  [current-like ALL hours]: n= 44813 P(downFirst)=0.502 dn-up=+0.38
+  hr 00-04: n=  7312 P(downFirst)=0.487 dn-up=+0.14  | D=0.47 C=0.54 O=0.50
+  hr 04-08: n=  7408 P(downFirst)=0.510 dn-up=+1.49  | D=0.52 C=0.52 O=0.48
+  hr 08-12: n=  7680 P(downFirst)=0.515 dn-up=+1.07  | D=0.52 C=0.49 O=0.53
+  hr 12-16: n=  7834 P(downFirst)=0.526 dn-up=+0.21  | D=0.51 C=0.55 O=0.58
+  hr 16-20: n=  8301 P(downFirst)=0.488 dn-up=-0.18  | D=0.48 C=0.53 O=0.46
+  hr 20-24: n=  6278 P(downFirst)=0.482 dn-up=-0.33  | D=0.48 C=0.50 O=0.48
+
+  ROBUST-ORDERING CHECK (P(downFirst)>0.5 in ALL of D/C/O):
+    hr 12-16: ROBUST down-first ordering (all partitions >0.50, overall 0.526)
+--- status=OK  wall=1.81s ---
+
+====================================================================================================
+CR-6 (session-inheritance trade)  [cur_cr6_trade.main()]
+====================================================================================================
+=== PRIMARY: entry 12:00 UTC ===
+CR-6 session-short @ 12:00 UTC (current-like, 1.5ATR sym bracket rr1): N=489 avgR=-0.0415 PF=0.92 WR=0.515
+  per-year: {2011: (-0.051, 20), 2012: (-0.005, 28), 2013: (0.057, 60), 2014: (-0.198, 33), 2015: (-0.097, 43), 2016: (-0.047, 30), 2017: (0.459, 5), 2018: (0.876, 1), 2019: (-0.094, 10), 2020: (-0.131, 39), 2021: (-0.021, 40), 2022: (-0.001, 64), 2023: (-0.304, 18), 2024: (-0.341, 28), 2025: (-0.261, 26), 2026: (0.343, 44)}
+  best-1%-removed=-0.0500  best-10%-removed=-0.1521
+  DISC<=2021 -0.0438(n309) | CONF 22-24 -0.1372(n110) | OOS 25+ +0.1187(n70)
+  -> NOT a survivor
+
+=== NEIGHBOR STABILITY (skepticism): same short at 13:00 and 14:00 UTC ===
+  @13:00 N=490 avgR=-0.0285 best10%rm=-0.1403 | D -0.093 C +0.111 O +0.036
+  @14:00 N=490 avgR=+0.0421 best10%rm=-0.0626 | D -0.037 C +0.139 O +0.240
+--- status=OK  wall=0.96s ---
+
+====================================================================================================
+CR-7 (episode-age hazard)  [cur_cr7.main()]
+====================================================================================================
+FRONTIER CR-7: current-like EPISODE AGE (days since onset, gap<= 2.0d bridged) -> forward ordering.
+  [current-like ALL ages]: n= 44813 P(downFirst)=0.502 dn-up=+0.38
+  age  0-  1d: n= 18199 P(downFirst)=0.504 dn-up=+0.42  | D=0.51 C=0.50 O=0.49
+  age  1-  3d: n= 16711 P(downFirst)=0.510 dn-up=+0.55  | D=0.50 C=0.55 O=0.50
+  age  3-  7d: n=  9903 P(downFirst)=0.485 dn-up=-0.04  | D=0.46 C=0.51 O=0.56
+  age  7- 21d: n=0(thin)  | D=thin C=thin O=thin
+  age 21- 60d: n=0(thin)  | D=thin C=thin O=thin
+  age 60-infd: n=0(thin)  | D=thin C=thin O=thin
+
+  Robust-ordering age windows (P(downFirst)>0.52 overall AND >0.50 in every partition) flagged above by eye.
+--- status=OK  wall=1.82s ---
+
+====================================================================================================
+CR-8 (macro-session x fresh)  [cur_cr8.main()]
+====================================================================================================
+FRONTIER CR-8: CONJUNCTION macro-session[12-16) x fresh-episode(age<1d) in current-like -> ordering.
+  [current-like baseline]: n= 44813 P(downFirst)=0.502 dn-up=+0.38
+  [session A only]       : n=  7834 P(downFirst)=0.526 dn-up=+0.21
+  [fresh B only]         : n= 18199 P(downFirst)=0.504 dn-up=+0.42
+  [CONJUNCTION A&B]      : n=  3216 P(downFirst)=0.544 dn-up=+0.23
+    DISC: n=  2096 P(downFirst)=0.545 dn-up=-0.05
+    CONF: n=   672 P(downFirst)=0.519 dn-up=+0.82
+    OOS: n=   448 P(downFirst)=0.580 dn-up=+0.47
+
+  PREREGISTERED BAR (>=0.56 overall AND >0.53 every partition): FAIL -> definitive bound, ordering too weak, NO tradeable test
+--- status=OK  wall=1.83s ---
+
+====================================================================================================
+CR-9 (range-migration coil)  [cur_cr9.main()]
+====================================================================================================
+=== PRIMARY: coil length L=24 (6h) ===
+CR-9 coil-breakdown-short L=24 (current-like, structural stop, measured-move rr=0.88): N=235 avgR=-0.0223 PF=0.95 WR=0.536
+  per-year: {2011: (-0.156, 13), 2012: (0.112, 13), 2013: (0.118, 23), 2014: (-0.254, 14), 2015: (0.01, 28), 2016: (-0.227, 16), 2017: (0.814, 3), 2018: (-1.044, 2), 2019: (-0.291, 5), 2020: (-0.087, 16), 2021: (0.07, 17), 2022: (0.265, 26), 2023: (-0.77, 7), 2024: (-0.478, 18), 2025: (-0.072, 12), 2026: (0.399, 22)}
+  best-1%-removed=-0.0300  best-10%-removed=-0.1192
+  DISC<=2021 -0.0404(n150) | CONF 22-24 -0.1393(n51) | OOS 25+ +0.2330(n34)
+  -> NOT a survivor
+
+=== NEIGHBOR STABILITY (skepticism): L=18 and L=32 ===
+  L=18 N=304 avgR=-0.0139 best10%rm=-0.1099 | D -0.013 C -0.099 O +0.097
+  L=32 N=188 avgR=-0.0604 best10%rm=-0.1603 | D -0.072 C +0.020 O -0.147
+--- status=OK  wall=1.27s ---
+
+====================================================================================================
+CR-10 (PDL/PDH reference)  [cur_cr10.main()]
+====================================================================================================
+FRONTIER CR-10: prior-day reference geometry in current-like -> forward ordering (ceiling ~0.54).
+  [current-like baseline] : P(downFirst)=0.515
+  [PDL break-accept x current-like] : n=   694 P(downFirst)=0.494 dn-up=-0.36
+    DISC: n=   466 P(downFirst)=0.486 dn-up=-0.77
+    CONF: n=139(thin)
+    OOS: n=89(thin)
+  [PDH reject x current-like] : n=   821 P(downFirst)=0.469 dn-up=-0.17
+    DISC: n=   556 P(downFirst)=0.487 dn-up=-0.09
+    CONF: n=   177 P(downFirst)=0.429 dn-up=+0.30
+    OOS: n=88(thin)
+--- status=OK  wall=1.89s ---
+
+====================================================================================================
+CR-11 (vol-expansion follow)  [cur_cr11.main()]
+====================================================================================================
+=== PRIMARY: coil L=24 ===
+CR-11 two-sided vol-expansion L=24 (current-like, mid stop, measured-move rr=1.63): N=462 avgR=-0.1732 PF=0.75 WR=0.338
+  long N=233 avgR=-0.3138 | short N=229 avgR=-0.0302
+  per-year: {2011: (-0.069, 19), 2012: (-0.113, 25), 2013: (-0.242, 51), 2014: (-0.216, 33), 2015: (-0.146, 50), 2016: (-0.265, 30), 2017: (-1.107, 6), 2018: (0.24, 4), 2019: (-0.689, 7), 2020: (-0.273, 34), 2021: (-0.381, 35), 2022: (0.093, 52), 2023: (-0.865, 13), 2024: (0.197, 28), 2025: (-0.091, 29), 2026: (-0.098, 46)}
+  best-1%-removed=-0.1889  best-10%-removed=-0.3699
+  DISC<=2021 -0.2448(n294) | CONF 22-24 -0.0097(n93) | OOS 25+ -0.0953(n75)
+  -> NOT a survivor
+
+=== NEIGHBOR STABILITY: L=18 and L=32 ===
+  L=18 N=619 avgR=-0.1241 best10%rm=-0.3105 | D -0.177 C +0.043 O -0.113 | L-0.204 S-0.044
+  L=32 N=373 avgR=-0.1217 best10%rm=-0.3157 | D -0.179 C +0.005 O -0.064 | L-0.161 S-0.078
+--- status=OK  wall=1.69s ---
+
+====================================================================================================
+CR-12 (coil-breakout fade)  [cur_cr12.main()]
+====================================================================================================
+=== PRIMARY: coil L=24 ===
+CR-12 FADE coil-breakout L=24 (current-like, stop=coil-height, target=mid, rr=0.61): N=462 avgR=+0.0274 PF=1.08 WR=0.660
+  long N=229 avgR=-0.0711 | short N=233 avgR=+0.1242
+  per-year: {2011: (-0.094, 19), 2012: (0.057, 25), 2013: (0.066, 51), 2014: (-0.031, 33), 2015: (-0.026, 50), 2016: (0.059, 30), 2017: (0.543, 6), 2018: (-0.244, 4), 2019: (0.342, 7), 2020: (0.062, 34), 2021: (0.207, 35), 2022: (-0.068, 52), 2023: (0.449, 13), 2024: (-0.102, 28), 2025: (-0.013, 29), 2026: (-0.063, 46)}
+  LEFT-TAIL: worst=-1.11 worst-10%-mean=-1.059 worst-10%-REMOVED=+0.1475 | best-10%-removed=-0.0362
+  DISC<=2021 +0.0561(n294) | CONF 22-24 -0.0063(n93) | OOS 25+ -0.0433(n75)
+  -> NOT a survivor
+
+=== NEIGHBOR STABILITY: L=18 and L=32 ===
+  L=18 N=619 avgR=-0.0105 worst10%rm=+0.1058 | D +0.013 C -0.120 O +0.032 | L-0.058 S+0.037
+  L=32 N=373 avgR=-0.0005 worst10%rm=+0.1151 | D +0.014 C -0.059 O +0.021 | L-0.060 S+0.052
+--- status=OK  wall=1.67s ---
+
+====================================================================================================
+CR-13 (cross-scale info)  [cur_cr13.main()]
+====================================================================================================
+FRONTIER CR-13: cross-scale H4xM15 in current-like -> M15 ordering (ceiling ~0.54).
+  [current-like baseline]        : P(downFirst)=0.515
+  (1) STEADY STATE:
+    H4 known-trend DOWN : n= 40713 P(downFirst)=0.501 dn-up=+0.31
+    H4 known-trend UP   : n=  4100 P(downFirst)=0.515 dn-up=+0.94
+  (2) FRESH H4 DOWN-TRANSITION (<=4 H4 bars):
+    fresh trans (all)   : n=  3017 P(downFirst)=0.520 dn-up=+0.46
+      DISC: n=  1913 P(downFirst)=0.500 dn-up=+0.54
+      CONF: n=   540 P(downFirst)=0.539 dn-up=-1.43
+      OOS: n=   564 P(downFirst)=0.569 dn-up=+2.19
+--- status=OK  wall=1.81s ---
+
+====================================================================================================
+CR-13 (cross-scale tradeable)  [cur_cr13_trade.main()]
+====================================================================================================
+=== PRIMARY: 1.5ATR stop, rr2 ===
+CR-13 H4-up-fade short (current-like, 1.5ATR stop, rr2.0): N=267 avgR=+0.0669 PF=1.10 WR=0.378
+  per-year: {2011: (-0.41, 14), 2012: (0.17, 21), 2013: (-0.07, 24), 2014: (0.9, 3), 2015: (-0.36, 4), 2016: (-0.28, 22), 2019: (-0.12, 3), 2020: (0.21, 63), 2021: (-0.07, 15), 2022: (0.11, 22), 2023: (-0.47, 5), 2024: (0.17, 5), 2025: (0.61, 22), 2026: (0.0, 44)}
+  best-1%-removed=+0.0524  best-10%-removed=-0.1395
+  DISC<=2021 +0.0198(n169) | CONF 22-24 +0.0304(n32) | OOS 25+ +0.2053(n66)
+  -> NOT a survivor
+
+=== NEIGHBOR STABILITY (skepticism): (stop,rr) in {(1.5,1),(2.0,2),(1.0,3)} ===
+  stop1.5 rr1.0: N=267 avgR=+0.0224 best10%rm=-0.0811 | D +0.020 C +0.001 O +0.039
+  stop2.0 rr2.0: N=267 avgR=+0.2151 best10%rm=+0.0241 | D +0.090 C +0.684 O +0.307
+  stop1.0 rr3.0: N=267 avgR=-0.0328 best10%rm=-0.3561 | D -0.071 C -0.267 O +0.179
+--- status=OK  wall=3.34s ---
+
+====================================================================================================
+CR-13 (skepticism gate)  [cur_cr13_verify.main()]
+====================================================================================================
+BASE (current-like & H4-up short): N=267 avgR=+0.0669 WR=0.378
+  (1) entry hour (2h buckets): {0: 17, 2: 17, 4: 25, 6: 15, 8: 21, 10: 16, 12: 30, 14: 17, 16: 38, 18: 23, 20: 22, 22: 26}
+      frac 13-14 UTC (NY open)=0.07  frac 12-16 UTC=0.18
+  (2) leave-one-year-out: worst-case avgR=+0.0182 (dropping 2025); all-years avgR=+0.0669
+      worst min-partition over all year-drops=-0.1523 (stays>0 => partition-robust to year removal)
+  (3) distinct H4-up episodes spanned (>4 H4-bar gap): 214 (effective independent clusters)
+  (4) cost_mult not supported by sb.simulate; STRESS already the adverse ratified scenario
+  (5) DIAGNOSTIC same short NOT-current-like: avgR=-0.1128 (N=11816) | H4-DOWN current-like (closed trend short): avgR=-0.0680 (N=2559)
+      -> edge should be strong only in current-like & H4-UP (divergence), weak elsewhere.
+--- status=OK  wall=2.40s ---
+
+====================================================================================================
+CR-13 (label-dependency probe)  [cur_cr13_robust.main()]
+====================================================================================================
+CRS-1 ROBUSTNESS PROBE: same entry (H4-up bounce -> M15 short) under a LABEL-FREE regime definition.
+  LABEL-FREE regime (no SIGNATURE_V1) : N=254 avgR=-0.1667 PF=0.78 WR=0.319 best10%rm=-0.3982 | D -0.209(n196) C +0.012(n36) O -0.085(n22) -> weaker
+  label-free AND current-like (overlap): N=10 avgR=-0.1668 PF=0.78 WR=0.300 best10%rm=-0.4061 | D -0.406(n9) C +nan(n0) O +1.987(n1) -> weaker
+  label-free but NOT current-like    : N=244 avgR=-0.1667 PF=0.78 WR=0.320 best10%rm=-0.3978 | D -0.199(n187) C +0.012(n36) O -0.184(n21) -> weaker
+  (HOLDS on the label-free set => CRS-1 not dependent on the SIGNATURE_V1 global-percentile label.)
+--- status=OK  wall=0.52s ---
+
+====================================================================================================
+CR-14 (divergence LONG)  [cur_cr14.main()]
+====================================================================================================
+=== PRIMARY: 1.5ATR stop, rr2 ===
+CR-14 H4-down-fade LONG (current-like, 1.5ATR stop, rr2.0): N=2559 avgR=-0.0889 PF=0.88 WR=0.332
+  per-year: {2011: (-0.35, 105), 2012: (-0.06, 135), 2013: (-0.12, 303), 2014: (-0.13, 197), 2015: (-0.21, 272), 2016: (-0.27, 169), 2017: (-0.53, 29), 2018: (-0.12, 12), 2019: (0.05, 53), 2020: (0.09, 148), 2021: (0.13, 221), 2022: (-0.16, 326), 2023: (-0.17, 102), 2024: (0.08, 145), 2025: (0.38, 132), 2026: (-0.18, 210)}
+  best-1%-removed=-0.1093  best-10%-removed=-0.3164
+  DISC<=2021 -0.1105(n1644) | CONF 22-24 -0.1021(n573) | OOS 25+ +0.0374(n342)
+  -> NOT a survivor
+
+=== NEIGHBORS (stop,rr) and entry-timing ===
+  stop1.5 rr1.0: N=2559 avgR=-0.0946 best10%rm=-0.2128 | D -0.096 C -0.117 O -0.047
+  stop2.0 rr2.0: N=2559 avgR=-0.0952 best10%rm=-0.3241 | D -0.127 C -0.062 O +0.002
+  stop1.0 rr3.0: N=2559 avgR=-0.1334 best10%rm=-0.4738 | D -0.160 C -0.146 O +0.017
+  dedup8: N=5096 avgR=-0.0882 best10%rm=-0.3162 | D -0.105 C -0.127 O +0.057
+  dedup24: N=1715 avgR=-0.1084 best10%rm=-0.3382 | D -0.112 C -0.163 O +0.002
+  dedup32: N=1301 avgR=-0.1074 best10%rm=-0.3375 | D -0.125 C -0.157 O +0.063
+--- status=OK  wall=5.14s ---
+
+====================================================================================================
+CR-15 (M15xH1 decomposition)  [cur_cr15.main()]
+====================================================================================================
+FRONTIER CR-15: M15xH1 cross-scale divergence short + redundancy decomposition vs CRS-1 (H4).
+  H1-up ALL (M15xH1 short)      : N=811 avgR=-0.0528 PF=0.93 WR=0.346 best10%rm=-0.2769 | D -0.121(n518) C +0.126(n182) O -0.029(n111) -> no
+  H1-up & H4-up  (=CRS-1 episode): N=84 avgR=-0.0336 PF=0.95 WR=0.345 best10%rm=-0.2448 | D +0.030(n54) C -0.274(n15) O -0.022(n15) -> no
+  H1-up & H4-DOWN (INDEPENDENT)  : N=732 avgR=-0.0714 PF=0.90 WR=0.342 best10%rm=-0.2971 | D -0.145(n466) C +0.130(n169) O -0.071(n97) -> no
+  (independent subset survivor+material => CRS-2 divergence family; else CRS-1 captures it singularly)
+--- status=OK  wall=1.90s ---
+
+full manifest output written to cur_replay_manifest_output.txt
