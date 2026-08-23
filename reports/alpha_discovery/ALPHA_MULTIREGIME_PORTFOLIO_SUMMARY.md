@@ -21,3 +21,16 @@ The only robust tradeable specialists (S5 breakout, CRS-1 high-vol-correction cr
 CROSS-SCALE mechanisms that SUPPLY their own direction, not from regime-conditioned bias. Router state: S5 (trend/breakout),
 CRS-1 (high-vol correction), NO_TRADE in the other 5 regimes. 2 near-misses (RS-2, LOWVOL_BEAR) both tail-dependent.
 Next: test whether a DIFFERENT cross-scale EVENT (acceptance/retest, per mandate §5 — not the CRS-1 bounce-fade) converts a near-miss.
+
+## Continued discovery — acceptance-event (§5) extension
+- LOWVOL_BEAR x M15 acceptance short: tail-dependence REMOVED (best-5%rm +0.033), DISC/CONF+, regime-specific — but OOS n=17 negative (regime rare 2025-26). Strongest near-miss.
+- BROAD BEAR (any-vol) x acceptance short: OOS+ (+0.151) but CONF -0.134 (mid/high-vol bear reverts in bull era) + tail-dependent. Fail.
+=> The §5 acceptance/retest lesson genuinely reduces tail-dependence (validated), but the clean-direction subset (low-vol bear) is OOS-thin and the broad bear is era-split. No new clean survivor.
+
+## FINAL multi-regime portfolio result
+6 single-axis regimes frozen (causal, pre-P&L) + cross-scale D1 confluence + §5 acceptance-event + broad-bear all tested.
+CLEAN SURVIVORS: S5 (trend/breakout, universal), CRS-1 (high-vol correction, in independent validation). NEAR-MISSES (documented,
+NOT promoted): RS-2 (range breakout+D1), LOWVOL_BEAR wide-short, LOWVOL_BEAR x acceptance (tail-dep removed, OOS-thin). ROUTER:
+S5 + CRS-1 active; NO_TRADE in RANGE / HIGHVOL_BULL / LOWVOL_BULL / MIDVOL_BULL / MIDVOL_BEAR (+ low-vol-bear as watch-list).
+ROBUST META: regime-gating alone does not beat R20 (era-trend dominance); tradeable specialists require STRUCTURAL/CROSS-SCALE
+direction-supplying mechanisms (S5, CRS-1). The acceptance-event is a validated tail-dependence-reducer for future candidates.
