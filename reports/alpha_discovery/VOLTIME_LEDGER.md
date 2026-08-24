@@ -37,3 +37,24 @@ Opening-range breakout (first-1h OR, both directions) at each session open, STRE
   winrate / net-negative after costs. Confirms R26 from the volatility angle: predictable magnitude, unmonetizable symmetric direction;
   S5's narrow NY-long config is the unique surviving direction-resolution. Next distinct angle: path-asymmetry / first-move fade after
   compression (does the first break reverse = liquidity grab?), the last non-breakout volatility-timing mechanism.
+
+## VOLTIME-5 (`voltime_fade.py`) — first-move-fade also negative; breaks CONTINUE modestly (not liquidity grabs)
+7,837 first-break events from mature compression. **INFO: P(revert-to-mid-first)=0.365** — breaks CONTINUE 63.5% (momentum R19), they
+are NOT liquidity grabs. Fade→mid net −0.146 (WR0.218, gross +0.094), fade→opposite net −0.116 (WR0.141, gross +0.124): small positive
+gross, costs kill it, decays OOS. Fading is WORSE than the breakout because breaks continue. Both sides explained.
+
+## VOLTIME FRONTIER — BOUNDED-NEGATIVE (5 families, mechanism understood)
+NON_DIRECTIONAL_VOLATILITY_TIMING_DISCOVERY_V1 comprehensively tested:
+1. VOLTIME-1 info: compression → expansion is REAL, strong, monotone, CROSS-ERA-STABLE (dur25+ 9.39ATR/P2R0.99). ✔ predictable.
+2. VOLTIME-2 breakout: WR 0.333 = EXACT null, gross +0.000 — whipsaw cancels the (symmetric) expansion.
+3. VOLTIME-3 direction-resolutions (displacement/acceptance/retest): all ~null gross, displacement WORSE (move already spent).
+4. VOLTIME-4 session opening-range breakouts (Asia/London/NY, RR2/3): all net-negative; no generic second session-timing edge.
+5. VOLTIME-5 fade/path-asymmetry: breaks continue (P revert 0.365), fade net-negative.
+**Conclusion:** XAUUSD volatility MAGNITUDE is predictable and cross-era-stable, but its DIRECTION is symmetric and its capture is
+whipsaw-limited — NOT independently monetizable in spot at any bracket/resolution/session tested. S5's narrow NY-long session-timing
+config is the unique surviving direction-resolution (the one liquidity/time event that supplies a path-surviving direction). This
+mirrors R26 exactly and completes the second frontier. Remaining sub-angles (vol-persistence/transition filters, failed-expansion
+timing, waiting-improves-quality/NO_TRADE) are FILTERS/refinements that logically cannot create a standalone edge given the proven core
+unmonetizability (they need a base direction-mechanism, and none survives) — runnable if CEO wants, but not expected to change the
+conclusion. **BOTH authorized frontiers now bounded-negative; S5 remains the sole validated edge. Governance gate: needs a genuinely
+new frontier concept or new data (CEO).**
