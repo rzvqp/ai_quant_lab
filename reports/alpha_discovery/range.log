@@ -1,3 +1,45 @@
 1787334969 H1 RANGE bars: DEV=4352 CALIB=1204 of DEV H1=10168
 1787335026 H1 RANGE bars: DEV=4352 CALIB=1204 of DEV H1=10168
 1787335124 H1 RANGE bars: DEV=4352 CALIB=1204 of DEV H1=10168
+1787400245 H1 RANGE bars: DEV=4352 CALIB=1204 of DEV H1=10168
+1787400245 RANGE CAMPAIGN START ids=18
+1787400245 RM-reject-L-mid [LONG mid m5=mom]: coarse(n=115,WR=0.47,avgR=-0.0174,b5=-0.1926)->FAIL | M5(n=115,WR=0.461,avgR=-0.0372,b5=-0.2082,rr=1.43)->FAIL | timing(matched) dAvg=-0.0221 dWR=-0.008 | medTP=48.1p medW=164.8p
+1787400245 RM-reject-L-opp [LONG opp m5=mom]: coarse(n=119,WR=0.303,avgR=0.0014,b5=-0.2628)->TAIL_FRAGILE | M5(n=119,WR=0.303,avgR=-0.0017,b5=-0.2534,rr=3.09)->FAIL | timing(matched) dAvg=-0.0213 dWR=-0.005 | medTP=107.1p medW=166.1p
+1787400245 RM-reject-S-mid [SHORT mid m5=mom]: coarse(n=115,WR=0.409,avgR=-0.0513,b5=-0.2219)->FAIL | M5(n=115,WR=0.409,avgR=-0.0444,b5=-0.2084,rr=1.44)->FAIL | timing(matched) dAvg=0.0024 dWR=-0.002 | medTP=56.4p medW=175.3p
+1787400245 RM-reject-S-opp [SHORT opp m5=mom]: coarse(n=117,WR=0.248,avgR=-0.1276,b5=-0.4033)->FAIL | M5(n=117,WR=0.256,avgR=-0.0883,b5=-0.3454,rr=3.16)->FAIL | timing(matched) dAvg=0.0617 dWR=0.013 | medTP=119.0p medW=176.6p
+1787400245 RM-sweep-L-mid [LONG mid m5=reclaim]: coarse(n=70,WR=0.329,avgR=0.0448,b5=-0.1844)->TAIL_FRAGILE | M5(n=47,WR=0.128,avgR=-0.4084,b5=-0.6548,rr=3.47)->FAIL | timing(matched) dAvg=0.1969 dWR=-0.007 | medTP=62.8p medW=162.0p
+1787400245 RM-sweep-L-opp [LONG opp m5=reclaim]: coarse(n=73,WR=0.192,avgR=-0.1508,b5=-0.4746)->FAIL | M5(n=47,WR=0.064,avgR=-0.5021,b5=-0.8109,rr=6.58)->FAIL | timing(matched) dAvg=0.4246 dWR=0.036 | medTP=123.6p medW=159.2p
+1787400245 RM-sweep-S-mid [SHORT mid m5=reclaim]: coarse(n=71,WR=0.282,avgR=0.0718,b5=-0.3394)->TAIL_FRAGILE | M5(n=55,WR=0.127,avgR=-0.0196,b5=-0.3836,rr=2.97)->FAIL | timing(matched) dAvg=0.3834 dWR=0.018 | medTP=62.4p medW=172.0p
+1787400245 RM-sweep-S-opp [SHORT opp m5=reclaim]: coarse(n=71,WR=0.225,avgR=0.5225,b5=-0.2166)->TAIL_FRAGILE | M5(n=55,WR=0.109,avgR=0.4432,b5=-0.2056,rr=5.81)->TAIL_FRAGILE | timing(matched) dAvg=0.3687 dWR=0.016 | medTP=128.0p medW=171.4p
+1787400245 RM-failbreak-L-mid [LONG mid m5=mom]: coarse(n=119,WR=0.37,avgR=0.0648,b5=-0.1558)->TAIL_FRAGILE | M5(n=119,WR=0.361,avgR=0.0249,b5=-0.1895,rr=2.85)->TAIL_FRAGILE | timing(matched) dAvg=-0.022 dWR=-0.007 | medTP=66.0p medW=188.6p
+1787400245 RM-failbreak-L-opp [LONG opp m5=mom]: coarse(n=126,WR=0.254,avgR=0.1568,b5=-0.2617)->TAIL_FRAGILE | M5(n=126,WR=0.254,avgR=0.1236,b5=-0.2882,rr=5.54)->TAIL_FRAGILE | timing(matched) dAvg=-0.0458 dWR=-0.002 | medTP=136.6p medW=187.4p
+1787400246 RM-failbreak-S-mid [SHORT mid m5=mom]: coarse(n=127,WR=0.331,avgR=-0.1649,b5=-0.4271)->FAIL | M5(n=127,WR=0.339,avgR=-0.1822,b5=-0.4339,rr=2.84)->FAIL | timing(matched) dAvg=-0.0552 dWR=-0.005 | medTP=65.2p medW=195.0p
+1787400246 RM-failbreak-S-opp [SHORT opp m5=mom]: coarse(n=130,WR=0.238,avgR=-0.087,b5=-0.4953)->FAIL | M5(n=131,WR=0.252,avgR=-0.0881,b5=-0.4862,rr=6.06)->FAIL | timing(matched) dAvg=-0.0421 dWR=0.004 | medTP=147.7p medW=197.7p
+1787400246 RM-exhaust-L-mid [LONG mid m5=mom]: coarse(n=101,WR=0.465,avgR=0.0628,b5=-0.183)->TAIL_FRAGILE | M5(n=101,WR=0.465,avgR=0.0449,b5=-0.1803,rr=1.63)->TAIL_FRAGILE | timing(matched) dAvg=-0.0341 dWR=-0.004 | medTP=52.3p medW=162.9p
+1787400246 RM-exhaust-L-opp [LONG opp m5=mom]: coarse(n=105,WR=0.333,avgR=0.1133,b5=-0.1649)->TAIL_FRAGILE | M5(n=105,WR=0.333,avgR=0.0999,b5=-0.1679,rr=3.24)->TAIL_FRAGILE | timing(matched) dAvg=-0.0485 dWR=-0.01 | medTP=111.4p medW=162.9p
+1787400246 RM-exhaust-S-mid [SHORT mid m5=mom]: coarse(n=99,WR=0.444,avgR=0.1155,b5=-0.0626)->TAIL_FRAGILE | M5(n=99,WR=0.455,avgR=0.109,b5=-0.0588,rr=1.58)->TAIL_FRAGILE | timing(matched) dAvg=-0.0128 dWR=0.012 | medTP=58.2p medW=175.3p
+1787400246 RM-exhaust-S-opp [SHORT opp m5=mom]: coarse(n=102,WR=0.245,avgR=-0.072,b5=-0.3686)->FAIL | M5(n=102,WR=0.255,avgR=-0.0557,b5=-0.3524,rr=3.32)->FAIL | timing(matched) dAvg=0.0273 dWR=0.015 | medTP=120.3p medW=171.7p
+1787400246 RM-reject-L-mid-mbos [LONG mid m5=mbos]: coarse(n=115,WR=0.47,avgR=-0.0174,b5=-0.1926)->FAIL | M5(n=114,WR=0.482,avgR=0.0899,b5=-0.1285,rr=1.43)->TAIL_FRAGILE | timing(matched) dAvg=0.0852 dWR=0.005 | medTP=48.1p medW=164.8p
+1787400246 RM-reject-S-mid-mbos [SHORT mid m5=mbos]: coarse(n=115,WR=0.409,avgR=-0.0513,b5=-0.2219)->FAIL | M5(n=115,WR=0.391,avgR=-0.0213,b5=-0.2085,rr=1.44)->FAIL | timing(matched) dAvg=0.0973 dWR=-0.005 | medTP=56.4p medW=175.3p
+1787400246 RANGE_COMPLETE ids=18 coarse_survivors=[] m5_survivors=[]
+1787400265 H1 RANGE bars: DEV=4352 CALIB=1204 of DEV H1=10168
+1787400265 RANGE CAMPAIGN START ids=18
+1787400265 RM-reject-L-mid [LONG mid m5=mom]: coarse(n=115,WR=0.47,avgR=-0.0174,b5=-0.1926)->FAIL | M5(n=115,WR=0.461,avgR=-0.0372,b5=-0.2082,rr=1.43)->FAIL | timing(matched) dAvg=-0.0221 dWR=-0.008 | medTP=48.1p medW=164.8p
+1787400265 RM-reject-L-opp [LONG opp m5=mom]: coarse(n=119,WR=0.303,avgR=0.0014,b5=-0.2628)->TAIL_FRAGILE | M5(n=119,WR=0.303,avgR=-0.0017,b5=-0.2534,rr=3.09)->FAIL | timing(matched) dAvg=-0.0213 dWR=-0.005 | medTP=107.1p medW=166.1p
+1787400265 RM-reject-S-mid [SHORT mid m5=mom]: coarse(n=115,WR=0.409,avgR=-0.0513,b5=-0.2219)->FAIL | M5(n=115,WR=0.409,avgR=-0.0444,b5=-0.2084,rr=1.44)->FAIL | timing(matched) dAvg=0.0024 dWR=-0.002 | medTP=56.4p medW=175.3p
+1787400265 RM-reject-S-opp [SHORT opp m5=mom]: coarse(n=117,WR=0.248,avgR=-0.1276,b5=-0.4033)->FAIL | M5(n=117,WR=0.256,avgR=-0.0883,b5=-0.3454,rr=3.16)->FAIL | timing(matched) dAvg=0.0617 dWR=0.013 | medTP=119.0p medW=176.6p
+1787400265 RM-sweep-L-mid [LONG mid m5=reclaim]: coarse(n=70,WR=0.329,avgR=0.0448,b5=-0.1844)->TAIL_FRAGILE | M5(n=47,WR=0.128,avgR=-0.4084,b5=-0.6548,rr=3.47)->FAIL | timing(matched) dAvg=0.1969 dWR=-0.007 | medTP=62.8p medW=162.0p
+1787400265 RM-sweep-L-opp [LONG opp m5=reclaim]: coarse(n=73,WR=0.192,avgR=-0.1508,b5=-0.4746)->FAIL | M5(n=47,WR=0.064,avgR=-0.5021,b5=-0.8109,rr=6.58)->FAIL | timing(matched) dAvg=0.4246 dWR=0.036 | medTP=123.6p medW=159.2p
+1787400265 RM-sweep-S-mid [SHORT mid m5=reclaim]: coarse(n=71,WR=0.282,avgR=0.0718,b5=-0.3394)->TAIL_FRAGILE | M5(n=55,WR=0.127,avgR=-0.0196,b5=-0.3836,rr=2.97)->FAIL | timing(matched) dAvg=0.3834 dWR=0.018 | medTP=62.4p medW=172.0p
+1787400265 RM-sweep-S-opp [SHORT opp m5=reclaim]: coarse(n=71,WR=0.225,avgR=0.5225,b5=-0.2166)->TAIL_FRAGILE | M5(n=55,WR=0.109,avgR=0.4432,b5=-0.2056,rr=5.81)->TAIL_FRAGILE | timing(matched) dAvg=0.3687 dWR=0.016 | medTP=128.0p medW=171.4p
+1787400265 RM-failbreak-L-mid [LONG mid m5=mom]: coarse(n=119,WR=0.37,avgR=0.0648,b5=-0.1558)->TAIL_FRAGILE | M5(n=119,WR=0.361,avgR=0.0249,b5=-0.1895,rr=2.85)->TAIL_FRAGILE | timing(matched) dAvg=-0.022 dWR=-0.007 | medTP=66.0p medW=188.6p
+1787400265 RM-failbreak-L-opp [LONG opp m5=mom]: coarse(n=126,WR=0.254,avgR=0.1568,b5=-0.2617)->TAIL_FRAGILE | M5(n=126,WR=0.254,avgR=0.1236,b5=-0.2882,rr=5.54)->TAIL_FRAGILE | timing(matched) dAvg=-0.0458 dWR=-0.002 | medTP=136.6p medW=187.4p
+1787400265 RM-failbreak-S-mid [SHORT mid m5=mom]: coarse(n=127,WR=0.331,avgR=-0.1649,b5=-0.4271)->FAIL | M5(n=127,WR=0.339,avgR=-0.1822,b5=-0.4339,rr=2.84)->FAIL | timing(matched) dAvg=-0.0552 dWR=-0.005 | medTP=65.2p medW=195.0p
+1787400265 RM-failbreak-S-opp [SHORT opp m5=mom]: coarse(n=130,WR=0.238,avgR=-0.087,b5=-0.4953)->FAIL | M5(n=131,WR=0.252,avgR=-0.0881,b5=-0.4862,rr=6.06)->FAIL | timing(matched) dAvg=-0.0421 dWR=0.004 | medTP=147.7p medW=197.7p
+1787400265 RM-exhaust-L-mid [LONG mid m5=mom]: coarse(n=101,WR=0.465,avgR=0.0628,b5=-0.183)->TAIL_FRAGILE | M5(n=101,WR=0.465,avgR=0.0449,b5=-0.1803,rr=1.63)->TAIL_FRAGILE | timing(matched) dAvg=-0.0341 dWR=-0.004 | medTP=52.3p medW=162.9p
+1787400265 RM-exhaust-L-opp [LONG opp m5=mom]: coarse(n=105,WR=0.333,avgR=0.1133,b5=-0.1649)->TAIL_FRAGILE | M5(n=105,WR=0.333,avgR=0.0999,b5=-0.1679,rr=3.24)->TAIL_FRAGILE | timing(matched) dAvg=-0.0485 dWR=-0.01 | medTP=111.4p medW=162.9p
+1787400265 RM-exhaust-S-mid [SHORT mid m5=mom]: coarse(n=99,WR=0.444,avgR=0.1155,b5=-0.0626)->TAIL_FRAGILE | M5(n=99,WR=0.455,avgR=0.109,b5=-0.0588,rr=1.58)->TAIL_FRAGILE | timing(matched) dAvg=-0.0128 dWR=0.012 | medTP=58.2p medW=175.3p
+1787400266 RM-exhaust-S-opp [SHORT opp m5=mom]: coarse(n=102,WR=0.245,avgR=-0.072,b5=-0.3686)->FAIL | M5(n=102,WR=0.255,avgR=-0.0557,b5=-0.3524,rr=3.32)->FAIL | timing(matched) dAvg=0.0273 dWR=0.015 | medTP=120.3p medW=171.7p
+1787400266 RM-reject-L-mid-mbos [LONG mid m5=mbos]: coarse(n=115,WR=0.47,avgR=-0.0174,b5=-0.1926)->FAIL | M5(n=114,WR=0.482,avgR=0.0899,b5=-0.1285,rr=1.43)->TAIL_FRAGILE | timing(matched) dAvg=0.0852 dWR=0.005 | medTP=48.1p medW=164.8p
+1787400266 RM-reject-S-mid-mbos [SHORT mid m5=mbos]: coarse(n=115,WR=0.409,avgR=-0.0513,b5=-0.2219)->FAIL | M5(n=115,WR=0.391,avgR=-0.0213,b5=-0.2085,rr=1.44)->FAIL | timing(matched) dAvg=0.0973 dWR=-0.005 | medTP=56.4p medW=175.3p
+1787400266 RANGE_COMPLETE ids=18 coarse_survivors=[] m5_survivors=[]

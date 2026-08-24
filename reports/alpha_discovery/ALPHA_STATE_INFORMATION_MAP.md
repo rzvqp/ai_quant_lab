@@ -37,3 +37,17 @@ Screened 10 causal path-history states (realized-efficiency, pullback-depth, MFE
 - **Within-DEV STABLE signals found (all the "clean recent advance -> exhaustion" family):** clean_up LONG -0.156 / SHORT +0.035; shallowPB_up LONG -0.043 / **SHORT +0.039**; lowMAE_up LONG -0.046; stale_up LONG -0.107; cleanDn_lowMFE LONG -0.034. All same-sign across 2021/2022/2023 AND DISC/CONF -> passed the within-DEV gate. **The first stable POSITIVE tradeable lift (SHORT +0.039).**
 - **CROSS-POPULATION (b0/b1) — DECISIVE KILL (`state_pathhist_xpop.py`):** the SHORT exhaustion lift INVERTS: b0 clean_up -0.009 / shallowPB_up -0.026; b1 clean_up -0.044 / shallowPB_up -0.052 (all negative vs +0.035/+0.039 on DEV). LONG side also inverts (b1 clean_up LONG +0.034).
 **META-FINDING (the real map result):** causal price-state->path relationships on XAUUSD are **REGIME-CONDITIONAL, not stationary**. A signal can pass the full within-period gate (per-year + DISC/CONF) yet INVERT on a different macro-regime (b0/b1). Within-2021-2023 per-year splits share the same regime -> within-period stability is necessary but NOT sufficient; **cross-population is the decisive generalization test.** This is WHY general price-only alpha is elusive and why the only robust edges (frozen COMP-CONT-L=2021-23-specific LONG, H4-bo-raw-S=2011-18-specific SHORT) are themselves regime-specific. This is the honest information map (§26), not a list of failed patterns.
+
+## MULTI-TF family (HTF state -> H1 path) + SESSION family — cross-pop as first-class gate
+- **Multi-TF (`state_multitf.py`):** H4/D1 trend/efficiency/extension conditioning H1 P(+100/-70). NO cross-stable edge. Even trend-beta conditioning is weak: H4_up->H1 LONG +0.028 DEV but ~0 on b0 (+0.000). Only dev-stable = H4_down->H1 LONG-avoidance (-0.036, ~0 on b0). HTF-state conditioning gives no cross-population-stable H1 path lift.
+- **Session (`state_session.py`):** London->SHORT dev-stable +0.036 (all years, DISC+/CONF+) AND same-sign on b0/b1 (+0.002/+0.010) — but the cross-pop magnitude is NEGLIGIBLE (~0-0.01, untradeable after cost). NY->LONG similar (+0.024 DEV, +0.010/+0.012). A faint, genuinely-stable session microstructure, economically immaterial.
+
+## COMPLETE MAP SUMMARY (5 families)
+| family | best signal | within-DEV | cross-pop b0/b1 | verdict |
+|---|---|---|---|---|
+| static state | trend-extension SHORT | +0.081 (top decile) | inverts (~0) | regime-transient, KILLED |
+| transition | up-eff-drop LONG-avoidance | -0.069 stable | (filter) | filter only, not a trade |
+| path-history | clean-advance exhaustion SHORT | +0.039 (all yrs+DISC/CONF) | **INVERTS** (-0.01..-0.05) | regime-conditional, KILLED |
+| multi-TF | H4-trend -> H1 | +0.028 | ~0 on b0 | trend-beta, weak+redundant |
+| session | London-SHORT / NY-LONG | +0.036 / +0.024 | same-sign but +0.002..+0.012 | stable but IMMATERIAL |
+**No family yields a MATERIAL, cross-population-stable, non-redundant, positive tradeable state->path edge.** Material DEV signals are regime-conditional (invert cross-pop); cross-pop-stable signals are economically negligible (faint session bias) or redundant (trend-beta). The stationary price-only information = weak session microstructure + trend-drive presence (already in frozen COMP-CONT-L).

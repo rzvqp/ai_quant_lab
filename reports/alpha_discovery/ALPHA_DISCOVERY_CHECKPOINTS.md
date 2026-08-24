@@ -173,3 +173,434 @@ Rolling research checkpoints for `ALPHA-XAUUSD-CONTINUOUS-RESEARCH-LOOP-001`. A 
 **META-FINDING:** causal price-state->path relationships on XAUUSD are **REGIME-CONDITIONAL, not stationary**. A signal can pass the full within-period gate (per-year + DISC/CONF) yet INVERT cross-regime. Within-period per-year splits share the macro-regime -> within-period stability is necessary but NOT sufficient; **cross-population is the decisive generalization test.** Explains why general price-only alpha is elusive and why the frozen survivors are regime-specific. This is the honest map (§26).
 **NEXT:** multi-TF state family (H4/D1 causal state conditioning H1 path) + session-conditioned states — with cross-population as a first-class gate from the outset. After that the causal-state information space is substantially mapped; a bounded, evidence-backed conclusion (regime-conditional non-stationarity) can be presented to CEO.
 **Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #15 — 2026-08-22 — state-path map COMPLETE (5 families); bounded regime-conditional conclusion -> CEO decision (auto-loop paused, program ACTIVE)
+**Completed:** multi-TF (HTF state -> H1 path: no cross-stable edge; trend-beta ~0 on b0) + session-conditioned (London-SHORT/NY-LONG stable but IMMATERIAL, +0.002..0.012 cross-pop). Full state-path map now spans 5 families (static / transition / path-history / multi-TF / session).
+**Central finding:** causal price-only state->path relationships on XAUUSD are REGIME-CONDITIONAL, not stationary. Material DEV lifts (trend-extension, clean-advance exhaustion) INVERT cross-population; the only cross-pop-stable effects are a faint untradeable session microstructure + trend-drive presence (redundant with frozen COMP-CONT-L). No material cross-population-stable non-redundant positive price-only state->path edge exists in the mapped space.
+**Methodological result:** within-period stability is necessary but NOT sufficient (per-year splits share the macro-regime); CROSS-POPULATION is the decisive generalization gate. Now standard for all future candidates.
+**Deliverable:** `ALPHA_STATE_PATH_BOUNDED_CONCLUSION.md` (whole map + method result + CEO options). Per §26 this is a BOUNDED conclusion with the full information map attached — NOT PRICE_ONLY_ALPHA_IMPOSSIBLE.
+**CEO decision requested:** (1) re-authorize EXOGENOUS with provisioned data (most likely source of a stationary uncorrelated signal; blocked only on data); (2) accept the regime-specific portfolio (S5 + COMP-CONT-L-rr2 + H4-bo-raw-S) with a regime-detection overlay (separate mandate); (3) authorize a genuinely different ratified price-only population. Loop resumes on any.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused at decision point).
+
+---
+
+## CHECKPOINT #16 — 2026-08-22 — NEW mandate: regime-conditional method; causal regime taxonomy FROZEN + reproducible + baselines
+**Authorization:** CEO accepted the regime-conditional finding; issued `ALPHA-XAUUSD-REGIME-CONDITIONAL-STATE-PATH-DISCOVERY-001`. Generalization gate CHANGED: same-regime cross-era (not same-sign across different regimes). DXY/exogenous stays PAUSED (ignore acquisition_staging/dxy). Loop resumed.
+**Foundation (Stage 1) done:** built + FROZE a causal price-only regime taxonomy (`state_regime.py`): UP/DOWN/QUIET/CHOP/TRANSITION from eff/trend/vr (all causal; QUIET is research-local, NOT canonical RANGE; no MI retuning). **Reproducibility EXCELLENT** — every regime occurs 8-34% in EVERY era (2021/2022/2023 + b0/b1), near-identical frequencies; DOWN recurs in all eras (b0 11.9%/b1 11.6%) enabling same-regime cross-era SHORT validation. Regime-conditional path baselines established (`ALPHA_REGIME_PATH_BASELINES.md`): regime BASE rates are stable across eras (DOWN-SHORT ~0.40-0.41 both eras; QUIET-SHORT ~0.40-0.41) — unlike the raw state->path lifts that inverted.
+**Status corrections recorded:** H4-bo-raw-S = INDEPENDENT_VALIDATION_BLOCKED (non-causal legacy D1 filter) -> reference/overlap only. Clean frozen = S5 (validated) + COMP-CONT-L-rr2 (pending).
+**Artifacts:** ALPHA_CAUSAL_REGIME_MAP, ALPHA_REGIME_PATH_BASELINES, ALPHA_REGIME_STATE_INFORMATION_MAP, ALPHA_REGIME_TRANSITION_MAP, ALPHA_REGIME_STRATEGY_REGISTRY.
+**NEXT:** within-regime state discovery — priority DOWN & QUIET regimes (SHORT), where cross-era base rates are most consistent: find causal states lifting SHORT materially above the same-regime base, validate DEV vs b0/b1 same-regime. Then regime transitions (§27). LONG/SHORT separate; material lift + sample honesty + DISC/CONF.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #17 — 2026-08-22 — within-regime SHORT discovery (DOWN, QUIET): no material same-regime-stable edge
+**Screen:** 8 causal states x 2 priority regimes (DOWN, QUIET) SHORT, DEV lift over same-regime base + within-regime DISC/CONF + per-year + SAME-REGIME cross-era b0/b1 (`state_regime_discover.py`).
+**Result:** strongest = DOWN + falling-vol -> SHORT +0.097 DEV (all 3 years positive, DISC +0.11/CONF +0.08 — flawless within-period) BUT same-regime cross-era FAILS (b0 -0.029, b1 -0.001). QUIET fresh-down-impulse same-sign across all eras (+0.032/+0.042/+0.013) but IMMATERIAL (<0.04) + 2021-inconsistent. No material same-regime-stable SHORT candidate.
+**Deepened meta-finding:** state->path lifts are era-dependent EVEN WITHIN a fixed causal regime. Same-regime cross-era is a strict, genuine generalization gate; within-period stability (even flawless across all years + DISC/CONF) remains insufficient.
+**NEXT (do not stop, §30):** UP/CHOP regimes LONG + regime-TRANSITION family (§27, boundary A->B — may hold more path info than persistent states). Same-regime / same-transition cross-era gate throughout.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #18 — 2026-08-22 — regime + transition sweep COMPLETE; only stable edge = the frozen COMP-CONT-L (re-discovered) -> CEO decision (auto-loop paused, program ACTIVE)
+**Completed:** UP/CHOP LONG within-regime + 8-transition family (§27). **Only same-transition-cross-era-STABLE positive = QUIET->UP LONG (+0.099 DEV/+0.048 b0b1)** — but tiny N (40/72, §16) AND REDUNDANT with COMP-CONT-L (compression->uptrend thesis). Every other regime/transition signal is regime-transient (fails same-regime cross-era), a stable avoidance filter, immaterial, or insufficient-N.
+**Central conclusion (bounded, §26):** NO new non-redundant material same-regime(-transition)-stable price-only edge. The one stable positive is the already-frozen COMP-CONT-L edge -> the regime-conditional method INDEPENDENTLY CONFIRMS COMP-CONT-L as a genuine QUIET->UP regime-transition LONG. Deeper result: price-only state->path is era-dependent EVEN WITHIN a fixed causal regime (a regime label is insufficient for portability). NOT price-only-impossible.
+**Deliverable:** `ALPHA_REGIME_CONDITIONAL_BOUNDED_CONCLUSION.md` (method + findings + CEO options).
+**CEO decision requested:** (1) send COMP-CONT-L-rr2 to independent validation (now doubly-confirmed); (2) re-authorize exogenous with provisioned data (DXY staging appeared); (3) accept regime-specific portfolio + regime-router overlay. Loop resumes on any.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (auto-loop paused at decision point).
+
+---
+
+## CHECKPOINT #19 — 2026-08-22 — NEW M15 mandate; Stage-1 M15 path baselines (engine + foundation)
+**Authorization:** CEO issued `ALPHA-XAUUSD-M15-CAUSAL-STATE-PATH-DISCOVERY-001` — apply the information-first state->path method to M15 (H1 map bounded; M15 only ever tested via named patterns). DXY stays PAUSED. Loop resumed.
+**Stage 1 done:** built causal M15 first-passage engine (`state_path_m15.py`, sorted-threshold pointer) + unconditional path baselines (`ALPHA_M15_PATH_BASELINES.md`) on 2021-2023 gated M15 (N=40,649) + historical b0/b1 M15 (52k each; governance-proven, 2024+ excluded). Findings: M15 LONG/SHORT base rates near-SYMMETRIC (unlike H1 long-bias); natural excursion MFE/MAE med ~44-52p (b0/2021-23), ~31p (b1) -> structural M15 stop ~50-70p, NOT tight (§19); base rates strongly era-dependent (b1 much quieter) -> same-regime-conditional baselines required.
+**NEXT:** M15 univariate state info map (efficiency/displacement/vol/compression/pullback/path-cleanliness/MFE-MAE-asymmetry) for P(+70/-50) & P(+100/-70) lift over regime-conditional base + same-regime cross-era + event-dedup; then M15 TRANSITIONS (§8 priority: low-vol->expansion, inefficient->directional, etc.); H1/H4 causal context conditioning; session-conditioned (vs session base). LONG/SHORT separate. No named patterns, no tight-stop forcing.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #20 — 2026-08-22 — M15 state info map: FIRST cross-era-stable signal (high-vol -> M15 SHORT bias)
+**Screen:** 16 causal M15 states x 2 sides -> P(+70/-50) 8h lift, event-deduped (raw vs effective-N), per-year + DISC/CONF + cross-era b0/b1 (`state_m15_discover.py`).
+**BREAKTHROUGH:** the FIRST cross-era-stable signals in the entire H1+M15 program — all VOLATILITY-based. The directional one: **high/rising M15 volatility (ATR>1.3x norm, vc>1.2) -> M15 SHORT bias** (P(+70/-50) lift +0.058/+0.050, same-sign across 2021/2022/2023 + b0 + b1, DISC+CONF; vol_hi does NOT lift LONG -> genuine directional asymmetry, consistent with gold down-moves being faster in high-vol/risk-off). Other vol signals (vol_lo/vc_fall/compress) are symmetric quiet->avoidance filters. Registered ST-M15-HIGHVOL-SHORT = STABLE_INFO_TRADEABILITY_TBD.
+**Honest caveat:** lift is stable but MODEST — high-vol SHORT P(+70/-50)=0.32 < 0.417 breakeven for that label. Stable INFORMATION; tradeability not yet established.
+**NEXT:** characterize high/rising-vol SHORT expectancy across RR/targets (find net-positive geometry after STRESS cost, §18-19), effective-N/opportunities, same-regime recurrence, overlap vs frozen; sharpen via M15 transitions (low-vol->expansion) + H1/H4 context (does high-vol-short concentrate in a parent regime?) + session. If no RR is net-positive -> STABLE_INFO_NOT_TRADEABLE + continue. Do NOT force geometry.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #21 — 2026-08-22 — ST-M15-HIGHVOL-SHORT: univariate NOT tradeable; DOWN-parent-regime LEAD (+0.102 DEV)
+**Characterization (`state_m15_highvol.py`, STRESS, event-deduped):** fixed brackets + structural ATR stops on DEV+b0+b1.
+**Univariate = STABLE_INFO_NOT_TRADEABLE:** no geometry net-positive cross-era (DEV all neg, b1 all neg, b0 marginal +0.03). The stable +0.058 lift is sub-breakeven (P 0.32).
+**LEAD:** high-vol-short CONDITIONED on H1 DOWN parent regime = +0.102 avgR DEV (WR .48, N=239, best10 -0.048 slightly tail-carried); UP/QUIET/CHOP/TRANSITION parents negative; raw down-disp interaction doesn't help. Economically high-vol confirms downtrend. `ST-M15-HIGHVOL-SHORT-DOWNPARENT` = LEAD_CROSS_ERA_TBD.
+**NEXT:** DECISIVE same-regime cross-era check — DOWN-parent high-vol-short on b0/b1 (b0 has 2013 bear DOWN; b1 has little DOWN -> possibly INSUFFICIENT_SAME_REGIME_EVIDENCE). If material + cross-era-stable + non-redundant + sample-honest -> Stage-C freeze (REGIME-SPECIFIC SHORT candidate); else record honestly and continue to M15 transitions + other M15 states. Guarded: H1 DOWN shorts were era-unstable.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #22 — 2026-08-22 — DOWN-parent high-vol-short FAILS same-regime cross-era (b1 contradicts) -> not frozen
+**Decisive check (`state_m15_downparent.py`):** DOWN-parent high-vol M15 short, STRESS, event-deduped.
+- DEV (N=293): positive, best 2.0ATR rr1.0 avgR +0.112 WR .56 best10 +0.015 (14.7 tpm). b0 (N=469): sign-confirmed (+0.03..+0.13) but best10<0. **b1 (N=392): CONTRADICTS (all neg -0.11..-0.15).**
+**Verdict: REGIME_SPECIFIC_INFO_NOT_CROSS_ERA_STABLE** — fails same-regime cross-era (§9). High-vol-short works when DOWN = genuine downtrend (DEV/b0 2013 bear) but fails when DOWN = correction in uptrend (b1). Consistent with the program-wide finding that price-only shorts are genuine-downtrend-specific. NOT frozen (b1 contradicts + b0 tail-carried). A sharper causal genuine-downtrend regime def MIGHT rescue it but would be P&L-fitting if defined post-hoc (§28) -> not pursued.
+**NEXT (do not stop, §29):** M15 TRANSITIONS (§8: low-vol->expansion, inefficient->directional, extension->loss-of-continuation, pullback->renewed-efficiency) + deeper M15 states (displacement/pullback/path-cleanliness) + session-conditioned, all event-deduped + same-era cross-population gate.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #23 — 2026-08-22 — M15 transition family: no positive tradeable transition (only highvol->stab LONG-avoidance)
+**Screen (`state_m15_transitions.py`):** 10 causal M15 transitions A(t-8)->B(t) -> P(+70/-50) lift, event-deduped, per-year + DISC/CONF + cross-era b0/b1.
+**Result:** only CROSS_STABLE = highvol->stabilization -> LONG -0.068 (avoidance filter, not a trade). Every apparent positive transition fails cross-era (extUp->pullback S +0.039 but b0/b1 invert) or immaterial. No material cross-era-stable positive tradeable M15 transition.
+**M15 map status:** volatility is the only cross-era-stable M15 information (high-vol -> down-bias; quiet -> targets unreached; highvol-stab -> avoid long) but none converts to tradeable positive alpha (univariate not tradeable; DOWN-parent short fails b1; transitions only avoidance). Deeper states (displacement/pullback/path-cleanliness/wick) were covered in the univariate map (only vol cross-stable). SESSION-conditioned = last untested family.
+**NEXT:** session-conditioned M15 (state lift vs SESSION base, §13, cross-era + event-dedup); then present a BOUNDED M15 conclusion (whole M15 map) + CEO decision, §27 (NOT before session done).
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #24 — 2026-08-22 — Session-conditioned M15 (§13): NY-session high-vol->SHORT survives b1 (first directional cross-era-stable M15 candidate)
+**Screen (`state_m15_session.py`):** session structural bias + session-open burst + high-vol-short concentration, all vs SESSION base, event-deduped, cross-era b0/b1.
+**Findings:** (1) London bilateral +0.086L/+0.126S cross-stable = range-expansion (small consistent short tilt); Off 21-24 bilateral depression = stable avoidance filter. (2) NY-open first hour +0.173L/+0.162S cross-stable = volatility-timing burst. (3) **NY-session high-vol->SHORT +0.070 (b0+0.08/b1+0.05) = S_CROSS_STABLE — the FIRST directional M15 signal to survive the b1 gate**, because SESSION conditioning captures the mechanism where DOWN-parent conditioning failed b1.
+**Registered:** ST-M15-NY-HIGHVOL-SHORT (CANDIDATE_PENDING_TRADEABILITY). Opposite direction to frozen COMP-CONT-L -> non-redundant.
+**NEXT (decisive):** tradeability characterization of NY-session high-vol->SHORT — any geometry (fixed brackets / structural ATR stop, §19) net-positive STRESS expectancy cross-era (DEV+b0+b1), event-deduped? If yes -> Stage-C freeze (REGIME/STATE_SPECIFIC_FROZEN_PENDING_INDEPENDENT_VALIDATION) + notify CEO. If no -> bounded M15 conclusion + CEO decision (§27).
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #25 — 2026-08-22 — NY-session high-vol-short NOT tradeable -> BOUNDED M15 CONCLUSION (CEO decision requested)
+**Decisive tradeability (`state_m15_ny_hvshort.py`):** NY-session high-vol M15 SHORT across 4 fixed brackets + 9 structural ATR stops x 3 eras (DEV/b0/b1), STRESS, event-deduped. ALL net-NEGATIVE (best DEV avgR -0.034 w/ losing 2022 -0.16; b0 -0.021; b1 -0.088); best10 -0.15..-0.38 everywhere -> carried by outliers, no robust core. The +0.070 cross-era-stable P-lift is REAL info but does NOT convert to tradeable expectancy. ST-M15-NY-HIGHVOL-SHORT = INFO_CONFIRMED_CROSS_ERA_NOT_TRADEABLE (not frozen).
+**M15 frontier status:** baselines + univariate states + transitions + session ALL systematically completed (§27). No tradeable cross-era-stable non-redundant standalone M15 edge exists. => BOUNDED M15 CONCLUSION written (`ALPHA_M15_BOUNDED_CONCLUSION.md`): the only cross-era-stable M15 information is volatility (timing/filter), which does NOT convert to standalone directional alpha; M15's evidenced role is a causal TRIGGER under a frozen HTF edge (COMP-CONT-L / S5), matching the CEO economic-profile directive.
+**CEO DECISION REQUESTED (A/B/C):** A(rec)=pivot M15 to trigger-under-HTF-edge (test M15 vol-timing improving frozen HTF LONG entry); B=extend M15 to path-SHAPE/H4-conditioned axis; C=accept bounded negative, return to HTF/trigger track. Loop paused at this genuine decision point.
+**Global status:** `ALPHA_M15_STANDALONE_FRONTIER_BOUNDED` — awaiting CEO A/B/C.
+
+---
+
+## CHECKPOINT #26 — 2026-08-22 — NEW MANDATE (Decision B): H4 parent-state taxonomy FROZEN + per-state M15 base rates
+**Mandate:** ALPHA-XAUUSD-H4-M15-PATH-SHAPE-DISCOVERY-001. §3-4 foundation.
+**Done (`h4_parent.py`):** froze causal H4 parent-state taxonomy (reused frozen regime() on the causal H4 frame; QUIET = research-local neutral, NOT canonical RANGE, §4); aligned H4 state to M15 causally (last-closed H4 bar); established per-H4-state M15 first-passage BASE RATES (P(+50/-50,+70/-50,+100/-70,+100/-100) L/S + adverse-first + MFE/MAE med/P75/P90), DEV/b0/b1, event-deduped with RAW/EffN/unique-days/independent-H4-episodes. Contract frozen in `ALPHA_H4_PARENT_STATE_CONTRACT.md`.
+**Key facts locked in:** (1) all 5 H4 states have EffN>=500 in every era -> same-H4-state cross-era gate (§10) viable for all; (2) absolute base rates strongly era-dependent (b1 low-vol compresses all P + MFE/MAE) -> only WITHIN-state/era LIFTS are comparable (§8); (3) instantaneous H4 state alone = era-dependent directional bias (UP DEV short-favor/b1 long; DOWN DEV long/b0 short; QUIET symmetric) -> NOT standalone cross-era alpha. The open question: does M15 PATH-SHAPE conditional on H4 add cross-era-stable lift over these baselines?
+**NEXT:** first M15 path-shape family (directional run-length / persistence-vs-alternation, window 4/8) conditional on each H4 state, lift vs per-state/era base rate, L/S separate, event-deduped, cross-era gate.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (new frontier).
+
+---
+
+## CHECKPOINT #27 — 2026-08-22 — Family 1 (run-length/persistence): no cross-era-stable positive lift over H4-state base
+**Screen (`h4m15_runlen.py`):** M15 signed run-length + path-persistence (pe8/pe4) conditional on each H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state deduped base, L/S separate, DEV DISC/CONF + per-year + b0 + b1, event-deduped.
+**Result:** NO cross-era-stable positive tradeable lift. Only CROSS_STABLE = QUIET x runUp>=4 short -0.055 (a NEGATIVE short-avoidance signal, + within-DEV per-year sign flip -> weak). Strongest positive = DOWN x persistDn short +100/-70 +0.059 (D/C/b0 positive) but b1 ~0 -> era-conditional continuation, fails cross-era. "Pullback-in-uptrend -> LONG" NOT supported (UP x runDn LONG negative). Continuation shorts era-conditional (fail b1 low-vol), consistent with program-wide finding.
+**NEXT:** Family 2 = impulse -> retracement geometry (recent impulse magnitude + retracement depth relative to it) conditional on H4 state; then recovery-after-adverse & MFE/MAE-asymmetry families.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #28 — 2026-08-22 — Family 2 (impulse->retracement geometry): FIRST cross-era-stable candidate (DOWN-H4 down-impulse-shallow -> SHORT)
+**Screen (`h4m15_impretr.py`):** M15 impulse magnitude (W=8/16, ATR-norm) x retracement depth (shallow=continuation / deep=reversal) conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** FIRST cross-era-stable positive candidate of the mandate. **DOWN x impDn8&shallow -> SHORT +70/-50 = +0.055** (DISC +0.03/CONF +0.08; b0 +0.04/b1 +0.03 — survives incl b1 low-vol era; per-yr 2021 +0.12/2023 +0.05; +100/-70 & W=16 neighbor also +; coherent mirror). Registered ST-H4DN-M15DNIMP-SHALLOW-SHORT (INFO_CROSS_STABLE_PENDING_CHARACTERIZATION). Note: the research-bracket lift is INFORMATION, not yet tradeable expectancy. Other cells fail (QUIET impUp16 short reverses on b0/b1 = era-transient).
+**NEXT (characterization):** §8 full outcome distribution; §14-15 STRUCTURAL-STOP strategy (recent M15 swing high / ATR from observed MAE, NO forced RR), net STRESS expectancy cross-era DEV/b0/b1 event-deduped; §16 frequency; §17 independence vs S5/COMP-CONT-L. If net-positive + non-redundant -> Stage-C freeze + notify CEO; else record + continue path-shape families.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #29 — 2026-08-22 — ST-H4DN-M15DNIMP-SHALLOW-SHORT characterized: NOT a tradeable survivor (expectancy era-conditional)
+**Characterization (`h4m15_dnimp_char.py`, §8/§14/§15/§16/§17):** structural stop = recent 8-bar M15 swing high (med 42/62/30p DEV/b0/b1 — genuine, not tight); net STRESS expectancy cross-era, event-deduped, predeclared rr set (no mining).
+**Result:** tradeable ONLY in b0 (strong-downtrend high-vol: avgR +0.089..+0.200, best10 ~0); DEV breakeven-negative (best rr3.0 -0.015, DISC -0.047/CONF +0.032 disagree, losing 2022); b1 negative (-0.02..-0.05, best10 -0.15..-0.35). The cross-era-stable RELATIVE info lift does NOT convert to cross-era-stable EXPECTANCY — DOWN-state base rate + follow-through scale with era volatility (b1 MFE med 32p vs b0 59p). Fails robust-survivor bar (§22); NOT frozen; NOT rescued by vol-sub-cutting DOWN (would re-tune frozen H4 taxonomy, §3). Independence vs COMP-CONT-L: 4/72 shared-days, opposite direction (non-redundant, moot).
+**Central lesson (recorded):** cross-era-stable relative INFORMATION != cross-era-stable tradeable EXPECTANCY; absolute expectancy is gated by era volatility/follow-through even when the relative lift is stable.
+**NEXT:** Family 3 = recovery-after-adverse-excursion / successive MFE-MAE asymmetry / volatility-expansion->controlled-retracement, conditional on H4 state.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #30 — 2026-08-22 — Family 3 (recovery/asymmetry/vol-exp-calm): no cross-era-stable candidate
+**Screen (`h4m15_recovery.py`):** M15 dip-recover/pop-fade + intrabar MFE-MAE asymmetry + vol-expansion->calm conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** NO cross-era-stable candidate. Strongest = UP x dipRecovUp -> LONG +0.059 (absorption; DEV-robust all-years + DISC +0.06/CONF +0.06 + coherent mirror) but b0 +0.02 marginal / b1 -0.01 -> era-conditional, fails. DOWN x asymDn short +0.047 fails b1 (flat). Meta-pattern F1-F3: continuation edges work high-vol/trend eras & fail b1; reversal/absorption edges work DEV & fail hist. Binding constraint = b1 low-vol lacks follow-through.
+**NEXT:** Family 4 = HH/HL vs LH/LL structural swing-sequence + wick/body sequence asymmetry (microstructure) conditional on H4 state.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #31 — 2026-08-22 — Family 4 (swing-sequence + wick): only vol-structure cross-era-stable (non-directional); convergence with standalone-M15
+**Screen (`h4m15_swingwick.py`):** M15 HH/HL block structure + wick asymmetry conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** 2 CROSS_STABLE flags but both non-directional: (1) CHOP x HH_LL(expand) short +0.049 = BILATERAL range-expansion (long side also +0.041; CHOP has no directional H4 thesis for §15) = VOL_TIMING_NOT_DIRECTIONAL; (2) UP x uwDom short -0.061 = negative avoidance. Pattern: HH_LL expansion lifts BOTH sides in every state (vol-structure); LH_HL contraction lowers BOTH sides (avoidance). Directional structure (DOWN x LH_LL short +0.050) era-conditional (b1 flat). NO new directional cross-era-stable tradeable candidate.
+**Convergence:** H4-conditioned path-shape REPRODUCES the standalone-M15 bounded conclusion — the only cross-era-stable M15 information is VOLATILITY-STRUCTURE (expansion/contraction), which is non-directional; directional path-edges remain era-conditional.
+**NEXT:** Family 5 = time-since-local-extreme + recent path curvature/acceleration (last univariate path-shape class); then present a BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #32 — 2026-08-22 — Family 5 (fresh-extreme + curvature): 2nd cross-era-stable candidate (DOWN x decelDn short, same family as F2)
+**Screen (`h4m15_curvature.py`):** M15 fresh 8-bar extreme (momentum) + 4-bar velocity accel/decel conditional on H4 state; P(+70/-50 & +100/-70) lift vs same-H4-state base, L/S separate, DISC/CONF+per-year+b0+b1, event-deduped.
+**Result:** momentum-extreme signals fail cross-era (b1~0). ONE cross-era-stable candidate: **DOWN x decelDn -> SHORT +0.050/+0.059** (DISC+0.05/CONF+0.05, b0+0.06/b1+0.04 — survives incl b1; coherent mirrors). BUT it is the SAME DOWN-H4-short-continuation MECHANISM as the F2 candidate ST-H4DN-M15DNIMP-SHALLOW-SHORT (different trigger). Registered ST-H4DN-M15-DECELDN-SHORT (pending characterization).
+**NEXT:** characterize ST-H4DN-M15-DECELDN-SHORT (§14-15 structural-stop net STRESS cross-era + §17 redundancy: event-day overlap vs F2). Prior from F2: expectancy era-conditional (tradeable b0, neg b1) + likely redundant -> expect not-a-survivor; verify not assume. THEN present BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #33 — 2026-08-22 — ST-H4DN-M15-DECELDN-SHORT: NOT tradeable + REDUNDANT with F2 (not frozen)
+**Characterization (`h4m15_deceldn_char.py`, §14/§15/§17):** structural stop = recent 8-bar swing high (med 47/64/30p DEV/b0/b1); net STRESS cross-era + event-overlap vs F2.
+**Result:** tradeable ONLY in b0 (+0.019..+0.161); DEV net-negative (best -0.010, 2022 -0.35); b1 marginal (+0.009..-0.011) -> era-conditional, same as F2. **§17 redundancy: 100% DEV day-overlap with F2 (62/62 days, 36 shared bars)** -> same DOWN-H4 short-continuation events = REDUNDANT_EXISTING_ALPHA. NOT frozen on two independent grounds.
+**Interpretation:** the DOWN-H4 short-continuation family has era-conditional EXPECTANCY (tradeable high-vol/trend eras only) AND its distinct triggers (impulse-shallow F2, decel F5) are MUTUALLY REDUNDANT (fire on the same days) -> not multiple distinct strategies, one era-conditional mechanism.
+**NEXT:** complete §21 budget — bounded M15 path-shape TRANSITION/sequence map + a small number of interpretable INTERACTIONS conditional on H4 — then present a BOUNDED INTERIM CONCLUSION on the H4-M15 path-shape frontier for CEO review.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #34 — 2026-08-22 — §21 budget complete -> BOUNDED H4-M15 CONCLUSION (CEO decision A/B/C/D requested)
+**§21 completion (`h4m15_trans_interact.py`):** M15 path-shape transitions (squeeze->release, pullback->resume) + interactions conditional on H4. squeeze-release UP->L +0.107 but thin(EffN 72)/CONF-na/b1-flat; DOWN->S b1-negative; pullback-resume zero-info; interactions marginal EXCEPT LH_LL&decel@DOWN->S +0.055 cross-stable = 3rd trigger of the SAME DOWN-H4-short mechanism (not independent, §18 no-cloning). NO new candidate.
+**Frontier bounded:** univariate 5 families + transition map + interactions ALL completed. NO robust non-redundant cross-era-tradeable NEW price-only strategy emerged.
+**Central result:** only cross-era-stable M15 info = VOLATILITY-STRUCTURE (non-directional); the one cross-era-stable-INFO directional mechanism (DOWN-H4 short continuation) has era-conditional EXPECTANCY (tradeable b0 only) + mutually-redundant triggers -> one era-conditional mechanism, not a strategy. Binding constraint = b1 low-vol lacks follow-through. Convergent across THREE methods (standalone M15, regime state-path, H4-M15 path-shape): cross-era-stable price-only INFO is non-directional; cross-era-stable directional EXPECTANCY does not exist price-only. `ALPHA_H4M15_BOUNDED_CONCLUSION.md` written.
+**CEO DECISION A/B/C/D:** A(rec)=open EXOGENOUS axis (authorize bounded DXY causal study); B=deploy DOWN-H4 short as regime-gated module (non-stationary); C=M15 as trigger under frozen HTF edge; D=non-directional vol-timing study. Loop paused at decision point.
+**Global status:** `ALPHA_H4M15_PATHSHAPE_FRONTIER_BOUNDED` — awaiting CEO A/B/C/D.
+
+---
+
+## CHECKPOINT #35 — 2026-08-22 — NEW MANDATE (Decision A): DXY causal aligner FROZEN + coverage verified
+**Mandate:** ALPHA-XAUUSD-DXY-CAUSAL-INCREMENTAL-INFORMATION-001. Exogenous DXY axis, information-first.
+**Done (`dxy_data.py`):** causal loader/aligner for the RATIFIED ICE DXY H1 (governed slices) joined to XAUUSD H1 (_from_M15_v2 = DXY coverage reference). Enforces the ratified timestamp contract (merge_asof backward on dxy_close=dxy.time+3600 vs XAUUSD decision=time+3600; causal assertion passes). Per-slice DXY features (governed, no between-block continuous). Predeclared feature set (8) + lag set {0,1,2,4}H. Coverage verified == ratified report: b0 97.4% / b1 97.8% / y2123 99.9% same-hour. Contract frozen in `ALPHA_DXY_ALIGNER_CONTRACT.md`.
+**Foundation finding:** corr(past DXY 4h return, XAUUSD forward 24h return) ~= 0 in every era (b0 -0.027/b1 -0.000/y2123 +0.004) -> the DXY<->gold inverse relationship is CONTEMPORANEOUS (shared-driver, simultaneous), NOT predictive from past DXY to future gold. The mandate's real question (does causal/lagged DXY add INCREMENTAL info about future XAUUSD path) is thus non-trivial; naive lagged DXY-return alone carries no edge.
+**NEXT:** Stage A DXY information map — DXY state (impulse/accel/efficiency/vol/dist) -> XAUUSD P(+50/-50,+70/-50,+100/-70,+100/-100) path lift vs XAUUSD parent-state base, L/S separate, lag curve {0,1,2,4}, cross-era, event-deduped; then §7 incremental-over-price-only test.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (DXY frontier).
+
+---
+
+## CHECKPOINT #36 — 2026-08-22 — Stage A DXY univariate map: no cross-era-stable info; DXY<->gold relationship INVERTS in 2021-2023
+**Screen (`dxy_infomap.py`):** DXY state (impulse/accel/efficiency) -> XAUUSD P(+70/-50 & +100/-70) path lift vs era-global XAUUSD base, directed side (§13), lag {0,1,2,4}H, cross-era b0/b1/y2123, event-deduped (6h), H=24h.
+**Result:** NO cross-era-stable univariate DXY directional information. Lifts small (<=0.04, consistent w/ ~0 linear corr). Most coherent signal = persistent DXY efficiency -> inverse XAUUSD path: +0.02..+0.03 in b0/b1 (classic inverse) but **REVERSES to -0.02..-0.04 in 2021-2023** (inflation/safe-haven regime where gold & USD rose together). DXY's directional link to gold is REGIME-CONDITIONAL, not stationary. Lag curve decays from lag0 (no better lag).
+**NEXT:** X3 divergence (XAUUSD NOT reacting to DXY as expected -> continuation/reversal info?) + §7 incremental-over-XAUUSD-parent test + small XAUUSD-state x DXY-state interactions, before the bounded DXY conclusion. Do NOT conclude DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED until X3 + incremental + interactions done (§20).
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #37 — 2026-08-22 — DXY X3 divergence + §7 incremental: incremental info REAL but regime-conditional (inverts 2021-2023)
+**Screen (`dxy_divergence_incremental.py`):** X3 divergence (gold not reacting to material DXY move, DXY threshold from DISC only) + §7 incremental (persistent DXY direction OVER XAUUSD parent regime), cross-era, deduped, H=24h.
+**Result:** X3 divergence flips sign across eras (div_bull L +0.029 b0 / -0.053 b1; div_bear S -0.046 b0 / +0.050 b1) -> not stable. §7 incremental (CRITICAL gate): DXY direction adds SMALL POSITIVE increment over XAUUSD parent in b0/b1 (+0.02..+0.06, so NOT purely redundant with XAUUSD trend) but INVERTS in 2021-2023 (dxyEffDn->L UP -0.034/TRANSITION -0.061). The only cross-era-coherent piece (DXY-strength-in-XAUUSD-UP -> shorts worse) is an XAUUSD-trend effect, not new DXY info.
+**Decisive:** DXY carries GENUINE (non-redundant) incremental info about XAUUSD path in 2011-2018, but it is REGIME-CONDITIONAL and INVERTS in the 2021-2023 inflation/safe-haven regime -> fails the MATERIAL+STABLE requirement (§1/§15). Same non-stationarity the whole program found, now on the exogenous axis.
+**NEXT:** bounded DXY transitions (DXY accel->decel / reversal sequences) to complete the §20 order; then present the BOUNDED DXY CONCLUSION (likely DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED as a STABLE edge) + CEO decision.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #38 — 2026-08-22 — DXY transitions -> §20 complete -> BOUNDED DXY CONCLUSION (CEO decision A/B/C/D)
+**DXY transitions (`dxy_transitions.py`):** USD impulse-exhaustion + reversal -> XAUUSD path lift, cross-era. NO cross-era-stable transition (usdUpExhaust->L +0.037/+0.044 b1/y2123 but ~0 b0; usdRevDn->L flips b0 vs b1). §20 order complete.
+**BOUNDED DXY CONCLUSION (`ALPHA_DXY_BOUNDED_CONCLUSION.md`):** DXY carries GENUINE non-redundant incremental info about XAUUSD path in 2011-2018 (§7: +0.02..+0.06 over parent, NOT redundant) but it INVERTS in 2021-2023 (inflation/safe-haven regime; classic inverse DXY<->gold flipped). Univariate/divergence/transitions all confirm no cross-era-stable sign. => `DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED` as a STABLE/tradeable edge (not "uninformative" — real but non-stationary; recent regime carries inverted sign). Mechanism: DXY is an endogenous output of the real-yield/monetary regime, not the primitive driver -> cannot be cross-era-stable alone. Exogenous-axis confirmation of the program-wide result.
+**CEO DECISION A/B/C/D:** A(rec) accept the bounded DXY negative; C(rec next) authorize REAL-YIELDS axis (mandate deferred yields "until DXY determined" — now determined; 2021-2023 inversion is a real-yield signature); B regime-gated DXY (rejected — recent regime inverted, no stable gate); D price-only M15-trigger-under-HTF-edge fallback. Loop paused at decision point.
+**Global status:** `ALPHA_DXY_FRONTIER_BOUNDED` — awaiting CEO A/B/C/D.
+
+---
+
+## CHECKPOINT #39 — 2026-08-22 — ARCHITECTURE RESET (Decision): MARKET_OPERATING_MODE_V1 FROZEN
+**Mandate:** ALPHA-XAUUSD-HIERARCHICAL-MODE-STRUCTURAL-EVENT-DISCOVERY-001. Paradigm: mode -> structural event -> specialist strategy (regime-specific specialists, not one universal strategy).
+**Done (`market_mode.py`, §3-8):** froze MARKET_OPERATING_MODE_V1 — price-only, causal, H4, 6 modes via a two-scale view (PRIMARY backbone pdisp over P=30 H4 bars vs IMMEDIATE idisp over I=6): PRIMARY_BULL_IMPULSE / BULL_CORRECTION / PRIMARY_BEAR_IMPULSE / BEAR_CORRECTION / NEUTRAL_ROTATION / TRANSITION. Solves §4 (separates genuine PRIMARY_BEAR from bearish CORRECTION-inside-bull). Vol/extension = attribute tags (no combinatorial explosion). NEUTRAL_ROTATION != canonical RANGE. Thresholds frozen from price-structure reasoning (PRIM_T=1.0/IMM_T=0.3/EFF_T=0.25), NOT P&L. Contract `ALPHA_MARKET_OPERATING_MODE_V1_CONTRACT.md`.
+**Population/validity:** stable distribution across all 5 eras (b0/b1/2021/2022/2023), every mode sufficient N + episodes (cross-era gate viable); corrections shorter-duration than primary impulses; transition matrix shows sticky primary backbone (BULL_CORRECTION returns to PRIMARY_BULL, rarely flips to bear) -> §4 confirmed.
+**NEXT (§10):** FIRST structural-event family ONLY — LIQUIDITY EVENT -> RECLAIM/FAILURE -> DISPLACEMENT -> FUTURE PATH — M15 events conditioned on the frozen H4 mode, information-first, mandatory decomposition (mode base -> +event -> +reclaim -> +displacement), L/S separate, event-deduped, cross-era within same mode.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE` (mode->event architecture).
+
+---
+
+## CHECKPOINT #40 — 2026-08-22 — Liquidity-event family first cut: DISPLACEMENT is the informative component; 2 mode-conditional cross-era leads
+**Screen (`liquidity_event.py`):** mechanical M15 liquidity event (sweep recent 20-bar swing -> reclaim -> displacement) conditioned on the FROZEN H4 mode; mandatory decomposition MODE base -> +evt -> +rcl -> +disp, P(+70/-50) 8h, directed side (sell->L/buy->S), event-deduped, per era (b0/b1/2021/2022/2023).
+**Key finding (validates §13/§14):** the DISPLACEMENT component carries the information, NOT the raw sweep — +evt lifts ~0/inconsistent, +disp adds the most across cells. The CEO's core hypothesis (edge is in the post-event response) is supported.
+**Two mode-conditional cross-era-consistent leads (b0+b1 same sign, disp-driven):** BEAR_CORRECTION + sell-sweep+reclaim+disp -> LONG (+0.144 b0 / +0.045 b1); BULL_CORRECTION + buy-sweep+reclaim+disp -> SHORT (+0.064 b0 / +0.046 b1). Both = "sweep + displacement continues the correction" — specialist (mode-conditional) signals. Counter-trend cells (PRIMARY_BULL buy->S) fail 2023. Disp-N small (31-44/era); b1 low-vol base. LEADS not survivors.
+**NEXT:** deepen the 2 correction leads — more eras (relaxed-N 2023) + +100/-70 label + explicit winner-vs-loser (reclaim vs no-reclaim) + event-N honesty (unique days/H4 episodes) + tradeability with structural stop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #41 — 2026-08-22 — Two single-bar liquidity leads FAIL deepening (rare + tight-stop + not cross-era-robust)
+**Deepening (`liquidity_deepen.py`, §14/§18/§20/§21/§22):** winner-vs-loser + full labels + event-N honesty + tradeability with structural stop (swept swing extreme).
+**Result:** BOTH leads fail. Lead A (BEAR_CORRECTION sweep->L): b0 rr1.0 +0.136 but SL only 23p (tight), b1 NEGATIVE -> not cross-era-robust. Lead B (BULL_CORRECTION sweep->S): b0 NEGATIVE (-0.21..-0.29) despite P-lift (reversal short run over by bull primary), b1 marginal. Both ~2 eff/mo (too rare for a desirable specialist §25). Winner-loser non-monotonic (reclaim-only often < base) -> first-cut disp lift was small-N noise. Structural stop = swept extreme is TOO TIGHT (16-30p) when sweep+reclaim+displacement forced onto ONE M15 bar (§21 tight-stop fragility).
+**Root cause:** event FORMULATION, not necessarily the hypothesis — the CEO sequence (sweep->reclaim->DISPLACEMENT->path) is inherently MULTI-BAR; the single-bar collapse made it rare + tight-stopped.
+**NEXT (one predeclared reformulation, §12-13, NOT mining):** multi-bar liquidity SEQUENCE — sweep+reclaim on bar t, displacement over next K bars, entry after displacement confirms, structural stop at swept extreme (with room); re-test the mode-conditional decomposition + winner-loser + tradeability cross-era. If still no robust specialist -> bounded liquidity-family conclusion.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #42 — 2026-08-22 — Liquidity multi-bar REVERSAL branch: NEGATIVE all modes cross-era
+**Screen (`liquidity_seq.py`):** multi-bar sweep->reclaim->displacement reversal (predeclared reformulation), structural stop = swept extreme (healthy 20-41p), net STRESS per mode x side x era, events plentiful (26-599).
+**Result:** net-NEGATIVE in ALL 6 H4 modes x both sides, cross-era. Only positives = single-era small-N outliers (BULL_CORR sell->L 2022 +0.45; TRANSITION short 2023 +0.08) failing cross-era. The multi-bar reformulation fixed the frequency + tight-stop problems but decisively confirmed the REVERSAL reading of the liquidity mechanism has no cross-era tradeable edge in any mode (§14 "don't assume textbook").
+**Radar:** R2 (reversal negative regularity), R1 (displacement is the informative component), R3 (correction modes least-negative, b1 worst).
+**NEXT (§14 mandatory, in-family):** CONTINUATION / acceptance branch — sweep + NO reclaim (acceptance beyond) + same-direction displacement -> continuation (sellside->SHORT-down, buyside->LONG-up), structural stop = broken swing level (reclaim = fail), per mode cross-era. Continuous loop, no pause.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #43 — 2026-08-22 — Liquidity CONTINUATION branch NEGATIVE -> S1 family BOUNDED (CEO next-family selection)
+**Screen (`liquidity_cont.py`):** multi-bar sweep + acceptance (no reclaim) + same-dir displacement -> continuation, structural stop = opposite extreme, net STRESS per mode x era. Net-NEGATIVE all 6 modes x both sides cross-era; least-bad = trend-aligned continuation (PRIMARY_BEAR short b0 +0.075, PRIMARY_BULL long 2023 ~breakeven); scattered positives are single-era outliers.
+**S1 CONCLUSION (`ALPHA_LIQUIDITY_FAMILY_CONCLUSION.md`):** liquidity-sweep family produces NO robust cross-era specialist in EITHER reversal (CASE A) or continuation (CASE B) branch, in any mode. Displacement carries path INFORMATION (R1) but not net-positive expectancy after STRESS cost. Comprehensive negative.
+**Radar R4:** trend-aligned continuation least-negative; robust direction is WITH the primary trend (consistent w/ frozen COMP-CONT-L/S5).
+**Backlog:** S1 -> BOUNDED_NEGATIVE. Recommended next = S10 Displacement Continuation.
+**CEO DECISION (pause condition #5):** select next structural family. Recommendation S10; alternatives S7 (Trend Pullback, prove independence vs COMP-CONT-L), S4 (Vol Compression->Expansion).
+**Global status:** `ALPHA_S1_LIQUIDITY_FAMILY_BOUNDED` — awaiting CEO next-family selection.
+
+---
+
+## CHECKPOINT #44 — 2026-08-23 — S10 displacement decomposition: cross-era-CONSISTENT positive P-lift (mode-aligned)
+**Mandate:** ALPHA-XAUUSD-S10-DISPLACEMENT-CONTINUATION-001 (CEO selected S10). §19 audit: prior impulse-continuation tests NOT under frozen mode taxonomy -> NOT_COMPARABLE (distinct experiment).
+**Screen (`displacement_info.py`, §6):** MODE base -> +DISP -> +DISP+ACCEPT, mode-aligned displacement (body>0.7ATR, close far-quartile, range>1.2ATR), P(+70/-50) 8h lift vs same-mode base, deduped, per era.
+**Result (POSITIVE):** mode-aligned displacement continuation shows cross-era-CONSISTENT positive P-lift in several cells: PRIMARY_BULL bull-disp->L (all 5 eras +0.001..+0.053), BULL_CORRECTION bear-disp->S corr-continue (all 5 eras +0.003..+0.053), BEAR_CORRECTION bear-disp->S primary-resume (b0/b1/2021/2023 +0.022..+0.139), PRIMARY_BEAR bear-disp->S (all but marginal 2022). Displacement is the signal; ACCEPTANCE mixed. Validates R1+R4. First frontier w/ cross-era-consistent positive info.
+**Radar R5:** mode-aligned displacement continuation = cross-era-consistent positive P-lift (short-side/trend-continuation most consistent).
+**NEXT:** controlled-retracement + failure branch + tradeability (structural stop = displacement origin) for the consistent cells; independence vs COMP-CONT-L. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #45 — 2026-08-23 — S10: FAILURE branch is the edge (HOLD ~3x FAIL); immediate entry NOT tradeable
+**Screen (`displacement_trade.py`, §9/§14/§15/§16):** immediate continuation entry at displacement bar (structural stop = disp origin), net STRESS per cell x era + FAILURE branch (origin reclaimed within 4 bars?).
+**Result:** (1) FAILURE branch STRONGLY informative cross-era ALL cells: displacement+HOLD has ~3x the P(+70/-50) of displacement+FAIL (e.g. b0 C1 0.37/0.11, C4 0.48/0.15; 2021 C1 0.37/0.04; 2023 C1 0.47/0.15). The HOLD/acceptance is the edge (§14 winner-vs-loser), NOT the raw displacement. (2) IMMEDIATE entry (before hold known) is net-NEGATIVE all cells/eras under STRESS (best C4 2023/2021 rr2 +0.02/+0.075) — because it includes the FAIL cases that crater; stops also tightish (16-30p).
+**Radar R6:** displacement HOLD-vs-FAIL = strongest discriminator (~3x), cross-era. -> the tradeable edge requires entering AFTER hold is confirmed (controlled retracement), exactly the CEO §14 architecture.
+**NEXT:** CONTROLLED-RETRACEMENT entry — after displacement, wait for a pullback that HOLDS the origin, enter on resumption; structural stop = origin/pullback extreme; net STRESS cross-era for the consistent cells. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #46 — 2026-08-23 — S10: hold-MARKET entry negative; PULLBACK-FILL entry strongly positive (PROVISIONAL)
+**Screens:** `displacement_retrace.py` (hold-confirmed market entry) + `displacement_pullback.py` (limit pullback-fill entry).
+**Result:** (1) hold-confirmed MARKET entry (enter 2 bars after displacement, stop=origin) net-NEGATIVE all cells cross-era — entering late at market surrenders the move. (2) **PULLBACK-FILL entry (limit @61.8% of displacement, stop=origin, target=retest extreme) is STRONGLY POSITIVE and cross-era-consistent** in all 4 cells: f0.618 rr1.5 C1(PRIMARY_BULL→L) b0 +0.53/b1 +0.54/2021 +0.71/2022 +0.83/2023 +0.71; C4(PRIMARY_BEAR→S) all 5 eras +0.48..+0.67; C2/C3 positive b0/b1/2023. The canonical 'buy the deep retrace, target the retest' geometry.
+**CAUTION:** magnitude high after a long negative string -> PROVISIONAL. Prime suspicion: same-bar win allowed on the fill bar (optimistic). Radar R7.
+**NEXT (rigorous verification, continuous loop):** re-run pullback-fill with STRICT rule (resolve target only from bar AFTER fill; stop-first), + DISC/CONF split + event-N honesty (unique days/H4 episodes) + frequency (tpm) + §17 independence vs COMP-CONT-L (C1 long likely overlaps). Only if it survives -> Stage-C characterization/freeze.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #47 — 2026-08-23 — S10 pullback-fill FALSIFIED (sim artifact) -> S10 BOUNDED_NEGATIVE (CEO next-family)
+**Strict verification (`displacement_verify.py`):** realistic causal fill (no same-bar target win; fill+stop-same-bar=loss; target from next bar; stop-first). The provisional +0.5..+0.8 pullback-fill edge was a SIMULATION ARTIFACT -> under strict fill, net-NEGATIVE all cells/eras (avgR -0.14..-0.72). No false positive frozen (skeptical verification worked).
+**S10 CONCLUSION (`ALPHA_S10_FAMILY_CONCLUSION.md`):** displacement carries the program's cleanest cross-era-CONSISTENT positive INFORMATION (#44) + strong HOLD-vs-FAIL discriminator (~3x, R6), but the absolute continuation P (~0.40 on +70/-50 for HOLD) is just below breakeven and NO entry geometry (immediate/hold/pullback-fill) converts net-positive after cost. BOUNDED_NEGATIVE; 0 survivors. Reinforces program-wide finding: real cross-era-stable INFO != net-positive tradeable expectancy.
+**Radar:** R5 (displacement info) + R6 (HOLD 3x) KEPT (genuine); R7 FALSIFIED (artifact) + methodological flag.
+**Backlog:** S10 -> BOUNDED_NEGATIVE. Recommended next = S2 Failed Breakout (R6: failure is highly informative -> trade the reversal side); alt S4 Vol Compression->Expansion.
+**CEO DECISION (pause #5):** select next structural family. Recommendation S2; alt S4/S7.
+**Global status:** `ALPHA_S10_FAMILY_BOUNDED` — awaiting CEO next-family selection.
+
+---
+
+## CHECKPOINT #48 — 2026-08-23 — S2 §9 decomposition: failed-break reversal info weak/rare; signal is displacement, not failure
+**Mandate:** ALPHA-XAUUSD-S2-FAILED-BREAKOUT-FAILED-SWEEP-001 (CEO selected S2). §21 audit: WICK/penetration failure = S1_EQUIVALENT (S1 bounded-neg); CLOSE-beyond failure = the NEW mechanism.
+**Screen (`s2_failbreak.py`, §6/§9):** structural level = 20-bar swing; SEPARATE WICK-failure (~S1) vs CLOSE-beyond-failure (close beyond then lose it, decision at next close, causal); reversal direction (failed UP->SHORT / failed DN->LONG); decomposition MODE base -> +break -> +WICKfail -> +CLOSEfail -> +CLOSEfail+opposite-displacement; P(+70/-50 reversal) lift vs same-mode base, per era, deduped.
+**Result:** failed-break reversal info WEAK + inconsistent. +break/+WICKfail small/mixed all modes (WICKfail reproduces S1 -> REDUNDANT_WITH_S1). CLOSE-beyond failure RARE (n<40 gated eras). The only material lift comes from adding an OPPOSITE DISPLACEMENT after the failure (PRIMARY_BULL UP->S +0.078 b0/+0.082 b1; PRIMARY_BEAR DN->L +0.075 b0/+0.087 b1) -> i.e. the DISPLACEMENT is the signal (R1/R6), NOT the failure of acceptance; and it re-triggers the already-bounded S10 displacement mechanism. Rare + 2023 mixed -> not cross-era-consistent.
+**Radar R8.** NEXT: strict-realism tradeability of the failed-break+opp cells (structural stop = break extreme) — likely negative/redundant -> S2 bounded. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #49 — 2026-08-23 — S2 tradeability thin/inconsistent -> S2 BOUNDED_NEGATIVE (CEO next-family)
+**Screen (`s2_trade.py`, §17/§18/§19):** failed-break+opposite-displacement reversal, strict next-bar entry, structural stop = break extreme, net STRESS per mode x era.
+**Result:** THIN + RARE (gated 2021/2022 = ZERO qualifying cells) and NOT cross-era-consistent (PRIMARY_BEAR failedUP->S +0.08 b0/+0.26 b1/mixed 2023; PRIMARY_BULL failedDN->L neg-b0/pos-b1/pos-2023). Isolated strong single-era b1 values (+0.26/+0.32) do not replicate -> rejected by §26 skepticism gate. Combined with #48 (weak info, displacement-not-failure is the signal), S2 has no robust specialist.
+**S2 CONCLUSION (`ALPHA_S2_FAMILY_CONCLUSION.md`):** BOUNDED_NEGATIVE, 0 survivors. Failure-of-acceptance is NOT the edge; the only signal is the (S10-bounded) opposite displacement. Meta-pattern S1/S10/S2 all bounded-neg: every price-SHAPE mechanism (continuation + reversal) hits the same breakeven wall — real INFO, sub-breakeven expectancy after cost.
+**Backlog:** S2 -> BOUNDED_NEGATIVE. Recommended next = S4 Volatility Compression->Expansion (STRUCTURALLY distinct vol-regime, larger natural target); alt S18 Time-of-Day / S16 Prev-Day-Levels.
+**CEO DECISION (pause #5):** select next structural family.
+**Global status:** `ALPHA_S2_FAMILY_BOUNDED` — awaiting CEO next-family selection.
+
+---
+
+## CHECKPOINT #50 — 2026-08-23 — S4 compression->expansion decomposition: no stable directional alpha, no payoff advantage
+**Mandate:** ALPHA-XAUUSD-S4-VOLATILITY-COMPRESSION-EXPANSION-001 (CEO selected S4). §3 audit: prior compression/expansion work (M15 path-shape HH_LL/LH_HL) = NO_MODE_CONDITIONING / NOT_COMPARABLE (bilateral, not mode-conditioned, no payoff characterization) -> distinct experiment.
+**Screen (`s4_compexp.py`, §8/§9/§14):** mechanical compression (range-box <0.7*box_ma + vr<0.9) -> directional expansion (close breaks compression envelope with range>1.3 ATR), per frozen H4 mode; BOTH long & short future-path lift + MFE/MAE.
+**Result:** (1) NO stable directional alpha — directional resolution FLIPS cross-era (PRIMARY_BULL EXP_UP directional-toward-SHORT b0 / directional-toward-LONG b1; negative 2021/2023); lifts small (<=0.06), mostly weak. (2) §14 payoff rationale FALSIFIED — MFE med ~= MAE med everywhere (ratio ~0.85-1.0); NO larger/better natural payoff vs S1/S10/S2 (buying after a big expansion bar -> adverse excursion as large as favorable). (3) prior bilateral-vol finding partly holds; mode-conditioning does NOT create direction.
+**Radar R9.** NEXT: verify HOLD/FAIL (§12) + larger payoff horizons (§13, +100..+200) — unlikely to rescue (MFE med ~40p) — then bound S4. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #51 — 2026-08-23 — S4 HOLD/FAIL + tradeability: primary cells era-trend-leak; correction-resume cells (C3/C4) promising
+**Screen (`s4_hold.py`, §12/§13/§18-20):** mode-aligned directional expansion, HOLD vs FAIL, HOLD-confirmed entry, structural stop = compression origin, net STRESS.
+**Result:** (1) HOLD/FAIL discriminator TRANSFERS to S4 (HOLD>FAIL continuation P cross-era; R6 confirmed here). (2) PRIMARY continuation cells SIGN-REVERSE across eras (C1 bull b0 -0.14/b1 +0.21; C2 bear b0 +0.18/b1 -0.09 -> anti-correlated = era-trend leakage, FAIL §15 same-mode sign-reversal). (3) CORRECTION-RESUMPTION cells positive both dense eras: C3 BULL_CORR+bull-exp->L b0 +0.13/b1 +0.09; C4 BEAR_CORR+bear-exp->S b0 +0.07/b1 +0.21 (HOLD-filtered, structural stop) — the correction-resolves-to-primary specialist thesis; but gated 2021-2023 thin (n<30) -> cross-era unconfirmed.
+**Radar R10.** NEXT (§26/§28 adversarial verification, NOT freeze yet): C3/C4 with pooled-DEV N, DISC/CONF, cross-era, session clustering (§24), redundancy vs COMP-CONT-L/S5 (§23). Remember S10 false positive. Continuous loop.
+**Global status:** `ALPHA_CONTINUOUS_RESEARCH_ACTIVE`.
+
+---
+
+## CHECKPOINT #52 — 2026-08-23 — S4 candidates are SESSION ARTIFACT -> S4 BOUNDED_NEGATIVE (CEO next-family)
+**Adversarial verification (`s4_verify.py`, §26/§28):** C3/C4 correction-resumption cells with neighbor-stability + DISC/CONF + session + cross-era. **FATAL:** both ~65-77% ASIA-session concentrated (compression fires in quiet Asia -> session/liquidity artifact, §24); C4 sign-REVERSES in y2123 (avgR -0.19, DISC -0.44, fail §15); C3 survives sign test + neighbor-stable but Asia-confounded + y2123 CONF negative. Neither is a clean non-artifact S4 specialist. Skepticism gate worked (as with S10).
+**S4 CONCLUSION (`ALPHA_S4_FAMILY_CONCLUSION.md`):** BOUNDED_NEGATIVE, 0 survivors. Compression->expansion = bilateral/VOLATILITY_TIMING, not directional (mode-conditioning doesn't fix direction; primary cells era-trend-leak); §14 payoff rationale FALSIFIED (MFE~=MAE); correction-resume apparent edge = Asia-session artifact.
+**Radar R11:** Asia-session compression = genuine lead for S18. Backlog S4->BOUNDED_NEGATIVE; S18 RECOMMENDED_NEXT.
+**Meta S1/S10/S2/S4 all bounded-neg:** price-shape + vol-regime mechanisms all fail to yield a robust cross-era specialist; frozen S5/COMP-CONT-L remain the only robust price-only edges.
+**CEO DECISION (pause #5):** select next family. Recommendation S18 Time-of-Day (R11-motivated); alt S16/S17 levels, S8 mean-reversion.
+**Global status:** `ALPHA_S4_FAMILY_BOUNDED` — awaiting CEO next-family selection.
+
+## CHECKPOINT #54 — 2026-08-23 — BROAD DISCOVERY CAMPAIGN v2 launched: S5 process reconstructed + modern multi-era screen + Batch A
+**Mandate:** `ALPHA-XAUUSD-BROAD-DISCOVERY-CAMPAIGN-V2-001` (+ never-idle addendum). Architecture reset: one-family-at-a-time -> BROAD parallel cross-class screening modeled on the reconstructed S5 discovery process. Alpha now selects batches autonomously.
+**§2 S5 lineage reconstruction (`ALPHA_S5_DISCOVERY_LINEAGE_RECONSTRUCTION.md`):** two Explore agents mechanically reconstructed from primary artifacts (not memory). S5 = `S5{session=ny,mode=breakout,side=up,stop=or_opp,exit=rr3}` LONG-only, ID C_2d587447, `mstrat.py:260-278`. Process = broad common-engine (20 families/1972 hyps, ONE simulator) -> frozen Discovery Screen V1 (research_worthy: n>=25,exp>0,PF>=1.02,dd<=25,(wo1>0|t1<0.5),months>=2,years>=2; 1972->357->130) -> dedup to 17 -> robustness rank (S5 #1/2.14) -> independent A-H validation on FRESH clean pop w/ RATIFIED cost (STRESS 0.24; NOT mstrat TICK=0.1 10x-bug). S5 distinguishers = legit positive skew (best-1%-removed>0), temporal reproduction on BOTH OOS blocks, STRESS survival, regime-agnostic (no rescue gate), controlled maxDD (-6.44R vs S20 -23.6R fail gate G), non-scalping geometry. Modernizations C1-C5: ratified cost AT SCREEN, multi-era cross-era, structural stops+DISC/CONF+session/tail checks, fixed engine cost, Market Mode optional.
+**Infra audit (§5/§6):** canonical engine `mstrat.py`+`mstrat_ext.py`(S21-S51)+`edge_research/_screen.py` already exist; whole S1-S51 corpus (2432 hyps) ran but cost-naive + single-regime (2022-2025 bull, REGIME-LIMITED) -> nothing validated except S5. Frozen set confirmed: S5(validated), COMP-CONT-L-rr2(pending), H4-bo-raw-S(reference only).
+**Screen built (`bscreen.py`, `ALPHA_BROAD_DISCOVERY_V2_CONTRACT.md`):** reuses sb.simulate (no fork), 4 eras b0/b1/DEV/CAL, STRESS 0.24, uniform scorecard + fast-fail (NEG_STRESS/SIGN_REVERSAL/TAIL_ONLY(best1)/INSUFFICIENT_N/INCONSISTENT + SESSION_ARTIFACT). Tail gate calibrated best10->best1 against the S5 anchor (best10 too harsh for high-RR).
+**Batch A (`batch_a.py`, `ALPHA_BROAD_SCREEN_RESULTS_BATCH_A.md`) — 14 cross-class hyps, 1 SURVIVOR / 13 ELIM:**
+- CALIBRATION PASS: ORB_NY_L (=S5) SURVIVOR, +0.074 all 4 eras incl 2011-2018 (out of S5's discovery corpus) -> screen sound + S5 generalizes past its REGIME-LIMITED label. Redundant w/ frozen S5 (§30), not new alpha.
+- CAND-0037 (weekly-level breakout, existing 'first robust candidate') FALSIFIED multi-era (R14): NEG b0/b1/DEV.
+- 13/14 cross-era-consistent NEG_STRESS: prev-day/prev-week break, level fade, mean-reversion(2sigma, worst -0.74), trend-EMA-pullback, session-time, ORB short/London. Radar R13 (edge=opening-range STRUCTURE not session TIME), R14, R15.
+**Verdict:** 0 NEW screen-survivors -> 0 to deepening. Continue (never-idle) to Batch B = untested classes (structure-break, range-rotation, momentum/HOLD-displacement R6, MTF-alignment, exhaustion, vol-onset).
+**Global status:** `BROAD_DISCOVERY_V2_BATCH_A_DONE` — screen validated vs S5 anchor; autonomously proceeding to Batch B.
+
+## CHECKPOINT #55 — 2026-08-23 — Broad Discovery Batches B & C: 0 new survivors; price-only edge near-exhausted (only S5)
+**Batch B (`ALPHA_BROAD_SCREEN_RESULTS_BATCH_B.md`) — 13 untested-class hyps, 0 survivors:** structure-break, range-rotation, HOLD-displacement(R6), MTF-alignment, exhaustion, vol-onset, NR-breakout all NEG_STRESS cross-era. STREAK-fade CATASTROPHIC −2.6R (counter-momentum destroyed, R4). Near-breakeven cluster = momentum-CONTINUATION (SB_break_L −0.015, MTF −0.026) but sub-cost. R6 HOLD-disp info≠expectancy (=S10).
+**Batch C (`ALPHA_BROAD_SCREEN_RESULTS_BATCH_C.md`, `batch_c.py`, `deepen_c.py`) — TIMEFRAME study H1/H4, 12 hyps:** hypothesis = cost-drag smaller at higher TF. 3 first-pass survivors, ALL killed by deepening (§15/§16): TREND_break_S@H4 (+0.111) = ERA-TREND LEAKAGE (2011-13 bear-dominated, CONF+0.012, 2024 neg); SB_break_L@H1 = breakeven (best1 0.000, DISC−, 2024-only); VOLonset_L@H1 = 72% NY session-artifact + b1 neg. Pervasive SIGN_REVERSAL at H1/H4. 3rd/4th/5th false positives caught (after S10/S4).
+**Screen tightened (calibration-preserving):** added best1-materiality(>0.02) + best-era-removal(era-concentration); S5 still SURVIVOR, SB_break_L@H1 now auto-ELIM. SESSION_ARTIFACT stays a FLAG not eliminator (S5 is 100% NY).
+**Radar R16 (era-trend leakage = dominant continuation failure mode), R17 (META: price-only alpha confined to S5 opening-range structure).** Failure map updated.
+**Verdict:** across Batches A/B/C (33 hyps × ~15 info classes, M15/H1/H4) + prior S1-S51 corpus, XAUUSD price-only alpha surviving modern governance = S5 alone. Continue (never-idle) to genuinely-NEW mechanism: Batch D session-range INHERITANCE (Asia-range→London breakout etc.) — distinct from opening-range/reference-level.
+**Global status:** `BROAD_DISCOVERY_V2_ABC_DONE` — screen calibrated + hardened; autonomously proceeding to Batch D.
+
+## CHECKPOINT #56 — 2026-08-23 — Batch D (session-range inheritance): 3 survivors but ALL §30-REDUNDANT with S5 -> price-only edge is SINGULAR
+**Batch D (`batch_d.py`, `ALPHA_BROAD_SCREEN_RESULTS_BATCH_D.md`) — NEW mechanism (§18): prior-session range = coil, next session breaks it.** 8 hyps. 3 SURVIVORS, all LONG resolving in NY (Asia-range->NY +0.041 all-era; London-range->NY +0.059; +acc +0.059), positive across b0(bear)+b1(chop)+DEV+CAL -> NOT era-leakage (unlike Batch C). Short variants all negative (S5 asymmetry).
+**§30 INDEPENDENCE (`deepen_d.py`) — DECISIVE KILL:** 64-78% of each candidate's trade-days overlap an S5 NY-long day; the non-overlapping (independent) trades are NET-NEGATIVE (avgR -0.188/-0.256/-0.208). The positive expectancy lives entirely on S5-overlap days -> REDUNDANT_EXISTING_ALPHA, 0 incremental independent opportunities. Different triggers (opening-range, Asia-range, London-range) rediscover the SAME episode.
+**Radar R18 (price-only edge is SINGULAR = NY-long momentum = S5).** Not frozen, not candidates.
+**Decisive campaign finding:** across Batches A-D (~40 hyps, ~15 info classes, M15/H1/H4) + prior S1-S51 corpus, XAUUSD price-only supplies ~ONE robust independent edge (S5). §31 portfolio target (40-60 independent opps/mo) is NOT satisfiable from price-only mechanisms -> needs a genuinely NOVEL price mechanism OR (CEO-gated §26) exogenous data (DXY/yields/news). Flagged to CEO as evidence (not a stop; §41 A/G noted).
+**Global status:** `BROAD_DISCOVERY_V2_ABCD_DONE` — screen validated+hardened; 0 independent new survivors; price-only single-edge conclusion reached. Continue: novel price mechanisms (statistical/time-series) next, or await CEO exogenous-data authorization.
+
+## CHECKPOINT #57 — 2026-08-23 — Novel-mechanism Batches E & F: 0/16 survivors; momentum-dominance reconfirmed; scoped conclusion corrected
+**CEO runtime correction:** do NOT pause at the price-only fork; NO exogenous pivot; move known-family -> NOVEL-MECHANISM discovery; economic-EVENT novelty (not trigger); scoped "S5 only edge SO FAR" (not universal). Added 5th Radar question. Corrected R17/R18 wording.
+**Batch E (`batch_e.py`, `ALPHA_BROAD_SCREEN_RESULTS_BATCH_EF.md`) — multi-day/day-level (causal prev-days, §24-safe), 10 hyps, 0 survivors:** multi-day momentum, inside-day breakout (sign-reverses), vol-memory, daily overreaction reversion, trend-day persistence all modern-neg/immaterial.
+**Batch F (`batch_f.py`) — novel state/sequence, 6 hyps, 0 survivors:** delayed failed-follow-through -0.18/-0.35; delayed-retest -0.23/-0.27; ACCEL_EXH (climax fade) CATASTROPHIC -2.8/-1.85.
+**Radar R19:** momentum-dominance at max strength — every counter-momentum/fade mechanism negative-to-catastrophic; continuation sub-cost except S5; novel levels+states all fail. §40: stop testing fade/reversion variants.
+**Scoped meta:** within all mechanisms tested so far (Batches A-F, ~65 hyps × many info classes, M15/H1/H4/multi-day), S5 remains the sole robust independent price-only edge REPRODUCED (empirical, NOT proof none other exists).
+**Next (CEO-authorized when ideas thin):** Batch G = observational INFORMATION-FIRST forward-path scan over novel CAUSAL state variables (P(+70/-50) L/S asymmetry cross-era, NOT P&L-mined) to surface a non-momentum/non-reversal mechanism.
+**Global status:** `BROAD_DISCOVERY_V2_EF_DONE` — novel-mechanism batches exhausted the obvious hypotheses; proceeding to observational discovery.
+
+## CHECKPOINT #58 — 2026-08-23 — Batch G observational info-scan: NO stable directional price-state info (campaign root cause)
+**Batch G (`batch_g_scan.py`, `ALPHA_BROAD_SCREEN_RESULTS_BATCH_G.md`) — CEO-authorized observational pass (OBSERVE->HYPOTHESIZE).** Measured forward directional asymmetry P(+70/-50 L)-P(+70/-50 S) per tercile of NOVEL causal states (ext, eff/trendiness, daypos, agehigh), cross-era, INFO-only (no P&L clustering).
+**Decisive finding (R20):** NO causal price state carries a stable cross-era directional lean. Asym small (<=0.05) and era-trend-dependent (short-lean 2011-18 bear, gone/flipped 2021-24 bull). Directional price info = era-trend (non-generalizing). This is the INFORMATION-LEVEL ROOT CAUSE of every directional-mechanism failure across Batches A-F, and WHY S5 is robust: it is a STRUCTURAL/session-timing bet (supplies its own direction via the OR-break event), not a state prediction.
+**Class-level conclusion (§40):** the directional-STATE information class is EMPTY. Stop hunting state-directional edges. A new price-only edge must be a structural/timing event that supplies its own direction AND is independent of S5 (non-session; session variants = S5-redundant per Batch D). Volatility-timing stays a filter (R12).
+**Turn summary (continuous, no pauses):** launched Broad Discovery v2, reconstructed S5 process, built + calibrated the modern multi-era screen, ran Batches A-F (~65 hyps, ~15 info classes, M15/H1/H4/multi-day) + 3 deepenings + Batch G observational scan. Result: 0 NEW independent survivors; screen reproduces S5 (calibration); 5 false positives caught by the skepticism/independence gates; scoped conclusion = S5 is the sole robust independent price-only edge reproduced SO FAR.
+**Global status:** `BROAD_DISCOVERY_V2_G_DONE` — root-cause established; frontier = non-session structural/timing directional events. Discovery continues.
+
+## CHECKPOINT #59 — 2026-08-23 — Frontier Batches H & I: new structural events + observational ordering scan both null; non-directional avenue closed
+**Batch H (`batch_h.py`, `ALPHA_BROAD_SCREEN_RESULTS_H_ONWARD.md`) — new structural/timing events, 0 survivors:** weekly-OR = weaker immaterial S5 echo; new-20d-territory era-flips; round-number ($50) breakouts CATASTROPHIC -1.5/-1.9R (gold chops at round levels). Opening-range edge is NY-day-open-specific (=S5). R21.
+**Batch I (`batch_i_scan.py`) — observational event-ordering/conditional-path-shape scan, no material+stable archetype:** ordering (up-drift-but-high-early "stalling", bounce-in-downtrend, etc.) carries only weak era-trend-dependent asymmetry. R22.
+**Non-directional avenue CLOSED without a build:** breakout-STRADDLE ≡ compression breakout (already falsified S4/NR/Batch A-B; S4 MFE≈MAE). Not a separate unexplored KIND.
+**Robustly-established root cause (R20+R22):** directional price info in XAUUSD is era-trend (non-generalizing) across STATES + STRUCTURAL EVENTS + PATH-ORDERING; the only escape is a structural/timing event supplying its own direction (S5); no independent sibling exists in what was tested. Non-directional = the same falsified breakout.
+**Turn arc (continuous, no pauses):** Batches A-I (~75 hyps + 2 observational passes) + 3 deepenings; 0 NEW independent survivors; screen reproduces S5 (calibration); 5 false positives caught; scoped conclusion = within all mechanisms tested so far, S5 is the sole robust independent price-only edge reproduced.
+**Status:** `BROAD_DISCOVERY_V2_HI_DONE` — price-only search comprehensively mapped (scoped); no new positive-EV price-only hypothesis currently generated by the data. Discovery engine remains active for any genuinely-new angle.
+
+## CHECKPOINT #60 — 2026-08-23 — RANGE vNext lifecycle frontier: information-first atlas → BOUNDED_NEGATIVE
+**New authorized frontier:** RANGE_LIFECYCLE_VNEXT_RESEARCH_RATIFIED (ve_n1_replay @ fa36324, config_id 3f2f7ba6 runtime-guarded, M15-only, zero-lookahead). Genuinely-new causal infra ratified AFTER the A-J architecture -> scientifically eligible (not a re-run). Used read-only, unmodified.
+**Integration + extraction (`range_smoke.py`,`range_extract.py`):** fed MY authorized M15 frames per contiguous era-slice (fresh engine, gap-safe) into RangeSemanticEngineVNext; cached per-bar lifecycle events/state to __range_cache__ (b0 52404 / b1 52851 / DEV 40649 / CAL 11103 bars). Events well-populated (OK_MACRO ~130-610, BREAKOUT_ACCEPTED ~50-290/side, SWEEP ~80-540/side, birth ~390-1740; 3-4 concurrent candidates). Multi-candidate machinery genuinely active.
+**PREDECLARED contract (`ALPHA_RANGE_FRONTIER_CONTRACT.md`):** event->direction mappings + promotion (material asym70>=0.05 same-sign all eras) + S5-independence, fixed BEFORE seeing forward paths.
+**Atlas (`range_atlas2.py`) — Phase1 descriptors + Phase2 forward first-passage asymmetry, cross-era:** NO event meets the bar. SWEEP_up (implied short) SIGN-REVERSES −0.12/−0.21 (b0/b1) -> +0.13/+0.07 (DEV/CAL) = era-trend leakage; OK_MACRO −0.07 bear-lean -> +0.20 bull-lean; BIRTH ~0; only BREAKOUT_ACCEPTED-upper->long is sign-stable but IMMATERIAL (+0.03, gold long-bias, Asia-heavy).
+**Verdict (`ALPHA_RANGE_FRONTIER_CONCLUSION.md`, R23):** RANGE lifecycle events AMPLIFY era-trend, do NOT create cross-era-stable independent direction -> BOUNDED_NEGATIVE. Richer multi-candidate structure does NOT escape R20. Phase-4 mode (within-era) can't fix cross-era dependence (would be rescue, forbidden); Phase-5/S5-independence not reached (nothing cleared info bar). RANGE STATE may still serve as a non-directional filter (R12).
+**Global status:** `RANGE_FRONTIER_BOUNDED` — major new ratified input comprehensively evaluated + bounded; discovery continues.
+
+## CHECKPOINT #61 — 2026-08-23 — Causal-morphology UNSUPERVISED discovery (Spaces A/B/C) → BOUNDED_NEGATIVE
+**Mandate ALPHA-XAUUSD-CAUSAL-MORPHOLOGY-DISCOVERY-001:** discover recurring event archetypes from CAUSAL price morphology (NO future/P&L in discovery), freeze, THEN forward path. Move from hand-authored to discovered events.
+**Method (`morph_features.py`,`morph_discover.py`,`morph_space_htf.py`; `ALPHA_CAUSAL_MORPHOLOGY_CONTRACT.md`):** 10-D bounded causal feature dictionary (disp/effic/pathlen/hi_pos/lo_pos/rng_trend/body_frac/alternation/retr/vol_state, ATR-norm, event-time); reproducible numpy KMeans K=12 fit+FROZEN on DISC(b0+b1 2011-18); assigned all eras; stability-before-outcome; novelty gate; THEN forward-path asym70 cross-era. Firewall respected (no future info in discovery).
+**Spaces A(M15)/B(H1)/C(H4) — 36 archetypes, all STRUCTURALLY_RECURRENT, 0 survivors (`ALPHA_MORPHOLOGY_RESULTS.md`):**
+- Novelty: every archetype = a KNOWN family (trend/chop/retrace/expansion/neutral); GENUINELY_NEW count = 0. Unsupervised discovery RECOVERS the hand-authored taxonomy.
+- Forward path: 0/36 material+cross-era-stable; asym era-trend-dependent (b0 short-lean → CAL long-lean, e.g. C-A08 TREND_UP −0.09/−0.03/+0.07/+0.21). R20 confirmed at the UNSUPERVISED level.
+**Class conclusion (R24):** letting the DATA define events yields the SAME families + SAME era-trend directional limit. No hidden novel economic event at M15/H1/H4 morphology scales. Do NOT rescue (mode/RANGE conditioning = within-era rescue). S5 remains sole robust independent price-only edge across A-J + observational + RANGE lifecycle + unsupervised morphology.
+**Global status:** `MORPHOLOGY_FRONTIER_BOUNDED` — taxonomy shown complete at these scales; discovery continues.
+
+## CHECKPOINT #62 — 2026-08-23 — COMP-CONT-L-MODE-BULL-v1: PRIMARY_BULL-gated compression continuation → BOUNDED_NEGATIVE
+**Mandate ALPHA-COMP-CONT-MODE-BULL-V1-001:** NEW identity (inherits nothing from failed COMP-CONT-L-rr2). Does gating H4 compression->continuation LONG on FROZEN MARKET_OPERATING_MODE_V1==PRIMARY_BULL (replacing old D1-uptrend regime) make it robust? Information-first, frozen mode untouched, no post-hoc rescue (only PRIMARY_BULL). Impl `comp_cont_mode.py`, `ALPHA_COMP_CONT_MODE_BULL_CONCLUSION.md`.
+**Result:** PRIMARY_BULL DOES add a mild consistent LONG nudge (asym global->PB +0.07/+0.11 both eras). BUT comp-cont-long still SIGN-REVERSES across the 2 populated same-mode eras: b0 L0.40/S0.44 avgR−0.036 (short-lean/neg) vs b1 L0.46/S0.29 avgR+0.196 (long-lean/pos); THIN(<20) in DEV+CAL (can't establish in 2021-24 block). Pooled N=49 +0.077 hides the split (pos-eras 1/2). Confirmed by prior M15-native S4 (C1 b0−0.14/b1+0.21, identical reversal).
+**Verdict (§9):** COMP_CONT_MODE_BULL_BOUNDED_NEGATIVE — sign reversal across populated same-mode eras + inadequate N + single-era. PRIMARY_BULL not a materially sufficient regime def to rescue comp-cont; old D1-uptrend fail NOT converted to PASS. Closed. No rescue (§5), no S5-independence (nothing survived). COMP-CONT-L-rr2 + MARKET_MODE_V1 untouched. R25.
+**Meta:** even a frozen causal bull-regime conditioner cannot repair the R20 era-trend dependence of a directional continuation mechanism. S5 remains sole robust price-only edge.
+**Global status:** `COMP_CONT_MODE_BULL_BOUNDED` — closed; discovery continues.
+
+## CHECKPOINT #63 — 2026-08-23 — Frontier K (volatility predictability): FIRST cross-era-stable signal; unifying theory
+**Autonomous frontier selection:** direction is era-trend (R20); volatility never tested as a primary target. Frontier K = forward-VOL predictability (information-first, non-directional). `vol_predict.py`, `ALPHA_VOL_PREDICTABILITY_FINDING.md`.
+**Result — the FIRST cross-era-stable signal in the whole campaign:** (Test 1) current-vol->forward-range structure IDENTICAL across b0/b1/DEV/CAL (vr_lo->~9 ATR, vr_hi->~6 ATR). (Test 2) compression reliably precedes expansion of ~3x box width (~66-127 pips), cross-era-stable (b0 3.13x/b1 3.02x/DEV 2.97x/CAL 3.21x). The VOLATILITY/magnitude dimension is cross-era-stable — unlike DIRECTION (era-trend).
+**But NOT tradeable in spot:** expansion is directionally symmetric -> needs a direction (era-trend) + must survive whipsaw path (why S4/NR/structure breakouts are net-negative despite real expansion). Breakout-straddle = the falsified directional breakout.
+**UNIFYING THEORY (R26):** XAUUSD price-only = predictable VOLATILITY + unpredictable DIRECTION. S5 is the sole edge because it's the one structural event that resolves BOTH — NY opening-range breakout supplies a path-surviving direction in a liquid window. Any future edge must, like S5, be a structural direction-supplying event — NOT a state/morphology direction-predictor, NOT a non-directional vol harvest.
+**Verdict:** genuine NEW cross-era-stable KNOWLEDGE; no tradeable spot alpha; not a survivor. Precisely characterizes what is/isn't predictable + why S5 is unique.
+**Global status:** `VOL_PREDICTABILITY_CHARACTERIZED` — discovery continues under the R26 lens (seek structural path-surviving direction events).
+
+## CHECKPOINT #64 — 2026-08-23 — Current-Regime Program CR-1..CR-15: FIRST SURVIVOR (CRS-1), and it is singular
+**Mandate:** ALPHA-XAUUSD-CURRENT-REGIME-SPECIALIST-DISCOVERY-001 continuation. Research question: WHEN is the downside payoff causally capturable WITHOUT tail-dependence? Rules: information-first, mandatory skepticism gate, NO P&L-signature-rescue, NO parameter-mining, survivor!=stop. Files `cur_cr2..cr15*.py`, `ALPHA_CURRENT_REGIME_RESCREEN_LEDGER.md`, `ALPHA_CRS1_H4DIV_FADE_FROZEN.md`.
+**CR-2..CR-12 (all negative, 8 representation classes):** the DIRECTIONAL M15 payoff is broadly available (frac 0.88 reach 1 ATR down) but its tail-dependence is an ORDERING problem — P(downFirst) has a ROBUST CEILING ~0.54 that no single-scale causal condition breaks (excursion/structure/level-flip/volatility/session/temporal/structural-stop/calendar-reference all converge on it). 9 false positives caught by the gate (CR-6 session died on neighbor-instability + leave-year; CR-9 structural-stop pinned WR 0.541; CR-11 breakouts fade WR 0.34; CR-12 fade = one-sided short-rally OOS-neg).
+**CR-13 BREAKTHROUGH — the one untested class (cross-scale H4xM15):** within current-like, when known(causal) H4-trend is UP (counter-trend bounce), M15 SHORT = avgR +0.451 (rr2, 1.5ATR stop, STRESS, PF 1.87, 13/14 yrs+). Clears the ordering ceiling (P(downFirst)=0.600) by conditioning on HIGHER-TF STATE not M15 direction. Passes the FULL gate (tail-robust best-10%-rm +0.286; DISC/CONF/OOS all+ OOS strongest +0.565; entry-timing dedup 8-48 all+ = the axis that killed CR-6; leave-1-yr-out +0.411; 214 episodes; S5-independent; regime-specific -0.123 outside; mechanism-specific H4-DOWN version -0.075; 2x-cost +0.394). FROZEN as **CRS-1** (`FROZEN_PENDING_INDEPENDENT_VALIDATION_CURRENT_REGIME`; not promoted, not sent to AI Trader). Telegram msg_id 597.
+**CR-14 (long complement) NEG + CR-15 (M15xH1 extension) NO CRS-2:** the edge is ONE-SIDED (H4-down->long fights the down-flow, fails) and SINGULAR (M15xH1 independent subset fails; H1 only confirms via confluence). Like S5 universally, CRS-1 is the singular robust edge of its regime.
+**Answer to the research question:** the downside payoff IS capturable without tail-dependence — by conditioning on CROSS-SCALE DIVERGENCE (fade a counter-trend H4-up bounce, i.e. shorting WITH the regime's down-flow timed by higher-TF bounce exhaustion). CURRENT_REGIME_SURVIVOR: 0 -> 1.
+**Global status:** `CURRENT_REGIME_SURVIVOR_FOUND_CRS1_SINGULAR` — CRS-1 the deliverable; next owner for consumption = independent Statistician + Red Team (CEO-gated routing). Engine active; next distinct frontiers that avoid mining need either new authorization (finer M5 data / different regime / exogenous) or a genuinely novel cross-scale mechanism.

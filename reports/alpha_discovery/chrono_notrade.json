@@ -1,0 +1,137 @@
+{
+"2020-Q1": {
+"cooldown": 823,
+"no_structural_event": 1312,
+"ctx_not_directional": 3520
+},
+"2020-Q2": {
+"ctx_not_directional": 4626,
+"no_structural_event": 657,
+"cooldown": 467
+},
+"2020-Q3": {
+"no_structural_event": 1186,
+"cooldown": 807,
+"ctx_not_directional": 3844
+},
+"2020-Q4": {
+"cooldown": 490,
+"no_structural_event": 760,
+"ctx_not_directional": 4551
+},
+"2021-Q1": {
+"cooldown": 409,
+"no_structural_event": 643,
+"ctx_not_directional": 4617
+},
+"2021-Q2": {
+"ctx_not_directional": 3884,
+"no_structural_event": 1037,
+"cooldown": 766
+},
+"2021-Q3": {
+"ctx_not_directional": 4872,
+"no_structural_event": 654,
+"cooldown": 407
+},
+"2021-Q4": {
+"ctx_not_directional": 4194,
+"no_structural_event": 984,
+"cooldown": 601
+},
+"2022-Q1": {
+"cooldown": 678,
+"no_structural_event": 996,
+"ctx_not_directional": 4031
+},
+"2022-Q2": {
+"ctx_not_directional": 4190,
+"cooldown": 657,
+"no_structural_event": 860
+},
+"2022-Q3": {
+"ctx_not_directional": 3623,
+"no_structural_event": 1324,
+"cooldown": 869
+},
+"2022-Q4": {
+"ctx_not_directional": 4419,
+"no_structural_event": 779,
+"cooldown": 532
+},
+"2023-Q1": {
+"ctx_not_directional": 3662,
+"no_structural_event": 1150,
+"cooldown": 850
+},
+"2023-Q2": {
+"ctx_not_directional": 4564,
+"no_structural_event": 720,
+"cooldown": 464
+},
+"2023-Q3": {
+"ctx_not_directional": 4235,
+"no_structural_event": 944,
+"cooldown": 623
+},
+"2023-Q4": {
+"cooldown": 720,
+"no_structural_event": 1100,
+"ctx_not_directional": 3858
+},
+"2024-Q1": {
+"ctx_not_directional": 4455,
+"cooldown": 465,
+"no_structural_event": 744
+},
+"2024-Q2": {
+"cooldown": 746,
+"no_structural_event": 1093,
+"ctx_not_directional": 3933
+},
+"2024-Q3": {
+"ctx_not_directional": 3961,
+"cooldown": 825,
+"no_structural_event": 1068
+},
+"2024-Q4": {
+"no_structural_event": 859,
+"cooldown": 702,
+"ctx_not_directional": 4217
+},
+"2025-Q1": {
+"ctx_not_directional": 3755,
+"no_structural_event": 1037,
+"cooldown": 804
+},
+"2025-Q2": {
+"no_structural_event": 904,
+"cooldown": 654,
+"ctx_not_directional": 4147
+},
+"2025-Q3": {
+"ctx_not_directional": 3663,
+"cooldown": 977,
+"no_structural_event": 1181
+},
+"2025-Q4": {
+"cooldown": 1015,
+"no_structural_event": 1213,
+"ctx_not_directional": 3490
+},
+"2026-Q1": {
+"ctx_not_directional": 3575,
+"no_structural_event": 1145,
+"cooldown": 857
+},
+"2026-Q2": {
+"cooldown": 501,
+"no_structural_event": 759,
+"ctx_not_directional": 4473
+},
+"2026-Q3": {
+"ctx_not_directional": 1120,
+"no_structural_event": 311,
+"cooldown": 217
+}
+}
