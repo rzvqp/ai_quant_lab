@@ -41,3 +41,23 @@ campaign) but NOT a tradeable edge — magnitude/timing is amplified, DIRECTION 
 not monetize (whipsaw persists/worsens).** This refines (does not overturn) the prior `DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED`:
 DXY carries STABLE non-directional info (new) but still no tradeable directional edge (confirmed). Answers the CEO question:
 WHEN/HOW-LARGE/HOW-FAST → DXY helps (stable info); WHICH-WAY → no; TRADEABLE → no. Frozen as an information finding; not mechanized.
+
+## JOINT compression/convergence (`dxy_joint.py`) — negative; DXY frontier V1 CONCLUSION
+Last distinct DXY mechanism: XAU breakout gated on DXY-also-compressed + DXY-inverse-impulse at the break (shared-catalyst coordinated
+direction). All variants net-negative every block: baseline −0.309/−0.307/−0.333; +DXY-compressed −0.307/−0.254/−0.376; +DXY-inverse-
+impulse −0.424/−0.264/−0.373. The DXY coordination does not rescue the breakout — whipsaw dominates.
+
+## DXY_INCREMENTAL_INFORMATION_DISCOVERY_V1 — FRONTIER CONCLUSION
+Comprehensively answered the CEO question "can DXY help resolve WHEN/HOW-LARGE/HOW-FAST/WHICH-WAY the predictable XAU expansion?":
+- **WHEN / HOW-LARGE / HOW-FAST → YES (genuine, first stable incremental signal): DXY-NDX1** — a causal DXY impulse amplifies XAU
+  expansion magnitude/timing (dP2R +0.08/+0.09/+0.11), cross-era-stable, non-redundant (survives XAU-own-vol control), dedup-robust.
+- **WHICH-WAY → NO:** DXY direction is weak + regime-conditional (inverse in disinflation b0/b1, flips in the 2021-23 inflation regime);
+  H-DIR1, dir-confluence, and joint-convergence all confirm no stable direction resolution.
+- **TRADEABLE → NO:** the stable DXY info is NON-DIRECTIONAL (magnitude), and a bigger symmetric expansion is not monetizable (all DXY-
+  conditioned breakouts net-negative, some worse than baseline). No cross-era-stable tradeable DXY edge.
+- **Refines (not overturns) the prior `DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED`:** DXY carries a STABLE non-directional incremental
+  component (NDX1, new positive) plus real-but-regime-conditional directional info (prior); neither yields a tradeable edge.
+- **Mechanism / next axis:** DXY↔gold direction is a reduced-form of the real-yield / monetary regime; DXY alone (an endogenous output)
+  cannot be a cross-era-stable direction resolver. The prior work's recommendation stands and is now doubly-confirmed: the deeper STABLE
+  driver is REAL YIELDS (which DXY only reflects) — a DIFFERENT exogenous axis requiring separate CEO authorization + governed data.
+  2024+ DXY never accessed; causal contract enforced; S5 frozen; no mining. **GOVERNANCE GATE: DXY-only frontier concluded.**
