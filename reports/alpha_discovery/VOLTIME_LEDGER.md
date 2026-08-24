@@ -14,3 +14,13 @@ dir)=0.888, medT2R=6b, P(3R)=0.737.
 - **FOUNDATION:** the move reliably COMES after compression. Open crux (R26): does a breakout capture it after costs + whipsaw?
   -> VOLTIME-2 tests the tradeable compression-breakout (direction supplied by the break). Info-first threshold MET; proceeding to
   mechanize + falsify (not yet an edge — path/cost is the decisive test).
+
+## VOLTIME-2/3 (`voltime_breakout.py`, `voltime_resolution.py`) — expansion NOT capturable by generic breakout (whipsaw=null)
+Compression-range breakout (D=12,M=24,RR=2, STRESS 0.24), direction supplied by the break:
+- RAW: 7,323 signals, **winrate 0.333 = EXACT 2R:1R null, gross +0.000**, net −0.240. Every era/session (incl NY)/neighbor negative.
+- Direction-resolutions (mandate's list) ALL fail: DISPLACEMENT gross −0.046 (WORSE — a big break has already spent the move),
+  ACCEPTANCE +0.012 (best gross, still net −0.228, not cross-era+), RETEST −0.005. Winrate pinned ~0.33 regardless of confirmation.
+- **The real, cross-era-stable expansion (VOLTIME-1) is DIRECTIONALLY SYMMETRIC and uncapturable by generic break-confirmation** —
+  the whipsaw exactly cancels the expansion. Confirms R26 from the volatility angle: predictable magnitude, unmonetizable direction.
+  Note 82% of raw signals are Asian-session low-liquidity compressions. S5's NY-open session-timing remains the unique surviving
+  direction-resolution. VOLTIME-4 next: S5-style opening-range breakout at the LONDON open (the most-principled second-edge location).
