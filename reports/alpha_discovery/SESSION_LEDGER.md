@@ -33,3 +33,23 @@ Session-relative phases (DST-correct), forward K=8b=2h non-directional metrics, 
   CONTEXT/filter, NOT a standalone tradeable edge (direction still the binding constraint; the underlying directional mechanisms fail).
   Consistent with the campaign: session-TIMING supplies real non-directional structure (like VOLTIME, DXY-NDX1) but no standalone
   directional edge beyond S5's narrow config. Next: LBMA PM benchmark (family-6) + synthesis.
+
+## SF-4 remaining families (`session_remaining.py`) — all directional COINFLIP
+- **(6) LBMA PM 15:00 London:** after a LARGE pre-fix move, P(continuation)=0.496 (D0.50/C0.50/O0.49) — benchmark window does NOT change
+  continuation/reversal. No info.
+- **(3-proper) London H/L level interaction at US 08:30:** break P(cont)=0.508, sweepback 0.491 — both coinflip; sweep adds NO reversal
+  info (0.509 vs 0.492). No info.
+- **(1D) Asia sweep+reclaim+retest → fade:** P(fade)=0.485 — reclaim does NOT predict reversal (confirms SF-1). No info.
+
+## SESSION_TIMING_LIQUIDITY_DISCOVERY_V1 — FRONTIER CONCLUSION
+Comprehensively tested (DST-correct native-tz anchors, info-first, per era, S5 frozen, DXY not used):
+- **Every DIRECTIONAL session event is COINFLIP / no edge:** Asia→London extreme interaction (break/sweep/reclaim), US 08:30 ORB, NYSE
+  09:30 ORB, 08:30→09:30 continuation, LBMA PM post-fix, London-H/L level interaction. No time-anchored session event creates a
+  cross-era-stable directional edge. S5's narrow NY-long config remains the unique, non-generalizable exception.
+- **ONE genuine NON-DIRECTIONAL finding (SF-3):** a cross-era-stable session-phase WHIPSAW/OPPORTUNITY map (US-session cleanest whipsaw
+  0.088, pre-US/macro choppiest 0.42, London-AM best clean-expansion ratio 0.71@0.16). A valid NO_TRADE/context asset (the CEO counts a
+  NO_TRADE window as a real edge) — but a FILTER/context, not a standalone P&L strategy. Explains WHY S5's window works (lowest whipsaw)
+  and WHY breakouts at the macro window fail (highest whipsaw).
+- **VERDICT:** session-timing supplies real cross-era-stable NON-DIRECTIONAL structure (SF-3, like DXY-NDX1 and VOLTIME-1) but NO
+  standalone tradeable directional edge beyond S5. FOURTH frontier confirming the campaign structure: magnitude/timing/session-structure
+  predictable, DIRECTION the binding constraint. GOVERNANCE GATE: session frontier concluded. S5 frozen; no candidate promoted.
