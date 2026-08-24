@@ -24,3 +24,16 @@ Compression-range breakout (D=12,M=24,RR=2, STRESS 0.24), direction supplied by 
   the whipsaw exactly cancels the expansion. Confirms R26 from the volatility angle: predictable magnitude, unmonetizable direction.
   Note 82% of raw signals are Asian-session low-liquidity compressions. S5's NY-open session-timing remains the unique surviving
   direction-resolution. VOLTIME-4 next: S5-style opening-range breakout at the LONDON open (the most-principled second-edge location).
+
+## VOLTIME-4 (`voltime_session.py`) — no generic second session-timing edge
+Opening-range breakout (first-1h OR, both directions) at each session open, STRESS 0.24:
+- ASIA(00h) net −0.246 (RR2)/−0.372 (RR3); LONDON(07h/08h) −0.290/−0.285 (RR2), −0.44/−0.41 (RR3); all net-negative, WR ~0.32, gross ~0.
+- RR3 far worse everywhere (WR 0.13-0.22 — whipsaw dominates a distant target).
+- **NY-ref caveat:** my NAIVE both-direction NY-13h ORB is ALSO negative (−0.459) — this does NOT contradict S5. S5 is LONG-ONLY with
+  its specific OR/rr3/stop config (the "NY long-momentum" episode, mstrat.py:260-278); a generic both-direction ORB is not S5. This
+  reinforces that S5's edge is NARROW and non-generalizable, not a generic "session ORB works" phenomenon.
+- **VOLTIME frontier interim (4 families):** volatility expansion is REAL + predictable + cross-era-stable (VOLTIME-1), but NOT
+  independently tradeable — generic breakout (V2), any direction-resolution (V3), and any session ORB (V4) all pin at the ~null 0.33
+  winrate / net-negative after costs. Confirms R26 from the volatility angle: predictable magnitude, unmonetizable symmetric direction;
+  S5's narrow NY-long config is the unique surviving direction-resolution. Next distinct angle: path-asymmetry / first-move fade after
+  compression (does the first break reverse = liquidity grab?), the last non-breakout volatility-timing mechanism.
