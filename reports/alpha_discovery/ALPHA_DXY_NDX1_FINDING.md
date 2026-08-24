@@ -30,3 +30,14 @@ amplified by DXY-impulse, but DIRECTION remains unresolved (H-DIR1 null). Per VO
 S5-style entry survives costs — or merely bigger-symmetric (still untradeable)? MECHANIZE only if a DXY-impulse-conditioned entry beats
 its unconditioned baseline after full costs cross-block. No strategy, no P&L claim yet. S5 frozen/untouched. No parameter mining
 (median splits, predeclared features). No protected data.
+
+## TRADEABILITY VERDICT (`dxy_tradeable.py`) — INFORMATION-ONLY, NOT tradeable
+Compression-breakout on the DXY-aligned XAU-H1 blocks (STRESS 0.24): BASELINE all breakouts net −0.309/−0.307/−0.333 (b0/b1/y2123,
+confirms H1 breakout ≈ M15 VOLTIME-2 null-negative). **DXY-IMP-FILTER net −0.348/−0.346/−0.468 (WORSE than baseline)** — the DXY-impulse-
+amplified expansion is bigger but DIRECTIONALLY SYMMETRIC, so the wider move whipsaws MORE, not less. DXY-DIR-CONFLUENCE (break agrees
+with DXY-inverse) net −0.502/−0.328/−0.300 (also all-negative; direction weak + era-inverting). **NONE tradeable.**
+**VERDICT: DXY-NDX1 = genuine, cross-era-stable, non-redundant NON-DIRECTIONAL INFORMATION (first stable incremental signal in the
+campaign) but NOT a tradeable edge — magnitude/timing is amplified, DIRECTION remains unresolved, and a bigger symmetric expansion does
+not monetize (whipsaw persists/worsens).** This refines (does not overturn) the prior `DXY_INCREMENTAL_INFORMATION_NOT_SUPPORTED`:
+DXY carries STABLE non-directional info (new) but still no tradeable directional edge (confirmed). Answers the CEO question:
+WHEN/HOW-LARGE/HOW-FAST → DXY helps (stable info); WHICH-WAY → no; TRADEABLE → no. Frozen as an information finding; not mechanized.
