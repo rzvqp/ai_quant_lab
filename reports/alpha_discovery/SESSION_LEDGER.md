@@ -21,3 +21,15 @@ DST-correct macro/equity anchors (distinct from VOLTIME-4 fixed-UTC ORBs). 30-mi
   HARDER than the generic null (WR<0.33). Family-4: 08:30→09:30 move continues past 09:30 at P=0.510 (D0.52/C0.51/O0.50) = coinflip, no
   continuation info. **VERDICT: no tradeable directional edge at the US-participation anchors; S5's narrow NY-long config stays
   non-generalizable.** Consistent with VOLTIME-4. Next: family-5 session-phase opportunity structure (London-lunch NO_TRADE, non-directional).
+
+## SF-3 SESSION-PHASE opportunity structure (`session_phase.py`) — cross-era-stable NON-DIRECTIONAL finding (valid NO_TRADE map)
+Session-relative phases (DST-correct), forward K=8b=2h non-directional metrics, per era. ALL phases cross-era-STABLE (D/C/O nearly identical).
+- **Whipsaw (both ±1ATR within 2h = chop) varies ~5x by phase, stable:** US_SESSION post-09:30 = **0.088 (cleanest/most trending)**;
+  London-AM 0.161; LATE 0.136; **pre-US/London-lunch 0.424 and US-MACRO 0.383 (choppiest)**. fwdRange/P(move): macro-window high
+  (5.1/0.93 — but forward-window leaks into the 08:30 explosion) vs US-session low (2.36/0.51 — clean but quiet).
+- **Reading:** the pre-US/macro window is HIGH-expansion but HIGH-whipsaw (breakout NO_TRADE zone — explains why 08:30/09:30 ORB failed);
+  the US cash session is LOW-whipsaw/clean (where S5 lives) but low expansion; London-AM has the best clean-expansion ratio (0.71 P(move)
+  at 0.16 whipsaw). **This is a valid cross-era-stable NON-DIRECTIONAL session-timing discovery (a whipsaw/NO_TRADE map)** — useful as
+  CONTEXT/filter, NOT a standalone tradeable edge (direction still the binding constraint; the underlying directional mechanisms fail).
+  Consistent with the campaign: session-TIMING supplies real non-directional structure (like VOLTIME, DXY-NDX1) but no standalone
+  directional edge beyond S5's narrow config. Next: LBMA PM benchmark (family-6) + synthesis.
