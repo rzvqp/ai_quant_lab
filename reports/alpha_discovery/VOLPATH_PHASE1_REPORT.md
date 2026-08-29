@@ -37,3 +37,19 @@ Answer: **MARGINAL / CONDITIONAL — proceed to a BOUNDED Phase-2 with the §14 
 - **Decision:** the property is real and stable enough to warrant ONE bounded Phase-2 falsification (D-family: post-classification entry;
   and a WIDE ±2ATR conditional straddle as the two-sided candidate). If Phase-2 shows it is REDUNDANT_WITH_PREVIOUSLY_CLOSED_FRONTIER or
   fails cost/robustness → close VOLPATH honestly as an information-only result. No strategy claimed. S5 frozen. Broker disabled.
+
+## PHASE-2 (bounded) — both candidates FALSIFIED; VOLPATH closes INFORMATION-ONLY
+`volpath_phase2.py` (STRESS 0.24, blocks D/C/O):
+- **RAW breakout baseline: net −0.439** all eras (confirms VOLTIME-2 null-negative).
+- **POST-CLASSIFICATION (D) entry: net −0.519 — WORSE than the raw breakout** → **REDUNDANT_WITH_PREVIOUSLY_CLOSED_FRONTIER** (§14). The
+  Phase-1 continuation lift (0.154→0.395) was mechanical/definitional; entering after the 2-bar follow-through arrives later (0.3ATR gone)
+  and still hits 34% double-break — a delayed breakout that fails identically. NOT a distinct edge.
+- **STRADDLE (B) range-boundary: net −0.375/event, both-side-activation 0.478** — pays whipsaw on BOTH sides ~48% of the time (the 47%
+  double-break confirmed), net-negative every era. Straddle harvests whipsaw, not volatility.
+
+## §7 HARD GATE — RESOLVED: **NO monetizable path asymmetry.** VOLPATH CLOSED as information-only.
+The compression-expansion path is whipsaw-dominant and directionally symmetric; the one non-trivial property (post-classification
+continuation) is redundant with the already-failed breakout, and two-sided harvesting pays whipsaw twice. **No strategy invented**
+(mandate §7/§17 stop A+B). The genuine deliverable is the PATH-GEOMETRY INFORMATION itself (VOLPATH_INFORMATION_LEDGER.md) — it precisely
+characterizes WHY the predictable expansion is not harvestable (symmetric double-break oscillation), a fifth non-directional information
+asset alongside VOLTIME-1 / DXY-NDX1 / SF-3. S5 frozen/untouched; broker disabled; no protected data; no mining.
