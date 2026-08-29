@@ -1,0 +1,72 @@
+//@version=6
+indicator("AI_TRADER_CONTEXT_V1", overlay=true)
+
+// =====================================================================
+// AI_TRADER_CONTEXT_V1 -- SCRIPT_VERSION 1.0
+// CONTEXT ONLY. Never generates BUY/SELL/LONG/SHORT signals or logic.
+// Combines exactly three approved diagnostics:
+//   1. Confirmed H1 EMA(50)         -- staleness / cross-scale tripwire
+//   2. Causal session VWAP          -- mean location / acceptance-rejection
+//   3. M15 ATR(14), pip-converted   -- volatility magnitude
+// Decision hierarchy (never altered by this script):
+//   H4 context -> H1 structure -> M15 structure/location/confirmation
+//   -> this indicator (secondary context) -> BUY/SELL/NO_TRADE
+// Any future change creates AI_TRADER_CONTEXT_V2 -- this file is not
+// silently edited once Q3 evidence begins accumulating against it.
+// =====================================================================
+
+// ---- 1. H1 EMA(50), CONFIRMED/CLOSED H1 bars only, non-repainting ----
+// The [1] offset on the H1-resolution series guarantees every M15 bar only
+// ever sees the last FULLY CLOSED H1 bar's EMA value -- the H1 bar currently
+// forming (whose eventual close is not yet known at the M15 replay
+// timestamp) is never referenced. lookahead=barmerge.lookahead_off prevents
+// any future-bar leakage during historical/replay evaluation.
+h1_ema_raw = ta.ema(close, 50)
+h1_ema = request.security(syminfo.tickerid, "60", h1_ema_raw[1], lookahead=barmerge.lookahead_off)
+
+h1_ema_slope_val = h1_ema - h1_ema[1]
+h1_ema_slope_txt = h1_ema_slope_val > 0 ? "RISING" : h1_ema_slope_val < 0 ? "FALLING" : "FLAT"
+price_vs_ema_txt = close > h1_ema ? "ABOVE" : close < h1_ema ? "BELOW" : "NEAR"
+
+plot(h1_ema, title="H1 EMA(50) [confirmed]", color=color.new(color.orange, 0), linewidth=2)
+
+// ---- 2. Causal session VWAP ----
+// Session boundaries are the project's own coded SessionEngine
+// (ai_trader/market_scanner/session.py, session_name_for_hour()), the
+// definition AI_TRADER_MARKET_READING_LIBRARY_V1.md module M07 cites as
+// RUNTIME-BACKED -- fixed UTC hours, no DST adjustment:
+//   ASIA 00:00-08:00 UTC | LONDON 08:00-13:00 UTC | NY 13:00-21:00 UTC
+//   | LATE 21:00-24:00 UTC
+// ta.vwap(source, anchor) resets its cumulative sum whenever `anchor` is
+// true and accumulates only current/past bar price*volume from that point
+// forward -- it never references a bar that has not yet occurred, so it is
+// non-repainting/causal by construction; no request.security is used here.
+utc_hour = hour(time, "UTC")
+sess_idx = utc_hour < 8 ? 0 : utc_hour < 13 ? 1 : utc_hour < 21 ? 2 : 3
+new_session = ta.change(sess_idx) != 0
+session_vwap = ta.vwap(hlc3, new_session)
+
+session_name = utc_hour < 8 ? "ASIA" : utc_hour < 13 ? "LONDON" : utc_hour < 21 ? "NY" : "LATE"
+price_vs_vwap_txt = close > session_vwap ? "ABOVE" : close < session_vwap ? "BELOW" : "NEAR"
+
+plot(session_vwap, title="Session VWAP", color=color.new(color.aqua, 0), linewidth=2, style=plot.style_stepline)
+
+// ---- 3. M15 ATR(14), project pip convention (0.10 price = 1 pip) ----
+atr14_price = ta.atr(14)
+atr14_pips = atr14_price * 10
+
+// ---- 4. Compact diagnostic panel -- context values only, no scoring ----
+var table diag = table.new(position.top_right, 2, 6, border_width=1)
+if barstate.islast
+    table.cell(diag, 0, 0, "H1 EMA50 slope", text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 1, 0, h1_ema_slope_txt, text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 0, 1, "Price vs EMA50", text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 1, 1, price_vs_ema_txt, text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 0, 2, "Session", text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 1, 2, session_name, text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 0, 3, "Session VWAP", text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 1, 3, str.tostring(session_vwap, "#.###"), text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 0, 4, "Price vs VWAP", text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 1, 4, price_vs_vwap_txt, text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 0, 5, "ATR14 (pips)", text_color=color.white, bgcolor=color.gray)
+    table.cell(diag, 1, 5, str.tostring(atr14_pips, "#.#"), text_color=color.white, bgcolor=color.gray)
