@@ -5,6 +5,35 @@
 — unchanged by this mandate. Resuming Q4 (under this accelerator or unchanged Option A) requires a
 **separate, explicit CEO instruction** — this document does not itself authorize it.
 
+## 0. Superseding identity (integration mandate, 2026-08-30)
+
+`tradingview-mcp`'s `main` had diverged from `origin/main` (64 remote-only commits) at the time the
+accelerator was first committed (`164c9c1`, local-only, never pushed). Per a separate CEO
+authorization, `164c9c1` was cherry-picked cleanly (zero direct conflicts beyond a trivial additive
+`.gitignore` line) onto a fresh branch cut from current `origin/main`
+(`c05b8f5755ed8e64ea242de88ddbf46aa24d56a4`). The resulting commit is **byte-identical in code** to
+`164c9c1` (same 7-file, +990/-4 diff) and is now the authoritative implementation identity per that
+mandate's own instruction:
+
+- `SOURCE_ACCELERATOR_COMMIT` (superseded, code-identical, wrong git base): `164c9c1`
+- `FINAL_INTEGRATED_COMMIT` (authoritative): `cf6f470cd311ae1ff9a35ae72fd0c9edaed67ec6`
+- `INTEGRATION_BRANCH`: `integration/causal-replay-accelerator-v1`
+- `BASE_ORIGIN_MAIN_COMMIT`: `c05b8f5755ed8e64ea242de88ddbf46aa24d56a4`
+- **`PUSHED_REMOTE = NO`** — `git push origin integration/causal-replay-accelerator-v1` failed with
+  `403` (the locally-configured git credentials, GitHub account `rzvqp`, do not have write access to
+  `tradesdontlie/tradingview-mcp.git`). The branch and commit exist only in the local worktree at
+  `tradingview-mcp-integration` pending a CEO decision on push credentials — **do not treat this
+  identity as available anywhere but that local checkout until it is actually pushed.**
+- All 34 accelerator tests, plus the full repo regression suite (123 tests across
+  `causal_replay.test.js`/`replay.test.js`/`pine_analyze.test.js`/`sanitization.test.js`), re-ran
+  against this integrated commit specifically (not just inherited from the original `164c9c1` run)
+  and pass, with one disclosed pre-existing, unrelated, environment-specific failure — see the
+  integration mandate's own final report for detail. The benchmark also re-ran against this commit
+  and reproduced the original numbers exactly (3.000 / 2.000 / 0.250 calls/bar).
+
+Sections 1-7 below describe the accelerator itself, unchanged by the integration (the code did not
+change, only its git base did).
+
 ## 1. What exists now
 
 Four new MCP tools, registered in `tradingview-mcp`'s server (available the next time that server
