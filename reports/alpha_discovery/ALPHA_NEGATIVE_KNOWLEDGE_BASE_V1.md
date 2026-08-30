@@ -22,6 +22,7 @@ REGIMES · WHAT_REMAINS · ARTIFACT · COMMIT.
 | DXY directional filtering | DXY resolves XAU direction | NOT_SUPPORTED (regime-inverts) + NDX1 info-only | DXY↔gold direction is regime-conditional | b0/b1/y2123 | REAL YIELDS (deeper driver) | ALPHA_DXY_* |
 | structural-break discriminators (V2) | ex-ante feature separates continue vs fail | NO discriminator flips sign (all bins net-neg) | outcome efficient in price-only features | all | non-price info | ALPHA_CONTRAST_MINER_REPORT_V1 |
 | failed-break-fade / sweep-reverse / structural-target (V2) | 3 distinct hypotheses, full gate | all FALSIFIED (net −0.26/−0.26/−0.36) | mean-reversion & structural-target also efficient | all | — | factory_falsify |
+| temporal-sequence / path-order (TSM V1) | does ORDER/trajectory into a setup add directional info beyond final state? 5 distinct mechs (energy-order, extreme-recency, approach-directness, net-magnitude-path, ordered-sign) | all FALSIFIED; P(up)≈0.50 in all 19 ordered classes, net-R −0.24…−1.24 | ORDER is efficient too; clean-path selects spent moves (worse than null); pos-control +0.56 confirms power | all eras/2 anchors/L∈{8,16,32,64} | — (closed) | TEMPORAL_SEQUENCE_*_V1 |
 
 **META (R19/R20/R26, multiply-confirmed):** XAUUSD M15 DIRECTION is efficient (price-only, all representations); MAGNITUDE/TIMING/
 PATH/SESSION-STRUCTURE are predictable + cross-era-stable but NON-directional (5 info assets: VOLTIME-1, DXY-NDX1, SF-3, VOLPATH-geometry,
