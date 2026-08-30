@@ -1129,3 +1129,30 @@ instance. Full detail in `AI_TRADER_Q4_PATTERN_LEDGER.md`. No trade was open dur
 trade/MGMT-004 decision affected. TRADE_DECISION: NO_TRADE throughout. INTEGRITY: OK.
 
 Q4 replay pointer: 2020-10-22 05:29:59 UTC. NEXT_UNSEEN_BAR = 1403.
+
+### COMPACT BLOCK 1403-1427 (2020-10-22 05:30:00-11:14:59 UTC) [routine, 3 trivial P007 candidates auto/quickly rejected]
+BARS: 1403-1427 (25 bars) | VOL: real, mostly thin-to-moderate, no records | STATE_CHANGE: three
+further P007 candidates fired in this stretch, all clearly trivial and rejected without extended
+monitoring (a disclosed, conservative auto-reject threshold -- volume<500 AND |gap|<3.0pt -- was
+added to the runner after the first of these needed no real judgment; the second/third were the same
+ongoing shallow dip re-detected bar-by-bar since a REJECTED classification clears the durable lock
+but does not change the underlying still-below-EMA price condition, so a persistent shallow dip gets
+freshly re-flagged each bar until either volume/gap crosses the threshold or price reclaims):
+- bar 1404: gap -0.84pt, vol 250 -- AUTO-REJECTED
+- bar 1425: gap -0.24pt, vol 243 -- AUTO-REJECTED
+- bar 1426: gap -0.33pt, vol 226 -- AUTO-REJECTED (same ongoing dip as 1425)
+- bar 1427: gap -0.61pt, vol 527 (barely over the auto-threshold) -- manually rejected, same
+  ongoing dip, still clearly trivial
+None promoted to numbered pattern-ledger entries (unlike Q4-P007-005, none showed genuine ambiguity).
+TRADE_DECISION: NO_TRADE throughout. INTEGRITY: OK.
+
+Q4 replay pointer: 2020-10-22 11:14:59 UTC. NEXT_UNSEEN_BAR = 1428.
+
+### SESSION CHECKPOINT (CEO-authorized autonomous continuation, 2026-08-31)
+
+Processed bars 1305-1427 in this continuation: adopted the canonical `reveal_next_bar_with_p007_gate()`
+path for every forward reveal (CEO mandate + Red Team E110), closed TRADE #5 (-1.0R) and TRADE #6
+(-1.0R, a legitimate same-session re-trigger), and handled the P007 gate's first real output --
+Q4-P007-005 (genuinely prospective, REJECTED after 13 bars of no volume follow-through) plus several
+clearly-trivial candidates (auto-rejected via a disclosed conservative threshold added mid-session).
+Durable state (`next_bar=1428`) is the sole source of truth for resumption.
