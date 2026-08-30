@@ -4769,4 +4769,49 @@
                ADAPTER-V1-REVIEW-001.md.
                STATE: OPERATIONAL. Next entry [104], prev_hash E103.
   entry_hash:  E103
+
+[104] 2026-08-30
+  prev_hash:   E103
+  event:       VERDICT
+  dc_id:       DC-CSV-INCREMENTAL-UNLOCK-BAR379-AUTONOMOUS-Q4-GATE
+  freeze_hash: checkpoint a87f42d (descendant of adapter 4d2b391, HEAD ai-trader-implementation) / Q4_SEALED_1_379
+               .csv content_hash 651b944f (2000 warmup+379, bar 380 absent) / durable state last_committed=379(ts
+               1602037800)/next=380/pending=null/P007-003 OPEN / origin 57f4ed95
+  battery_ver: RT-CSV-INCREMENTAL-UNLOCK-BAR379-REVIEW-001
+  reviewer:    Red Team
+  detail:      Audit of the incremental CSV causal-unlock mechanism (bar-379 checkpoint -> autonomous Q4
+               continuation gate). VERDICT = ***FAIL*** (autonomous-Q4 gate; single BLOCKING finding -- the bar-379
+               checkpoint state ITSELF is verified correct). CHECKPOINT_IDENTITY_VERIFIED=YES: a87f42d changes exactly
+               5 files (379 fixture+manifest, parameterized materializer, durable state, +608 Q4 log lines); engine.py
+               /sealed_reader.py/ema.py/persistence.py BYTE-UNCHANGED vs 4d2b391 (so E103 state-machine guarantees
+               carry). INCREMENTAL_MATERIALIZER=PASS: materialize(source,max_q4_bar_index=378 default) writes
+               SEPARATELY-NAMED Q4_SEALED_1_{N}.csv, NEVER overwrites lower fixture (378 byte-unchanged), same
+               SealedReader boundary (SealedBoundaryError at N+1 BEFORE OHLCV parse), fail-closes on source-exhausted-
+               before-N or row-count!=N (so fixture always contiguous 1..N, no skip), streaming no-DataFrame. ★★ ONE_
+               BAR_UNLOCK_ENFORCED=FAIL (DECISIVE): the CLI accepts ARBITRARY --max-bar (default 378); nothing reads
+               the durable boundary(379) and refuses N>current+1; `materialize --max-bar 5900` would in ONE call parse
+               Q4 bars 380..5900 and WRITE their OHLCV into a plaintext readable fixture = BULK future exposure the
+               engine's per-bar handshake does NOT prevent (handshake gates reveal, not materialization). TECHNICAL_
+               CAPABILITY=arbitrary N; AUTHORIZED_RUNTIME_PATH(fail-closed +1)=DOES NOT EXIST. COMMIT_BEFORE_NEXT_BAR/
+               POINTER_PERSISTENCE/CRASH_RECOVERY/RESTART_RESUME_EXACT=PASS (engine unchanged from E103; durable JSON
+               yields LAST_COMMITTED=379/NEXT=380/PENDING=null/P007-OPEN/sealed=379 WITHOUT TradingView, content_hash
+               651b944f fail-closes a fixture swap). BAR_379_CHECKPOINT_PARITY=PASS (378 unchanged, 379 max bar=379,
+               bar380 absent, durable state correct, bar379 close1880.496/ts1602037800). BAR_380_ACCESSED=NO (max_q4_
+               bar_index_read=379). ★ P007_H1_EMA_SEMANTIC=PASS -- the Q4 log bar-379 bridge note ADOPTS my E103
+               correction VERBATIM: "'EMA50' in this log has always meant the H1 EMA50 (never M15) ... H1 EMA50 @ bar
+               378 = 1901.160, streak = 39" (matches E103 exactly); counters 38(TV-era)/39(canonical causal H1)/40
+               (prospective) preserved, descriptive-only non-decision-critical; M15 ema.py stays test-only. E103 EMA
+               nonblocking note thereby CLOSED. ATOMIC_LOCK_WHILE_P007_OPEN=PASS (engine unchanged: HYBRID unreachable
+               while P007-003 OPEN, only step() until P007_RESOLUTION clears). SAFE_FOR_AUTONOMOUS_SEQUENTIAL_Q4=NO --
+               state machine preserves the invariant WITHIN a fixture but NOT across the fixture-EXTENSION boundary
+               (unconstrained materializer). 50/50 tests reproduced (no bar-380 exposure); coverage GAP: no test that
+               an extension cannot jump >+1 (guard doesn't exist yet). BLOCKING (1): no fail-closed one-bar-unlock
+               enforcement -- REMEDIATION: read durable sealed_through, refuse max_q4_bar_index>current+1, gate on prior
+               commit (pending==null & next==current+1), ship a test; until then fixture extension must stay per-step
+               CEO-authorized NOT autonomous. NONBLOCKING (1): durable state source_identity.symbol='UNKNOWN' (manifest
+               has OANDA:XAUUSD) cosmetic. NOT authorized: expose bar 380 / materialize 380 / resume Q4 / modify adapter
+               /MT5/S5/P007/MGMT-004 -- NEXT_AUTHORIZED_ACTION=NONE CEO DECISION REQUIRED. bar 380 NOT exposed. Changes
+               only in red_team/. Report: RT-CSV-INCREMENTAL-UNLOCK-BAR379-REVIEW-001.md.
+               STATE: OPERATIONAL. Next entry [105], prev_hash E104.
+  entry_hash:  E104
 ```
