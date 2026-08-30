@@ -4926,4 +4926,59 @@
                Report: RT-CSV-EXTEND-ENGINE-IDENTITY-HANDOFF-REAL-E2E-001.md.
                STATE: OPERATIONAL. Next entry [107], prev_hash E106.
   entry_hash:  E106
+
+[107] 2026-08-30
+  prev_hash:   E106
+  event:       VERDICT
+  dc_id:       DC-Q4-380-385-SEMANTIC-INTEGRITY-H1-EMA50-P007-CONTINUITY
+  freeze_hash: durable state 2ab3b5e2 (last_committed=385/ts 1602043200/next=386/sealed=385/pending=null/
+               P007-003 OPEN/symbol=OANDA:XAUUSD [healed from E106 UNKNOWN via first legit bind]) / 385 fixture
+               c3dc4750 / origin 57f4ed95 / accepted 379 baseline 651b944f
+  battery_ver: RT-Q4-380-385-SEMANTIC-INTEGRITY-H1-EMA-001
+  reviewer:    Red Team
+  detail:      Semantic-integrity audit of already-committed Q4 bars 380-385 + adjudication of AI Trader's two
+               disputed claims (bar-379 provenance; M15-vs-causal-H1 EMA50). VERDICT = ***PASS_WITH_NONBLOCKING_
+               NOTES***; error = SEMANTIC_DOCUMENTATION_ERROR_ONLY (NOT a scientific integrity blocker). Read-only
+               forensics + independent causal-H1-EMA50 reconstruction; bar 386 NOT accessed/materialized, Q4 not
+               resumed, engine/strategy not modified. ★ BAR-379 PROVENANCE: first semantically exposed + decided by
+               the APPRENTICESHIP (CEO-authorized single-bar validation pass, real engine step()/commit_decision(),
+               ROUTINE_NO_EVENT/NO_TRADE); fixture Q4_SEALED_1_379 (651b944f) materialized in VE E104 checkpoint
+               a87f42d from canonical source. BAR_379_APPRENTICESHIP_DECISION_EXISTS=YES; RED_TEAM_CONSUMED_REAL_BAR
+               _379=NO (E105 synthetic-only; E106 6a8861d used synthetic bars 1-12 and left real durable state byte-
+               unchanged 40397a74). AI Trader's claim A ('bar 379 consumed via Red Team E2E, not genuine reasoning')
+               is INACCURATE -- conflates RT's synthetic mechanism test with the apprenticeship's own commit; already
+               reconciled append-only in the log. BAR_379_PROVENANCE_CORRECTED=YES, history not rewritten. ★★ CAUSAL
+               H1 EMA50 RECONSTRUCTED (M15->H1 agg, SMA-50 seed, alpha=2/51, only fully-closed H1 candles, gap-aware
+               index): reproduces the established checkpoint EXACTLY -- H1 EMA50 @ bar 378 = 1901.160, below-streak
+               39 (40 @ 379). Per bar (close / H1_EMA50 / pos / H1-closed-this-bar): 380 1881.263/1900.380/BELOW/YES;
+               381 1882.261/1900.380/BELOW/NO; 382 1881.900/1900.380/BELOW/NO; 383 1882.538/1900.380/BELOW/NO; 384
+               1883.020/1899.699/BELOW/YES; 385 1882.958/1899.699/BELOW/NO. EMA steps only on bars 380 & 384 (H1
+               closes), drifts DOWN, never toward reclaim; max close 1883.020 is ~17pt UNDER min H1 EMA50 1899.699.
+               ★ P007 REPLAY: resolves only on a close ABOVE causal H1 EMA50 (binary; no gate reads a streak) -- NO
+               bar 380-385 recloses above -> Q4-P007-003 REMAINS OPEN at every bar, exactly as committed. ORIGINAL vs
+               CORRECT_H1 decision = NO_TRADE == NO_TRADE, MATCH=YES for all 6. Claim B (M15 EMA50 is the only impl /
+               causal H1 cannot be satisfied) is WRONG and already walked back in the log; independently, I computed
+               M15 EMA50 too (@378=1890.390, the streak-44 ref) -- price is BELOW the EMA under BOTH M15 (1888-1890)
+               AND H1 (1899-1901) at every bar 378-385, so the two disagree ONLY on descriptive streak length (M15
+               44->51 vs H1 39->46) and the reference confusion could not have flipped any decision. BARS_380_385_
+               DECISIONS_IDENTICAL_UNDER_CORRECT_H1_EMA=YES; P007_STATUS_IDENTICAL=YES; ANY_TRADE/MGMT004/NO_TRADE_
+               DECISION_AFFECTED=NO (FLAT, 0 trades, 0 MGMT-004). ★ SOURCE LINEAGE: origin_source_content_hash
+               57f4ed95 identical in 379 & 385 manifests = accepted canonical (E104); each fixture 379->385 file SHA
+               matches its manifest AND is an exact byte-prefix +1 row of the next; 379 == E106-accepted baseline
+               651b944f; 4 Q4 gaps (85/177/269/361) identical + match REPLAY_DATA_GAP_LEDGER. SOURCE_LINEAGE_VALID=
+               YES (vendor/alpha_automation_demo_gate copy per log's disclosed origin-hash finding). REAL STATE FREEZE:
+               last_committed=385/next=386/sealed=385/P007 OPEN; no fixture >=386; 385 fixture has no ts>=1602044100;
+               BAR_386_ACCESSED=NO. BLOCKING=NONE. NONBLOCKING (3, all documentation, prescribe APPEND-ONLY
+               correction never a rewrite): (1) log internally contradicts itself -- stale early statements (bar-379
+               'consumed by Red Team'; 'causal H1 EMA50 cannot be satisfied, only M15 exists') remain physically
+               present alongside their later append-only corrections; prescribe an explicit correction stamp; (2) log
+               blocks out of chronological order (380-385 block precedes the 379 validation-pass/reconciliation
+               block); (3) sub-bar miscount line 662 (bar 379 called '2nd of 4', is 3rd) -- conclusion unaffected.
+               Streak-length disagreement is NOT a finding (descriptive-only, disclosed). BARS_380_385_SCIENTIFICALLY
+               _VALID=YES; SAFE_TO_CONTINUE_FROM_BAR_386=YES (conditional on standing E106 wiring note + CEO auth).
+               NOT authorized: expose/materialize bar 386 / resume Q4 / modify engine/strategy / overwrite prior log
+               entries -- NEXT_AUTHORIZED_ACTION=NONE CEO DECISION REQUIRED. bar 386 NOT exposed. Changes only in
+               red_team/. Report: RT-Q4-380-385-SEMANTIC-INTEGRITY-H1-EMA-001.md.
+               STATE: OPERATIONAL. Next entry [108], prev_hash E107.
+  entry_hash:  E107
 ```
