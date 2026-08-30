@@ -4981,4 +4981,62 @@
                red_team/. Report: RT-Q4-380-385-SEMANTIC-INTEGRITY-H1-EMA-001.md.
                STATE: OPERATIONAL. Next entry [108], prev_hash E107.
   entry_hash:  E107
+
+[108] 2026-08-30
+  prev_hash:   E107
+  event:       VERDICT
+  dc_id:       DC-Q4-P007-004-RETROSPECTIVE-DETECTION-INTEGRITY
+  freeze_hash: checkpoint 3cb48fe (through bar 1304) / durable last_committed=1304 (ts 1603251900)/next=1305/
+               pending=null/open_event_ref=null/FLAT / 4 trades (608 +0.651R, 884 -1.000R, 982 -0.005R, 1256
+               +0.929R) net +0.575R / 927 contiguous per-bar fixtures 378..1304
+  battery_ver: RT-Q4-P007-004-RETRO-DETECTION-INTEGRITY-001
+  reviewer:    Red Team
+  detail:      Audit of AI Trader's RETROSPECTIVE identification of Q4-P007-004 (~91-bar below-H1-EMA excursion
+               bars 787-878, detected only after bars 787-884 were processed as routine). VERDICT = ***PASS_WITH_
+               NONBLOCKING_NOTES***; classification = PROCESS_DETECTION_GAP_NONBLOCKING (NOT a scientific blocker).
+               Read-only forensics + independent causal-H1-EMA50 reconstruction; bar 1305 NOT accessed, Q4 not
+               continued, no historical decision modified, P007 not retuned, checkpoint not modified. ★ TIMELINE
+               (independently reconstructed, EVERY claim EXACT; dual calibration H1 EMA50 @378=1901.160 [E107] and
+               @487=1891.748 [log P007-003 resolution] both reproduce exactly): P007_004_ELIGIBILITY/OPEN bar = 787
+               (close 1916.054 first BELOW causal H1 EMA50 1918.200 -- bars 782-786 all ABOVE 1919-1921 -- with
+               immediate heavy real-vol follow-through 788=2718/789=2747/791=4134); OPEN_INTERVAL = 787-877 (91
+               consecutive bars ALL strictly below H1 EMA50, verified bar-by-bar; deepest low 1882.434@834; heaviest
+               vol 4134@791 -- both exact); RESOLUTION = bar 878 (close 1905.436 > EMA 1904.592, first reclaim);
+               CLASSIFICATION = SUPPORT/RECLAIM (held above through 879-885; no new Q4 low; 1882.434 >> all-time low
+               1872.898@375). ★ ATOMIC/HYBRID: P007_ATOMIC_CONTRACT_VIOLATED=NO. P007-004 never flagged so the
+               mechanical lock (open_event_state_reference) never engaged, BUT HYBRID (run_until_gate) was NEVER used
+               this session -- corroborated by (a) engine per-bar step()/commit_decision() design, (b) 927 FULLY
+               CONTIGUOUS per-bar fixtures 378..1304 no gaps (bulk --max-bar/HYBRID would not need every intermediate
+               fixture), (c) COMPACT BLOCK log entries = documentation-compaction of individually-committed bars, not
+               bulk reveals. Since the bulk/lookahead reveal the lock guards against did NOT occur, the missing lock
+               had no effect; atomic discipline maintained in substance across 787-877. ACTUAL_ATOMIC_BARS=787-878
+               (all 386-1304); ACTUAL_HYBRID_BARS=0. ★ DECISION IMPACT: ALL NO -- PATTERN-007 is TRADEABLE=NO/
+               PLAYBOOK_READY=NO (observational field-capture, never gates a trade); S5 is a mechanical OR-breakout
+               trigger, P007-blind (no S5 trigger fired 787-877, all NO_TRADE, unchanged under P007-open); TRADE #2
+               @884 is 6 bars AFTER the 878 reclaim (a prospectively-open P007-004 would have RESOLVED+cleared its
+               lock at 878) and price @884 (1912.356) is ~7pt ABOVE the reclaimed EMA (1905.015) -- mechanical S5
+               LONG (close>or_high 1909.755, OR 880-883), entirely independent of P007 detection; position FLAT
+               787-877 so no MGMT-004 in scope; classification is a frozen-data fact, identical prospective-vs-
+               retro. TRADE_DECISIONS/S5/NO_TRADE/MGMT004/TRADE_2_VALIDITY/P007_CLASSIFICATION _CHANGED = NO (all).
+               ★ INFORMATION-LOSS: REASONING_EVIDENCE_LOST=NO -- no bulk reveal (HYBRID never used) so every bar
+               787-877 physically individually committed; the only unwritten item is the P007-OPEN annotation/
+               prospective pre-classification, which for a non-tradeable pattern drives no decision; and every field
+               is a contamination-free causal function of bars <=878 (reconstructed exactly using only data through
+               each bar). CHECKPOINT verified: last_committed=1304/next=1305/FLAT; TRADES_TOTAL=4; CONTROL_NET_R=
+               +0.651-1.000-0.005+0.929=+0.575R; BAR_1305_ACCESSED=NO (only sealed 1304 fixture read; no fixture
+               >=1305; no bar-1305 row present). BLOCKING=NONE. NONBLOCKING (3): (1) the detection gap itself
+               (batch process not coded to flag a NEW heavy-volume P007 break -> retrospective registration; only
+               P007 instance not pre-classified; disclosed; non-consequential); (2) ★ the cited preventive fix is
+               NOT verifiable -- ledger/log cite 'q4_batch_runner.py current version' with an added heavy-volume-
+               EMA-crossing check but NO such file exists anywhere in the repo, so 'will not recur' is unconfirmable;
+               recommend the fix be actually committed + tested; (3) missing STRUCTURAL_LEVEL field on P007-004
+               (retro-ID descriptive gap, disclosed not backfilled). Remedy = append-only disclosure, ALREADY
+               present (ledger process-disclosure note + log bar-787-878 entry). PROCESS_DETECTION_GAP_NONBLOCKING;
+               BARS_787_884_SCIENTIFICALLY_VALID=YES; SAFE_TO_CONTINUE_FROM_BAR_1305=YES (conditional on standing
+               E106 wiring note + CEO auth + committing the NONBLOCKING-2 fix). NOT authorized: expose/materialize
+               bar 1305 / continue Q4 / modify historical decisions / retune P007 -- NEXT_AUTHORIZED_ACTION=NONE CEO
+               DECISION REQUIRED. bar 1305 NOT exposed. Changes only in red_team/. Report:
+               RT-Q4-P007-004-RETRO-DETECTION-INTEGRITY-001.md.
+               STATE: OPERATIONAL. Next entry [109], prev_hash E108.
+  entry_hash:  E108
 ```
