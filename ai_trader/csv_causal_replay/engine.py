@@ -28,6 +28,7 @@ fully, which this class never does and never accepts a path to (see `__init__`'s
 
 from __future__ import annotations
 
+import json
 import time
 from pathlib import Path
 from typing import Callable
@@ -91,6 +92,26 @@ class CSVCausalReplayEngine:
     def _ensure_loaded(self) -> None:
         if self._loaded:
             return
+        # The raw sealed CSV has no symbol column (header is time,open,high,low,close,volume) -- the
+        # authoritative symbol comes from the fixture's own sibling manifest
+        # (materialize_sealed_fixture.py always writes one alongside the CSV). A prior version of
+        # this method hardcoded symbol="UNKNOWN" here instead of reading it, which was flagged as
+        # merely cosmetic in isolation but turned out to be BLOCKING once fixtures.autonomous_extend
+        # .bind_extended_fixture() started constructing a real, manifest-derived SourceIdentity to
+        # compare against this method's own -- two placeholders can accidentally "match" each other,
+        # but "UNKNOWN" vs the real symbol a correctly-derived identity carries never will (caught by
+        # tests/test_engine_identity_handoff.py's real end-to-end step() call during development, not
+        # merely inferred). Missing the manifest is treated as a hard failure, not a silent fallback
+        # to a placeholder -- every fixture this package's own tooling ever produces has one.
+        manifest_path = self._path.parent / f"{self._path.stem}_MANIFEST.json"
+        if not manifest_path.exists():
+            raise RestartAmbiguityError(
+                f"{self._path} has no sibling manifest at {manifest_path} -- refusing to guess its "
+                "symbol identity rather than defaulting to a placeholder"
+            )
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        symbol = manifest["symbol"]
+
         # Bound this read at a large-but-finite ceiling anyway (never trust the file's own claimed
         # size) -- if the fixture were somehow corrupted to contain more Q4-range rows than this,
         # SealedReader itself raises rather than this engine silently reading an unbounded amount.
@@ -100,7 +121,7 @@ class CSVCausalReplayEngine:
         # during development: sealed_through_bar_index came out as 2378, the total row count,
         # instead of 378).
         config = SealedReaderConfig(
-            symbol="UNKNOWN", bar_interval_seconds=900, q4_start_ts=Q4_START_TS, max_q4_bar_index=100_000,
+            symbol=symbol, bar_interval_seconds=900, q4_start_ts=Q4_START_TS, max_q4_bar_index=100_000,
         )
         with SealedReader(self._path, config=config) as reader:
             first_ts: int | None = None

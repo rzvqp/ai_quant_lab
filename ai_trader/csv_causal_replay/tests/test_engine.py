@@ -13,7 +13,8 @@ import pytest
 from ai_trader.csv_causal_replay.engine import CSVCausalReplayEngine
 from ai_trader.csv_causal_replay.errors import (
     HybridModeLockedError, IncompleteDecisionRecordError, MissingCommitError, PointerMismatchError,
-    SealedBoundaryError, SourceIdentityMismatchError, UnknownDecisionTypeError, WrongCommitBarError,
+    RestartAmbiguityError, SealedBoundaryError, SourceIdentityMismatchError, UnknownDecisionTypeError,
+    WrongCommitBarError,
 )
 from ai_trader.csv_causal_replay.persistence import DurablePointerStore
 
@@ -171,10 +172,36 @@ def test_source_hash_mismatch_is_refused(sealed_fixture_path, tmp_path):
     original_lines = sealed_fixture_path.read_text(encoding="utf-8").splitlines(keepends=True)
     original_lines[-1] = original_lines[-1].replace("1880.434", "9999.999")
     tampered.write_text("".join(original_lines), encoding="utf-8")
+    # A sibling manifest is required for engine._ensure_loaded() to read the symbol identity at all
+    # (RestartAmbiguityError otherwise, tested separately) -- this test is specifically about a
+    # CONTENT/hash mismatch, so give the tampered file a normal-shaped manifest; engine.py computes
+    # its own content_hash fresh from the real file bytes regardless of what any manifest claims, so
+    # this manifest's own (now-stale) content_hash field is irrelevant to what's being tested here.
+    manifest_path = sealed_fixture_path.parent / f"{sealed_fixture_path.stem}_MANIFEST.json"
+    (tmp_path / "tampered_MANIFEST.json").write_text(manifest_path.read_text(encoding="utf-8"), encoding="utf-8")
 
     engine2 = CSVCausalReplayEngine(sealed_csv_path=tampered, store=DurablePointerStore(state_path))
     state = engine2.status()
     with pytest.raises(SourceIdentityMismatchError):
+        engine2.step(expected_pointer_before=state.last_committed_timestamp)
+
+
+def test_fixture_with_no_sibling_manifest_is_refused(sealed_fixture_path, tmp_path):
+    """A distinct failure mode from the hash-mismatch test above: a fixture CSV with no manifest at
+    all (engine.py cannot determine its symbol identity without one, and refuses to guess) --
+    RestartAmbiguityError, not SourceIdentityMismatchError, since this is a structurally incomplete
+    fixture rather than a content disagreement between two otherwise-complete ones."""
+    state_path = tmp_path / "durable_state.json"
+    engine1 = CSVCausalReplayEngine(sealed_csv_path=sealed_fixture_path, store=DurablePointerStore(state_path))
+    engine1.seed_from_known_state(session_id="s", last_committed_bar_index=200, open_event_state_reference=None)
+    del engine1
+
+    orphan = tmp_path / "orphan.csv"
+    orphan.write_text(sealed_fixture_path.read_text(encoding="utf-8"), encoding="utf-8")  # no manifest written
+
+    engine2 = CSVCausalReplayEngine(sealed_csv_path=orphan, store=DurablePointerStore(state_path))
+    state = engine2.status()
+    with pytest.raises(RestartAmbiguityError):
         engine2.step(expected_pointer_before=state.last_committed_timestamp)
 
 
