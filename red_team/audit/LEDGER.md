@@ -4814,4 +4814,49 @@
                only in red_team/. Report: RT-CSV-INCREMENTAL-UNLOCK-BAR379-REVIEW-001.md.
                STATE: OPERATIONAL. Next entry [105], prev_hash E104.
   entry_hash:  E104
+
+[105] 2026-08-30
+  prev_hash:   E104
+  event:       VERDICT
+  dc_id:       DC-CSV-ONE-BAR-UNLOCK-REMEDIATION-DELTA-AUTONOMOUS-Q4-GATE
+  freeze_hash: remediation 7241b176 (a87f42d -> 7241b17, HEAD ai-trader-implementation) / delta = exactly 3 files
+               (autonomous_extend.py NEW 138, materialize_sealed_fixture.py +31/-6, test_autonomous_extend.py NEW 202)
+               / engine.py+sealed_reader.py+ema.py+persistence.py+Q4_SEALED_1_378/379.csv BYTE-UNCHANGED (empty diff)
+  battery_ver: RT-CSV-ONE-BAR-UNLOCK-REMEDIATION-DELTA-001
+  reviewer:    Red Team
+  detail:      DELTA review of VE's remediation of the E104 single blocker (ONE_BAR_UNLOCK_ENFORCED=FAIL). VERDICT =
+               ***PASS_WITH_NONBLOCKING_NOTES*** -- E104 blocker CLOSED, SAFE_FOR_AUTONOMOUS_SEQUENTIAL_Q4=YES
+               (conditional on wiring note). REMEDIATION_IDENTITY_VERIFIED=YES / SCOPE_CLEAN=YES (3 files only; engine/
+               sealed_reader/ema/persistence/378/379 byte-unchanged -> E103/E104 guarantees carry; no MT5/S5/P007/
+               MGMT-004 change). ★ ONE_BAR_UNLOCK_ENFORCED=PASS & ARBITRARY_RUNTIME_BOUNDARY_REACHABLE=NO: the NEW
+               autonomous entrypoint extend_next_bar(*,store,source_path,output_dir) takes NO boundary parameter
+               (inspect.signature verified) and derives TARGET=durable sealed_through+1 INTERNALLY -- no path to
+               request +2/+10/arbitrary N. The arbitrary --max-bar materialize() CLI remains for CEO-manual use,
+               uncalled by extend_next_bar/engine (the mandated TECHNICAL_CAPABILITY vs AUTHORIZED_RUNTIME_PATH
+               distinction, cleanly realized). extend_next_bar fail-closes (OneBarUnlockRefusedError, no fixture/state
+               touched) unless ALL hold: pending_decision==None (PENDING_DECISION_GATE/COMMIT_BEFORE_EXTEND);
+               current fixture exists & content-hash matches recorded; last_committed_timestamp maps -- LOOKED UP IN
+               THE FIXTURE'S OWN ROWS, not state arithmetic -- to bar index==sealed_through (POINTER_CONSISTENCY_GATE,
+               catches a tampered/earlier pointer with correct-looking next_bar); next_bar==sealed_through+1; target
+               Q4_SEALED_1_{N}.csv absent (FIXTURE_OVERWRITE_PROTECTION). All refusals raise BEFORE materialize() ->
+               no future OHLCV parsed/written (FAIL_CLOSED=PASS, UNAUTHORIZED_FUTURE_SEMANTIC_EXPOSURE=NO). ★ INDEPEND-
+               ENT RT PROBE on SYNTHETIC data (bars 1-12 close=1000+N in tmp dir, NEVER real Q4 source, NEVER real bar
+               380) drove the REAL extend_next_bar: valid +1 materializes exactly the next bar (bar 7 absent); +2 skip
+               refused; pending refused; tampered-pointer (earlier bar) refused via fixture-content lookup; hash-
+               mismatch refused; duplicate/overwrite refused; and a 4-iteration autonomous loop (extend -> simulated
+               reveal+commit -> reload state.json = simulated restart -> extend) advanced EXACTLY +1 each step
+               (6,7,8,9), materialized no bar beyond boundary, recovered pointer from state.json alone
+               (RESTART_RESUME_EXACT=PASS, AUTONOMOUS_ONE_BAR_LOOP=PASS). CHECKPOINT_378/379_UNCHANGED=YES, BAR_380_
+               ACCESSED=NO. ATOMIC_LOCK_WHILE_P007_OPEN=PASS & P007_H1_EMA_SEMANTIC_PRESERVED=PASS (engine.py/ema.py
+               byte-unchanged; causal H1 EMA50 remains the P007 reference, M15 ema.py test-only). TESTS=63 (50+13)
+               reproduced + 12 independent RT synthetic checks all pass. BLOCKING=NONE. NONBLOCKING (2): (1) autonomous-
+               wiring requirement -- safety depends on the autonomous runtime being wired EXCLUSIVELY to extend_next_
+               bar(); the manual --max-bar CLI must stay CEO-gated (not a defect, the distinction is correctly built,
+               but the operational condition for autonomy); (2) per-extension full-source re-hash + one fixture per bar
+               (~5,500 hashes/files over remaining Q4) = disk/IO only, no causal impact. NOT authorized: expose bar 380
+               / materialize 380 / resume Q4 / modify source/MT5/S5/P007/MGMT-004 -- NEXT_AUTHORIZED_ACTION=NONE CEO
+               DECISION REQUIRED. bar 380 NOT exposed. Changes only in red_team/. Report:
+               RT-CSV-ONE-BAR-UNLOCK-REMEDIATION-DELTA-001.md.
+               STATE: OPERATIONAL. Next entry [106], prev_hash E105.
+  entry_hash:  E105
 ```
