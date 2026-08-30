@@ -48,10 +48,21 @@ OUTPUT_CSV = OUTPUT_DIR / "Q4_SEALED_1_378.csv"
 OUTPUT_MANIFEST = OUTPUT_DIR / "Q4_SEALED_1_378_MANIFEST.json"
 
 
-def materialize(source_path: Path) -> dict:
+def materialize(source_path: Path, *, max_q4_bar_index: int = MAX_Q4_BAR_INDEX) -> dict:
+    """`max_q4_bar_index` defaults to the originally-sealed 378 boundary (identical behavior/output
+    path to before this parameter existed). Passing a larger value materializes a NEW, separately
+    named fixture (`Q4_SEALED_1_{max_q4_bar_index}.csv`) extending the sealed boundary by exactly
+    that many bars -- it never overwrites an already-materialized lower-boundary fixture, so every
+    prior boundary's file + manifest remains on disk as an audit trail of exactly how far the sealed
+    boundary has ever been extended, one CEO-authorized step at a time (mandate: "does NOT authorize
+    bulk future exposure" -- each call here is still bounded by the same SealedReader/SealedBoundaryError
+    mechanism the original 378 fixture and the Red Team's review of it were built and audited against;
+    only the boundary value itself is now a parameter instead of a hardcoded constant)."""
+    output_csv = OUTPUT_DIR / f"Q4_SEALED_1_{max_q4_bar_index}.csv"
+    output_manifest = OUTPUT_DIR / f"Q4_SEALED_1_{max_q4_bar_index}_MANIFEST.json"
     config = SealedReaderConfig(
         symbol=XAUUSD_M15_SYMBOL, bar_interval_seconds=M15_BAR_INTERVAL_SECONDS,
-        q4_start_ts=Q4_START_TS, max_q4_bar_index=MAX_Q4_BAR_INDEX,
+        q4_start_ts=Q4_START_TS, max_q4_bar_index=max_q4_bar_index,
     )
     warmup_buffer: deque[tuple[int, float, float, float, float, float]] = deque(maxlen=WARMUP_BARS_BEFORE_Q4)
     q4_rows: list[tuple[int, float, float, float, float, float]] = []
@@ -80,41 +91,41 @@ def materialize(source_path: Path) -> dict:
     if not reached_boundary:
         raise RuntimeError(
             "materialize_sealed_fixture: source file exhausted WITHOUT ever reaching the sealed "
-            f"boundary (max_q4_bar_index={MAX_Q4_BAR_INDEX}) -- the source file does not contain "
+            f"boundary (max_q4_bar_index={max_q4_bar_index}) -- the source file does not contain "
             "enough Q4 history; refusing to write a truncated-for-the-wrong-reason fixture"
         )
-    if len(q4_rows) != MAX_Q4_BAR_INDEX:
+    if len(q4_rows) != max_q4_bar_index:
         raise RuntimeError(
             f"materialize_sealed_fixture: collected {len(q4_rows)} Q4 rows, expected exactly "
-            f"{MAX_Q4_BAR_INDEX} -- refusing to write a fixture with an unexplained row-count mismatch"
+            f"{max_q4_bar_index} -- refusing to write a fixture with an unexplained row-count mismatch"
         )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     all_rows = list(warmup_buffer) + q4_rows
-    with OUTPUT_CSV.open("w", encoding="utf-8", newline="") as fh:
+    with output_csv.open("w", encoding="utf-8", newline="") as fh:
         writer = csv.writer(fh)
         writer.writerow(["time", "open", "high", "low", "close", "volume"])
         for ts, o, h, l, c, v in all_rows:
             writer.writerow([ts, o, h, l, c, v])
 
-    content_hash = hash_file(OUTPUT_CSV)
+    content_hash = hash_file(output_csv)
     origin_source_content_hash = hash_file(source_path)
     manifest = {
-        "source_file_name": OUTPUT_CSV.name,
+        "source_file_name": output_csv.name,
         "content_hash": content_hash,
         "symbol": XAUUSD_M15_SYMBOL,
         "timeframe": "M15",
         "bar_interval_seconds": M15_BAR_INTERVAL_SECONDS,
         "first_bar_ts_open": all_rows[0][0],
-        "sealed_through_bar_index": MAX_Q4_BAR_INDEX,
+        "sealed_through_bar_index": max_q4_bar_index,
         "adapter_version": ADAPTER_VERSION,
         "warmup_bar_count": len(warmup_buffer),
         "q4_bar_count": len(q4_rows),
         "total_row_count": len(all_rows),
         "q4_start_ts": Q4_START_TS,
-        "bar_378_ts_open": q4_rows[-1][0],
-        "bar_378_close": q4_rows[-1][4],
-        "bar_378_volume": q4_rows[-1][5],
+        "last_bar_ts_open": q4_rows[-1][0],
+        "last_bar_close": q4_rows[-1][4],
+        "last_bar_volume": q4_rows[-1][5],
         "gaps_found_in_q4_range": gaps_found,
         "max_q4_bar_index_read_during_materialization": reader.max_q4_bar_index_read,
         "origin_source_path_basename": source_path.name,
@@ -124,15 +135,23 @@ def materialize(source_path: Path) -> dict:
             "boundary; this manifest records only what was actually, boundedly read"
         ),
     }
-    OUTPUT_MANIFEST.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    output_manifest.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
     return manifest
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True, type=Path, help="path to the full OANDA_XAUUSD_M15.csv")
+    parser.add_argument(
+        "--max-bar", type=int, default=MAX_Q4_BAR_INDEX,
+        help=(
+            "sealed boundary (last Q4 bar index to include). Defaults to the originally-sealed 378. "
+            "Pass a larger value to extend the boundary by exactly that many bars into a new, "
+            "separately-named fixture -- never overwrites a lower-boundary fixture already on disk."
+        ),
+    )
     args = parser.parse_args()
-    manifest = materialize(args.source)
+    manifest = materialize(args.source, max_q4_bar_index=args.max_bar)
     print(json.dumps(manifest, indent=2, sort_keys=True))
 
 
