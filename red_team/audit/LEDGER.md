@@ -5039,4 +5039,58 @@
                RT-Q4-P007-004-RETRO-DETECTION-INTEGRITY-001.md.
                STATE: OPERATIONAL. Next entry [109], prev_hash E108.
   entry_hash:  E108
+
+[109] 2026-08-30
+  prev_hash:   E108
+  event:       VERDICT
+  dc_id:       DC-DURABLE-P007-PROSPECTIVE-DETECTION-GATE-FINAL-Q4-RESUME-GATE
+  freeze_hash: implementation 8deba48 (child of E108 checkpoint 3cb48fe) / 6 NEW files pure additions
+               (causal_h1.py+119, p007_detector.py+128, p007_gate.py+92, 3 tests) 788 ins/0 del / durable state
+               unchanged last_committed=1304 ts1603251900/next=1305/open_ref=null/FLAT
+  battery_ver: RT-P007-PROSPECTIVE-GATE-DELTA-001
+  reviewer:    Red Team
+  detail:      Delta review of the durable prospective PATTERN-007 detection gate = concrete remediation of E108's
+               nonblocking-2 (the cited q4_batch_runner.py fix did not exist; now committed+tested as p007_gate).
+               VERDICT = ***PASS_WITH_NONBLOCKING_NOTES***; E108 detection gap CLOSED. Read-only audit; bar 1305 NOT
+               accessed/materialized, Q4 not continued, no code modified, real durable state not touched. IDENTITY_
+               VERIFIED=YES / SCOPE_CLEAN=YES (6 NEW files only, 788 ins/0 del; engine/sealed_reader/ema/persistence/
+               identity/errors/types + S5/MGMT-004/MT5/risk/execution + all docs/ledgers BYTE-UNCHANGED). ★ CAUSAL_
+               H1_EMA50=PASS / M15_EMA_USED_FOR_P007=NO: detector+gate compute via new causal_h1.CausalH1EmaTracker
+               (streaming M15->H1, SMA-50 seed, alpha=2/51, only fully-closed H1 candles), NOT the M15 ema.py helper
+               (no import anywhere in the 3 modules). Real 1304 fixture through VE's tracker reproduces ALL four
+               anchors EXACTLY: @378=1901.160, @487=1891.748, @787=1918.200, @878=1904.592. ★ P007-004 REGRESSION:
+               real P007Detector over real bars 1..1304 reproduces TRIGGER bar 787 (close 1916.054<EMA 1918.200) +
+               RESOLUTION bar 878 (close 1905.436>1904.592), no spurious resolution inside 787-877; also reproduces
+               P007-003 (340/487); pure forward pass, no retro info. ★ ATOMIC GATE (verified END-TO-END on the REAL
+               engine + real fixtures 799/800/878, tmp state -- real durable state never touched): apply_p007_gate
+               reuses engine.py's EXISTING open_event_state_reference field (never modifies engine.py), writes ONLY
+               that field via dataclasses.replace+save (bind_extended_fixture pattern). At sealed boundary 800 (inside
+               787-877) it sets open_event_state_reference='Q4-P007-CANDIDATE:OPEN@bar_787' (scientific state
+               untouched); engine.run_until_gate then raises HybridModeLockedError (HYBRID_BLOCKED_WHILE_P007_OPEN=
+               PASS) while engine.step() reveals bar 800 (ATOMIC permitted); a fresh store reload preserves the open
+               ref (RESTART_PRESERVES_P007=PASS); one-directional (NEVER auto-clears -- clearing stays the reasoning
+               layer's explicit commit_decision(P007_RESOLUTION)); idempotent no-op when already flagged; does NOT
+               flag at a mechanically-resolved boundary (compute_p007_candidate_reference(878)=None, (800)=OPEN@787).
+               P007_ATOMIC_GATE=PASS. ★ SCIENTIFIC ISOLATION: open_event_state_reference is read by ONLY engine.run_
+               until_gate (grep: no S5/MGMT/trade/risk/execution code reads it) -> affects REPLAY MODE only, never a
+               trade; PATTERN-007 TRADEABLE=NO/PLAYBOOK_READY=NO header unchanged (no ledger/doc modified). P007_
+               TRADEABLE_UNCHANGED=YES / S5_UNCHANGED=YES / MGMT004_UNCHANGED=YES. TESTS=94 reproduced (77 existing +
+               17 new = 4 causal_h1 + 8 detector + 5 gate) + independent RT probe all pass. CHECKPOINT FROZEN:
+               last_committed=1304/next=1305/open_ref=null (detector closed at 1304: last event RESOLUTION@1255, no
+               trigger after -> resume boundary carries NO stale lock)/FLAT; no fixture >=1305; BAR_1305_ACCESSED=NO.
+               BLOCKING=NONE. NONBLOCKING (4): (1) detector OVER-INCLUSIVE by design (flags ~30 EMA-crossing pairs
+               over 1-1304, not just the 2 cataloged P007s) = the 'never silently pass' tradeoff -> HYBRID de-facto
+               disabled during Q4 + reasoning layer must P007_RESOLUTION-commit each crossing (benign: apprenticeship
+               is ATOMIC-only anyway); (2) stale-ref masking -- apply_p007_gate is a no-op while any ref is set, so an
+               unresolved crossing leaves a stale ref that masks a later crossing's trigger-bar LABEL (lock stays
+               correctly set; label recoverable via fresh compute); resolve each crossing promptly; (3) :00-bar EMA
+               convention (bucket closes on next hour's first bar -> excludes just-completed candle at top-of-hour
+               bars only; immaterial to all 4 anchors + P007-004 which are non-:00; internally consistent disclosed
+               causal choice); (4) not yet wired into a resume loop (primitives correct+tested, no orchestrator --
+               standing E106 note). SAFE_TO_RESUME_Q4_FROM_BAR_1305=YES (conditional on wiring apply_p007_gate into
+               the resume loop + per-crossing resolution discipline + CEO auth). NOT authorized: continue Q4 / access/
+               materialize bar 1305 / modify code -- NEXT_AUTHORIZED_ACTION=NONE CEO DECISION REQUIRED. bar 1305 NOT
+               exposed. Changes only in red_team/. Report: RT-P007-PROSPECTIVE-GATE-DELTA-001.md.
+               STATE: OPERATIONAL. Next entry [110], prev_hash E109.
+  entry_hash:  E109
 ```
