@@ -5093,4 +5093,56 @@
                exposed. Changes only in red_team/. Report: RT-P007-PROSPECTIVE-GATE-DELTA-001.md.
                STATE: OPERATIONAL. Next entry [110], prev_hash E109.
   entry_hash:  E109
+
+[110] 2026-08-30
+  prev_hash:   E109
+  event:       VERDICT
+  dc_id:       DC-P007-RUNTIME-WIRING-Q4-RESUME-GATE-BAR-1305
+  freeze_hash: implementation 3f567a2 (child of accepted gate 8deba48) / 2 NEW files pure additions
+               (q4_replay_step.py+108, test_q4_replay_step.py+210) 318 ins/0 del / durable state unchanged
+               last_committed=1304 ts1603251900/next=1305/open_ref=null/FLAT / canonical source 57f4ed95
+  battery_ver: RT-P007-RUNTIME-WIRING-DELTA-001
+  reviewer:    Red Team
+  detail:      Delta review wiring the accepted P007 gate (8deba48) into the real Q4 reveal path = closes E109
+               nonblocking-4 (not-yet-wired) + addresses E109 nonblocking-2 (stale-ref masking). VERDICT = ***PASS_
+               WITH_NONBLOCKING_NOTES***. Read-only; bar 1305 NOT accessed/materialized, Q4 not continued, no code
+               modified, real durable state not touched. IDENTITY_VERIFIED=YES / SCOPE_CLEAN=YES (2 NEW files only,
+               318 ins/0 del; engine/p007_detector/p007_gate/causal_h1/S5/MGMT-004/MT5/risk/execution/P007-def/docs
+               BYTE-UNCHANGED; q4_replay_step imports ONLY accepted primitives + engine, no ema/S5/MGMT). ★ WIRING:
+               reveal_next_bar_with_p007_gate() = canonical single entrypoint composing extend_next_bar()->bind_
+               extended_fixture()->engine.step()->apply_p007_gate() in ONE call, deliberately NOT commit_decision
+               (reasoning layer's act). VERIFIED END-TO-END ON REAL DATA (canonical source 57f4ed95, real fixtures,
+               <=892 never 1305): one call at 786->787 revealed bar 787 AND the gate already ran on return (open_
+               event_state_reference set) -> the caller cannot classify/commit before the gate evaluated the bar.
+               P007_GATE_IN_REAL_REPLAY_PATH=PASS / P007_GATE_PRECEDES_ROUTINE_CLASSIFICATION=PASS. ★ REGRESSION via
+               the WIRED path: TRIGGER -- wired call at 786->787 sets new_p007_candidate_detected=True + open_ref=
+               'Q4-P007-CANDIDATE:OPEN@bar_787' (naturally_reclaimed=False); RESOLUTION -- wired call at 877->878
+               (locked@787) reveals 878 and surfaces p007_naturally_reclaimed_but_still_locked=True (detector fresh
+               = resolved, durable lock still set until explicit commit). P007_004_WIRED_TRIGGER=PASS / P007_004_
+               WIRED_RESOLUTION=PASS. ★ REPLAY-MODE SAFETY: HYBRID_BLOCKED_WHILE_P007_OPEN=PASS (run_until_gate ->
+               HybridModeLockedError while locked); REJECTED_CANDIDATE_CLEARS=PASS (explicit commit_decision(P007_
+               RESOLUTION) clears open_ref->None, then run_until_gate no longer P007-blocked; same mechanism whether
+               resolved or rejected); STALE_LOCK_MASKING_PREVENTED=PASS (after resolving the 787 lock, driving the
+               wired path forward detects the NEXT independent crossing FRESH @ bar 892, not masked -- the naturally_
+               reclaimed signal prompts the timely resolution). ★ ISOLATION: causal H1 EMA50 used (787/878 reproduce),
+               M15 ema.py NOT used; PATTERN-007 TRADEABLE=NO/PLAYBOOK_READY=NO unchanged; S5/MGMT-004 byte-unchanged;
+               open_event_state_reference still read ONLY by run_until_gate. CAUSAL_H1_EMA50=PASS / M15_EMA_USED_FOR_
+               P007=NO / S5_UNCHANGED=YES / MGMT004_UNCHANGED=YES. TESTS=97 reproduced (94+3 new test_q4_replay_step)
+               + independent RT wired probe all pass. CHECKPOINT FROZEN: last_committed=1304/next=1305/open_ref=null/
+               FLAT; real fixtures dir still max 1304 (probe materialized 787-892 into tmp only); no fixture >=1305;
+               BAR_1305_ACCESSED=NO. BLOCKING=NONE. NONBLOCKING (3): (1) raw-primitive bypass remains possible --
+               engine.py unmodified (by scope) so raw extend/bind/step remain callable and would skip the gate; the
+               historical record processed open-trade MONITORING bars via raw engine.step (not the wired path); the
+               resume runtime MUST route ALL forward reveals incl. trade-monitoring through reveal_next_bar_with_p007
+               _gate, else a P007 crossing during a non-wired reveal skips the gate (recommend exclusive use + a
+               future engine-level guard, out of scope); (2) the masking fix is a SIGNAL not an auto-resolve (lock
+               clears only on the reasoning layer's explicit P007_RESOLUTION -- correct design; residual = discipline,
+               not a mechanical gap); (3) carried over-inclusive detector (flags every crossing -> HYBRID de-facto
+               disabled + per-crossing resolution needed; benign, ATOMIC-only anyway). SAFE_TO_RESUME_Q4_FROM_BAR_
+               1305=YES (conditional: runtime routes ALL forward reveals through the wired path + per-crossing
+               resolution discipline + CEO auth). NOT authorized: continue Q4 / access/materialize bar 1305 / modify
+               code -- NEXT_AUTHORIZED_ACTION=NONE CEO DECISION REQUIRED. bar 1305 NOT exposed. Changes only in
+               red_team/. Report: RT-P007-RUNTIME-WIRING-DELTA-001.md.
+               STATE: OPERATIONAL. Next entry [111], prev_hash E110.
+  entry_hash:  E110
 ```
