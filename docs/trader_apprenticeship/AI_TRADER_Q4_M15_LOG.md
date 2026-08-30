@@ -1112,3 +1112,20 @@ POSITION = FLAT
 ```
 
 Q4 replay pointer: 2020-10-21 20:14:59 UTC. NEXT_UNSEEN_BAR = 1366.
+
+### COMPACT BLOCK 1366-1388 (2020-10-21 20:15:00-2020-10-22 01:44:59 UTC) [routine]
+BARS: 1366-1388 (23 bars) | VOL: real, no records | GAP-164 (75min standard daily rollover, bar
+1372->1373) logged in `REPLAY_DATA_GAP_LEDGER.md`. TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+### Q4-P007-005 (bars 1389-1401, REJECTED) -- first candidate from the new durable prospective gate
+
+Bar 1389 (2020-10-22 02:00:00 UTC): close 1911.413, volume 980, causal H1 EMA50 1915.604 (gap
+-4.19pt) -- **genuinely prospectively detected** by `p007_detector.py` as the reveal happened (not
+retrospectively, unlike Q4-P007-004). Pre-classification recorded the ambiguity honestly (real EMA
+gap, uncertain volume severity) before reading further bars. Resolution: volume collapsed to thin
+levels immediately (never exceeded 411 across 13 bars) with no follow-through, price reclaimed
+within 13 bars (bar 1402, close 1915.606) -- classified **REJECTED**, not a genuine PATTERN-007
+instance. Full detail in `AI_TRADER_Q4_PATTERN_LEDGER.md`. No trade was open during this window; no
+trade/MGMT-004 decision affected. TRADE_DECISION: NO_TRADE throughout. INTEGRITY: OK.
+
+Q4 replay pointer: 2020-10-22 05:29:59 UTC. NEXT_UNSEEN_BAR = 1403.

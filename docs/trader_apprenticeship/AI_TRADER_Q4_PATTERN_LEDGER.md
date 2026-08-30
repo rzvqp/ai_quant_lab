@@ -323,3 +323,48 @@ and held (above-streak continuing through at least bar 884, where the S5 breakou
 occurred from a position above EMA). No trade/MGMT-004 decision was affected by the late recognition
 of this event -- `TRADES_TOTAL` and `MGMT004_TRIGGERS_TOTAL` are unchanged by this entry; it is a
 pattern-taxonomy record only.
+
+---
+
+## Q4-P007-005
+
+**FIRST INSTANCE DETECTED BY THE DURABLE PROSPECTIVE GATE** (`p007_detector.py`, CEO mandate + Red
+Team E110) -- registered genuinely prospectively (before resolution), unlike Q4-P007-004.
+
+```
+TRIGGER_BAR           1389 (2020-10-22 02:00:00-02:14:59 UTC)
+TRIGGER_CLOSE          1911.413
+CAUSAL_H1_EMA50_AT_TRIGGER   1915.604 (gap -4.19pt -- LARGER than Q4-P007-004's initial -2.15pt gap)
+TRIGGER_VOLUME          980 (moderate -- clearly above the quietest bars in this stretch (~200-400)
+                        but well below the historical "heavy/record" instances that opened
+                        Q4-P007-003 (1268) or Q4-P007-004 (1929, with immediate 2718/2747/4134
+                        follow-through))
+```
+
+**PRE-CLASSIFICATION (recorded before further bars read):** genuinely ambiguous by volume. The gap
+below EMA is real and larger than P007-004's own opening gap, but the triggering volume alone does
+not clearly meet the "sharp, volume-confirmed" bar prior genuine instances set. Watching for: (a)
+real-volume follow-through in the bars immediately after (would support classifying as a genuine
+PATTERN-007 instance), or (b) a fade/reclaim without ever showing volume confirmation (would support
+`REJECTED -- EMA crossing only, does not meet PATTERN-007's volume-confirmed criterion`, clearing the
+gate's lock without asserting a false SUPPORT/COUNTEREXAMPLE). Not pre-committing to either outcome.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         1402 (2020-10-22 05:29:59 UTC)
+DURATION               13 bars (1389-1401)
+DEEPEST_LOW             1911.26 (bar 1390)
+HEAVIEST_VOLUME         411 (bar 1390) -- never exceeded 411 across the whole 13-bar window; most
+                        bars under 200, several under 100
+```
+
+No real-volume follow-through at any point after the trigger bar -- volume collapsed to thin levels
+immediately and stayed there. Price reclaimed the causal H1 EMA50 within 13 bars without ever
+printing a fresh local extreme. This is the ambiguity flagged in the pre-classification resolving to
+outcome (b): a mechanical EMA crossing the over-inclusive gate correctly flagged per its own design,
+but not a "sharp, volume-confirmed" break matching PATTERN-007's actual definition. Classified
+REJECTED rather than SUPPORT to keep the pattern's evidence base honest -- inflating the count with
+routine wiggles would dilute, not strengthen, PATTERN-007's evidentiary standing. No trade/MGMT-004
+decision affected (no trade was open at the time).
