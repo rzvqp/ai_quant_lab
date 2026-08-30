@@ -176,3 +176,76 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 4
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -0.354 + 0.929 = +0.575
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #5 — S5 opening-range-breakout LONG (bar 1345)
+
+**METHODOLOGY NOTE:** the first trade evaluated under the new canonical
+`reveal_next_bar_with_p007_gate()` path (CEO mandate, Red Team E110/`a2db277`) -- every bar leading
+up to and monitoring this trade ran through the P007 gate as a structural part of the reveal, not a
+separately-remembered step.
+
+```
+STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
+SIGNAL_BAR              1345 (2020-10-23 15:30:00-15:44:59 UTC, NY session bis=5)
+DIRECTION               LONG
+ENTRY                   1928.046
+INITIAL_STOP             1921.947 (= or_low 1921.967 - 2*TICK)
+STRUCTURAL_TARGET         1946.343 (= entry + 3R, R=6.099)
+RISK (R)                 6.099
+INVALIDATION              1921.947
+```
+
+**THESIS (frozen before bar 1346 was revealed):** mechanically triggered, no discretionary override.
+Close 1928.046 > or_high 1926.384 within the entry window (bis=5). P007 gate flagged no candidate in
+bars 1310-1345. No new Q4 price/volume record.
+
+**OUTCOME:** stopped out at bar 1350 (2020-10-21 15:15:00 UTC), low 1920.214 <= stop 1921.947.
+```
+EXIT_BAR      1350
+EXIT_REASON    STOP
+EXIT_PRICE     1921.947
+R_MULTIPLE     -1.000
+```
+Fast loss -- 5 bars from entry to stop. Brief push to 1931.401 (bar 1347, +0.55R) before reversing
+hard through bars 1348-1350 (real volume 1005/1500/1629) straight through the stop. MGMT-004 never
+triggered (never reached +1.0R = 1934.145).
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 5
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = +0.575 - 1.000 = -0.425
+POSITION_AFTER_THIS_TRADE = FLAT
+```
+
+## TRADE #6 — S5 opening-range-breakout LONG (bar 1353)
+
+```
+STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
+SIGNAL_BAR              1353 (2020-10-21 15:45:00-15:59:59 UTC, bis=13, SAME session as TRADE #5)
+DIRECTION               LONG
+ENTRY                   1927.102
+INITIAL_STOP             1921.947 (= or_low 1921.967 - 2*TICK, same OR as TRADE #5)
+STRUCTURAL_TARGET         1942.567 (= entry + 3R, R=5.155)
+INVALIDATION              1921.947
+```
+
+**THESIS (frozen before bar 1354 was revealed):** mechanically triggered, no discretionary override
+-- a fresh, independent re-trigger of the same session's opening range (TRADE #5 had already closed
+by bar 1350; the frozen S5 spec does not prohibit a second signal within the same bis 4-20 window).
+No new Q4 price/volume record.
+
+**OUTCOME:** stopped out at bar 1365, low 1921.814 <= stop 1921.947.
+```
+EXIT_BAR      1365
+EXIT_REASON    STOP
+EXIT_PRICE     1921.947
+R_MULTIPLE     -1.000
+```
+Max favorable excursion +0.44R (bar 1354, high 1929.393) immediately after entry, then a slow,
+grinding decline over 11 bars straight through the stop -- no gaps, no dramatic single-bar move,
+just sustained real selling. MGMT-004 never triggered (never reached +1.0R = 1932.257).
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 6
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -0.425 - 1.000 = -1.425
+POSITION_AFTER_THIS_TRADE = FLAT
+```

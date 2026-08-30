@@ -1036,3 +1036,79 @@ Q4 replay pointer: 2020-10-21 15:59:59 UTC. NEXT_UNSEEN_BAR = 1305.
 Processed bars 1031-1304 in this continuation: a quiet 225-bar consolidation, then TRADE #4
 (+0.929R, control and MGMT-004 shadow converged identically). Durable state (`next_bar=1305`) is
 the sole source of truth for resumption.
+
+### CANONICAL REVEAL PATH ADOPTED (CEO mandate + Red Team E110, `a2db277`, 2026-08-30)
+
+From bar 1305 onward, every forward reveal -- routine bars, S5 monitoring, open-trade monitoring
+(stop/target/MGMT-004), gap handling -- goes exclusively through
+`q4_replay_step.reveal_next_bar_with_p007_gate()` (`extend_next_bar -> bind_extended_fixture ->
+engine.step() -> apply_p007_gate()`, one call), never raw `engine.step()` as an independent path.
+This closes a real gap Red Team's E110 review flagged: the prior sessions' open-trade monitoring
+bars (TRADE #1-#4) used raw `engine.step()` directly, which would have silently skipped a durable,
+prospective P007 gate had one existed then -- it did not, so no bar was actually missed, but the
+gap was real. The new gate (`p007_detector.py`/`causal_h1.py`/`p007_gate.py`) is a durable,
+prospective, over-inclusive-by-design detector (flags every M15 close-crossing from at-or-above to
+below the causal H1 EMA50, not only "severe" ones) -- reproduces all 4 established real anchor
+points (1901.160@378, 1891.748@487, 1918.200@787, 1904.592@878) to within 0.0003, and the real
+Q4-P007-004 trigger (787)/resolution (878) exactly, through the actual wired path (97/97 tests).
+
+### COMPACT BLOCK 1305-1344 (2020-10-21 16:00:00-2020-10-23 15:29:59 UTC) [routine, no P007 candidate flagged]
+BARS: 1305-1344 (40 bars) | VOL: real, no records | STATE_CHANGE: no gaps, no P007 candidate
+detected by the new gate across this entire stretch (the gate ran on every one of these 40 bars).
+TRADE_DECISION: NO_TRADE until the entry window handled below. INTEGRITY: OK.
+
+### BAR 1345 (2020-10-23T15:30:00-15:44:59 UTC) -- S5 OPENING-RANGE-BREAKOUT LONG, TRADE #5 OPENED
+
+OHLCV: open=1926.157, high=1928.298, low=1924.706, close=**1928.046**, volume=1242, or_high=1926.384
+-- **mechanical S5 LONG trigger** (bis=5). Frozen and committed before bar 1346: entry 1928.046, stop
+1921.947, target 1946.343, max_hold through bar 1393. Full thesis in
+`AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #5).
+
+```
+TRADES_TOTAL = 5
+POSITION = LONG (1928.046, stop 1921.947, target 1946.343)
+```
+
+### TRADE #5 MONITORING AND RESOLUTION (bars 1346-1350, via reveal_next_bar_with_p007_gate)
+
+Fast loss: brief push to 1931.401 (bar 1347, +0.55R) before reversing hard through bars 1348-1350
+(real volume 1005/1500/1629) straight through the stop (bar 1350, low 1920.214). MGMT-004 never
+triggered. Full detail in `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #5).
+
+```
+EXIT_BAR = 1350, EXIT_REASON = STOP, R = -1.000
+TRADES_TOTAL = 5 (all closed)
+Q4_NET_R (control basis) = +0.575 - 1.000 = -0.425
+MGMT004_TRIGGERS_TOTAL = 2 (unchanged)
+POSITION = FLAT
+```
+
+Q4 replay pointer: 2020-10-21 15:14:59 UTC. NEXT_UNSEEN_BAR = 1351.
+
+### BAR 1353 (2020-10-21T15:45:00-15:59:59 UTC) -- S5 RE-TRIGGER, TRADE #6 OPENED
+
+Bars 1351-1352 (2 bars, NO_TRADE, no gap, no P007 candidate) preceded a fresh re-trigger of the SAME
+session's opening range (TRADE #5 had already closed by bar 1350): close 1927.102 > or_high 1926.384
+(bis=13). Frozen and committed before bar 1354: entry 1927.102, stop 1921.947, target 1942.567.
+Full thesis in `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #6).
+
+```
+TRADES_TOTAL = 6
+POSITION = LONG (1927.102, stop 1921.947, target 1942.567)
+```
+
+### TRADE #6 MONITORING AND RESOLUTION (bars 1354-1365, via reveal_next_bar_with_p007_gate)
+
+Max favorable +0.44R (bar 1354) immediately after entry, then a slow 11-bar grind straight through
+the stop (bar 1365, low 1921.814) -- no gaps, no dramatic single bar, sustained real selling.
+MGMT-004 never triggered. Full detail in `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #6).
+
+```
+EXIT_BAR = 1365, EXIT_REASON = STOP, R = -1.000
+TRADES_TOTAL = 6 (all closed)
+Q4_NET_R (control basis) = -0.425 - 1.000 = -1.425
+MGMT004_TRIGGERS_TOTAL = 2 (unchanged)
+POSITION = FLAT
+```
+
+Q4 replay pointer: 2020-10-21 20:14:59 UTC. NEXT_UNSEEN_BAR = 1366.
