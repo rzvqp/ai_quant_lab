@@ -1,0 +1,72 @@
+{
+  "adapter_version": "1.0.0",
+  "bar_interval_seconds": 900,
+  "content_hash": "2ee914c9ec71ea7e186d5a44b0548557498375a86761efe50040d8c0b7ee8ad0",
+  "first_bar_ts_open": 1598925600,
+  "gaps_found_in_q4_range": [
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1601589600,
+      "gap_start": 1601585100,
+      "q4_bar_index": 85
+    },
+    {
+      "classification": "WEEKEND",
+      "duration_seconds": 177300,
+      "gap_end": 1601848800,
+      "gap_start": 1601671500,
+      "q4_bar_index": 177
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1601935200,
+      "gap_start": 1601930700,
+      "q4_bar_index": 269
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602021600,
+      "gap_start": 1602017100,
+      "q4_bar_index": 361
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602108000,
+      "gap_start": 1602103500,
+      "q4_bar_index": 453
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602194400,
+      "gap_start": 1602189900,
+      "q4_bar_index": 545
+    },
+    {
+      "classification": "WEEKEND",
+      "duration_seconds": 177300,
+      "gap_end": 1602453600,
+      "gap_start": 1602276300,
+      "q4_bar_index": 637
+    }
+  ],
+  "last_bar_close": 1923.592,
+  "last_bar_ts_open": 1602522900,
+  "last_bar_volume": 398.0,
+  "max_q4_bar_index_read_during_materialization": 714,
+  "origin_source_content_hash": "57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37",
+  "origin_source_path_basename": "OANDA_XAUUSD_M15.csv",
+  "origin_source_total_row_count_NOT_recorded": "deliberately not counted/recorded -- doing so would require reading past the sealed boundary; this manifest records only what was actually, boundedly read",
+  "q4_bar_count": 714,
+  "q4_start_ts": 1601510400,
+  "sealed_through_bar_index": 714,
+  "source_file_name": "Q4_SEALED_1_714.csv",
+  "symbol": "OANDA:XAUUSD",
+  "timeframe": "M15",
+  "total_row_count": 2714,
+  "warmup_bar_count": 2000
+}

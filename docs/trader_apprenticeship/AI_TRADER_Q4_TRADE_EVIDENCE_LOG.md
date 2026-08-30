@@ -60,3 +60,81 @@ MGMT-004 ledger for the full, disclosed comparison.
 TRADES_TOTAL_AFTER_THIS_TRADE = 1
 POSITION_AFTER_THIS_TRADE = FLAT (both control and shadow paths closed)
 ```
+
+## TRADE #2 — S5 opening-range-breakout LONG (bar 884)
+
+```
+STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
+SIGNAL_BAR              884 (2020-10-14 13:45:00-13:59:59 UTC, NY session bis=4)
+DIRECTION               LONG
+ENTRY                   1912.356
+INITIAL_STOP             1904.96 (= or_low 1904.98 - 2*TICK)
+STRUCTURAL_TARGET         1934.544 (= entry + 3R, R=7.396)
+RISK (R)                 7.396
+BASELINE_MANAGEMENT       hold to stop/target/max-hold per S5's frozen exit spec; MGMT-004 tracked
+                          separately, never influencing entry
+INVALIDATION              1904.96
+```
+
+**THESIS (frozen before bar 885 was revealed):** mechanically triggered, no discretionary override.
+OR formed bars 880-883 (or_high 1909.755, or_low 1904.98); bar 884 closed 1912.356, above or_high, in
+the entry window (bis=4). Descriptive context: this bar sits 6 bars after the Q4-P007-004 reclaim
+(bar 878) -- itself the resolution of a 91-bar below-EMA pullback (bars 787-877, real/heavy peak
+volume 4134 at bar 791) that had pulled back roughly 40pt off the bar-786 local high. No new Q4
+price/volume record on this bar or the preceding stretch.
+
+**OUTCOME:** stopped out at bar 892 (2020-10-14 15:45:00 UTC), low 1902.764 <= stop 1904.96.
+```
+EXIT_BAR      892
+EXIT_REASON    STOP
+EXIT_PRICE     1904.96
+R_MULTIPLE     -1.000
+```
+A fast, clean loss -- 8 bars from entry to stop, price never closed back above the entry level after
+bar 890's brief 1911-1912 push (high 1912.214, +0.05R short of the entry itself), then reversed
+sharply on bar 892 (open 1909.212, low 1902.764, a 6.4pt intrabar range on real volume 1247) straight
+through the stop. MGMT-004 never triggered (price never closed at or beyond +1.0R = 1919.752 at any
+point in the hold) -- no shadow track to report.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 2
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = +0.651 + (-1.000) = -0.349
+POSITION_AFTER_THIS_TRADE = FLAT
+```
+
+## TRADE #3 — S5 opening-range-breakout LONG (bar 982)
+
+```
+STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
+SIGNAL_BAR              982 (2020-10-15 15:15:00-15:29:59 UTC, NY session bis=10 -- not the first
+                        entry-window bar; OR was not broken until several bars into the session)
+DIRECTION               LONG
+ENTRY                   1904.62
+INITIAL_STOP             1891.748 (= or_low 1891.768 - 2*TICK)
+STRUCTURAL_TARGET         1943.236 (= entry + 3R, R=12.872)
+RISK (R)                 12.872
+INVALIDATION              1891.748
+```
+
+**THESIS (frozen before bar 983 was revealed):** mechanically triggered, no discretionary override.
+Close 1904.62 > or_high 1900.22 within the bis 4-20 entry window (bis=10). Descriptive context: this
+trigger follows TRADE #2's stop-out (bar 892, -1.0R) and a further below-EMA stretch that reclaimed
+without reaching the batch runner's heavy-volume-crossing threshold. No new Q4 price/volume record.
+
+**OUTCOME:** ran the full 48-bar hold, never threatening either stop or target.
+```
+EXIT_BAR      1030 (2020-10-16 15:15:00-15:29:59 UTC)
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1904.56
+R_MULTIPLE     -0.005 (essentially flat)
+```
+Tight range throughout: max favorable excursion +0.46R (bar 1017, high 1910.574), max adverse
+excursion -0.21R (bar 987, low 1901.862, +10.1pt / +0.79R of stop headroom at its narrowest). One
+MAINTENANCE gap (GAP-160, bar 1004->1005) inside the hold, no directional information (zero-price-gap).
+MGMT-004 never triggered (never reached +1.0R = 1917.492).
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 3
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = +0.651 - 1.000 - 0.005 = -0.354
+POSITION_AFTER_THIS_TRADE = FLAT
+```

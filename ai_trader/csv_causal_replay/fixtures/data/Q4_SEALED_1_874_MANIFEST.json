@@ -1,0 +1,86 @@
+{
+  "adapter_version": "1.0.0",
+  "bar_interval_seconds": 900,
+  "content_hash": "68dd5d47b98b92b32379b6800a40646231349b9a434bded7515381e9cb1f01c9",
+  "first_bar_ts_open": 1598925600,
+  "gaps_found_in_q4_range": [
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1601589600,
+      "gap_start": 1601585100,
+      "q4_bar_index": 85
+    },
+    {
+      "classification": "WEEKEND",
+      "duration_seconds": 177300,
+      "gap_end": 1601848800,
+      "gap_start": 1601671500,
+      "q4_bar_index": 177
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1601935200,
+      "gap_start": 1601930700,
+      "q4_bar_index": 269
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602021600,
+      "gap_start": 1602017100,
+      "q4_bar_index": 361
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602108000,
+      "gap_start": 1602103500,
+      "q4_bar_index": 453
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602194400,
+      "gap_start": 1602189900,
+      "q4_bar_index": 545
+    },
+    {
+      "classification": "WEEKEND",
+      "duration_seconds": 177300,
+      "gap_end": 1602453600,
+      "gap_start": 1602276300,
+      "q4_bar_index": 637
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602540000,
+      "gap_start": 1602535500,
+      "q4_bar_index": 729
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602626400,
+      "gap_start": 1602621900,
+      "q4_bar_index": 821
+    }
+  ],
+  "last_bar_close": 1902.219,
+  "last_bar_ts_open": 1602674100,
+  "last_bar_volume": 526.0,
+  "max_q4_bar_index_read_during_materialization": 874,
+  "origin_source_content_hash": "57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37",
+  "origin_source_path_basename": "OANDA_XAUUSD_M15.csv",
+  "origin_source_total_row_count_NOT_recorded": "deliberately not counted/recorded -- doing so would require reading past the sealed boundary; this manifest records only what was actually, boundedly read",
+  "q4_bar_count": 874,
+  "q4_start_ts": 1601510400,
+  "sealed_through_bar_index": 874,
+  "source_file_name": "Q4_SEALED_1_874.csv",
+  "symbol": "OANDA:XAUUSD",
+  "timeframe": "M15",
+  "total_row_count": 2874,
+  "warmup_bar_count": 2000
+}

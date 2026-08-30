@@ -875,3 +875,121 @@ excursion), and the apprenticeship's first CSV-transport trade (bar 608, closed 
 0.000R MGMT-004 shadow). Stopping here for a checkpoint/review before continuing further into Q4;
 durable state (`next_bar=657`) is the sole source of truth for resumption -- see this session's own
 report for the remaining-scope estimate.
+
+### CONTINUATION FROM BAR 657 (CEO-authorized autonomous continuation, 2026-08-30)
+
+**OPERATIONAL NOTE:** a transient Windows file-permission error interrupted the batch runner
+mid-write while revealing bar 771 (`os.replace` failed on the durable-state file, likely a brief
+external lock -- antivirus/backup scan, not reproducible on retry). The atomic-write pattern did
+exactly its job: the orphaned `.tmp` file was never activated and durable state remained fully
+consistent (`pending_decision: null`, correctly NOT reflecting the incomplete reveal). Verified the
+real committed decisions for bars 657-770 were entirely unaffected (they completed before the
+failure), removed the orphaned tmp file, and cleanly re-ran `engine.step()` for bar 771 alone (no
+re-extension needed -- its fixture was already bound). Not a causal-integrity issue.
+
+### COMPACT BLOCK 657-786 (2020-10-12 03:00:00-2020-10-13 12:14:59 UTC) [rally continues, cools, then choppy]
+BARS: 657-786 (130 bars) | CLOSE RANGE: ~1900-1930 (opened 1927.249, peaked intraday near 1930s,
+closed 1921.302 at 786) | VOL: real, no records | STATE_CHANGE: the post-P007-003/TRADE-1 rally
+continued for a stretch, cooled into a broad 1900-1930 range, with one MAINTENANCE gap (GAP-158,
+bar 729, 75min standard daily rollover). Above-EMA streak held throughout (causal H1 EMA50 rising
+from ~1911 to ~1918.2). No S5 setup in the NY sessions covered by this block (opening ranges formed
+but no close broke above OR high). TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+### Q4-P007-004 (bars 787-878) -- see `AI_TRADER_Q4_PATTERN_LEDGER.md` for full detail
+
+Bar 787 (12:29:59 UTC): close 1916.054, volume 1929 -- first close below the causal H1 EMA50 (1918.2)
+since the post-reclaim rally began, followed by immediate real-volume follow-through (bar 788 close
+1909.671 vol 2718; bar 789 close 1907.557 vol 2747; bar 791 close 1897.235 vol **4134**, the
+heaviest bar since the historic 352/353 spikes). Price declined to a low of 1882.434 (bar 834) --
+well short of the all-time Q4 low (1872.898) -- before stabilizing and reclaiming the causal H1 EMA50
+at bar 878 (close 1905.436 > EMA 1904.592). **91 consecutive bars below EMA (787-877)**. This
+instance was identified retrospectively rather than pre-registered before resolution -- a disclosed
+gap in the autonomous batch process, now corrected (see the pattern ledger's process-disclosure note
+and the batch runner's added heavy-volume-crossing check). No trade/MGMT-004 decision was affected.
+TRADE_DECISION: NO_TRADE throughout (787-877). INTEGRITY: OK (disclosed process gap, not a causal one).
+
+### COMPACT BLOCK 879-883 (2020-10-14 12:30:00-13:29:59 UTC) [recovery continues into a fresh NY session]
+BARS: 879-883 (5 bars) | CLOSES: 1907.414/1907.736/1909.258/1907.72/1907.794 | VOL: 1139/1001/1422/
+675/1317 (real) | STATE_CHANGE: steady recovery continues off the Q4-P007-004 reclaim; NY session
+opens at bar 880/881 (OR forms bars 880-883: or_high 1909.755 at bar 882, or_low 1904.98 at bar 883).
+TRADE_DECISION: NO_TRADE (883 is bis=3, still inside OR-forming window). INTEGRITY: OK.
+
+### BAR 884 (2020-10-14T13:45:00-13:59:59 UTC) -- S5 OPENING-RANGE-BREAKOUT LONG, TRADE #2 OPENED
+
+OHLCV: open=1907.794, high=1912.962, low=1907.618, close=**1912.356**, volume=1009. First
+entry-window bar (bis=4); close 1912.356 > or_high 1909.755 -- **mechanical S5 LONG trigger**.
+Trade hypothesis frozen and durably committed (`TRADE_CONTRACT`) before bar 885 was revealed: entry
+1912.356, stop 1904.96, target 1934.544, max_hold through bar 932. Full thesis in
+`AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #2).
+
+```
+TRADES_TOTAL = 2
+POSITION = LONG (1912.356, stop 1904.96, target 1934.544)
+```
+
+### TRADE #2 MONITORING AND RESOLUTION (bars 885-892, ATOMIC)
+
+Fast, clean loss: bars 885-891 chopped in a 1906-1912 range (never closing back above entry, best
+push bar 890 high 1912.214, +0.05R short of entry) before bar 892 (open 1909.212, low **1902.764**,
+real volume 1247) reversed straight through the stop. Closed via `commit_decision(bar_id=1602690300,
+decision_type="ROUTINE_NO_EVENT")` at the bar where the mechanical stop condition was met (the
+engine's own decision vocabulary has no dedicated "trade closed" type; the outcome is recorded in
+the trade ledgers, not the causal state machine). MGMT-004 never triggered (price never reached
++1.0R = 1919.752). Full detail in `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #2).
+
+```
+EXIT_BAR = 892, EXIT_REASON = STOP, R = -1.000
+TRADES_TOTAL = 2 (both closed)
+Q4_NET_R (control basis) = +0.651 - 1.000 = -0.349
+MGMT004_TRIGGERS_TOTAL = 1 (unchanged -- TRADE #2 never triggered it)
+POSITION = FLAT
+```
+
+Q4 replay pointer: 2020-10-14 15:59:59 UTC. NEXT_UNSEEN_BAR = 893.
+
+### COMPACT BLOCK 893-981 (2020-10-14 16:00:00-2020-10-15 15:14:59 UTC) [choppy consolidation, no heavy-volume crossing]
+BARS: 893-981 (89 bars) | CLOSE RANGE: ~1895-1905 | VOL: real, no records, no heavy-volume EMA
+crossing flagged by the batch runner's new check | STATE_CHANGE: choppy consolidation below and
+around the causal H1 EMA50 (no sustained excursion comparable to Q4-P007-003/004 -- price stayed
+within roughly a 15pt band). GAP-159 (75min standard daily rollover, bar 912->913) logged in
+`REPLAY_DATA_GAP_LEDGER.md`. No S5 setup in the sessions covered until the entry window of the
+2020-10-15 NY session, handled below. TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+### BAR 982 (2020-10-15T15:15:00-15:29:59 UTC) -- S5 OPENING-RANGE-BREAKOUT LONG, TRADE #3 OPENED
+
+OHLCV: open=1900.198, high=1904.914, low=1900.154, close=**1904.62**, volume=1482. bis=10 (within
+the entry window, not its first bar) -- close 1904.62 > or_high 1900.22 -- **mechanical S5 LONG
+trigger**. Trade hypothesis frozen and committed before bar 983 was revealed: entry 1904.62, stop
+1891.748, target 1943.236, max_hold through bar 1030. Full thesis in
+`AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #3).
+
+```
+TRADES_TOTAL = 3
+POSITION = LONG (1904.62, stop 1891.748, target 1943.236)
+```
+
+### TRADE #3 MONITORING AND RESOLUTION (bars 983-1030, ATOMIC)
+
+Tight, uneventful range throughout the full 48-bar hold -- max favorable +0.46R (bar 1017), max
+adverse -0.21R (bar 987), never threatening stop or target. GAP-160 (75min standard daily rollover,
+bar 1004->1005) logged in `REPLAY_DATA_GAP_LEDGER.md`. Closed at max-hold (bar 1030, close 1904.56,
+essentially flat). MGMT-004 never triggered (never reached +1.0R = 1917.492). Full detail in
+`AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #3).
+
+```
+EXIT_BAR = 1030, EXIT_REASON = MAX_HOLD, R = -0.005
+TRADES_TOTAL = 3 (all closed)
+Q4_NET_R (control basis) = +0.651 - 1.000 - 0.005 = -0.354
+MGMT004_TRIGGERS_TOTAL = 1 (unchanged)
+POSITION = FLAT
+```
+
+Q4 replay pointer: 2020-10-16 15:29:59 UTC. NEXT_UNSEEN_BAR = 1031.
+
+### SESSION CHECKPOINT (CEO-authorized autonomous continuation, 2026-08-30, continued)
+
+Processed bars 657-1030 in this continuation: recovered cleanly from a transient file-permission
+interruption at bar 771 (no data lost, no causal-integrity impact), identified and disclosed
+Q4-P007-004 (bars 787-878, retrospectively recognized -- batch runner now checks for heavy-volume
+EMA crossings going forward), and closed TRADE #2 (-1.0R) and TRADE #3 (-0.005R, essentially flat).
+Durable state (`next_bar=1031`) is the sole source of truth for resumption.

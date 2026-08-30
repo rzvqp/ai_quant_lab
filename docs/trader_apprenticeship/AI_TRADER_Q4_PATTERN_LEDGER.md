@@ -282,3 +282,44 @@ negative, no missed reclaim, no bar wrongly classified) -- the bug affected only
 *value*, never a decision, since bar 487 is confirmed as the sole reclaim point either way (both
 1892.001 and 1891.748 are below bar 487's 1893.26 close). The figures in this RESOLUTION section use
 the corrected, true value throughout.
+
+---
+
+## Q4-P007-004
+
+**PROCESS DISCLOSURE (read before the event detail below):** this instance was identified
+**retrospectively**, not pre-registered before its resolution. The autonomous batch runner used from
+bar 386 onward mechanically checks for gaps, S5 triggers, and all-time price/volume extremes, but was
+never extended to check for a NEW P007-eligible break (a judgment call: "severe" break, "record/heavy"
+volume) -- so bars 787-884 were committed as plain `ROUTINE_NO_EVENT` in real time, and this event was
+only recognized when reviewing the batch's own output afterward, by which point bar 884 (well past the
+reclaim) had already been revealed. This is a genuine, disclosed gap in the mechanical process, not a
+causal-integrity violation: every bar was still individually revealed and committed one at a time (no
+bulk exposure, no lookahead), and the reclaim determination itself is unaffected by when a human/AI
+noticed the pattern. The batch runner has been extended (see `q4_batch_runner.py`, current version)
+to flag a heavy-volume EMA-crossing going forward so this gap does not recur silently.
+
+```
+STATUS               RESOLVED (identified retrospectively -- see disclosure above)
+CLASSIFICATION        SUPPORT / RECLAIM (duration comparable to, though shorter than, Q4-P007-003)
+TRIGGER_BAR           787 (2020-10-13 12:29:59 UTC) -- close 1916.054, real volume 1929, first close
+                      below the causal H1 EMA50 (1918.2) since the bar-608-trade-era rally began.
+                      Immediate, real-volume follow-through: bar 788 close 1909.671 (vol 2718, H1
+                      candle closes this bar), bar 789 close 1907.557 (vol 2747).
+STRUCTURAL_LEVEL      Not independently identified against a specific pre-registered price level
+                      (unlike Q4-P007-001/002/003, which broke a specifically-named prior low) --
+                      this is a descriptive gap of the retrospective identification, disclosed rather
+                      than backfilled with an invented level.
+RESOLUTION_BAR         878 (2020-10-14 12:14:59 UTC) -- close 1905.436 > causal H1 EMA50 1904.592
+DURATION               91 consecutive M15 bars below causal H1 EMA50 (787-877 inclusive)
+DEEPEST_LOW_THIS_EPISODE 1882.434 (bar 834) -- well above the all-time Q4 low (1872.898, bar 375),
+                        not a new record
+HEAVIEST_VOLUME_THIS_EPISODE 4134 (bar 791) -- real/heavy, comparable to the historic bars 352/353
+                        (4743/6203) but not a new record
+```
+
+**Why RECLAIM, not a new COUNTEREXAMPLE**: price closed back above the causal H1 EMA50 at bar 878
+and held (above-streak continuing through at least bar 884, where the S5 breakout at bar 884 itself
+occurred from a position above EMA). No trade/MGMT-004 decision was affected by the late recognition
+of this event -- `TRADES_TOTAL` and `MGMT004_TRIGGERS_TOTAL` are unchanged by this entry; it is a
+pattern-taxonomy record only.

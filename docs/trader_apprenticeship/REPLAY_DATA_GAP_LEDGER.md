@@ -1205,3 +1205,21 @@ established weekend-gap duration (GAP-152). No trade-management action occurs ac
 under the frozen S5/MGMT-004 protocols (stop/target/max-hold are evaluated bar-by-bar as bars are
 revealed, not on wall-clock time) -- the bar-608 trade's max-hold count is in M15 bars, not elapsed
 calendar time, so this gap does not shorten or extend its effective holding window.
+
+### GAP-158 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-12T20:44:59Z (last close 1922.702, Q4 bar 728, Monday) -> 2020-10-12T22:00:00Z (first
+open 1922.702, Q4 bar 729)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-159 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-14T20:44:59Z (last close 1901.679, Q4 bar 912, Wednesday) -> 2020-10-14T22:00:00Z
+(first open 1901.679, Q4 bar 913)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-160 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-15T20:44:59Z (last close 1908.256, Q4 bar 1004, Thursday -- inside the open bar-982 S5
+trade's holding period) -> 2020-10-15T22:00:00Z (first open 1908.256, Q4 bar 1005)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
