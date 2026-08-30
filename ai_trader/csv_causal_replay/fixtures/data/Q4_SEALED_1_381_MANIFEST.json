@@ -1,0 +1,51 @@
+{
+  "adapter_version": "1.0.0",
+  "bar_interval_seconds": 900,
+  "content_hash": "2409eda559db5a5dea4ed334e560cdc87d690ada5112ede9e7c04e26bbb9432a",
+  "first_bar_ts_open": 1598925600,
+  "gaps_found_in_q4_range": [
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1601589600,
+      "gap_start": 1601585100,
+      "q4_bar_index": 85
+    },
+    {
+      "classification": "WEEKEND",
+      "duration_seconds": 177300,
+      "gap_end": 1601848800,
+      "gap_start": 1601671500,
+      "q4_bar_index": 177
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1601935200,
+      "gap_start": 1601930700,
+      "q4_bar_index": 269
+    },
+    {
+      "classification": "MAINTENANCE",
+      "duration_seconds": 4500,
+      "gap_end": 1602021600,
+      "gap_start": 1602017100,
+      "q4_bar_index": 361
+    }
+  ],
+  "last_bar_close": 1882.261,
+  "last_bar_ts_open": 1602039600,
+  "last_bar_volume": 291.0,
+  "max_q4_bar_index_read_during_materialization": 381,
+  "origin_source_content_hash": "57f4ed9544993c8fbba28d9c1e3319f2e0665ef5db211fb09d9f4622222ccd37",
+  "origin_source_path_basename": "OANDA_XAUUSD_M15.csv",
+  "origin_source_total_row_count_NOT_recorded": "deliberately not counted/recorded -- doing so would require reading past the sealed boundary; this manifest records only what was actually, boundedly read",
+  "q4_bar_count": 381,
+  "q4_start_ts": 1601510400,
+  "sealed_through_bar_index": 381,
+  "source_file_name": "Q4_SEALED_1_381.csv",
+  "symbol": "OANDA:XAUUSD",
+  "timeframe": "M15",
+  "total_row_count": 2381,
+  "warmup_bar_count": 2000
+}

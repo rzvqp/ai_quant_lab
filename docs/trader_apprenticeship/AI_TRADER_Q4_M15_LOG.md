@@ -554,6 +554,94 @@ ACTIVE_THESIS: unchanged | TRADE_DECISION: NO_TRADE | INTEGRITY: OK.
 BAR 378 (02:29:59): close 1880.434, vol 523. STATE_CHANGE: none, still below EMA50 (38 consecutive
 bars, 340-378). NO_TRADE. Q4 replay pointer: 2020-10-07 02:29:59 UTC. NEXT_UNSEEN_BAR = 379.
 
+### TRANSPORT MIGRATION: TradingView MCP -> CSV_CAUSAL_REPLAY_ADAPTER_V1 (from bar 380 onward)
+
+The TradingView MCP connection never recovered (see the handoff documents
+`Q4_GOVERNANCE_SCOPE_AUDIT_001.md` and the two `AI_TRADER_*_HANDOFF_2026-08-30.md` files for the
+full diagnostic trail). CEO-authorized `CSV_CAUSAL_REPLAY_ADAPTER_V1` (implementation `72d91c5`,
+Red Team E2E review `6a8861d`, `PASS_WITH_NONBLOCKING_NOTES`) is now the replay transport, starting
+at bar 380. Verified before use, not accepted on assertion:
+- Commits `72d91c5`/`6a8861d` genuinely exist in this repo's git history.
+- `ai_trader/csv_causal_replay/` is now fully committed (tests exist: `test_engine_identity_handoff.py`,
+  `test_adversarial.py`, etc.), unlike the earlier untracked/test-less state.
+- The durable state's own 4 recorded gaps (bar 85 MAINTENANCE 75min, bar 177 WEEKEND 49.25h, bar
+  269 MAINTENANCE 75min, bar 361 MAINTENANCE 75min) match GAP-151..154 in
+  `REPLAY_DATA_GAP_LEDGER.md` exactly, to the second -- strong independent confirmation this CSV
+  data is the same real market data this apprenticeship has been reading all along, not a
+  fabricated/different series.
+- Bar 379's own close (1880.496, per the sealed manifest) continues cleanly from this log's own
+  bar-378 close (1880.434) -- a small, plausible move, not a discontinuity.
+- **Origin-source integrity finding (disclosed, not silently worked around)**: this repo's own
+  `data/market/OANDA_XAUUSD_M15.csv` does NOT match the content hash the bar-379 manifest recorded
+  as its origin source. The correct file (verified byte-for-byte via SHA256) is
+  `vendor/alpha_automation_demo_gate/data/market/OANDA_XAUUSD_M15.csv` -- used for the bar-380
+  extension below. Using the wrong copy would risk splicing a different data lineage past bar 379;
+  this was caught before running anything, not after.
+
+**EMA reference discrepancy (disclosed, corrected against the mandate's own text)**: the CEO
+mandate authorizing this resumption stated "canonical CSV recomputation @378 = 39" consecutive
+bars below EMA50. This was checked directly against `ai_trader/csv_causal_replay/ema.py` (both its
+own docstring's disclosed measurement AND an independent re-run of `sub_ema_streak()` against the
+actual current fixture, performed before writing this entry) -- **the real figure is 44, not 39**.
+The mandate's "39" does not match the shipped code's own output; treated as an error in the
+mandate's text, not as authority to override a mechanically-reproducible number. Separately, and
+more structurally: `ema.py`'s own docstring discloses it computes EMA-50 directly on M15 closes,
+with **no H1 aggregation at all** ("no ATR/H1/H4 aggregation... left out per mandate section 15, no
+scope creep") -- meaning the mandate's instruction to use "CAUSAL H1 EMA50, NOT M15 EMA50" cannot
+currently be satisfied by this transport; only an M15-close-based causal EMA-50 exists here. Per
+the module's own explicit scope statement, only the **SIGN** (price below/above its own EMA-50) is
+claimed trustworthy from this source -- the exact streak length is explicitly NOT claimed to match
+this log's historical H1-based figure, and is not forced to agree with it.
+
+**Three-track counter, preserved distinctly, none rewritten**:
+```
+historical durable (this log, H1-EMA50-based)      @378 = 38 (bars 340-378)
+canonical CSV recomputation (M15-close-based)       @378 = 44  [corrected from the mandate's
+                                                                stated 39 -- verified 2026-08-30]
+canonical CSV recomputation                          @379 = 45
+canonical CSV recomputation                          @380 = 46
+```
+The historical 38-count (bars 340-378, H1 EMA50, this log's own basis throughout Q4) is NOT
+retrospectively rewritten. The CSV-side count is a separate, differently-computed series, kept side
+by side. Both agree on SIGN (price below EMA50) at every point checked; only the streak length
+differs, for the disclosed warmup/aggregation reasons above.
+
+### BAR 379 (2020-10-07T02:30:00-02:44:59 UTC) -- consumed via Red Team E2E validation, not genuine prospective reasoning
+
+Per the durable state at hand-off, bar 379 (close 1880.496, per the sealed fixture manifest) was
+already `engine.step()`'d and `commit_decision()`'d before this session resumed -- as part of Red
+Team's own real end-to-end mechanism test (`6a8861d`, testing the extend->bind->step->commit
+identity handoff itself, not performing genuine apprenticeship market-reading). **This is disclosed
+as a real, if narrow, gap in the prospective record**: bar 379's price action was never reasoned
+about by this apprenticeship the way bars 1-378 were (no MARKET_THESIS update, no trigger-integrity
+check against the open Q4-P007-003 episode). Its raw OHLCV is available for context (open 1880.434,
+close 1880.496, per the manifest) and is consistent with continued, undramatic consolidation in the
+same territory as bar 378 -- but no causal decision was frozen for it by this apprenticeship. Not
+retroactively constructed here. Genuine prospective reasoning resumes cleanly at bar 380 below.
+
+### BAR 380 (2020-10-07T02:45:00-02:59:59 UTC) -- first genuinely reasoned CSV-transport bar
+OHLCV: open=1880.496, high=1882.19, low=1880.458, close=1881.263, volume=502 (real CSV volume
+field, same convention as every prior bar). No gap before this bar. CSV canonical EMA streak = 46
+(sign only trustworthy, see disclosure above). STATE_CHANGE: none material -- close continues the
+same shallow stabilization/bounce texture as bars 375-379 (deepest point of this whole episode
+remains bar 375's 1872.898), still far below any EMA-50 estimate from either source. Q4-P007-003
+remains OPEN/UNRESOLVED -- this bar shows no reclaim attempt of substance. NO_TRADE (no genuine
+setup). Committed via `commit_decision(bar_id=1602038700, decision_type="ROUTINE_NO_EVENT")`.
+Q4 replay pointer (CSV transport): 2020-10-07 02:59:59 UTC. NEXT_UNSEEN_BAR = 381.
+
+### BLOCK 381-385 (2020-10-07 03:00:00-04:14:59 UTC) [ATOMIC mode, CSV transport, P007-003 remains open]
+BARS: 381-385 | CLOSES: 1882.261/1881.9/1882.538/1883.02/1882.958 | VOL: 291/338/293/234/186 (thin
+throughout) | STATE_CHANGE: continued shallow stabilization/bounce in the same 1879.7-1884.2
+territory since the bar-375 low (1872.898); no fresh low, no reclaim of substance | CSV canonical
+sub_ema_streak: 47/48/49/50/51 (sign-only trustworthy per ema.py's own disclosed scope -- see
+migration note above) | Q4-P007-003: remains OPEN/UNRESOLVED | TRADE_DECISION: NO_TRADE (all 5
+bars) | Each bar individually revealed via `causal_step_snapshot`-equivalent
+(extend_next_bar->bind_extended_fixture->engine.step()) and committed via
+`commit_decision(decision_type="ROUTINE_NO_EVENT")` -- ATOMIC mode throughout, no HYBRID/gated
+stepping used while P007-003 remains reasoning-dependent. INTEGRITY: OK -- every bar's origin-source
+content hash re-verified as the correct file on every extend call; no gap; no skip; no duplicate.
+Q4 replay pointer (CSV transport): 2020-10-07 04:14:59 UTC. NEXT_UNSEEN_BAR = 386.
+
 **METHODOLOGY NOTE (bar 379 onward): Q4 replay source is now `CSV_CAUSAL_REPLAY_ADAPTER_V1`**, not
 TradingView Bar Replay -- the TradingView MCP connection proved unrecoverable in-session (see
 `AI_TRADER_FULL_RUNTIME_HANDOFF_2026-08-30.md` section 13). Adapter reviewed by Red Team
@@ -606,3 +694,28 @@ reclaim-or-not test), never on a bar-count threshold. Confirmed this counter did
 379's `ROUTINE_NO_EVENT` decision, which was driven entirely by (a) no H1 candle closing this bar,
 (b) price remaining below EMA50 under either count, (c) bar 379 falling outside NY session (S5's
 own time gate, unrelated to EMA/counter), and (d) no mechanical event gate firing.
+
+**RED TEAM E107 CORRECTION NOTE (append-only, 2026-08-30) -- resolves the internal contradiction
+flagged by `RT-Q4-380-385-SEMANTIC-INTEGRITY-H1-EMA-001`:** the "TRANSPORT MIGRATION" and "BAR 379
+... consumed via Red Team E2E validation" headers earlier in this file (preceding the SESSION STOP/
+bridge-note entries above) contain two errors, corrected here without deleting the original text:
+
+1. Bar 379 was NOT consumed by Red Team. It was revealed, reasoned, and committed by this
+   apprenticeship itself via the real `engine.step()`/`commit_decision()` handshake, in a
+   CEO-authorized single-bar validation pass -- see the "SESSION STOP" and "BAR 379 (02:44:59)"
+   entries above, which predate any Red Team end-to-end test of this mechanism. Red Team's E105/E106
+   reviews tested the extend/bind/step mechanism on synthetic data only and never read bar 379's real
+   price action.
+2. The causal H1 EMA50 IS reconstructable from this adapter's own revealed M15 OHLCV (M15->H1
+   aggregation, standard EMA, only fully-closed H1 candles) -- already done and independently
+   verified in this session before bar 379 was revealed (reproduces the established checkpoint
+   exactly: 1901.160 @ bar 378). It remains the P007 reference, per the METHODOLOGY BRIDGE NOTE
+   above. `ema.py`'s M15-close-based streak is a separate, sign-only-trustworthy diagnostic, not a
+   substitute H1 reference.
+
+Independently confirmed by Red Team's own semantic-integrity audit
+(`RT-Q4-380-385-SEMANTIC-INTEGRITY-H1-EMA-001`, E107, `PASS_WITH_NONBLOCKING_NOTES`): every
+bar-380-385 decision is identical under the correct causal H1 EMA50 (all six bars close ~17-19pt
+below it; no reclaim; Q4-P007-003 remains OPEN under either EMA reference). Classified
+`SEMANTIC_DOCUMENTATION_ERROR_ONLY` -- no trade, MGMT-004, or NO_TRADE decision was affected. This
+is a documentation correction only; no bar is re-replayed, no prior decision is reversed.
