@@ -4859,4 +4859,71 @@
                RT-CSV-ONE-BAR-UNLOCK-REMEDIATION-DELTA-001.md.
                STATE: OPERATIONAL. Next entry [106], prev_hash E105.
   entry_hash:  E105
+
+[106] 2026-08-30
+  prev_hash:   E105
+  event:       VERDICT
+  dc_id:       DC-CSV-EXTEND-ENGINE-IDENTITY-HANDOFF-REAL-E2E-FINAL-Q4-RESUME-GATE
+  freeze_hash: implementation 72d91c5d (7241b17 -> 72d91c5, HEAD ai-trader-implementation) / delta =
+               exactly 4 files (engine.py +23/-2, autonomous_extend.py +148, test_engine.py +29 [1 new test],
+               test_engine_identity_handoff.py NEW 286) / materialize+sealed_reader+ema+persistence+identity+
+               errors+types + Q4_SEALED_1_378/379.csv(+MANIFEST) BYTE-UNCHANGED / real durable state
+               40397a74 (next=380/sealed=379/symbol=UNKNOWN/pending=null/P007-003 OPEN/FLAT/0 trades) / real
+               379 fixture 651b944f
+  battery_ver: RT-CSV-EXTEND-ENGINE-IDENTITY-HANDOFF-REAL-E2E-001
+  reviewer:    Red Team
+  detail:      REAL end-to-end delta review of the extend-to-engine source-identity handoff. VERDICT =
+               ***PASS_WITH_NONBLOCKING_NOTES*** -- SAFE_FOR_REAL_AUTONOMOUS_Q4=YES (conditional on nonblocking
+               note 1). IMPLEMENTATION_IDENTITY_VERIFIED=YES / SCOPE_CLEAN=YES (4 files; core package + 378/379
+               fixtures byte-unchanged; no S5/P007/MGMT-004/MT5). ★ TWO integration bugs INDEPENDENTLY CONFIRMED
+               genuine: (1) ORIGINAL_IDENTITY_HANDOFF_BUG=YES -- extend_next_bar creates fixture N+1 but never
+               touches durable source_identity (still N), so a real engine.step() against N+1 raises
+               SourceIdentityMismatchError (reproduced: extend-without-bind fails closed); (2) ENGINE_UNKNOWN_
+               SYMBOL_BUG=YES -- _ensure_loaded hardcoded symbol='UNKNOWN' (the E103 cosmetic note), which turned
+               BLOCKING once bind builds a real manifest-derived identity (OANDA:XAUUSD) that 'UNKNOWN' can never
+               match. Fix reads symbol from the fixture's sibling manifest, fail-closes (RestartAmbiguityError) on
+               a missing manifest -- never a silent placeholder. ★ ENGINE_IDENTITY_CHECK_PRESERVED=PASS &
+               IDENTITY_MISMATCH_STILL_FAILS_CLOSED=PASS: step()'s fingerprint match (engine.py:210, compares ALL
+               identity fields incl symbol+content_hash) is UNCHANGED; fix is additive (bind + correct symbol
+               source), not a relaxation (verified: extend-without-bind + tampered-durable-hash both fail step()
+               closed). ★ bind_extended_fixture(): derives target=sealed+1 internally, fail-closes unless pending
+               clear + current fixture exists & hash-matches + candidate manifest boundary==filename & manifest
+               content_hash==actual bytes + CANDIDATE'S FIRST N Q4 ROWS BYTE-MATCH THE CURRENTLY-BOUND FIXTURE;
+               then dataclasses.replace(source_identity only), atomic save. SOURCE_IDENTITY_BIND=PASS. ★★ DECISIVE
+               INDEPENDENT ATTACK (BIND_VALIDATES_ACTUAL_FIXTURE=PASS): a forged +1 fixture built from DIFFERENT
+               synthetic data (5000-base vs bound 2000-base) with a FULLY SELF-CONSISTENT manifest (correct self-
+               hash + boundary) was REFUSED via the row-content byte-compare -- proving bind verifies the actual
+               fixture against the one in use, not caller/manifest metadata; durable state stayed sealed=7.
+               SCIENTIFIC_STATE_UNCHANGED_DURING_BIND=PASS (only source_identity changes). ★ REAL PRODUCTION E2E
+               (independent probe, real objects, NO simulation/mocks, synthetic data): extend->bind->engine.step
+               ->commit_decision->DESTROY runtime->fresh DurablePointerStore reload->extend->bind->step->commit,
+               two full cycles (bar 7->8->9), only fixtures 7/8/9 exist (no bulk). REAL_{EXTEND,BIND,ENGINE_STEP,
+               COMMIT_DECISION,STATE_RELOAD}_USED=YES; REAL_E2E_TWO_CYCLE_CHAIN=PASS. ★ CRASH/RECOVERY (§8 A-K, all
+               PASS): crash before-fixture / after-fixture-before-bind / after-bind-before-step / after-step-
+               before-commit / after-commit all recover deterministically; duplicate extension refused; duplicate
+               bind idempotent; candidate-hash tamper, manifest boundary-lie, durable-identity tamper (extend+bind
+               refuse AND step fails closed), next_bar inconsistency (extend refused) -- all fail closed. ★ §9
+               UNKNOWN_SYMBOL_CHECKPOINT_MIGRATION=PASS / MANUAL_STATE_PATCH_REQUIRED=NO: the REAL Q4 durable state
+               carries symbol='UNKNOWN' today; on a synthetic replica, direct step() fails closed, and extend->bind
+               SELF-HEALS the symbol to OANDA:XAUUSD with no manual edit, scientific state preserved, real step()
+               then succeeds (so resume must NOT step the 379 state directly -- first action is extend->bind, which
+               advances to 380 AND heals the symbol). ONE_BAR_UNLOCK_ENFORCED/COMMIT_BEFORE_NEXT_EXTENSION/PENDING_
+               DECISION_GATE/FAIL_CLOSED=PASS; ARBITRARY_RUNTIME_BOUNDARY_REACHABLE=NO. ATOMIC_LOCK_WHILE_P007_OPEN=
+               PASS & P007_H1_EMA_SEMANTIC_PRESERVED=PASS (engine ATOMIC logic + ema.py byte-unchanged; run_until_
+               gate refused while P007 OPEN; P007 ref survives extend+bind). 77 tests reproduced (63+14) + 37
+               independent RT E2E/adversarial checks all pass. REAL CHECKPOINT UNTOUCHED (byte-identical SHA pre/
+               post: 378 719afa43, 379 651b944f, both manifests, durable 40397a74); no fixture > 379 on disk;
+               BAR_380_ACCESSED=NO; Q4_CONTINUED=NO. BLOCKING=NONE. NONBLOCKING (3): (1) no shipped autonomous
+               ORCHESTRATOR -- only the verified primitives + tests exist; the Q4-resume runtime must wire extend->
+               bind->engine-on-new-fixture->step->reason->commit->persist->repeat, calling bind after EVERY extend
+               (skipping bind fails closed, never corrupts) = the operational condition behind the YES; (2)
+               _fixture_rows_match compares only Q4 rows not the pre-Q4 warm-up window (by design; warm-up is
+               historical, cannot leak future bars; a forged warm-up needs sealed-dir write access = out of threat
+               model, cannot expose bar 380); (3) operational disk/IO growth (per-extension full-source re-hash +
+               one fixture/bar + bind's bounded row re-read). NOT authorized: expose/materialize bar 380 / resume
+               Q4 / edit real durable state / weaken identity checks / modify source/S5/P007/MGMT-004/MT5 --
+               NEXT_AUTHORIZED_ACTION=NONE CEO DECISION REQUIRED. bar 380 NOT exposed. Changes only in red_team/.
+               Report: RT-CSV-EXTEND-ENGINE-IDENTITY-HANDOFF-REAL-E2E-001.md.
+               STATE: OPERATIONAL. Next entry [107], prev_hash E106.
+  entry_hash:  E106
 ```
