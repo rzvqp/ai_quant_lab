@@ -14,7 +14,19 @@ only fixture USE.
 
 Usage:
     python -m ai_trader.csv_causal_replay.fixtures.materialize_sealed_fixture --source <path to the
-        full OANDA_XAUUSD_M15.csv>
+        full OANDA_XAUUSD_M15.csv> [--max-bar N]
+
+**Autonomous-Q4 reachability (Red Team E104, RT-CSV-INCREMENTAL-UNLOCK-BAR379-REVIEW-001, FAIL,
+remediated)**: `materialize()`/`--max-bar` below accept an arbitrary boundary and are for
+CEO-authorized manual/research use ONLY -- nothing here reads durable state or refuses
+`N > current_sealed + 1`. An autonomous Q4-continuation runtime MUST NOT call this module's
+`materialize()` or CLI directly (doing so is exactly the "bulk future exposure" finding E104
+identified: one `--max-bar 5900`-style call would materialize bars 380..5900 in one step, which the
+engine's own per-bar commit handshake does not prevent, since materialization is a separate code
+path from `engine.step()`/`commit_decision()`). The autonomous-safe entrypoint is
+`fixtures.autonomous_extend.extend_next_bar()`, which derives its target boundary from durable state
+internally, refuses everything but exactly `current_sealed + 1`, and calls `materialize()` here only
+after that gate passes -- see that module's own docstring for the full remediation.
 """
 
 from __future__ import annotations
@@ -48,7 +60,9 @@ OUTPUT_CSV = OUTPUT_DIR / "Q4_SEALED_1_378.csv"
 OUTPUT_MANIFEST = OUTPUT_DIR / "Q4_SEALED_1_378_MANIFEST.json"
 
 
-def materialize(source_path: Path, *, max_q4_bar_index: int = MAX_Q4_BAR_INDEX) -> dict:
+def materialize(
+    source_path: Path, *, max_q4_bar_index: int = MAX_Q4_BAR_INDEX, output_dir: Path = OUTPUT_DIR,
+) -> dict:
     """`max_q4_bar_index` defaults to the originally-sealed 378 boundary (identical behavior/output
     path to before this parameter existed). Passing a larger value materializes a NEW, separately
     named fixture (`Q4_SEALED_1_{max_q4_bar_index}.csv`) extending the sealed boundary by exactly
@@ -57,9 +71,14 @@ def materialize(source_path: Path, *, max_q4_bar_index: int = MAX_Q4_BAR_INDEX) 
     boundary has ever been extended, one CEO-authorized step at a time (mandate: "does NOT authorize
     bulk future exposure" -- each call here is still bounded by the same SealedReader/SealedBoundaryError
     mechanism the original 378 fixture and the Red Team's review of it were built and audited against;
-    only the boundary value itself is now a parameter instead of a hardcoded constant)."""
-    output_csv = OUTPUT_DIR / f"Q4_SEALED_1_{max_q4_bar_index}.csv"
-    output_manifest = OUTPUT_DIR / f"Q4_SEALED_1_{max_q4_bar_index}_MANIFEST.json"
+    only the boundary value itself is now a parameter instead of a hardcoded constant).
+
+    `output_dir` defaults to the real `fixtures/data/` directory (production behavior, unchanged) --
+    overridable only so `tests/test_autonomous_extend.py` can point synthetic-scenario calls at a
+    `tmp_path` instead of writing test fixtures into the real directory alongside the genuine Q4
+    ones. The CLI (`main()` below) never overrides it."""
+    output_csv = output_dir / f"Q4_SEALED_1_{max_q4_bar_index}.csv"
+    output_manifest = output_dir / f"Q4_SEALED_1_{max_q4_bar_index}_MANIFEST.json"
     config = SealedReaderConfig(
         symbol=XAUUSD_M15_SYMBOL, bar_interval_seconds=M15_BAR_INTERVAL_SECONDS,
         q4_start_ts=Q4_START_TS, max_q4_bar_index=max_q4_bar_index,
@@ -100,7 +119,7 @@ def materialize(source_path: Path, *, max_q4_bar_index: int = MAX_Q4_BAR_INDEX) 
             f"{max_q4_bar_index} -- refusing to write a fixture with an unexplained row-count mismatch"
         )
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
     all_rows = list(warmup_buffer) + q4_rows
     with output_csv.open("w", encoding="utf-8", newline="") as fh:
         writer = csv.writer(fh)
