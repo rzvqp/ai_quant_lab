@@ -138,3 +138,41 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 3
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = +0.651 - 1.000 - 0.005 = -0.354
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #4 — S5 opening-range-breakout LONG (bar 1256)
+
+```
+STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
+SIGNAL_BAR              1256 (2020-10-20 15:45:00-15:59:59 UTC, NY session bis=8)
+DIRECTION               LONG
+ENTRY                   1908.914
+INITIAL_STOP             1899.446 (= or_low 1899.466 - 2*TICK)
+STRUCTURAL_TARGET         1937.318 (= entry + 3R, R=9.468)
+RISK (R)                 9.468
+INVALIDATION              1899.446
+```
+
+**THESIS (frozen before bar 1257 was revealed):** mechanically triggered, no discretionary override.
+Close 1908.914 > or_high 1907.422 within the entry window (bis=8). Follows a quiet 226-bar
+consolidation (bars 1031-1255, GAP-161 weekend + GAP-162 daily, no heavy-volume EMA crossing) after
+TRADE #2/#3. No new Q4 price/volume record.
+
+**OUTCOME (CONTROL and SHADOW converged):**
+```
+EXIT_BAR (both)  1304 (2020-10-21 15:45:00-15:59:59 UTC)
+EXIT_REASON       MAX_HOLD (both tracks)
+EXIT_PRICE        1917.711 (both tracks)
+R_MULTIPLE        +0.929 (both tracks)
+```
+MGMT-004 triggered at bar 1297 (close 1919.326, +1.10R); shadow stop moved to breakeven (1908.914).
+Price reached a maximum of +1.22R intrabar (bar 1298, high 1920.483 -- 40.7% of the way to target)
+immediately after the trigger, then pulled back but never came close to testing the breakeven shadow
+stop (closest approach after the trigger: bar low 1915.177, +6.26pt / +0.66R of headroom) -- **the
+first instance where MGMT-004 made literally no difference to the outcome**, since the shadow stop
+was never at risk of being touched. Both tracks closed identically at max-hold, +0.929R.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 4
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -0.354 + 0.929 = +0.575
+POSITION_AFTER_THIS_TRADE = FLAT
+```

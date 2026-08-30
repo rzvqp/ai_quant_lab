@@ -993,3 +993,46 @@ interruption at bar 771 (no data lost, no causal-integrity impact), identified a
 Q4-P007-004 (bars 787-878, retrospectively recognized -- batch runner now checks for heavy-volume
 EMA crossings going forward), and closed TRADE #2 (-1.0R) and TRADE #3 (-0.005R, essentially flat).
 Durable state (`next_bar=1031`) is the sole source of truth for resumption.
+
+### COMPACT BLOCK 1031-1255 (2020-10-16 15:30:00-2020-10-20 15:29:59 UTC) [quiet consolidation]
+BARS: 1031-1255 (225 bars) | VOL: real, no records, no heavy-volume EMA crossing flagged |
+STATE_CHANGE: quiet consolidation, no excursion comparable to Q4-P007-003/004. GAP-161 (49.25h
+standard weekend, bar 1096->1097) and GAP-162 (75min standard daily rollover, bar 1188->1189)
+logged in `REPLAY_DATA_GAP_LEDGER.md`. No S5 setup until the entry window handled below.
+TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+### BAR 1256 (2020-10-20T15:45:00-15:59:59 UTC) -- S5 OPENING-RANGE-BREAKOUT LONG, TRADE #4 OPENED
+
+OHLCV: open=1906.28, high=1912.344, low=1906.136, close=**1908.914**, volume=1603. bis=8; close
+1908.914 > or_high 1907.422 -- **mechanical S5 LONG trigger**. Frozen and committed before bar 1257:
+entry 1908.914, stop 1899.446, target 1937.318, max_hold through bar 1304. Full thesis in
+`AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #4).
+
+```
+TRADES_TOTAL = 4
+POSITION = LONG (1908.914, stop 1899.446, target 1937.318)
+```
+
+### TRADE #4 MONITORING AND RESOLUTION (bars 1257-1304, ATOMIC)
+
+GAP-163 (75min standard daily rollover, bar 1280->1281) logged in `REPLAY_DATA_GAP_LEDGER.md`.
+MGMT-004 triggered bar 1297 (+1.10R); price pushed to +1.22R (bar 1298) then pulled back but never
+threatened the breakeven shadow stop (closest post-trigger approach +0.66R of headroom) -- **control
+and shadow closed identically**, both MAX_HOLD at bar 1304, both +0.929R. Full detail in
+`AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` and `AI_TRADER_Q4_MGMT004_PROSPECTIVE_LEDGER.md` (TRADE #4).
+
+```
+EXIT_BAR = 1304 (both tracks), EXIT_REASON = MAX_HOLD, R = +0.929 (both tracks)
+TRADES_TOTAL = 4 (all closed)
+Q4_NET_R (control basis) = -0.354 + 0.929 = +0.575
+MGMT004_TRIGGERS_TOTAL = 2
+POSITION = FLAT
+```
+
+Q4 replay pointer: 2020-10-21 15:59:59 UTC. NEXT_UNSEEN_BAR = 1305.
+
+### SESSION CHECKPOINT (CEO-authorized autonomous continuation, 2026-08-30, continued)
+
+Processed bars 1031-1304 in this continuation: a quiet 225-bar consolidation, then TRADE #4
+(+0.929R, control and MGMT-004 shadow converged identically). Durable state (`next_bar=1305`) is
+the sole source of truth for resumption.

@@ -1223,3 +1223,21 @@ TYPE: Standard daily rollover (75min)
 SPAN: 2020-10-15T20:44:59Z (last close 1908.256, Q4 bar 1004, Thursday -- inside the open bar-982 S5
 trade's holding period) -> 2020-10-15T22:00:00Z (first open 1908.256, Q4 bar 1005)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-161 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard weekend (49.25h)
+SPAN: 2020-10-16T20:44:59Z (last close 1899.33, Q4 bar 1096, Friday) -> 2020-10-18T22:00:00Z (first
+open 1899.33, Q4 bar 1097, Sunday)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 49.25h.
+
+### GAP-162 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-19T20:44:59Z (last close 1904.4, Q4 bar 1188, Monday) -> 2020-10-19T22:00:00Z (first
+open 1904.4, Q4 bar 1189)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-163 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-20T20:44:59Z (last close 1907.169, Q4 bar 1280, Tuesday -- inside the open bar-1256
+S5 trade's holding period) -> 2020-10-20T22:00:00Z (first open 1907.169, Q4 bar 1281)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.

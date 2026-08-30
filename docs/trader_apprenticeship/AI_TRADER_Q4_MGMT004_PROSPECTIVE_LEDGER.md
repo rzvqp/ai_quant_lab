@@ -55,3 +55,31 @@ in response to this outcome, per the frozen protocol's own "no post-outcome exce
 MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 1
 Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651
 ```
+
+## TRADE #4 — S5 LONG, bar 1256 (2020-10-20 15:45:00 UTC)
+
+```
+ENTRY                 1908.914
+RISK (1R)              9.468
+STRUCTURAL_TARGET      1937.318 (unchanged in both tracks)
++1.0R_TRIGGER_LEVEL     1918.382
+```
+
+**TRIGGER**: bar 1297 (2020-10-21 14:45:00 UTC), close 1919.326, +1.1046R. Shadow stop moved to
+breakeven (1908.914); control stop (1899.446) and target (1937.318) unchanged in both tracks.
+
+```
+TRACK      EXIT_BAR   EXIT_REASON   EXIT_PRICE   R_MULTIPLE
+CONTROL    1304        MAX_HOLD      1917.711     +0.929
+SHADOW     1304        MAX_HOLD      1917.711     +0.929
+```
+
+**DELTA_R (SHADOW - CONTROL) = 0.000.** The first instance where MGMT-004 made literally no
+difference: after triggering at +1.10R, price never pulled back anywhere near the breakeven shadow
+stop (closest approach post-trigger: +6.26pt / +0.66R of headroom) — both tracks rode the same
+48-bar hold to the same max-hold close.
+
+```
+MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 2
+Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 = -0.651
+```
