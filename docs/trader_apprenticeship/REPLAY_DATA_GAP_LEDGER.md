@@ -1157,3 +1157,51 @@ VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75
 TYPE: Standard daily rollover (75min)
 SPAN: 2020-09-30T20:59:59Z (last close 1885.5) -> 2020-09-30T22:00:00Z (first open 1885.5)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-151 [Q4 2020, first Q4 gap]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-01T20:59:59Z (last close 1906.12, Q4 bar 84) -> 2020-10-01T22:00:00Z (first open
+1906.12, Q4 bar 85)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-152 [Q4 2020, first Q4 weekend gap]
+TYPE: Standard weekend gap (49.25h)
+SPAN: 2020-10-02T20:59:59Z (last close 1899.168, Q4 bar 176, Friday) -> 2020-10-04T22:00:00Z (first
+open 1899.168, Q4 bar 177, Sunday)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 49.25h.
+
+### GAP-153 [Q4 2020]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-05T20:59:59Z (last close 1913.445, Q4 bar 268, Monday) -> 2020-10-05T22:00:00Z (first
+open 1913.445, Q4 bar 269)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-154 [Q4 2020]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-06T20:59:59Z (last close 1878.177, Q4 bar 360, Tuesday, immediately following the
+bars-352-360 major-volume decline) -> 2020-10-06T22:00:00Z (first open 1878.177, Q4 bar 361)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-155 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-07T20:59:59Z (last close 1887.592, Q4 bar 452, Wednesday, immediately following the
+day's NY session, no S5 setup) -> 2020-10-07T22:00:00Z (first open 1887.592, Q4 bar 453)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min. Detected
+mechanically by the CSV adapter's own gap classifier (`sealed_reader.classify_gap`, reused verbatim
+from `live_signal_source`), matching every prior GAP-1xx entry's detection method.
+
+### GAP-156 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-08T20:44:59Z (last close 1893.608, Q4 bar 544, Thursday) -> 2020-10-08T22:00:00Z
+(first open 1893.608, Q4 bar 545)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-157 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard weekend (49.25h)
+SPAN: 2020-10-09T20:44:59Z (last close 1930.521, Q4 bar 636, Friday -- inside the open bar-608 S5
+trade's holding period) -> 2020-10-11T22:00:00Z (first open 1930.521, Q4 bar 637, Sunday)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 49.25h, matching the
+established weekend-gap duration (GAP-152). No trade-management action occurs across a weekend gap
+under the frozen S5/MGMT-004 protocols (stop/target/max-hold are evaluated bar-by-bar as bars are
+revealed, not on wall-clock time) -- the bar-608 trade's max-hold count is in M15 bars, not elapsed
+calendar time, so this gap does not shorten or extend its effective holding window.
