@@ -4666,4 +4666,57 @@
                Changes only in red_team/. Report: RT-CRS1-CURRENT-REGIME-INDEPENDENT-VALIDATION-001.md.
                STATE: OPERATIONAL. Next entry [102], prev_hash E101.
   entry_hash:  E101
+
+[102] 2026-08-30
+  prev_hash:   E101
+  event:       VERDICT
+  dc_id:       DC-CAUSAL-REPLAY-ACCELERATOR-V1-NO-LOOKAHEAD-REVIEW
+  freeze_hash: VE_CAUSAL_REPLAY_ACCELERATOR_V1 commit cf6f470 / remote rzvqp/tradingview-mcp-aql branch integration/
+               causal-replay-accelerator-v1 (REMOTE_COMMIT_MATCH=YES) / src/core/causal_replay.js + tests byte-
+               identical worktree / composes EXISTING unmodified replay.js+data.js
+  battery_ver: RT-CAUSAL-REPLAY-ACCELERATOR-V1-REVIEW-001
+  reviewer:    Red Team
+  detail:      INDEPENDENT NO-LOOKAHEAD / PROSPECTIVE-INTEGRITY audit of VE_CAUSAL_REPLAY_ACCELERATOR_V1 (cf6f470),
+               a tradingview-mcp accelerator for the AI Trader Q4 apprenticeship. VERDICT = ***PASS_WITH_NONBLOCKING_
+               NOTES*** / SAFE_FOR_AI_TRADER_Q4=YES (conditional on HYBRID usage contract). Live Q4 NOT resumed, no
+               replay tool called (MCP replay tools disconnected this session), BAR_379_ACCESSED=NO, accelerator NOT
+               modified. §2 REMOTE_IDENTITY_VERIFIED=YES (read-only fetch: remote tip = cf6f470 exactly); worktree
+               core+test byte-identical to cf6f470; accelerator composes existing UNMODIFIED replay/data primitives,
+               computes no new market intelligence (data.js change = behavior-preserving _deps test seam). ★ FUTURE-
+               ISOLATION: _stepAndSnapshot = status()->step() ONE bar->getOhlcv({count:1}) current bar + getPineTables
+               current state; NO future OHLC/volume/indicator/Pine/next-bar field read or returned (T01/04/05/06/07 +
+               schema scan); no memoization/cache layer (T373 source-scan); CDP-level no-lookahead INHERITED from
+               unchanged primitives. TWO MODES (not identical risk): ATOMIC causalStepSnapshot = full per-bar
+               prospective guarantee (every bar frozen via pending-commit before next); HYBRID causalRunUntilGate =
+               reveals bars sequentially one step() at a time, gate evaluated AFTER each, stops at first mechanical
+               gate or 8-bar heartbeat, every bar in bars_processed none skipped (T14 stops EXACTLY at touching bar
+               count=3 not later) -- but only the FINAL bar gets a pending commit; intermediate routine bars advance
+               without individual freeze. HANDSHAKE fail-closed: DECISION_COMMIT_REQUIRED before advance, bar_id
+               match, required fields, duplicate/retry rejected (T08/09/18). CRASH: in-memory-only handshake (live
+               currentDate() is sole durable pointer); resume with last DURABLY-COMMITTED bar + POINTER_MISMATCH
+               fails closed on a revealed-but-uncommitted bar (T16), clean resume no dup (T17). TRADE_CONTRACT_
+               PROTECTION=PASS (7 fields entry/dir/stop/target/mgmt/thesis/invalidation frozen before advance, T10).
+               P007_PROSPECTIVE=PASS (preclass before resolution, resolution stamped at RESOLVING bar not trigger,
+               T11). MGMT004_CAUSALITY=PASS (trigger stamped at causally-observed bar not retroactive, T12).
+               NO_TRADE_PROSPECTIVE=PASS (setup_desc+rationale at setup bar, T13). HEARTBEAT_ENFORCEMENT=PASS
+               (cap=min(max_bars,8) mechanical, T15). APPRENTICESHIP_INFORMATION_LOSS=MODERATE (per-bar reasoning
+               skipped on routine stretches but all bars returned in bars_processed, capped at 8, opt-in). FAIL-CLOSED
+               verified on pointer/timestamp/commit/bar/decision/max_bars anomalies; no fail-open. TESTS reproduced
+               INDEPENDENTLY: 34/34 PASS (byte-identical), substantive (faithful CDP mock cannot supply future bar;
+               T29/T30 source-scan for connection.js import + hardcoded Q4 bar/date, concatenation-built; adversarial
+               injection 4/4). Broader regression: ONLY failure = pre-existing sanitization.test.js:298 Windows path
+               bug (malformed C:\C:\..%20.. scandir), file UNTOUCHED by cf6f470, VE-disclosed, out of scope. Perf
+               claims honest (not the gate). BLOCKING_FINDINGS=NONE. NONBLOCKING (4): (1) HYBRID prospective
+               protection for reasoning-dependent events = USAGE CONTRACT not mechanical guarantee (P007/MGMT004/
+               setup/NO_TRADE = NOT_MECHANICALLY_GATED, heartbeat-covered) -- DISCLOSED in docstring+tool description,
+               bounded 8 bars, ATOMIC is the safe path; AI Trader MUST use causal_step_snapshot when a trade/pattern
+               is active + register levels; (2) crash-recovery requires caller to pass expected_pointer_before = last
+               DURABLY COMMITTED bar (documented; POINTER_MISMATCH backstops); (3) in-memory-only handshake (by
+               design); (4) pre-existing sanitization path bug (out of scope). VE_HANDOFF_PASS independently
+               CORROBORATED subject to note-1 usage contract. NOT authorized: restore replay / resume Q4 / consume
+               bar 379 / modify accelerator -- LIVE_TRADINGVIEW_REPLAY_STATE not-yet-verified, NEXT_AUTHORIZED_ACTION
+               =NONE CEO DECISION REQUIRED. Changes only in red_team/. Report: RT-CAUSAL-REPLAY-ACCELERATOR-V1-
+               REVIEW-001.md.
+               STATE: OPERATIONAL. Next entry [103], prev_hash E102.
+  entry_hash:  E102
 ```
