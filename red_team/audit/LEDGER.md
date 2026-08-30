@@ -4719,4 +4719,54 @@
                REVIEW-001.md.
                STATE: OPERATIONAL. Next entry [103], prev_hash E102.
   entry_hash:  E102
+
+[103] 2026-08-30
+  prev_hash:   E102
+  event:       VERDICT
+  dc_id:       DC-CSV-CAUSAL-REPLAY-ADAPTER-V1-SCIENTIFIC-CONTINUITY-REVIEW
+  freeze_hash: CSV_CAUSAL_REPLAY_ADAPTER_V1 commit 4d2b391 (HEAD ai-trader-implementation, ai_quant_lab-research-
+               main) / origin source 57f4ed95 (canonical 2011-2026 XAUUSD M15, contains Q4 2020) / sealed fixture
+               Q4_SEALED_1_378.csv (2000 warmup + 378 Q4) content_hash 719afa43
+  battery_ver: RT-CSV-CAUSAL-REPLAY-ADAPTER-V1-REVIEW-001
+  reviewer:    Red Team
+  detail:      INDEPENDENT SCIENTIFIC-CONTINUITY / NO-LOOKAHEAD audit of CSV_CAUSAL_REPLAY_ADAPTER_V1 (4d2b391),
+               the CSV-backed Q4 replay data source replacing TradingView. VERDICT = ***PASS_WITH_NONBLOCKING_
+               NOTES***. ARTIFACT_IDENTITY_VERIFIED=YES (4d2b391=HEAD); SOURCE_IDENTITY_VERIFIED=YES (origin hash
+               57f4ed95 canonical, bar-378 mapping ts1602036900/close1880.434/vol523 matches Q4 log verbatim,
+               warmup starts 2020-09-01 -> Q4 2020 not a post-2022 subset). ★ BAR-379 (physical vs semantic):
+               BAR_379_PHYSICALLY_READ=YES (hash_file(origin) streams whole multi-year file incl 379+ into a one-way
+               SHA256; SealedReader also reads bar 379's LINE to parse timestamp before boundary), BAR_379_PARSED=NO
+               (OHLCV market data NEVER float()'d -- boundary raised before _parse_ohlcv, only the ts int parsed),
+               ENGINE_ACCESS=NO (engine reads only the 1-378 fixture), AI_EXPOSED=NO (into hash+boundary check only).
+               Full-file SHA is a disclosed PROVENANCE op (manifest deliberately declines to count total rows).
+               FUTURE_ROW_INACCESSIBLE=PASS: csv.reader line-at-a-time (unread line never off disk), boundary on ts
+               ALONE before OHLCV parse, rejects read_csv().head() anti-pattern, exception can't capture 379 price.
+               LEDGER PARITY thru 378 (surfaced state): BAR_SEQUENCE/TIMESTAMP/OHLC (375-378 closes + bar378 vol523)/
+               4 gaps GAP-151-154 @ bars 85/177/269/361/ P007-003 OPEN/ trade count 0/ MGMT004 count 0/ bar-378
+               pointer -- ALL PASS. State machine: POINTER_PERSISTENCE/DECISION_HANDSHAKE/CRASH_RECOVERY/FAIL_CLOSED
+               PASS (DurableState, seed_from_known_state at 378 w/o revealing, expected_pointer_before, SealedBoundary
+               uncaught past 378). ATOMIC/HYBRID PASS; ★ P007_REQUIRES_ATOMIC_AT_RESUME=YES -- engine MECHANICALLY
+               blocks run_until_gate (HYBRID) while Q4-P007-003 OPEN, only step() reachable until P007_RESOLUTION
+               commit clears the lock. 50/50 tests reproduced independently. ★★ EMA-50 PARITY -- VE ROOT CAUSE
+               DISPROVEN: VE reports 38(log) vs 44(adapter) as WARM-UP sensitivity. INDEPENDENTLY DISPROVEN: the log's
+               EMA50 is the H1 EMA50 (stated verbatim: 'H1 EMA50' bars 27/176/~250), adapter's ema.py computes M15
+               EMA-50. Reproduced on the fixture: M15 EMA-50 @378 = 1890.390 -> streak 44 (=VE exactly); H1 EMA-50 @378
+               = 1901.160 -> streak 39 (=log's 38 within 1 bar, THAT residual is warm-up). ROOT_CAUSE_OF_38_VS_44 =
+               TIMEFRAME MISMATCH (H1 vs M15), NOT warm-up; the 2 EMAs differ ~11pt (reclaim level for OPEN P007-003
+               differs). EMA50_VALUE/STATE/P007_COUNTER PARITY = FAIL (wrong-timeframe helper). BUT EMA_DIVERGENCE_
+               SCIENTIFIC_IMPACT=NONBLOCKING: ema.py imported ONLY by itself + test_ema (NEVER surfaced -- RevealedBar
+               = OHLCV+gap+index, no EMA field), so the wrong M15 EMA is NOT fed to reasoning, and the correct OHLCV
+               lets the causal H1 EMA-50 be recomputed (I did: 39). REQUIRED resume note: judge Q4-P007-003 reclaim
+               against the causal H1 EMA-50 (aggregate revealed M15->H1), NOT ema.py's M15 helper; correct VE's parity-
+               doc root-cause line. OUT_OF_SCOPE (§13): MEMORY.md compaction + xauusd-monday-plan.md deletion (per VE
+               report) NOT in commit 4d2b391, no scientific impact, not restored. BLOCKING=NONE. NONBLOCKING (3): (1)
+               EMA H1-vs-M15 timeframe mismatch + VE misdiagnosis (test-only helper, correct at resume via H1 EMA-50);
+               (2) bar-379 full-file SHA physical read (provenance, no semantic exposure, disclosed); (3) out-of-scope
+               MEMORY/monday-plan (no impact). SAFE_TO_EXTEND_SEALED_BOUNDARY_TO_BAR_379=YES (conditional on EMA note);
+               SAFE_FOR_NEW_AI_TRADER_SESSION=YES (conditional on EMA note). NOT authorized: expose bar 379 / extend
+               boundary / resume Q4 / modify adapter/S5/MGMT-004/P007-003 -- NEXT_AUTHORIZED_ACTION=NONE CEO DECISION
+               REQUIRED. bar 379 NOT semantically exposed. Changes only in red_team/. Report: RT-CSV-CAUSAL-REPLAY-
+               ADAPTER-V1-REVIEW-001.md.
+               STATE: OPERATIONAL. Next entry [104], prev_hash E103.
+  entry_hash:  E103
 ```
