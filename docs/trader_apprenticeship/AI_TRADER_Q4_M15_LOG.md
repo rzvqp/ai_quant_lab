@@ -1210,3 +1210,25 @@ Bar 1514: continuation of the same 1512 episode (gap -0.35pt, vol 222) -- REJECT
 throughout). TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
 
 Q4 replay pointer: 2020-10-23 14:29:59 UTC. NEXT_UNSEEN_BAR = 1526.
+
+### BAR 1526 (2020-10-23T13:15:00-13:29:59 UTC) -- another trivial candidate rejected
+Close 1908.42 vs EMA 1910.016, gap -1.60pt, volume 792 (moderate, but low 1907.319 is not a fresh
+local extreme -- 30-bar low was already 1902.829). REJECTED individually. TRADE_DECISION: NO_TRADE.
+
+### Q4-P007-007 (bars 1525-1607) -- a genuine, building multi-bar decline
+
+Gate origin bar 1525 (trivial, rejected); bar 1527 caps an 8-bar accelerating-volume decline (bars
+1520-1527, NY session, volume 326->1592, roughly quadrupling) -- qualitatively different from the
+surrounding single-bar trivial candidates, so pre-classified as a genuine pattern candidate. Monitored
+81 further bars (1528-1607): deepest low 1891.508, heaviest volume 1496, one standard WEEKEND gap
+(GAP-166, bar 1556->1557). No S5 setup at any point. Resolution bar 1608 (close 1904.76 > causal H1
+EMA50 1904.274, margin +0.49pt). Classified **SUPPORT / RECLAIM**. Full detail in
+`AI_TRADER_Q4_PATTERN_LEDGER.md`. No trade/MGMT-004 decision affected.
+
+Q4 replay pointer: 2020-10-26 09:44:59 UTC. NEXT_UNSEEN_BAR = 1609.
+
+### SESSION CHECKPOINT (CEO E111 continuation, 2026-08-31)
+
+Processed bars 1514-1608: 6 more P007 candidates reasoned individually (1514, 1525, 1526 trivial;
+1527->1608 as Q4-P007-007/SUPPORT after genuinely escalating). Durable state (`next_bar=1609`) is
+the sole source of truth for resumption.

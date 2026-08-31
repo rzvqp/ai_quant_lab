@@ -421,3 +421,28 @@ genuinely-resolved SUPPORT instance in Q4 (after Q4-P007-003 and Q4-P007-004), a
 correctly identified as a real pattern only after an initial period of legitimately-trivial activity
 under the same durable gate reference -- handled as a continuation, not force-classified either way
 prematurely.
+
+---
+
+## Q4-P007-007
+
+```
+GATE_ORIGIN_BAR          1525 (trivial at first; bars 1525/1526 individually rejected)
+GENUINE_ESCALATION_BAR    1527 (2020-10-23 13:30:00 UTC) -- caps an 8-bar accelerating-volume
+                          decline (bars 1520-1527, NY session): volume 326/442/623/511/629/660/
+                          792/1592, roughly quadrupling. Close 1907.01, gap -3.01pt at that bar.
+RESOLUTION_BAR             1608 (2020-10-26 09:44:59 UTC)
+DURATION_FROM_ORIGIN        83 bars (1525-1607)
+DURATION_FROM_ESCALATION    81 bars (1527-1607)
+DEEPEST_LOW                 1891.508
+HEAVIEST_VOLUME              1496
+RECLAIM_CLOSE                 1904.76
+CAUSAL_H1_EMA50_AT_RESOLUTION 1904.274 (margin +0.49pt, thin)
+```
+
+**Why treated differently from the surrounding trivial candidates**: unlike bars 1509/1512/1513/
+1514/1525/1526 (each a single thin/moderate bar with no sustained character), bar 1527 capped a
+genuine multi-bar, volume-accelerating decline -- the qualitative signature PATTERN-007's definition
+actually describes, not a mechanical threshold crossing. Classified **SUPPORT / RECLAIM**. GAP-166
+(standard weekend) logged inside the episode. No S5 setup at any point (unconditional check
+confirmed). No trade/MGMT-004 decision affected.
