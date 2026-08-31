@@ -5145,4 +5145,60 @@
                red_team/. Report: RT-P007-RUNTIME-WIRING-DELTA-001.md.
                STATE: OPERATIONAL. Next entry [111], prev_hash E110.
   entry_hash:  E110
+
+[111] 2026-08-31
+  prev_hash:   E110
+  event:       VERDICT
+  dc_id:       DC-Q4-P007-AUTO-REJECT-INTEGRITY-BARS-1425-1426
+  freeze_hash: checkpoint 04455cf (through bar 1427) / durable last_committed=1427 (ts 1603366200)/next=1428/
+               open_ref=null/pending=null/FLAT / 6 trades (608 +0.651, 884 -1.0, 982 -0.005, 1256 +0.929, 1345
+               -1.0, 1353 -1.0) net -1.425R
+  battery_ver: RT-Q4-P007-AUTO-REJECT-INTEGRITY-001
+  reviewer:    Red Team
+  detail:      Audit of an UNAUTHORIZED session-local shortcut (volume<500 AND abs(close-causal_H1_EMA50)<3.0 ->
+               auto-commit P007_RESOLUTION(REJECTED)) applied to already-consumed bars 1425-1426. VERDICT = ***PASS_
+               WITH_NONBLOCKING_NOTES***; classification = UNAUTHORIZED_PROCESS_SHORTCUT_NONBLOCKING (NOT a scientific
+               blocker). Read-only; bar 1428 NOT accessed/materialized, Q4 not continued, no history modified, P007
+               not retuned, no replacement threshold introduced. ★ FACTS_VERIFIED=YES (real P007Detector + causal H1
+               reconstruction from the sealed 1427 fixture): bar 1425 close 1915.580 / causal H1 EMA50 1915.815 /
+               gap -0.235 / vol 243 (1425 is a :00 top-of-hour bar so the causal EMA correctly excludes the just-
+               completing 10:00-11:00 candle -> 1915.815, exact match to mandate); bar 1426 close 1915.531 / EMA
+               1915.865 / gap -0.334 / vol 226. The rule is NOT in any committed code (grep csv_causal_replay/ +
+               ai_trader/ -> none) -- confirmed session-local only. ★ FULL REASONING (frozen P007 = sharp VOLUME-
+               CONFIRMED break, no volume<500/gap<3 auto-criteria): bar 1425 P007_CANDIDATE=YES (genuine crossing:
+               1424 closed +1.261 ABOVE, 1425 -0.235 BELOW) but a 0.235pt gap on thin vol 243 is NOT sharp/volume-
+               confirmed -> FULL_REASONING=REJECTED (trivial sub-EMA drift), WOULD_LOCK_REMAIN_OPEN=NO, WOULD_P007_
+               RESOLUTION_BE_COMMITTED=YES; bar 1426 is the SAME ongoing candidate from 1425 (the real detector fires
+               ONE trigger @1425 and NO separate trigger @1426 -- 1426 only re-appears because committing REJECTED @
+               1425 cleared the lock while price stayed below EMA) -> continuation not independent, REJECTED same
+               episode. Contrast: Q4-P007-005 (bar 1389, gap -4.19pt vol 980) was NOT auto-rejected -- genuinely
+               monitored 13 bars before an evidenced REJECTED; the shortcut hit only unambiguously-trivial candidates.
+               ★ DECISION IMPACT: P007_CLASSIFICATION_CHANGED=NO / P007_DURATION_CHANGED=NO / NO_TRADE_DECISION_
+               CHANGED=NO / TRADE_DECISION_CHANGED=NO / MGMT004_CHANGED=NO (FLAT -- TRADE #6 exited bar 1365). S5_
+               CHECK_WAS_SKIPPED=YES (the auto-reject path used `continue`, skipping the S5 check) BUT S5_OUTCOME_
+               COULD_HAVE_CHANGED=NO -- bars 1425/1426 are at 11:00/11:15 UTC = OUTSIDE the NY session (13:00-21:00)
+               where S5 operates, so no opening-range-breakout setup exists to evaluate; the skip is consequence-free
+               in THIS case. ★ CLASSIFICATION = UNAUTHORIZED_PROCESS_SHORTCUT_NONBLOCKING; prescribe append-only
+               disclosure (already present, log block 1403-1427), prohibit the shortcut prospectively (not in code
+               = discipline prohibition; canonical reasoning-forcing gate stays the only path), no replay of 1425-
+               1426. §6 affirmed: volume<500/|gap|<3 are NOT frozen P007, absent from all committed code, must not be
+               used prospectively. CHECKPOINT: last_committed=1427/next=1428/FLAT/6 trades/net -1.425R; no fixture
+               >=1428; BAR_1428_ACCESSED=NO. BLOCKING=NONE. NONBLOCKING (3): (1) the unauthorized shortcut bypassed
+               the E109/E110 reasoning-forcing gate contract -- non-consequential here (outcome matches full
+               reasoning) but must be prohibited prospectively; (2) the S5-skip coupling is NOT generally safe -- it
+               was harmless only because 1425-1426 are out of session; on an in-session bar the `continue` would skip
+               a LIVE S5 eligibility check (latent trade-integrity risk) = strongest reason to remove it; (3) ROOT
+               CAUSE = reject-clears-lock re-flagging artifact (REJECTED clears the durable lock but price stays
+               below EMA -> same shallow dip re-detected bar-by-bar: bars 1404/1425/1426/1427), exactly the E109 over-
+               inclusive-detector + one-directional-gate interaction; proper remedy is a gate/detector refinement
+               (suppress re-flagging a still-open dip after a REJECTED classification), a FUTURE mandate, not an auto-
+               threshold. Disclosed footprint: the shortcut also auto-rejected bar 1404 + informed manual rejection
+               of 1427 (mandate scopes 1425-1426; prohibition should cover the whole footprint). BARS_1425_1426_
+               SCIENTIFICALLY_VALID=YES; SAFE_TO_CONTINUE_FROM_BAR_1428=YES (conditional: prohibit the shortcut +
+               canonical gate only + standing E110 wiring note + CEO auth). NOT authorized: expose/materialize bar
+               1428 / continue Q4 / modify history / retune P007 / modify S5/MGMT/MT5 / introduce replacement
+               thresholds -- NEXT_AUTHORIZED_ACTION=NONE CEO DECISION REQUIRED. bar 1428 NOT exposed. Changes only in
+               red_team/. Report: RT-Q4-P007-AUTO-REJECT-INTEGRITY-001.md.
+               STATE: OPERATIONAL. Next entry [112], prev_hash E111.
+  entry_hash:  E111
 ```
