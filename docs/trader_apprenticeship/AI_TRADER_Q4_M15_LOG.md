@@ -1243,6 +1243,16 @@ decisions are made. No S5 setup throughout. TRADE_DECISION: NO_TRADE. INTEGRITY:
 
 Q4 replay pointer: 2020-10-26 12:14:59 UTC. NEXT_UNSEEN_BAR = 1616.
 
+### COMPACT BLOCK 1616-1619 (2020-10-26 12:45:00-13:44:59 UTC) [continued chop entering NY session, 3 more trivial candidates]
+Bar 1616: gap -2.54pt, but choppy back-and-forth (1901->1905->1903->1901 over 1613-1616), volume
+flat not accelerating -- REJECTED. Bar 1617: volume 1003 but bar recovered off its own low, no fresh
+extreme -- REJECTED. Bar 1619 (13:30 UTC, inside NY session): heaviest volume of the stretch (1666)
+but wide, indecisive range closing near the middle, gap only -0.43pt, no net directional conviction
+-- REJECTED. S5 checked unconditionally throughout (including the NY-session bars) -- no trigger.
+TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+Q4 replay pointer: 2020-10-26 13:44:59 UTC. NEXT_UNSEEN_BAR = 1620.
+
 ### SESSION CHECKPOINT (CEO E111 continuation, 2026-08-31)
 
 Processed bars 1514-1608: 6 more P007 candidates reasoned individually (1514, 1525, 1526 trivial;
