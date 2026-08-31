@@ -1,7 +1,15 @@
 # ALPHA_CANDIDATE_OBR-BULL-1 — bullish order-block fresh first-retest (displacement-gated, LN+NY)
 
-Status: **ALPHA_CANDIDATE_UNVALIDATED** (survived ORDER_BLOCK_RETEST_FACTORY_V1 internal discovery+falsification; NOT independently
-validated). Per §32 flagged `READY_FOR_STATISTICIAN_REVIEW`; **no promotion, no Statistician/Red Team handoff performed** — CEO decides.
+Status: **FALSIFIED AS A TRADEABLE STRATEGY** (2026-08-31, Statistician + OB_CAUSAL_EXECUTION_FACTORY_V1). The reported +0.154R was a
+same-bar fill artifact: the resting BUY limit was cancelled when the same bar closed below the block, dropping same-bar filled-then-
+invalidated LOSSES. **Corrected causal fill = −0.067R** (reproduced to the digit; regression test `test_ob_exec_fill.py`). Four causal
+executions (true limit / retest-close / rejection-close / penetration-reclaim) all net-negative → SURVIVED=0. **Do NOT repair, retune, or
+re-promote.** The OB *level* information is independently confirmed real (OB_INCREMENTAL_INFORMATION=YES) but
+**NOT CURRENTLY MONETIZABLE** by any tested execution. See `OB_CAUSAL_EXECUTION_FACTORY_V1_REPORT.md`. The metrics below are the ARTIFACT
+values, retained only for the historical record.
+
+---
+_Historical (falsified) record follows._
 
 ## Exact causal definition (M15, OANDA XAUUSD, UTC)
 1. **Causal swing:** prior swing high `swH[i] = max(high[i-20:i])` (rolling, shift-1; no centered pivots).
