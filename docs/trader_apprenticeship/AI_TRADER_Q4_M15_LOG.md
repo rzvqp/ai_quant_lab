@@ -1253,6 +1253,37 @@ TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
 
 Q4 replay pointer: 2020-10-26 13:44:59 UTC. NEXT_UNSEEN_BAR = 1620.
 
+### BAR 1621 (2020-10-26T14:00:00-14:14:59 UTC) -- S5 OPENING-RANGE-BREAKOUT LONG, TRADE #7 OPENED
+Close 1905.948 > or_high 1905.344 (bis=5) -- mechanical trigger. Entry 1905.948, stop 1900.046,
+target 1923.654. Full thesis in `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md` (TRADE #7).
+```
+TRADES_TOTAL = 7
+POSITION = LONG (1905.948, stop 1900.046, target 1923.654)
+```
+
+### TRADE #7 MONITORING (bars 1622-1625) -- P007 candidate coincided with an open trade
+
+Bar 1624 (mid-hold) also carried a P007 candidate (gap -0.23pt, vol 1125). The runner's control flow
+evaluates P007 signals BEFORE its trade-monitoring block, so bar 1624's stop/target exposure was not
+mechanically checked in that same pass -- verified manually before committing the P007 decision (low
+1903.846, high 1906.524, both well clear of stop/target) -- disclosed rather than silently relied on.
+This is a real, standing limitation of the current runner (distinct from the earlier S5-skip bug,
+which is fixed) -- not restructuring the runner for it per CEO E111 section 7 ("no more
+infrastructure"), just verifying by hand each time it recurs.
+
+Trade stopped out at bar 1625 (low 1898.962 <= stop 1900.046). Fast 4-bar loss, real volume
+throughout (1040-1759). MGMT-004 never triggered. Full detail in `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md`.
+
+```
+EXIT_BAR = 1625, EXIT_REASON = STOP, R = -1.000
+TRADES_TOTAL = 7 (all closed)
+Q4_NET_R (control basis) = -1.425 - 1.000 = -2.425
+MGMT004_TRIGGERS_TOTAL = 2 (unchanged)
+POSITION = FLAT
+```
+
+Q4 replay pointer: 2020-10-26 15:14:59 UTC. NEXT_UNSEEN_BAR = 1626.
+
 ### SESSION CHECKPOINT (CEO E111 continuation, 2026-08-31)
 
 Processed bars 1514-1608: 6 more P007 candidates reasoned individually (1514, 1525, 1526 trivial;

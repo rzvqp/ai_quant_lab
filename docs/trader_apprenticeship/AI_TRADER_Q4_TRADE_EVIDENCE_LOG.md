@@ -249,3 +249,36 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 6
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -0.425 - 1.000 = -1.425
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #7 — S5 opening-range-breakout LONG (bar 1621)
+
+```
+SIGNAL_BAR    1621 (2020-10-26 14:00:00-14:14:59 UTC, bis=5)
+ENTRY          1905.948
+INITIAL_STOP    1900.046 (= or_low 1900.066 - 2*TICK)
+STRUCTURAL_TARGET 1923.654 (= entry + 3R, R=5.902)
+```
+
+**THESIS (frozen before bar 1622 was revealed):** mechanically triggered, no discretionary override.
+Close 1905.948 > or_high 1905.344 within the entry window. Preceded by an extended choppy stretch
+(bars ~1509-1620) with many individually-reasoned P007 candidates, none affecting S5 eligibility.
+
+**OUTCOME:** stopped out at bar 1625 (2020-10-26 15:00:00 UTC), low 1898.962 <= stop 1900.046.
+```
+EXIT_BAR      1625
+EXIT_REASON    STOP
+EXIT_PRICE     1900.046
+R_MULTIPLE     -1.000
+```
+Fast loss -- 4 bars from entry to stop, price never closed back above entry after the signal bar,
+declining steadily through bars 1622-1625 (real volume throughout, 1040-1759) straight through the
+stop. MGMT-004 never triggered. Note: bar 1624 (inside this trade's hold) also carried a P007
+candidate (gap -0.23pt, vol 1125, REJECTED) -- the trade's own stop/target were manually verified
+safe for that bar before the P007 decision was committed (see `AI_TRADER_Q4_M15_LOG.md`), since the
+runner's control flow evaluates P007 signals before its trade-monitoring block.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 7
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.425 - 1.000 = -2.425
+POSITION_AFTER_THIS_TRADE = FLAT
+```
