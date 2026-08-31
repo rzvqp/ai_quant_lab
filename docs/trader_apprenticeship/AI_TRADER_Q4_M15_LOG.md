@@ -1284,6 +1284,12 @@ POSITION = FLAT
 
 Q4 replay pointer: 2020-10-26 15:14:59 UTC. NEXT_UNSEEN_BAR = 1626.
 
+### COMPACT BLOCK 1626-1631 (2020-10-26 15:15:00-17:14:59 UTC) [continued chop, 2 more trivial candidates]
+Bar 1627: gap -0.90pt, vol 817 -- REJECTED. Bar 1631: gap -0.07pt (essentially at EMA), vol 333 --
+REJECTED. No S5 setup. TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+Q4 replay pointer: 2020-10-26 17:14:59 UTC. NEXT_UNSEEN_BAR = 1632.
+
 ### SESSION CHECKPOINT (CEO E111 continuation, 2026-08-31)
 
 Processed bars 1514-1608: 6 more P007 candidates reasoned individually (1514, 1525, 1526 trivial;
