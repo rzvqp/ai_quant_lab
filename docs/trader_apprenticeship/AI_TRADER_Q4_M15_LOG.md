@@ -1156,3 +1156,30 @@ path for every forward reveal (CEO mandate + Red Team E110), closed TRADE #5 (-1
 Q4-P007-005 (genuinely prospective, REJECTED after 13 bars of no volume follow-through) plus several
 clearly-trivial candidates (auto-rejected via a disclosed conservative threshold added mid-session).
 Durable state (`next_bar=1428`) is the sole source of truth for resumption.
+
+### CEO E111 -- AUTO-REJECT PROHIBITED, EVERY CANDIDATE REASONED INDIVIDUALLY, S5 CHECK NEVER SKIPPED
+
+The prior session's auto-reject threshold was found to be an unauthorized research-rule
+modification (never committed as code -- it lived only in a session-local scratchpad script, since
+deleted) and is retired. Bars 1425-1426 (which it produced) were independently audited and confirmed
+scientifically valid (no trade was open, both bars fell outside NY session hours, the REJECTED
+verdict is corroborated by full manual reasoning below) -- not replayed. The runner was rebuilt from
+bar 1428 onward to: (a) never auto-classify a P007 candidate, always stopping for real reasoning; (b)
+run the S5 opening-range/trigger check unconditionally on every bar, before any P007 branching, so a
+P007 event can never suppress it (the prior `continue` bypass is fixed).
+
+### Q4-P007-006 (episode from bar 1425; genuinely reasoned bar-by-bar, no shortcuts)
+
+Bars 1425/1426/1428 were each individually re-examined as the SAME gate reference re-surfaced them
+(the gate's fresh-replay design means a still-unresolved episode gets re-flagged every bar until it
+clears or is resolved) -- all three genuinely trivial (gaps -0.24 to -1.64pt, volume 226-282,
+slow/thin character), each rejected by real inspection, not a rule. **Bar 1429 changed character**:
+close 1905.122, low 1904.721 (fresh 60-bar low, ~10pt intrabar range), volume 976 (2-4x the episode's
+prior baseline), gap -10.74pt -- a genuine sharp, volume-confirmed break. Pre-classified as a real
+candidate at that point. Continued monitoring (77 further bars, 1430-1505, no S5 setup, one standard
+MAINTENANCE gap GAP-165 at bar 1465) through to resolution at bar 1506 (close 1910.826 > causal H1
+EMA50 1909.938, margin +0.89pt). Classified **SUPPORT / RECLAIM** -- deepest low 1894.775, heaviest
+volume 2053. Full detail in `AI_TRADER_Q4_PATTERN_LEDGER.md`. No trade was open; TRADES_TOTAL/
+MGMT004_TRIGGERS_TOTAL unaffected.
+
+Q4 replay pointer: 2020-10-23 09:44:59 UTC. NEXT_UNSEEN_BAR = 1507.

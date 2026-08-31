@@ -368,3 +368,56 @@ but not a "sharp, volume-confirmed" break matching PATTERN-007's actual definiti
 REJECTED rather than SUPPORT to keep the pattern's evidence base honest -- inflating the count with
 routine wiggles would dilute, not strengthen, PATTERN-007's evidentiary standing. No trade/MGMT-004
 decision affected (no trade was open at the time).
+
+---
+
+## Q4-P007-006
+
+**EPISODE CONTINUITY NOTE (CEO E111 -- every candidate reasoned individually, no auto-reject):** the
+underlying price decline the gate tracks here originates at bar 1425 (same reference the gate has
+reported since bars 1425/1426/1428, each individually reasoned and rejected as trivial -- see
+`AI_TRADER_Q4_M15_LOG.md`). This is NOT a new, independent trigger -- it is the SAME episode,
+genuinely escalating. Numbering it as its own entry reflects that the SEVERITY assessment changed
+with new information (bar 1429), not that a fresh, unrelated break occurred; the prior REJECTED
+determinations for 1425/1426/1428 stand unchanged (correct given what was known at each of those
+bars) and are not retroactively rewritten.
+
+```
+EPISODE_ORIGIN_BAR      1425 (2020-10-22 11:00:00 UTC) -- gap -0.24pt, vol 243, REJECTED (trivial)
+PRIOR_RE-FLAGS           1426 (gap -0.33pt, vol 226, REJECTED), 1428 (gap -1.64pt, vol 282, REJECTED)
+ESCALATION_BAR           1429 (2020-10-22 11:45:00-11:59:59 UTC) -- genuinely different character
+ESCALATION_CLOSE          1905.122
+ESCALATION_LOW             1904.721 -- fresh 60-bar low, ~10pt intrabar range in one M15 bar
+CAUSAL_H1_EMA50_AT_1429   1915.865 (gap -10.74pt -- far larger than any prior bar in this episode)
+ESCALATION_VOLUME          976 (2-4x the episode's prior thin baseline of 198-527)
+```
+
+**PRE-CLASSIFICATION (recorded before further bars read):** bar 1429 looks like a genuine sharp,
+volume-confirmed break -- unlike its predecessors in the same episode. Watching for real-volume
+follow-through (would support classifying this as a genuine PATTERN-007 instance, SUPPORT pending
+eventual reclaim) vs an early fade (would still resolve REJECTED, consistent with the episode's
+earlier bars). Not pre-committing to either outcome.
+
+### RESOLUTION
+
+```
+STATUS               RESOLVED
+CLASSIFICATION        SUPPORT / RECLAIM
+ESCALATION_BAR (real trigger)  1429 (2020-10-22 11:45:00 UTC)
+RESOLUTION_BAR                  1506 (2020-10-23 09:44:59 UTC)
+DURATION_FROM_ESCALATION        77 bars (1429-1505 inclusive)
+DURATION_FROM_GATE_ORIGIN       81 bars (1425-1505 inclusive) -- includes the 4 genuinely-trivial
+                                bars (1425/1426/1428, already individually REJECTED; not reopened)
+DEEPEST_LOW                     1894.775
+HEAVIEST_VOLUME                 2053
+RECLAIM_CLOSE                    1910.826
+CAUSAL_H1_EMA50_AT_RESOLUTION    1909.938 (margin +0.89pt, thin)
+```
+
+No S5 setup occurred during this episode (the S5 check ran unconditionally on every bar per CEO
+E111 -- confirmed no trigger). One MAINTENANCE gap (GAP-165, bar 1464->1465) inside the episode,
+standard. No trade was open; no trade/MGMT-004 decision affected. This is the pattern's third
+genuinely-resolved SUPPORT instance in Q4 (after Q4-P007-003 and Q4-P007-004), and the second one
+correctly identified as a real pattern only after an initial period of legitimately-trivial activity
+under the same durable gate reference -- handled as a continuation, not force-classified either way
+prematurely.

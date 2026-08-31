@@ -1247,3 +1247,9 @@ TYPE: Standard daily rollover (75min)
 SPAN: 2020-10-21T20:44:59Z (last close 1924.456, Q4 bar 1372, Wednesday) -> 2020-10-21T22:00:00Z
 (first open 1924.456, Q4 bar 1373)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
+
+### GAP-165 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-10-22T20:44:59Z (last close 1904.014, Q4 bar 1464, Thursday -- inside the open
+Q4-P007-006 episode) -> 2020-10-22T22:00:00Z (first open 1904.014, Q4 bar 1465)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Duration 75min.
