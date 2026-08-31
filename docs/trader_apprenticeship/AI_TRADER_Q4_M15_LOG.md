@@ -1183,3 +1183,21 @@ volume 2053. Full detail in `AI_TRADER_Q4_PATTERN_LEDGER.md`. No trade was open;
 MGMT004_TRIGGERS_TOTAL unaffected.
 
 Q4 replay pointer: 2020-10-23 09:44:59 UTC. NEXT_UNSEEN_BAR = 1507.
+
+### COMPACT BLOCK 1507-1513 (2020-10-23 09:45:00-11:14:59 UTC) [choppy right around causal H1 EMA50 following the thin-margin Q4-P007-006 reclaim]
+Three further P007 candidates in quick succession, each individually reasoned (no threshold, per CEO
+E111) and rejected -- all razor-thin: bar 1509 (gap -0.00005pt, essentially exactly at the EMA, vol
+280), bar 1512 (gap -0.76pt, vol 259), bar 1513 (gap -0.65pt, same episode as 1512, vol 262). No
+sharp break, no volume confirmation in any of the three. This texture -- price oscillating right at
+its own EMA after a thin reclaim -- is expected to keep producing frequent, individually-trivial
+candidates; each is still being reasoned about individually rather than filtered, per E111. No S5
+setup (checked unconditionally on all 3 bars). TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+Q4 replay pointer: 2020-10-23 11:14:59 UTC. NEXT_UNSEEN_BAR = 1514.
+
+### SESSION CHECKPOINT (CEO E111 compliance, 2026-08-31)
+
+Processed bars 1428-1513 in this continuation: retired the unauthorized auto-reject rule, fixed the
+S5-check-skip bug (now unconditional every bar), and reasoned individually about 7 P007 candidates
+(1428, 1429->1506 as Q4-P007-006/SUPPORT, 1509, 1512, 1513) with no shortcuts. Durable state
+(`next_bar=1514`) is the sole source of truth for resumption.
