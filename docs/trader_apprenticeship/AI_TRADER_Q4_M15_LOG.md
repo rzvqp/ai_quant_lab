@@ -1201,3 +1201,12 @@ Processed bars 1428-1513 in this continuation: retired the unauthorized auto-rej
 S5-check-skip bug (now unconditional every bar), and reasoned individually about 7 P007 candidates
 (1428, 1429->1506 as Q4-P007-006/SUPPORT, 1509, 1512, 1513) with no shortcuts. Durable state
 (`next_bar=1514`) is the sole source of truth for resumption.
+
+### COMPACT BLOCK 1514-1525 (2020-10-23 11:15:00-14:29:59 UTC) [continued chop, two more trivial candidates rejected]
+Bar 1514: continuation of the same 1512 episode (gap -0.35pt, vol 222) -- REJECTED. Clean stretch
+1515-1524 (no gaps, no S5 setup). Bar 1525: fresh independent candidate, close 1909.799 vs EMA
+1910.003 (gap only -0.20pt) despite moderate volume 660 -- the break itself is negligible; REJECTED
+(volume alone doesn't make a trivial crossing significant). No S5 setup (checked unconditionally
+throughout). TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+Q4 replay pointer: 2020-10-23 14:29:59 UTC. NEXT_UNSEEN_BAR = 1526.
