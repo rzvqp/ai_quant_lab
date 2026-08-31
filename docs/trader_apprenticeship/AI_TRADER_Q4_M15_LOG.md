@@ -1227,6 +1227,12 @@ EMA50 1904.274, margin +0.49pt). Classified **SUPPORT / RECLAIM**. Full detail i
 
 Q4 replay pointer: 2020-10-26 09:44:59 UTC. NEXT_UNSEEN_BAR = 1609.
 
+### BAR 1609 (2020-10-26T09:45:00-09:59:59 UTC) -- trivial candidate rejected
+Close 1904.252 essentially at the causal H1 EMA50 (1904.274, gap -0.02pt), volume 408. REJECTED
+individually. TRADE_DECISION: NO_TRADE.
+
+Q4 replay pointer: 2020-10-26 09:59:59 UTC. NEXT_UNSEEN_BAR = 1610.
+
 ### SESSION CHECKPOINT (CEO E111 continuation, 2026-08-31)
 
 Processed bars 1514-1608: 6 more P007 candidates reasoned individually (1514, 1525, 1526 trivial;
