@@ -1233,6 +1233,16 @@ individually. TRADE_DECISION: NO_TRADE.
 
 Q4 replay pointer: 2020-10-26 09:59:59 UTC. NEXT_UNSEEN_BAR = 1610.
 
+### COMPACT BLOCK 1610-1615 (2020-10-26 10:00:00-12:14:59 UTC) [continued chop, 4 more trivial candidates]
+Bar 1610: gap -0.13pt, vol 266 -- REJECTED. Bar 1612: gap -0.41pt, vol 268 -- REJECTED. Bar 1613:
+single-bar spike (gap -3.04pt, vol 757) after a quiet stretch, but not a multi-bar building move and
+low 1900.874 not a fresh 40-bar extreme (1894.961) -- REJECTED. Bar 1615: gap only -0.94pt despite
+volume 712 -- REJECTED. Runner now displays the causal H1 EMA gap directly in its stop output
+(CEO-accepted observability aid, section 4) -- speeds up individual reasoning, does not change how
+decisions are made. No S5 setup throughout. TRADE_DECISION: NO_TRADE. INTEGRITY: OK.
+
+Q4 replay pointer: 2020-10-26 12:14:59 UTC. NEXT_UNSEEN_BAR = 1616.
+
 ### SESSION CHECKPOINT (CEO E111 continuation, 2026-08-31)
 
 Processed bars 1514-1608: 6 more P007 candidates reasoned individually (1514, 1525, 1526 trivial;
