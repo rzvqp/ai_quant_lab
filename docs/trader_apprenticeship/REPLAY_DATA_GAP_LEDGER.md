@@ -1298,3 +1298,11 @@ VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanicall
 -- did not require a reasoning stop. The 1h-later-than-usual reopen (23:00Z vs the ~22:00Z seen in
 GAP-166) reflects US DST ending on 2020-11-01 -- a real, correctly-observed calendar effect, not an
 anomaly.
+
+### GAP-172 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min), now at 22:00-23:00Z post-DST (was 21:00-22:00Z pre-DST, see
+GAP-167/168/170)
+SPAN: 2020-11-02T21:59:59Z (last close 1895.774, Q4 bar 2108, Monday -- inside TRADE #10's open
+hold) -> 2020-11-02T23:00:00Z (first open 1895.774, Q4 bar 2109)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
