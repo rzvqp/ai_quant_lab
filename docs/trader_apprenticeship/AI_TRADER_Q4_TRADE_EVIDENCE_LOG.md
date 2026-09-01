@@ -413,3 +413,24 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 10
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.3376 - 0.2597 = -2.5973
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #11 — S5 opening-range-breakout LONG (bar 2175)
+
+```
+SIGNAL_BAR    2175 (2020-11-04 01:15:00-01:29:59 UTC, bis=11)
+ENTRY          1908.178
+INITIAL_STOP    1899.309 (= or_low 1899.329 - 2*TICK)
+STRUCTURAL_TARGET 1934.785 (= entry + 3R, R=8.869)
+```
+
+**THESIS (frozen before bar 2176 was revealed):** mechanically triggered, no discretionary override.
+Close 1908.178 > or_high 1908.064 within the entry window. Preceded by a steady ~15pt climb from bar
+2134 (close 1892.602) to bar 2170 (close 1906.626), no P007 candidates fired anywhere in this
+stretch. Volume picked up sharply in the final 5 bars (2171-2175: 1734/1516/1401/1018/1091, well
+above the quieter climb's baseline), with a wider-range, more volatile character (bar 2173's 7.7pt
+range, bar 2174's dip to 1902.806) -- this window falls on 2020-11-03/04 (US election date),
+consistent with genuine elevated market activity around that date, though this thesis rests only on
+the visible price/volume pattern, not on any assumed cause.
+
+**INVALIDATION:** a close at or below 1899.309 (STOP). MAX_HOLD 48 bars from entry (through bar
+2223). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1917.047).
