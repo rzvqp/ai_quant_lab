@@ -500,3 +500,25 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 12
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.5973 + 3.0000 = -0.5973
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #13 — S5 opening-range-breakout LONG (bar 2363)
+
+```
+SIGNAL_BAR    2363 (2020-11-06 02:30:00-02:44:59 UTC, bis=15)
+ENTRY          1947.384
+INITIAL_STOP    1924.940 (= or_low 1924.96 - 2*TICK -- SAME or_low as TRADE #12)
+STRUCTURAL_TARGET 2014.716 (= entry + 3R, R=22.444)
+```
+
+**THESIS (frozen before bar 2364 was revealed):** mechanically triggered, no discretionary override.
+Close 1947.384 > or_high 1930.356 within the entry window. Reuses the SAME opening range as TRADE
+#12 (bars 2352-2355) -- verified against the canonical `S5OpeningRangeBreakoutLong.evaluate()`
+(`s5_opening_range_breakout.py`) that this is legitimate, not a control-flow bug: the strategy's
+`evaluate()` carries no memory of whether a signal already fired this session, it is purely reactive
+to each bar's own (session, OR, bis, close) state. TRADE #12 had already closed (TARGET, bar 2362)
+before this new trigger, so no position conflict. Continuation of the same impulsive rally that
+produced TRADE #12's target. Because the stop is anchored to the same or_low, risk is unusually wide
+this time (22.444 vs TRADE #12's 6.798).
+
+**INVALIDATION:** a close at or below 1924.940 (STOP). MAX_HOLD 48 bars from entry (through bar
+2411). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1969.828).
