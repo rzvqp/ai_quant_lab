@@ -855,3 +855,25 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 21
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.5981 - 1.0000 = -5.5981
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #22 — S5 opening-range-breakout LONG (bar 3366)
+
+```
+SIGNAL_BAR    3366 (2020-11-20 14:15:00-14:30:00 UTC, bis=6)
+ENTRY          1877.502
+INITIAL_STOP    1865.688 (= or_low 1865.708 - 2*TICK)
+STRUCTURAL_TARGET 1912.944 (= entry + 3R, R=11.814)
+```
+
+**THESIS (frozen before bar 3367 was revealed):** mechanically triggered, no discretionary override.
+Close 1877.502 > or_high 1868.78 within the entry window. This is the deferred re-fire of the S5
+signal that coincided with Q4-P007-039's reclaim on bar 3365 (position was FLAT at the time; P007
+took priority per governance, and as expected the S5 signal re-surfaced on the very next bar via S5's
+stateless evaluate()). Q4-P007-039 (gate origin bar 3187, 179 bars) resolved SUPPORT the prior bar --
+a genuine, high-conviction case: a deep fresh extreme (low 1852.792), an extended ~93-bar basing
+period at the new lower level, and a decisive, well-participated reclaim (bar 3365, ~10pt move,
+volume 1698). This entry sits at the start of that reclaim move. Noted honestly as context; S5 fires
+mechanically regardless of P007 classification, and no discretionary override is being applied.
+
+**INVALIDATION:** a close at or below 1865.688 (STOP). MAX_HOLD 48 bars from entry (through bar
+3414). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1889.316).
