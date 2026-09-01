@@ -305,3 +305,24 @@ out on moderate volume (545, in line with the session's 500-900 baseline).
 **INVALIDATION:** a close at or below 1902.110 (STOP). MAX_HOLD 48 bars from entry (through bar
 1766) if neither stop nor target is hit first. MGMT-004 breakeven trigger at first M15 close >=
 +1.0R (>= 1914.426).
+
+**OUTCOME:** MAX_HOLD exit at bar 1766 (2020-10-28 04:15:00 UTC), price 1907.376 (bar's own close).
+```
+EXIT_BAR      1766
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1907.376
+R_MULTIPLE     -0.1449
+```
+Choppy, directionless hold -- price never closed within 1R of target (highest close of the whole
+48-bar hold was 1910.802 at bar 1727, only +0.42R) and MGMT-004 never triggered. Never came within
+0.403pt of the stop either (closest approach: bar 1749's low 1902.513, part of Q4-P007-013's episode,
+itself REJECTED as a spike/reversal). Four P007 candidates opened and resolved during this hold
+(Q4-P007-012 through -014 REJECTED; -013 tested the stop closely but never touched it) -- trade
+mechanics ran unconditionally on every bar throughout, confirmed via `open_trade_state.json` staying
+untouched (mgmt004_fired/control_closed both false) until the MAX_HOLD exit itself.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 8
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.425 - 0.1449 = -2.5699
+POSITION_AFTER_THIS_TRADE = FLAT
+```

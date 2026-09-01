@@ -717,3 +717,38 @@ explicitly withheld commitment pending follow-through; follow-through showed non
 (1902.11) was tested closely (bar 1749 low 1902.513, only 0.403pt above) but never touched -- trade
 mechanics ran unconditionally each bar, confirmed via `open_trade_state.json`. No S5 trigger at any
 point.
+
+---
+
+## Q4-P007-014
+
+```
+GATE_ORIGIN_BAR          1761 (2020-10-28 03:00:00 UTC)
+CONTEXT                    bars 1751-1760 drifted quietly 1904.8-1908.3, moderate-thin volume
+                          (163-451, mostly 170-311), no strong directional character
+TRIGGER_CLOSE                1905.152
+TRIGGER_LOW                   1904.577 -- no fresh extreme; well inside the range since -013
+CAUSAL_H1_EMA50_AT_1761       1905.423
+GAP                            -0.27pt
+VOLUME                          178 -- in line with the recent baseline, no acceleration
+```
+
+**PRE-CLASSIFICATION:** matches -008/-009/-012's trivial-touch signature, not -010/-013's sharper
+character. Leaning REJECTED, not pre-committing. TRADE #8 remains open, well clear of stop and
+MGMT-004 trigger.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         1762 (2020-10-28 03:30:00 UTC)
+DURATION                2 bars (1761-1762)
+DEEPEST_LOW              1904.577 (bar 1761)
+HEAVIEST_VOLUME          178 (bar 1761)
+RECLAIM_CLOSE             1906.48
+CAUSAL_H1_EMA50_AT_RESOLUTION 1905.434 (margin +1.05pt)
+```
+
+Reclaimed immediately, thin volume throughout (115 on the reclaim, below even the immediate baseline).
+No continuation, no fresh extreme. Confirms the pre-classification's REJECTED lean exactly. TRADE #8
+remained open throughout, well clear of stop and MGMT-004 trigger. No S5 trigger.
