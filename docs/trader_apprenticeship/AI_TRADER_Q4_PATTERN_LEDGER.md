@@ -1370,3 +1370,36 @@ VOLUME                          125 -- thin
 ```
 
 **PRE-CLASSIFICATION:** leaning REJECTED. POSITION=FLAT. Not pre-committing.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2868 (2020-11-13 05:00:00 UTC)
+DURATION                2 bars (2867-2868)
+DEEPEST_LOW              1876.579 (bar 2867)
+HEAVIEST_VOLUME          125 (bar 2867)
+RECLAIM_CLOSE             1877.422
+CAUSAL_H1_EMA50_AT_RESOLUTION 1876.645 (margin +0.78pt)
+```
+
+Reclaimed immediately, very thin volume, no continuation, no fresh extreme. Confirms the
+pre-classification's REJECTED lean exactly. No trade was open; no MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-032
+
+```
+GATE_ORIGIN_BAR          2885 (2020-11-13 09:00:00 UTC)
+CONTEXT                    bars 2878-2884 chopped 1876-1880.9, moderate volume (208-562), no strong
+                          direction
+TRIGGER_CLOSE                1876.28
+TRIGGER_LOW                   1876.028 -- modest fresh dip below the recent floor (1877.152)
+CAUSAL_H1_EMA50_AT_2885       1876.962
+GAP                            -0.68pt
+VOLUME                          416 -- in line with the surrounding range, no acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- ordinary chop, not a fresh break. Not pre-committing.
+POSITION=FLAT.
