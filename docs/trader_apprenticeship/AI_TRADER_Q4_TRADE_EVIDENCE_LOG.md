@@ -541,3 +541,22 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 13
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -0.5973 - 0.3557 = -0.9530
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #14 — S5 opening-range-breakout LONG (bar 2445)
+
+```
+SIGNAL_BAR    2445 (2020-11-06 21:30:00-21:44:59 UTC, bis=5)
+ENTRY          1960.285
+INITIAL_STOP    1948.100 (= or_low 1948.12 - 2*TICK)
+STRUCTURAL_TARGET 1996.840 (= entry + 3R, R=12.185)
+```
+
+**THESIS (frozen before bar 2446 was revealed):** mechanically triggered, no discretionary override.
+Close 1960.285 > or_high 1959.552 within the entry window. Preceded by a steady climb from bar 2412
+(close 1939.4) to bar 2440 (close 1949.658), no P007 candidates fired anywhere in this stretch. OR
+itself (bars 2440-2443) formed during a volatile stretch -- bar 2443 alone printed a 10pt range
+(1949.635-1959.552) on volume 3737, the heaviest single-bar volume since TRADE #13's own hold. Entry
+followed 2 more bars of continuation.
+
+**INVALIDATION:** a close at or below 1948.100 (STOP). MAX_HOLD 48 bars from entry (through bar
+2493). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1972.470).
