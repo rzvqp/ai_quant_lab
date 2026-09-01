@@ -1631,3 +1631,27 @@ CLOSE never meaningfully breaks and the round-trip is full -- consistent with th
 discriminator being a composite of correlated signals, not any single one being decisive alone. This
 episode is recorded as a genuine test that partially disconfirms a naive single-factor reading of the
 "fresh extreme" component, not as a confirmation.
+
+---
+
+## Q4-P007-038
+
+```
+GATE_ORIGIN_BAR          3097 (2020-11-17 16:00:00 UTC) -- immediately after -037's reclaim
+CONTEXT                    bar 3096 closed 1888.707, reclaiming well clear of the EMA; this bar
+                            dips straight back through it
+TRIGGER_CLOSE                1887.348
+TRIGGER_LOW                   1886.941 -- NOT a fresh extreme (well above -037's 1884.739 and TRADE
+                              #19/#20's stop-run lows)
+CAUSAL_H1_EMA50_AT_3097       1887.5614
+GAP                            -0.213pt
+VOLUME                          468 -- modest, below -037's episode range (623-907), close to the
+                                 thin dead-chop baseline (196-444) seen earlier in this stretch
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED on the actual evidence for this bar -- another shallow,
+non-extreme dip immediately following -037's own REJECTED resolution, same dead-chop character. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
+discriminator's SUPPORT-leaning signature (no fresh extreme, volume modest and not accelerating) --
+consistent with, not the basis for, the REJECTED lean.
