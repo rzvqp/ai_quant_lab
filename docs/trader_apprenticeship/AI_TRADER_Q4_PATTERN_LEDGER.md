@@ -1856,3 +1856,42 @@ pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 discriminator's SUPPORT-leaning signature on its own bar (no fresh extreme, volume not accelerating)
 -- but this episode's resolution will be read together with -040 as a pair, not in isolation, given
 how directly it follows.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         3947 (2020-12-01 05:45:00 UTC)
+DURATION                238 bars (3710-3947) -- the second-longest episode in the Q4 replay so far,
+                          after -040's 273 bars; see note below on how -040/-041 relate
+DEEPEST_LOW              1764.57 (bar 3843) -- deeper than -040's own confirmed low (1800.424),
+                          another genuine fresh extreme continuing the same structural decline
+HEAVIEST_VOLUME          3477 (bar 3807) -- landed ~36 bars BEFORE the ultimate low (bar 3843), not
+                          coincident with it -- a genuine departure from -038/-039/-040's pattern of
+                          volume peaking exactly at the extreme
+RECLAIM_CLOSE             1787.212 (bar 3947), margin +0.61pt -- again marginal, similar texture to
+                          -040's own +0.48pt reclaim
+CAUSAL_H1_EMA50_AT_RESOLUTION 1786.5975
+```
+
+TRADE #23 (opened bar 3889, MAX_HOLD exit bar 3937, +0.78R) was open for part of this episode and
+closed before it resolved. This episode directly follows -040's own resolution (bar 3709) and its
+gate origin is the very next bar (3710) -- effectively continuing the SAME underlying decline rather
+than being a fully independent event: pre-episode level (bar 3709 close 1816.928) fell to 1764.57, a
+further ~52pt beyond where -040 already stood, before this reclaim.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this pair (-040 then -041)
+directly and prospectively tested the durability question -040's own resolution raised -- and the
+concern was borne out: -040's marginal +0.48pt reclaim did NOT hold, failing on the very next bar
+(-041's gate origin), and price fell another ~36pt beyond -040's own low before finally basing here.
+Read together, -040 and -041 look less like two separate SUPPORT instances and more like one
+continuous, still-ongoing structural decline that P007 detected in two segments because of a brief,
+thin EMA-crossing pause in between. Two further nuances worth flagging honestly: (1) retracement here
+is ~43% (22.6 of 52.4pt) -- a genuinely intermediate value between -040's ~23% and -038/-039's
+~79-81%, not clustering neatly with either; (2) the heaviest volume (bar 3807) did NOT coincide with
+the ultimate low (bar 3843) this time, landing well before it -- a partial departure from the
+volume-price-coincidence signature seen in -038/-039/-040's capitulation bars. Both discriminator
+components still point toward SUPPORT overall (fresh extreme genuine; heaviest volume still
+unambiguously on the break side, not the reclaim), so this is recorded SUPPORT with confidence, but
+these nuances are recorded as genuine, useful tests, not swept aside -- the discriminator's individual
+components appear to have some texture/variance even within confirmed SUPPORT cases, which is itself
+informative for how much weight any single component should carry going forward.
