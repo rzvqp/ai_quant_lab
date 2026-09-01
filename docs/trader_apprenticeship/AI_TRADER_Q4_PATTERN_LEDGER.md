@@ -2391,3 +2391,28 @@ is both complete AND fast. The dramatic fresh extreme is recorded honestly as a 
 tension, not dismissed -- but on balance it is not treated as sufficient on its own when the round-trip
 and duration both point the other way, consistent with -043's own earlier lesson that a fresh extreme
 alone does not override a full round-trip.
+
+---
+
+## Q4-P007-052
+
+```
+GATE_ORIGIN_BAR          4533 (2020-12-09 13:45:00 UTC)
+TRIGGER_CLOSE                1859.108
+TRIGGER_LOW                   1858.811 -- NOT a fresh extreme (well above -051's 1851.636)
+CAUSAL_H1_EMA50_AT_4533       1859.3929
+GAP                            -0.285pt -- shallow
+VOLUME                          1040 -- elevated in absolute terms, but continuing the generally
+                                 elevated volume regime seen since -051 (1125, 850 in the two
+                                 preceding bars), NOT a clear acceleration relative to immediate
+                                 context
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- shallow gap, no fresh extreme; the volume is high in
+absolute terms but that reflects the generally more active period following -051's capitulation-and-
+reclaim, not a distinguishing signal for this specific bar. Not pre-committing. POSITION=FLAT; no
+MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a useful reminder that absolute
+volume level matters less than volume RELATIVE to the immediate surrounding context -- this bar's 1040
+would have looked dramatic against -046/-050's baseline, but is unremarkable against -051's own
+elevated regime.
