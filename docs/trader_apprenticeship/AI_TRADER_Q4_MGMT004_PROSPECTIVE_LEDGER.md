@@ -83,3 +83,67 @@ stop (closest approach post-trigger: +6.26pt / +0.66R of headroom) — both trac
 MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 2
 Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 = -0.651
 ```
+
+## TRADE #12 — S5 LONG, bar 2352 (2020-11-05 13:45:00 UTC)
+
+*(Retroactive completeness fix: this trigger was already committed to the durable engine state and
+disclosed as a documentation gap during the 2026-08-30 CEO learning audit -- see that audit's Section
+11 -- but had never received its formal write-up here. No new judgment is applied; the figures below
+are pulled directly from the already-frozen `TRADE_CONTRACT`/outcome record in
+`AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md`.)*
+
+```
+ENTRY                 1931.738
+RISK (1R)              6.798
+STRUCTURAL_TARGET      1952.132 (unchanged in both tracks)
++1.0R_TRIGGER_LEVEL     1938.536
+```
+
+**TRIGGER**: bar 2357 (2020-11-05 15:30:00 UTC), close 1942.109, +1.5256R -- first M15 close at or
+beyond +1.0R. Shadow stop moved to breakeven (1931.738); control stop (1924.940) and target
+(1952.132) unchanged in both tracks.
+
+```
+TRACK      EXIT_BAR   EXIT_REASON   EXIT_PRICE   R_MULTIPLE
+CONTROL    2362        TARGET        1952.132     +3.000
+SHADOW     2362        TARGET        1952.132     +3.000
+```
+
+**DELTA_R (SHADOW - CONTROL) = 0.000.** Price never pulled back toward the breakeven shadow stop after
+triggering at +1.53R -- it ran impulsively straight through to target four bars later (bar 2358 high
+1948.303 on volume 2325). Both tracks converge, as at TRADE #4.
+
+```
+MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 3
+Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 = -0.651
+```
+
+## TRADE #25 — S5 LONG, bar 4079 (2020-12-02 15:45:00 UTC)
+
+```
+ENTRY                 1826.580
+RISK (1R)              10.074
+STRUCTURAL_TARGET      1856.802 (unchanged in both tracks)
++1.0R_TRIGGER_LEVEL     1836.654
+```
+
+**TRIGGER**: bar 4122 (2020-12-03 03:30:00 UTC), close 1837.41, +1.0750R -- first M15 close at or
+beyond +1.0R. Shadow stop moved to breakeven (1826.580); control stop (1816.506) and target
+(1856.802) unchanged in both tracks.
+
+```
+TRACK      EXIT_BAR   EXIT_REASON   EXIT_PRICE   R_MULTIPLE
+CONTROL    4127        MAX_HOLD      1836.136     +0.9486
+SHADOW     4127        MAX_HOLD      1836.136     +0.9486
+```
+
+**DELTA_R (SHADOW - CONTROL) = 0.000.** After triggering at +1.08R (bar 4122's high-water close for
+the trade, +0.13R above where it eventually exited), price eased slightly but never pulled back
+anywhere near the breakeven shadow stop before the 5-bar-later MAX_HOLD exit -- both tracks ride the
+same short remainder of the hold to the same close. Third consecutive MGMT-004 convergence (matching
+TRADE #4 and TRADE #12); the first Q4 divergence remains TRADE #1's -0.651R.
+
+```
+MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 4
+Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 + 0.000 = -0.651
+```

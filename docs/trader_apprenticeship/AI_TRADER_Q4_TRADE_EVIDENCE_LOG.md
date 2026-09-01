@@ -994,3 +994,25 @@ then a renewed climb on rising volume into this breakout (1603/1327/1068/1130/12
 
 **INVALIDATION:** a close at or below 1816.506 (STOP). MAX_HOLD 48 bars from entry (through bar
 4127). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1836.654).
+
+**OUTCOME:** MGMT-004 fired at bar 4122 (2020-12-03 03:30:00 UTC), close 1837.41, +1.0750R (see
+`AI_TRADER_Q4_MGMT004_PROSPECTIVE_LEDGER.md` for the full dual-track write-up). MAX_HOLD exit at bar
+4127 (2020-12-03 04:45:00 UTC), price 1836.136 (bar's own close), both CONTROL and SHADOW tracks
+identical.
+```
+EXIT_BAR      4127
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1836.136 (bar's own close)
+R_MULTIPLE     +0.9486 (CONTROL basis)
+```
+A steady, unremarkable climb -- worst close was bar 4087's 1826.058, essentially flat (-0.05R), never
+threatening the stop. MGMT-004 fired at bar 4122's +1.08R high-water close; price eased slightly but
+never came back near the breakeven shadow stop before the MAX_HOLD exit 5 bars later, so CONTROL and
+SHADOW converge. GAP-193 (standard, 60min MAINTENANCE) sat inside the hold. Trade mechanics ran
+unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 25
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.6690 + 0.9486 = -4.7204
+POSITION_AFTER_THIS_TRADE = FLAT
+```
