@@ -1512,3 +1512,22 @@ VOLUME                          472 -- in line with the recent baseline, no acce
 
 **PRE-CLASSIFICATION:** reads as continuation of the same ordinary chop, not a fresh break. Leaning
 REJECTED. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         3058 (2020-11-17 06:30:00 UTC)
+DURATION                2 bars (3057-3058)
+DEEPEST_LOW              1884.339 (bar 3057)
+HEAVIEST_VOLUME          472 (bar 3057)
+RECLAIM_CLOSE             1887.602
+CAUSAL_H1_EMA50_AT_RESOLUTION 1886.782 (margin +0.82pt)
+```
+
+No continuation, no fresh extreme. No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 learning-audit guidance -- not a formal rule):** matches the
+emerging volume-persistence + fresh-extreme discriminator's REJECTED profile exactly -- no volume
+sustaining past the trigger bar (472 -> 397, no growth), no fresh extreme, full reclaim within 1
+bar. Fourth consecutive REJECTED reading of the same dead-chop stretch (-032 through -035),
+consistent with the discriminator's own prediction, not a counterexample.
