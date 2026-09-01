@@ -1719,3 +1719,43 @@ same OR) but is not actionable since a position is already open.
 discriminator's SUPPORT-leaning signature (no fresh extreme, volume moderate but not clearly
 accelerating past the episode's own recent range) -- consistent with, not the basis for, the REJECTED
 lean.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         3365 (2020-11-20 14:00:00 UTC)
+DURATION                179 bars (3187-3365) -- the longest episode in the Q4 replay so far,
+                          surpassing -038's 90 bars
+DEEPEST_LOW              1852.792 (bar 3271) -- a genuine fresh extreme, well beyond -038's own
+                          1863.772
+HEAVIEST_VOLUME          1992 (bar 3271) -- the same bar as the deepest low, a capitulation signature;
+                          the reclaim bar itself (3365) also carried real volume (1698), but the
+                          absolute heaviest still sits on the break
+RECLAIM_CLOSE             1877.586 (bar 3365)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1868.667 (margin +8.92pt -- a sharp, decisive reclaim, not a marginal one)
+```
+
+TRADE #21 (opened bar 3181, resolved STOP bar 3218) was open for the first 32 bars of this episode
+and closed before it resolved; no trade was open for the remaining ~147 bars. Price declined steadily
+from ~1881 (bar 3219) through ~1866 (bar 3230), ~1862 (bar 3240), to the capitulation low at bar 3271,
+then based in a 1857-1869 range for roughly 93 bars (3272-3364) -- a genuine, extended consolidation
+at the new, lower level, not a quick bounce -- before a sharp single-bar breakout at bar 3365 (close
+jumping from 1867.497 to 1877.586, ~10pt in one bar) that reclaimed the EMA decisively and
+simultaneously triggered a fresh S5 OR breakout (bis=5, informational only this bar -- position was
+FLAT, so per the established coincident-signal handling this S5 trigger is deferred and expected to
+re-surface on the next bar once this P007 gate clears). GAP-183 already logged (inside TRADE #21's
+prior hold); a standard MAINTENANCE gap (60min) fell inside this episode's basing period, to be logged
+in the gap ledger as GAP-184.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** an even more compelling case
+than -038 by several measures -- deeper fresh extreme, volume-price coincidence at the capitulation
+bar, AND (unlike -038's 13-bar recovery) an extended ~93-bar basing period at the new lower level
+before the reclaim, rather than an immediate bounce. The reclaim close sits ~81% of the way back
+toward the pre-episode level (bar 3186 close 1883.53), ~5.9pt short of a full round-trip -- again a
+partial, not full, retracement, in the same range as -038's ~79%. The one point of nuance: the
+reclaim bar's own volume (1698) is substantial, not negligible, so this is not a story of "volume
+only on the break" -- it is heaviest-on-the-break WITH a genuinely well-participated reclaim, which
+reads as a decisive structural shift rather than a thin, unconvincing bounce. Recorded as a further
+confirmation that when fresh-extreme, volume-on-the-break, and partial-retracement agree, the reading
+has been reliable across this stretch of Q4 so far -- while still treating this as an ongoing test,
+not a settled rule, per standing instruction.
