@@ -1828,3 +1828,31 @@ raises the open, unresolved question of whether a bare EMA-cross with a razor-th
 this large represents the same kind of "reclaim" as -038/-039's more decisive ones, or whether it
 should be watched for a possible re-test/failure in subsequent bars -- an open question for future
 episodes to test, not a conclusion drawn here.
+
+---
+
+## Q4-P007-041
+
+```
+GATE_ORIGIN_BAR          3710 (2020-11-26 08:15:00 UTC) -- the very next bar after -040's marginal
+                            reclaim (bar 3709, margin only +0.48pt)
+CONTEXT                    directly tests the concern flagged in -040's own resolution: does a
+                            razor-thin reclaim after a massive move hold, or fail immediately?
+TRIGGER_CLOSE                1815.828
+TRIGGER_LOW                   1815.718 -- NOT a fresh extreme (well above -040's 1800.424)
+CAUSAL_H1_EMA50_AT_3710       1816.3976
+GAP                            -0.570pt -- shallow, similar magnitude to -037/-039's origins
+VOLUME                          625 -- moderate, not a clear spike
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain. On the surface this reads like the shallow, REJECTED-
+leaning dips seen at -037/-039 (no fresh extreme, moderate volume). But the context is different: this
+is an IMMEDIATE failure of -040's own marginal reclaim, one bar after it printed -- directly bearing
+on the open question -040 raised about whether that reclaim was durable. Leaning slightly toward
+REJECTED on the bar's own evidence (no fresh extreme, no volume acceleration), but flagging this
+honestly as a live test of -040's own uncertainty rather than a fresh, independent read. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
+discriminator's SUPPORT-leaning signature on its own bar (no fresh extreme, volume not accelerating)
+-- but this episode's resolution will be read together with -040 as a pair, not in isolation, given
+how directly it follows.
