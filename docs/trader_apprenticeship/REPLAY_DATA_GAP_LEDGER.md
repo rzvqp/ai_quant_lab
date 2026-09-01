@@ -1320,3 +1320,10 @@ SPAN: 2020-11-04T21:59:59Z (last close 1903.015, Q4 bar 2292, Wednesday) -> 2020
 (first open 1903.015, Q4 bar 2293)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-175 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-11-05T21:59:59Z (last close 1949.632, Q4 bar 2384, Thursday -- inside TRADE #13's open
+hold) -> 2020-11-05T23:00:00Z (first open 1949.632, Q4 bar 2385)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
