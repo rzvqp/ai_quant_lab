@@ -9,7 +9,10 @@ edge search, no analysis of winners vs losers.
 MANIFEST_HASH_VERIFIED = YES
   433f1cecbbae20e1d27ce9dc47b604d5258e36702881973a0e7f5fa032a440d9   (recomputed, matches)
 
-PROTOCOL_PACKAGE_HASH  = 62852d36844d4eee8a48eec85f4102c4e1b12b4e3e039fa38272ca4f25cf8bf2
+PROTOCOL_PACKAGE_HASH  = 4488f0e89ae8bb079bf51eb74e4a2767f072d4e368ee383bae1d875ac4359b8f
+  (supersedes 62852d36... -- ATTRIBUTION_V2_EXECUTION_UNIVERSE.csv added per the identity addendum;
+   no scientific content changed. See ATTRIBUTION_V2_IDENTITY_RECONCILIATION_ADDENDUM.md)
+EXECUTION_UNIVERSE_HASH = 78ea539fe2f6731e5a3dc482220591133d9fc06a3585fb998791bb882839f150
 FEATURE_MAP_HASH       = 6cddeef6371fb42da7e4db5f5f936b7451727fae8673cc4414d5ab282ab5e943
 BLIND_KEY_HASH         = 268a4f1878ff15df81adba165f1786d320c15b62a148327f440eb3cf293f146f
 ```
@@ -33,9 +36,16 @@ scored without names.
 ## 1 — ATTRIBUTION UNIVERSE V2 (§2)
 
 ```
-ATTRIBUTION_FAMILIES     = 115 objects   (all attribution-eligible objects in the frozen manifest)
-REPRESENTATIVE_VARIANTS  = 56            (S-library, outcome-blind rule below)
+SOURCE_ATTRIBUTION_FAMILIES = 102   distinct real families (104 eligible - 2 duplicate factory parents)
+ANALYSIS_OBJECTS            = 115   what Alpha runs; the test-budget unit
+REPRESENTATIVE_VARIANTS     =  56   S-library only (13 families direction-split -> 26, 30 unsplit)
+DIRECTIONAL_SPLIT_OBJECTS   =  26   from 13 families (net +13 objects)
 ```
+
+> **CORRECTED 2026-09-02.** An earlier revision printed `ATTRIBUTION_FAMILIES = 115`. That label was wrong:
+> **115 is an analysis-object count, not a family count**, and the removal of 2 duplicate factory parent
+> rows was done in code but not documented. Full accounting identity, the 56/57/58 reconciliation and the
+> binding denominator rules are in `ATTRIBUTION_V2_IDENTITY_RECONCILIATION_ADDENDUM.md`.
 
 | tier | objects | source |
 |---|---|---|
@@ -265,8 +275,10 @@ PLACEBO_PROTOCOL (all three run BEFORE any real result is interpreted):
 
 A blinded feature qualifies as a **RECURRING DISCRIMINATOR** only if **all** hold:
 
-1. supported in **≥ 5 distinct families**;
-2. supported in **≥ 3 distinct mechanisms** (level C, not level A);
+1. supported in **≥ 5 distinct SOURCE FAMILIES** (`SOURCE_FAMILY_ID`, never analysis objects — LONG and
+   SHORT representatives of one family are ONE family);
+2. supported in **≥ 3 distinct MECHANISMS** (`MECHANISM_ID`, level C — parameter variants and direction
+   splits are never independent mechanisms);
 3. **same sign** of the expectancy shift in every supporting family;
 4. **|mean effect| ≥ 0.05R** at family-weighted level B;
 5. sign-consistent in **≥ 2 of 3 chronological thirds** (stability, *not* validation — §5);
@@ -349,7 +361,8 @@ is published — see §6).
 ```
 STRATEGY_ATTRIBUTION_V2_PROTOCOL_FREEZE_COMPLETE = YES
 MANIFEST_HASH_VERIFIED       = YES
-ATTRIBUTION_FAMILIES         = 115
+SOURCE_ATTRIBUTION_FAMILIES  = 102
+ANALYSIS_OBJECTS             = 115
 REPRESENTATIVE_VARIANTS      = 56
 FINAL_DISTINCT_MECHANISMS    = 25   (MECHANISM_MAPPING_COMPLETE = YES, 0 unknown)
 BLINDED_PRE_ENTRY_FEATURES   = 46
@@ -357,7 +370,7 @@ POST_ENTRY_ELIGIBLE_FAMILIES = 10   (+56 conditional on path recomputation)
 TOTAL_DECLARED_TESTS         = 5,356
 MULTIPLICITY_METHOD          = hierarchical BH-FDR(q=.05, m=5290) / Bonferroni(m=46) / Bonferroni(m=20)
 HISTORICAL_REUSE_STATUS      = MATERIALLY_EXPOSED — no clean OOS exists; V2 output is HYPOTHESIS_GENERATION ONLY
-PROTOCOL_PACKAGE_HASH        = 62852d36844d4eee8a48eec85f4102c4e1b12b4e3e039fa38272ca4f25cf8bf2
+PROTOCOL_PACKAGE_HASH        = 4488f0e89ae8bb079bf51eb74e4a2767f072d4e368ee383bae1d875ac4359b8f
 READY_FOR_ALPHA_ATTRIBUTION_V2 = YES
 NEXT_AUTHORIZED_ACTION = NONE — CEO DECISION REQUIRED
 ```
