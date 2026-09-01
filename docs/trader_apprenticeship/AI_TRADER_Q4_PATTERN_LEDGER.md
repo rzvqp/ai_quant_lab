@@ -650,3 +650,70 @@ VOLUME                         515 -- 2-4x the immediate 120-320 baseline
 grind lacked volume conviction -- more ambiguous than -010's clean sustained-decline signature. Not
 pre-committing -- watching for real continuation vs an early fade. GAP-168 (standard, 60min) logged
 just before this episode.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         1748 (2020-10-27 23:45:00 UTC)
+DURATION                5 bars (1743-1747)
+DEEPEST_LOW              1904.372 (bar 1745) -- only marginally below the trigger bar's own low
+                        (1904.85), not a meaningful new extreme
+HEAVIEST_VOLUME          515 (bar 1743, the trigger bar itself -- never matched again)
+RECLAIM_CLOSE             1905.34
+CAUSAL_H1_EMA50_AT_RESOLUTION 1905.307 (margin only +0.03pt -- a bare, marginal reclaim)
+```
+
+The pre-classification's ambiguity resolved clearly toward REJECTED once follow-through was
+observed: volume collapsed immediately and steadily after the trigger bar -- 515 -> 253 -> 156 -> 72
+-> 81 -> 142 (reclaim) -- no continuation whatsoever. The whole 5-bar episode stayed inside a tight
+~0.6pt band. An isolated volume spike on the trigger bar with zero follow-through, matching
+-008/-009's signature, not -010's sustained decline. TRADE #8 remained open and unaffected
+throughout (still ~-0.5R to -0.6R, clear of stop and MGMT-004 trigger); trade mechanics ran
+unconditionally each bar, confirmed via `open_trade_state.json` (mgmt004_fired/control_closed both
+still false throughout). No S5 trigger at any point.
+
+---
+
+## Q4-P007-013
+
+```
+GATE_ORIGIN_BAR          1749 (2020-10-28 00:00:00 UTC) -- immediately after Q4-P007-012 resolved
+                          REJECTED one bar earlier; same overall consolidation
+CONTEXT                    bars 1744-1748 were the quietest stretch of this session (volume 72-253,
+                          tight ~1.6pt range 1904.37-1905.97)
+TRIGGER_BAR                 1749 -- open 1905.34, low 1902.513, close 1902.948, 2.875pt intrabar
+                          range (far larger than anything in the preceding week)
+CAUSAL_H1_EMA50_AT_1749      1905.307
+GAP                           -2.36pt -- largest gap magnitude of any candidate opened this session
+VOLUME                         313 -- more than 2x the immediate 72-142 dead-zone baseline
+TRADE_8_PROXIMITY             bar low 1902.513 only 0.403pt above initial_stop 1902.11 -- trade
+                             mechanics ran unconditionally, confirmed stop NOT touched
+```
+
+**PRE-CLASSIFICATION:** a sharp, decisive break out of an unusually compressed/quiet session is more
+credible than a marginal touch, even though absolute volume is moderate rather than dramatic.
+Leaning toward taking this seriously, not pre-committing -- watching for real continuation vs an
+early fade, and watching TRADE #8's stop given the proximity.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance, despite real trigger-bar magnitude
+RESOLUTION_BAR         1750 (2020-10-28 00:30:00 UTC)
+DURATION                2 bars (1749-1750)
+DEEPEST_LOW              1902.513 (bar 1749)
+HEAVIEST_VOLUME          313 (bar 1749, the trigger bar)
+RECLAIM_CLOSE             1905.328 -- almost exactly back at the pre-break level (1905.34)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1905.309 (margin +0.02pt)
+```
+
+A complete 1-bar round-trip: bar 1750 fully reversed bar 1749's 2.875pt break within the very next
+bar, landing back almost exactly at the pre-break level, with no continuation whatsoever. Volume on
+the reversal (220) was lower than the break bar (313), unlike -011's reclaim -- but the decisive
+fact is the full retrace itself, reading as a sharp spike/liquidity event rather than a sustained
+directional break. The pre-classification correctly flagged real magnitude on the trigger bar but
+explicitly withheld commitment pending follow-through; follow-through showed none. TRADE #8's stop
+(1902.11) was tested closely (bar 1749 low 1902.513, only 0.403pt above) but never touched -- trade
+mechanics ran unconditionally each bar, confirmed via `open_trade_state.json`. No S5 trigger at any
+point.
