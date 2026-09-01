@@ -434,3 +434,30 @@ the visible price/volume pattern, not on any assumed cause.
 
 **INVALIDATION:** a close at or below 1899.309 (STOP). MAX_HOLD 48 bars from entry (through bar
 2223). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1917.047).
+
+**OUTCOME:** STOP hit at bar 2209 (2020-11-03 23:15:00 UTC), price 1899.309.
+```
+EXIT_BAR      2209
+EXIT_REASON    STOP
+EXIT_PRICE     1899.309
+R_MULTIPLE     -1.0000
+```
+Came genuinely close to MGMT-004 first: the trade reached a high close of 1915.593 (bar 2205,
++0.83R) -- just short of the +1.0R trigger (1917.047) -- before reversing hard: bar 2206 close
+1911.452, bar 2207 close 1908.75, bar 2208 close 1899.934 (essentially at the stop already). Bar
+2209 then wicked violently -- low 1882.212, a ~22pt intrabar stop-run well below the stop level --
+on the heaviest single-bar volume of the entire Q4 replay to date (4229, exceeding even
+Q4-P007-015's 4017 capitulation bar), before closing back up at 1904.193. The stop was triggered by
+that low, not the close (control logic checks bar.low against control_stop). No P007 candidate
+opened despite the extreme wick -- the bar's CLOSE (1904.193) stayed above the causal H1 EMA50
+throughout, since P007 only evaluates closes, not intrabar wicks. This bar falls on 2020-11-03
+(US election night); the extreme volume/range is consistent with genuine market activity around
+that date, noted factually and not as a causal claim. GAP-173 (standard, 60min) sat inside the hold,
+standard. MGMT-004 never fired (never reached +1.0R). Trade mechanics ran unconditionally on every
+bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 11
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.5973 - 1.0000 = -3.5973
+POSITION_AFTER_THIS_TRADE = FLAT
+```
