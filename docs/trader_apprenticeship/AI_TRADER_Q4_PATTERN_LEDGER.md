@@ -1787,3 +1787,44 @@ resolve properly. POSITION=FLAT; no MGMT-004 relevance.
 emerging discriminator -- modest fresh extreme present, but volume not accelerating -- unlike -038/
 -039's unambiguous readings. Recorded honestly as ambiguous going in, not forced into a confident
 lean.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         3709 (2020-11-26 08:00:00 UTC)
+DURATION                273 bars (3436-3709) -- by far the longest episode in the Q4 replay so far,
+                          well beyond -039's 179 bars
+DEEPEST_LOW              1800.424 (bar 3555) -- a confirmed genuine all-time-low-so-far for the Q4
+                          replay (is_new_low flag true against full prior sealed history)
+HEAVIEST_VOLUME          7296 (bar 3460) -- the heaviest bar of this episode by a wide margin, though
+                          NOT a new Q4-wide record (is_new_vol_record flag false -- an even larger
+                          volume bar exists somewhere earlier in the already-sealed history)
+RECLAIM_CLOSE             1816.928 (bar 3709), margin only +0.48pt -- a marginal, not decisive, reclaim
+CAUSAL_H1_EMA50_AT_RESOLUTION 1816.4514
+```
+
+The starting context (bars 3437-3459) was the same calm drift the pre-classification described, then
+bar 3460 broke violently -- close fell from 1866.246 to 1841.655 in a single bar (~24.6pt) on 7296
+volume, this session's largest single-bar move, landing 2020-11-23 14:45 UTC. Heavy volume continued
+for several more bars (4852, 2552, 1824, 1761, 1917), then an extended, sustained decline (bars
+3465-3540, ~75 bars) carried price from ~1833 to ~1810. A second heavy-volume wave (2898, 2184, 2993,
+1690, 1688 across bars 3550-3555) drove the final capitulation to 1800.424. From there, an extremely
+long, slow, low-volume basing period (bars 3556-3709, ~154 bars, mostly 100-500 volume) ground
+gradually higher in a 1800-1813 range before finally closing marginally above the EMA. No S5 trigger
+fired anywhere in this 273-bar span (POSITION stayed FLAT throughout, so nothing was deferred). GAP-
+186, -187, -188 (all standard MAINTENANCE, 60min) logged inside this episode.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the largest, most genuine
+structural event of the Q4 replay so far by every measure (magnitude, duration, and the record-
+setting low), but its SHAPE is meaningfully different from -038/-039: those were V-shaped or
+gradual-then-decisive reclaims; this one is a violent break followed by an extremely long, slow,
+low-volume grind that only marginally closes above a heavily-lagging EMA (+0.48pt, the thinnest
+reclaim margin of any SUPPORT case so far), with the retracement only ~23% of the full decline (16.5pt
+of a 71.1pt move) -- far more partial than -038/-039's ~79-81%. The core discriminator components
+still agree (fresh extreme genuine on both low and close basis; heaviest volume unambiguously on the
+break, not the reclaim -- the reclaim bar itself carried only 480, quite modest), so this is recorded
+SUPPORT with confidence. But the marginal reclaim margin is a genuinely new texture worth tracking: it
+raises the open, unresolved question of whether a bare EMA-cross with a razor-thin margin after a move
+this large represents the same kind of "reclaim" as -038/-039's more decisive ones, or whether it
+should be watched for a possible re-test/failure in subsequent bars -- an open question for future
+episodes to test, not a conclusion drawn here.
