@@ -1921,3 +1921,31 @@ POSITION=FLAT; no MGMT-004 relevance.
 leaning signature on its own bar. Whatever this resolves to will be a further data point on how
 reliably a marginal EMA-cross reclaim holds in this specific volatile stretch -- genuinely useful
 regardless of which way it goes, not a foregone conclusion.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         3952 (2020-12-01 07:00:00 UTC)
+DURATION                5 bars (3948-3952)
+DEEPEST_LOW              1785.093 (bar 3949) -- NOT a fresh extreme by any measure, nowhere near
+                          -041's 1764.57
+HEAVIEST_VOLUME          431 (bar 3952, the RECLAIM bar itself) -- volume actually grew across the
+                          episode (296 -> 242 -> 212 -> 322 -> 431), landing on the reclaim, not the
+                          break -- the classic REJECTED signature, matching -011/-036
+RECLAIM_CLOSE             1787.784 -- ABOVE the pre-episode level (bar 3947 close 1787.212) by
+                          +0.57pt, a full round-trip and slight overshoot, not a partial retracement
+CAUSAL_H1_EMA50_AT_RESOLUTION 1786.6216 (margin +1.16pt)
+```
+
+The answer to the question this episode's own pre-classification posed: this one does NOT hold up as
+SUPPORT -- it breaks the streak. No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the cleanest REJECTED signature
+in a while -- every component agrees in the REJECTED direction (no fresh extreme, volume growing into
+the reclaim not the break, a full-plus round-trip). Read together with -040/-041/-042 as a triplet:
+after two genuine, deep structural SUPPORT episodes, the market appears to be settling into calmer,
+shallower chop -- this shallow dip did not carry the same weight as its two immediate predecessors,
+and the individual, non-assumed reasoning applied to it (rather than extrapolating from the "marginal
+reclaims keep failing" streak) correctly caught that. Evidence that treating each candidate on its own
+merits, as instructed, matters in practice -- assuming this would repeat the prior pattern would have
+been wrong here.
