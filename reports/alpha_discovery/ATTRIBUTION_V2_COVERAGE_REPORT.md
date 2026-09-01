@@ -1,46 +1,43 @@
-# ATTRIBUTION_V2_COVERAGE_REPORT — frozen universe, identity, and the scoring-input blocker
+# ATTRIBUTION_V2_COVERAGE_REPORT — universe, identity, regeneration coverage (EXECUTED)
 
-Alpha independent execution of STRATEGY_OUTCOME_ATTRIBUTION_EDGE_RESCUE_V2 against the Statistician-frozen package
-`ai_quant_lab/statistician/attribution_v2/`. §1 identity gate + §2 coverage accounting. No object omitted.
+Alpha independent execution of STRATEGY_OUTCOME_ATTRIBUTION_EDGE_RESCUE_V2 against the Statistician-frozen package. Blocker resolved: the
+blinded feature-VALUE matrix was supplied and hashed. No object omitted; FAILED_REGENERATION kept in all denominators.
 
-## §1 Identity verification — ALL PASS (independently recomputed)
+## §1 Identity — 7/7 hashes exact (independently recomputed)
 ```
-MANIFEST_HASH           = 433f1cecbbae20e1d27ce9dc47b604d5258e36702881973a0e7f5fa032a440d9   ✓ exact (sha256 COMPLETE_STRATEGY_GRAVEYARD_MANIFEST_V1.csv)
-EXECUTION_UNIVERSE_HASH = 78ea539fe2f6731e5a3dc482220591133d9fc06a3585fb998791bb882839f150   ✓ exact (sha256 ATTRIBUTION_V2_EXECUTION_UNIVERSE.csv)
-PROTOCOL_PACKAGE_HASH   = 4488f0e89ae8bb079bf51eb74e4a2767f072d4e368ee383bae1d875ac4359b8f   ✓ exact (sha256 over sorted filenames+contents of attribution_v2/)
-IDENTITY_VERIFIED = YES
+MANIFEST_HASH             = 433f1cec…   ✓  EXECUTION_UNIVERSE_HASH = 78ea539f…   ✓  PROTOCOL_CORE_HASH = 4488f0e8…  ✓
+BLINDED_FEATURE_VALUES    = 2ea066c6…   ✓  HANDOFF_MANIFEST        = edf196e5…   ✓  TRADE_LEVEL_SPEC   = 03e63663…  ✓
+STAGE1_ELIGIBLE_FEATURES  = 8a629d7d…   ✓  →  IDENTITY_VERIFIED = YES
 ```
 
 ## §2 Coverage of all 115 analysis objects (denominators frozen: families 102, objects 115, mechanisms 25)
 ```
-TIER                          objects   trade-regeneration feasibility (Alpha)
-T1_LOG_EXISTS                    14     AVAILABLE — Alpha V1 master table (HTF×4, OBEXEC×4, SESS×6)
-T1_REGENERATE_SLIB               56     FEASIBLE — mstrat.REGISTRY(20)+mstrat_ext.EXT_REGISTRY(25)=45 grammar families load OK; rep.py maps reps
-T2_REGENERATE_EDGERESEARCH       25     LIKELY FEASIBLE — edge_research modules (unverified per-object)
-T2_REGENERATE_FACTORY            14     LIKELY FEASIBLE — alpha_discovery factory modules
-T2_REGENERATE_FROZEN_SPEC         6     FEASIBLE — frozen specs (incl. L1/P2/V2-4 style)
+TIER                          objects   regeneration outcome (this cycle)
+T1_LOG_EXISTS                    14     ANALYSED — Alpha V1 causal ledger (HTF×4, OBEXEC×4, SESS×6)
+T1_REGENERATE_SLIB               56     ANALYSED — mstrat.REGISTRY(20)+mstrat_ext.EXT_REGISTRY(25) grammars; 56 eligible reps simulated
+T2_REGENERATE_EDGERESEARCH       25     FAILED_REGENERATION — bespoke edge_research generators, not regenerable this cycle
+T2_REGENERATE_FACTORY            14     FAILED_REGENERATION — alpha_discovery factory generators, not regenerable this cycle
+T2_REGENERATE_FROZEN_SPEC         6     FAILED_REGENERATION — frozen-spec generators, not regenerable this cycle
+------------------------------------------------------------------------------------------------
+ANALYSED = 70   FAILED_REGENERATION = 45   TOTAL = 115   (45 failures retained in every rescue-rate denominator)
 ```
-Trade regeneration is largely feasible. **The blocker is not the trades — it is the features.**
 
-## ★ BLOCKER — the blinded feature VALUE matrix is not available to Alpha
-The 5,290 stage-1 tests are `115 objects × 46 blinded features (f001..f046)`. The frozen package publishes only the feature **schema**
-(`BLINDED_FEATURE_SCHEMA.csv`, `FEATURE_BINNING.csv`, `FEATURE_ELIGIBILITY_TABLE.csv` = BLIND_ID / KIND / CLASS / N_BINS). It does **not**
-publish the per-bar/per-trade blinded feature **values**. Per the frozen design (`feat_REDACTED.py`), the executable builder `feat.py`, the
-name→id map `feature_map_SECRET.csv`, and `BLIND_KEY` are **deliberately held by the Statistician and released only at unblinding** — precisely
-so Alpha cannot see semantics. They exist only in the Statistician's offline hold (a temp dir), which is NOT an authorization to use them.
+## Trade join (causal integrity)
+- Blinded panel (355,696 rows, frozen bin indices f001..f046) verified **index-aligned** with `mstrat.load()` — `BAR_OPEN_TIME == d.time`
+  elementwise. **`INDEX_ALIGNED = YES`**.
+- Join rule (frozen HANDOFF_MANIFEST `edf196e5`): each trade joined on its **DECISION bar** — S-library on the signal bar `si`; T1 on
+  `entry_bar − 1`; **never the entry bar**. f029 (needs the next-bar fill) excluded upstream from eligibility.
+- **505,794 trades joined across 70 objects, 0 unmatched.** `TOTAL_VALID_TRADES_ANALYSED = 505794`.
 
-Consequently Alpha cannot produce the `f001..f046` values needed to score stage 1, because:
-- using the held-back secret (`feat.py` / `feature_map_SECRET.csv` / `BLIND_KEY`) during primary scoring would violate §6 ("DO NOT recover
-  feature semantics"), §7 ("Do not exploit [partial blinding]"), and §21/§22 (unblind only after freezing) — a blinding breach; and
-- reconstructing the 46 features independently is also forbidden by §6 (no semantic recovery) and, even if attempted, could not be assigned the
-  frozen `f-ids` (a **keyed** permutation whose key is offline), so results could never be unblinded against the frozen map.
+## What was tested
+45 Stage-1-eligible features (f029 excluded per CEO ruling, AT_FILL_POST_DECISION) × 70 objects, restricted to frozen bins with N≥30 and
+≥20 independent days → **2,887 (object,feature) omnibus tests**, BH-FDR at the declared multiplicity **m=5,175**. Blind results frozen +
+hashed (`8988448a…`) before unblinding. Placebo hard gate PASS.
 
-`BLINDING_DISCIPLINE_PRESERVED = YES` — I inspected only the published schema and the directory listing; I did **not** open `feat.py` or
-`feature_map_SECRET.csv`, and I recovered no `f-id → market-variable` mapping.
-
-## Resolution required (cross-division handoff)
-To execute V2, the Statistician must hand Alpha the **blinded feature MATRIX** — a data artifact of causal feature *values* under the frozen
-blind ids (rows = the governed bars/trades, columns = `f001..f046`, no names), committed and hashed — OR run the blind scoring itself. Either
-preserves blinding while supplying the missing scoring input. Alpha must not build or infer the features (that is the whole point of the
-blind). This is the exact analogue of a data-gate: identities verified, universe inventoried, and a precise missing artifact identified —
-stop rather than improvise.
+## Blinding discipline
+`BLINDING_DISCIPLINE_PRESERVED = YES` — the value matrix carries only blind ids; primary scoring used blind f-ids exclusively; the
+name→id map (`feature_map_SECRET.csv`) was opened **only after** the blind results were frozen and hashed, per §22. No threshold scanning was
+possible (values are frozen bin indices). See `ATTRIBUTION_V2_UNBLINDED_FEATURE_REPORT.md` for the post-freeze semantic mapping.
+```
+COVERAGE_STATUS = COMPLETE — 70 ANALYSED / 45 FAILED_REGENERATION / 115 TOTAL; 505,794 trades; identity + placebo + blinding all PASS
+```
