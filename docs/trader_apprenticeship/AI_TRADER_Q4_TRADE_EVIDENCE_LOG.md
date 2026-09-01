@@ -877,3 +877,23 @@ mechanically regardless of P007 classification, and no discretionary override is
 
 **INVALIDATION:** a close at or below 1865.688 (STOP). MAX_HOLD 48 bars from entry (through bar
 3414). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1889.316).
+
+**OUTCOME:** MAX_HOLD exit at bar 3414 (2020-11-23 03:15:00 UTC), price 1873.152 (bar's own close).
+```
+EXIT_BAR      3414
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1873.152 (bar's own close)
+R_MULTIPLE     -0.3683
+```
+The full 48-bar hold, never threatening either stop or target. The reclaim move that produced this
+entry stalled almost immediately: best close was bar 3370's 1879.0 (+0.13R), reached within 4 bars of
+entry, then price drifted lower for the rest of the hold, closing as low as bar 3394's 1870.628
+(-0.58R) before recovering slightly into the MAX_HOLD exit. Never came close to MGMT-004 (+1.0R =
+1889.316). GAP-185 (standard weekend, ~49h) sat inside the hold, standard zero-price-gap. Trade
+mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 22
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.5981 - 0.3683 = -5.9664
+POSITION_AFTER_THIS_TRADE = FLAT
+```

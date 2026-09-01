@@ -1383,3 +1383,10 @@ SPAN: 2020-11-19T22:00:00Z (last close 1866.12, Q4 bar 3304, Thursday -- inside 
 period) -> 2020-11-19T23:00:00Z (first open 1866.12, Q4 bar 3305)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-185 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard weekend (~49h)
+SPAN: 2020-11-20T22:00:00Z (last close 1870.987, Q4 bar 3396, Friday -- inside TRADE #22's open hold)
+-> 2020-11-22T23:00:00Z (first open 1870.987, Q4 bar 3397, Sunday)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified WEEKEND
+-- did not require a reasoning stop.
