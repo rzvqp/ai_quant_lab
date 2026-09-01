@@ -1895,3 +1895,29 @@ unambiguously on the break side, not the reclaim), so this is recorded SUPPORT w
 these nuances are recorded as genuine, useful tests, not swept aside -- the discriminator's individual
 components appear to have some texture/variance even within confirmed SUPPORT cases, which is itself
 informative for how much weight any single component should carry going forward.
+
+---
+
+## Q4-P007-042
+
+```
+GATE_ORIGIN_BAR          3948 (2020-12-01 06:00:00 UTC) -- the very next bar after -041's reclaim,
+                            the third consecutive instance of this exact shape (-040 reclaim -> -041
+                            origin next bar; -041 reclaim -> -042 origin next bar)
+TRIGGER_CLOSE                1785.841
+TRIGGER_LOW                   1785.841 -- NOT a fresh extreme (well above -041's 1764.57)
+CAUSAL_H1_EMA50_AT_3948       1786.5975
+GAP                            -0.757pt -- shallow, similar magnitude to -039/-041's origins
+VOLUME                          296 -- modest, no acceleration
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain, treated individually rather than assumed to repeat the
+prior pattern. On its own bar evidence this leans REJECTED (no fresh extreme, no volume
+acceleration) -- similar shallow shape to -041's own origin. But given -040/-041 revealed that this
+stretch's marginal reclaims have NOT been holding, this deserves the same honest, non-assumed
+treatment -- it will be judged on its own eventual evidence, not on the streak. Not pre-committing.
+POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature on its own bar. Whatever this resolves to will be a further data point on how
+reliably a marginal EMA-cross reclaim holds in this specific volatile stretch -- genuinely useful
+regardless of which way it goes, not a foregone conclusion.
