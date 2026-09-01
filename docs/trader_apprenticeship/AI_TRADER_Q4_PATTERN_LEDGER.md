@@ -1417,3 +1417,23 @@ CAUSAL_H1_EMA50_AT_RESOLUTION 1877.043 (margin +2.34pt)
 ```
 
 No sustained volume confirmation. No trade was open; no MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-033
+
+```
+GATE_ORIGIN_BAR          2988 (2020-11-16 12:00:00 UTC) -- another unprecedented single-bar shock,
+                          similar in shape to Q4-P007-024's opening bar (2528), zero lead-in (bars
+                          2953-2987 completely quiet: 1888-1898 range, volume 206-362)
+TRIGGER_BAR                 2988 -- open 1892.904, high 1893.156, low 1864.541 (28.6pt intrabar
+                          range), close 1869.628
+CAUSAL_H1_EMA50_AT_2988      1885.822
+GAP                            -16.19pt -- by far the largest gap magnitude of the entire session
+VOLUME                          5983 -- exceeds -024's own trigger-adjacent volume (5318 at bar 2528)
+```
+
+**PRE-CLASSIFICATION:** given -024's own precedent -- an isolated shock bar with zero lead-in that
+became the largest, most significant genuine SUPPORT instance in the whole replay -- taking this
+very seriously from the outset. Not pre-committing until follow-through is actually observed.
+POSITION=FLAT; no MGMT-004 relevance.
