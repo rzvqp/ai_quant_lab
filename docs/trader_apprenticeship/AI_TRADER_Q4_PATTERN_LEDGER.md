@@ -2137,3 +2137,29 @@ no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** components lean the same
 direction here (unlike -043's genuinely mixed case), but all at moderate rather than extreme
 magnitude -- a useful mid-strength test case for the discriminator.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4497 (2020-12-09 04:45:00 UTC)
+DURATION                4 bars (4494-4497)
+DEEPEST_LOW              1855.698 (bar 4494, the gate origin itself)
+HEAVIEST_VOLUME          763 (bar 4494, the break bar) -- clearly higher than the following bars
+                          (321/372/201), a genuine SUPPORT-consistent detail
+RECLAIM_CLOSE             1860.558 -- ~89% retracement of the decline (4.86 of 5.45pt), essentially a
+                          near-complete round-trip back to the pre-episode level (bar 4493 close
+                          1861.145)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1859.4217 (margin +1.14pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the pre-classification flagged
+this as a mid-strength test against -045's precedent, and that comparison resolves it: -045 had a
+DRAMATIC fresh extreme (1822.253, far below anything recent) and capitulation-scale volume (2494)
+alongside its own ~89% retracement, and still read SUPPORT because those components were so strong.
+Here the fresh low (1855.698) is only modestly deeper than recent trading, and the volume (763) is a
+real but modest acceleration, not a capitulation spike. When the retracement is this high (~89%,
+essentially complete) and the supporting evidence is only moderate rather than dramatic, the round-
+trip dominates the read. REJECTED -- a useful data point that magnitude, not just direction, of the
+individual components matters when they're weighed against a near-complete retracement.
