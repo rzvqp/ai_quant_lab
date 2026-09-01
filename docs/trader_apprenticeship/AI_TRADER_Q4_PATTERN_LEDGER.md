@@ -1759,3 +1759,31 @@ reads as a decisive structural shift rather than a thin, unconvincing bounce. Re
 confirmation that when fresh-extreme, volume-on-the-break, and partial-retracement agree, the reading
 has been reliable across this stretch of Q4 so far -- while still treating this as an ongoing test,
 not a settled rule, per standing instruction.
+
+---
+
+## Q4-P007-040
+
+```
+GATE_ORIGIN_BAR          3436 (2020-11-23 08:45:00 UTC)
+CONTEXT                    bars 3415-3435 a calm, thin-volume drift (mostly 50-550 volume) in the
+                            1872-1876 range, well after TRADE #22's own hold; this bar breaks below
+                            with a deeper gap than -037/-039's shallow origins, though still moderate
+TRIGGER_CLOSE                1869.158
+TRIGGER_LOW                   1868.754 -- a modest fresh local low relative to the last ~20 bars,
+                              comparable to (marginally below) TRADE #22's own hold low of 1868.925
+CAUSAL_H1_EMA50_AT_3436       1871.0008
+GAP                            -1.843pt -- deeper than -037/-039's origins but not a dramatic break
+VOLUME                          426 -- roughly in line with the 3429-3435 stretch (411-551), not a
+                                 clear acceleration
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain, leaning slightly REJECTED -- the gap is deeper than the
+shallow dips seen at -037/-039's origins, and there is a modest fresh local low, but volume is not
+accelerating past the immediate recent range, and the preceding stretch was calm/thin rather than
+showing building pressure. Not pre-committing; this one needs the reclaim/continuation evidence to
+resolve properly. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a genuinely mixed read on the
+emerging discriminator -- modest fresh extreme present, but volume not accelerating -- unlike -038/
+-039's unambiguous readings. Recorded honestly as ambiguous going in, not forced into a confident
+lean.
