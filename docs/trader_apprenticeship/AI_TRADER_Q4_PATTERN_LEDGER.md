@@ -2541,3 +2541,28 @@ genuine SUPPORT-consistent detail, but the low itself was not a fresh record and
 overshot completely -- REJECTED, matching the now-established pattern that a full-plus round-trip has
 proven the single most reliable signal, overriding a favorable volume placement when the extreme
 itself isn't dramatic.
+
+---
+
+## Q4-P007-055
+
+```
+GATE_ORIGIN_BAR          4735 (2020-12-11 18:15:00 UTC)
+CONTEXT                    a push up to ~1846-1847 (bars 4722-4723, close to but short of MGMT-004's
+                            1848.418) then a steady, thinning decline through bars 4724-4734 (volume
+                            fading from 891 down to 173)
+TRIGGER_CLOSE                1839.452
+TRIGGER_LOW                   1838.904 -- NOT a fresh extreme for this zone
+CAUSAL_H1_EMA50_AT_4735       1840.4933
+GAP                            -1.041pt -- moderate
+VOLUME                          445 -- a modest uptick from bar 4734's 173, but still well below the
+                                 1424-1614 seen at the start of this batch, thin overall
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- a shallow, low-conviction dip at the tail of a thinning
+decline, no fresh extreme, volume thin in absolute terms despite the small uptick. Not pre-committing.
+POSITION=LONG (TRADE #30, open since bar 4717, entry 1840.106, stop 1831.794) -- this bar's low/close
+do not threaten the stop; MGMT-004 has not fired (best approach was bar 4723's 1846.714, +0.79R, still
+short of the +1.0R trigger).
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature -- consistent with, not the basis for, the REJECTED lean.
