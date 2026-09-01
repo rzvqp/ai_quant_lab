@@ -1063,3 +1063,25 @@ VOLUME                          1361 -- in line with the surrounding range, no a
 **PRE-CLASSIFICATION:** a genuine modest new local low, but not dramatic, and volume isn't
 distinctly elevated vs the immediate baseline. Genuinely uncertain -- will apply the round-trip test
 at resolution (same as -019/-021). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2280 (2020-11-04 10:45:00 UTC)
+DURATION                7 bars (2273-2279)
+DEEPEST_LOW              1893.296 (bar 2277) -- does not undercut -021's low (1887.103), no fresh
+                        extreme
+HEAVIEST_VOLUME          1361 (bar 2273, the trigger bar itself -- never matched again)
+RECLAIM_CLOSE             1898.414
+CAUSAL_H1_EMA50_AT_RESOLUTION 1897.138 (margin +1.28pt)
+```
+
+Volume declined steadily and continuously throughout (1361/1191/725/665/592/460/632), never
+re-accelerating -- the opposite of volume confirmation. Note on the round-trip test applied to
+-019/-021: this episode's retracement percentage happens to land numerically similar to -019's
+(~61% vs ~65% of the move retraced) -- but the total magnitude here (8.36pt) is far smaller than
+-019's (20.7pt, on record volume 5175), and this episode's volume never showed any confirmation at
+all. Weighing overall severity and volume conviction rather than treating the retracement percentage
+as a threshold -- reads as ordinary, thinning-volume chop. No trade was open; no MGMT-004 relevance.
+No S5 trigger.
