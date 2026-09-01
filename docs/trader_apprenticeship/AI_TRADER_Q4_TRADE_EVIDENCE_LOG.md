@@ -811,3 +811,26 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 20
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.5981 - 1.0000 = -4.5981
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #21 — S5 opening-range-breakout LONG (bar 3181)
+
+```
+SIGNAL_BAR    3181 (2020-11-18 14:00:00-14:15:00 UTC, bis=5)
+ENTRY          1877.656
+INITIAL_STOP    1869.032 (= or_low 1869.052 - 2*TICK)
+STRUCTURAL_TARGET 1903.528 (= entry + 3R, R=8.624)
+```
+
+**THESIS (frozen before bar 3182 was revealed):** mechanically triggered, no discretionary override.
+Close 1877.656 > or_high 1876.22 within the entry window. This OR (bars 3177-3180, NY session
+2020-11-18 13:00 UTC) formed during a recovery bounce off a sharp intraday selloff -- price fell from
+~1887 near bar 3098 to a low of 1863.772 (bar 3173) over roughly 75 bars, with notably elevated
+volume around bars 3172-3173 (1842, 2554) and again at bar 3179 (1353). Q4-P007-038 (gate origin bar
+3097) has remained open and unresolved this entire time -- 84 bars without a natural reclaim of the
+causal H1 EMA50 -- a notably long, seemingly genuine sustained break, still unresolved as this trade
+opens. This is meaningfully different context from most prior S5 entries, which mostly followed
+already-resolved/reclaimed P007 episodes or flat chop. Noted honestly as context; S5 fires
+mechanically regardless of P007 state by design, and no discretionary override is being applied.
+
+**INVALIDATION:** a close at or below 1869.032 (STOP). MAX_HOLD 48 bars from entry (through bar
+3229). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1886.280).
