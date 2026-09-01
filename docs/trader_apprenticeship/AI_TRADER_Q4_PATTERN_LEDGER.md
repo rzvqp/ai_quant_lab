@@ -2163,3 +2163,22 @@ real but modest acceleration, not a capitulation spike. When the retracement is 
 essentially complete) and the supporting evidence is only moderate rather than dramatic, the round-
 trip dominates the read. REJECTED -- a useful data point that magnitude, not just direction, of the
 individual components matters when they're weighed against a near-complete retracement.
+
+---
+
+## Q4-P007-047
+
+```
+GATE_ORIGIN_BAR          4501 (2020-12-09 05:45:00 UTC)
+TRIGGER_CLOSE                1859.196
+TRIGGER_LOW                   1857.843 -- NOT a fresh extreme (well above -046's 1855.698)
+CAUSAL_H1_EMA50_AT_4501       1859.4663
+GAP                            -0.270pt -- shallow
+VOLUME                          417 -- moderate, below bar 4500's 544, above the earlier 220/167
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED on the actual evidence for this bar -- shallow, ordinary
+dip continuing this choppy zone, no fresh extreme, no clear volume acceleration. Not pre-committing.
+POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature -- consistent with, not the basis for, the REJECTED lean.
