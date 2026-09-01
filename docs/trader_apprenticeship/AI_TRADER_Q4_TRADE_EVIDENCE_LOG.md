@@ -601,3 +601,21 @@ of it. GAP-177 (standard, 60min) sat inside the episode.
 **INVALIDATION:** a close at or below 1873.664 (STOP) -- would mean the recovery failed and the
 episode's decline resumed. MAX_HOLD 48 bars from entry (through bar 2681). MGMT-004 breakeven
 trigger at first M15 close >= +1.0R (>= 1894.148).
+
+**OUTCOME:** STOP hit at bar 2656 (2020-11-10 16:15:00 UTC), price 1873.664.
+```
+EXIT_BAR      2656
+EXIT_REASON    STOP
+EXIT_PRICE     1873.664
+R_MULTIPLE     -1.0000
+```
+The invalidation played out exactly as flagged: the recovery attempt failed. Highest close of the
+hold was only 1884.606 (bar 2637, +0.07R), then price ground steadily lower through bars 2650-2656
+(1877.19 -> 1872.839) and breached the stop. MGMT-004 never came close. Q4-P007-024's gate remains
+open as of this exit -- the episode's decline has resumed, not yet reclaimed.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 15
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.9530 - 1.0000 = -2.9530
+POSITION_AFTER_THIS_TRADE = FLAT
+```
