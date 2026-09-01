@@ -2715,3 +2715,32 @@ MGMT-004 relevance.
 because it decouples volume from the other two components (gap depth, fresh extreme) that have
 usually moved together -- the resolution evidence will show whether volume magnitude alone can carry
 real weight.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5016 (2020-12-16 19:30:00 UTC)
+DURATION                3 bars (5014-5016) -- very fast
+DEEPEST_LOW              1844.844 (bar 5015) -- deeper than the gate origin, but not a record for
+                          this general zone (well above -057's 1822.282), just a local dip within a
+                          broader uptrend
+HEAVIEST_VOLUME          3784 (bar 5014, the GATE ORIGIN itself) -- still the heaviest of the episode
+                          by a wide margin, one of the most dramatic single-bar volumes in the whole
+                          Q4 replay
+RECLAIM_CLOSE             1855.372 -- a ~97% retracement of the decline (10.5 of 10.8pt), essentially
+                          a near-complete round-trip (bar 5013 pre-episode close 1855.672, only
+                          -0.30pt short)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1849.6695 (margin +5.70pt -- a very decisive reclaim)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this directly answers the
+question the pre-classification posed -- does massive volume alone, without either a deep gap or a
+fresh extreme, carry weight? Here the answer is NO: despite volume that dwarfs almost every REJECTED
+case seen so far (and rivals -052/-038's confirmed SUPPORT episodes), the episode reabsorbed almost
+completely (~97%) in just 3 bars, with no fresh extreme to anchor it. This closely echoes -051's own
+lesson (dramatic single-bar events, however extreme in isolation, still read REJECTED when the
+round-trip is this complete and the duration this short) -- but pushes it further: -051 at least had a
+genuine new record low; this episode has neither a record extreme nor extended duration, only volume.
+Volume magnitude alone, decoupled from the other components, is not sufficient.
