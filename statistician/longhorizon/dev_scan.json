@@ -1,0 +1,1064 @@
+[
+ {
+  "id": "A1-DIR-6",
+  "branch": "A",
+  "desc": "trailing-24h directional efficiency in top 20% -> continuation, 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1913,
+   "n_cond": 330,
+   "clusters": 90,
+   "cond": 1.7133787878788098,
+   "base": 4.336073910296926,
+   "lift": -2.622695122418116,
+   "se": 2.7237136007551475,
+   "z": -0.9629114902870022
+  }
+ },
+ {
+  "id": "A1-DIR-24",
+  "branch": "A",
+  "desc": "efficiency top 20% -> continuation, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1518,
+   "n_cond": 255,
+   "clusters": 90,
+   "cond": 0.6990392156862892,
+   "base": 5.375589865399834,
+   "lift": -4.6765506497135405,
+   "se": 9.562906416025887,
+   "z": -0.4890302640498914
+  }
+ },
+ {
+  "id": "A1-MAG-6",
+  "branch": "A",
+  "desc": "efficiency top 20% -> |move|, 6h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1914,
+   "n_cond": 330,
+   "clusters": 90,
+   "cond": 29.412621212121216,
+   "base": 34.37225063131312,
+   "lift": -4.95962941919191,
+   "se": 2.993528570177107,
+   "z": -1.6567837262693914
+  }
+ },
+ {
+  "id": "A1-MAG-24",
+  "branch": "A",
+  "desc": "efficiency top 20% -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 255,
+   "clusters": 90,
+   "cond": 82.38758823529419,
+   "base": 97.00632120253167,
+   "lift": -14.618732967237586,
+   "se": 11.169092991948324,
+   "z": -1.3088558737738212
+  }
+ },
+ {
+  "id": "A2-DIR-6",
+  "branch": "A",
+  "desc": "efficiency bottom 20% (churn) -> continuation, 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1913,
+   "n_cond": 334,
+   "clusters": 90,
+   "cond": 2.0290119760478365,
+   "base": 4.275953134895544,
+   "lift": -2.246941158847707,
+   "se": 2.7213009385933433,
+   "z": -0.8256863939528732
+  }
+ },
+ {
+  "id": "A2-DIR-24",
+  "branch": "A",
+  "desc": "efficiency bottom 20% -> continuation, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1518,
+   "n_cond": 254,
+   "clusters": 90,
+   "cond": 5.312401574803174,
+   "base": 4.444837816455687,
+   "lift": 0.8675637583474916,
+   "se": 7.4963227041098115,
+   "z": 0.11573191184417064
+  }
+ },
+ {
+  "id": "A2-MAG-6",
+  "branch": "A",
+  "desc": "efficiency bottom 20% -> |move|, 6h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1914,
+   "n_cond": 334,
+   "clusters": 90,
+   "cond": 29.249371257484974,
+   "base": 34.41931645569621,
+   "lift": -5.169945198211269,
+   "se": 3.0972456188480497,
+   "z": -1.669207365005205
+  }
+ },
+ {
+  "id": "A2-MAG-24",
+  "branch": "A",
+  "desc": "efficiency bottom 20% -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 254,
+   "clusters": 90,
+   "cond": 86.12496062992133,
+   "base": 96.24433596837947,
+   "lift": -10.119375338458292,
+   "se": 7.472750463132352,
+   "z": -1.3541701129167045
+  }
+ },
+ {
+  "id": "A3-DIR-24",
+  "branch": "A",
+  "desc": "trailing-24h |move|/ATR20d top 20% -> continuation, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1518,
+   "n_cond": 248,
+   "clusters": 90,
+   "cond": 3.983467741935418,
+   "base": 4.708444881889772,
+   "lift": -0.7249771399543505,
+   "se": 9.55326973271523,
+   "z": -0.07588785413141451
+  }
+ },
+ {
+  "id": "A3-MAG-24",
+  "branch": "A",
+  "desc": "trailing |move| top 20% -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 248,
+   "clusters": 90,
+   "cond": 82.93919354838718,
+   "base": 96.81817859952795,
+   "lift": -13.878985051140923,
+   "se": 11.050304637884626,
+   "z": -1.2559821204891048
+  }
+ },
+ {
+  "id": "A4-DIR-24",
+  "branch": "A",
+  "desc": "3+ consecutive same-direction daily closes -> continuation, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 363,
+   "clusters": 90,
+   "cond": 6.782038567493097,
+   "base": 0.25795415224914336,
+   "lift": 6.5240844152439585,
+   "se": 8.360407031456024,
+   "z": 0.7803548787394079
+  }
+ },
+ {
+  "id": "A4-MAG-24",
+  "branch": "A",
+  "desc": "3+ consecutive same-direction days -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 363,
+   "clusters": 90,
+   "cond": 100.91947658402209,
+   "base": 92.55281574394465,
+   "lift": 8.366660840077293,
+   "se": 7.995214793179985,
+   "z": 1.0464585450805095
+  }
+ },
+ {
+  "id": "B1-MAG-12",
+  "branch": "B",
+  "desc": "48h range / 20d ATR bottom 20% (compressed) -> |move|, 12h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1914,
+   "n_cond": 355,
+   "clusters": 90,
+   "cond": 49.74181690140851,
+   "base": 56.16713919178962,
+   "lift": -6.42532229038122,
+   "se": 3.8607784524500808,
+   "z": -1.6642556338097203
+  }
+ },
+ {
+  "id": "B1-MAG-24",
+  "branch": "B",
+  "desc": "48h compression -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 271,
+   "clusters": 90,
+   "cond": 84.70184501845029,
+   "base": 96.6912059294872,
+   "lift": -11.989360911036934,
+   "se": 7.152508417936744,
+   "z": -1.6762456204833742
+  }
+ },
+ {
+  "id": "B1-MAG-48",
+  "branch": "B",
+  "desc": "48h compression -> |move|, 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 74,
+   "clusters": 90,
+   "cond": 112.9946621621623,
+   "base": 138.61651731160893,
+   "lift": -25.621855149446525,
+   "se": 13.392449573932955,
+   "z": -1.9131567386534623
+  }
+ },
+ {
+  "id": "B1-EXC-24",
+  "branch": "B",
+  "desc": "48h compression -> largest excursion, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 271,
+   "clusters": 90,
+   "cond": 135.12149446494462,
+   "base": 156.7323477564103,
+   "lift": -21.61085329146551,
+   "se": 9.342307868252798,
+   "z": -2.313224269230509
+  }
+ },
+ {
+  "id": "B1-TTX-48",
+  "branch": "B",
+  "desc": "48h compression -> hours to first +-100p, 48h window",
+  "target_class": "TIMING",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 74,
+   "clusters": 90,
+   "cond": 25.35810810810811,
+   "base": 21.460285132382893,
+   "lift": 3.89782297572522,
+   "se": 2.5194344163619844,
+   "z": 1.5471023775858403
+  }
+ },
+ {
+  "id": "B2-MAG-24",
+  "branch": "B",
+  "desc": "48h range / 20d ATR top 20% (expanded) -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 245,
+   "clusters": 90,
+   "cond": 85.39995918367354,
+   "base": 96.3122723704867,
+   "lift": -10.912313186813245,
+   "se": 10.536299076137224,
+   "z": -1.0356874940582907
+  }
+ },
+ {
+  "id": "B2-MAG-48",
+  "branch": "B",
+  "desc": "48h expansion -> |move|, 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 53,
+   "clusters": 90,
+   "cond": 113.19849056603736,
+   "base": 137.54452148437505,
+   "lift": -24.34603091833756,
+   "se": 14.602995806099392,
+   "z": -1.6671942690121633
+  }
+ },
+ {
+  "id": "B2-TTX-48",
+  "branch": "B",
+  "desc": "48h expansion -> hours to first +-100p",
+  "target_class": "TIMING",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 53,
+   "clusters": 90,
+   "cond": 24.19811320754717,
+   "base": 21.740234375,
+   "lift": 2.45787883254717,
+   "se": 1.9171121331818093,
+   "z": 1.2820735887096266
+  }
+ },
+ {
+  "id": "B3-MAG-48",
+  "branch": "B",
+  "desc": "5d/20d realised-vol ratio bottom 20% -> |move|, 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 57,
+   "clusters": 90,
+   "cond": 109.91035087719315,
+   "base": 138.10516732283466,
+   "lift": -28.194816445641425,
+   "se": 13.001819739182423,
+   "z": -2.1685284837993275
+  }
+ },
+ {
+  "id": "B3-EXC-48",
+  "branch": "B",
+  "desc": "5d/20d vol contraction -> largest excursion, 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 57,
+   "clusters": 90,
+   "cond": 172.1685087719297,
+   "base": 225.24358267716534,
+   "lift": -53.07507390523571,
+   "se": 14.808267038448705,
+   "z": -3.5841515936624946
+  }
+ },
+ {
+  "id": "C1-DIR-6",
+  "branch": "C",
+  "desc": "large trailing move AND close at 48h-range edge -> continuation, 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1913,
+   "n_cond": 358,
+   "clusters": 90,
+   "cond": 1.9374720670390928,
+   "base": 4.331707395498421,
+   "lift": -2.3942353284593283,
+   "se": 2.520499835264164,
+   "z": -0.9499049731968728
+  }
+ },
+ {
+  "id": "C1-DIR-24",
+  "branch": "C",
+  "desc": "large move + close at range edge -> continuation, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1518,
+   "n_cond": 265,
+   "clusters": 90,
+   "cond": 0.3545094339621996,
+   "base": 5.485778132482052,
+   "lift": -5.131268698519849,
+   "se": 9.493721250824963,
+   "z": -0.5404907688935952
+  }
+ },
+ {
+  "id": "C1-MAG-24",
+  "branch": "C",
+  "desc": "large move + close at range edge -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 265,
+   "clusters": 90,
+   "cond": 80.66481132075477,
+   "base": 97.48696172248808,
+   "lift": -16.822150401733474,
+   "se": 10.21285750056877,
+   "z": -1.6471541290766685
+  }
+ },
+ {
+  "id": "C2-DIR-6",
+  "branch": "C",
+  "desc": "large trailing move BUT close mid-range (retraced) -> continuation, 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1913,
+   "n_cond": 31,
+   "clusters": 90,
+   "cond": 6.666129032258053,
+   "base": 3.837816153028715,
+   "lift": 2.8283128792293386,
+   "se": 6.671992961679533,
+   "z": 0.42390825282246264
+  }
+ },
+ {
+  "id": "C2-DIR-24",
+  "branch": "C",
+  "desc": "large move, retraced -> continuation, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": null
+ },
+ {
+  "id": "C2-MAG-24",
+  "branch": "C",
+  "desc": "large move, retraced -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": null
+ },
+ {
+  "id": "C3-DIR-6",
+  "branch": "C",
+  "desc": "close in top/bottom decile of 48h range -> move toward that edge, 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1914,
+   "n_cond": 276,
+   "clusters": 90,
+   "cond": -1.388333333333308,
+   "base": 4.52098290598293,
+   "lift": -5.909316239316237,
+   "se": 3.3140103290988856,
+   "z": -1.783131509105176
+  }
+ },
+ {
+  "id": "C3-DIR-24",
+  "branch": "C",
+  "desc": "close at 48h-range decile edge -> move toward edge, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 221,
+   "clusters": 90,
+   "cond": -1.2130090497738124,
+   "base": 2.4157473035439176,
+   "lift": -3.6287563533177307,
+   "se": 9.069284837669132,
+   "z": -0.400114939410189
+  }
+ },
+ {
+  "id": "C3-MAG-24",
+  "branch": "C",
+  "desc": "close at 48h-range decile edge -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 221,
+   "clusters": 90,
+   "cond": 96.49386877828056,
+   "base": 94.2216332819723,
+   "lift": 2.2722354963081304,
+   "se": 6.700112160527611,
+   "z": 0.3391339490843986
+  }
+ },
+ {
+  "id": "C4-DIR-6",
+  "branch": "C",
+  "desc": "failed 48h extreme (touched then closed back inside) -> reclaim dir, 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1914,
+  "dev": {
+   "n": 1914,
+   "n_cond": 416,
+   "clusters": 90,
+   "cond": 6.834723557692394,
+   "base": 1.9944893190920938,
+   "lift": 4.840234238600292,
+   "se": 2.989177340954358,
+   "z": 1.6192529537424318
+  }
+ },
+ {
+  "id": "C4-DIR-24",
+  "branch": "C",
+  "desc": "failed 48h extreme -> reclaim direction, 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 329,
+   "clusters": 90,
+   "cond": 5.808161094224898,
+   "base": -7.836378151260493,
+   "lift": 13.644539245485396,
+   "se": 6.886676427927664,
+   "z": 1.9812952428187924
+  }
+ },
+ {
+  "id": "C4-MAG-24",
+  "branch": "C",
+  "desc": "failed 48h extreme -> |move|, 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 329,
+   "clusters": 90,
+   "cond": 82.69864741641342,
+   "base": 97.82938655462188,
+   "lift": -15.130739138208648,
+   "se": 6.204306840142739,
+   "z": -2.438747716394462
+  }
+ },
+ {
+  "id": "D1-MAG-6",
+  "branch": "D",
+  "desc": "Asia(00-08) range / 20d ATR bottom 20% -> |move| next 6h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1916,
+  "dev": {
+   "n": 1916,
+   "n_cond": 325,
+   "clusters": 90,
+   "cond": 46.33732307692303,
+   "base": 55.91461030798243,
+   "lift": -9.577287231059392,
+   "se": 4.229300561342966,
+   "z": -2.2645085380307504
+  }
+ },
+ {
+  "id": "D1-MAG-24",
+  "branch": "D",
+  "desc": "Asia range compressed -> |move| next 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1521,
+  "dev": {
+   "n": 1521,
+   "n_cond": 241,
+   "clusters": 90,
+   "cond": 79.1672614107885,
+   "base": 94.78148828125003,
+   "lift": -15.614226870461343,
+   "se": 6.981240439472942,
+   "z": -2.236597780270716
+  }
+ },
+ {
+  "id": "D2-MAG-6",
+  "branch": "D",
+  "desc": "Asia range top 20% -> |move| next 6h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1916,
+  "dev": {
+   "n": 1916,
+   "n_cond": 342,
+   "clusters": 90,
+   "cond": 48.49157894736841,
+   "base": 55.54997141041933,
+   "lift": -7.0583924630510335,
+   "se": 4.340979788627401,
+   "z": -1.6259906303970302
+  }
+ },
+ {
+  "id": "D2-MAG-24",
+  "branch": "D",
+  "desc": "Asia range expanded -> |move| next 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1521,
+  "dev": {
+   "n": 1521,
+   "n_cond": 270,
+   "clusters": 90,
+   "cond": 89.81781481481484,
+   "base": 92.84476818545168,
+   "lift": -3.02695337063671,
+   "se": 7.633241641942248,
+   "z": -0.39654887302460845
+  }
+ },
+ {
+  "id": "D3-DIR-6",
+  "branch": "D",
+  "desc": "Asia net move top 20% -> continuation next 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1916,
+  "dev": {
+   "n": 1916,
+   "n_cond": 343,
+   "clusters": 90,
+   "cond": 1.8673469387755222,
+   "base": 2.467943420216108,
+   "lift": -0.6005964814405793,
+   "se": 3.9480784088835863,
+   "z": -0.1521237471092709
+  }
+ },
+ {
+  "id": "D3-DIR-12",
+  "branch": "D",
+  "desc": "Asia net move top 20% -> continuation next 12h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1861,
+  "dev": {
+   "n": 1861,
+   "n_cond": 333,
+   "clusters": 90,
+   "cond": 6.200195195195208,
+   "base": 1.535405759162306,
+   "lift": 4.6647894360329065,
+   "se": 6.606555186505662,
+   "z": 0.7060849874623096
+  }
+ },
+ {
+  "id": "D4-DIR-6",
+  "branch": "D",
+  "desc": "Asia closed at edge of Asia range -> move toward edge, 6h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1916,
+  "dev": {
+   "n": 1916,
+   "n_cond": 720,
+   "clusters": 90,
+   "cond": 2.310243055555557,
+   "base": 2.0881856187290615,
+   "lift": 0.22205743682649495,
+   "se": 3.6530938889779407,
+   "z": 0.06078612912098517
+  }
+ },
+ {
+  "id": "D4-MAG-6",
+  "branch": "D",
+  "desc": "Asia closed at edge of its range -> |move| next 6h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1916,
+  "dev": {
+   "n": 1916,
+   "n_cond": 720,
+   "clusters": 90,
+   "cond": 49.13745138888891,
+   "base": 57.39198160535119,
+   "lift": -8.254530216462351,
+   "se": 2.876739804916338,
+   "z": -2.869404526038604
+  }
+ },
+ {
+  "id": "E1-MAG-24",
+  "branch": "E",
+  "desc": "previous day range in bottom 20% of its 20d history -> |move| 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 389,
+   "clusters": 90,
+   "cond": 83.86955012853475,
+   "base": 98.2297079646018,
+   "lift": -14.360157836067339,
+   "se": 4.791268160628724,
+   "z": -2.997151767473386
+  }
+ },
+ {
+  "id": "E1-MAG-48",
+  "branch": "E",
+  "desc": "low-range day -> |move| 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 185,
+   "clusters": 90,
+   "cond": 121.31178378378375,
+   "base": 142.05167105263163,
+   "lift": -20.73988726884756,
+   "se": 10.047301128162056,
+   "z": -2.064224711123144
+  }
+ },
+ {
+  "id": "E1-EXC-48",
+  "branch": "E",
+  "desc": "low-range day -> largest excursion 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 185,
+   "clusters": 90,
+   "cond": 196.5437567567568,
+   "base": 231.25460526315788,
+   "lift": -34.71084850640119,
+   "se": 12.933968766509762,
+   "z": -2.683696638906291
+  }
+ },
+ {
+  "id": "E2-MAG-24",
+  "branch": "E",
+  "desc": "previous day range in top 20% -> |move| 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 248,
+   "clusters": 90,
+   "cond": 88.02552419354842,
+   "base": 95.8257238394965,
+   "lift": -7.800199645948176,
+   "se": 6.8862566280875654,
+   "z": -1.1327198603277189
+  }
+ },
+ {
+  "id": "E2-MAG-48",
+  "branch": "E",
+  "desc": "high-range day -> |move| 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 72,
+   "clusters": 90,
+   "cond": 122.1841666666668,
+   "base": 137.17049695740363,
+   "lift": -14.986330290736737,
+   "se": 14.94444905344625,
+   "z": -1.0028024611105237
+  }
+ },
+ {
+  "id": "E3-DIR-24",
+  "branch": "E",
+  "desc": "persistent directional day (|net|/range >= .7) -> continuation 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 293,
+   "clusters": 90,
+   "cond": 14.50597269624566,
+   "base": -1.2154771615007947,
+   "lift": 15.721449857746462,
+   "se": 11.471456783526083,
+   "z": 1.3704841638181215
+  }
+ },
+ {
+  "id": "E3-MAG-24",
+  "branch": "E",
+  "desc": "persistent directional day -> |move| 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 293,
+   "clusters": 90,
+   "cond": 98.25747440273037,
+   "base": 93.66670880913544,
+   "lift": 4.5907655935946,
+   "se": 7.749792589844893,
+   "z": 0.5923727042205243
+  }
+ },
+ {
+  "id": "E4-DIR-24",
+  "branch": "E",
+  "desc": "failed directional day (|net|/range <= .3) -> continuation 24h",
+  "target_class": "DIRECTION",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 484,
+   "clusters": 90,
+   "cond": 4.582623966942172,
+   "base": 0.5237536231883988,
+   "lift": 4.058870343753776,
+   "se": 7.01350764584297,
+   "z": 0.5787218819330069
+  }
+ },
+ {
+  "id": "E4-MAG-24",
+  "branch": "E",
+  "desc": "failed directional day -> |move| 24h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 1519,
+  "dev": {
+   "n": 1519,
+   "n_cond": 484,
+   "clusters": 90,
+   "cond": 89.69696280991742,
+   "base": 96.82270048309181,
+   "lift": -7.125737673174652,
+   "se": 5.941805034955616,
+   "z": -1.1992547098489375
+  }
+ },
+ {
+  "id": "E5-MAG-48",
+  "branch": "E",
+  "desc": "5d/20d daily-range contraction bottom 20% -> |move| 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 57,
+   "clusters": 90,
+   "cond": 134.58228070175463,
+   "base": 135.33686023622047,
+   "lift": -0.7545795344657517,
+   "se": 15.17953173985801,
+   "z": -0.049710330160211515
+  }
+ },
+ {
+  "id": "E5-EXC-48",
+  "branch": "E",
+  "desc": "multi-day contraction -> largest excursion 48h",
+  "target_class": "MAGNITUDE",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 57,
+   "clusters": 90,
+   "cond": 196.57263157894735,
+   "base": 222.5053248031496,
+   "lift": -25.932693224202378,
+   "se": 18.054856839508787,
+   "z": -1.4363278232954364
+  }
+ },
+ {
+  "id": "E5-TTX-48",
+  "branch": "E",
+  "desc": "multi-day contraction -> hours to first +-100p",
+  "target_class": "TIMING",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 57,
+   "clusters": 90,
+   "cond": 22.907894736842106,
+   "base": 21.86564960629921,
+   "lift": 1.0422451305428921,
+   "se": 2.325461960996188,
+   "z": 0.448188423643968
+  }
+ },
+ {
+  "id": "F1-P300-48",
+  "branch": "F",
+  "desc": "5d/20d vol contraction -> P(|excursion| >= 300p) in 48h",
+  "target_class": "TAIL",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 57,
+   "clusters": 90,
+   "cond": 0.10526315789473684,
+   "base": 0.20078740157480315,
+   "lift": -0.0955242436800663,
+   "se": 0.049644030170253345,
+   "z": -1.9241839019206852
+  }
+ },
+ {
+  "id": "F1-P500-48",
+  "branch": "F",
+  "desc": "5d/20d vol contraction -> P(|excursion| >= 500p) in 48h",
+  "target_class": "TAIL",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 57,
+   "clusters": 90,
+   "cond": 0.0,
+   "base": 0.07086614173228346,
+   "lift": -0.07086614173228346,
+   "se": 0.019462738461473752,
+   "z": -3.641118739408748
+  }
+ },
+ {
+  "id": "F2-P300-48",
+  "branch": "F",
+  "desc": "48h range expanded -> P(|excursion| >= 300p) in 48h",
+  "target_class": "TAIL",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 53,
+   "clusters": 90,
+   "cond": 0.09433962264150944,
+   "base": 0.201171875,
+   "lift": -0.10683225235849057,
+   "se": 0.05059726702917862,
+   "z": -2.1114233758294128
+  }
+ },
+ {
+  "id": "F3-UP300",
+  "branch": "F",
+  "desc": "close at 48h-range decile edge -> P(MFE >= 300p) in 48h",
+  "target_class": "TAIL",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 75,
+   "clusters": 90,
+   "cond": 0.08,
+   "base": 0.08163265306122448,
+   "lift": -0.0016326530612244686,
+   "se": 0.027544671884089725,
+   "z": -0.05927291739378159
+  }
+ },
+ {
+  "id": "F3-DN300",
+  "branch": "F",
+  "desc": "close at 48h-range decile edge -> P(MAE >= 300p) in 48h",
+  "target_class": "TAIL",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 75,
+   "clusters": 90,
+   "cond": 0.10666666666666667,
+   "base": 0.11632653061224489,
+   "lift": -0.009659863945578207,
+   "se": 0.034589790235937515,
+   "z": -0.2792692259677818
+  }
+ },
+ {
+  "id": "F4-P300-48",
+  "branch": "F",
+  "desc": "trailing efficiency bottom 20% -> P(|excursion| >= 300p) in 48h",
+  "target_class": "TAIL",
+  "note": "",
+  "dev_anchors": 565,
+  "dev": {
+   "n": 565,
+   "n_cond": 62,
+   "clusters": 90,
+   "cond": 0.16129032258064516,
+   "base": 0.19483101391650098,
+   "lift": -0.033540691335855854,
+   "se": 0.055272052447168284,
+   "z": -0.6068291270333354
+  }
+ }
+]
