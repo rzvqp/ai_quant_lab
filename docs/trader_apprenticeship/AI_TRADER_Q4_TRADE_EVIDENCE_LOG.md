@@ -1016,3 +1016,21 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 25
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.6690 + 0.9486 = -4.7204
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #26 — S5 opening-range-breakout LONG (bar 4347)
+
+```
+SIGNAL_BAR    4347 (2020-12-07 13:45:00-14:00:00 UTC, bis=4)
+ENTRY          1839.422
+INITIAL_STOP    1830.271 (= or_low 1830.291 - 2*TICK)
+STRUCTURAL_TARGET 1866.875 (= entry + 3R, R=9.151)
+```
+
+**THESIS (frozen before bar 4348 was revealed):** mechanically triggered, no discretionary override.
+Close 1839.422 > or_high 1838.805 within the entry window. This entry rides the very start of the
+Q4-P007-045 reclaim move (resolved bar 4345), a genuine capitulation-and-recovery structure: deepest
+low 1822.253 (bar 4326) coincided with the episode's heaviest volume (2494), the classic PATTERN-007
+SUPPORT signature. Volume built into this breakout (773 at bar 4346, 877 at bar 4347).
+
+**INVALIDATION:** a close at or below 1830.271 (STOP). MAX_HOLD 48 bars from entry (through bar
+4395). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1848.573).
