@@ -375,3 +375,22 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 9
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.5699 + 0.2323 = -2.3376
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #10 — S5 opening-range-breakout LONG (bar 2085)
+
+```
+SIGNAL_BAR    2085 (2020-11-02 15:15:00-15:29:59 UTC, bis=13)
+ENTRY          1894.492
+INITIAL_STOP    1887.215 (= or_low 1887.235 - 2*TICK)
+STRUCTURAL_TARGET 1916.323 (= entry + 3R, R=7.277)
+```
+
+**THESIS (frozen before bar 2086 was revealed):** mechanically triggered, no discretionary override.
+Close 1894.492 > or_high 1893.136 within the entry window. Preceded by a steady, unremarkable
+~58-bar grind higher from bar 2027's reclaim (close ~1879.5) to ~1890 (bars 2060-2084) -- no P007
+candidates fired anywhere in this stretch, price stayed comfortably above the causal H1 EMA50
+throughout. Volume picked up notably in the final approach (bars 2080-2085: 1189/1332/941/1021/622/
+826), consistent with a genuine breakout rather than a random poke through the range.
+
+**INVALIDATION:** a close at or below 1887.215 (STOP). MAX_HOLD 48 bars from entry (through bar
+2133). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1901.769).
