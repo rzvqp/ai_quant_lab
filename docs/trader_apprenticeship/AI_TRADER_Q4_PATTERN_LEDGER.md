@@ -1328,3 +1328,16 @@ CAUSAL_H1_EMA50_AT_RESOLUTION 1876.366 (margin +1.08pt)
 
 Thin/moderate volume throughout, tight range, no directional conviction, no fresh extreme. TRADE #16
 remained open throughout. No S5 trigger.
+
+---
+
+## Q4-P007-030
+
+```
+GATE_ORIGIN_BAR          2862 (2020-11-13 03:15:00 UTC) -- right after TRADE #16's MAX_HOLD close
+TRIGGER_CLOSE                1876.48
+TRIGGER_LOW                   1876.474 -- no fresh extreme
+VOLUME                          191 -- thin, same dead-chop regime as -025 through -029
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED. POSITION=FLAT. Not pre-committing.
