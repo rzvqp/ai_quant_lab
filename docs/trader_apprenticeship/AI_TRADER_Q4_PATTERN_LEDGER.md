@@ -1021,3 +1021,26 @@ VOLUME                          1348 -- in line with the surrounding chop, no ac
 
 **PRE-CLASSIFICATION:** leaning REJECTED -- ordinary two-sided chop, not a fresh break. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance, despite 19-bar duration
+RESOLUTION_BAR         2252 (2020-11-04 05:45:00 UTC)
+DURATION                19 bars (2233-2251)
+DEEPEST_LOW              1887.103 (bar 2247) -- does not undercut -019's low (1883.225), no fresh
+                        extreme
+HEAVIEST_VOLUME          3033 (bar 2235) -- a real early spike, but not sustained
+RECLAIM_CLOSE             1902.352
+CAUSAL_H1_EMA50_AT_RESOLUTION 1895.431 (margin +6.92pt -- large mainly because the EMA itself lagged
+                             down through the consolidation, not because the reclaim's own price move
+                             was proportionally larger than -019's)
+```
+
+Applying the same round-trip test used for Q4-P007-019 (SUPPORT): pre-episode level was 1899.608
+(bar 2233's open). Bar 2235's early volume spike led into a decline, then 16 bars of tight
+1887.1-1896.7 consolidation with volume normalizing back toward baseline. The reclaim jumped back to
+1902.352 -- essentially the SAME level the episode started from, a near-complete round trip, unlike
+-019's reclaim which left price ~7pt below its pre-break level. This is the -011/-013/-020 'full
+round-trip' signature, not -019's 'lasting level shift' signature. No trade was open; no MGMT-004
+relevance. No S5 trigger.
