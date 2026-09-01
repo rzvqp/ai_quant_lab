@@ -2290,3 +2290,26 @@ heavier on the break) is the one SUPPORT-consistent detail, but an essentially c
 no fresh extreme dominate -- the fourth consecutive REJECTED resolution in this stretch (-046 through
 -049). Consistent with -046's own lesson: a single favorable component doesn't override a near-100%
 retracement when the other evidence is only moderate.
+
+---
+
+## Q4-P007-050
+
+```
+GATE_ORIGIN_BAR          4519 (2020-12-09 10:15:00 UTC)
+TRIGGER_CLOSE                1858.014
+TRIGGER_LOW                   1856.192 -- deeper than -047/-048/-049's recent lows (1857.843/
+                              1858.321/1858.368), a moderate fresh low, though still shallower than
+                              -046's own 1855.698
+CAUSAL_H1_EMA50_AT_4519       1859.7738
+GAP                            -1.760pt -- meaningful
+VOLUME                          715 -- a real acceleration versus bars 4517/4518's 521/496
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain, leaning slightly toward SUPPORT -- the moderate fresh low
+and volume acceleration are real, similar in shape to -046, which still resolved REJECTED once the
+round-trip evidence came in. Treating this as its own case, not assumed to repeat -046's outcome. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** another mid-strength test,
+structurally similar to -046 -- will be judged on its own retracement/volume evidence at resolution,
+not on the precedent alone.
