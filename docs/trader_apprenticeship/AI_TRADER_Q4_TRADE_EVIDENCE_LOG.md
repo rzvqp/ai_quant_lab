@@ -560,3 +560,22 @@ followed 2 more bars of continuation.
 
 **INVALIDATION:** a close at or below 1948.100 (STOP). MAX_HOLD 48 bars from entry (through bar
 2493). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1972.470).
+
+**OUTCOME:** STOP hit at bar 2447 (2020-11-06 22:15:00 UTC), price 1948.100.
+```
+EXIT_BAR      2447
+EXIT_REASON    STOP
+EXIT_PRICE     1948.100
+R_MULTIPLE     -1.0000
+```
+Fast reversal -- only 2 bars from entry to stop. Bar 2446 immediately faded (close 1953.562, volume
+2625, well off the entry high). Bar 2447 broke straight through the stop (low 1944.758), volume 3507
+-- heavy participation on the reversal, the opposite of the entry's own volume signature. MGMT-004
+never came close to triggering. No P007 candidate opened despite the reversal (bar 2447's close,
+1946.847, stayed on the correct side of the causal H1 EMA50).
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 14
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -0.9530 - 1.0000 = -1.9530
+POSITION_AFTER_THIS_TRADE = FLAT
+```
