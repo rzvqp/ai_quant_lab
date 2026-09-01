@@ -1,0 +1,7 @@
+{
+ "multiplicity_method": "hierarchical: BH-FDR q=0.05 on stage 1 (5,290 per-object x per-feature omnibus tests); Bonferroni m=46 on stage 2 (cross-family recurrence); Bonferroni m=20 on stage 3 (interactions)",
+ "total_declared_tests": 5356,
+ "reference_bound": "Bonferroni over all 5,356 would require |z| > 4.43; reported alongside every stage-2 survivor",
+ "frozen_before_outcomes": true,
+ "rule": "the correction is fixed here and may not be revised after results are seen"
+}

@@ -1,0 +1,19 @@
+{
+ "placebo_1": {
+  "name": "OUTCOME_SHUFFLE_WITHIN_BLOCK",
+  "method": "permute the per-trade outcome within (object x calendar-month) blocks, preserving the feature panel and the trade timestamps; rerun the FULL stage-1 pipeline",
+  "replicates": 200,
+  "pass_criterion": "the BH-FDR discovery rate under the null must be <= q (0.05) +/- Monte-Carlo error; if the pipeline routinely manufactures 'rescue' cells under shuffled outcomes, V2 STOPS"
+ },
+ "placebo_2": {
+  "name": "FEATURE_ASSIGNMENT_SHUFFLE",
+  "method": "permute the feature-vector-to-trade assignment within each object; any condition that survives is a property of the payoff shape, not of the feature",
+  "replicates": 200
+ },
+ "placebo_3": {
+  "name": "SYNTHETIC_POSITIVE_CONTROL",
+  "method": "inject a known conditional effect (+0.3R on one randomly chosen blinded feature's top bin) and confirm the pipeline recovers it at the declared power",
+  "replicates": 50
+ },
+ "rule": "all three run BEFORE any real result is interpreted"
+}

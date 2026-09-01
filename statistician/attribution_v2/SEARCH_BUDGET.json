@@ -1,0 +1,11 @@
+{
+ "stage1_per_object_per_feature": 5290,
+ "stage2_recurrence": 46,
+ "stage3_interactions": 20,
+ "total_declared_tests": 5356,
+ "multiplicity": "BH-FDR q=0.05 (stage1); Bonferroni (stage2 m=46, stage3 m=20)",
+ "min_trades_per_bin": 30,
+ "min_independent_days_per_bin": 20,
+ "binning": "numeric=5 causal quintiles on a trailing 2000-bar rank; bool=2; categorical=declared levels",
+ "interactions": "fully blind and mechanical: the 10 pairs among the top-5 stage-2 ranked features, plus the 10 pairs formed by crossing each top-5 feature with the next-ranked feature (ranks 6-10) at matching index = 20 exactly. No feature name is needed to execute this rule, and no other interaction is permitted inside V2."
+}

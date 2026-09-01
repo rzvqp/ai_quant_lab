@@ -1,0 +1,57 @@
+FAMILY_ID,REP_ID,RULE,SPEC,N_VARIANTS,SIDE_DIM,RAN,STATUS
+S1,4b7c6d5c6035,GRAMMAR_FIRST_PER_SIDE=high,"{""confirm"": ""consecutive2"", ""exit"": ""rr2"", ""imb"": ""none"", ""liq_lb"": 20, ""liq_ref"": ""swing"", ""side"": ""high"", ""stop"": ""beyond_sweep"", ""window"": 4}",1152,side,True,ELIGIBLE
+S1,11c4710e404e,GRAMMAR_FIRST_PER_SIDE=low,"{""confirm"": ""consecutive2"", ""exit"": ""rr2"", ""imb"": ""none"", ""liq_lb"": 20, ""liq_ref"": ""swing"", ""side"": ""low"", ""stop"": ""beyond_sweep"", ""window"": 4}",1152,side,True,ELIGIBLE
+S2,691f36c634e3,GRAMMAR_FIRST_PER_SIDE=high,"{""exit"": ""rr2"", ""fail_within"": 2, ""lb"": 20, ""ref"": ""swing"", ""side"": ""high"", ""stop"": ""beyond_ext""}",144,side,True,ELIGIBLE
+S2,2c6012247423,GRAMMAR_FIRST_PER_SIDE=low,"{""exit"": ""rr2"", ""fail_within"": 2, ""lb"": 20, ""ref"": ""swing"", ""side"": ""low"", ""stop"": ""beyond_ext""}",144,side,True,ELIGIBLE
+S3,7aafa506c507,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""lb"": 20, ""ref"": ""swing"", ""retest_within"": 4, ""side"": ""up"", ""stop"": ""beyond_level""}",96,side,True,ELIGIBLE
+S3,37a51a4fd454,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""lb"": 20, ""ref"": ""swing"", ""retest_within"": 4, ""side"": ""down"", ""stop"": ""beyond_level""}",96,side,True,ELIGIBLE
+S4,cf232107e3b5,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""exp_k"": 1.5, ""min_compress"": 1, ""stop"": ""bar""}",32,,True,ELIGIBLE
+S5,15be26301532,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""mode"": ""breakout"", ""session"": ""asia"", ""side"": ""up"", ""stop"": ""or_opp""}",96,side,True,ELIGIBLE
+S5,9cce3e63e04e,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""mode"": ""breakout"", ""session"": ""asia"", ""side"": ""down"", ""stop"": ""or_opp""}",96,side,True,ELIGIBLE
+S6,a461ec93f607,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""mode"": ""breakout"", ""session"": ""london"", ""side"": ""up"", ""stop"": ""prev_ext""}",32,side,True,ELIGIBLE
+S6,7199b701458a,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""mode"": ""breakout"", ""session"": ""london"", ""side"": ""down"", ""stop"": ""prev_ext""}",32,side,True,ELIGIBLE
+S7,98a2f4583fb9,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""htf"": ""h4"", ""pb_within"": 4, ""stop"": ""ema""}",24,,True,ELIGIBLE
+S8,ec037f864152,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""k"": 2.0, ""ref"": ""sma"", ""side"": ""up"", ""stop"": ""atr""}",48,side,True,ELIGIBLE
+S8,b7adfd7f9d4f,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""k"": 2.0, ""ref"": ""sma"", ""side"": ""down"", ""stop"": ""atr""}",48,side,True,ELIGIBLE
+S9,731bd4dd4aa4,GRAMMAR_INDEX_0,"{""c4h"": ""up"", ""conf1h"": ""align"", ""exit"": ""rr2"", ""lb"": 10, ""stop"": ""atr""}",32,,True,ELIGIBLE
+S10,598adad042be,GRAMMAR_FIRST_PER_SIDE=up,"{""disp_k"": 1.5, ""exit"": ""rr2"", ""pb"": 2, ""side"": ""up"", ""stop"": ""bar""}",48,side,True,ELIGIBLE
+S10,7df75fdb8ecb,GRAMMAR_FIRST_PER_SIDE=down,"{""disp_k"": 1.5, ""exit"": ""rr2"", ""pb"": 2, ""side"": ""down"", ""stop"": ""bar""}",48,side,True,ELIGIBLE
+S11,576394ea476f,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""htf"": ""h4"", ""lb"": 20, ""stop"": ""struct""}",24,,True,ELIGIBLE
+S12,884efeda36f3,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""lb"": 20, ""side"": ""up"", ""stop"": ""ext"", ""target"": ""center""}",48,side,True,ELIGIBLE
+S12,061854e10b15,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""lb"": 20, ""side"": ""down"", ""stop"": ""ext"", ""target"": ""center""}",48,side,True,ELIGIBLE
+S13,7d288aa44d52,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""fvg"": ""bull"", ""mode"": ""revert"", ""stop"": ""atr""}",24,,True,ELIGIBLE
+S14,dc07a2d5d013,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""roc_k"": 0.004, ""side"": ""up"", ""stop"": ""atr""}",16,side,True,ELIGIBLE
+S14,25e44853ad0f,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""roc_k"": 0.004, ""side"": ""down"", ""stop"": ""atr""}",16,side,True,ELIGIBLE
+S15,ac373f9fe529,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""exp_k"": 1.5, ""htf"": ""h4"", ""stop"": ""atr""}",24,,True,ELIGIBLE
+S16,393fe65826e6,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""level"": ""pdh"", ""mode"": ""breakout"", ""stop"": ""atr""}",40,,True,ELIGIBLE
+S17,3cf289079abb,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""level"": ""pw_high"", ""mode"": ""breakout"", ""stop"": ""atr""}",24,,True,ELIGIBLE
+S18,18995ee3f508,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""hour"": 0, ""side"": ""up"", ""stop"": ""atr""}",24,side,True,ELIGIBLE
+S18,3933c532ec9c,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""hour"": 0, ""side"": ""down"", ""stop"": ""atr""}",24,side,True,ELIGIBLE
+S19,762b6018f2c5,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""gap_dir"": ""up"", ""mode"": ""fill"", ""stop"": ""atr""}",12,,True,ELIGIBLE
+S20,3a706309724e,GRAMMAR_INDEX_0,"{""ctx"": ""h4up"", ""exit"": ""rr2"", ""lb"": 20, ""stop"": ""atr"", ""trig"": ""sweep""}",32,,True,ELIGIBLE
+S21,6ddb75c3f9b1,GRAMMAR_FIRST_PER_SIDE=high,"{""exit"": ""rr2"", ""lb"": 20, ""min_touches"": 2, ""side"": ""high"", ""stop"": ""beyond_raid""}",48,side,True,ELIGIBLE
+S21,b61f7b31fafc,GRAMMAR_FIRST_PER_SIDE=low,"{""exit"": ""rr2"", ""lb"": 20, ""min_touches"": 2, ""side"": ""low"", ""stop"": ""beyond_raid""}",48,side,True,ELIGIBLE
+S22,e730d6bce802,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""mode"": ""reject"", ""step"": 50, ""stop"": ""atr""}",24,,True,ELIGIBLE
+S23,866611e1c7db,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""htf"": ""h4"", ""min_sq"": 3, ""stop"": ""range_opp""}",32,,True,ELIGIBLE
+S24,a20c02d14359,GRAMMAR_INDEX_0,"{""entry_bar"": 1, ""exit"": ""rr2"", ""mode"": ""carry"", ""sess"": ""london""}",24,,True,ELIGIBLE
+S25,017b79ce0b9e,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""mode"": ""expand"", ""stop"": ""atr""}",12,,True,ELIGIBLE
+S26,f196a9ae20d6,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""k"": 2.0, ""mode"": ""reject"", ""stop"": ""atr""}",32,,True,ELIGIBLE
+S27,8492323d86e4,GRAMMAR_INDEX_0,"{""band_k"": 1.0, ""exit"": ""rr2"", ""htf"": ""h4"", ""stop"": ""atr""}",24,,True,ELIGIBLE
+S28,b2a817579286,GRAMMAR_INDEX_0,"{""anchor"": ""week"", ""exit"": ""rr2"", ""mode"": ""reclaim""}",12,,True,ELIGIBLE
+S29,bd28e989b4eb,GRAMMAR_FIRST_PER_SIDE=up,"{""dow"": 0, ""exit"": ""rr2"", ""side"": ""up""}",20,side,True,ELIGIBLE
+S29,10d4532019fd,GRAMMAR_FIRST_PER_SIDE=down,"{""dow"": 0, ""exit"": ""rr2"", ""side"": ""down""}",20,side,True,ELIGIBLE
+S30,282a94fa23d8,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""mode"": ""continuation"", ""stop"": ""atr"", ""zone"": ""london_kz""}",12,,True,ELIGIBLE
+S31,555f488885b1,GRAMMAR_FIRST_PER_SIDE=up,"{""exit"": ""rr2"", ""side"": ""up"", ""window"": ""month_end""}",12,side,True,ELIGIBLE
+S31,9584b16899ad,GRAMMAR_FIRST_PER_SIDE=down,"{""exit"": ""rr2"", ""side"": ""down"", ""window"": ""month_end""}",12,side,True,ELIGIBLE
+S38,3029c9493a71,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""htf"": ""h4"", ""stop"": ""swing"", ""zone"": ""ema20""}",36,,True,ELIGIBLE
+S39,cdecf371316b,GRAMMAR_INDEX_0,"{""L"": 10, ""er_thr"": 0.3, ""exit"": ""rr2"", ""stop"": ""atr""}",24,,True,ELIGIBLE
+S40,43b9c7dbd606,GRAMMAR_INDEX_0,"{""er_thr"": 0.3, ""exit"": ""rr2"", ""range_lb"": 20, ""stop"": ""atr""}",16,,True,ELIGIBLE
+S41,73a2a8a65e5e,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""stop"": ""bar"", ""vthr"": 0.9}",12,,True,ELIGIBLE
+S42,a347eead7c5d,GRAMMAR_INDEX_0,"{""L"": 3, ""exit"": ""rr2"", ""stop"": ""atr"", ""thr"": 0.006}",12,,True,ELIGIBLE
+S43,6aacd27a298d,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""lb"": 14, ""rsi_tf"": ""m"", ""stop"": ""bar""}",16,,True,ELIGIBLE
+S44,3d6f380511c2,GRAMMAR_INDEX_0,"{""N"": 3, ""exit"": ""rr2"", ""mode"": ""continue"", ""stop"": ""atr""}",12,,True,ELIGIBLE
+S45,4809d6e42bc2,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""k"": 4, ""mode"": ""reverse"", ""stop"": ""atr""}",12,,True,ELIGIBLE
+S46,28bd0e966c33,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""lb"": 20, ""stop"": ""level"", ""vthr"": 0.7}",24,,True,ELIGIBLE
+S48,6d74b2000433,GRAMMAR_INDEX_0,"{""D"": 6, ""exit"": ""rr2"", ""stop"": ""range""}",12,,True,ELIGIBLE
+S50,9cc65b2c5452,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""mode"": ""reversal"", ""stop"": ""bar""}",12,,True,ELIGIBLE
+S51,049ca99687f4,GRAMMAR_INDEX_0,"{""exit"": ""rr2"", ""stop"": ""atr"", ""thr"": 0.85}",8,,True,ELIGIBLE

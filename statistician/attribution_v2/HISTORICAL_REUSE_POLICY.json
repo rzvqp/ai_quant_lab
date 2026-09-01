@@ -1,0 +1,12 @@
+{
+ "attribution_discovery_range": "2011-07-26 .. 2026-07-27 (the entire governed XAU M15 record)",
+ "untouched_validation_range": "NONE",
+ "historical_reuse_status": "MATERIALLY_EXPOSED",
+ "evidence": [
+  "RESEARCH_HOLDOUT_CUTOFF_UTC = 2025-10-23 was the program escrow; it has been consumed - Alpha's DIRECTION_AGNOSTIC_EXPANSION_HARVEST_V1 ran to 2026-07-27 with no truncation (STAT 94dff78: 213 episodes inside the holdout at +0.2374R vs +0.0442R outside)",
+  "Alpha's own attribution V1 trade objects span 2011..2026, i.e. include the escrow window",
+  "the S1-S51 campaign declared its own research/val/holdout split (50491/16830/16831) and that split's holdout has been reported on in prior campaign artifacts"
+ ],
+ "consequence": "No clean out-of-sample range exists for this universe. A clean OOS is NOT manufactured. EVERY V2 finding is HYPOTHESIS_GENERATION ONLY and may not be described as validated, confirmed, or out-of-sample. Chronological thirds are used for STABILITY description only, never as independent validation.",
+ "future": "a genuinely clean validation requires either new forward data accrued after this freeze date, or a newly escrowed range that no division has consulted"
+}
