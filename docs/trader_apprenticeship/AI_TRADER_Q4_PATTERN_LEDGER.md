@@ -2335,3 +2335,28 @@ like -046: a real volume gap on the break, but a round-trip even more complete t
 here vs -046's ~89%), which settles it firmly REJECTED. This stretch (since TRADE #28's stop, bars
 ~4494-4522) is now a clear, consistent example of a range where moderate-strength P007 triggers
 repeatedly fail to represent genuine structural breaks -- five out of five in a row.
+
+---
+
+## Q4-P007-051
+
+```
+GATE_ORIGIN_BAR          4524 (2020-12-09 11:30:00 UTC) -- breaks decisively from the -046/-050
+                            dead-chop stretch
+TRIGGER_CLOSE                1853.937
+TRIGGER_LOW                   1852.849 -- clearly deeper than -046's 1855.698 (the deepest of the
+                              recent stretch), and very close to (0.06pt above) bar 3271's 1852.792
+                              from -040's episode, one of the deepest points in the whole Q4 replay
+CAUSAL_H1_EMA50_AT_4524       1859.7195
+GAP                            -5.783pt -- by far the deepest gap of this whole recent stretch
+VOLUME                          1138 -- clearly breaks out of the 715-767 ceiling seen across
+                                 -046 through -050, a genuine acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning SUPPORT -- this is qualitatively different from the five REJECTED
+predecessors: a genuinely deep gap, a near-record fresh extreme, and volume clearly above anything
+seen in this stretch. Not pre-committing; the reclaim/round-trip evidence still needs to confirm this,
+but the magnitude here is a real step up. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the discriminator components
+all agree at genuinely strong magnitude here, unlike the moderate -046/-049/-050 cases -- a useful
+contrast that reinforces the "magnitude matters" lesson from the immediately preceding streak.
