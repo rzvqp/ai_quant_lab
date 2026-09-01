@@ -2416,3 +2416,34 @@ MGMT-004 relevance.
 volume level matters less than volume RELATIVE to the immediate surrounding context -- this bar's 1040
 would have looked dramatic against -046/-050's baseline, but is unremarkable against -051's own
 elevated regime.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         4628 (2020-12-10 14:30:00 UTC)
+DURATION                96 bars (4533-4628) -- a substantial, genuine structural episode, unlike
+                          -051's fast 6-bar liquidity grab
+DEEPEST_LOW              1825.579 (bar 4553) -- a genuine, dramatic new low, deeper than -051's own
+                          1851.636 by ~26pt, approaching (though not exceeding) -040's historic
+                          1800.424
+HEAVIEST_VOLUME          3220 (bar 4538) -- one of the heaviest single-bar volumes in the whole Q4
+                          replay, though 15 bars before the ultimate low (bar 4553), not exactly
+                          coincident -- a similar nuance to -041's own volume/low timing
+RECLAIM_CLOSE             1848.65 -- a ~64% retracement of the full decline (23.1 of 35.8pt), a
+                          genuinely partial retracement, not full or overshooting
+CAUSAL_H1_EMA50_AT_RESOLUTION 1846.3098 (margin +2.34pt)
+```
+
+A coincident S5 OR breakout fired the same bar (POSITION was FLAT); per established handling this is
+deferred and expected to re-surface on the next bar. GAP-199 (standard MAINTENANCE) logged inside the
+episode's basing period.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a clear, genuine SUPPORT case,
+the sharpest contrast possible with the immediately preceding -051 tension episode. Same qualitative
+ingredients as -038/-039/-040/-041/-045: a dramatic, genuinely record-approaching new low; massive
+volume near the break (though not exactly coincident with the ultimate low, echoing -041); a partial,
+not complete, retracement (~64%); and a substantial multi-day duration (96 bars) reflecting a genuine
+structural process rather than a fast grab-and-reclaim. This pairing with -051 is itself useful: two
+back-to-back episodes with genuinely deep fresh extremes resolved oppositely (REJECTED then SUPPORT)
+because the round-trip completeness and duration -- not the extreme alone -- told the real story in
+each case.
