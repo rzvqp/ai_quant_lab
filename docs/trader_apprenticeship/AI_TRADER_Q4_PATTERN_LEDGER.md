@@ -1117,6 +1117,33 @@ on moderating but still-elevated volume, triggering TRADE #15 (S5 LONG, entry 18
 gate has reclaimed. GAP-177 (standard, 60min) logged inside this stretch. Not resolving prematurely
 -- the eventual RESOLUTION entry will cover the full episode once a genuine reclaim occurs.
 
+### RESOLUTION
+
+```
+STATUS               SUPPORT / RECLAIM -- overwhelmingly the largest, most unambiguous instance in Q4
+RESOLUTION_BAR         2812 (2020-11-12 21:45:00 UTC)
+DURATION                284 bars (2528-2811) -- by far the longest episode of the quarter
+DEEPEST_LOW              1850.53 (bar 2548) -- new Q4-replay-low, deepest of the entire replay
+HEAVIEST_VOLUME          8812 (bar 2529) -- THE HEAVIEST SINGLE-BAR VOLUME OF THE ENTIRE Q4 REPLAY,
+                        exceeding the next-largest (-019's 5175) by 70%
+RECLAIM_CLOSE             1877.074
+CAUSAL_H1_EMA50_AT_RESOLUTION 1875.756 (margin +1.32pt)
+```
+
+Bar 2529 alone printed a 38pt intrabar range on record volume, followed by many more bars of
+sustained multi-thousand volume declining to the episode low -- an ~88pt decline from bar 2528's own
+open, ~103pt from bar 2528's trigger close. After the low, price spent the remaining ~264 bars
+stabilizing/grinding higher, never printing a fresh low again, before reclaiming. Applying the
+round-trip test used for -019/-021/-022: pre-episode level (1953.899) vs reclaim close (1877.074)
+leaves a ~76.8pt shortfall -- an even more pronounced lasting level shift than -019's, nowhere close
+to a round trip. TRADE #15 opened and stopped out (-1.0R) entirely inside this episode. Three
+MAINTENANCE gaps (GAP-177/178/179) sat inside the episode, no weekend gaps. A coincident S5
+breakout trigger also surfaced on this exact reclaim bar -- per the durable control-flow ordering
+invariant, P007 reasoning took priority for this bar's commit; the S5 signal is deferred, not
+dropped, and will re-check naturally on the next bar. Eighth genuinely-resolved SUPPORT instance in
+Q4 (after Q4-P007-003, Q4-P007-004, Q4-P007-006, Q4-P007-007, Q4-P007-010, Q4-P007-015,
+Q4-P007-019), and by a wide margin the largest in every dimension.
+
 ---
 
 ## Q4-P007-023

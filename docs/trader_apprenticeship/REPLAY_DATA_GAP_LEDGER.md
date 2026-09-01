@@ -1341,3 +1341,17 @@ SPAN: 2020-11-09T21:59:59Z (last close 1861.914, Q4 bar 2568, Monday -- inside Q
 open episode) -> 2020-11-09T23:00:00Z (first open 1861.914, Q4 bar 2569)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-178 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-11-10T21:59:59Z (last close 1876.776, Q4 bar 2660, Tuesday -- inside Q4-P007-024's still-
+open episode) -> 2020-11-10T23:00:00Z (first open 1876.776, Q4 bar 2661)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-179 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-11-11T21:59:59Z (last close 1865.268, Q4 bar 2752, Wednesday -- inside Q4-P007-024's
+still-open episode) -> 2020-11-11T23:00:00Z (first open 1865.268, Q4 bar 2753)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
