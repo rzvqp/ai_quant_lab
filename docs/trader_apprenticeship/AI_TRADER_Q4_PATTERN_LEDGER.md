@@ -1481,3 +1481,34 @@ VOLUME                          542 -- a real step-up (2-4x the immediate baseli
 
 **PRE-CLASSIFICATION:** some character here but modest scale -- not pre-committing, watching for
 real continuation vs an early fade. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         3056 (2020-11-17 06:00:00 UTC)
+DURATION                2 bars (3055-3056)
+DEEPEST_LOW              1884.891 (bar 3055)
+HEAVIEST_VOLUME          542 (bar 3055)
+RECLAIM_CLOSE             1886.95
+CAUSAL_H1_EMA50_AT_RESOLUTION 1886.775 (margin +0.18pt)
+```
+
+The volume step-up on the trigger bar did not sustain into a second bar (274 vs 542). No
+continuation, no fresh extreme. No trade was open; no MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-035
+
+```
+GATE_ORIGIN_BAR          3057 (2020-11-17 06:00:00 UTC) -- immediately after -034's reclaim
+TRIGGER_CLOSE                1885.884
+TRIGGER_LOW                   1884.339 -- a marginal fresh dip below -034's own low (1884.891)
+CAUSAL_H1_EMA50_AT_3057       1886.775
+GAP                            -0.89pt
+VOLUME                          472 -- in line with the recent baseline, no acceleration
+```
+
+**PRE-CLASSIFICATION:** reads as continuation of the same ordinary chop, not a fresh break. Leaning
+REJECTED. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
