@@ -2269,3 +2269,24 @@ relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a modestly more active bar than
 -046/-047/-048, but not clearly enough to break from their REJECTED pattern -- worth watching for
 whether it resolves differently or continues the streak.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4516 (2020-12-09 09:30:00 UTC)
+DURATION                2 bars (4515-4516)
+DEEPEST_LOW              1858.368 (bar 4515, the gate origin itself)
+HEAVIEST_VOLUME          736 (bar 4515, the break bar) -- clearly heavier than the reclaim bar's 374,
+                          a real gap, though not capitulation-scale in absolute terms
+RECLAIM_CLOSE             1862.91 -- essentially a FULL round-trip back to the pre-episode level (bar
+                          4514 close 1863.164, only -0.25pt short)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1859.7237 (margin +3.19pt -- a decisive reclaim)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the volume placement (clearly
+heavier on the break) is the one SUPPORT-consistent detail, but an essentially complete round-trip and
+no fresh extreme dominate -- the fourth consecutive REJECTED resolution in this stretch (-046 through
+-049). Consistent with -046's own lesson: a single favorable component doesn't override a near-100%
+retracement when the other evidence is only moderate.
