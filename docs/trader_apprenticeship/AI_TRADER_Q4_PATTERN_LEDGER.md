@@ -2007,3 +2007,25 @@ ordinary, quickly-reversed pullback. A useful reminder that recent volatility in
 context does not automatically transfer weight to the NEXT candidate that happens to follow it --
 each episode's own evidence (duration, round-trip, volume placement) still has to be judged on its
 own terms.
+
+---
+
+## Q4-P007-044
+
+```
+GATE_ORIGIN_BAR          4266 (2020-12-04 16:30:00 UTC) -- one bar after -043's own reclaim
+TRIGGER_CLOSE                1832.914
+TRIGGER_LOW                   1831.698 -- NOT a fresh extreme (well above the recent 1829.276/
+                              1823.772 lows)
+CAUSAL_H1_EMA50_AT_4266       1833.5246
+GAP                            -0.611pt -- shallow, similar magnitude to -043's own origin
+VOLUME                          585 -- modest, below both -043's break-bar (1450) and reclaim-bar
+                                 (995) volumes
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED on the actual evidence for this bar -- same shallow,
+choppy-around-the-EMA character as -043, treated on its own merits rather than assumed from that
+precedent. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature (no fresh extreme, volume modest and not accelerating) -- consistent with, not the
+basis for, the REJECTED lean.
