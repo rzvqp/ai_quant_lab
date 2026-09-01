@@ -2081,3 +2081,31 @@ decays immediately. POSITION=FLAT; no MGMT-004 relevance.
 persistence component in isolation from the fresh-extreme component (they disagree here) -- useful
 regardless of outcome for understanding whether volume alone can carry weight when the low doesn't
 confirm it.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         4345 (2020-12-07 13:15:00 UTC)
+DURATION                20 bars (4325-4345)
+DEEPEST_LOW              1822.253 (bar 4326) -- a genuine fresh extreme, well beyond the 1833.113
+                          recent-stretch floor; printed the bar IMMEDIATELY after the gate origin
+HEAVIEST_VOLUME          2494 (bar 4326) -- the SAME bar as the deepest low, a capitulation signature
+RECLAIM_CLOSE             1834.788 -- ~89% retracement of the decline (12.5 of 14.1pt), still ~1.6pt
+                          short of the pre-episode level (bar 4324 close 1836.361)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1834.6704 (margin +0.12pt -- thin, but the underlying episode is not)
+```
+
+The pre-classification framed this as a test of volume-persistence in isolation from fresh-extreme --
+that framing turned out to be premature: the fresh extreme showed up on the very next bar (4326), not
+at the gate origin itself. Once that bar is in, this reads as a straightforward, if compressed, SUPPORT
+case: fresh extreme and heaviest volume coincide exactly, the classic capitulation signature. The
+reclaim margin itself is thin (+0.12pt), but that thinness reflects the EMA's own proximity to price at
+this point in the replay, not a weak underlying move -- the ~89% retracement and volume-price
+coincidence are the more decisive evidence. No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a useful correction to how the
+pre-classification framed the test -- the "isolation" premise (volume without a confirming fresh
+extreme) didn't hold up once one more bar of evidence arrived. Worth remembering for future
+pre-classifications: an initial read based on the gate-origin bar alone can be superseded quickly by
+the very next bar, and the eventual classification should follow the fuller episode, not lock in to the
+opening bar's framing.
