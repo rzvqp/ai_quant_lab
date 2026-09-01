@@ -1213,3 +1213,23 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 30
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.6415 - 0.3507 = -3.9922
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #31 — S5 opening-range-breakout LONG (bar 4809)
+
+```
+SIGNAL_BAR    4809 (2020-12-14 13:45:00-14:00:00 UTC, bis=4)
+ENTRY          1832.711
+INITIAL_STOP    1822.309 (= or_low 1822.329 - 2*TICK)
+STRUCTURAL_TARGET 1863.917 (= entry + 3R, R=10.402)
+```
+
+**THESIS (frozen before bar 4810 was revealed):** mechanically triggered, no discretionary override.
+Close 1832.711 > or_high 1827.892 within the entry window. Follows a gradual decline within
+Q4-P007-056's still-open episode (gate origin bar 4738, now spanning 71 bars) to a fresh deep low
+(1819.418, bar 4795), a bounce on heavy volume (1398, bar 4796), extended consolidation (1822-1828
+range), then a decisive breakout on building volume (1073/1545/948/1150 across bars 4806-4809). Noted
+honestly: this entry sits inside an episode that has not yet naturally reclaimed as of this bar. S5
+fires mechanically regardless of P007 state; no discretionary override applied.
+
+**INVALIDATION:** a close at or below 1822.309 (STOP). MAX_HOLD 48 bars from entry (through bar
+4857). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1843.113).
