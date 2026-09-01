@@ -1,0 +1,59 @@
+{
+ "spec": {
+  "phenomenon_id": "L1-LONDON-WINDOW-PATH-ASYMMETRY-V1",
+  "dataset": "OANDA_XAUUSD_M5.csv (native governed, no synthesis)",
+  "dataset_sha256": "cbb6eebe1a189ebb20972318a8d98a36bfa461d2cd030bbaa7ba5430cc9f3814",
+  "bars": 354669,
+  "span": [
+   "2021-07-27 15:45:00+00:00",
+   "2026-07-27 17:55:00+00:00"
+  ],
+  "timezone": "UTC",
+  "dst_handling": "NONE (fixed UTC hour buckets)",
+  "condition": "UTC hour in {8,9,10,11,12}  == the 08:00-13:00 UTC window; EVERY M5 bar in the window",
+  "not_an_open_event": true,
+  "baseline": "complement of the condition: all M5 bars with UTC hour outside [8,13)",
+  "headline_statistic": "P(+100 project pips touched before -80 project pips)",
+  "reference_price": "close of bar t",
+  "pip_usd": 0.1,
+  "measurement_start": "bar t+1",
+  "horizon_bars": 288,
+  "horizon_hours": 24,
+  "tie_rule": "both barriers inside one M5 bar -> ADVERSE (0)",
+  "censoring": "unresolved within 288 bars -> excluded (NaN)",
+  "dedup": "NONE - every eligible M5 bar is one observation (overlapping)",
+  "overlap_handling": "day-clustered standard errors; separate 1-per-288-bar non-overlap check",
+  "missing_data": "weekend/holiday gaps left as-is; forward window walks bar index, not clock",
+  "timing_statistic": "median of first-touch bar index of the +100p UP barrier ONLY, censored cases DROPPED"
+ },
+ "spec_hash": "b2bc79c6f7d91aa613657a3ad6e9374b3b0edbe34348e0bf7562c3658f8b3af2",
+ "headline": {
+  "T1 P(+100 before -80)": {
+   "N": 73796,
+   "days": 1289,
+   "p": 0.4286275678898585,
+   "base": 0.46633253681663067,
+   "lift": -0.037704968926772164,
+   "se": 0.010494544633000763,
+   "z": -3.5928161006821098
+  },
+  "T2 P(+200 before -100)": {
+   "N": 61459,
+   "days": 1210,
+   "p": 0.29927268585561106,
+   "base": 0.3259969096730955,
+   "lift": -0.02672422381748446,
+   "se": 0.011534680711294728,
+   "z": -2.3168585664721673
+  },
+  "T3 P(+300 before -150)": {
+   "N": 44872,
+   "days": 976,
+   "p": 0.2816678552326618,
+   "base": 0.30357357794910456,
+   "lift": -0.021905722716442755,
+   "se": 0.013914316818729669,
+   "z": -1.5743297354675783
+  }
+ }
+}
