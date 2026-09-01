@@ -2497,3 +2497,25 @@ low, same general zone, same eventual reclaim character). Unlike -051's tension 
 every component pointing the same direction: heaviest volume cleanly at the break (an even cleaner
 placement than -052's own 15-bar-early volume), a genuine new record low, a partial (not complete)
 retracement, and a substantial 89-bar duration -- a textbook case with no real ambiguity.
+
+---
+
+## Q4-P007-054
+
+```
+GATE_ORIGIN_BAR          4719 (2020-12-11 14:15:00 UTC) -- one bar after -053's reclaim
+TRIGGER_CLOSE                1836.242
+TRIGGER_LOW                   1835.262 -- NOT deeper than -053's own record 1824.184, but a
+                              meaningfully deep dip for a fresh gate origin
+CAUSAL_H1_EMA50_AT_4719       1840.1196
+GAP                            -3.878pt -- meaningfully deep
+VOLUME                          1020 -- moderate-high but roughly in line with the recent elevated
+                                 regime (1813, 1035), not a clear standout acceleration
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain -- the gap depth is notable, but volume doesn't clearly
+distinguish itself from the recent elevated baseline, and the low isn't a fresh record. Not
+pre-committing. POSITION=LONG (TRADE #30, open since bar 4717, entry 1840.106, stop 1831.794) -- this
+bar's low/close do not threaten the stop; MGMT-004 has not fired (needs close >= 1848.418).
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a genuine mid-strength case,
+similar in spirit to -046/-050 -- will be judged on its own round-trip evidence at resolution.
