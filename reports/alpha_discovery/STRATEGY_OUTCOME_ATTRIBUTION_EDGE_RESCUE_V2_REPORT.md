@@ -56,6 +56,14 @@ vol-compression at hour 12 → +0.36R; S21 liquidity-sweep at range-location 0 �
 discriminator *type* is time/location, but the favorable *bin* differs per family, so the subpopulations do not stack into one shared
 profitable regime. The graveyard is not globally rescuable; individual strategies have exploitable slivers.
 
+## Stage-3 bounded interactions (20 frozen pairs) — one narrow joint candidate, NOT significant
+Testing joint (feature-A bin ∩ feature-B bin) states for a pooled-positive meta-state the single features missed: 2 of 20 interactions
+yield a pooled-positive best cell. The strongest is **halfhour_bucket=45 ∩ far-from-prior-session-high (dist bin 4) → pooled +0.150R, N=285**.
+Stress-test: drop-best-5% +0.049 (survives concentration), top-1% trade share 9% (not outlier-driven), all 3 chronological thirds positive,
+13 strategies / 9 positive — coherent — **but day-clustered z vs 0 = +1.40 (NOT significant), and it is the MAX over 20 interactions × many
+joint bins on materially-exposed history.** → It does **not** overturn `PROFITABLE_META_STATE = NO`; logged as a hypothesis
+(`ATTRIBUTION_V2_STAGE3_INTERACTIONS.csv`), not a finding. Same discipline that caught OBR (fill artifact) and Family-E (outlier dependence).
+
 ## §28 Post-entry (10 POST_ENTRY_ELIGIBLE families, MFE/MAE path) — management signal, NOT a pre-entry edge
 `favorable_early` (MFE≥0.5R, MAE>−0.5R) → **+1.41R, 95.7% WR** vs `immediate_fail` (MAE≤−1.0R) → **−1.14R, 0% WR**. The first few bars are
 enormously predictive — but this is **post-entry path**, usable only as a time-stop / early-abort management rule, not a causal entry filter.
@@ -87,7 +95,9 @@ STAGE1_FDR_SIGNIFICANT = 368 · FDR_SIG_POSITIVE_BINS = 79 across 29 objects
 PLACEBO_GATE = PASS (null 9-12 vs real 79) · BLIND_RESULTS_HASH = 8988448ac1efb1e566ecb2d035910bce8160ff696a11df70f8aaaea531b21049
 FAMILIES_WITH_PROFITABLE_SUBPOPULATION_RAW = 29 · FAMILIES_WITH_CREDIBLE_RESCUE = 15
 RESCUE_PROFITABLE = 15 · RESCUE_LOSE_LESS_OR_FRAGILE = 14 · RESCUE_NONE = 41
-PROFITABLE_META_STATE_FOUND = NO · LOSE_LESS_META_STATE_FOUND = YES (fine time-of-day; best 30-min bucket -0.14R vs worst -0.33R)
+PROFITABLE_META_STATE_FOUND = NO (single-feature best pooled -0.140R; stage-3 best joint cell +0.150R but z=+1.40 NS, max-selected)
+LOSE_LESS_META_STATE_FOUND = YES (fine time-of-day; best 30-min bucket -0.14R vs worst -0.33R)
+STAGE3_INTERACTIONS = 20 (frozen); 1 narrow joint candidate (halfhour=45 & far-from-prev-sess-high) logged as HYPOTHESIS, not significant
 TOP_RESCUE_HYPOTHESIS = S14 mean-reversion @ prev-session-extreme (subset +0.49R vs remainder -0.19R, N=65; convergent rloc_50~0 +0.44R)
 STRONGEST_BLIND_FEATURE_ID = f011 · STRONGEST_UNBLINDED_FEATURE = halfhour_bucket_utc (30-min UTC clock)
 NEW_UNSEEDED_DISCOVERY_FOUND = YES (fine clock + session-position beat coarse session/vol/side; side & trend de-emphasized)
