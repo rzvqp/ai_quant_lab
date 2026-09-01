@@ -2472,3 +2472,28 @@ POSITION=LONG (TRADE #29, open since bar 4629, entry 1847.771, stop 1834.287) --
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature relative to its own immediate context -- consistent with, not the basis for, the
 REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         4718 (2020-12-11 14:00:00 UTC)
+DURATION                89 bars (4630-4718)
+DEEPEST_LOW              1824.184 (bar 4707) -- ANOTHER new record low for this zone, deeper even
+                          than -052's own 1825.579 -- continuing the same broader decline
+HEAVIEST_VOLUME          1813 (bar 4630, the GATE ORIGIN itself) -- a genuinely clean SUPPORT-
+                          consistent placement, heaviest right at the break
+RECLAIM_CLOSE             1840.514 -- a ~69% retracement of the decline (16.3 of 23.6pt), genuinely
+                          partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1840.1202 (margin +0.39pt)
+```
+
+TRADE #30 (opened bar 4717) was open through this resolution and remains open, unaffected -- P007
+classification does not influence trade management. A coincident S5 trigger fired this same bar
+(bis=5, same OR as TRADE #30) but is not actionable since a position is already open.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** another clear SUPPORT case,
+directly continuing -052's own episode as effectively a second leg of the same broader decline (deeper
+low, same general zone, same eventual reclaim character). Unlike -051's tension case, this one has
+every component pointing the same direction: heaviest volume cleanly at the break (an even cleaner
+placement than -052's own 15-bar-early volume), a genuine new record low, a partial (not complete)
+retracement, and a substantial 89-bar duration -- a textbook case with no real ambiguity.
