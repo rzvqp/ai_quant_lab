@@ -1655,3 +1655,40 @@ pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
 discriminator's SUPPORT-leaning signature (no fresh extreme, volume modest and not accelerating) --
 consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         3186 (2020-11-18 15:15:00 UTC)
+DURATION                90 bars (3097-3186) -- by far the longest episode in the Q4 replay so far
+DEEPEST_LOW              1863.772 (bar 3173) -- a genuine multi-session low, not a shallow wick (the
+                          bar's own CLOSE, 1868.404, was also well below the EMA, not just the low)
+HEAVIEST_VOLUME          2554 (bar 3173) -- the SAME bar as the deepest low: volume and price extreme
+                          coincide, a capitulation signature
+RECLAIM_CLOSE             1883.53 (bar 3186)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1882.6746 (margin +0.855pt)
+```
+
+This is Q4-P007-038's own episode, not -037's -- gate origin bar 3097, immediately following -037's
+REJECTED resolution. Across bars 3098-3172 (73 bars) price ground down gradually and thinly (mostly
+100-500 volume) from ~1887 to ~1875, before a genuine capitulation move at bars 3172-3173 (volume
+1842, then 2554 -- the heaviest single-bar volume in the Q4 replay to date) drove the low to 1863.772.
+Recovery from there was gradual and multi-bar (13 bars from the low to this reclaim), not a sharp
+V-reversal. TRADE #21 (opened bar 3181) was open throughout this resolution and remains open,
+unaffected -- P007 classification does not influence trade management. A coincident S5 trigger fired
+this same bar (bis=10, same OR as TRADE #21) but is not actionable since a position is already open;
+no deferral needed.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the clearest, most
+textbook-consistent case yet -- every component of the emerging discriminator agrees, in contrast to
+-037's mixed signals immediately prior. (1) The fresh extreme is genuine on a CLOSE basis, not just a
+wick (bar 3173 closed at 1868.404, deep below the EMA). (2) The heaviest volume of the episode landed
+on the break itself (bar 3173), not the reclaim -- matching -024/-033's genuine PATTERN-007 signature,
+the opposite of -011/-036's REJECTED signature. (3) The reclaim close (1883.53) sits meaningfully
+below the pre-episode level (bar 3096 close 1888.707) -- a ~79% retracement of the full decline
+(1888.707 to 1863.772), still ~5.2pt short of a full round-trip, not a full reclaim back to the
+pre-episode price -- consistent with, though on the higher end of, the SUPPORT-leaning discriminator's
+established partial-retracement profile (not being treated as a rigid threshold).
+Recorded as a strong confirmation, immediately following a case (-037) that showed the same
+components can disagree -- underscoring that it is their AGREEMENT, not any single factor, that makes
+this reading confident.
