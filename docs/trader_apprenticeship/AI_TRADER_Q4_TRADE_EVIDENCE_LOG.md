@@ -619,3 +619,23 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 15
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.9530 - 1.0000 = -2.9530
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #16 — S5 opening-range-breakout LONG (bar 2813)
+
+```
+SIGNAL_BAR    2813 (2020-11-12 22:00:00-22:14:59 UTC, bis=5)
+ENTRY          1877.526
+INITIAL_STOP    1867.594 (= or_low 1867.614 - 2*TICK)
+STRUCTURAL_TARGET 1907.322 (= entry + 3R, R=9.932)
+```
+
+**THESIS (frozen before bar 2814 was revealed):** mechanically triggered, no discretionary override.
+Close 1877.526 > or_high 1874.703 within the entry window. This is the deferred S5 signal that first
+surfaced on bar 2812 (Q4-P007-024's own reclaim bar) -- per the durable control-flow ordering
+invariant, P007 reasoning took priority for that bar's commit, and S5's own stateless evaluate()
+correctly re-checked and re-fired here on bar 2813 with a fresh entry price, exactly as expected --
+confirms the deferral mechanism works as designed, no signal was lost. This entry sits immediately
+after Q4-P007-024's massive 284-bar episode resolved SUPPORT at bar 2812.
+
+**INVALIDATION:** a close at or below 1867.594 (STOP). MAX_HOLD 48 bars from entry (through bar
+2861). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1887.458).
