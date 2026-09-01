@@ -538,3 +538,51 @@ at any point; no MGMT-004 relevance. No S5 trigger at any point (unconditional c
 bar). Classified REJECTED rather than SUPPORT: the two moderate-volume bars were isolated, not
 sustained/accelerating, and produced no fresh extreme -- same evidentiary-honesty standard applied
 to Q4-P007-005.
+
+---
+
+## Q4-P007-010
+
+```
+GATE_ORIGIN_BAR          1688 (2020-10-27 07:45:00 UTC)
+CONTEXT                   bars 1675-1684 ground quietly higher on thin volume (79-397), ~1908->1910
+BREAK_BAR                  1685 -- close 1908.842 -> 1906.336, low 1904.66, volume 620 (~2x baseline)
+CONTINUATION_BAR            1686 -- fresh local low 1904.231 (for the 1675-1685 window), volume 496
+RETEST_BOUNCE_BAR            1687 -- close 1905.947, volume dropped to 237
+RENEWED_BREAK_BAR (trigger)   1688 -- new low 1903.296 (below 1686's low), volume 453, close 1904.226
+CAUSAL_H1_EMA50_AT_1688        1904.801
+GAP                             -0.575pt -- largest gap magnitude of any candidate since Q4-P007-007
+```
+
+**PRE-CLASSIFICATION:** more credible signature than -008/-009's marginal touches -- a recognizable
+break/bounce-retest/renewed-break shape with volume elevated relative to the immediate baseline
+(453-620 vs 79-397). Not pre-committing to SUPPORT: volume is still well below TRADE #7-era levels
+(700-1700) and below -006/-007's eventual escalation peaks (792-1592). Watching for real continuation
+vs an early fade. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT / RECLAIM -- on different evidentiary grounds than -006/-007
+RESOLUTION_BAR         1708 (2020-10-27 15:15:00 UTC)
+DURATION                20 bars (1688-1707)
+DEEPEST_LOW              1897.914 (bar 1694) -- genuine fresh multi-hundred-bar extreme (lower than
+                        any low seen since at least bar 1610: 1900.066/1900.382/1903.074)
+HEAVIEST_VOLUME          619 (bar 1689)
+RECLAIM_CLOSE             1905.816
+CAUSAL_H1_EMA50_AT_RESOLUTION 1904.303 (margin +1.51pt)
+```
+
+Unlike -008/-009's isolated blips, this episode shows a SUSTAINED 7-bar directional decline (bars
+1688-1694) making progressively lower lows every single bar -- 1903.296 -> 1901.552 -> 1901.447 ->
+1900.854 -> 1900.28 -> 1898.86 -> 1897.914 -- with volume consistently elevated throughout that leg
+(453/619/532/501/383/552/378, all above the immediate pre-episode baseline of 79-397). Volume never
+reached -006/-007's escalation peaks (792-1592) and collapsed into a long thin consolidation (bars
+1695-1704, mostly 240-327) before a final push and reclaim on moderate volume (508/382/551/502). The
+SUSTAINED multi-bar progressive-new-lows character across the whole down-leg, plus the genuine fresh
+extreme, is real qualitative evidence PATTERN-007's definition is pointing at -- distinct from
+-008/-009's thin, isolated non-events, even without -006/-007's accelerating-volume signature. No
+trade was open at any point; no MGMT-004 relevance. No S5 trigger at any point (unconditional check
+confirmed each bar). Fifth genuinely-resolved SUPPORT instance in Q4 (after Q4-P007-003, Q4-P007-004,
+Q4-P007-006, Q4-P007-007) -- the first identified primarily by sustained directional character plus a
+fresh extreme rather than accelerating volume alone.
