@@ -1483,3 +1483,36 @@ SPAN: 2020-12-04T22:00:00Z (last close 1838.79, Q4 bar 4287, Friday) -> 2020-12-
 open 1838.79, Q4 bar 4288, Sunday)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified WEEKEND
 -- did not require a reasoning stop.
+
+### GAP-196 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport] -- REQUIRED A REASONING STOP
+TYPE: Non-standard (30min, does not fit the mechanical WEEKEND or MAINTENANCE shape)
+SPAN: 2020-12-07T22:00:00Z (Q4 bar 4380 row -- inside TRADE #27's open hold) -> 2020-12-07T22:30:00Z
+(Q4 bar 4381)
+DURATION: 30 minutes (1,800s)
+CLASSIFICATION MECHANICS: `classify_gap()` uses the PREVIOUS bar's own raw CSV timestamp (its
+`ts_open`, per `sealed_reader.py`'s `gap_start=prev_ts`) as the start of the gap, not that bar's
+`ts_close` -- a distinction this ledger's own prose has been describing loosely as "last close" in
+recent entries (GAP-183 through -195), which remains factually accurate for the verification (the
+zero-price-gap check genuinely compares last-close to first-open) but is 15 minutes later than the
+actual `start_hour` value the classifier evaluates. For bar 4380 (ts_open 22:00 UTC), `start_hour=22`
+falls outside the mechanical MAINTENANCE window (`start_hour in (20,21)`), so `classify_gap()`
+correctly, mechanically returns UNEXPECTED here -- this is not a bug. (Re-verified against GAP-183's
+own values: bar 3212's ts_open was 21:45 UTC, hour=21, which DOES fall inside the window at exactly
+the 75-minute duration ceiling -- confirming that entry's MAINTENANCE classification was correct
+despite the "last close ~22:00" framing used in its prose.)
+VERIFICATION: exact last-close (bar 4380 close 1862.608) == first-open (bar 4381 open 1862.608) match
+(zero-price-gap) -- confirmed via direct read of the source CSV. Both bracketing bars are extremely
+thin (volume 1 and 2 respectively, versus the ~100-250 baseline seen just before and after), fully
+consistent with the tail end of the ordinary daily illiquid-close window, just one hour later than the
+classifier's hard-coded assumption and narrower (30min vs the usual ~60-75min) -- not a missing-data
+or corruption issue.
+IMPACT ON OPEN STATE: bar 4381 was independently checked since the runner's early break skipped its
+normal bookkeeping: (1) P007 -- no candidate was open; a direct causal-H1-EMA recompute through bar
+4381 shows close 1857.45 sits far ABOVE the EMA (1842.407, gap +15.04pt) -- no P007 trigger is
+possible on a close this far above the EMA. (2) S5 -- bar 4381 opens 22:30 UTC, outside the NY session
+window [13:00,21:00) UTC entirely. (3) TRADE #27 (open since bar 4356, stop 1830.271) -- this bar's
+low (1856.95) and close (1857.45) sit well above the stop, unthreatened. Committed as ROUTINE_NO_EVENT
+(trade continues), the same decision the normal control flow would have produced. Not flagged as a
+genuine causal-integrity blocker -- data integrity is verified intact and the shape is fully explained
+by the ordinary daily illiquid-close window falling one hour outside the classifier's fixed window;
+the replay continues.
