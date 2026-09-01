@@ -1981,3 +1981,29 @@ relevance.
 recent volatility/volume argues some weight toward SUPPORT, but the lack of a genuine full-stretch
 fresh extreme and the trigger bar's own moderate (not accelerating) volume argue the other way.
 Recorded honestly as a close call, not forced into a lean it doesn't earn.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4264 (2020-12-04 16:00:00 UTC)
+DURATION                2 bars (4263-4264) -- the fastest resolution since the shallowest dead-chop
+                          episodes
+DEEPEST_LOW              1829.276 (bar 4263, the gate origin itself)
+HEAVIEST_VOLUME          1450 (bar 4263, the break bar) -- modestly higher than the reclaim bar's 995,
+                          but not by a dramatic margin
+RECLAIM_CLOSE             1833.948 -- essentially a FULL round-trip back to the pre-episode level
+                          (bar 4262 close 1834.968, only -1.02pt short)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1833.5809 (margin +0.37pt)
+```
+
+The pre-classification's genuine uncertainty resolves cleanly once the actual reclaim evidence is in:
+a 2-bar episode, no fresh extreme, and an essentially complete round-trip. No trade was open; no
+MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the preceding volatility (bar
+4254's whipsaw) turned out not to carry through into this specific gate origin's own episode -- by the
+time this candidate opened, the market had already absorbed that volatility and this dip was just an
+ordinary, quickly-reversed pullback. A useful reminder that recent volatility in the surrounding
+context does not automatically transfer weight to the NEXT candidate that happens to follow it --
+each episode's own evidence (duration, round-trip, volume placement) still has to be judged on its
+own terms.
