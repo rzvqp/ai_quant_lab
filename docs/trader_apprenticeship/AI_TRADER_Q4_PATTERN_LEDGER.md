@@ -2687,3 +2687,31 @@ origin-heavy signature), the low is a near-record continuing the same well-estab
 and the retracement is comfortably partial. The thin reclaim margin (+0.16pt) reflects EMA proximity,
 not a weak underlying move, consistent with -045/-053's own pattern. A confident SUPPORT read, the
 fourth consecutive confirmed episode in this decline chain.
+
+---
+
+## Q4-P007-058
+
+```
+GATE_ORIGIN_BAR          5014 (2020-12-16 19:00:00 UTC)
+CONTEXT                    a calm, steady climb from ~1841 (bar 4872) to ~1863 (bar 4980), then a
+                            gentle pullback to ~1854-1857 (bars 4995-5013, thin volume 180-300)
+TRIGGER_CLOSE                1848.839
+TRIGGER_LOW                   1848.552 -- NOT a fresh extreme (well above -057's 1822.282)
+CAUSAL_H1_EMA50_AT_5014       1849.4245
+GAP                            -0.586pt -- shallow, despite the dramatic bar
+VOLUME                          3784 -- MASSIVE, among the heaviest single-bar volumes in the entire
+                                 Q4 replay (comparable to -052's 3220, -038's 2554), a genuine outlier
+                                 against the thin 180-500 baseline of the preceding weeks
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain -- an unusual combination: the gap is shallow (price had
+been climbing steadily, so the EMA sat close by), but the volume is dramatic and the single-bar range
+is wide (1848.552-1857.826, ~9.3pt), a real, sharp reversal-type event, not an ordinary dip. Not
+pre-committing; this directly tests whether massive volume alone, without either a deep gap or a fresh
+extreme, is sufficient -- a genuinely novel combination not yet seen in this ledger. POSITION=FLAT; no
+MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a useful test case precisely
+because it decouples volume from the other two components (gap depth, fresh extreme) that have
+usually moved together -- the resolution evidence will show whether volume magnitude alone can carry
+real weight.
