@@ -1463,3 +1463,21 @@ continuation of the same broad volatility regime as -024's 2020-11-09 shock -- n
 causally. No trade was open; no MGMT-004 relevance. Ninth genuinely-resolved SUPPORT instance in Q4
 (after Q4-P007-003, Q4-P007-004, Q4-P007-006, Q4-P007-007, Q4-P007-010, Q4-P007-015, Q4-P007-019,
 Q4-P007-024).
+
+---
+
+## Q4-P007-034
+
+```
+GATE_ORIGIN_BAR          3055 (2020-11-17 05:30:00 UTC)
+CONTEXT                    bars 3050-3054 thin volume (121-255), tight range, no direction
+TRIGGER_CLOSE                1886.254
+TRIGGER_LOW                   1884.891 -- a modest fresh dip
+CAUSAL_H1_EMA50_AT_3055       1886.775
+GAP                            -0.52pt
+VOLUME                          542 -- a real step-up (2-4x the immediate baseline), though modest
+                              in absolute terms
+```
+
+**PRE-CLASSIFICATION:** some character here but modest scale -- not pre-committing, watching for
+real continuation vs an early fade. POSITION=FLAT; no MGMT-004 relevance.
