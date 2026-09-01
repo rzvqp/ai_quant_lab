@@ -906,3 +906,20 @@ VOLUME                          454 -- unremarkable vs the recent baseline
 
 **PRE-CLASSIFICATION:** leaning REJECTED, matching the ordinary-chop signature of -016/-017.
 POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2027 (2020-11-01 23:45:00 UTC)
+DURATION                15 bars (2012-2026)
+DEEPEST_LOW              1873.504 (bar 2025) -- only a modest extension below -016/-017's recent lows
+HEAVIEST_VOLUME          970 (bar 2025) -- a late bump, not sustained
+RECLAIM_CLOSE             1879.468
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.023 (margin +0.45pt)
+```
+
+Mostly thin/moderate volume throughout (136-507), one late bump that wasn't sustained. GAP-171
+(standard weekend, 50h, spanning US DST end) sat inside the episode. No sustained directional or
+volume-accelerating character at any point -- an ordinary, unremarkable episode despite the longer
+duration. No trade was open; no MGMT-004 relevance. No S5 trigger.

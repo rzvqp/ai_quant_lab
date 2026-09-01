@@ -1289,3 +1289,12 @@ SPAN: 2020-10-29T20:59:59Z (last close 1867.959, Q4 bar 1924, Thursday -- inside
 hold and Q4-P007-015's still-open episode) -> 2020-10-29T22:00:00Z (first open 1867.959, Q4 bar 1925)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-171 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard weekend (~50h), reopen shifted 1h later than usual weekend gaps
+SPAN: 2020-10-30T20:59:59Z (last close 1878.952, Q4 bar 2016, Friday -- inside Q4-P007-018's open
+episode) -> 2020-11-01T23:00:00Z (first open 1878.952, Q4 bar 2017, Sunday)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified WEEKEND
+-- did not require a reasoning stop. The 1h-later-than-usual reopen (23:00Z vs the ~22:00Z seen in
+GAP-166) reflects US DST ending on 2020-11-01 -- a real, correctly-observed calendar effect, not an
+anomaly.
