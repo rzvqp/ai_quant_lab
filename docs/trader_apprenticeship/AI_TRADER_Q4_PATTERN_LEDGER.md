@@ -1949,3 +1949,35 @@ and the individual, non-assumed reasoning applied to it (rather than extrapolati
 reclaims keep failing" streak) correctly caught that. Evidence that treating each candidate on its own
 merits, as instructed, matters in practice -- assuming this would repeat the prior pattern would have
 been wrong here.
+
+---
+
+## Q4-P007-043
+
+```
+GATE_ORIGIN_BAR          4263 (2020-12-04 15:45:00 UTC)
+CONTEXT                    a genuinely volatile stretch precedes this: bar 4254 (5190 volume, a wide
+                            1833.318-1847.976 whipsaw range) kicked off several bars of elevated
+                            volume (2847/2530/2048/1912), a push up to ~1848, then a reversal down
+                            through bars 4259-4263 on still-elevated volume (1341-1664)
+TRIGGER_CLOSE                1832.146
+TRIGGER_LOW                   1829.276 -- a fresh LOCAL low relative to the last ~30 bars, but NOT a
+                              fresh extreme relative to the full stretch (bar 4172's 1823.772, well
+                              earlier, sits deeper)
+CAUSAL_H1_EMA50_AT_4263       1833.5809
+GAP                            -1.435pt -- a meaningful, not shallow, break
+VOLUME                          1450 -- moderate, below the 4254-4258 volume spike but still elevated
+                                 versus the thin baseline seen earlier in this range (bars 4180-4240,
+                                 mostly 130-620)
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain -- an intermediate case, not a clean read either way. The
+preceding volatility (the 4254 whipsaw and its aftermath) is real, elevated activity, distinguishing
+this from the simplest shallow-dip origins (-037/-039/-042). But the trigger bar's own low is only a
+local, not a full-stretch, fresh extreme, and the gate-origin bar's own volume (1450) is well off the
+spike's peak (5190). Not pre-committing; leaning neither way strongly. POSITION=FLAT; no MGMT-004
+relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a mixed read -- meaningful
+recent volatility/volume argues some weight toward SUPPORT, but the lack of a genuine full-stretch
+fresh extreme and the trigger bar's own moderate (not accelerating) volume argue the other way.
+Recorded honestly as a close call, not forced into a lean it doesn't earn.
