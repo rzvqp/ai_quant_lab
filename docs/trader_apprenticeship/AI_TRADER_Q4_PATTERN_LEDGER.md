@@ -1531,3 +1531,23 @@ emerging volume-persistence + fresh-extreme discriminator's REJECTED profile exa
 sustaining past the trigger bar (472 -> 397, no growth), no fresh extreme, full reclaim within 1
 bar. Fourth consecutive REJECTED reading of the same dead-chop stretch (-032 through -035),
 consistent with the discriminator's own prediction, not a counterexample.
+
+---
+
+## Q4-P007-036
+
+```
+GATE_ORIGIN_BAR          3083 (2020-11-17 12:30:00 UTC)
+CONTEXT                    bars 3078-3082 thin-moderate volume (196-392), tight range, no direction
+TRIGGER_CLOSE                1887.068
+TRIGGER_LOW                   1886.978 -- a modest step up in volume but still thin in absolute terms
+CAUSAL_H1_EMA50_AT_3083       1887.289
+GAP                            -0.22pt
+VOLUME                          444
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED on the actual evidence for this bar. Not pre-committing.
+POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
+discriminator's SUPPORT-leaning signature (no sustained/growing volume, no fresh extreme) --
+consistent with, not the basis for, the REJECTED lean.
