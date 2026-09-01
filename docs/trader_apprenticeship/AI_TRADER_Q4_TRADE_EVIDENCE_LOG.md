@@ -123,7 +123,7 @@ without reaching the batch runner's heavy-volume-crossing threshold. No new Q4 p
 
 **OUTCOME:** ran the full 48-bar hold, never threatening either stop or target.
 ```
-EXIT_BAR      1030 (2020-10-16 15:15:00-15:29:59 UTC)
+EXIT_BAR      1030 (2020-10-16 04:15:00-04:30:00 UTC)
 EXIT_REASON    MAX_HOLD
 EXIT_PRICE     1904.56
 R_MULTIPLE     -0.005 (essentially flat)
@@ -143,7 +143,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 
 ```
 STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
-SIGNAL_BAR              1256 (2020-10-20 15:45:00-15:59:59 UTC, NY session bis=8)
+SIGNAL_BAR              1256 (2020-10-20 14:45:00-15:00:00 UTC, NY session bis=8)
 DIRECTION               LONG
 ENTRY                   1908.914
 INITIAL_STOP             1899.446 (= or_low 1899.466 - 2*TICK)
@@ -159,7 +159,7 @@ TRADE #2/#3. No new Q4 price/volume record.
 
 **OUTCOME (CONTROL and SHADOW converged):**
 ```
-EXIT_BAR (both)  1304 (2020-10-21 15:45:00-15:59:59 UTC)
+EXIT_BAR (both)  1304 (2020-10-21 03:45:00-04:00:00 UTC)
 EXIT_REASON       MAX_HOLD (both tracks)
 EXIT_PRICE        1917.711 (both tracks)
 R_MULTIPLE        +0.929 (both tracks)
@@ -186,7 +186,7 @@ separately-remembered step.
 
 ```
 STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
-SIGNAL_BAR              1345 (2020-10-23 15:30:00-15:44:59 UTC, NY session bis=5)
+SIGNAL_BAR              1345 (2020-10-21 14:00:00-14:15:00 UTC, NY session bis=5)
 DIRECTION               LONG
 ENTRY                   1928.046
 INITIAL_STOP             1921.947 (= or_low 1921.967 - 2*TICK)
@@ -220,7 +220,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 
 ```
 STRATEGY               s5_c_2d587447_opening_range_breakout_long (rep_7472f3d412f2)
-SIGNAL_BAR              1353 (2020-10-21 15:45:00-15:59:59 UTC, bis=13, SAME session as TRADE #5)
+SIGNAL_BAR              1353 (2020-10-21 16:00:00-16:15:00 UTC, bis=13, SAME session as TRADE #5)
 DIRECTION               LONG
 ENTRY                   1927.102
 INITIAL_STOP             1921.947 (= or_low 1921.967 - 2*TICK, same OR as TRADE #5)
@@ -330,7 +330,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #9 — S5 opening-range-breakout LONG (bar 1896)
 
 ```
-SIGNAL_BAR    1896 (2020-10-29 01:00:00-01:14:59 UTC, bis=4)
+SIGNAL_BAR    1896 (2020-10-29 13:45:00-14:00:00 UTC, bis=4)
 ENTRY          1871.904
 INITIAL_STOP    1860.060 (= or_low 1860.08 - 2*TICK)
 STRUCTURAL_TARGET 1907.436 (= entry + 3R, R=11.844)
@@ -355,7 +355,7 @@ unresolved as of TRADE #9's entry -- price has never closed back above the causa
 Both subsystems are being tracked independently per the durable control-flow ordering invariant; see
 `AI_TRADER_Q4_PATTERN_LEDGER.md`.
 
-**OUTCOME:** MAX_HOLD exit at bar 1944 (2020-10-30 09:00:00 UTC), price 1874.655 (bar's own close).
+**OUTCOME:** MAX_HOLD exit at bar 1944 (2020-10-30 03:00:00 UTC), price 1874.655 (bar's own close).
 ```
 EXIT_BAR      1944
 EXIT_REASON    MAX_HOLD
@@ -379,7 +379,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #10 — S5 opening-range-breakout LONG (bar 2085)
 
 ```
-SIGNAL_BAR    2085 (2020-11-02 15:15:00-15:29:59 UTC, bis=13)
+SIGNAL_BAR    2085 (2020-11-02 16:00:00-16:15:00 UTC, bis=13)
 ENTRY          1894.492
 INITIAL_STOP    1887.215 (= or_low 1887.235 - 2*TICK)
 STRUCTURAL_TARGET 1916.323 (= entry + 3R, R=7.277)
@@ -395,7 +395,7 @@ throughout. Volume picked up notably in the final approach (bars 2080-2085: 1189
 **INVALIDATION:** a close at or below 1887.215 (STOP). MAX_HOLD 48 bars from entry (through bar
 2133). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1901.769).
 
-**OUTCOME:** MAX_HOLD exit at bar 2133 (2020-11-03 08:15:00 UTC), price 1892.602 (bar's own close).
+**OUTCOME:** MAX_HOLD exit at bar 2133 (2020-11-03 05:15:00 UTC), price 1892.602 (bar's own close).
 ```
 EXIT_BAR      2133
 EXIT_REASON    MAX_HOLD
@@ -417,7 +417,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #11 — S5 opening-range-breakout LONG (bar 2175)
 
 ```
-SIGNAL_BAR    2175 (2020-11-04 01:15:00-01:29:59 UTC, bis=11)
+SIGNAL_BAR    2175 (2020-11-03 15:30:00-15:45:00 UTC, bis=11)
 ENTRY          1908.178
 INITIAL_STOP    1899.309 (= or_low 1899.329 - 2*TICK)
 STRUCTURAL_TARGET 1934.785 (= entry + 3R, R=8.869)
@@ -435,7 +435,7 @@ the visible price/volume pattern, not on any assumed cause.
 **INVALIDATION:** a close at or below 1899.309 (STOP). MAX_HOLD 48 bars from entry (through bar
 2223). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1917.047).
 
-**OUTCOME:** STOP hit at bar 2209 (2020-11-03 23:15:00 UTC), price 1899.309.
+**OUTCOME:** STOP hit at bar 2209 (2020-11-04 01:15:00 UTC), price 1899.309.
 ```
 EXIT_BAR      2209
 EXIT_REASON    STOP
@@ -465,7 +465,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #12 — S5 opening-range-breakout LONG (bar 2352)
 
 ```
-SIGNAL_BAR    2352 (2020-11-05 23:15:00-23:29:59 UTC, bis=4)
+SIGNAL_BAR    2352 (2020-11-05 13:45:00-14:00:00 UTC, bis=4)
 ENTRY          1931.738
 INITIAL_STOP    1924.940 (= or_low 1924.96 - 2*TICK)
 STRUCTURAL_TARGET 1952.132 (= entry + 3R, R=6.798)
@@ -481,7 +481,7 @@ up to 1557 at bar 2347), including a genuine impulsive push at bar 2347 (+6.4pt 
 **INVALIDATION:** a close at or below 1924.940 (STOP). MAX_HOLD 48 bars from entry (through bar
 2400). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1938.536).
 
-**OUTCOME:** TARGET hit at bar 2362 (2020-11-06 02:15:00 UTC), price 1952.132.
+**OUTCOME:** TARGET hit at bar 2362 (2020-11-05 16:30:00 UTC), price 1952.132.
 ```
 EXIT_BAR      2362
 EXIT_REASON    TARGET
@@ -504,7 +504,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #13 — S5 opening-range-breakout LONG (bar 2363)
 
 ```
-SIGNAL_BAR    2363 (2020-11-06 02:30:00-02:44:59 UTC, bis=15)
+SIGNAL_BAR    2363 (2020-11-05 16:30:00-16:45:00 UTC, bis=15)
 ENTRY          1947.384
 INITIAL_STOP    1924.940 (= or_low 1924.96 - 2*TICK -- SAME or_low as TRADE #12)
 STRUCTURAL_TARGET 2014.716 (= entry + 3R, R=22.444)
@@ -523,7 +523,7 @@ this time (22.444 vs TRADE #12's 6.798).
 **INVALIDATION:** a close at or below 1924.940 (STOP). MAX_HOLD 48 bars from entry (through bar
 2411). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1969.828).
 
-**OUTCOME:** MAX_HOLD exit at bar 2411 (2020-11-06 14:15:00 UTC), price 1939.4 (bar's own close).
+**OUTCOME:** MAX_HOLD exit at bar 2411 (2020-11-06 05:45:00 UTC), price 1939.4 (bar's own close).
 ```
 EXIT_BAR      2411
 EXIT_REASON    MAX_HOLD
@@ -545,7 +545,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #14 — S5 opening-range-breakout LONG (bar 2445)
 
 ```
-SIGNAL_BAR    2445 (2020-11-06 21:30:00-21:44:59 UTC, bis=5)
+SIGNAL_BAR    2445 (2020-11-06 14:00:00-14:15:00 UTC, bis=5)
 ENTRY          1960.285
 INITIAL_STOP    1948.100 (= or_low 1948.12 - 2*TICK)
 STRUCTURAL_TARGET 1996.840 (= entry + 3R, R=12.185)
@@ -561,7 +561,7 @@ followed 2 more bars of continuation.
 **INVALIDATION:** a close at or below 1948.100 (STOP). MAX_HOLD 48 bars from entry (through bar
 2493). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1972.470).
 
-**OUTCOME:** STOP hit at bar 2447 (2020-11-06 22:15:00 UTC), price 1948.100.
+**OUTCOME:** STOP hit at bar 2447 (2020-11-06 14:45:00 UTC), price 1948.100.
 ```
 EXIT_BAR      2447
 EXIT_REASON    STOP
@@ -583,7 +583,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #15 — S5 opening-range-breakout LONG (bar 2633)
 
 ```
-SIGNAL_BAR    2633 (2020-11-10 09:30:00-09:44:59 UTC, bis=9)
+SIGNAL_BAR    2633 (2020-11-10 15:00:00-15:15:00 UTC, bis=9)
 ENTRY          1883.906
 INITIAL_STOP    1873.664 (= or_low 1873.684 - 2*TICK)
 STRUCTURAL_TARGET 1914.632 (= entry + 3R, R=10.242)
@@ -602,7 +602,7 @@ of it. GAP-177 (standard, 60min) sat inside the episode.
 episode's decline resumed. MAX_HOLD 48 bars from entry (through bar 2681). MGMT-004 breakeven
 trigger at first M15 close >= +1.0R (>= 1894.148).
 
-**OUTCOME:** STOP hit at bar 2656 (2020-11-10 16:15:00 UTC), price 1873.664.
+**OUTCOME:** STOP hit at bar 2656 (2020-11-10 21:00:00 UTC), price 1873.664.
 ```
 EXIT_BAR      2656
 EXIT_REASON    STOP
@@ -623,7 +623,7 @@ POSITION_AFTER_THIS_TRADE = FLAT
 ## TRADE #16 — S5 opening-range-breakout LONG (bar 2813)
 
 ```
-SIGNAL_BAR    2813 (2020-11-12 22:00:00-22:14:59 UTC, bis=5)
+SIGNAL_BAR    2813 (2020-11-12 14:00:00-14:15:00 UTC, bis=5)
 ENTRY          1877.526
 INITIAL_STOP    1867.594 (= or_low 1867.614 - 2*TICK)
 STRUCTURAL_TARGET 1907.322 (= entry + 3R, R=9.932)

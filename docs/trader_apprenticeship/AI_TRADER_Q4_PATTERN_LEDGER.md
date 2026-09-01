@@ -245,8 +245,8 @@ hours net of the GAP-155 rollover) before resolving -- see RESOLUTION below.
 ```
 STATUS               RESOLVED
 CLASSIFICATION        SUPPORT / EXTREME_DELAYED_RECLAIM
-TRIGGER_BAR           340 (2020-10-06 15:59:59 UTC)
-RESOLUTION_BAR         487 (2020-10-08 06:44:59 UTC)
+TRIGGER_BAR           340 (2020-10-06 16:00:00 UTC)
+RESOLUTION_BAR         487 (2020-10-08 06:45:00 UTC)
 DURATION               147 consecutive M15 bars below causal H1 EMA50 (340-486 inclusive)
 RECLAIM_CLOSE           1893.26
 CAUSAL_H1_EMA50_AT_RESOLUTION   1891.748 (independently reconstructed and cross-validated by two
@@ -302,7 +302,7 @@ to flag a heavy-volume EMA-crossing going forward so this gap does not recur sil
 ```
 STATUS               RESOLVED (identified retrospectively -- see disclosure above)
 CLASSIFICATION        SUPPORT / RECLAIM (duration comparable to, though shorter than, Q4-P007-003)
-TRIGGER_BAR           787 (2020-10-13 12:29:59 UTC) -- close 1916.054, real volume 1929, first close
+TRIGGER_BAR           787 (2020-10-13 12:45:00 UTC) -- close 1916.054, real volume 1929, first close
                       below the causal H1 EMA50 (1918.2) since the bar-608-trade-era rally began.
                       Immediate, real-volume follow-through: bar 788 close 1909.671 (vol 2718, H1
                       candle closes this bar), bar 789 close 1907.557 (vol 2747).
@@ -310,7 +310,7 @@ STRUCTURAL_LEVEL      Not independently identified against a specific pre-regist
                       (unlike Q4-P007-001/002/003, which broke a specifically-named prior low) --
                       this is a descriptive gap of the retrospective identification, disclosed rather
                       than backfilled with an invented level.
-RESOLUTION_BAR         878 (2020-10-14 12:14:59 UTC) -- close 1905.436 > causal H1 EMA50 1904.592
+RESOLUTION_BAR         878 (2020-10-14 12:30:00 UTC) -- close 1905.436 > causal H1 EMA50 1904.592
 DURATION               91 consecutive M15 bars below causal H1 EMA50 (787-877 inclusive)
 DEEPEST_LOW_THIS_EPISODE 1882.434 (bar 834) -- well above the all-time Q4 low (1872.898, bar 375),
                         not a new record
@@ -353,7 +353,7 @@ gate's lock without asserting a false SUPPORT/COUNTEREXAMPLE). Not pre-committin
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         1402 (2020-10-22 05:29:59 UTC)
+RESOLUTION_BAR         1402 (2020-10-22 05:30:00 UTC)
 DURATION               13 bars (1389-1401)
 DEEPEST_LOW             1911.26 (bar 1390)
 HEAVIEST_VOLUME         411 (bar 1390) -- never exceeded 411 across the whole 13-bar window; most
@@ -385,7 +385,7 @@ bars) and are not retroactively rewritten.
 ```
 EPISODE_ORIGIN_BAR      1425 (2020-10-22 11:00:00 UTC) -- gap -0.24pt, vol 243, REJECTED (trivial)
 PRIOR_RE-FLAGS           1426 (gap -0.33pt, vol 226, REJECTED), 1428 (gap -1.64pt, vol 282, REJECTED)
-ESCALATION_BAR           1429 (2020-10-22 11:45:00-11:59:59 UTC) -- genuinely different character
+ESCALATION_BAR           1429 (2020-10-22 12:00:00-12:15:00 UTC) -- genuinely different character
 ESCALATION_CLOSE          1905.122
 ESCALATION_LOW             1904.721 -- fresh 60-bar low, ~10pt intrabar range in one M15 bar
 CAUSAL_H1_EMA50_AT_1429   1915.865 (gap -10.74pt -- far larger than any prior bar in this episode)
@@ -403,8 +403,8 @@ earlier bars). Not pre-committing to either outcome.
 ```
 STATUS               RESOLVED
 CLASSIFICATION        SUPPORT / RECLAIM
-ESCALATION_BAR (real trigger)  1429 (2020-10-22 11:45:00 UTC)
-RESOLUTION_BAR                  1506 (2020-10-23 09:44:59 UTC)
+ESCALATION_BAR (real trigger)  1429 (2020-10-22 12:15:00 UTC)
+RESOLUTION_BAR                  1506 (2020-10-23 08:30:00 UTC)
 DURATION_FROM_ESCALATION        77 bars (1429-1505 inclusive)
 DURATION_FROM_GATE_ORIGIN       81 bars (1425-1505 inclusive) -- includes the 4 genuinely-trivial
                                 bars (1425/1426/1428, already individually REJECTED; not reopened)
@@ -431,7 +431,7 @@ GATE_ORIGIN_BAR          1525 (trivial at first; bars 1525/1526 individually rej
 GENUINE_ESCALATION_BAR    1527 (2020-10-23 13:30:00 UTC) -- caps an 8-bar accelerating-volume
                           decline (bars 1520-1527, NY session): volume 326/442/623/511/629/660/
                           792/1592, roughly quadrupling. Close 1907.01, gap -3.01pt at that bar.
-RESOLUTION_BAR             1608 (2020-10-26 09:44:59 UTC)
+RESOLUTION_BAR             1608 (2020-10-26 11:00:00 UTC)
 DURATION_FROM_ORIGIN        83 bars (1525-1607)
 DURATION_FROM_ESCALATION    81 bars (1527-1607)
 DEEPEST_LOW                 1891.508
@@ -455,7 +455,7 @@ confirmed). No trade/MGMT-004 decision affected.
 commit `44aee88`) for the first time -- CEO authorization to resume from bar 1632.**
 
 ```
-GATE_ORIGIN_BAR          1631 (2020-10-26 12:30:00 UTC) -- retroactively confirmed once bar 1632's
+GATE_ORIGIN_BAR          1631 (2020-10-26 16:45:00 UTC) -- retroactively confirmed once bar 1632's
                           reveal closed the containing H1 hour (causal H1 EMA only reflects fully-
                           closed hours; the crossing was not computable until then)
 TRIGGER_CLOSE (1631)      1904.15
@@ -480,7 +480,7 @@ confirmed, per the durable control-flow ordering invariant).
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         1633 (2020-10-26 13:00:00 UTC)
+RESOLUTION_BAR         1633 (2020-10-26 17:15:00 UTC)
 DURATION                3 bars (1631-1633)
 DEEPEST_LOW              1903.074 (bar 1632)
 HEAVIEST_VOLUME          333 (bar 1631) -- never exceeded across the whole episode
@@ -499,7 +499,7 @@ episode (unconditional check confirmed each bar).
 ## Q4-P007-009
 
 ```
-GATE_ORIGIN_BAR          1634 (2020-10-26 13:15:00 UTC) -- only 1 bar after Q4-P007-008 resolved
+GATE_ORIGIN_BAR          1634 (2020-10-26 17:30:00 UTC) -- only 1 bar after Q4-P007-008 resolved
                           REJECTED; price is chopping sideways around a flat causal H1 EMA50 rather
                           than making a decisive move
 TRIGGER_CLOSE               1904.115
@@ -518,7 +518,7 @@ Watching for reclaim vs genuine volume-confirmed escalation. POSITION=FLAT; no M
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance (closer to the line than -008)
-RESOLUTION_BAR         1658 (2020-10-26 22:15:00 UTC)
+RESOLUTION_BAR         1658 (2020-10-27 00:30:00 UTC)
 DURATION                24 bars (1634-1657)
 DEEPEST_LOW              1900.382 (bar 1635) -- not a fresh extreme; bars 1613/1616/1617 already
                         printed lower (1900.066-1900.874) earlier in the same consolidation
@@ -564,7 +564,7 @@ vs an early fade. POSITION=FLAT; no MGMT-004 relevance.
 
 ```
 STATUS               SUPPORT / RECLAIM -- on different evidentiary grounds than -006/-007
-RESOLUTION_BAR         1708 (2020-10-27 15:15:00 UTC)
+RESOLUTION_BAR         1708 (2020-10-27 13:00:00 UTC)
 DURATION                20 bars (1688-1707)
 DEEPEST_LOW              1897.914 (bar 1694) -- genuine fresh multi-hundred-bar extreme (lower than
                         any low seen since at least bar 1610: 1900.066/1900.382/1903.074)
@@ -592,7 +592,7 @@ fresh extreme rather than accelerating volume alone.
 ## Q4-P007-011
 
 ```
-GATE_ORIGIN_BAR          1710 (2020-10-27 15:45:00 UTC) -- immediately after Q4-P007-010's reclaim
+GATE_ORIGIN_BAR          1710 (2020-10-27 13:30:00 UTC) -- immediately after Q4-P007-010's reclaim
                           (bar 1708) and a follow-through push bar (1709: close 1905.575, high
                           1907.636, volume 783)
 TRIGGER_CLOSE               1904.271
@@ -610,7 +610,7 @@ not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         1711 (2020-10-27 16:15:00 UTC)
+RESOLUTION_BAR         1711 (2020-10-27 13:45:00 UTC)
 DURATION                2 bars (1710-1711)
 DEEPEST_LOW              1902.13 (bar 1711, intrabar -- a minor undershoot, not a fresh extreme;
                         -010's low of 1897.914 stands untouched)
@@ -788,7 +788,7 @@ logged inside this stretch.
 
 ```
 STATUS               SUPPORT / RECLAIM -- clearest, most dramatic instance in Q4 so far
-RESOLUTION_BAR         1980 (2020-10-30 19:45:00 UTC)
+RESOLUTION_BAR         1980 (2020-10-30 12:00:00 UTC)
 DURATION                198 bars (1782-1979) -- by far the longest episode of the quarter
 DEEPEST_LOW              1860.08 (bar 1893) -- genuine fresh Q4-replay extreme
 HEAVIEST_VOLUME          4017 (bar 1895) -- roughly 8x this session's typical peak
@@ -819,7 +819,7 @@ in both duration and price magnitude.
 ## Q4-P007-016
 
 ```
-GATE_ORIGIN_BAR          1994 (2020-10-30 23:15:00 UTC) -- still-elevated-volume regime following
+GATE_ORIGIN_BAR          1994 (2020-10-30 15:30:00 UTC) -- still-elevated-volume regime following
                           Q4-P007-015's massive episode (bars 1981-1994 ran 700-2011 volume
                           throughout, well above the 100-500 baseline of most earlier candidates)
 CONTEXT                    post-reclaim rally to a high of 1889.756 (bar 1987, volume 716-1726),
@@ -839,7 +839,7 @@ failed rally topped out (SUPPORT). Not pre-committing. POSITION=FLAT; no MGMT-00
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         1996 (2020-10-31 00:00:00 UTC)
+RESOLUTION_BAR         1996 (2020-10-30 16:00:00 UTC)
 DURATION                3 bars (1994-1996)
 DEEPEST_LOW              1874.804 (bar 1995) -- barely below 1994's own low, nowhere near -015's
                         episode low of 1860.08
@@ -859,7 +859,7 @@ was open; no MGMT-004 relevance. No S5 trigger.
 ## Q4-P007-017
 
 ```
-GATE_ORIGIN_BAR          2003 (2020-10-31 01:30:00 UTC)
+GATE_ORIGIN_BAR          2003 (2020-10-30 17:45:00 UTC)
 CONTEXT                    volume normalizing from the 700-2011 regime (bars 1981-1996) back to a
                           moderate 420-889 range across bars 1997-2002, drifting sideways-to-lower
                           1878.5-1882.8
@@ -877,7 +877,7 @@ pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2004 (2020-10-31 01:45:00 UTC)
+RESOLUTION_BAR         2004 (2020-10-30 18:00:00 UTC)
 DURATION                2 bars (2003-2004)
 DEEPEST_LOW              1877.6 (bar 2003)
 HEAVIEST_VOLUME          584 (bar 2003)
@@ -894,7 +894,7 @@ MGMT-004 relevance. No S5 trigger.
 ## Q4-P007-018
 
 ```
-GATE_ORIGIN_BAR          2012 (2020-10-31 03:30:00 UTC)
+GATE_ORIGIN_BAR          2012 (2020-10-30 20:00:00 UTC)
 CONTEXT                    bars 2005-2011 held a tight 1878.5-1881.5 consolidation, thin-moderate
                           volume (277-757), no direction
 TRIGGER_CLOSE                1877.747
@@ -911,7 +911,7 @@ POSITION=FLAT; no MGMT-004 relevance.
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2027 (2020-11-01 23:45:00 UTC)
+RESOLUTION_BAR         2027 (2020-11-02 01:45:00 UTC)
 DURATION                15 bars (2012-2026)
 DEEPEST_LOW              1873.504 (bar 2025) -- only a modest extension below -016/-017's recent lows
 HEAVIEST_VOLUME          970 (bar 2025) -- a late bump, not sustained
@@ -929,7 +929,7 @@ duration. No trade was open; no MGMT-004 relevance. No S5 trigger.
 ## Q4-P007-019
 
 ```
-GATE_ORIGIN_BAR          2214 (2020-11-04 00:15:00 UTC) -- direct aftermath of TRADE #11's dramatic
+GATE_ORIGIN_BAR          2214 (2020-11-04 02:30:00 UTC) -- direct aftermath of TRADE #11's dramatic
                           stop-out (bar 2209, volume 4229); volume stayed extraordinarily elevated
                           the whole way through (bars 2210-2213: 1222-2471)
 TRIGGER_BAR                 2214 -- open 1903.888, high 1903.888, low 1890.952 (~13pt intrabar range,
@@ -950,7 +950,7 @@ pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 ```
 STATUS               SUPPORT / RECLAIM -- borderline vs -011/-013's REJECTED pattern, distinguished
                     by a partial (not full) retracement
-RESOLUTION_BAR         2217 (2020-11-04 01:00:00 UTC)
+RESOLUTION_BAR         2217 (2020-11-04 03:15:00 UTC)
 DURATION                3 bars (2214-2216)
 DEEPEST_LOW              1883.225 (bar 2215) -- close to but not past bar 2209's earlier stop-run
                         wick of 1882.212
@@ -976,7 +976,7 @@ Q4-P007-010, Q4-P007-015).
 ## Q4-P007-020
 
 ```
-GATE_ORIGIN_BAR          2218 (2020-11-04 01:15:00 UTC) -- immediately after Q4-P007-019's reclaim
+GATE_ORIGIN_BAR          2218 (2020-11-04 03:30:00 UTC) -- immediately after Q4-P007-019's reclaim
 TRIGGER_CLOSE                1895.776
 TRIGGER_LOW                   1894.641 -- no fresh extreme, sits inside -019's episode range
 CAUSAL_H1_EMA50_AT_2218       1895.822
@@ -992,7 +992,7 @@ a quiet-market marginal touch. Not pre-committing. POSITION=FLAT; no MGMT-004 re
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2219 (2020-11-04 01:30:00 UTC)
+RESOLUTION_BAR         2219 (2020-11-04 03:45:00 UTC)
 DURATION                2 bars (2218-2219)
 DEEPEST_LOW              1893.506 (bar 2219) -- no fresh extreme vs -019's episode range
 HEAVIEST_VOLUME          2415 (bar 2218)
@@ -1009,7 +1009,7 @@ MGMT-004 relevance. No S5 trigger.
 ## Q4-P007-021
 
 ```
-GATE_ORIGIN_BAR          2233 (2020-11-04 04:45:00 UTC)
+GATE_ORIGIN_BAR          2233 (2020-11-04 07:15:00 UTC)
 CONTEXT                    bars 2225-2232 chopped 1894.6-1903.3, volume 757-1492 (still elevated but
                           without directional character, oscillating both ways)
 TRIGGER_CLOSE                1895.44
@@ -1026,7 +1026,7 @@ pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance, despite 19-bar duration
-RESOLUTION_BAR         2252 (2020-11-04 05:45:00 UTC)
+RESOLUTION_BAR         2252 (2020-11-04 12:00:00 UTC)
 DURATION                19 bars (2233-2251)
 DEEPEST_LOW              1887.103 (bar 2247) -- does not undercut -019's low (1883.225), no fresh
                         extreme
@@ -1050,7 +1050,7 @@ relevance. No S5 trigger.
 ## Q4-P007-022
 
 ```
-GATE_ORIGIN_BAR          2273 (2020-11-04 09:45:00 UTC)
+GATE_ORIGIN_BAR          2273 (2020-11-04 17:15:00 UTC)
 CONTEXT                    bars 2265-2272 chopped 1898-1909.7, volume still elevated (1015-1953, same
                           post-election regime as -021)
 TRIGGER_CLOSE                1895.891
@@ -1068,7 +1068,7 @@ at resolution (same as -019/-021). Not pre-committing. POSITION=FLAT; no MGMT-00
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2280 (2020-11-04 10:45:00 UTC)
+RESOLUTION_BAR         2280 (2020-11-04 19:00:00 UTC)
 DURATION                7 bars (2273-2279)
 DEEPEST_LOW              1893.296 (bar 2277) -- does not undercut -021's low (1887.103), no fresh
                         extreme
@@ -1091,7 +1091,7 @@ No S5 trigger.
 ## Q4-P007-023
 
 ```
-GATE_ORIGIN_BAR          2281 (2020-11-04 11:00:00 UTC) -- immediately after Q4-P007-022's resolution
+GATE_ORIGIN_BAR          2281 (2020-11-04 19:15:00 UTC) -- immediately after Q4-P007-022's resolution
 TRIGGER_CLOSE                1896.886
 TRIGGER_LOW                   1896.58 -- no fresh extreme
 CAUSAL_H1_EMA50_AT_2281       1897.138
@@ -1106,7 +1106,7 @@ pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2283 (2020-11-04 11:30:00 UTC)
+RESOLUTION_BAR         2283 (2020-11-04 19:45:00 UTC)
 DURATION                3 bars (2281-2283)
 DEEPEST_LOW              1896.222 (bar 2282)
 HEAVIEST_VOLUME          468 (bar 2281)
@@ -1123,7 +1123,7 @@ exactly. No trade was open; no MGMT-004 relevance. No S5 trigger.
 ## Q4-P007-024
 
 ```
-GATE_ORIGIN_BAR          2528 (2020-11-09 22:45:00 UTC) -- unprecedented single-bar shock, zero
+GATE_ORIGIN_BAR          2528 (2020-11-09 12:00:00 UTC) -- unprecedented single-bar shock, zero
                           lead-in (bars 2515-2527 completely quiet: 1954-1961 range, volume 208-679)
 TRIGGER_BAR                 2528 -- open 1953.899, high 1957.354, low 1935.042 (22.3pt intrabar
                           range, LARGEST OF THE ENTIRE Q4 REPLAY), close 1938.474
@@ -1153,7 +1153,7 @@ gate has reclaimed. GAP-177 (standard, 60min) logged inside this stretch. Not re
 
 ```
 STATUS               SUPPORT / RECLAIM -- overwhelmingly the largest, most unambiguous instance in Q4
-RESOLUTION_BAR         2812 (2020-11-12 21:45:00 UTC)
+RESOLUTION_BAR         2812 (2020-11-12 14:00:00 UTC)
 DURATION                284 bars (2528-2811) -- by far the longest episode of the quarter
 DEEPEST_LOW              1850.53 (bar 2548) -- new Q4-replay-low, deepest of the entire replay
 HEAVIEST_VOLUME          8812 (bar 2529) -- THE HEAVIEST SINGLE-BAR VOLUME OF THE ENTIRE Q4 REPLAY,
@@ -1181,7 +1181,7 @@ Q4-P007-019), and by a wide margin the largest in every dimension.
 ## Q4-P007-025
 
 ```
-GATE_ORIGIN_BAR          2830 (2020-11-13 02:15:00 UTC) -- TRADE #16 open (entry 1877.526, currently
+GATE_ORIGIN_BAR          2830 (2020-11-12 18:30:00 UTC) -- TRADE #16 open (entry 1877.526, currently
                           ~1875.2, well clear of stop 1867.594; trade mechanics ran unconditionally)
 CONTEXT                    bars 2822-2829 gently declined 1883->1875, moderate volume (350-799), no
                           acceleration
@@ -1199,7 +1199,7 @@ pre-committing.
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2831 (2020-11-13 02:30:00 UTC)
+RESOLUTION_BAR         2831 (2020-11-12 18:45:00 UTC)
 DURATION                2 bars (2830-2831)
 DEEPEST_LOW              1874.331 (bar 2830)
 HEAVIEST_VOLUME          799 (bar 2830)
@@ -1216,7 +1216,7 @@ and MGMT-004 trigger. No S5 trigger.
 ## Q4-P007-026
 
 ```
-GATE_ORIGIN_BAR          2834 (2020-11-13 03:15:00 UTC) -- TRADE #16 open, well clear of stop and
+GATE_ORIGIN_BAR          2834 (2020-11-12 19:30:00 UTC) -- TRADE #16 open, well clear of stop and
                           MGMT-004; trade mechanics ran unconditionally
 CONTEXT                    bars 2832-2834 very quiet, thin volume (245-311), tiny drift lower
 TRIGGER_CLOSE                1876.073
@@ -1230,7 +1230,7 @@ GAP                            -0.29pt
 
 ```
 STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2835 (2020-11-13 03:30:00 UTC)
+RESOLUTION_BAR         2835 (2020-11-12 19:45:00 UTC)
 DURATION                2 bars (2834-2835)
 DEEPEST_LOW              1876.073 (bar 2834)
 HEAVIEST_VOLUME          382 (bar 2835)
@@ -1246,7 +1246,7 @@ pre-classification's REJECTED lean exactly. TRADE #16 remained open throughout. 
 ## Q4-P007-027
 
 ```
-GATE_ORIGIN_BAR          2837 (2020-11-13 03:45:00 UTC) -- immediately after -026's reclaim; TRADE
+GATE_ORIGIN_BAR          2837 (2020-11-12 20:15:00 UTC) -- immediately after -026's reclaim; TRADE
                           #16 open, well clear of stop and MGMT-004
 TRIGGER_CLOSE                1875.685
 TRIGGER_LOW                   1875.192 -- marginally undercuts -026's low (1876.073) by ~0.9pt
@@ -1256,3 +1256,18 @@ GAP                            -0.68pt
 
 **PRE-CLASSIFICATION:** leaning REJECTED -- continuation of the same trivial, thin chop pattern as
 -025/-026. Not pre-committing.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2843 (2020-11-12 21:45:00 UTC)
+DURATION                6 bars (2837-2842)
+DEEPEST_LOW              1874.154 (bar 2840)
+HEAVIEST_VOLUME          527 (bar 2841)
+RECLAIM_CLOSE             1876.416
+CAUSAL_H1_EMA50_AT_RESOLUTION 1876.355 (margin +0.06pt -- essentially dead-flat)
+```
+
+Extremely thin volume throughout (152-527), tight range, no directional conviction at any point. No
+fresh extreme. TRADE #16 remained open throughout. No S5 trigger.
