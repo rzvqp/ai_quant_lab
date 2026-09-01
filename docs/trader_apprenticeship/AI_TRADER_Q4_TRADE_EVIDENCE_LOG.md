@@ -976,3 +976,21 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 24
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.1863 - 0.4827 = -5.6690
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #25 — S5 opening-range-breakout LONG (bar 4079)
+
+```
+SIGNAL_BAR    4079 (2020-12-02 15:45:00-16:00:00 UTC, bis=12)
+ENTRY          1826.580
+INITIAL_STOP    1816.506 (= or_low 1816.526 - 2*TICK)
+STRUCTURAL_TARGET 1856.802 (= entry + 3R, R=10.074)
+```
+
+**THESIS (frozen before bar 4080 was revealed):** mechanically triggered, no discretionary override.
+Close 1826.58 > or_high 1826.36 within the entry window. Follows a choppy but net-positive stretch
+since TRADE #24's MAX_HOLD close (bar 4028-4060 climbed to ~1828, pulled back to ~1818 by bar 4070),
+then a renewed climb on rising volume into this breakout (1603/1327/1068/1130/1210/767 across bars
+4074-4079). No P007 candidates fired anywhere in this stretch.
+
+**INVALIDATION:** a close at or below 1816.506 (STOP). MAX_HOLD 48 bars from entry (through bar
+4127). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1836.654).
