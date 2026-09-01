@@ -2052,3 +2052,32 @@ extreme dominate the overall read. REJECTED, matching the pre-classification's l
 now-established character of this particular price zone (~1830-1835) as a choppy, low-conviction area
 following the earlier massive moves -- three of the last four candidates in this immediate stretch
 (-042, -043, -044) have resolved REJECTED.
+
+---
+
+## Q4-P007-045
+
+```
+GATE_ORIGIN_BAR          4325 (2020-12-07 08:15:00 UTC)
+CONTEXT                    a very quiet, thin 56-bar drift (bars 4270-4323, mostly 87-485 volume) in
+                            the 1833-1841 range, then a step-up in volume as price declined into this
+                            bar (bars 4324-4325: 1112/1093, well above the stretch's baseline)
+TRIGGER_CLOSE                1834.06
+TRIGGER_LOW                   1833.412 -- NOT a fresh extreme (bar 4290's 1833.113, within this same
+                              stretch, sits slightly deeper)
+CAUSAL_H1_EMA50_AT_4325       1835.4190
+GAP                            -1.359pt -- meaningful, not shallow
+VOLUME                          1093 -- a genuine acceleration versus the very thin recent baseline
+                                 (87-485), though the deepest low is not exceeded
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain, leaning slightly toward SUPPORT on the volume evidence --
+the two-bar volume step-up (1112, 1093) breaking out of an unusually thin, quiet stretch is a real
+signal, even though the low itself is not a fresh extreme. Not pre-committing; this is the kind of
+case the volume-persistence component of the emerging discriminator was meant to help distinguish from
+ordinary noise, and it will be watched for whether the volume actually persists into further bars or
+decays immediately. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a genuine test of the volume-
+persistence component in isolation from the fresh-extreme component (they disagree here) -- useful
+regardless of outcome for understanding whether volume alone can carry weight when the low doesn't
+confirm it.
