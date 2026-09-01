@@ -675,3 +675,21 @@ above the quieter 200-600 range earlier.
 
 **INVALIDATION:** a close at or below 1884.336 (STOP). MAX_HOLD 48 bars from entry (through bar
 2952). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1905.364).
+
+**OUTCOME:** MAX_HOLD exit at bar 2952 (2020-11-16 03:00:00 UTC), price 1895.383 (bar's own close).
+```
+EXIT_BAR      2952
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1895.383
+R_MULTIPLE     +0.0507
+```
+Choppy, directionless hold -- highest close of the whole 48-bar hold was only 1898.768 (bar 2949,
++0.37R), well short of MGMT-004 (+1.0R = 1905.364). Never came close to the stop either. No P007
+candidates fired at any point during this hold. One GAP-180 (standard weekend, 49h) sat inside the
+hold, standard.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 17
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.8576 + 0.0507 = -2.8069
+POSITION_AFTER_THIS_TRADE = FLAT
+```
