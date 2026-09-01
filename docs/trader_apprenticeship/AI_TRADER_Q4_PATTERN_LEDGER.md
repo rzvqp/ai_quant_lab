@@ -2029,3 +2029,26 @@ precedent. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature (no fresh extreme, volume modest and not accelerating) -- consistent with, not the
 basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4269 (2020-12-04 17:15:00 UTC)
+DURATION                4 bars (4266-4269)
+DEEPEST_LOW              1831.698 (bar 4266, the gate origin itself)
+HEAVIEST_VOLUME          585 (bar 4266, the break bar) -- modestly higher than the following bars
+                          (406/320/382), but shallow in absolute terms throughout
+RECLAIM_CLOSE             1834.647 -- OVERSHOOTS the pre-episode level (bar 4265 close 1834.052) by
+                          +0.60pt, a full-plus round-trip, not a partial retracement
+CAUSAL_H1_EMA50_AT_RESOLUTION 1833.5165 (margin +1.13pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a genuinely mixed-but-leaning
+case, similar in shape to -043: the heaviest volume did land on the break, a SUPPORT-consistent
+detail, but it was shallow in absolute terms, and the full-plus round-trip and lack of any fresh
+extreme dominate the overall read. REJECTED, matching the pre-classification's lean and continuing the
+now-established character of this particular price zone (~1830-1835) as a choppy, low-conviction area
+following the earlier massive moves -- three of the last four candidates in this immediate stretch
+(-042, -043, -044) have resolved REJECTED.
