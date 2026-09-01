@@ -1194,3 +1194,34 @@ VOLUME                          799 -- in line with the immediate baseline
 
 **PRE-CLASSIFICATION:** leaning REJECTED -- ordinary gentle drift, not a fresh break. Not
 pre-committing.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2831 (2020-11-13 02:30:00 UTC)
+DURATION                2 bars (2830-2831)
+DEEPEST_LOW              1874.331 (bar 2830)
+HEAVIEST_VOLUME          799 (bar 2830)
+RECLAIM_CLOSE             1877.27
+CAUSAL_H1_EMA50_AT_RESOLUTION 1876.296 (margin +0.97pt)
+```
+
+Reclaimed immediately, thin volume throughout, no continuation, no fresh extreme. Confirms the
+pre-classification's REJECTED lean exactly. TRADE #16 remained open throughout, well clear of stop
+and MGMT-004 trigger. No S5 trigger.
+
+---
+
+## Q4-P007-026
+
+```
+GATE_ORIGIN_BAR          2834 (2020-11-13 03:15:00 UTC) -- TRADE #16 open, well clear of stop and
+                          MGMT-004; trade mechanics ran unconditionally
+CONTEXT                    bars 2832-2834 very quiet, thin volume (245-311), tiny drift lower
+TRIGGER_CLOSE                1876.073
+CAUSAL_H1_EMA50_AT_2834      1876.361
+GAP                            -0.29pt
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- trivial marginal touch. Not pre-committing.
