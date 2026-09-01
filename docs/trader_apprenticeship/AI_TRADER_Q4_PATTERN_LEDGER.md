@@ -2661,3 +2661,29 @@ well above the stop) and close do not threaten the stop; MGMT-004 has not fired.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the direct echo of -054's own
 shape (both following a reclaim by one bar, both deep-looking but volume-context-relative rather than
 absolute) is a useful pattern to watch -- will be judged on its own resolution evidence, not assumed.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         4860 (2020-12-15 03:30:00 UTC)
+DURATION                48 bars (4813-4860)
+DEEPEST_LOW              1822.282 (bar 4820, TRADE #31's own stop-run low) -- very close to but NOT
+                          exceeding -056's own record 1819.418; a fourth consecutive episode in the
+                          same decline chain (-052 -> -053 -> -056 -> -057)
+HEAVIEST_VOLUME          1371 (bar 4813, the GATE ORIGIN itself) -- a clean SUPPORT-consistent
+                          placement, matching -056's own origin-heavy signature
+RECLAIM_CLOSE             1833.524 -- a ~72% retracement of the decline (11.2 of 15.5pt), genuinely
+                          partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1833.3689 (margin +0.16pt -- thin, though the episode itself is not)
+```
+
+TRADE #32 (opened bar 4823) was open through this resolution and remains open, unaffected -- best
+close so far is this very bar's 1833.524 (+0.81R), still short of MGMT-004. GAP-202 (standard
+MAINTENANCE) logged inside the episode.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** unlike -056's genuinely mixed
+case, this one reads cleanly: heaviest volume sits right at the break (echoing -038/-045/-056's own
+origin-heavy signature), the low is a near-record continuing the same well-established decline chain,
+and the retracement is comfortably partial. The thin reclaim margin (+0.16pt) reflects EMA proximity,
+not a weak underlying move, consistent with -045/-053's own pattern. A confident SUPPORT read, the
+fourth consecutive confirmed episode in this decline chain.
