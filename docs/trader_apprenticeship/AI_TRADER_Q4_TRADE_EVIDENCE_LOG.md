@@ -1078,3 +1078,23 @@ discretionary sizing choice; no override is being applied.
 
 **INVALIDATION:** a close at or below 1830.271 (STOP). MAX_HOLD 48 bars from entry (through bar
 4404). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1901.329).
+
+**OUTCOME:** MAX_HOLD exit at bar 4404 (2020-12-08 04:30:00 UTC), price 1868.604 (bar's own close).
+```
+EXIT_BAR      4404
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1868.604 (bar's own close)
+R_MULTIPLE     +0.0789
+```
+As anticipated given the unusually wide risk (R=35.529), this trade essentially chopped sideways for
+its entire hold and never came close to either boundary: best close was bar 4402's 1870.962 (+0.15R),
+worst was bar 4392's 1862.966 (-0.08R) -- neither MGMT-004 (+1.0R = 1901.329) nor the stop (1830.271)
+was ever seriously threatened. No gaps, no P007 candidates during the hold. A clean illustration that
+a same-OR re-fire landing deep in the entry window (bis=13) produces a trade whose R-multiple outcomes
+are compressed toward zero by construction, regardless of the underlying move's direction.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 27
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.7204 + 0.0789 = -1.6415
+POSITION_AFTER_THIS_TRADE = FLAT
+```
