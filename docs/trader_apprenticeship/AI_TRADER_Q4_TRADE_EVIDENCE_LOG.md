@@ -834,3 +834,24 @@ mechanically regardless of P007 state by design, and no discretionary override i
 
 **INVALIDATION:** a close at or below 1869.032 (STOP). MAX_HOLD 48 bars from entry (through bar
 3229). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1886.280).
+
+**OUTCOME:** STOP hit at bar 3218 (2020-11-19 00:15:00 UTC), low 1868.97 <= stop 1869.032.
+```
+EXIT_BAR      3218
+EXIT_REASON    STOP
+EXIT_PRICE     1869.032
+R_MULTIPLE     -1.0000
+```
+A 37-bar hold, the longest since TRADE #12's target hit. Price never got close to the target or to
+MGMT-004: the high-water mark was bar 3186's close of 1883.53 (+0.68R), reached right as Q4-P007-038
+resolved SUPPORT (see pattern ledger) -- short of the +1.0R breakeven trigger (1886.280). From there
+price ground down steadily over the next ~32 bars (Q4-P007-039 opened and remained unresolved
+throughout this entire hold) until bar 3218's low wicked to 1868.97, triggering the stop, before
+closing at 1869.096. GAP-183 (standard, 60min MAINTENANCE) sat inside the hold. Trade mechanics ran
+unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 21
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.5981 - 1.0000 = -5.5981
+POSITION_AFTER_THIS_TRADE = FLAT
+```
