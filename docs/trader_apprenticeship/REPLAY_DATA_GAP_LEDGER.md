@@ -1441,3 +1441,10 @@ state. POSITION was FLAT. Committed as ROUTINE_NO_EVENT, the same decision the n
 would have produced had the gap not interrupted the runner's bookkeeping. Not flagged as a genuine
 causal-integrity blocker per the standing mandate -- data integrity is verified intact and the shape
 is fully explained by a known market holiday; the replay continues.
+
+### GAP-190 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard weekend (~52h)
+SPAN: 2020-11-27T18:45:00Z (last close 1786.92, Q4 bar 3827, Friday -- inside Q4-P007-041's ongoing
+episode) -> 2020-11-29T23:00:00Z (first open 1786.92, Q4 bar 3828, Sunday)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified WEEKEND
+-- did not require a reasoning stop.

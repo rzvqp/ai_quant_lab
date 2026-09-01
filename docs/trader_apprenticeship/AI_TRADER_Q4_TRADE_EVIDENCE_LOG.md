@@ -897,3 +897,25 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 22
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.5981 - 0.3683 = -5.9664
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #23 — S5 opening-range-breakout LONG (bar 3889)
+
+```
+SIGNAL_BAR    3889 (2020-11-30 14:15:00-14:30:00 UTC, bis=6)
+ENTRY          1776.695
+INITIAL_STOP    1765.594 (= or_low 1765.614 - 2*TICK)
+STRUCTURAL_TARGET 1809.998 (= entry + 3R, R=11.101)
+```
+
+**THESIS (frozen before bar 3890 was revealed):** mechanically triggered, no discretionary override.
+Close 1776.695 > or_high 1772.901 within the entry window. This OR forms during a recovery bounce off
+a fresh low (1764.57, bar 3843) made WITHIN Q4-P007-041's own still-open episode (gate origin bar
+3710, now spanning 179+ bars) -- this low is deeper than -040's own historic 1800.424, another
+confirmed multi-month extreme in the same ongoing structural decline. Bar 3843's low printed on
+elevated volume (1328, then 1408 the next bar). Price then based/recovered from there into this
+breakout. Noted honestly as context: this entry sits inside an episode that has not yet resolved,
+riding a bounce within a still-unfolding, very large bearish structure, not a confirmed reversal. S5
+fires mechanically regardless of P007 state, and no discretionary override is applied.
+
+**INVALIDATION:** a close at or below 1765.594 (STOP). MAX_HOLD 48 bars from entry (through bar
+3937). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1787.796).
