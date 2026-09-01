@@ -1233,3 +1233,22 @@ fires mechanically regardless of P007 state; no discretionary override applied.
 
 **INVALIDATION:** a close at or below 1822.309 (STOP). MAX_HOLD 48 bars from entry (through bar
 4857). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1843.113).
+
+**OUTCOME:** STOP hit at bar 4820 (2020-12-14 16:30:00 UTC), low 1822.282 <= stop 1822.309.
+```
+EXIT_BAR      4820
+EXIT_REASON    STOP
+EXIT_PRICE     1822.309
+R_MULTIPLE     -1.0000
+```
+A steady, clean 7-bar decline, never threatening MGMT-004. Price ground down consistently from entry
+(1832.711) through bars 4814-4820 without a meaningful bounce. Bar 4820's low (1822.282) sits just
+above -056's own record low (1819.418), not exceeding it. Q4-P007-057 (gate origin bar 4813) remains
+open/locked through this decline. No gap fell inside the hold. Trade mechanics ran unconditionally on
+every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 31
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.9922 - 1.0000 = -4.9922
+POSITION_AFTER_THIS_TRADE = FLAT
+```
