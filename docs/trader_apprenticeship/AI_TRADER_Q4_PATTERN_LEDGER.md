@@ -1101,3 +1101,19 @@ VOLUME                          468 -- thin, market finally calming from the pos
 
 **PRE-CLASSIFICATION:** leaning REJECTED, matching -020's ordinary-marginal-touch signature. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2283 (2020-11-04 11:30:00 UTC)
+DURATION                3 bars (2281-2283)
+DEEPEST_LOW              1896.222 (bar 2282)
+HEAVIEST_VOLUME          468 (bar 2281)
+RECLAIM_CLOSE             1897.824
+CAUSAL_H1_EMA50_AT_RESOLUTION 1897.188 (margin +0.64pt)
+```
+
+Thin volume throughout (468/414/324), confirming the market has calmed from the post-election
+extreme regime. No continuation, no fresh extreme. Confirms the pre-classification's REJECTED lean
+exactly. No trade was open; no MGMT-004 relevance. No S5 trigger.
