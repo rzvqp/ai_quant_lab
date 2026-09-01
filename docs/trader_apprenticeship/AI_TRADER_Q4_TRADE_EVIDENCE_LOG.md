@@ -788,3 +788,26 @@ candidate is active.
 
 **INVALIDATION:** a close at or below 1886.330 (STOP). MAX_HOLD 48 bars from entry (through bar
 3140). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1895.244).
+
+**OUTCOME:** STOP hit at bar 3095 (2020-11-17 15:30:00 UTC), low 1884.739 <= stop 1886.330.
+```
+EXIT_BAR      3095
+EXIT_REASON    STOP
+EXIT_PRICE     1886.330
+R_MULTIPLE     -1.0000
+```
+A second consecutive fast stop-out on the same OR, 3 bars after re-entry. Bar 3093 (close 1888.132,
+low 1887.27) and bar 3094 (close 1887.4, low 1886.482, coinciding with Q4-P007-037's gate origin)
+both held above the stop; bar 3095's low wicked to 1884.739 -- a genuine fresh extreme, deeper than
+any low seen in this stretch including bar 3091's 1886.297 -- triggering the stop on the low, before
+closing back up at 1887.42. Never came close to MGMT-004 (+1.0R = 1895.244) -- the trade's high
+close across its life was 1890.787 (its own entry bar), 0R. Q4-P007-037 remains open and unresolved
+(bar 3095 did not naturally reclaim the causal H1 EMA50); this fresh-extreme low is directly relevant
+context for that episode's eventual resolution and will be weighed there, not here. No gap fell
+inside the hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 20
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.5981 - 1.0000 = -4.5981
+POSITION_AFTER_THIS_TRADE = FLAT
+```
