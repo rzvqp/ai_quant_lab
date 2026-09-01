@@ -2182,3 +2182,22 @@ dip continuing this choppy zone, no fresh extreme, no clear volume acceleration.
 POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature -- consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4502 (2020-12-09 06:00:00 UTC)
+DURATION                2 bars (4501-4502)
+DEEPEST_LOW              1857.843 (bar 4501, the gate origin itself)
+HEAVIEST_VOLUME          417 (bar 4501, the break bar) -- essentially flat versus the reclaim bar's
+                          409, no meaningful distinguishing signal either way
+RECLAIM_CLOSE             1861.572 -- OVERSHOOTS the pre-episode level (bar 4500 close 1859.702) by
+                          +1.87pt, a full-plus round-trip
+CAUSAL_H1_EMA50_AT_RESOLUTION 1859.4663 (margin +2.11pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a clean, quick REJECTED read
+matching the pre-classification's lean -- no fresh extreme, no distinguishing volume signal, and a
+full-plus round-trip, all pointing the same direction with nothing to weigh against them.
