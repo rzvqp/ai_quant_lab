@@ -1088,6 +1088,27 @@ No S5 trigger.
 
 ---
 
+## Q4-P007-024
+
+```
+GATE_ORIGIN_BAR          2528 (2020-11-09 22:45:00 UTC) -- unprecedented single-bar shock, zero
+                          lead-in (bars 2515-2527 completely quiet: 1954-1961 range, volume 208-679)
+TRIGGER_BAR                 2528 -- open 1953.899, high 1957.354, low 1935.042 (22.3pt intrabar
+                          range, LARGEST OF THE ENTIRE Q4 REPLAY), close 1938.474
+CAUSAL_H1_EMA50_AT_2528      1944.503
+GAP                            -6.03pt -- largest gap magnitude of any candidate this session
+VOLUME                          5318 -- THE HEAVIEST SINGLE-BAR VOLUME OF THE ENTIRE Q4 REPLAY,
+                              exceeding -019's prior record (5175)
+```
+
+**PRE-CLASSIFICATION:** genuinely undecided. More comparable in shape to -013's isolated-spike
+pattern (REJECTED, full 1-bar reversal) than -015/-019's multi-bar declines, but at vastly larger
+scale and unprecedented volume. Leaning toward taking this seriously given the magnitude, not
+pre-committing -- watching for a quick reversal (REJECTED lean) vs holding/extending (SUPPORT lean).
+POSITION=FLAT; no MGMT-004 relevance.
+
+---
+
 ## Q4-P007-023
 
 ```
