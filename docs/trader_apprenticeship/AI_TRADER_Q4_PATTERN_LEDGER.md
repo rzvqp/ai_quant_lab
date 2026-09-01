@@ -2360,3 +2360,34 @@ but the magnitude here is a real step up. POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the discriminator components
 all agree at genuinely strong magnitude here, unlike the moderate -046/-049/-050 cases -- a useful
 contrast that reinforces the "magnitude matters" lesson from the immediately preceding streak.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4530 (2020-12-09 13:00:00 UTC)
+DURATION                6 bars (4524-4530)
+DEEPEST_LOW              1851.636 (bar 4525) -- a genuine NEW RECORD low for this trading zone,
+                          deeper than bar 3271's 1852.792 (from -040's episode); the bar's own CLOSE
+                          (1853.82) also stayed convincingly below the EMA, not just a wick
+HEAVIEST_VOLUME          1266 (bar 4530, the RECLAIM bar) -- essentially tied with bar 4525's 1251
+                          (the deepest-low bar); NOT a clean break-side concentration
+RECLAIM_CLOSE             1860.734 -- OVERSHOOTS the pre-episode level (bar 4523 close 1860.028) by
+                          +0.71pt, a full-plus round-trip, completed in just 6 bars
+CAUSAL_H1_EMA50_AT_RESOLUTION 1859.4882 (margin +1.25pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a genuinely novel tension case
+-- the fresh extreme here is dramatic and real (a new record low for this whole trading zone, on a
+close basis, not just a wick), qualitatively stronger than any REJECTED case seen so far. But every
+confirmed SUPPORT case to date (-038/-039/-040/-041/-045) paired its fresh extreme with a PARTIAL
+retracement (23-89%) and a genuinely extended process (20-273 bars); this episode instead round-tripped
+completely (and overshot) in just 6 bars, and the heaviest volume landed on the reclaim, not cleanly on
+the break. Read this way -- as a fast, aggressive liquidity-grab-and-reclaim rather than a genuine
+multi-bar structural process -- REJECTED is the more consistent call: a full-plus round-trip has been
+the single most reliable REJECTED signal across every prior episode, with zero exceptions, and this one
+is both complete AND fast. The dramatic fresh extreme is recorded honestly as a genuine point of
+tension, not dismissed -- but on balance it is not treated as sufficient on its own when the round-trip
+and duration both point the other way, consistent with -043's own earlier lesson that a fresh extreme
+alone does not override a full round-trip.
