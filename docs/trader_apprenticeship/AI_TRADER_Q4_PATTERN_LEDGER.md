@@ -1284,3 +1284,32 @@ CONTEXT                    bars 2843-2846 extremely thin volume (143-160), tight
 ```
 
 **PRE-CLASSIFICATION:** leaning REJECTED. Not pre-committing.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2847 (2020-11-12 23:45:00 UTC)
+DURATION                2 bars (2846-2847)
+DEEPEST_LOW              1875.405 (bar 2846)
+HEAVIEST_VOLUME          160 (bar 2846)
+RECLAIM_CLOSE             1876.71
+CAUSAL_H1_EMA50_AT_RESOLUTION 1876.379 (margin +0.33pt)
+```
+
+Reclaimed immediately, very thin volume, no continuation, no fresh extreme. TRADE #16 remained open
+throughout. No S5 trigger.
+
+---
+
+## Q4-P007-029
+
+```
+GATE_ORIGIN_BAR          2848 (2020-11-12 23:45:00 UTC) -- immediately after -028's reclaim
+TRIGGER_CLOSE                1876.03
+TRIGGER_LOW                   1875.576 -- no fresh extreme
+VOLUME                          120 -- very thin, same dead-chop regime as -025 through -028
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED. TRADE #16 remains open, well clear of stop and MGMT-004.
+Not pre-committing.
