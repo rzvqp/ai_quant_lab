@@ -2243,3 +2243,29 @@ No trade was open; no MGMT-004 relevance. No S5 trigger.
 matching the pre-classification -- the third consecutive REJECTED resolution in this stretch (-046,
 -047, -048), consistent with the ordinary, shallow-chop character this zone has settled into since
 TRADE #28 closed.
+
+---
+
+## Q4-P007-049
+
+```
+GATE_ORIGIN_BAR          4515 (2020-12-09 09:15:00 UTC)
+CONTEXT                    a sharp one-bar reversal: bar 4513 closed 1864.896 (session high 1865.356),
+                            bar 4514 pulled back to 1863.164, then this bar dropped further to 1858.794
+                            -- a ~4.4pt one-bar decline from bar 4514's close
+TRIGGER_CLOSE                1858.794
+TRIGGER_LOW                   1858.368 -- close to but NOT below the recent 1858.108 (bar 4510), not
+                              a fresh extreme
+CAUSAL_H1_EMA50_AT_4515       1859.7237
+GAP                            -0.930pt -- moderate
+VOLUME                          736 -- a real acceleration versus bar 4514's 543, similar in magnitude
+                                 to earlier peaks in this stretch (768, 792)
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- the one-bar decline is sharper than the recent shallow
+dips, but the low doesn't exceed the stretch's own recent floor and volume, while elevated, isn't
+clearly beyond what this choppy zone has already shown. Not pre-committing. POSITION=FLAT; no MGMT-004
+relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a modestly more active bar than
+-046/-047/-048, but not clearly enough to break from their REJECTED pattern -- worth watching for
+whether it resolves differently or continues the streak.
