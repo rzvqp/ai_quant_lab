@@ -2519,3 +2519,25 @@ pre-committing. POSITION=LONG (TRADE #30, open since bar 4717, entry 1840.106, s
 bar's low/close do not threaten the stop; MGMT-004 has not fired (needs close >= 1848.418).
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a genuine mid-strength case,
 similar in spirit to -046/-050 -- will be judged on its own round-trip evidence at resolution.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4721 (2020-12-11 14:45:00 UTC)
+DURATION                3 bars (4719-4721)
+DEEPEST_LOW              1834.956 (bar 4720) -- not a fresh record beyond -053's own 1824.184
+HEAVIEST_VOLUME          1320 (bar 4720) -- coincides with the deepest-low bar, a genuine
+                          SUPPORT-consistent detail
+RECLAIM_CLOSE             1841.426 -- OVERSHOOTS the pre-episode level (bar 4718 close 1840.514) by
+                          +0.91pt, a full-plus round-trip
+CAUSAL_H1_EMA50_AT_RESOLUTION 1840.1196 (margin +1.31pt)
+```
+
+TRADE #30 remains open, unaffected. A coincident S5 trigger fired this same bar (same OR as TRADE
+#30) but is not actionable since a position is already open.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the volume/low coincidence is a
+genuine SUPPORT-consistent detail, but the low itself was not a fresh record and the round-trip
+overshot completely -- REJECTED, matching the now-established pattern that a full-plus round-trip has
+proven the single most reliable signal, overriding a favorable volume placement when the extreme
+itself isn't dramatic.
