@@ -1403,3 +1403,17 @@ VOLUME                          416 -- in line with the surrounding range, no ac
 
 **PRE-CLASSIFICATION:** leaning REJECTED -- ordinary chop, not a fresh break. Not pre-committing.
 POSITION=FLAT.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2887 (2020-11-13 09:45:00 UTC)
+DURATION                2 bars (2885-2886)
+DEEPEST_LOW              1875.965 (bar 2886) -- only a modest extension, no meaningful new extreme
+HEAVIEST_VOLUME          416 (bar 2885)
+RECLAIM_CLOSE             1879.384
+CAUSAL_H1_EMA50_AT_RESOLUTION 1877.043 (margin +2.34pt)
+```
+
+No sustained volume confirmation. No trade was open; no MGMT-004 relevance. No S5 trigger.
