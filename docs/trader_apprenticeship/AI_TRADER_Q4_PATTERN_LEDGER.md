@@ -1692,3 +1692,30 @@ established partial-retracement profile (not being treated as a rigid threshold)
 Recorded as a strong confirmation, immediately following a case (-037) that showed the same
 components can disagree -- underscoring that it is their AGREEMENT, not any single factor, that makes
 this reading confident.
+
+---
+
+## Q4-P007-039
+
+```
+GATE_ORIGIN_BAR          3187 (2020-11-18 15:30:00 UTC) -- immediately after -038's reclaim
+CONTEXT                    bar 3186 closed 1883.53, reclaiming -038's episode; this bar pulls back
+                            below the EMA again, a retest rather than a fresh break
+TRIGGER_CLOSE                1881.93
+TRIGGER_LOW                   1880.51 -- NOT a fresh extreme (well above -038's 1863.772)
+CAUSAL_H1_EMA50_AT_3187       1882.6746
+GAP                            -0.745pt -- moderate, deeper than -037's shallow dips but far short of
+                                 -038's genuine break
+VOLUME                          1027 -- moderate, comparable to several bars within -038's own episode,
+                                 not a clear acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- reads as a retest/pullback immediately following a
+genuine reclaim, not a fresh structural break. Not pre-committing. POSITION=LONG (TRADE #21, open
+since bar 3181, entry 1877.656, stop 1869.032) -- this bar's close/low do not threaten the stop;
+MGMT-004 has not fired (needs close >= 1886.280). A coincident S5 trigger fired this bar (bis=11,
+same OR) but is not actionable since a position is already open.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
+discriminator's SUPPORT-leaning signature (no fresh extreme, volume moderate but not clearly
+accelerating past the episode's own recent range) -- consistent with, not the basis for, the REJECTED
+lean.
