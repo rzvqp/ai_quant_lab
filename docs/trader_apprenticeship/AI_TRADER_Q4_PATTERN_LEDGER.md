@@ -2606,3 +2606,34 @@ since bar 4717, entry 1840.106, stop 1831.794) -- this bar's low/close do not th
 MGMT-004 has not fired.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature -- consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         4812 (2020-12-14 14:30:00 UTC)
+DURATION                75 bars (4738-4812)
+DEEPEST_LOW              1819.418 (bar 4795) -- ANOTHER new record low, deeper than -053's own
+                          1824.184, continuing the exact same broader decline chain (-052 -> -053 ->
+                          -056), each episode setting a new record
+HEAVIEST_VOLUME          2309 (bar 4812, the RECLAIM bar) -- NOT cleanly on the break; bar 4796 (the
+                          bounce right after the low) carried 1398, and bar 4807 (mid-consolidation)
+                          carried 1545, but nothing at the actual low bar (4795, only 770)
+RECLAIM_CLOSE             1837.814 -- an 86% retracement of the decline (18.4 of 21.3pt), high but
+                          not complete or overshooting
+CAUSAL_H1_EMA50_AT_RESOLUTION 1836.4906 (margin +1.32pt)
+```
+
+TRADE #31 (opened bar 4809) was open through this resolution and remains open, unaffected. A
+coincident S5 trigger fired this same bar (same OR as TRADE #31) but is not actionable since a
+position is already open.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a genuinely weighed case,
+unlike -046/-049/-050/-054's cleaner REJECTED reads. The volume-on-reclaim placement is a real
+REJECTED-consistent detail (echoing -011/-036's signature), and the 86% retracement alone would
+usually lean REJECTED per -046's lesson. But this episode's SUBSTANTIAL 75-bar duration and its role
+as the third consecutive episode in an unbroken record-low chain (-052 -> -053 -> -056, each deeper
+than the last) carry more weight here than in the fast, isolated REJECTED cases -- this reads as a
+genuine continuation of an already-established downtrend, not an isolated test. SUPPORT, with the
+volume-placement nuance recorded honestly rather than smoothed over: not every confirmed SUPPORT case
+has to match every component of the discriminator cleanly, and duration + chain-context are treated as
+carrying real weight alongside (not simply overridden by) the retracement percentage.
