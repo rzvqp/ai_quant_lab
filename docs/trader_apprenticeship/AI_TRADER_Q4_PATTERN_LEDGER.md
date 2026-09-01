@@ -2566,3 +2566,23 @@ do not threaten the stop; MGMT-004 has not fired (best approach was bar 4723's 1
 short of the +1.0R trigger).
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature -- consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4737 (2020-12-11 18:45:00 UTC)
+DURATION                3 bars (4735-4737)
+DEEPEST_LOW              1838.772 (bar 4736)
+HEAVIEST_VOLUME          445 (bar 4735, the break bar) -- heaviest on the break, but thin in
+                          absolute terms throughout the episode
+RECLAIM_CLOSE             1840.746 -- a ~73% retracement of the decline (1.97 of 2.70pt), partial but
+                          on a very small total move
+CAUSAL_H1_EMA50_AT_RESOLUTION 1840.4933 (margin +0.25pt)
+```
+
+TRADE #30 remains open, unaffected. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a clean REJECTED read on
+overall weakness rather than any single dominant signal -- every measure here (gap depth, volume,
+total decline) was thin in absolute terms, consistent with a low-conviction dip rather than a genuine
+structural break, regardless of the retracement percentage.
