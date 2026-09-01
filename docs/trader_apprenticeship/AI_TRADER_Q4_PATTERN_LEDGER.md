@@ -1044,3 +1044,22 @@ Applying the same round-trip test used for Q4-P007-019 (SUPPORT): pre-episode le
 -019's reclaim which left price ~7pt below its pre-break level. This is the -011/-013/-020 'full
 round-trip' signature, not -019's 'lasting level shift' signature. No trade was open; no MGMT-004
 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-022
+
+```
+GATE_ORIGIN_BAR          2273 (2020-11-04 09:45:00 UTC)
+CONTEXT                    bars 2265-2272 chopped 1898-1909.7, volume still elevated (1015-1953, same
+                          post-election regime as -021)
+TRIGGER_CLOSE                1895.891
+TRIGGER_LOW                   1895.696 -- a fresh dip below the 2265-2272 window's floor (1898.522)
+CAUSAL_H1_EMA50_AT_2273       1897.061
+GAP                            -1.17pt
+VOLUME                          1361 -- in line with the surrounding range, no acceleration
+```
+
+**PRE-CLASSIFICATION:** a genuine modest new local low, but not dramatic, and volume isn't
+distinctly elevated vs the immediate baseline. Genuinely uncertain -- will apply the round-trip test
+at resolution (same as -019/-021). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
