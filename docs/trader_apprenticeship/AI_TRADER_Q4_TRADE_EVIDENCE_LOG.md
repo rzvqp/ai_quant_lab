@@ -579,3 +579,25 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 14
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -0.9530 - 1.0000 = -1.9530
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #15 — S5 opening-range-breakout LONG (bar 2633)
+
+```
+SIGNAL_BAR    2633 (2020-11-10 09:30:00-09:44:59 UTC, bis=9)
+ENTRY          1883.906
+INITIAL_STOP    1873.664 (= or_low 1873.684 - 2*TICK)
+STRUCTURAL_TARGET 1914.632 (= entry + 3R, R=10.242)
+```
+
+**THESIS (frozen before bar 2634 was revealed):** mechanically triggered, no discretionary override.
+Close 1883.906 > or_high 1883.566 within the entry window. Entry sits inside the still-open,
+unresolved Q4-P007-024 episode -- by far the largest of the entire Q4 replay: bar 2529 alone printed
+a 38pt intrabar range on 8812 volume, the heaviest single-bar volume of the entire replay, followed
+by many more bars of extreme sustained volume declining to a new Q4-replay-low of 1850.53 (bar
+2548), an ~88pt decline from bar 2528's open. Price has since stabilized and ground back up over the
+following ~85 bars. This LONG entry rides that stabilization mechanically, not a discretionary read
+of it. GAP-177 (standard, 60min) sat inside the episode.
+
+**INVALIDATION:** a close at or below 1873.664 (STOP) -- would mean the recovery failed and the
+episode's decline resumed. MAX_HOLD 48 bars from entry (through bar 2681). MGMT-004 breakeven
+trigger at first M15 close >= +1.0R (>= 1894.148).

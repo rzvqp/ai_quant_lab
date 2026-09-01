@@ -1107,6 +1107,16 @@ scale and unprecedented volume. Leaning toward taking this seriously given the m
 pre-committing -- watching for a quick reversal (REJECTED lean) vs holding/extending (SUPPORT lean).
 POSITION=FLAT; no MGMT-004 relevance.
 
+**INTERIM NOTE (bar 2633, still open, not yet resolved):** this became, by a wide margin, the
+largest episode of the entire Q4 replay. Bar 2529 (immediately after the trigger) alone printed a
+38pt intrabar range on 8812 volume -- the heaviest single-bar volume of the entire replay -- and the
+decline continued with sustained multi-thousand volume for many more bars (5951/3941/3423/5409/
+5215/6167/4850/3399/2706/4534...) down to a new Q4-replay-low of 1850.53 (bar 2548), an ~88pt
+decline from bar 2528's own open. Price then stabilized and ground back up over ~85 bars (2548-2632)
+on moderating but still-elevated volume, triggering TRADE #15 (S5 LONG, entry 1883.906) before the
+gate has reclaimed. GAP-177 (standard, 60min) logged inside this stretch. Not resolving prematurely
+-- the eventual RESOLUTION entry will cover the full episode once a genuine reclaim occurs.
+
 ---
 
 ## Q4-P007-023
