@@ -1259,3 +1259,10 @@ TYPE: Standard weekend (~49h)
 SPAN: 2020-10-23T20:44:59Z (last close 1902.04, Q4 bar 1556, Friday -- inside the open Q4-P007-007
 episode) -> 2020-10-25T22:00:00Z (first open 1902.04, Q4 bar 1557, Sunday)
 VERIFICATION: exact last-close == first-open match (zero-price-gap).
+
+### GAP-167 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-10-26T20:59:59Z (last close 1902.272, Q4 bar 1648, Monday -- inside the open Q4-P007-009
+episode) -> 2020-10-26T22:00:00Z (first open 1902.272, Q4 bar 1649)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE by the sealed reader's own gap gate -- did not require a reasoning stop.

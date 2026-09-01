@@ -446,3 +446,95 @@ genuine multi-bar, volume-accelerating decline -- the qualitative signature PATT
 actually describes, not a mechanical threshold crossing. Classified **SUPPORT / RECLAIM**. GAP-166
 (standard weekend) logged inside the episode. No S5 setup at any point (unconditional check
 confirmed). No trade/MGMT-004 decision affected.
+
+---
+
+## Q4-P007-008
+
+**Committed via the durable control flow (`ai_trader/csv_causal_replay/q4_control_flow.py`,
+commit `44aee88`) for the first time -- CEO authorization to resume from bar 1632.**
+
+```
+GATE_ORIGIN_BAR          1631 (2020-10-26 12:30:00 UTC) -- retroactively confirmed once bar 1632's
+                          reveal closed the containing H1 hour (causal H1 EMA only reflects fully-
+                          closed hours; the crossing was not computable until then)
+TRIGGER_CLOSE (1631)      1904.15
+BAR_1632_CLOSE             1904.144
+CAUSAL_H1_EMA50_AT_1632    1904.224
+GAP                        -0.07 / -0.08pt -- a touch, not a break
+VOLUME_CONTEXT (1626-1632) 942 / 817 / 749 / 700 / 595 / 333 / 286 -- steadily tapering; bars 1631
+                           and 1632 are the two thinnest of the entire 22-bar window (1610-1632)
+FRESH_LOCAL_EXTREME         none -- bar 1632 low 1903.074 sits inside the 1613-1632 range
+```
+
+**PRE-CLASSIFICATION (recorded before further bars read):** thin/declining volume into a marginal
+EMA touch, no fresh extreme -- the same profile that resolved REJECTED for Q4-P007-005 and for the
+early (non-escalating) bars of Q4-P007-006/007's own episodes, not the volume-confirmed-escalation
+profile that resolved SUPPORT in those two. Leaning REJECTED, but not pre-committing -- watching for
+either an early reclaim (consistent with this read) or a genuine volume-confirmed escalation (would
+override this initial read, as it did for -006/-007). No trade open at gate-origin (POSITION=FLAT
+since TRADE #7's resolution); no MGMT-004 relevance. No S5 trigger on bar 1632 (unconditional check
+confirmed, per the durable control-flow ordering invariant).
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         1633 (2020-10-26 13:00:00 UTC)
+DURATION                3 bars (1631-1633)
+DEEPEST_LOW              1903.074 (bar 1632)
+HEAVIEST_VOLUME          333 (bar 1631) -- never exceeded across the whole episode
+RECLAIM_CLOSE             1904.928
+CAUSAL_H1_EMA50_AT_RESOLUTION 1904.224 (margin +0.70pt)
+```
+
+Reclaimed only 2 bars after gate-origin. Volume never escalated at any point (333/286/310 across
+the 3-bar episode). Matches the pre-classification's leaning read exactly -- a marginal EMA touch on
+tapering volume, not a sharp volume-confirmed break. Consistent with Q4-P007-005's REJECTED
+signature. No trade was open at any point; no MGMT-004 relevance. No S5 trigger at any point in the
+episode (unconditional check confirmed each bar).
+
+---
+
+## Q4-P007-009
+
+```
+GATE_ORIGIN_BAR          1634 (2020-10-26 13:15:00 UTC) -- only 1 bar after Q4-P007-008 resolved
+                          REJECTED; price is chopping sideways around a flat causal H1 EMA50 rather
+                          than making a decisive move
+TRIGGER_CLOSE               1904.115
+CAUSAL_H1_EMA50_AT_1634     1904.221
+GAP                          -0.11pt -- a touch, not a break
+VOLUME                        314 -- continuing the decay trend since bar 1628 (749/700/595/333/
+                              286/310/314), no volume confirmation
+INTRABAR_RANGE                1.9pt (high 1905.055, low 1903.16) -- wider than recent bars but fully
+                              contained inside the 1613-1634 window, no fresh extreme
+```
+
+**PRE-CLASSIFICATION:** same profile as Q4-P007-008 -- leaning REJECTED, not pre-committing.
+Watching for reclaim vs genuine volume-confirmed escalation. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance (closer to the line than -008)
+RESOLUTION_BAR         1658 (2020-10-26 22:15:00 UTC)
+DURATION                24 bars (1634-1657)
+DEEPEST_LOW              1900.382 (bar 1635) -- not a fresh extreme; bars 1613/1616/1617 already
+                        printed lower (1900.066-1900.874) earlier in the same consolidation
+HEAVIEST_VOLUME          626 (bar 1642)
+RECLAIM_CLOSE             1904.414
+CAUSAL_H1_EMA50_AT_RESOLUTION 1903.881 (margin +0.53pt)
+```
+
+Full 24-bar episode reviewed, not just the reclaim bar. Bar 1635 (immediately after gate-origin)
+printed a real down-move -- close 1904.115 -> 1901.644, low 1900.382, volume 610, roughly 2x the
+preceding thin baseline -- and bar 1642 printed a second moderate bar (626). Neither led anywhere:
+no accelerating multi-bar volume buildup like Q4-P007-006/007's genuine escalations, just two
+isolated moderate bars surrounded by an otherwise-thin, decaying grind (bars 1643-1656 mostly 55-460,
+several under 100) that drifted for 14 more bars before an unremarkable reclaim on 314/138 volume.
+One MAINTENANCE gap (GAP-167, bar 1648->1649, 60min) inside the episode, standard. No trade was open
+at any point; no MGMT-004 relevance. No S5 trigger at any point (unconditional check confirmed each
+bar). Classified REJECTED rather than SUPPORT: the two moderate-volume bars were isolated, not
+sustained/accelerating, and produced no fresh extreme -- same evidentiary-honesty standard applied
+to Q4-P007-005.
