@@ -1551,3 +1551,25 @@ POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
 discriminator's SUPPORT-leaning signature (no sustained/growing volume, no fresh extreme) --
 consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         3085 (2020-11-17 13:15:00 UTC)
+DURATION                2 bars (3083-3084)
+DEEPEST_LOW              1886.35 (bar 3085) -- barely below 3084's low, well inside the broader range
+HEAVIEST_VOLUME          1007 (bar 3085, the RECLAIM bar, not the break)
+RECLAIM_CLOSE             1888.154
+CAUSAL_H1_EMA50_AT_RESOLUTION 1887.289 (margin +0.87pt)
+```
+
+Volume actually grew across the episode (444 -> 547 -> 1007), but the growth landed on the reclaim
+bar, not the break -- the opposite of PATTERN-007's signature, matching -011's established profile
+exactly. No fresh extreme. No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance):** a genuine test of the emerging discriminator,
+not just a confirmation -- volume DID sustain/grow across the episode, superficially resembling the
+SUPPORT-leaning pattern, yet the actual reasoning (where the volume landed, no fresh extreme) still
+correctly separates it from -024/-033's genuine signature. Shows the discriminator is not a simple
+"volume grew = SUPPORT" rule -- where the volume lands and whether a fresh extreme prints still
+matter more than raw volume growth alone.
