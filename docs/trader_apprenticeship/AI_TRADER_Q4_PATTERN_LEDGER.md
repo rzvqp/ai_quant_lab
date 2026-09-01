@@ -970,3 +970,20 @@ election-period volatility (TRADE #11's stop-out at bar 2209 was the immediately
 noted factually, not causally. No trade was open; no MGMT-004 relevance. No S5 trigger. Seventh
 genuinely-resolved SUPPORT instance in Q4 (after Q4-P007-003, Q4-P007-004, Q4-P007-006, Q4-P007-007,
 Q4-P007-010, Q4-P007-015).
+
+---
+
+## Q4-P007-020
+
+```
+GATE_ORIGIN_BAR          2218 (2020-11-04 01:15:00 UTC) -- immediately after Q4-P007-019's reclaim
+TRIGGER_CLOSE                1895.776
+TRIGGER_LOW                   1894.641 -- no fresh extreme, sits inside -019's episode range
+CAUSAL_H1_EMA50_AT_2218       1895.822
+GAP                            -0.05pt -- hairline touch
+VOLUME                          2415 -- still part of the same extreme regime, but magnitude is trivial
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- ordinary chop right at the EMA boundary, not a fresh
+break -- though the still-elevated volume regime makes this harder to call with full confidence than
+a quiet-market marginal touch. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
