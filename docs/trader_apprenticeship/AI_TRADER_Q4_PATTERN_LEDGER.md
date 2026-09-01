@@ -2201,3 +2201,24 @@ No trade was open; no MGMT-004 relevance. No S5 trigger.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a clean, quick REJECTED read
 matching the pre-classification's lean -- no fresh extreme, no distinguishing volume signal, and a
 full-plus round-trip, all pointing the same direction with nothing to weigh against them.
+
+---
+
+## Q4-P007-048
+
+```
+GATE_ORIGIN_BAR          4506 (2020-12-09 07:00:00 UTC)
+TRIGGER_CLOSE                1858.374
+TRIGGER_LOW                   1858.374 -- no wick below the close; NOT a fresh extreme (well above
+                              -046/-047's 1855.698/1857.843)
+CAUSAL_H1_EMA50_AT_4506       1859.4557
+GAP                            -1.082pt -- moderate
+VOLUME                          567 -- moderate, similar to 498/520 in the preceding bars, no clear
+                                 acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- another ordinary, moderate dip continuing this choppy
+zone, no fresh extreme, no volume acceleration. Not pre-committing. POSITION=FLAT; no MGMT-004
+relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature -- consistent with, not the basis for, the REJECTED lean.
