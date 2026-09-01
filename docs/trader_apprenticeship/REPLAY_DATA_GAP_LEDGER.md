@@ -1536,3 +1536,10 @@ causal H1 EMA50 (1842.407, gap +21.14pt), no trigger possible. (2) S5 -- bar 438
 outside the NY session window. (3) TRADE #27 -- low 1857.45 and close 1863.552 sit well above the
 1830.271 stop, unthreatened. Committed as ROUTINE_NO_EVENT. Not a genuine causal-integrity blocker --
 this is the tail of the same explained illiquid-close window as GAP-196; the replay continues.
+
+### GAP-198 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (75min)
+SPAN: 2020-12-08T22:00:00Z (last close 1870.434, Q4 bar 4473, Tuesday -- inside TRADE #28's open
+hold) -> 2020-12-08T23:00:00Z (first open 1870.434, Q4 bar 4474)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.

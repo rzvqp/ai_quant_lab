@@ -1116,3 +1116,22 @@ candidates fired anywhere in this stretch.
 
 **INVALIDATION:** a close at or below 1861.502 (STOP). MAX_HOLD 48 bars from entry (through bar
 4491). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1880.774).
+
+**OUTCOME:** STOP hit at bar 4491 (2020-12-09 03:15:00 UTC), low 1861.434 <= stop 1861.502 -- the
+same bar as the MAX_HOLD boundary; the stop check took priority.
+```
+EXIT_BAR      4491
+EXIT_REASON    STOP
+EXIT_PRICE     1861.502
+R_MULTIPLE     -1.0000
+```
+Best close was bar 4444's 1874.329 (+0.33R), reached one bar into the trade, then price drifted lower
+for the rest of the hold, closing right at the stop level (bar 4491, exactly on the max_hold boundary)
+after a wick down to 1861.434. Never came close to MGMT-004 (+1.0R = 1880.774). GAP-198 (standard,
+75min MAINTENANCE) sat inside the hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 28
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.6415 - 1.0000 = -2.6415
+POSITION_AFTER_THIS_TRADE = FLAT
+```
