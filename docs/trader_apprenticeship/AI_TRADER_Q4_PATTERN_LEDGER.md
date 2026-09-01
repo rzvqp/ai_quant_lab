@@ -1437,3 +1437,29 @@ VOLUME                          5983 -- exceeds -024's own trigger-adjacent volu
 became the largest, most significant genuine SUPPORT instance in the whole replay -- taking this
 very seriously from the outset. Not pre-committing until follow-through is actually observed.
 POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT / RECLAIM
+RESOLUTION_BAR         2996 (2020-11-16 14:00:00 UTC) -- coincident S5 trigger deferred, see below
+DURATION                8 bars (2988-2995) -- shorter than -024's 284 bars, but unambiguous on volume
+DEEPEST_LOW              1864.541 (bar 2988) -- 28.4pt decline from the episode's own open, though it
+                        does not undercut -024's all-time-replay low (1850.53)
+HEAVIEST_VOLUME          5983 (bar 2988)
+RECLAIM_CLOSE             1886.113
+CAUSAL_H1_EMA50_AT_RESOLUTION 1884.853 (margin +1.26pt)
+```
+
+Volume stayed heavily elevated across the ENTIRE episode, not just the trigger bar --
+5983/5532/2613/1540/1200/1397/979/2190 across bars 2988-2995, a real multi-bar continuation of
+participation, unlike -011/-013's isolated single-bar spikes. Round-trip test (same as -019/-021/
+-022/-024): pre-episode level 1892.904 vs reclaim close 1886.113 leaves a ~6.8pt shortfall (~76%
+retraced, ~24% unretraced) -- a real, if partial, lasting level shift, not a full round trip. A
+coincident S5 breakout trigger surfaced on this exact reclaim bar (bar 2996) -- P007 took priority
+per the durable control-flow ordering invariant, S5 deferred not dropped, the same mechanism already
+validated after -024 (TRADE #16 opened one bar later). This bar falls on 2020-11-16, plausibly a
+continuation of the same broad volatility regime as -024's 2020-11-09 shock -- noted factually, not
+causally. No trade was open; no MGMT-004 relevance. Ninth genuinely-resolved SUPPORT instance in Q4
+(after Q4-P007-003, Q4-P007-004, Q4-P007-006, Q4-P007-007, Q4-P007-010, Q4-P007-015, Q4-P007-019,
+Q4-P007-024).
