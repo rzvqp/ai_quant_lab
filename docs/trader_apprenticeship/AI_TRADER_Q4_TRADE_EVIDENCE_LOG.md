@@ -957,3 +957,22 @@ the quieter climb's baseline.
 
 **INVALIDATION:** a close at or below 1804.892 (STOP). MAX_HOLD 48 bars from entry (through bar
 4027). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1820.936).
+
+**OUTCOME:** MAX_HOLD exit at bar 4027 (2020-12-02 02:45:00 UTC), price 1809.042 (bar's own close).
+```
+EXIT_BAR      4027
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1809.042 (bar's own close)
+R_MULTIPLE     -0.4827
+```
+The full 48-bar hold, never threatening the stop. Best close was bar 3998's 1816.092 (+0.40R), well
+short of MGMT-004's +1.0R trigger (1820.936), reached fairly early in the hold; worst close was bar
+3985's 1806.586 (-0.79R), close to the stop but never breaching it. The trade drifted without
+sustained direction for the rest of the hold before the MAX_HOLD exit. GAP-192 (standard, 60min
+MAINTENANCE) sat inside the hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 24
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.1863 - 0.4827 = -5.6690
+POSITION_AFTER_THIS_TRADE = FLAT
+```
