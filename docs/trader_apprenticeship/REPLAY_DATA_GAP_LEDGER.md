@@ -1411,3 +1411,33 @@ SPAN: 2020-11-25T22:00:00Z (last close 1807.846, Q4 bar 3672, Wednesday -- insid
 basing period) -> 2020-11-25T23:00:00Z (first open 1807.846, Q4 bar 3673)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-189 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport] -- REQUIRED A REASONING STOP
+TYPE: Non-standard (does not fit the mechanical WEEKEND or MAINTENANCE shape)
+SPAN: 2020-11-26T18:00:00Z (last close 1810.474, Q4 bar 3748, Thursday) -> 2020-11-26T23:00:00Z
+(first open 1810.474, Q4 bar 3749)
+DURATION: 5.0 hours (18,000s)
+CLASSIFICATION MECHANICS: `classify_gap()` (verbatim CEO-specified logic, unmodified) returns
+UNEXPECTED here because this gap does not span a Saturday (not WEEKEND) and its start hour (18 UTC)
+is outside the fixed MAINTENANCE window (`start_hour in (20,21)` and `duration<=75min`) -- both
+checks are correctly, mechanically false for this gap; this is not a bug in the classifier.
+VERIFICATION: exact last-close == first-open match (zero-price-gap) -- confirmed via direct read of
+the source CSV around this timestamp range. Data integrity intact; this is not a missing-bar or
+corruption issue.
+REASONING: 2020-11-26 is US Thanksgiving Day. COMEX/CME gold futures (the reference market underlying
+OANDA's XAUUSD feed) observe an early close around 13:00 ET (18:00 UTC) on Thanksgiving with reduced
+or paused trading until the evening Globex resumption -- consistent with a legitimate holiday-schedule
+gap, not a data-quality problem. This is recorded factually (the calendar date, the exchange's known
+holiday-schedule pattern, and the confirmed zero-price-gap) rather than asserted as certain, matching
+the same evidentiary standard used for prior date-linked observations (e.g. the 2020-11-03 US election
+volume note in the pattern ledger).
+IMPACT ON OPEN STATE: bar 3749 was independently checked (not just assumed routine) since the runner's
+early break on UNEXPECTED skipped its normal per-bar S5/P007 bookkeeping: (1) P007 -- Q4-P007-041
+(gate origin bar 3710) was already open/locked; a direct causal-H1-EMA recompute through bar 3749
+confirms close 1809.751 sits well below the EMA (1815.157, gap -5.41pt) -- no natural reclaim, the
+episode remains open exactly as before. (2) S5 -- bar 3749 opens 23:00 UTC, outside the NY session
+window [13:00,21:00) UTC entirely, so no S5 evaluation is possible for this bar regardless of OR
+state. POSITION was FLAT. Committed as ROUTINE_NO_EVENT, the same decision the normal control flow
+would have produced had the gap not interrupted the runner's bookkeeping. Not flagged as a genuine
+causal-integrity blocker per the standing mandate -- data integrity is verified intact and the shape
+is fully explained by a known market holiday; the replay continues.
