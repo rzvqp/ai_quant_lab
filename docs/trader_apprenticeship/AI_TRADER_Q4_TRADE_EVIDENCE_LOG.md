@@ -730,3 +730,21 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 18
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.8069 + 0.2088 = -2.5981
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #19 — S5 opening-range-breakout LONG (bar 3088)
+
+```
+SIGNAL_BAR    3088 (2020-11-17 13:30:00-13:45:00 UTC, bis=4)
+ENTRY          1891.303
+INITIAL_STOP    1886.330 (= or_low 1886.35 - 2*TICK)
+STRUCTURAL_TARGET 1906.222 (= entry + 3R, R=4.973)
+```
+
+**THESIS (frozen before bar 3089 was revealed):** mechanically triggered, no discretionary override.
+Close 1891.303 > or_high 1890.205 within the entry window. Follows immediately after Q4-P007-036's
+reclaim (bar 3085), with volume staying elevated throughout the climb into this breakout (547/1007/
+962/1344/1117 across bars 3084-3088), well above the 196-444 baseline seen earlier in this same
+dead-chop stretch (-032 through -036).
+
+**INVALIDATION:** a close at or below 1886.330 (STOP). MAX_HOLD 48 bars from entry (through bar
+3136). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1896.276).
