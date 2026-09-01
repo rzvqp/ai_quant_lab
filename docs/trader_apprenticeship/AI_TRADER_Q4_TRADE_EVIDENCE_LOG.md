@@ -748,3 +748,23 @@ dead-chop stretch (-032 through -036).
 
 **INVALIDATION:** a close at or below 1886.330 (STOP). MAX_HOLD 48 bars from entry (through bar
 3136). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1896.276).
+
+**OUTCOME:** STOP hit at bar 3091 (2020-11-17 14:30:00 UTC), low 1886.297 <= stop 1886.330.
+```
+EXIT_BAR      3091
+EXIT_REASON    STOP
+EXIT_PRICE     1886.330
+R_MULTIPLE     -1.0000
+```
+A fast, clean stop-out over just 3 bars. Bar 3089 (close 1889.334) and bar 3090 (close 1889.102,
+low 1886.47) both held above the stop; bar 3091's low wicked to 1886.297, triggering the stop on
+the low (control logic checks bar.low against control_stop), before closing back up at 1889.206.
+Never came close to MGMT-004 (+1.0R = 1896.276) -- the trade's high close across its life was
+1889.334 (bar 3089), only +0.398R. No P007 candidate fired during the hold. No gap fell inside the
+hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 19
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.5981 - 1.0000 = -3.5981
+POSITION_AFTER_THIS_TRADE = FLAT
+```
