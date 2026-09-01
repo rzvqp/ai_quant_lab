@@ -1056,3 +1056,25 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 26
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.7204 + 3.0000 = -1.7204
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #27 — S5 opening-range-breakout LONG (bar 4356)
+
+```
+SIGNAL_BAR    4356 (2020-12-07 16:00:00-16:15:00 UTC, bis=13)
+ENTRY          1865.800
+INITIAL_STOP    1830.271 (= or_low 1830.291 - 2*TICK)
+STRUCTURAL_TARGET 1972.387 (= entry + 3R, R=35.529)
+```
+
+**THESIS (frozen before bar 4357 was revealed):** mechanically triggered, no discretionary override.
+Close 1865.8 > or_high 1838.805 within the entry window. Same opening range as TRADE #26 (or_high
+1838.805, or_low 1830.291) -- a legitimate re-fire on the same OR immediately after TRADE #26 closed
+via TARGET (bar 4355), matching S5's established stateless-evaluate() re-fire behavior already
+validated multiple times earlier in Q4. Noted honestly: because so much of the move already happened
+before this bar (bis=13, deep in the entry window), the stop distance back to or_low is unusually
+wide -- R=35.529, by far the largest of any Q4 trade so far (previous widest was TRADE #21/#23's
+~9-11). This is a mechanical consequence of the OR re-fire rule interacting with a strong runup, not a
+discretionary sizing choice; no override is being applied.
+
+**INVALIDATION:** a close at or below 1830.271 (STOP). MAX_HOLD 48 bars from entry (through bar
+4404). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1901.329).
