@@ -1313,3 +1313,18 @@ VOLUME                          120 -- very thin, same dead-chop regime as -025 
 
 **PRE-CLASSIFICATION:** leaning REJECTED. TRADE #16 remains open, well clear of stop and MGMT-004.
 Not pre-committing.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2851 (2020-11-13 00:30:00 UTC)
+DURATION                3 bars (2848-2850)
+DEEPEST_LOW              1874.198 (bar 2850)
+HEAVIEST_VOLUME          321 (bar 2850)
+RECLAIM_CLOSE             1877.443
+CAUSAL_H1_EMA50_AT_RESOLUTION 1876.366 (margin +1.08pt)
+```
+
+Thin/moderate volume throughout, tight range, no directional conviction, no fresh extreme. TRADE #16
+remained open throughout. No S5 trigger.
