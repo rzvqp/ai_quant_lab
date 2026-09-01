@@ -834,3 +834,41 @@ VOLUME                          1483
 **PRE-CLASSIFICATION:** genuinely ambiguous -- could be ordinary profit-taking/pullback within a
 still-volatile post-capitulation regime (REJECTED), or the start of a renewed leg down after the
 failed rally topped out (SUPPORT). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         1996 (2020-10-31 00:00:00 UTC)
+DURATION                3 bars (1994-1996)
+DEEPEST_LOW              1874.804 (bar 1995) -- barely below 1994's own low, nowhere near -015's
+                        episode low of 1860.08
+HEAVIEST_VOLUME          1483 (bar 1994)
+RECLAIM_CLOSE             1879.472
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.174 (margin +0.30pt)
+```
+
+Volume stayed elevated throughout (1483/1364/1058) but matched the whole surrounding window's regime
+(700-2011 across bars 1981-1996), not a distinct acceleration relative to local baseline. Reads as
+ordinary volatile churn within the still-active post-Q4-P007-015 regime. Confirms the
+pre-classification's first scenario (ordinary pullback) over the second (renewed leg down). No trade
+was open; no MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-017
+
+```
+GATE_ORIGIN_BAR          2003 (2020-10-31 01:30:00 UTC)
+CONTEXT                    volume normalizing from the 700-2011 regime (bars 1981-1996) back to a
+                          moderate 420-889 range across bars 1997-2002, drifting sideways-to-lower
+                          1878.5-1882.8
+TRIGGER_CLOSE                1878.167
+TRIGGER_LOW                   1877.6 -- close to but does not undercut -016's episode low (1874.804)
+CAUSAL_H1_EMA50_AT_2003       1879.284
+GAP                            -1.12pt
+VOLUME                          584 -- in line with the recent moderate baseline, no acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED, similar to -016's ordinary-chop signature, not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
