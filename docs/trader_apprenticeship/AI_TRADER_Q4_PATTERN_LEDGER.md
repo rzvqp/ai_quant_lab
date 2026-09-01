@@ -1341,3 +1341,32 @@ VOLUME                          191 -- thin, same dead-chop regime as -025 throu
 ```
 
 **PRE-CLASSIFICATION:** leaning REJECTED. POSITION=FLAT. Not pre-committing.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2863 (2020-11-13 03:45:00 UTC)
+DURATION                2 bars (2862-2863)
+DEEPEST_LOW              1876.17 (bar 2863)
+HEAVIEST_VOLUME          212 (bar 2863)
+RECLAIM_CLOSE             1877.383
+CAUSAL_H1_EMA50_AT_RESOLUTION 1876.628 (margin +0.75pt)
+```
+
+Reclaimed immediately, thin volume, no continuation, no fresh extreme. No trade was open; no
+MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-031
+
+```
+GATE_ORIGIN_BAR          2867 (2020-11-13 04:30:00 UTC)
+TRIGGER_CLOSE                1876.642
+CAUSAL_H1_EMA50_AT_2867      1876.645
+GAP                            -0.003pt -- a hairline touch, essentially noise
+VOLUME                          125 -- thin
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED. POSITION=FLAT. Not pre-committing.
