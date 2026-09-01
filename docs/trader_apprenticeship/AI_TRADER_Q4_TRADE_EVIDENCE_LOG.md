@@ -1252,3 +1252,22 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 31
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.9922 - 1.0000 = -4.9922
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #32 — S5 opening-range-breakout LONG (bar 4823)
+
+```
+SIGNAL_BAR    4823 (2020-12-14 17:15:00-17:30:00 UTC, bis=18)
+ENTRY          1828.520
+INITIAL_STOP    1822.309 (= or_low 1822.329 - 2*TICK)
+STRUCTURAL_TARGET 1847.153 (= entry + 3R, R=6.211)
+```
+
+**THESIS (frozen before bar 4824 was revealed):** mechanically triggered, no discretionary override.
+Close 1828.52 > or_high 1827.892 within the entry window. Same opening range as TRADE #31 (or_high
+1827.892, or_low 1822.329) -- a legitimate re-fire on the same OR following TRADE #31's stop-out (bar
+4820), matching S5's established stateless-evaluate() re-fire behavior. This entry sits inside
+Q4-P007-057's still-open episode (gate origin bar 4813), which has not naturally reclaimed as of this
+bar. No discretionary override applied.
+
+**INVALIDATION:** a close at or below 1822.309 (STOP). MAX_HOLD 48 bars from entry (through bar
+4871). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1834.731).
