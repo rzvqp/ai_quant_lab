@@ -2637,3 +2637,27 @@ genuine continuation of an already-established downtrend, not an isolated test. 
 volume-placement nuance recorded honestly rather than smoothed over: not every confirmed SUPPORT case
 has to match every component of the discriminator cleanly, and duration + chain-context are treated as
 carrying real weight alongside (not simply overridden by) the retracement percentage.
+
+---
+
+## Q4-P007-057
+
+```
+GATE_ORIGIN_BAR          4813 (2020-12-14 14:45:00 UTC) -- one bar after -056's reclaim
+TRIGGER_CLOSE                1833.246
+TRIGGER_LOW                   1832.073 -- NOT deeper than -056's own record 1819.418
+CAUSAL_H1_EMA50_AT_4813       1836.4906
+GAP                            -3.245pt -- meaningfully deep
+VOLUME                          1371 -- high in absolute terms but continuing the elevated regime
+                                 around -056's reclaim (2309, bar 4812), not a clear acceleration
+                                 relative to context
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED, similar in shape to -054 (which followed -053's reclaim the
+same way) -- the gap depth is notable, but volume isn't distinguishing relative to the immediately
+preceding elevated bars, and the low isn't a fresh record. Not pre-committing. POSITION=LONG (TRADE
+#31, open since bar 4809, entry 1832.711, stop 1822.309) -- this bar's low (1832.073, below entry but
+well above the stop) and close do not threaten the stop; MGMT-004 has not fired.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the direct echo of -054's own
+shape (both following a reclaim by one bar, both deep-looking but volume-context-relative rather than
+absolute) is a useful pattern to watch -- will be judged on its own resolution evidence, not assumed.
