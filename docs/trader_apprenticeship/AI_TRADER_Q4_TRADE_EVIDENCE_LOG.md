@@ -354,3 +354,24 @@ breakeven trigger at first M15 close >= +1.0R (>= 1883.748).
 unresolved as of TRADE #9's entry -- price has never closed back above the causal H1 EMA50 since.
 Both subsystems are being tracked independently per the durable control-flow ordering invariant; see
 `AI_TRADER_Q4_PATTERN_LEDGER.md`.
+
+**OUTCOME:** MAX_HOLD exit at bar 1944 (2020-10-30 09:00:00 UTC), price 1874.655 (bar's own close).
+```
+EXIT_BAR      1944
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1874.655
+R_MULTIPLE     +0.2323
+```
+The violent reversal (bars 1894-1896) fizzled into a tight range -- price oscillated between
+~1866 and ~1876 for the entire 48-bar hold, never closing more than +0.38R above entry (max close
+1876.396, bar 1899) and never coming close to MGMT-004 (+1.0R = 1883.748) or the stop (1860.06,
+never within ~6pt after entry). Q4-P007-015 remained open throughout this entire hold too -- price
+never closed back above the causal H1 EMA50 at any point across TRADE #9's 48 bars. One MAINTENANCE
+gap (GAP-170, bar 1924->1925, 60min) inside the hold. Trade mechanics ran unconditionally on every
+bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 9
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.5699 + 0.2323 = -2.3376
+POSITION_AFTER_THIS_TRADE = FLAT
+```

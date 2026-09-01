@@ -1282,3 +1282,10 @@ episode, mid-way through the major Oct 28 decline) -> 2020-10-28T22:00:00Z (firs
 bar 1833)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-170 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-10-29T20:59:59Z (last close 1867.959, Q4 bar 1924, Thursday -- inside TRADE #9's open
+hold and Q4-P007-015's still-open episode) -> 2020-10-29T22:00:00Z (first open 1867.959, Q4 bar 1925)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
