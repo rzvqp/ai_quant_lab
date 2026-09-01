@@ -872,3 +872,37 @@ VOLUME                          584 -- in line with the recent moderate baseline
 
 **PRE-CLASSIFICATION:** leaning REJECTED, similar to -016's ordinary-chop signature, not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2004 (2020-10-31 01:45:00 UTC)
+DURATION                2 bars (2003-2004)
+DEEPEST_LOW              1877.6 (bar 2003)
+HEAVIEST_VOLUME          584 (bar 2003)
+RECLAIM_CLOSE             1879.678
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.284 (margin +0.39pt)
+```
+
+Reclaimed immediately, volume in line with the moderate baseline throughout, no continuation, no
+fresh extreme. Confirms the pre-classification's REJECTED lean exactly. No trade was open; no
+MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-018
+
+```
+GATE_ORIGIN_BAR          2012 (2020-10-31 03:30:00 UTC)
+CONTEXT                    bars 2005-2011 held a tight 1878.5-1881.5 consolidation, thin-moderate
+                          volume (277-757), no direction
+TRIGGER_CLOSE                1877.747
+TRIGGER_LOW                   1877.433 -- no fresh extreme vs -016/-017's recent lows
+CAUSAL_H1_EMA50_AT_2012       1879.328
+GAP                            -1.58pt
+VOLUME                          454 -- unremarkable vs the recent baseline
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED, matching the ordinary-chop signature of -016/-017.
+POSITION=FLAT; no MGMT-004 relevance.
