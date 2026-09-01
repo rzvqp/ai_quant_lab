@@ -586,3 +586,42 @@ trade was open at any point; no MGMT-004 relevance. No S5 trigger at any point (
 confirmed each bar). Fifth genuinely-resolved SUPPORT instance in Q4 (after Q4-P007-003, Q4-P007-004,
 Q4-P007-006, Q4-P007-007) -- the first identified primarily by sustained directional character plus a
 fresh extreme rather than accelerating volume alone.
+
+---
+
+## Q4-P007-011
+
+```
+GATE_ORIGIN_BAR          1710 (2020-10-27 15:45:00 UTC) -- immediately after Q4-P007-010's reclaim
+                          (bar 1708) and a follow-through push bar (1709: close 1905.575, high
+                          1907.636, volume 783)
+TRIGGER_CLOSE               1904.271
+CAUSAL_H1_EMA50_AT_1710      1904.362
+GAP                           -0.09pt -- a touch, not a break
+VOLUME                         402
+```
+
+**PRE-CLASSIFICATION:** reads as a normal pullback/retracement after bar 1709's push higher, not a
+fresh severe break -- no continuation lower yet, no fresh extreme (1904.224 is well inside the
+1897.914-1907.636 range just established by -010). Leaning REJECTED, similar to -008/-009's profile,
+not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         1711 (2020-10-27 16:15:00 UTC)
+DURATION                2 bars (1710-1711)
+DEEPEST_LOW              1902.13 (bar 1711, intrabar -- a minor undershoot, not a fresh extreme;
+                        -010's low of 1897.914 stands untouched)
+HEAVIEST_VOLUME          1111 (bar 1711, ON THE RECLAIM bar, not the break bar -- the opposite of
+                        PATTERN-007's signature)
+RECLAIM_CLOSE             1906.622
+CAUSAL_H1_EMA50_AT_RESOLUTION 1904.362 (margin +2.26pt)
+```
+
+Reclaimed on the very next bar after gate-origin. Bar 1711 dipped intrabar then reversed hard,
+closing with the heaviest single-bar volume since TRADE #7's own hold (1111) -- but that volume
+printed on the reclaim, not the break (bar 1710 itself was only 402). Confirms the
+pre-classification's read exactly: a normal pullback/retracement, not a fresh break. No trade was
+open at any point; no MGMT-004 relevance. No S5 trigger (unconditional check confirmed each bar).

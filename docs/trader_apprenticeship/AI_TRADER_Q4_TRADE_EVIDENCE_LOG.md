@@ -282,3 +282,26 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 7
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.425 - 1.000 = -2.425
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #8 — S5 opening-range-breakout LONG (bar 1718)
+
+**Opened via the durable control flow (`ai_trader/csv_causal_replay/q4_control_flow.py`, commit
+`44aee88`) for the first time in production.**
+
+```
+SIGNAL_BAR    1718 (2020-10-27 15:15:00-15:29:59 UTC, bis=10)
+ENTRY          1908.268
+INITIAL_STOP    1902.110 (= or_low 1902.13 - 2*TICK)
+STRUCTURAL_TARGET 1926.742 (= entry + 3R, R=6.158)
+```
+
+**THESIS (frozen before bar 1719 was revealed):** mechanically triggered, no discretionary override.
+Close 1908.268 > or_high 1907.636 within the entry window. OR formed by bars 1708-1711 -- the exact
+same 4 bars as Q4-P007-010's reclaim (bar 1708) and Q4-P007-011's full episode (bars 1710-1711);
+or_low 1902.13 is bar 1711's own intrabar low, printed during -011's brief dip-and-reverse. Entry
+window bars 1712-1717 stayed below or_high (max close 1906.822 at bar 1713) before bar 1718 broke
+out on moderate volume (545, in line with the session's 500-900 baseline).
+
+**INVALIDATION:** a close at or below 1902.110 (STOP). MAX_HOLD 48 bars from entry (through bar
+1766) if neither stop nor target is hit first. MGMT-004 breakeven trigger at first M15 close >=
++1.0R (>= 1914.426).
