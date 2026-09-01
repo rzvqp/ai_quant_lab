@@ -2447,3 +2447,28 @@ structural process rather than a fast grab-and-reclaim. This pairing with -051 i
 back-to-back episodes with genuinely deep fresh extremes resolved oppositely (REJECTED then SUPPORT)
 because the round-trip completeness and duration -- not the extreme alone -- told the real story in
 each case.
+
+---
+
+## Q4-P007-053
+
+```
+GATE_ORIGIN_BAR          4630 (2020-12-10 15:00:00 UTC) -- one bar after TRADE #29 opened
+TRIGGER_CLOSE                1844.904
+TRIGGER_LOW                   1842.92 -- NOT a fresh extreme (well above -052's 1825.579)
+CAUSAL_H1_EMA50_AT_4630       1846.3098
+GAP                            -1.406pt -- moderate
+VOLUME                          1813 -- high in absolute terms, but roughly flat versus the two
+                                 immediately preceding bars (bar 4628 reclaim 1808, bar 4629 TRADE #29
+                                 entry 1724), not a clear acceleration relative to context
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- same "-052's own lesson" applies: absolute volume level
+is high because this whole stretch has been active since -052's reclaim, but this bar's volume isn't
+distinguishing relative to its immediate neighbors, and there's no fresh extreme. Not pre-committing.
+POSITION=LONG (TRADE #29, open since bar 4629, entry 1847.771, stop 1834.287) -- this bar's low
+(1842.92) and close (1844.904) do not threaten the stop; MGMT-004 has not fired (needs close >=
+1861.255).
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature relative to its own immediate context -- consistent with, not the basis for, the
+REJECTED lean.
