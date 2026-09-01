@@ -1225,3 +1225,34 @@ GAP                            -0.29pt
 ```
 
 **PRE-CLASSIFICATION:** leaning REJECTED -- trivial marginal touch. Not pre-committing.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2835 (2020-11-13 03:30:00 UTC)
+DURATION                2 bars (2834-2835)
+DEEPEST_LOW              1876.073 (bar 2834)
+HEAVIEST_VOLUME          382 (bar 2835)
+RECLAIM_CLOSE             1876.595
+CAUSAL_H1_EMA50_AT_RESOLUTION 1876.361 (margin +0.23pt)
+```
+
+Reclaimed immediately, thin volume throughout, no continuation, no fresh extreme. Confirms the
+pre-classification's REJECTED lean exactly. TRADE #16 remained open throughout. No S5 trigger.
+
+---
+
+## Q4-P007-027
+
+```
+GATE_ORIGIN_BAR          2837 (2020-11-13 03:45:00 UTC) -- immediately after -026's reclaim; TRADE
+                          #16 open, well clear of stop and MGMT-004
+TRIGGER_CLOSE                1875.685
+TRIGGER_LOW                   1875.192 -- marginally undercuts -026's low (1876.073) by ~0.9pt
+CAUSAL_H1_EMA50_AT_2837       1876.361
+GAP                            -0.68pt
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- continuation of the same trivial, thin chop pattern as
+-025/-026. Not pre-committing.
