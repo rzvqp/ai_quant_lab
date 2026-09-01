@@ -1088,6 +1088,38 @@ No S5 trigger.
 
 ---
 
+## Q4-P007-023
+
+```
+GATE_ORIGIN_BAR          2281 (2020-11-04 11:00:00 UTC) -- immediately after Q4-P007-022's resolution
+TRIGGER_CLOSE                1896.886
+TRIGGER_LOW                   1896.58 -- no fresh extreme
+CAUSAL_H1_EMA50_AT_2281       1897.138
+GAP                            -0.25pt
+VOLUME                          468 -- thin, market finally calming from the post-election regime
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED, matching -020's ordinary-marginal-touch signature. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2283 (2020-11-04 11:30:00 UTC)
+DURATION                3 bars (2281-2283)
+DEEPEST_LOW              1896.222 (bar 2282)
+HEAVIEST_VOLUME          468 (bar 2281)
+RECLAIM_CLOSE             1897.824
+CAUSAL_H1_EMA50_AT_RESOLUTION 1897.188 (margin +0.64pt)
+```
+
+Thin volume throughout (468/414/324), confirming the market has calmed from the post-election
+extreme regime. No continuation, no fresh extreme. Confirms the pre-classification's REJECTED lean
+exactly. No trade was open; no MGMT-004 relevance. No S5 trigger.
+
+---
+
 ## Q4-P007-024
 
 ```
@@ -1146,32 +1178,19 @@ Q4-P007-019), and by a wide margin the largest in every dimension.
 
 ---
 
-## Q4-P007-023
+## Q4-P007-025
 
 ```
-GATE_ORIGIN_BAR          2281 (2020-11-04 11:00:00 UTC) -- immediately after Q4-P007-022's resolution
-TRIGGER_CLOSE                1896.886
-TRIGGER_LOW                   1896.58 -- no fresh extreme
-CAUSAL_H1_EMA50_AT_2281       1897.138
-GAP                            -0.25pt
-VOLUME                          468 -- thin, market finally calming from the post-election regime
+GATE_ORIGIN_BAR          2830 (2020-11-13 02:15:00 UTC) -- TRADE #16 open (entry 1877.526, currently
+                          ~1875.2, well clear of stop 1867.594; trade mechanics ran unconditionally)
+CONTEXT                    bars 2822-2829 gently declined 1883->1875, moderate volume (350-799), no
+                          acceleration
+TRIGGER_CLOSE                1875.2
+TRIGGER_LOW                   1874.331 -- no fresh extreme
+CAUSAL_H1_EMA50_AT_2830       1876.296
+GAP                            -1.10pt
+VOLUME                          799 -- in line with the immediate baseline
 ```
 
-**PRE-CLASSIFICATION:** leaning REJECTED, matching -020's ordinary-marginal-touch signature. Not
-pre-committing. POSITION=FLAT; no MGMT-004 relevance.
-
-### RESOLUTION
-
-```
-STATUS               REJECTED -- not a genuine PATTERN-007 instance
-RESOLUTION_BAR         2283 (2020-11-04 11:30:00 UTC)
-DURATION                3 bars (2281-2283)
-DEEPEST_LOW              1896.222 (bar 2282)
-HEAVIEST_VOLUME          468 (bar 2281)
-RECLAIM_CLOSE             1897.824
-CAUSAL_H1_EMA50_AT_RESOLUTION 1897.188 (margin +0.64pt)
-```
-
-Thin volume throughout (468/414/324), confirming the market has calmed from the post-election
-extreme regime. No continuation, no fresh extreme. Confirms the pre-classification's REJECTED lean
-exactly. No trade was open; no MGMT-004 relevance. No S5 trigger.
+**PRE-CLASSIFICATION:** leaning REJECTED -- ordinary gentle drift, not a fresh break. Not
+pre-committing.
