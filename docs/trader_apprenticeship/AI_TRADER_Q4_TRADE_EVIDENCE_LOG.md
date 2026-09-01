@@ -480,3 +480,23 @@ up to 1557 at bar 2347), including a genuine impulsive push at bar 2347 (+6.4pt 
 
 **INVALIDATION:** a close at or below 1924.940 (STOP). MAX_HOLD 48 bars from entry (through bar
 2400). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1938.536).
+
+**OUTCOME:** TARGET hit at bar 2362 (2020-11-06 02:15:00 UTC), price 1952.132.
+```
+EXIT_BAR      2362
+EXIT_REASON    TARGET
+EXIT_PRICE     1952.132
+R_MULTIPLE     +3.0000
+```
+Clean, strong trade -- the first TARGET hit in Q4. After a brief pullback (bars 2353-2354, low
+1927.004), price ran hard higher: bar 2357 jumped to close 1942.109 on volume 2226, crossing MGMT-004
+(+1.0R = 1938.536, fired that bar). Continued impulsively through bar 2358 (high 1948.303, volume
+2325) and touched target on bar 2362's high (1952.786 >= 1952.132). Both CONTROL and SHADOW ledgers
+agree (TARGET, same bar, same price) since price never came back down toward the breakeven stop
+after MGMT-004 fired. No P007 candidates during the hold; no gaps.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 12
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.5973 + 3.0000 = -0.5973
+POSITION_AFTER_THIS_TRADE = FLAT
+```
