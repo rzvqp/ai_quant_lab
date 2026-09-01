@@ -85,5 +85,16 @@
   "BLIND_KEY_HASH": "268a4f1878ff15df81adba165f1786d320c15b62a148327f440eb3cf293f146f"
  },
  "protocol_change_required": false,
- "blinding_status": "PRESERVED_WITH_DISCLOSED_PARTIAL_LEAKAGE"
+ "blinding_status": "PRESERVED_WITH_DISCLOSED_PARTIAL_LEAKAGE",
+ "package_layout": {
+  "protocol_core_dir": "statistician/attribution_v2  (12 files, frozen identity)",
+  "handoff_dir": "statistician/attribution_v2_handoff  (values parquet, metadata, trade-level spec, this manifest)",
+  "rationale": "handoff artifacts are kept OUT of the directory the protocol identity is computed over, so PROTOCOL_CORE_HASH keeps its frozen value"
+ },
+ "PROTOCOL_CORE_HASH": "4488f0e89ae8bb079bf51eb74e4a2767f072d4e368ee383bae1d875ac4359b8f",
+ "trade_level_blind_feature_spec": "ATTRIBUTION_V2_TRADE_LEVEL_BLIND_FEATURE_SPEC.csv",
+ "trade_level_blind_feature_spec_hash": "03e636639012cd3e4edc6925c2b0f6c568941c7cb8060cf23ed896c7c711b4e2",
+ "trade_level_feature_causality": "PASS (at-entry standard; one feature is AT_FILL -- disclosed)",
+ "end_to_end_handoff_dry_run": "PASS (6 objects, 2 tiers, 74,956 trades, all joins 1:1)",
+ "alpha_feature_input_complete": true
 }

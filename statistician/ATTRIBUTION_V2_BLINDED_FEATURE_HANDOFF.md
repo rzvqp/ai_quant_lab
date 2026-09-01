@@ -37,9 +37,10 @@ No feature identity, bin, or protocol rule was changed.
 ## 2 — THE ARTIFACT (§2, §11)
 
 ```
-statistician/attribution_v2/ATTRIBUTION_V2_BLINDED_FEATURE_VALUES.parquet     14.4 MB
-statistician/attribution_v2/ATTRIBUTION_V2_BLINDED_FEATURE_VALUES_METADATA.csv
-statistician/attribution_v2/ATTRIBUTION_V2_BLINDED_FEATURE_HANDOFF_MANIFEST.json
+statistician/attribution_v2_handoff/ATTRIBUTION_V2_BLINDED_FEATURE_VALUES.parquet     14.4 MB
+statistician/attribution_v2_handoff/ATTRIBUTION_V2_BLINDED_FEATURE_VALUES_METADATA.csv
+statistician/attribution_v2_handoff/ATTRIBUTION_V2_BLINDED_FEATURE_HANDOFF_MANIFEST.json
+statistician/attribution_v2_handoff/ATTRIBUTION_V2_TRADE_LEVEL_BLIND_FEATURE_SPEC.csv
 ```
 
 | | |
@@ -216,8 +217,13 @@ eligibility table, historical-reuse policy.
 Three files were **added**. Adding files necessarily re-hashes the package directory:
 
 ```
-PROTOCOL_PACKAGE_HASH (superseded) = 4488f0e89ae8bb079bf51eb74e4a2767f072d4e368ee383bae1d875ac4359b8f  (12 files)
-PROTOCOL_PACKAGE_HASH (current)    = 36e07fb7de11bac098e6670f513baba68720140d6356e72595c2fd72d2f9158b  (15 files)
+PROTOCOL_CORE_HASH = 4488f0e89ae8bb079bf51eb74e4a2767f072d4e368ee383bae1d875ac4359b8f  (12 files, UNCHANGED)
+
+CORRECTED 2026-09-02: an earlier revision of this section reported a NEW package hash (36e07fb7...)
+because the handoff artifacts had been written INTO the identity-bearing directory. That was a
+bookkeeping error, not a protocol change. The artifacts now live in statistician/attribution_v2_handoff/
+and the protocol core keeps its frozen identity. 36e07fb7... is WITHDRAWN.
+See ATTRIBUTION_V2_FINAL_HANDOFF_INTEGRITY.md.
 ```
 
 ---
@@ -242,7 +248,7 @@ PROTOCOL_CHANGE_REQUIRED = NO
 
 BLINDED_FEATURE_VALUES_HASH           = 2ea066c6a6a75705d7429ed9ad982430f1bfd02c5242760d43cf8f363cc7e871
 BLINDED_FEATURE_HANDOFF_MANIFEST_HASH = 16dbe9632f05f0409aebc01c7060773862c8cf365051b3a78b481c62599a81fa
-PROTOCOL_PACKAGE_HASH                 = 36e07fb7de11bac098e6670f513baba68720140d6356e72595c2fd72d2f9158b
+PROTOCOL_CORE_HASH                    = 4488f0e89ae8bb079bf51eb74e4a2767f072d4e368ee383bae1d875ac4359b8f
 
 READY_FOR_ALPHA_V2_RESUME = YES
 NEXT_AUTHORIZED_ACTION = NONE — CEO DECISION REQUIRED
