@@ -1155,3 +1155,23 @@ structural process. This entry rides the start of that reclaim move.
 
 **INVALIDATION:** a close at or below 1834.287 (STOP). MAX_HOLD 48 bars from entry (through bar
 4677). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1861.255).
+
+**OUTCOME:** STOP hit at bar 4633 (2020-12-10 15:45:00 UTC), low 1833.92 <= stop 1834.287.
+```
+EXIT_BAR      4633
+EXIT_REASON    STOP
+EXIT_PRICE     1834.287
+R_MULTIPLE     -1.0000
+```
+A fast, clean 4-bar stop-out. Price declined steadily from entry (1847.771) through bars 4630-4633
+(1844.904/1840.952/1840.0/1835.56) without ever threatening MGMT-004 (+1.0R = 1861.255) -- the trade's
+best close was its own entry bar. Q4-P007-053 (gate origin bar 4630) remains open/locked through this
+decline; bar 4633's low (1833.92) is now deeper than -053's own gate-origin low (1842.92), relevant
+context for that episode's eventual resolution. No gap fell inside the hold. Trade mechanics ran
+unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 29
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.6415 - 1.0000 = -3.6415
+POSITION_AFTER_THIS_TRADE = FLAT
+```
