@@ -2313,3 +2313,25 @@ pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** another mid-strength test,
 structurally similar to -046 -- will be judged on its own retracement/volume evidence at resolution,
 not on the precedent alone.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4522 (2020-12-09 11:00:00 UTC)
+DURATION                4 bars (4519-4522)
+DEEPEST_LOW              1856.192 (bar 4519, the gate origin itself)
+HEAVIEST_VOLUME          715 (bar 4519, the break bar) -- a real gap over the following bars
+                          (473/282/339)
+RECLAIM_CLOSE             1859.927 -- essentially EXACTLY the pre-episode level (bar 4518 close
+                          1859.934, only -0.01pt short, a near-perfect round-trip)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1859.7738 (margin +0.15pt -- thin)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the fifth consecutive REJECTED
+resolution in this stretch (-046 through -050). As predicted going in, this played out structurally
+like -046: a real volume gap on the break, but a round-trip even more complete than -046's (~100%
+here vs -046's ~89%), which settles it firmly REJECTED. This stretch (since TRADE #28's stop, bars
+~4494-4522) is now a clear, consistent example of a range where moderate-strength P007 triggers
+repeatedly fail to represent genuine structural breaks -- five out of five in a row.
