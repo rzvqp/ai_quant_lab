@@ -2222,3 +2222,24 @@ zone, no fresh extreme, no volume acceleration. Not pre-committing. POSITION=FLA
 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature -- consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         4507 (2020-12-09 07:15:00 UTC)
+DURATION                2 bars (4506-4507)
+DEEPEST_LOW              1858.321 (bar 4507) -- marginally deeper than the gate origin's 1858.374,
+                          not a meaningful fresh extreme
+HEAVIEST_VOLUME          567 (bar 4506, the break bar) -- somewhat higher than the reclaim bar's 480,
+                          not dramatically so
+RECLAIM_CLOSE             1860.015 -- essentially a FULL round-trip back to the pre-episode level
+                          (bar 4505 close 1860.244, only -0.23pt short)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1859.4866 (margin +0.53pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** another clean REJECTED read
+matching the pre-classification -- the third consecutive REJECTED resolution in this stretch (-046,
+-047, -048), consistent with the ordinary, shallow-chop character this zone has settled into since
+TRADE #28 closed.
