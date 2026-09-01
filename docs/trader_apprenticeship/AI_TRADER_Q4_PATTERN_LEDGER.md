@@ -2109,3 +2109,31 @@ extreme) didn't hold up once one more bar of evidence arrived. Worth remembering
 pre-classifications: an initial read based on the gate-origin bar alone can be superseded quickly by
 the very next bar, and the eventual classification should follow the fuller episode, not lock in to the
 opening bar's framing.
+
+---
+
+## Q4-P007-046
+
+```
+GATE_ORIGIN_BAR          4494 (2020-12-09 04:00:00 UTC)
+CONTEXT                    TRADE #28 stopped out 3 bars earlier (bar 4491); this bar continues that
+                            decline
+TRIGGER_CLOSE                1856.634
+TRIGGER_LOW                   1855.698 -- a genuine fresh local low relative to recent trading
+                              (TRADE #28's hold ranged ~1861-1874; no bar in the last several dozen
+                              has closed or wicked this low), though not a multi-week extreme (bar
+                              3271's 1852.792, from Q4-P007-040's episode, sits deeper further back)
+CAUSAL_H1_EMA50_AT_4494       1859.3514
+GAP                            -2.717pt -- meaningfully deep, well beyond the shallow dead-chop
+                                 origins seen recently
+VOLUME                          763 -- a real acceleration versus the 328-635 seen in the two
+                                 preceding bars
+```
+
+**PRE-CLASSIFICATION:** genuinely uncertain, leaning slightly toward SUPPORT -- a meaningful gap depth,
+a genuine local fresh low, and a real volume acceleration all point that direction, though none of
+them are as decisive as -038/-039/-040/-041/-045's clearest cases. Not pre-committing. POSITION=FLAT;
+no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** components lean the same
+direction here (unlike -043's genuinely mixed case), but all at moderate rather than extreme
+magnitude -- a useful mid-strength test case for the discriminator.
