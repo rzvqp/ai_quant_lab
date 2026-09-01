@@ -175,3 +175,31 @@ at TRADE #4 and TRADE #12.
 MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 5
 Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 + 0.000 + 0.000 = -0.651
 ```
+
+## TRADE #32 — S5 LONG, bar 4823 (2020-12-14 17:15:00 UTC)
+
+```
+ENTRY                 1828.520
+RISK (1R)              6.211
+STRUCTURAL_TARGET      1847.153 (unchanged in both tracks)
++1.0R_TRIGGER_LEVEL     1834.731
+```
+
+**TRIGGER**: bar 4862 (2020-12-15 04:00:00 UTC), close 1834.784, +1.0085R -- first M15 close at or
+beyond +1.0R. Shadow stop moved to breakeven (1828.520); control stop (1822.309) and target
+(1847.153) unchanged in both tracks.
+
+```
+TRACK      EXIT_BAR   EXIT_REASON   EXIT_PRICE   R_MULTIPLE
+CONTROL    4871        MAX_HOLD      1839.062     +1.6973
+SHADOW     4871        MAX_HOLD      1839.062     +1.6973
+```
+
+**DELTA_R (SHADOW - CONTROL) = 0.000.** After triggering at +1.01R, price continued climbing steadily
+(best close 1839.408, +1.75R, bar 4868) and never pulled back anywhere near the breakeven shadow stop
+-- both tracks ride the same remainder of the hold to the same close.
+
+```
+MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 6
+Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 + 0.000 + 0.000 + 0.000 = -0.651
+```

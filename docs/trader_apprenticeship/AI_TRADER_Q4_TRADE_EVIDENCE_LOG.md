@@ -1271,3 +1271,24 @@ bar. No discretionary override applied.
 
 **INVALIDATION:** a close at or below 1822.309 (STOP). MAX_HOLD 48 bars from entry (through bar
 4871). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1834.731).
+
+**OUTCOME:** MGMT-004 fired at bar 4862 (2020-12-15 04:00:00 UTC), close 1834.784, +1.0085R (see
+`AI_TRADER_Q4_MGMT004_PROSPECTIVE_LEDGER.md` for the full dual-track write-up). MAX_HOLD exit at bar
+4871 (2020-12-15 06:15:00 UTC), price 1839.062 (bar's own close), both CONTROL and SHADOW tracks
+identical.
+```
+EXIT_BAR      4871
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1839.062 (bar's own close)
+R_MULTIPLE     +1.6973 (CONTROL basis)
+```
+A strong trade -- price continued climbing steadily after MGMT-004 fired, reaching a best close of
+1839.408 (+1.75R, bar 4868) before easing slightly into the MAX_HOLD exit. Never came back near the
+breakeven shadow stop, so CONTROL and SHADOW converge. No gaps, no P007 candidates during the hold.
+Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 32
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.9922 + 1.6973 = -3.2949
+POSITION_AFTER_THIS_TRADE = FLAT
+```
