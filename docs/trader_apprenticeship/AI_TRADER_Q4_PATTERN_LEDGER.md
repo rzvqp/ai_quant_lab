@@ -783,3 +783,33 @@ LONG, see `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md`). The gate remains open (no bar h
 the causal H1 EMA50 yet) -- not resolving prematurely; the eventual RESOLUTION entry will cover the
 full episode once a genuine reclaim occurs. One MAINTENANCE gap (GAP-169, bar 1832->1833, 60min)
 logged inside this stretch.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT / RECLAIM -- clearest, most dramatic instance in Q4 so far
+RESOLUTION_BAR         1980 (2020-10-30 19:45:00 UTC)
+DURATION                198 bars (1782-1979) -- by far the longest episode of the quarter
+DEEPEST_LOW              1860.08 (bar 1893) -- genuine fresh Q4-replay extreme
+HEAVIEST_VOLUME          4017 (bar 1895) -- roughly 8x this session's typical peak
+RECLAIM_CLOSE             1879.34
+CAUSAL_H1_EMA50_AT_RESOLUTION 1878.530 (margin +0.81pt)
+```
+
+Full arc: (1) a fast ~20pt decline in the first 18 bars (bar 1782 close 1902.655 -> bar 1800 close
+1882.423, volume up to 1637); (2) an ~80-bar consolidation around 1877-1882 (bars 1820-1880); (3) a
+final capitulation leg (bars 1890-1893, volume 1594-1817) to the episode low; (4) a violent reversal
+on the heaviest volume of the entire Q4 replay (bars 1894-1896: 1306/4017/3396), mechanically
+triggering TRADE #9 (S5 LONG, entry 1871.904); (5) TRADE #9 chopped in a tight ~1866-1876 range for
+its full 48-bar hold, closing +0.2323R at MAX_HOLD (bar 1944) without the gate ever reclaiming; (6) a
+further 36 bars of consolidation/gradual recovery (including a secondary dip to 1869.302 at bar
+1955) before bar 1980 finally reclaimed on real volume (674). Every element of PATTERN-007's
+definition is present at genuine scale: a severe break (largest decline of the quarter, fresh
+extreme), heavy volume confirmation at the break, and an eventual reclaim on real volume, not a
+marginal touch. No other P007 candidate could open during this stretch -- the gate is
+one-directional and the lock was held continuously. TRADE #8 was already closed before this episode
+began; TRADE #9 is the only trade that overlapped it -- both subsystems processed independently
+throughout per the durable control-flow ordering invariant. Two MAINTENANCE gaps (GAP-169, GAP-170)
+logged inside the episode, both standard. Sixth genuinely-resolved SUPPORT instance in Q4 (after
+Q4-P007-003, Q4-P007-004, Q4-P007-006, Q4-P007-007, Q4-P007-010), and by a wide margin the largest
+in both duration and price magnitude.
