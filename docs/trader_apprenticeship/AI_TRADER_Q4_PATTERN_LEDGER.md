@@ -987,3 +987,37 @@ VOLUME                          2415 -- still part of the same extreme regime, b
 **PRE-CLASSIFICATION:** leaning REJECTED -- ordinary chop right at the EMA boundary, not a fresh
 break -- though the still-elevated volume regime makes this harder to call with full confidence than
 a quiet-market marginal touch. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         2219 (2020-11-04 01:30:00 UTC)
+DURATION                2 bars (2218-2219)
+DEEPEST_LOW              1893.506 (bar 2219) -- no fresh extreme vs -019's episode range
+HEAVIEST_VOLUME          2415 (bar 2218)
+RECLAIM_CLOSE             1899.809
+CAUSAL_H1_EMA50_AT_RESOLUTION 1895.822 (margin +3.99pt)
+```
+
+Immediate strong bullish reclaim, confirming the pre-classification's REJECTED lean exactly --
+ordinary chop at the boundary followed by a strong bounce, not a fresh break. No trade was open; no
+MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-021
+
+```
+GATE_ORIGIN_BAR          2233 (2020-11-04 04:45:00 UTC)
+CONTEXT                    bars 2225-2232 chopped 1894.6-1903.3, volume 757-1492 (still elevated but
+                          without directional character, oscillating both ways)
+TRIGGER_CLOSE                1895.44
+TRIGGER_LOW                   1894.626 -- close to but not below bar 2229's recent low (1894.884)
+CAUSAL_H1_EMA50_AT_2233       1896.009
+GAP                            -0.57pt
+VOLUME                          1348 -- in line with the surrounding chop, no acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- ordinary two-sided chop, not a fresh break. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
