@@ -1034,3 +1034,25 @@ SUPPORT signature. Volume built into this breakout (773 at bar 4346, 877 at bar 
 
 **INVALIDATION:** a close at or below 1830.271 (STOP). MAX_HOLD 48 bars from entry (through bar
 4395). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1848.573).
+
+**OUTCOME:** MGMT-004 fired at bar 4351 (2020-12-07 14:45:00 UTC), close 1856.722, +1.8905R. TARGET
+hit at bar 4355 (2020-12-07 15:45:00 UTC), price 1866.875, both CONTROL and SHADOW tracks identical
+(see `AI_TRADER_Q4_MGMT004_PROSPECTIVE_LEDGER.md` for the full dual-track write-up).
+```
+EXIT_BAR      4355
+EXIT_REASON    TARGET
+EXIT_PRICE     1866.875
+R_MULTIPLE     +3.0000
+```
+A strong, clean trade -- the second TARGET hit since TRADE #12. Price ran hard almost immediately:
+bar 4350 jumped to close 1845.852 on volume 1373, then bar 4351 jumped further to 1856.722 on volume
+2204, crossing MGMT-004 (+1.0R = 1848.573, fired that bar). Continued impulsively through bar 4352
+(high 1863.894, volume 2602) and touched target on bar 4355's high (1867.188 >= 1866.875). Both
+CONTROL and SHADOW ledgers agree since price never came back down toward the breakeven stop after
+MGMT-004 fired. No P007 candidates during the hold; no gaps.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 26
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.7204 + 3.0000 = -1.7204
+POSITION_AFTER_THIS_TRADE = FLAT
+```

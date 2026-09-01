@@ -147,3 +147,31 @@ TRADE #4 and TRADE #12); the first Q4 divergence remains TRADE #1's -0.651R.
 MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 4
 Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 + 0.000 = -0.651
 ```
+
+## TRADE #26 — S5 LONG, bar 4347 (2020-12-07 13:45:00 UTC)
+
+```
+ENTRY                 1839.422
+RISK (1R)              9.151
+STRUCTURAL_TARGET      1866.875 (unchanged in both tracks)
++1.0R_TRIGGER_LEVEL     1848.573
+```
+
+**TRIGGER**: bar 4351 (2020-12-07 14:45:00 UTC), close 1856.722, +1.8905R -- first M15 close at or
+beyond +1.0R. Shadow stop moved to breakeven (1839.422); control stop (1830.271) and target
+(1866.875) unchanged in both tracks.
+
+```
+TRACK      EXIT_BAR   EXIT_REASON   EXIT_PRICE   R_MULTIPLE
+CONTROL    4355        TARGET        1866.875     +3.000
+SHADOW     4355        TARGET        1866.875     +3.000
+```
+
+**DELTA_R (SHADOW - CONTROL) = 0.000.** After triggering at +1.89R, price ran impulsively straight
+through to target four bars later (bar 4352 high 1863.894 on volume 2602) -- both tracks converge, as
+at TRADE #4 and TRADE #12.
+
+```
+MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 5
+Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 + 0.000 + 0.000 = -0.651
+```
