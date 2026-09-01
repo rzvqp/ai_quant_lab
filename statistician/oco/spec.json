@@ -1,0 +1,24 @@
+{
+ "spec": {
+  "architecture": "DIRECTION_AGNOSTIC_EXPANSION_HARVEST_V1 anchor-B (prior-day extremes) OCO continuation",
+  "anchor": "first M15 bar of each UTC calendar date (dt.dt.date groupby, .first())",
+  "activation_up": "previous UTC calendar date HIGH",
+  "activation_dn": "previous UTC calendar date LOW",
+  "day_boundary": "UTC calendar date",
+  "order_placed": "at the day-open anchor bar s",
+  "scan_window": "bars s+1 .. min(s+96, n-1)  (96 M15 bars = 24h)",
+  "first_trigger": "first bar with high>=PDH or low<=PDL; opposite order cancelled on that bar",
+  "same_bar_both_activations": "ambiguous -> episode SKIPPED (excluded from statistics)",
+  "entry_price": "the activation level exactly (no gap adjustment)",
+  "stop": "the opposite activation level",
+  "risk": "PDH - PDL",
+  "target": "entry + dir * mult * risk, mult in {1.0,1.5,2.0}",
+  "same_bar_target_and_stop": "resolved as STOP (conservative)",
+  "trigger_bar_resolution": "resolution scan starts on the trigger bar itself",
+  "expiry": "unresolved at bar min(s+96,n-1) -> marked to market at that close",
+  "cost": "0.419 price units per trade, converted to R as cost/risk",
+  "episode_independence": "one episode per UTC calendar date",
+  "data": "OANDA_XAUUSD_M15.csv full file, NO holdout truncation"
+ },
+ "hash": "26827e79511e1ac58ab3dc14f9b3c4251ee92d3e8602057dbd4394e265e37c1e"
+}
