@@ -1550,3 +1550,10 @@ SPAN: 2020-12-09T22:00:00Z (last close 1840.086, Q4 bar 4565, Wednesday -- insid
 basing period) -> 2020-12-09T23:00:00Z (first open 1840.086, Q4 bar 4566)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-200 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-12-10T22:00:00Z (last close 1836.693, Q4 bar 4657, Thursday -- inside Q4-P007-053's
+ongoing episode) -> 2020-12-10T23:00:00Z (first open 1836.693, Q4 bar 4658)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
