@@ -1573,3 +1573,29 @@ SUPPORT-leaning pattern, yet the actual reasoning (where the volume landed, no f
 correctly separates it from -024/-033's genuine signature. Shows the discriminator is not a simple
 "volume grew = SUPPORT" rule -- where the volume lands and whether a fresh extreme prints still
 matter more than raw volume growth alone.
+
+---
+
+## Q4-P007-037
+
+```
+GATE_ORIGIN_BAR          3094 (2020-11-17 15:15:00 UTC)
+CONTEXT                    bars 3092-3093 pulling back from TRADE #20's entry (1890.787 -> 1888.132),
+                            still inside the same broad 1886-1893.5 range this whole stretch has
+                            chopped in since bar ~3080
+TRIGGER_CLOSE                1887.4
+TRIGGER_LOW                   1886.482 -- NOT a fresh low (shallower than bar 3091's 1886.297)
+CAUSAL_H1_EMA50_AT_3094       1887.5614
+GAP                            -0.161pt -- a marginal, barely-below-EMA close
+VOLUME                          888 -- below the recent active-bar range (1156-1266) but above the
+                                 thin dead-chop baseline (196-444) seen earlier in this stretch
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED on the actual evidence for this bar -- a shallow,
+non-extreme dip inside an already-established chop range, not a fresh structural break. Not
+pre-committing. **POSITION=LONG (TRADE #20, open since bar 3092, entry 1890.787, stop 1886.33) --
+this bar's close (1887.4) and low (1886.482) do not threaten the stop; MGMT-004 has not fired (needs
+close >= 1895.244).**
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
+discriminator's SUPPORT-leaning signature (no fresh extreme, volume below the recent active range
+rather than accelerating) -- consistent with, not the basis for, the REJECTED lean.
