@@ -1599,3 +1599,35 @@ close >= 1895.244).**
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the emerging
 discriminator's SUPPORT-leaning signature (no fresh extreme, volume below the recent active range
 rather than accelerating) -- consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         3096 (2020-11-17 15:45:00 UTC)
+DURATION                3 bars (3094-3096)
+DEEPEST_LOW              1884.739 (bar 3095) -- a genuine fresh extreme on a LOW basis, deeper than
+                          anything else in this stretch (incl. TRADE #19's stop-run low of 1886.297)
+HEAVIEST_VOLUME          907 (bar 3095, the break/continuation bar) -- barely above bar 3094's 888,
+                          and higher than the reclaim bar's 623
+RECLAIM_CLOSE             1888.707
+CAUSAL_H1_EMA50_AT_RESOLUTION 1887.5614 (margin +1.15pt)
+```
+
+A genuinely mixed case, not a clean read either way. TRADE #20 was open through bar 3094 and closed
+(STOP, bar 3095) before this resolved; no MGMT-004 relevance (never fired). No S5 trigger this
+episode (POSITION=FLAT since bar 3095).
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this is the sharpest test of
+the emerging discriminator so far. Taken alone, the fresh-extreme low at bar 3095 (1884.739, a
+genuine new stretch-low on a LOW basis) points toward SUPPORT. But every other component points the
+other way: (1) that low was a wick, not a close -- bar 3095 closed back at 1887.42, essentially flat
+versus the EMA, the same intrabar-wick-gets-bought character as TRADE #19's and TRADE #20's own
+stop-runs rather than a structural break; (2) the reclaim close (1888.707) lands almost exactly where
+price was sitting before the gate origin (bar 3093 close 1888.132) -- a full round-trip, not a
+partial one; (3) volume did NOT persist or grow into the reclaim -- it peaked mid-episode (907) and
+fell on the reclaim bar (623), the same "growth-not-sustained-to-reclaim" shape that argued REJECTED
+at -036. The reasoning here is that a fresh extreme on a bare LOW basis, by itself, is not sufficient when the
+CLOSE never meaningfully breaks and the round-trip is full -- consistent with the
+discriminator being a composite of correlated signals, not any single one being decisive alone. This
+episode is recorded as a genuine test that partially disconfirms a naive single-factor reading of the
+"fresh extreme" component, not as a confirmation.
