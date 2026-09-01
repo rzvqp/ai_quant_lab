@@ -919,3 +919,22 @@ fires mechanically regardless of P007 state, and no discretionary override is ap
 
 **INVALIDATION:** a close at or below 1765.594 (STOP). MAX_HOLD 48 bars from entry (through bar
 3937). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1787.796).
+
+**OUTCOME:** MAX_HOLD exit at bar 3937 (2020-12-01 03:15:00 UTC), price 1785.355 (bar's own close).
+```
+EXIT_BAR      3937
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1785.355 (bar's own close)
+R_MULTIPLE     +0.7801
+```
+The full 48-bar hold, never threatening the stop. Choppy start -- worst close was bar 3890's 1770.074
+(-0.60R), one bar into the trade -- before a steady grind higher for the rest of the hold. The
+MAX_HOLD exit itself was the single best close of the entire trade (+0.78R), just short of MGMT-004's
++1.0R trigger (1787.796) -- never fired. GAP-191 (standard, 60min MAINTENANCE) sat inside the hold.
+Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 23
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.9664 + 0.7801 = -5.1863
+POSITION_AFTER_THIS_TRADE = FLAT
+```
