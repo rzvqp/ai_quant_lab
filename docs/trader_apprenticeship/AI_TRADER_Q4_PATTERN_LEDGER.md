@@ -923,3 +923,24 @@ Mostly thin/moderate volume throughout (136-507), one late bump that wasn't sust
 (standard weekend, 50h, spanning US DST end) sat inside the episode. No sustained directional or
 volume-accelerating character at any point -- an ordinary, unremarkable episode despite the longer
 duration. No trade was open; no MGMT-004 relevance. No S5 trigger.
+
+---
+
+## Q4-P007-019
+
+```
+GATE_ORIGIN_BAR          2214 (2020-11-04 00:15:00 UTC) -- direct aftermath of TRADE #11's dramatic
+                          stop-out (bar 2209, volume 4229); volume stayed extraordinarily elevated
+                          the whole way through (bars 2210-2213: 1222-2471)
+TRIGGER_BAR                 2214 -- open 1903.888, high 1903.888, low 1890.952 (~13pt intrabar range,
+                          one of the largest single-bar ranges of the whole Q4 replay), close 1895.168
+CAUSAL_H1_EMA50_AT_2214      1895.910
+GAP                            -0.74pt
+VOLUME                          3478
+```
+
+**PRE-CLASSIFICATION:** judging 'elevated vs baseline' is genuinely hard since the whole surrounding
+regime is elevated (same issue as -016), but the sheer scale of this bar's range and continued
+extreme volume suggest real, still-unfolding volatility (likely continued 2020-11-03/04 US
+election-period activity, noted factually not causally). Leaning toward taking this seriously, not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
