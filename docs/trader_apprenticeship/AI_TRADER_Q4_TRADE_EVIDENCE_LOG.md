@@ -938,3 +938,22 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 23
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -5.9664 + 0.7801 = -5.1863
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #24 — S5 opening-range-breakout LONG (bar 3979)
+
+```
+SIGNAL_BAR    3979 (2020-12-01 13:45:00-14:00:00 UTC, bis=4)
+ENTRY          1812.914
+INITIAL_STOP    1804.892 (= or_low 1804.912 - 2*TICK)
+STRUCTURAL_TARGET 1836.980 (= entry + 3R, R=8.022)
+```
+
+**THESIS (frozen before bar 3980 was revealed):** mechanically triggered, no discretionary override.
+Close 1812.914 > or_high 1811.046 within the entry window. Follows a steady 27-bar recovery climb
+since Q4-P007-042's REJECTED resolution (bar 3952) -- price grinded from ~1791 to ~1811 without any
+further P007 breaks, consistent with the "calmer chop / recovery continuation" read noted in that
+resolution. Volume picked up into the breakout (624/903/1182/890/1150 across bars 3975-3979), above
+the quieter climb's baseline.
+
+**INVALIDATION:** a close at or below 1804.892 (STOP). MAX_HOLD 48 bars from entry (through bar
+4027). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1820.936).
