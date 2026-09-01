@@ -944,3 +944,29 @@ regime is elevated (same issue as -016), but the sheer scale of this bar's range
 extreme volume suggest real, still-unfolding volatility (likely continued 2020-11-03/04 US
 election-period activity, noted factually not causally). Leaning toward taking this seriously, not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT / RECLAIM -- borderline vs -011/-013's REJECTED pattern, distinguished
+                    by a partial (not full) retracement
+RESOLUTION_BAR         2217 (2020-11-04 01:00:00 UTC)
+DURATION                3 bars (2214-2216)
+DEEPEST_LOW              1883.225 (bar 2215) -- close to but not past bar 2209's earlier stop-run
+                        wick of 1882.212
+HEAVIEST_VOLUME          5175 (bar 2215) -- THE HEAVIEST SINGLE-BAR VOLUME OF THE ENTIRE Q4 REPLAY
+RECLAIM_CLOSE             1896.603
+CAUSAL_H1_EMA50_AT_RESOLUTION 1895.910 (margin +0.69pt)
+```
+
+Key distinguishing test vs -011/-013 (both REJECTED as full round-trip reversals): those reclaims
+landed almost exactly back at their pre-break levels. This one did not -- the episode fell from
+~1903.888 (pre-break) to 1883.225 (~20.7pt), and the reclaim bar closed at only 1896.603, about 65%
+of the drop retraced. Price settled at a materially lower level, merely crossing back above the
+(also-lower) causal H1 EMA50 rather than fully erasing the break -- the signature of a real, lasting
+price-level shift, not a spike. Combined with record-breaking volume and a genuine 2-bar decline (not
+a single isolated bar), this resolves SUPPORT. Sits inside the continued 2020-11-03/04 US
+election-period volatility (TRADE #11's stop-out at bar 2209 was the immediately preceding event) --
+noted factually, not causally. No trade was open; no MGMT-004 relevance. No S5 trigger. Seventh
+genuinely-resolved SUPPORT instance in Q4 (after Q4-P007-003, Q4-P007-004, Q4-P007-006, Q4-P007-007,
+Q4-P007-010, Q4-P007-015).
