@@ -1516,3 +1516,23 @@ low (1856.95) and close (1857.45) sit well above the stop, unthreatened. Committ
 genuine causal-integrity blocker -- data integrity is verified intact and the shape is fully explained
 by the ordinary daily illiquid-close window falling one hour outside the classifier's fixed window;
 the replay continues.
+
+### GAP-197 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport] -- REQUIRED A REASONING STOP
+TYPE: Non-standard (30min) -- direct continuation of GAP-196's same illiquid-close stretch
+SPAN: 2020-12-07T22:30:00Z (Q4 bar 4381 row -- inside TRADE #27's open hold) -> 2020-12-07T23:00:00Z
+(Q4 bar 4382, volume 238 -- liquidity resumes)
+DURATION: 30 minutes (1,800s)
+CLASSIFICATION MECHANICS: same as GAP-196 -- gap_start = bar 4381's own ts_open (22:30 UTC),
+start_hour=22, outside the mechanical MAINTENANCE window. The underlying 60-minute illiquid stretch
+(22:00-23:00 UTC) happened to contain two extremely thin transactional bars (volume 1 at 22:00, volume
+2 at 22:30) rather than zero, splitting what would otherwise read as one clean ~60min MAINTENANCE-
+shaped gap into two separate 30-minute UNEXPECTED-classified sub-gaps (GAP-196, GAP-197) with real
+(if negligible) data in between.
+VERIFICATION: exact last-close (bar 4381 close 1857.45) == first-open (bar 4382 open 1857.45) match
+(zero-price-gap). Bar 4382 (volume 238) confirms liquidity resumed at 23:00 UTC, closing out the same
+illiquid window GAP-196 began.
+IMPACT ON OPEN STATE: bar 4382 independently checked: (1) P007 -- close 1863.552 sits far above the
+causal H1 EMA50 (1842.407, gap +21.14pt), no trigger possible. (2) S5 -- bar 4382 opens 23:00 UTC,
+outside the NY session window. (3) TRADE #27 -- low 1857.45 and close 1863.552 sit well above the
+1830.271 stop, unthreatened. Committed as ROUTINE_NO_EVENT. Not a genuine causal-integrity blocker --
+this is the tail of the same explained illiquid-close window as GAP-196; the replay continues.
