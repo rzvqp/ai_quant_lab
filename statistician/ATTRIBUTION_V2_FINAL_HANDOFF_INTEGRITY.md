@@ -63,11 +63,14 @@ Three rows — `f025`, `f029`, `f045` — each with `F_ID`, `KIND`, `N_BINS`, `S
 `DECISION_TIME_AVAILABILITY`, `BINNING_RULE`, `MISSINGNESS_RULE`. Nothing has to be inferred or
 reverse-engineered.
 
+> **CORRECTED 2026-09-02:** this table originally transposed `f025` and `f045`. The shipped
+> `ATTRIBUTION_V2_TRADE_LEVEL_BLIND_FEATURE_SPEC.csv` was always correct, so no execution was affected.
+
 | f-ID | what Alpha does | availability |
 |---|---|---|
-| `f025` | read the trade's committed direction from its own ledger; bin 1 = LONG, 0 = SHORT | **AT_DECISION** |
+| `f025` | constant per object: the `DIRECTION` column of the execution universe; NULL for the 89 `BOTH` objects | **AT_DECISION** |
 | `f029` | `abs(fill − stop) / ATR[decision_bar]`; 5 causal quintiles on a trailing-2000-**trade** rank within the object, shifted by one trade | **AT_FILL** |
-| `f045` | constant per object: the `DIRECTION` column of the execution universe; NULL for the 89 `BOTH` objects | **AT_DECISION** |
+| `f045` | read the trade's committed direction from its own ledger; bin 1 = LONG, 0 = SHORT | **AT_DECISION** |
 
 **Semantic disclosure, stated as required.** Specifying these three necessarily reveals what they are. That
 is unavoidable — Alpha cannot construct a value it cannot name — and it is added to the **already-declared
@@ -165,7 +168,9 @@ BLINDED_FEATURE_VALUES_HASH           = 2ea066c6a6a75705d7429ed9ad982430f1bfd02c
 BLINDED_FEATURE_HANDOFF_MANIFEST_HASH = edf196e56df1d51b9f6a638b79691dd3866604dc1f95b8a86d979361bf3dd3b2
 TRADE_LEVEL_BLIND_FEATURE_SPEC_HASH   = 03e636639012cd3e4edc6925c2b0f6c568941c7cb8060cf23ed896c7c711b4e2
 
-TRADE_LEVEL_FEATURE_CAUSALITY = PASS   (at-entry standard; f029 is AT_FILL -- disclosed, CEO's call)
+TRADE_LEVEL_FEATURE_CAUSALITY = PASS   (at-entry standard; SUPERSEDED -- CEO ruled f029 INELIGIBLE
+                                        under the strict decision-time standard. See
+                                        ATTRIBUTION_V2_STRICT_CAUSALITY_CORRECTION.md: 45 features, 5,240 tests.)
 ALPHA_FEATURE_INPUT_COMPLETE  = YES
 END_TO_END_HANDOFF_DRY_RUN    = PASS
 
