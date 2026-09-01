@@ -752,3 +752,34 @@ CAUSAL_H1_EMA50_AT_RESOLUTION 1905.434 (margin +1.05pt)
 Reclaimed immediately, thin volume throughout (115 on the reclaim, below even the immediate baseline).
 No continuation, no fresh extreme. Confirms the pre-classification's REJECTED lean exactly. TRADE #8
 remained open throughout, well clear of stop and MGMT-004 trigger. No S5 trigger.
+
+---
+
+## Q4-P007-015
+
+```
+GATE_ORIGIN_BAR          1782 (2020-10-28 08:15:00 UTC) -- most credible signature since -010
+LEAD-IN_DECLINE            bars 1775-1781, 7 bars, real volume throughout (262-523), closes drifting
+                          from ~1910 (post bar-1774 high 1910.826) down to ~1906.2
+ACCELERATION_BAR (trigger)  1782 -- open 1906.283, low 1902.511, close 1902.655, 3.772pt intrabar
+                          range, volume 737 (heaviest single-bar volume of the window)
+CAUSAL_H1_EMA50_AT_1782      1905.752
+GAP                           -3.10pt -- largest gap magnitude of any candidate this session
+LEVEL_NOTE                    low 1902.511 essentially matches -013's low (1902.513) and TRADE #8's
+                             former stop (1902.11) -- tested twice now
+```
+
+**PRE-CLASSIFICATION:** unlike -013 (isolated spike, no lead-in), this episode has a genuine
+multi-bar volume-accompanied decline BEFORE the acceleration bar -- closer to -010's evidentiary
+shape, arguably stronger since volume was already elevated through the lead-in. Leaning toward
+SUPPORT, not pre-committing -- watching for real continuation vs a fade. POSITION=FLAT; no MGMT-004
+relevance.
+
+**INTERIM NOTE (bar 1896, still open, not yet resolved):** this episode did not fade -- it became
+the single largest directional move of Q4 so far. Price continued falling from bar 1782's trigger
+(close 1902.655) all the way to a new Q4-replay-low of 1860.08 (bar 1893), ~42.6pt over 111 bars,
+before a violent reversal on record volume (bars 1894-1896: 1306/4017/3396) triggered TRADE #9 (S5
+LONG, see `AI_TRADER_Q4_TRADE_EVIDENCE_LOG.md`). The gate remains open (no bar has closed back above
+the causal H1 EMA50 yet) -- not resolving prematurely; the eventual RESOLUTION entry will cover the
+full episode once a genuine reclaim occurs. One MAINTENANCE gap (GAP-169, bar 1832->1833, 60min)
+logged inside this stretch.

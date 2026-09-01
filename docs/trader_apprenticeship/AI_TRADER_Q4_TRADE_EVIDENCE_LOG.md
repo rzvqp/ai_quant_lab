@@ -326,3 +326,31 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 8
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.425 - 0.1449 = -2.5699
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #9 — S5 opening-range-breakout LONG (bar 1896)
+
+```
+SIGNAL_BAR    1896 (2020-10-29 01:00:00-01:14:59 UTC, bis=4)
+ENTRY          1871.904
+INITIAL_STOP    1860.060 (= or_low 1860.08 - 2*TICK)
+STRUCTURAL_TARGET 1907.436 (= entry + 3R, R=11.844)
+```
+
+**THESIS (frozen before bar 1897 was revealed):** mechanically triggered, no discretionary override.
+Close 1871.904 > or_high 1871.519 within the entry window. This entry sits at the tail of the
+single largest directional move of Q4 so far: price fell from ~1902.7 (bar 1782, the same bar that
+opened the still-unresolved Q4-P007-015 gate) to a new Q4-replay-low of 1860.08 (bar 1893) -- a
+~42.6pt decline over 111 bars, punctuated by a fast ~20pt leg in the first 18 bars, an ~80-bar
+consolidation around 1877-1882, then a final capitulation leg (bars 1890-1893, volume 1594-1817) to
+the low. Bars 1894-1896 then reversed sharply on the heaviest volume of the whole Q4 replay to date
+(1306/4017/3396) -- the OR itself (bars 1892-1895) spans the capitulation low and the first violent
+bounce bar.
+
+**INVALIDATION:** a close at or below 1860.060 (STOP) -- would mean the reversal failed and the
+capitulation low was retested/broken. MAX_HOLD 48 bars from entry (through bar 1944). MGMT-004
+breakeven trigger at first M15 close >= +1.0R (>= 1883.748).
+
+**NOTE:** Q4-P007-015 (gate-origin bar 1782, the same bar this decline began) remains open and
+unresolved as of TRADE #9's entry -- price has never closed back above the causal H1 EMA50 since.
+Both subsystems are being tracked independently per the durable control-flow ordering invariant; see
+`AI_TRADER_Q4_PATTERN_LEDGER.md`.

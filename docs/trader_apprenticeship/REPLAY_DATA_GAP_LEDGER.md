@@ -1274,3 +1274,11 @@ SPAN: 2020-10-27T20:59:59Z (last close 1907.78, Q4 bar 1740, Tuesday -- inside T
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop. TRADE #8's control/shadow mechanics ran unaffected
 (no stop/target/MGMT-004 proximity at the time).
+
+### GAP-169 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-10-28T20:59:59Z (last close 1877.246, Q4 bar 1832, Wednesday -- inside Q4-P007-015's open
+episode, mid-way through the major Oct 28 decline) -> 2020-10-28T22:00:00Z (first open 1877.246, Q4
+bar 1833)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
