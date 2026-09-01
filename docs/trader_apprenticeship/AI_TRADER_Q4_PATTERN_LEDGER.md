@@ -813,3 +813,24 @@ throughout per the durable control-flow ordering invariant. Two MAINTENANCE gaps
 logged inside the episode, both standard. Sixth genuinely-resolved SUPPORT instance in Q4 (after
 Q4-P007-003, Q4-P007-004, Q4-P007-006, Q4-P007-007, Q4-P007-010), and by a wide margin the largest
 in both duration and price magnitude.
+
+---
+
+## Q4-P007-016
+
+```
+GATE_ORIGIN_BAR          1994 (2020-10-30 23:15:00 UTC) -- still-elevated-volume regime following
+                          Q4-P007-015's massive episode (bars 1981-1994 ran 700-2011 volume
+                          throughout, well above the 100-500 baseline of most earlier candidates)
+CONTEXT                    post-reclaim rally to a high of 1889.756 (bar 1987, volume 716-1726),
+                          then a choppy top (bars 1988-1993, still 1052-2011 volume)
+TRIGGER_CLOSE                1877.458
+TRIGGER_LOW                   1875.946 -- 8pt intrabar range
+CAUSAL_H1_EMA50_AT_1994       1879.174
+GAP                            -1.72pt
+VOLUME                          1483
+```
+
+**PRE-CLASSIFICATION:** genuinely ambiguous -- could be ordinary profit-taking/pullback within a
+still-volatile post-capitulation regime (REJECTED), or the start of a renewed leg down after the
+failed rally topped out (SUPPORT). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
