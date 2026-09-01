@@ -625,3 +625,28 @@ closing with the heaviest single-bar volume since TRADE #7's own hold (1111) -- 
 printed on the reclaim, not the break (bar 1710 itself was only 402). Confirms the
 pre-classification's read exactly: a normal pullback/retracement, not a fresh break. No trade was
 open at any point; no MGMT-004 relevance. No S5 trigger (unconditional check confirmed each bar).
+
+---
+
+## Q4-P007-012
+
+**First candidate opened while a trade (TRADE #8) is open, using the durable control flow in
+production -- trade mechanics confirmed to run unconditionally before this reasoning stop.**
+
+```
+GATE_ORIGIN_BAR          1743 (2020-10-27 22:30:00 UTC)
+TRADE_STATE_AT_ORIGIN      TRADE #8 open, entry 1908.268, currently ~1904.965 (~-0.54R), clear of
+                          both stop (1902.11) and MGMT-004 trigger (1914.426)
+CONTEXT                    post-entry high 1911.354 (bar 1719), then a ~14-bar thin-volume grind
+                          lower (1728 high 1911.107 -> 1742 close 1907.376, volume 120-320 throughout)
+TRIGGER_CLOSE               1904.965
+TRIGGER_LOW                  1904.85 -- fresh short-term low vs the whole 1719-1742 window
+CAUSAL_H1_EMA50_AT_1743      1905.329
+GAP                           -0.36pt
+VOLUME                         515 -- 2-4x the immediate 120-320 baseline
+```
+
+**PRE-CLASSIFICATION:** genuine acceleration on the trigger bar itself, but the preceding 14-bar
+grind lacked volume conviction -- more ambiguous than -010's clean sustained-decline signature. Not
+pre-committing -- watching for real continuation vs an early fade. GAP-168 (standard, 60min) logged
+just before this episode.
