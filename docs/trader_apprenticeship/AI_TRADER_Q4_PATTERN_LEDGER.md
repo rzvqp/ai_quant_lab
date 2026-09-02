@@ -2744,3 +2744,40 @@ lesson (dramatic single-bar events, however extreme in isolation, still read REJ
 round-trip is this complete and the duration this short) -- but pushes it further: -051 at least had a
 genuine new record low; this episode has neither a record extreme nor extended duration, only volume.
 Volume magnitude alone, decoupled from the other components, is not sufficient.
+
+---
+
+## Q4-P007-059
+
+```
+GATE_ORIGIN_BAR          5254 (2020-12-21 10:00:00 UTC) -- Monday, 2020-12-21
+CONTEXT                    a calm, generally rising stretch through bars 5134-5252 (~1880-1902 range,
+                            no P007 candidates), then two consecutive bars of dramatic, sharply
+                            escalating volume: bar 5253 (close fell 1895.4 -> 1886.642, -8.76pt,
+                            volume 3445) and bar 5254 itself
+TRIGGER_CLOSE                1868.98 -- itself well below the EMA, not just a wick
+TRIGGER_LOW                   1855.148 -- a genuine fresh extreme relative to the recent uptrend
+                              (though the runner's own seed-scan confirms this is not an all-time Q4
+                              record; is_new_low/is_new_vol_record both false against full sealed
+                              history)
+CAUSAL_H1_EMA50_AT_5254       1883.1180
+GAP                            -14.138pt -- BY FAR the deepest gap of the entire Q4 replay to date,
+                                 well beyond anything seen in any prior episode
+VOLUME                          6482 -- one of the heaviest single-bar volumes in the whole Q4 replay
+                                 (exceeding the script's own tracked constant of 6203), following
+                                 bar 5253's already-elevated 3445 -- two consecutive bars of dramatic
+                                 escalation, not an isolated spike
+```
+
+**PRE-CLASSIFICATION:** leaning strongly SUPPORT -- this is categorically different from -058's
+"volume only" test: here the gap depth, the volume, AND the close-basis break are all simultaneously
+extreme, a combination not seen anywhere else in this ledger. The two-bar escalation (5253's 3445 into
+5254's 6482) also argues against a single-bar liquidity-grab shape like -051/-058. This bar falls on
+2020-12-21 (Monday) -- noted factually, not asserted as a specific cause, consistent with how prior
+date-linked observations (2020-11-03 election, 2020-11-26 Thanksgiving) have been handled: the visible
+price/volume pattern is the evidence, not an assumed news catalyst. Not pre-committing; the reclaim
+evidence still needs to confirm this. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the strongest, most
+multi-dimensionally extreme gate origin in the ledger to date -- a genuine test of whether an episode
+this dramatic at the origin still needs the extended-duration/partial-retracement confirmation seen in
+-038/-039/-040/-041/-052/-053/-056/-057, or whether origin-magnitude this large can stand on its own.
