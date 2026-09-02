@@ -2,20 +2,20 @@
   "durable_state_schema_version": "csv-causal-replay-state-v1",
   "state": {
     "adapter_version": "1.0.0",
-    "last_committed_bar": 1609272900,
-    "last_committed_timestamp": 1609272900,
-    "next_bar": 5743,
-    "open_event_state_reference": null,
+    "last_committed_bar": 1609275600,
+    "last_committed_timestamp": 1609275600,
+    "next_bar": 5746,
+    "open_event_state_reference": "Q4-P007-CANDIDATE:OPEN@bar_5745",
     "pending_decision": null,
     "session_id": "ai-trader-q4-resume-2026-08-30",
     "source_identity": {
       "adapter_version": "1.0.0",
       "bar_interval_seconds": 900,
-      "content_hash": "36e170ccf702a5d0fe65a65ea29167e763261da771e5d347b5749d0abff03a6c",
+      "content_hash": "7998db6447f4ad55e9b806af93c0c84304e2d3803217fbf63369271438f93df1",
       "durable_state_schema_version": "csv-causal-replay-state-v1",
       "first_bar_ts_open": 1598925600,
-      "sealed_through_bar_index": 5742,
-      "source_file_name": "Q4_SEALED_1_5742.csv",
+      "sealed_through_bar_index": 5745,
+      "source_file_name": "Q4_SEALED_1_5745.csv",
       "symbol": "OANDA:XAUUSD",
       "timeframe": "M15"
     }

@@ -3992,3 +3992,22 @@ stop and MGMT-004 trigger). No S5 trigger. REJECTED -- no fresh extreme, unusual
 throughout the full 9-bar episode (never above 381), and an essentially complete round-trip.
 Confirms the market has entered a genuinely quiet, low-conviction stretch even by this record's
 own recent standards.
+
+---
+
+## Q4-P007-085
+
+```
+GATE_ORIGIN_BAR          5745 (2020-12-29 21:00:00 UTC)
+TRADE_STATE_AT_ORIGIN      TRADE #38 open, entry 1882.824, currently 1878.099 (~-0.562R), clear of
+                          both stop (1874.420) and MGMT-004 trigger (1891.228)
+TRIGGER_CLOSE                1878.099
+TRIGGER_LOW                   1878.099 -- close = low, a weak close; still well above the defended
+                              floor zone; NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5745       1879.0466
+GAP                            -0.9476pt -- moderate
+VOLUME                          113 -- very thin, continuing the quiet regime noted at -084
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, very thin volume, continuing the
+quiet-regime pattern from -084. Not pre-committing. TRADE #38 remains open.
