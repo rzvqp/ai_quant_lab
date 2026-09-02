@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>AI Trader Continuous Market Apprenticeship V2 -- CEO mandate 2026-09-02. Read-only, forward, causal XAUUSD observation. Structurally cannot submit broker orders (no order_send/order_check import anywhere in ai_trader/apprenticeship_v2/). Does not modify S5/P007/MGMT-004. Runs independently of AITraderS5MT5DemoSoak and AITraderLiveShadow -- its own MT5 client attachment, own SingletonLock ("AITraderApprenticeshipV2"), own state directory (new_brain_live_state/apprenticeship_v2/).</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <BootTrigger>
+      <Enabled>true</Enabled>
+    </BootTrigger>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+    </LogonTrigger>
+  </Triggers>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Priority>7</Priority>
+    <RestartOnFailure>
+      <Interval>PT1M</Interval>
+      <Count>999</Count>
+    </RestartOnFailure>
+  </Settings>
+  <Actions>
+    <Exec>
+      <Command>C:\Users\MEDION GAMING\ai_quant_lab-research-main\venv\Scripts\python.exe</Command>
+      <Arguments>-m ai_trader.apprenticeship_v2.main</Arguments>
+      <WorkingDirectory>C:\Users\MEDION GAMING\ai_quant_lab-research-main</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>
