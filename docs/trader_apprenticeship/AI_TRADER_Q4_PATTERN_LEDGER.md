@@ -3751,3 +3751,23 @@ VOLUME                          371 -- thin-moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, moderate gap, thin-moderate volume.
 Reverts to the same low-conviction profile that dominated -071 through -077, now that -078's own
 promising break has already faded. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5711 (2020-12-29 12:30:00 UTC)
+DURATION                5 bars (5706-5710)
+DEEPEST_LOW              1875.832 (bar 5710) -- still above -078's own low (1874.342) and even the
+                        earlier 1875.2-1875.4 floor zone; NOT a fresh extreme
+HEAVIEST_VOLUME          514 (bar 5709) -- moderate, lands 2 bars before the deepest low, not
+                        concentrated at the extreme
+RECLAIM_CLOSE             1879.518 -- a full overshoot: ~107% of the 3.441pt decline from the last
+                          pre-break close (1879.273)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0364 (margin +0.482pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED, consistent with the whole -071
+through -079 stretch: no fresh extreme, volume not concentrated at the extreme, and a full-overshoot
+retracement. The -078 floor break remains an isolated exception in this stretch rather than the
+start of a new trend.
