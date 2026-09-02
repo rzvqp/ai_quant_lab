@@ -1448,3 +1448,21 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 36
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.8812 + 3.0000 = -1.8812
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #37 — S5 opening-range-breakout LONG (bar 5625)
+
+```
+SIGNAL_BAR    5625 (2020-12-28 14:00:00-14:15:00 UTC, bis=5)
+ENTRY          1889.380
+INITIAL_STOP    1874.604 (= or_low 1874.624 - 2*TICK)
+STRUCTURAL_TARGET 1933.708 (= entry + 3R, R=14.776)
+```
+
+**THESIS (frozen before bar 5626 was revealed):** mechanically triggered, no discretionary override.
+Close 1889.38 > or_high 1888.117, within the entry window (bis=5). Signal fires 4 bars after
+Q4-P007-070 resolved SUPPORT (reclaim bar 5621), on the back of a genuine 3-bar real-volume rally
+(bars 5622-5624, volumes 1115/1251/819) that pushed to a fresh post-Christmas high. Volume on the
+signal bar (935) is real.
+
+**INVALIDATION:** a close at or below 1874.604 (STOP). MAX_HOLD 48 bars from entry (through bar
+5673). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1904.156).
