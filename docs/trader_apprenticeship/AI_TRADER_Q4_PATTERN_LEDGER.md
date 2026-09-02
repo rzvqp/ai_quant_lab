@@ -4011,3 +4011,25 @@ VOLUME                          113 -- very thin, continuing the quiet regime no
 
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, very thin volume, continuing the
 quiet-regime pattern from -084. Not pre-committing. TRADE #38 remains open.
+
+**INTERIM NOTE:** one MAINTENANCE gap (GAP-212, bar 5748->5749) logged inside the episode, standard.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5756 (2020-12-30 00:45:00 UTC)
+DURATION                11 bars (5745-5755)
+DEEPEST_LOW              1877.045 (bar 5751) -- still well above the defended floor zone; NOT a
+                        fresh extreme
+HEAVIEST_VOLUME          226 (bar 5749) -- extremely thin throughout the whole 11-bar episode
+                          (mostly under 175, several bars under 100)
+RECLAIM_CLOSE             1879.823 -- a decisive overshoot: ~135% of the 2.06pt decline from the
+                          last pre-break close (1879.105)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0148 (margin +0.808pt)
+```
+
+TRADE #38 remained open throughout, unaffected (~-0.53R to -0.66R across the episode, clear of
+stop and MGMT-004 trigger). No S5 trigger. REJECTED -- no fresh extreme, the thinnest sustained
+volume regime of the whole record (never above 226 across 11 bars), and a decisive overshoot
+reclaim. This is now the quietest multi-episode stretch of the entire Q4 replay.
