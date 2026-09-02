@@ -3633,3 +3633,21 @@ extreme (a SUPPORT-favoring signal, as at -070), the full-overshoot retracement 
 REJECTED, consistent with the established priority of round-trip completeness over volume
 placement (-058/-073). Sixth consecutive REJECTED since -070 (-071 through -076), the market
 continuing to hold the same floor zone without genuine fresh progress lower.
+
+---
+
+## Q4-P007-077
+
+```
+GATE_ORIGIN_BAR          5696 (2020-12-29 08:45:00 UTC)
+TRIGGER_CLOSE                1877.792
+TRIGGER_LOW                   1877.611 -- still above the 1875.2-1875.4 floor zone; NOT a fresh
+                              extreme
+CAUSAL_H1_EMA50_AT_5696       1879.0986
+GAP                            -1.3066pt -- larger than most recent candidates in this stretch
+VOLUME                          413 -- moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme despite the somewhat larger gap.
+Continues the same low-conviction pattern across the whole -071 through -076 stretch. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
