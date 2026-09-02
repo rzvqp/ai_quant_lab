@@ -2810,3 +2810,25 @@ the episode, evidence of a genuinely sustained repricing event rather than a sin
 Combined with the deepest gap and heaviest single-bar volume in the whole Q4 replay, and a partial (not
 complete) retracement, this reads as a confident SUPPORT case despite its comparatively short duration
 -- sustained volume, not bar count alone, is treated as the real marker of a genuine structural event.
+
+---
+
+## Q4-P007-060
+
+```
+GATE_ORIGIN_BAR          5269 (2020-12-21 13:45:00 UTC) -- one bar after -059's reclaim
+TRIGGER_CLOSE                1882.28
+TRIGGER_LOW                   1881.662 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5269       1882.4723
+GAP                            -0.192pt -- very shallow
+VOLUME                          1680 -- elevated in absolute terms, but continuing -059's own
+                                 elevated regime (2179 at bar 5268, 3089 at bar 5267), not a clear
+                                 acceleration relative to that specific context
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- very shallow gap immediately after a reclaim, no fresh
+extreme, volume high only in absolute terms, not relative to the just-resolved episode's own regime.
+Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature relative to its own immediate context -- consistent with, not the basis for, the
+REJECTED lean.
