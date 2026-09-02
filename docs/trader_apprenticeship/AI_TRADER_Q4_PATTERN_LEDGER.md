@@ -3874,3 +3874,37 @@ VOLUME                          1082 -- real/heavy
 1337, printed just before the origin). No fresh extreme yet, and the shallow gap itself is
 unremarkable, but the volume context is more sustained than -078/-080/-081's own isolated spikes.
 Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5724 (2020-12-29 15:45:00 UTC)
+DURATION                4 bars (5720-5723)
+DEEPEST_LOW              1871.868 (bar 5721) -- genuinely breaks the whole defended floor zone for
+                        the first time with real magnitude (2.47pt below -078's own low of
+                        1874.342), the deepest point of the entire -071 through -082 stretch; not
+                        an all-time Q4 record, but a real fresh local extreme
+HEAVIEST_VOLUME          1937 (bar 5721) -- the heaviest single-bar volume of the whole
+                          defended-floor stretch, landing cleanly at the deepest point itself;
+                          bar 5722 followed with real volume too (1326) before tapering (773, 640)
+                          on the recovery bars -- heavy volume front-loaded at the break, thinning
+                          into the reclaim
+RECLAIM_CLOSE             1879.236 -- an essentially complete round-trip: ~100% of the 7.336pt
+                          decline (7.368 of 7.336, measured from the last pre-episode close of
+                          1879.204)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0233 (margin +0.213pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. This is the most credible-looking trigger of
+the entire -071 through -082 stretch by every individual component -- genuinely the deepest fresh
+extreme, the heaviest and most cleanly-placed volume, front-loaded (not diffuse) volume character
+-- yet the retracement still completed essentially in full (100%) within 4 bars. Per the
+established priority (round-trip completeness overrides otherwise-favorable components, confirmed
+at -058/-073/-076/-078/-080/-081), this resolves REJECTED. Genuinely the closest call of the whole
+sequence, but the completed round-trip is decisive.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** even the single most
+favorable trigger of this entire 12-episode defended-floor stretch (-071 through -082) still fully
+round-tripped -- the strength of this particular support level looks unusually robust, having now
+absorbed the deepest break, the heaviest volume, and the most credible setup of the whole sequence
+without producing a genuine reclaim failure.
