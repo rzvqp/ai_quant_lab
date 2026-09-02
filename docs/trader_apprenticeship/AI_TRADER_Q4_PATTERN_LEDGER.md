@@ -3931,3 +3931,24 @@ VOLUME                          427 -- moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- a bare touch with no fresh extreme, continuing the
 same defended-floor pattern from -071 through -082. Not pre-committing. TRADE #38 remains open,
 pulled back but clear of its stop.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5731 (2020-12-29 17:30:00 UTC)
+DURATION                1 bar (5730)
+DEEPEST_LOW              1877.855 (bar 5730, the trigger bar itself) -- well above the whole
+                        defended floor zone; NOT a fresh extreme
+HEAVIEST_VOLUME          427 (bar 5730, the trigger bar)
+RECLAIM_CLOSE             1879.978 -- an 85% retracement of the 2.509pt decline (2.123 of 2.509,
+                          measured from the last pre-episode close of 1880.364), high but genuinely
+                          partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.1028 (margin +0.875pt)
+```
+
+TRADE #38 remained open throughout, unaffected (~-0.29R to -0.33R, clear of stop and MGMT-004
+trigger). No S5 trigger. REJECTED: the decisive factor is the absence of any fresh extreme, well
+above the whole defended floor zone -- the 85% retracement alone does not override that, consistent
+with the -072/-075 precedent (no fresh extreme decides REJECTED regardless of a moderately-high
+retracement figure).
