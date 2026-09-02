@@ -3952,3 +3952,21 @@ trigger). No S5 trigger. REJECTED: the decisive factor is the absence of any fre
 above the whole defended floor zone -- the 85% retracement alone does not override that, consistent
 with the -072/-075 precedent (no fresh extreme decides REJECTED regardless of a moderately-high
 retracement figure).
+
+---
+
+## Q4-P007-084
+
+```
+GATE_ORIGIN_BAR          5733 (2020-12-29 18:00:00 UTC)
+TRADE_STATE_AT_ORIGIN      TRADE #38 open, entry 1882.824, currently 1878.686 (~-0.492R), clear of
+                          both stop (1874.420) and MGMT-004 trigger (1891.228)
+TRIGGER_CLOSE                1878.686
+TRIGGER_LOW                   1877.428 -- well above the defended floor zone; NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5733       1879.1028
+GAP                            -0.4168pt -- shallow-moderate
+VOLUME                          621 -- moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, shallow-moderate gap and volume,
+continuing the same defended-floor pattern. Not pre-committing. TRADE #38 remains open.
