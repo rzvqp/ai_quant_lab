@@ -1635,6 +1635,13 @@ ongoing episode) -> 2020-12-29T23:00:00Z (first open 1878.349, Q4 bar 5749)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
 
+### GAP-213 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Standard daily rollover (60min)
+SPAN: 2020-12-30T22:00:00Z (last close 1894.508, Q4 bar 5840, Wednesday -- inside TRADE #39's
+ongoing hold) -> 2020-12-30T23:00:00Z (first open 1894.508, Q4 bar 5841)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
+MAINTENANCE -- did not require a reasoning stop.
+
 ### GAP-210 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
 TYPE: Extended pause (76.25hr) -- Christmas Day + weekend combined
 SPAN: 2020-12-24T18:45:00Z (last close 1879.555, Q4 bar 5564, Thursday, Christmas Eve close -- inside
