@@ -1,0 +1,123 @@
+{
+  "mandate": "CTS_V2",
+  "representations": {
+    "A_generic": [
+      "gA_atr_vs_atrma",
+      "gA_volrank",
+      "gA_rsi",
+      "gA_h1",
+      "gA_h4",
+      "gA_d1",
+      "gA_compress",
+      "gA_gap_atr",
+      "gA_hour",
+      "gA_wd",
+      "gA_bar_in_sess",
+      "gA_vrel8"
+    ],
+    "B_setup_static": [
+      "gB_dist_ref_atr",
+      "gB_stop_dist_atr",
+      "gB_target_dist_atr",
+      "gB_dir",
+      "gB_dist_sesshi",
+      "gB_dist_sesslo",
+      "gB_dist_rmax20",
+      "gB_dist_rmin20",
+      "gB_penetration",
+      "gB_ref_vs_range"
+    ],
+    "C_path_aggregates": [
+      "gC_eff_toward_8",
+      "gC_eff_toward_16",
+      "gC_eff_toward_32",
+      "gC_toward_legs",
+      "gC_pullback_legs",
+      "gC_toward_pullback_ratio",
+      "gC_impulse_prog",
+      "gC_pullback_prog",
+      "gC_accel_toward",
+      "gC_hh_16",
+      "gC_ll_16",
+      "gC_struct_net_16",
+      "gC_break_hold",
+      "gC_prior_touch_cnt",
+      "gC_time_near_ref",
+      "gC_min_pen",
+      "gC_closes_through",
+      "gC_toward_away_vol",
+      "gC_vol_persist_toward",
+      "gC_progress_per_vol",
+      "gC_volexp_noprog",
+      "gC_overlap_8",
+      "gC_atr_path",
+      "gC_range_exp"
+    ],
+    "D_path_plus_generic": [
+      "gC_eff_toward_8",
+      "gC_eff_toward_16",
+      "gC_eff_toward_32",
+      "gC_toward_legs",
+      "gC_pullback_legs",
+      "gC_toward_pullback_ratio",
+      "gC_impulse_prog",
+      "gC_pullback_prog",
+      "gC_accel_toward",
+      "gC_hh_16",
+      "gC_ll_16",
+      "gC_struct_net_16",
+      "gC_break_hold",
+      "gC_prior_touch_cnt",
+      "gC_time_near_ref",
+      "gC_min_pen",
+      "gC_closes_through",
+      "gC_toward_away_vol",
+      "gC_vol_persist_toward",
+      "gC_progress_per_vol",
+      "gC_volexp_noprog",
+      "gC_overlap_8",
+      "gC_atr_path",
+      "gC_range_exp",
+      "gA_atr_vs_atrma",
+      "gA_volrank",
+      "gA_rsi",
+      "gA_h1",
+      "gA_h4",
+      "gA_d1",
+      "gA_compress",
+      "gA_gap_atr",
+      "gA_hour",
+      "gA_wd",
+      "gA_bar_in_sess",
+      "gA_vrel8"
+    ],
+    "E_ordered_sequence": "cts_v2_seq.npy (32x6 channels: ret,trng,clsloc,vrel,dist_ref,dchg)"
+  },
+  "windows": [
+    8,
+    16,
+    32
+  ],
+  "models": {
+    "A_D": [
+      "L2_logistic",
+      "depth2_tree"
+    ],
+    "E": "nearest-centroid on z-normed ordered sequence (order-sensitive)"
+  },
+  "walk_forward": "4 date-blocks, expanding B1->B2, B1B2->B3, B1B2B3->B4, purge=max(96,holding,lookback=32)",
+  "retention_targets": [
+    0.8,
+    0.6,
+    0.4,
+    0.2
+  ],
+  "neg_controls": [
+    "label_perm_100",
+    "time_shift_placebo",
+    "random_matchedN_100",
+    "seq_order_destroy_20"
+  ],
+  "interaction_budget": "tree depth-2 only",
+  "seq_model": "nearest class-centroid, ordered Euclidean; destruction=per-seq bar permutation"
+}
