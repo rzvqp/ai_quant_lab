@@ -1466,3 +1466,22 @@ signal bar (935) is real.
 
 **INVALIDATION:** a close at or below 1874.604 (STOP). MAX_HOLD 48 bars from entry (through bar
 5673). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1904.156).
+
+**OUTCOME:** STOP hit at bar 5644 (2020-12-28 18:45:00 UTC), price 1874.604 (exact stop level).
+```
+EXIT_BAR      5644
+EXIT_REASON    STOP
+EXIT_PRICE     1874.604
+R_MULTIPLE     -1.0000
+```
+A clean -1R stop-out. The initial rally to bar 5628's high (+0.30R) gave way to a steady, grinding
+decline over the following bars, never regaining ground, until bar 5644 closed through the stop.
+MGMT-004 never fired (best close never approached +1.0R = 1904.156). Q4-P007-071 (gate origin bar
+5635, still open/unresolved at trade-close) was running concurrently and unaffected by this trade's
+resolution -- both subsystems processed independently.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 37
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.8812 - 1.0000 = -2.8812
+POSITION_AFTER_THIS_TRADE = FLAT
+```
