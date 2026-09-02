@@ -3771,3 +3771,21 @@ No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED, consistent with t
 through -079 stretch: no fresh extreme, volume not concentrated at the extreme, and a full-overshoot
 retracement. The -078 floor break remains an isolated exception in this stretch rather than the
 start of a new trend.
+
+---
+
+## Q4-P007-080
+
+```
+GATE_ORIGIN_BAR          5712 (2020-12-29 12:45:00 UTC) -- immediately after -079's own reclaim
+                          (bar 5711)
+TRIGGER_CLOSE                1878.4
+TRIGGER_LOW                   1877.522 -- still above all recent floors; NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5712       1879.0364
+GAP                            -0.6364pt -- shallow-moderate
+VOLUME                          480 -- moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, shallow-moderate gap and volume,
+continuing the same low-conviction pattern that has dominated since -071 (with -078 as the lone
+exception, which itself faded). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
