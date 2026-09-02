@@ -5201,4 +5201,54 @@
                red_team/. Report: RT-Q4-P007-AUTO-REJECT-INTEGRITY-001.md.
                STATE: OPERATIONAL. Next entry [112], prev_hash E111.
   entry_hash:  E111
+
+[112] 2026-09-02
+  prev_hash:   E111
+  event:       VERDICT
+  dc_id:       DC-S14-RESCUE-INDEPENDENT-RETEST-V1-STRATEGY2-FALSIFICATION
+  freeze_hash: S14_RESCUE_SPEC_HASH 7a4ef8036b77eeaea5cc829daf168aba2540d5102372dec37e69593f19984f2d
+               (sha256 red_team/policy_reviews/S14_RESCUE_FROZEN_SPEC_V1.md) / V2 protocol package 4488f0e8 /
+               governed XAU M15 sha 57f4ed95 (2011-07-26..2026-07-27)
+  battery_ver: RT-S14-RESCUE-INDEPENDENT-RETEST-V1
+  reviewer:    Red Team
+  detail:      Independent falsification of Alpha Discovery's frozen top-ranked ATTRIBUTION_V2 rescue hypothesis
+               (STRATEGY_OUTCOME_ATTRIBUTION_EDGE_RESCUE_V2): S14 SHORT mean-reversion at the previous-session-
+               extreme condition. VERDICT = ***S14_RESCUE_DATA_BLOCKED***; READY_FOR_STRATEGY2_PROMOTION_REVIEW=NO.
+               Read-only; no optimization; no post-hoc rescue; S5/AI-Trader/P007/MGMT-004/MT5/StrategyCatalog
+               untouched; did not touch Statistician P007 work; did not open the offline BLIND_KEY/secret feature
+               map. ★ IDENTITY FREEZE (§1/§2): object S14::25e44853ad0f (SHORT rep of family S14, mechanism M08_
+               EXTENSION_MEAN_REVERSION, variant {exit:rr2,roc_k:0.004,side:down,stop:atr}); rescue = blinded f028
+               = dist_prev_sess_high_atr == bin 0.0 (price at/through prev-session high, ATR-normalized nearest of
+               5 bins). Original mstrat.py S14 rule: 3-bar ROC>+0.004 (accel up) AND |ROC| stalling -> SHORT, next-
+               open entry, stop entry+1.5*ATR, target RR2, 48-bar timeout, BASE cost 0.40 round-trip (spread1+slip1,
+               TICK 0.1). Frozen spec written+hashed BEFORE any test: S14_RESCUE_SPEC_HASH=7a4ef803. All fields
+               verified at source. ★ REPRODUCE (§3, replication NOT validation): independently re-derived from the
+               committed ledger ATTRIBUTION_V2_TRADE_FEATURES.parquet (505,794 trades; S14 object 1,239 trades
+               2011-08-02..2026-07-26) -- EXACT to the digit: full N=1239 pooled -0.152388; RESCUE_SUBSET N=65 over
+               56 days exp +0.492592; REMAINDER N=1174 -0.188098; LIFT +0.680691; FDR_sig True (omni_p 0.000511 <
+               bh 0.002357 @ m=5175); chrono thirds [+0.903,-0.070,+0.651] = 2/3 positive; drop-best-5% (4/65)=
+               +0.394>0 (not tail-carried; WR 0.538, median +0.433, PF 2.083). DISCOVERY_RESULT_REPRODUCED=YES.
+               DIAGNOSTIC (does not rescue): subset THIN + EPISODE-CONCENTRATED -- 53/65 (82%) in 2011/2020/2025/
+               2026, ZERO in 2014/2016-2018/2022-2023, negative middle-third, ~13% per-cell placebo FP load,
+               selected on MATERIALLY_EXPOSED history. ★★ UNTOUCHED DATA (§4): DISCOVERY_DATA_END=2026-07-27 16:15
+               UTC (entire governed XAU M15 record); UNTOUCHED_TEST_DATA_AVAILABLE=NO. Protocol freeze: ATTRIBUTION_
+               DISCOVERY_RANGE=2011-07-26..2026-07-27, RESEARCH_HOLDOUT_CUTOFF_UTC=2025-10-23 CONSUMED, HISTORICAL_
+               REUSE_STATUS=MATERIALLY_EXPOSED (no clean OOS, HYPOTHESIS_GENERATION ONLY). Rebase audit: authorized
+               CURRENT_DATA_REBASE exposed everything 2024-06-20..2026-07-27 incl any 2025-10-23+ holdout, which
+               permanently lose untouched-validation status; forward MT5 DEMO is the true untouched confirmation.
+               Governed data (sha 57f4ed95) ends 2026-07-27; native M5 ends 2026-07-27, both inside the exposed
+               range -> NO chronological period after discovery end, NO reserved-untouched slice within it. ★ §5
+               DATA_BLOCKED: retest NOT run (no untouched data); §6-§13 not executed; no exposed-history recycling,
+               no manufactured holdout, no post-hoc rescue. MINIMUM PROSPECTIVE DATASET specified: XAUUSD M15-native
+               (ts/OHLC/tick_vol), strictly AFTER 2026-07-27 16:15 UTC never used by discovery/attribution/selection/
+               tuning, >=50-100 INDEPENDENT bin-0 rescue-condition trades (+ full-S14 baseline), BASE+STRESS costs no
+               favorable fills. ★ FEASIBILITY CAVEAT: rescue condition is extremely rare (65 bin-0 trades in 15 yrs
+               ~4.3/yr) -> ~12-23 YEARS of forward data to reach the minimum sample; prospective test of the frozen
+               condition is effectively INFEASIBLE near-term (broadening voids the frozen spec, forbidden). VERDICT=
+               S14_RESCUE_DATA_BLOCKED; NOT a PASS/economics-FAIL, a data-availability block. NO promotion, NO
+               StrategyCatalog change, NO live/demo, NO optimization. NEXT_AUTHORIZED_ACTION=NONE CEO DECISION
+               REQUIRED. Changes only in red_team/. Files: S14_RESCUE_FROZEN_SPEC_V1.md + RT-S14-RESCUE-INDEPENDENT-
+               RETEST-V1.md.
+               STATE: OPERATIONAL. Next entry [113], prev_hash E112.
+  entry_hash:  E112
 ```
