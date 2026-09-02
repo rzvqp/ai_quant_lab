@@ -3202,3 +3202,23 @@ VOLUME                          208 -- thin, no acceleration
 larger gap than -066. The gap magnitude alone has not been a reliable SUPPORT signal on its own in
 this record (e.g. -013's -2.36pt gap still resolved REJECTED). Not pre-committing. TRADE #35
 remains open and unaffected.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5481 (2020-12-23 20:45:00 UTC)
+DURATION                3 bars (5478-5480)
+DEEPEST_LOW              1869.956 (bar 5479) -- barely below the trigger bar's own low, not a
+                        meaningful new extreme
+HEAVIEST_VOLUME          208 (bar 5478, the trigger bar) -- volume never exceeded 208 across the
+                        3-bar episode (159/142 on the following bars), thin throughout
+RECLAIM_CLOSE             1872.636 -- a full overshoot: ~152% of the 1.768pt decline from the last
+                          pre-break close (1871.724)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1871.4119 (margin +1.224pt)
+```
+
+TRADE #35 remained open throughout, unaffected (~-0.28R to -0.43R across the episode, clear of stop
+and MGMT-004 trigger). No S5 trigger. Second consecutive fast, thin, overshoot-reclaim REJECTED
+(after -066, and matching -063's own earlier signature), continuing the quarter's late-Q4 pattern
+of quick, low-conviction P007 flickers around this price zone.
