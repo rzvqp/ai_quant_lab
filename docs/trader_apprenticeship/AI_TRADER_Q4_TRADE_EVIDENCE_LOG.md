@@ -1348,3 +1348,25 @@ broader episode's elevated regime rather than the earlier post-Dec-21 quiet stre
 
 **INVALIDATION:** a close at or below 1871.150 (STOP). MAX_HOLD 48 bars from entry (through bar
 5410). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1889.242).
+
+**OUTCOME:** STOP hit at bar 5366 (2020-12-22 15:00:00 UTC), price 1871.150 (exact stop level).
+```
+EXIT_BAR      5366
+EXIT_REASON    STOP
+EXIT_PRICE     1871.150
+R_MULTIPLE     -1.0000
+```
+A clean, fast -1R stop-out just 4 bars after entry -- no bounce, no hesitation. Bar 5364 (close
+1873.596, volume 1568) broke decisively below entry and continued straight through toward the stop;
+bar 5365 (close 1874.475) offered a brief pause but never approached breakeven; bar 5366 (close
+1870.594, volume 1657) closed through the stop, triggering the exit at the exact stop price. MGMT-004
+never fired (best close never approached +1.0R = 1889.242 -- the trade was never in meaningful
+profit at any point). Q4-P007-065 (gate origin bar 5363, still open/unresolved at trade-close) was
+running concurrently and unaffected by this trade's resolution -- both subsystems processed
+independently per the durable control-flow ordering invariant.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 34
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.8680 - 1.0000 = -4.8680
+POSITION_AFTER_THIS_TRADE = FLAT
+```
