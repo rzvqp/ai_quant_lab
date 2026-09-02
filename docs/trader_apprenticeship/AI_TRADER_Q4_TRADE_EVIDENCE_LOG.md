@@ -1310,3 +1310,21 @@ trend rather than a choppy grind. Volume built steadily into the breakout
 
 **INVALIDATION:** a close at or below 1874.371 (STOP). MAX_HOLD 48 bars from entry (through bar
 5133). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1901.549).
+
+**OUTCOME:** MAX_HOLD exit at bar 5133 (2020-12-18 02:45:00 UTC), price 1880.172 (bar's own close).
+```
+EXIT_BAR      5133
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1880.172 (bar's own close)
+R_MULTIPLE     -0.5731
+```
+The full 48-bar hold, never threatening the stop. Best close was bar 5090's 1893.974 (+0.44R), reached
+early in the hold and well short of MGMT-004 (+1.0R = 1901.549); worst close was bar 5130's 1879.566
+(-0.62R), close to but not breaching the stop. GAP-205 (standard, 60min MAINTENANCE) sat inside the
+hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 33
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.2949 - 0.5731 = -3.8680
+POSITION_AFTER_THIS_TRADE = FLAT
+```
