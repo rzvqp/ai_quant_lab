@@ -4144,3 +4144,23 @@ CAUSAL_H1_EMA50_AT_RESOLUTION 1879.7214 (margin +0.213pt)
 
 No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED, consistent with the whole
 defended-floor stretch: no fresh extreme, thin volume, full-overshoot retracement.
+
+---
+
+## Q4-P007-089
+
+```
+GATE_ORIGIN_BAR          5805 (2020-12-30 13:00:00 UTC)
+TRIGGER_CLOSE                1878.195
+TRIGGER_LOW                   1876.199 -- undercuts both -087's low (1877.672) and -088's low
+                              (1877.389); a genuine local low, but still well above the defended
+                              floor zone (1874.3-1874.4)
+CAUSAL_H1_EMA50_AT_5805       1879.7214
+GAP                            -1.5264pt -- moderate-larger
+VOLUME                          836 -- real/heavy, one of the heavier bars of this recent stretch
+```
+
+**PRE-CLASSIFICATION:** genuinely watching -- a real fresh local low against the very recent
+episodes with real/heavy volume, though still a meaningful distance above the defended floor zone
+itself. More credible than most of the recent thin/moderate candidates. Not pre-committing.
+POSITION=FLAT; no MGMT-004 relevance.
