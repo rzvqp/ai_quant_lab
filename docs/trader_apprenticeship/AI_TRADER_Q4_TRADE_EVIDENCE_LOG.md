@@ -1390,3 +1390,22 @@ on the heels of Q4-P007-065's own SUPPORT resolution (93-bar episode, fresh mult
 
 **INVALIDATION:** a close at or below 1860.711 (STOP). MAX_HOLD 48 bars from entry (through bar
 5505). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1892.449).
+
+**OUTCOME:** MAX_HOLD exit at bar 5505 (2020-12-24 03:45:00 UTC), price 1876.370 (bar's own close).
+```
+EXIT_BAR      5505
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1876.370
+R_MULTIPLE     -0.0132
+```
+An essentially flat 48-bar hold -- never threatened the stop (worst close 1871.64 at bar 5488,
+~-0.31R) and never approached MGMT-004 (best close 1879.022 at bar 5500, ~+0.15R, well short of
++1.0R = 1892.449). Price chopped in a tight ~1870-1879 range for the entire hold, never developing
+real direction either way. One MAINTENANCE gap (GAP-209, bar 5485->5486) inside the hold, standard.
+No P007 candidates during the hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 35
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.8680 - 0.0132 = -4.8812
+POSITION_AFTER_THIS_TRADE = FLAT
+```
