@@ -2915,3 +2915,26 @@ POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the clearest REJECTED lean of
 this immediate aftermath sequence (-060, -061, -062) -- volume finally normalizing is itself a
 meaningful signal that the elevated-volume period has run its course.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5312 (2020-12-22 01:30:00 UTC)
+DURATION                30 bars (5283-5312)
+DEEPEST_LOW              1874.034 (bar 5295) -- a modest fresh low, not dramatic
+HEAVIEST_VOLUME          883 (bar 5310) -- lands near the end of the episode, close to but not
+                          exactly at the reclaim, and not cleanly at the break either; modest in
+                          absolute terms throughout (nothing above 883 the whole episode)
+RECLAIM_CLOSE             1881.829 -- an 88% retracement of the decline (7.8 of 8.8pt), high but
+                          genuinely partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1881.0822 (margin +0.75pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger. GAP-207 (standard MAINTENANCE) logged inside
+the episode.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** consistent with the now-
+established lesson from -046/-049/-050/-061: modest-magnitude evidence across the board (a modest
+low, volume that never exceeds 883, no clean break-side concentration) does not override a high (88%)
+retracement. REJECTED -- the market has genuinely settled into a calmer, lower-conviction stretch
+following the Dec 21 volatility spike.
