@@ -1,0 +1,11 @@
+fam_a,fam_b,a_days,b_days,same_day_overlap,overlap_pct_of_smaller
+A_sweep_reclaim,B_breakout_pullback,2469,214,128,0.598
+A_sweep_reclaim,C_attack_decay_break,2469,304,185,0.609
+A_sweep_reclaim,D_disp_fail_reversal,2469,3183,1935,0.784
+A_sweep_reclaim,E_compress_expand,2469,96,65,0.677
+B_breakout_pullback,C_attack_decay_break,214,304,12,0.056
+B_breakout_pullback,D_disp_fail_reversal,214,3183,146,0.682
+B_breakout_pullback,E_compress_expand,214,96,7,0.073
+C_attack_decay_break,D_disp_fail_reversal,304,3183,240,0.789
+C_attack_decay_break,E_compress_expand,304,96,10,0.104
+D_disp_fail_reversal,E_compress_expand,3183,96,72,0.75

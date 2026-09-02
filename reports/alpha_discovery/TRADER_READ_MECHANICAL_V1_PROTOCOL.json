@@ -1,0 +1,21 @@
+{
+  "mandate": "TRADER_READ_MECHANICAL_V1",
+  "timeframe": "M15",
+  "entry": "open[si+1]",
+  "stop_floor": "max(struct,2*spread,0.05,0.10*ATR)",
+  "payoff_primary": "2R",
+  "payoff_secondary": "3R",
+  "spread_base": 0.05,
+  "spread_stress": 0.08,
+  "backstop_bars": 96,
+  "swing_theta_atr": 1.0,
+  "one_trade_at_a_time": true,
+  "context_filter": "NONE (recorded only)",
+  "families": [
+    "A_sweep_reclaim",
+    "B_breakout_pullback",
+    "C_attack_decay_break",
+    "D_disp_fail_reversal",
+    "E_compress_expand"
+  ]
+}

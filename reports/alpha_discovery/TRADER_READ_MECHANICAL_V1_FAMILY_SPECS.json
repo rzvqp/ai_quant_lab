@@ -1,0 +1,7 @@
+{
+  "A": "sweep(<=1ATR beyond prior-20 struct, last8)->reclaim(close back)->bull/bear displacement(>0.5ATR body breaking confirmed swing)->entry next open",
+  "B": "close beyond prior-20 struct->acceptance(closed bar stays beyond within 3)->pullback<=50% displacement staying breakout-side->continuation close->entry",
+  "C": "confirmed swing level, >=3 attacks within 0.20ATR w/ departures, reaction2<reaction1 & reaction3<=reaction2, close beyond->entry",
+  "D": "displacement(TR>=1.5ATR close beyond prior-20 struct)->fail-to-accept(close back within 3 bars)->opposite confirm close->entry opposite",
+  "E": "compression(medTR last8<medTR prev32 AND span8<1.5ATR)->expansion(TR>=1.5ATR, close outer25%, breaks comp box+swing)->entry"
+}
