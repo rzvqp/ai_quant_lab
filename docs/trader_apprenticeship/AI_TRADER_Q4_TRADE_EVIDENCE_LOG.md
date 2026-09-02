@@ -1504,3 +1504,21 @@ session's own or_low (1874.440) sits almost exactly on top of that same defended
 
 **INVALIDATION:** a close at or below 1874.420 (STOP). MAX_HOLD 48 bars from entry (through bar
 5774). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1891.228).
+
+**OUTCOME:** MAX_HOLD exit at bar 5774 (2020-12-30 05:15:00 UTC), price 1884.368 (bar's own close).
+```
+EXIT_BAR      5774
+EXIT_REASON    MAX_HOLD
+EXIT_PRICE     1884.368
+R_MULTIPLE     +0.1837
+```
+A slightly positive 48-bar hold, chopping through the quiet -083/-084/-085 P007 stretch without ever
+threatening the stop (worst close 1881.213 at bar 5758, ~-0.19R) or nearing MGMT-004 (best close
+1885.534 at bar 5769, ~+0.32R, well short of +1.0R = 1891.228). No gaps, no P007 candidates during
+the hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 38
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.8812 + 0.1837 = -2.6975
+POSITION_AFTER_THIS_TRADE = FLAT
+```
