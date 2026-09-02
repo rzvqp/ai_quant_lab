@@ -2781,3 +2781,32 @@ evidence still needs to confirm this. POSITION=FLAT; no MGMT-004 relevance.
 multi-dimensionally extreme gate origin in the ledger to date -- a genuine test of whether an episode
 this dramatic at the origin still needs the extended-duration/partial-retracement confirmation seen in
 -038/-039/-040/-041/-052/-053/-056/-057, or whether origin-magnitude this large can stand on its own.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT -- a genuine PATTERN-007 instance
+RESOLUTION_BAR         5268 (2020-12-21 13:30:00 UTC)
+DURATION                15 bars (5254-5268)
+DEEPEST_LOW              1855.148 (bar 5254, the gate origin itself)
+HEAVIEST_VOLUME          6482 (bar 5254, the GATE ORIGIN itself) -- and unlike every prior episode,
+                          volume stayed SUSTAINED and dramatically elevated across the ENTIRE 15-bar
+                          episode (4636/3733/3406/3025/1501/1964/2014/2470/1256/993/1225/4176/
+                          3089/2179), never dropping back to the thin 100-500 baseline seen elsewhere
+                          in this ledger -- a genuinely novel shape, not a single spike
+RECLAIM_CLOSE             1882.866 -- an 88% retracement of the decline (27.7 of 31.5pt), high but
+                          genuinely partial, not complete or overshooting
+CAUSAL_H1_EMA50_AT_RESOLUTION 1882.4723 (margin +0.39pt -- thin, though the episode itself is anything
+                          but)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger this bar.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** answers this episode's own
+framed question -- origin-magnitude this extreme did NOT need extended multi-day duration to confirm
+itself; what it needed instead was sustained follow-through, which it had in abundance. This is the
+clearest contrast with -058's isolated-spike REJECTED case: there, massive volume hit once and the
+market absorbed it in 3 bars back to baseline; here, elevated volume persisted across all 15 bars of
+the episode, evidence of a genuinely sustained repricing event rather than a single liquidity grab.
+Combined with the deepest gap and heaviest single-bar volume in the whole Q4 replay, and a partial (not
+complete) retracement, this reads as a confident SUPPORT case despite its comparatively short duration
+-- sustained volume, not bar count alone, is treated as the real marker of a genuine structural event.
