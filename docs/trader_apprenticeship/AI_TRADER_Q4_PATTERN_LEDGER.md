@@ -3651,3 +3651,33 @@ VOLUME                          413 -- moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme despite the somewhat larger gap.
 Continues the same low-conviction pattern across the whole -071 through -076 stretch. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5697 (2020-12-29 09:00:00 UTC)
+DURATION                1 bar (5696) -- the entire decline (1881.722 -> 1877.611) happened within
+                        the origin bar's own intrabar range, not a multi-bar slide
+DEEPEST_LOW              1877.611 (bar 5696, the origin bar itself) -- still above the 1875.2-1875.4
+                        floor zone; NOT a fresh extreme
+HEAVIEST_VOLUME          413 (bar 5696, the origin bar) -- moderate, no dramatic concentration
+                        either bar (bar 5697 only 364)
+RECLAIM_CLOSE             1879.122 -- a genuinely LOW retracement for this record, ~37% of the
+                          4.111pt decline (1.511 of 4.111, measured from the last pre-episode close
+                          of 1881.722) -- but the reclaim itself is marginal, barely above the
+                          causal H1 EMA50 (+0.023pt, the thinnest margin recorded)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0986 (margin +0.023pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. A genuinely different character from the
+recent overshoot-REJECTED run: a LOW retracement (37%, technically inside the 23-89% SUPPORT-
+compatible range on that single metric) but with none of the other required SUPPORT components --
+no fresh extreme, no volume concentration at the extreme, no extended duration or sustained
+elevated volume, and the reclaim itself is barely above EMA (+0.023pt), a weak, marginal move
+rather than a decisive one. Per the established discriminator, a partial retracement alone,
+without any of the other supporting components, does not meet the SUPPORT bar. REJECTED.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this instance is a useful
+counter-example to a naive retracement-only read -- a low retracement percentage is necessary but
+not sufficient for SUPPORT; the reclaim's own decisiveness (margin above EMA, volume behind the
+move) matters independently.
