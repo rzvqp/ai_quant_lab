@@ -2854,3 +2854,24 @@ the pre-classification's lean -- no fresh extreme, volume diffuse rather than co
 essentially complete round-trip. Continues the pattern seen after -052/-053/-056/-057's own reclaims:
 the immediate next candidate in the same stretch often reads REJECTED even when overall volume stays
 elevated, since it's the RELATIVE, not absolute, evidence that matters.
+
+---
+
+## Q4-P007-061
+
+```
+GATE_ORIGIN_BAR          5276 (2020-12-21 15:30:00 UTC) -- immediately after -060's own reclaim
+TRIGGER_CLOSE                1881.396
+TRIGGER_LOW                   1880.768 -- NOT deeper than -060's own 1877.636
+CAUSAL_H1_EMA50_AT_5276       1882.3917
+GAP                            -0.996pt -- moderate
+VOLUME                          1305 -- continuing the elevated-but-normalizing regime (2424, 1907,
+                                 2048, 1722 in the immediately preceding bars), not a clear
+                                 acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- same character as -060, no fresh extreme, volume
+moderate and fading rather than accelerating. Not pre-committing. POSITION=FLAT; no MGMT-004
+relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
+leaning signature -- consistent with, not the basis for, the REJECTED lean.
