@@ -3280,3 +3280,28 @@ VOLUME                          627 -- moderate, real
 extreme, matching the -008/-009/-011/-014 trivial-touch signature despite real-ish volume. This is
 Christmas Eve; watching for any holiday-driven thinning of subsequent volume as additional context,
 not as a rule. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5548 (2020-12-24 14:30:00 UTC)
+DURATION                2 bars (5546-5547)
+DEEPEST_LOW              1869.582 (bar 5547) -- a real move beyond the trigger bar's own low, but
+                        not a fresh extreme against the wider record
+HEAVIEST_VOLUME          1159 (bar 5547) -- genuinely real volume, larger than the trigger bar's own
+                        627, but landing on a bar that immediately reversed
+RECLAIM_CLOSE             1873.952 -- an essentially complete round-trip: ~100% of the 4.366pt
+                          decline from the last pre-break close (1873.948), reclaiming right back to
+                          the pre-episode level
+CAUSAL_H1_EMA50_AT_RESOLUTION 1873.4520 (margin +0.500pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. Real volume (1159) on the break bar did NOT
+override the near-perfect round-trip -- consistent with the established -058/-059 lesson that
+volume magnitude alone does not decide the outcome, and with the "full-plus round-trip is the most
+reliable REJECTED signal" pattern seen at -013/-051/-061 (there ~98-107%; here ~100%, right in the
+same near-complete band). REJECTED.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this is a clean confirming
+case for the round-trip-over-volume discriminator -- real, not thin, volume on the break bar, yet
+still REJECTED because the retracement was essentially complete within 2 bars.
