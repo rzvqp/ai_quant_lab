@@ -1409,3 +1409,20 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 35
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.8680 - 0.0132 = -4.8812
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #36 — S5 opening-range-breakout LONG (bar 5549)
+
+```
+SIGNAL_BAR    5549 (2020-12-24 14:45:00-15:00:00 UTC, bis=8, Christmas Eve NY session)
+ENTRY          1876.926
+INITIAL_STOP    1872.407 (= or_low 1872.427 - 2*TICK)
+STRUCTURAL_TARGET 1890.483 (= entry + 3R, R=4.519)
+```
+
+**THESIS (frozen before bar 5550 was revealed):** mechanically triggered, no discretionary override.
+Close 1876.926 > or_high 1876.463, within the entry window (bis=8). Fires 1 bar after Q4-P007-069
+resolved REJECTED (near-complete round-trip). Volume on the signal bar (855) is real. Tightest R of
+any recent trade (4.519pt) given the compressed opening range (1872.427-1876.463).
+
+**INVALIDATION:** a close at or below 1872.407 (STOP). MAX_HOLD 48 bars from entry (through bar
+5597). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1881.445).
