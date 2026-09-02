@@ -3179,3 +3179,26 @@ at -008/-009/-011/-014/-063. No S5 trigger.
 trigger bar escalates -- -064 and -065 diverged, but -066 did not, underscoring that the divergence
 risk cuts both ways and genuinely has to be watched for each time, not assumed from recent
 precedent in either direction.
+
+---
+
+## Q4-P007-067
+
+**Third candidate opened while TRADE #35 is live -- immediately after -066's own reclaim (bar 5477)
+-- trade mechanics confirmed to run unconditionally before this reasoning stop.**
+
+```
+GATE_ORIGIN_BAR          5478 (2020-12-23 20:00:00 UTC) -- 1 bar after -066 resolved REJECTED
+TRADE_STATE_AT_ORIGIN      TRADE #35 open, entry 1876.580, currently 1870.348 (~-0.393R), clear of
+                          both stop (1860.711) and MGMT-004 trigger (1892.449)
+TRIGGER_CLOSE                1870.348
+TRIGGER_LOW                   1870.214 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5478       1871.3992
+GAP                            -1.0512pt -- moderate, larger than -066's own tiny gap
+VOLUME                          208 -- thin, no acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme and thin volume, despite the somewhat
+larger gap than -066. The gap magnitude alone has not been a reliable SUPPORT signal on its own in
+this record (e.g. -013's -2.36pt gap still resolved REJECTED). Not pre-committing. TRADE #35
+remains open and unaffected.
