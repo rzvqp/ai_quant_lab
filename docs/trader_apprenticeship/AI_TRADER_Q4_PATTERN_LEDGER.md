@@ -3440,3 +3440,27 @@ VOLUME                          245 -- thin
 **PRE-CLASSIFICATION:** leaning REJECTED -- a bare touch immediately following -071's own
 inconclusive 26-bar grind, matching the -008/-009/-011/-014/-066 trivial-touch signature. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5667 (2020-12-29 01:30:00 UTC)
+DURATION                5 bars (5662-5666)
+DEEPEST_LOW              1877.49 (bar 5666) -- well above -071's own recent low (1871.198, ~6 bars
+                        earlier), decisively fails the sharpened "fresh vs. most recent comparable
+                        episode" test from -071's own observational note
+HEAVIEST_VOLUME          1131 (bar 5665) -- real, but lands mid-episode, not at the deepest point
+                        (bar 5666, only 482)
+RECLAIM_CLOSE             1879.325 -- an 88% retracement of the 2.089pt decline (1.835 of 2.089,
+                          measured from the last pre-episode close of 1879.579)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.3012 (margin +0.024pt, essentially a bare reclaim)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED, clearly: the deepest low fails to
+undercut -071's own very recent low by a wide margin (1877.49 vs 1871.198), the heaviest volume
+landed off the deepest point rather than at it, and the high retracement (88%) adds no counter-
+evidence. Continues the theme -- since -070, the market has been unable to make any genuine fresh
+progress lower, each subsequent episode's low landing higher than the last (-070: 1869.309 ->
+-071: 1871.198 -> -072: 1877.49), consistent with a broader stabilizing/basing character following
+the Christmas reopening.
