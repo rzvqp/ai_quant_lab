@@ -2984,3 +2984,26 @@ Q4-P007-051 (there 107% in 6 bars; here 193% in 2 bars, an even faster and more 
 round-trip of the whole Q4 record so far (2 bars gate-to-reclaim) -- extends the "speed +
 overshoot beats magnitude" reading from -051 to an even shorter timescale, and continues the
 post-Dec-21 quiet-regime pattern noted at -062/-063's own pre-classification.
+
+---
+
+## Q4-P007-064
+
+```
+GATE_ORIGIN_BAR          5324 (2020-12-22 04:30:00 UTC) -- immediately after -063's own reclaim
+                          (bar 5322) and one routine bar (5323)
+TRIGGER_CLOSE                1880.943
+TRIGGER_LOW                   1880.649 -- NOT a fresh extreme (well above -063's own low of
+                              1880.019, let alone the all-time Q4 low)
+CAUSAL_H1_EMA50_AT_5324       1881.1658
+GAP                            -0.2228pt -- a touch, not a break
+VOLUME                          194 -- thinner even than -063's own trigger bar (251), continuing
+                                 the quiet-regime decay
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED, clearly -- a marginal EMA touch, no fresh extreme, and
+volume thinner than the already-quiet -063 episode. Matches the -008/-009/-011/-014 trivial-touch
+signature. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the quiet post-Dec-21 regime
+continues to deepen -- each successive gate origin in this stretch (-062, -063, -064) has printed
+progressively thinner volume.
