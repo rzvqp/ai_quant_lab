@@ -29,3 +29,5 @@ reports/alpha_discovery/__swing_cache__/
 reports/alpha_discovery/__range_cache__/
 cts_v2_seq.npy
 _cts_v2_summary.json
+acquisition_staging/gc_databento_full15y/raw/
+acquisition_staging/gc_databento_full15y/derived/
