@@ -3510,3 +3510,21 @@ test of component-priority -- a fresher low + clean volume placement (both SUPPO
 lost to a fast full-overshoot retracement, reinforcing that the round-trip completeness is the
 single strongest discriminator component observed in this record, capable of overriding otherwise-
 positive signals.
+
+---
+
+## Q4-P007-074
+
+```
+GATE_ORIGIN_BAR          5672 (2020-12-29 02:45:00 UTC) -- immediately after -073's own reclaim
+                          (bar 5671)
+TRIGGER_CLOSE                1878.096
+TRIGGER_LOW                   1877.35 -- still above -073's own low (1875.236); NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5672       1879.2708
+GAP                            -1.1748pt -- moderate-larger than recent candidates
+VOLUME                          333 -- thin
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme and thin volume, despite the somewhat
+larger gap. Gap magnitude alone has repeatedly not been a reliable SUPPORT signal in this record
+(-013, -067). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
