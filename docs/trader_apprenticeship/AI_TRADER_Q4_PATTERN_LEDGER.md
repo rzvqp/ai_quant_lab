@@ -3222,3 +3222,22 @@ TRADE #35 remained open throughout, unaffected (~-0.28R to -0.43R across the epi
 and MGMT-004 trigger). No S5 trigger. Second consecutive fast, thin, overshoot-reclaim REJECTED
 (after -066, and matching -063's own earlier signature), continuing the quarter's late-Q4 pattern
 of quick, low-conviction P007 flickers around this price zone.
+
+---
+
+## Q4-P007-068
+
+```
+GATE_ORIGIN_BAR          5533 (2020-12-24 10:45:00 UTC) -- TRADE #35 closed (bar 5505, MAX_HOLD);
+                          POSITION=FLAT
+TRIGGER_CLOSE                1872.772
+TRIGGER_LOW                   1871.242 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5533       1873.2796
+GAP                            -0.5076pt -- shallow-moderate
+VOLUME                          477 -- moderate, real
+```
+
+**PRE-CLASSIFICATION:** genuinely ambiguous by the recent pattern -- moderate gap and moderate
+volume, somewhat more real volume than the recent thin/fast REJECTED instances (-066/-067), but no
+fresh extreme yet. Leaning slightly REJECTED but watching for real continuation. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
