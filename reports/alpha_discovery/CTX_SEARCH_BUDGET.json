@@ -1,0 +1,25 @@
+{
+  "context_primitives": 55,
+  "sequence_descriptors": 29,
+  "windows": [
+    4,
+    8,
+    16,
+    32
+  ],
+  "setups": 10,
+  "models": [
+    "unfiltered_base",
+    "L2_logistic",
+    "shallow_tree"
+  ],
+  "interactions_cap": 20,
+  "setup_specific_tests": 550,
+  "global_tests": 55,
+  "walkforward": "expanding chronological, purge=96 bars",
+  "neg_controls": [
+    "label_permutation",
+    "time_shift_placebo",
+    "random_selection_matchedN"
+  ]
+}

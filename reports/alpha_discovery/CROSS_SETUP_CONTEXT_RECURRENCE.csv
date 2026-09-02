@@ -1,0 +1,9 @@
+feature,name,category,direction,n_setups,n_mechanisms,mean_corr
+g019,compress_flag,static_state,higher->worse,7,7,-0.0426
+g004,m_volrank,static_state,higher->better,6,6,0.0479
+g042,atr_vs_atrma,static_state,higher->better,5,5,0.051
+g012,vol_rel_8,volume_path,higher->better,4,4,0.0517
+g015,roc3_atr,static_state,higher->worse,4,4,-0.0395
+g025,vol_rel_4,volume_path,higher->better,4,4,0.0494
+g043,ema20_rel_atr,trend_location,higher->worse,4,4,-0.0392
+g053,vol_rel_16,volume_path,higher->better,4,4,0.0491
