@@ -3832,3 +3832,23 @@ VOLUME                          858 -- real/moderate
 No fresh extreme yet. Leaning REJECTED given the established pattern in this zone, but not
 pre-committing -- this defended floor has shown real volume before without genuine follow-through.
 POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5716 (2020-12-29 13:45:00 UTC)
+DURATION                1 bar (5715)
+DEEPEST_LOW              1877.096 (bar 5715, the trigger bar itself)
+HEAVIEST_VOLUME          858 (bar 5715, the trigger bar) -- never exceeded (bar 5716 only 693)
+RECLAIM_CLOSE             1879.854 -- a decisive overshoot: ~131% of the 2.11pt decline from the
+                          last pre-break close (1879.206), the largest overshoot magnitude of this
+                          whole recent stretch
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0115 (margin +0.843pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. The genuinely credible trigger (real volume,
+larger gap) resolved into the fastest and most extreme overshoot of the whole -071 through -081
+stretch -- a single-bar round-trip that overshot the pre-episode level by nearly a third of the
+decline's own magnitude. REJECTED, consistent with the established pattern throughout this defended
+zone.
