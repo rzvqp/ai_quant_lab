@@ -1559,3 +1559,26 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 39
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.6975 + 0.1449 = -2.5526
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #40 — S5 opening-range-breakout LONG (bar 5908)
+
+```
+SIGNAL_BAR    5908 (2020-12-31 15:45:00-16:00:00 UTC, bis=12, New Year's Eve NY session)
+ENTRY          1898.874
+INITIAL_STOP    1893.596 (= or_low 1893.616 - 2*TICK)
+STRUCTURAL_TARGET 1914.708 (= entry + 3R, R=5.278)
+```
+
+**THESIS (frozen before bar 5909 was revealed):** mechanically triggered, no discretionary override.
+Close 1898.874 > or_high 1898.287, within the entry window (bis=12). No P007 candidates fired at
+all across the preceding 47-bar stretch (bars 5861-5907) -- a genuinely quiet run. Volume on the
+signal bar (974) is real.
+
+**DISCLOSED BOUNDARY NOTE:** MAX_HOLD (48 bars from entry) would fall at bar 5956, beyond the Q4
+completion boundary at bar 5932 per the standing mandate. This trade is very likely to still be
+open when the authorized Q4 replay reaches its final gate; that is a disclosed, expected outcome of
+the boundary, not a blocker, and will be reported as such in the Q4 completion report if it occurs.
+
+**INVALIDATION:** a close at or below 1893.596 (STOP). MAX_HOLD 48 bars from entry (through bar
+5956, subject to the Q4 boundary above). MGMT-004 breakeven trigger at first M15 close >= +1.0R
+(>= 1904.152).
