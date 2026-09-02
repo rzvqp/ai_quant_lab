@@ -1328,3 +1328,23 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 33
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.2949 - 0.5731 = -3.8680
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #34 — S5 opening-range-breakout LONG (bar 5362)
+
+```
+SIGNAL_BAR    5362 (2020-12-22 14:00:00-14:15:00 UTC, bis=5)
+ENTRY          1880.196
+INITIAL_STOP    1871.150 (= or_low 1871.170 - 2*TICK)
+STRUCTURAL_TARGET 1907.334 (= entry + 3R, R=9.046)
+```
+
+**THESIS (frozen before bar 5363 was revealed):** mechanically triggered, no discretionary override.
+Close 1880.196 > or_high 1878.913, within the entry window (bis=5). Bar 5361, the first entry-window
+bar, closed 1878.88 -- just below or_high, no trigger -- so this is the very next bar's clean
+breakout. Signal fires one bar after Q4-P007-064 resolved SUPPORT (reclaim bar 5361), which itself
+capped a genuine 37-bar sustained decline to a fresh multi-week local low (1866.794, bar 5334) on
+real break-leg volume (1565). Volume on the signal bar itself (863) is real, consistent with the
+broader episode's elevated regime rather than the earlier post-Dec-21 quiet stretch.
+
+**INVALIDATION:** a close at or below 1871.150 (STOP). MAX_HOLD 48 bars from entry (through bar
+5410). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1889.242).
