@@ -3594,3 +3594,22 @@ floor-retests without a fresh extreme outweighs the single moderately-high retra
 five consecutive gate cycles (~50 bars) unable to close below approximately 1875.2-1875.4, forming
 a genuine, repeatedly-tested support floor -- a structural observation independent of, but
 consistent with, the P007 discriminator's own REJECTED reads throughout this stretch.
+
+---
+
+## Q4-P007-076
+
+```
+GATE_ORIGIN_BAR          5686 (2020-12-29 06:15:00 UTC) -- immediately after -075's own reclaim
+                          (bar 5685)
+TRIGGER_CLOSE                1878.578
+TRIGGER_LOW                   1878.468 -- well above the 1875.2-1875.4 floor zone tested repeatedly
+                              since -071; NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5686       1879.0880
+GAP                            -0.5100pt -- shallow-moderate
+VOLUME                          338 -- thin
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, well above the established floor
+zone, thin volume. Continues the same low-conviction pattern seen across -071 through -075. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
