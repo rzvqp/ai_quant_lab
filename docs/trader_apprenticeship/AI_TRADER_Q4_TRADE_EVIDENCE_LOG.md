@@ -1370,3 +1370,23 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 34
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -3.8680 - 1.0000 = -4.8680
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #35 — S5 opening-range-breakout LONG (bar 5457)
+
+```
+SIGNAL_BAR    5457 (2020-12-23 14:45:00-15:00:00 UTC, bis=8)
+ENTRY          1876.580
+INITIAL_STOP    1860.711 (= or_low 1860.731 - 2*TICK)
+STRUCTURAL_TARGET 1924.187 (= entry + 3R, R=15.869)
+```
+
+**THESIS (frozen before bar 5458 was revealed):** mechanically triggered, no discretionary override.
+Close 1876.58 > or_high 1869.184, within the entry window (bis=8). This is the deferred re-fire of
+the coincident S5 signal first seen at bar 5456 (Q4-P007-065's own reclaim bar) -- per standing
+priority, the P007 resolution was handled first at bar 5456 and the S5 signal re-fired on the very
+next bar, exactly as at Q4-P007-039->TRADE #26 and Q4-P007-052->TRADE #29. Signal fires immediately
+on the heels of Q4-P007-065's own SUPPORT resolution (93-bar episode, fresh multi-week low
+1857.132, 77% partial retracement). Volume on the signal bar (1518) is real.
+
+**INVALIDATION:** a close at or below 1860.711 (STOP). MAX_HOLD 48 bars from entry (through bar
+5505). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1892.449).
