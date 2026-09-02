@@ -1,0 +1,6 @@
+family,N,exp,drop_best1,drop_best1pct,drop_best5pct,top1pct_share
+A_sweep_reclaim,3274,0.014,0.0134,-0.0055,-0.0898,1.391
+B_breakout_pullback,220,0.0628,0.054,0.0451,-0.039,0.289
+C_attack_decay_break,313,-0.0179,-0.0243,-0.0373,-0.119,
+D_disp_fail_reversal,5855,0.0406,0.0403,0.0211,-0.062,0.487
+E_compress_expand,100,0.1082,0.0892,0.0892,0.0091,0.184

@@ -1,0 +1,6 @@
+family,trades,tpy,base_exp,stress_exp,pf,maxdd,thirds,thirds_pos,drop5,pos_years,neg_years,maxyr_share,era,GATE,fail_reasons
+A_sweep_reclaim,3274,218.4,0.014,0.006,1.023,77.6,"[-0.0102, -0.0372, 0.0895]",1,-0.0898,9,7,0.55,ONE_ERA_EDGE,FAIL,base_ge_010;pf_ge_115;thirds_2of3;drop5_gt0;year_conc_ok;maxdd_le15
+B_breakout_pullback,220,14.8,0.0628,0.0535,1.103,14.2,"[0.0821, -0.1029, 0.209]",2,-0.039,11,5,0.43,MIXED,FAIL,N_ge300;tpy_ge25;base_ge_010;pf_ge_115;drop5_gt0
+C_attack_decay_break,313,20.9,-0.0179,-0.034,0.974,50.9,"[0.2909, 0.0073, -0.3548]",2,-0.119,9,7,2.75,EARLY_ONLY_EDGE,FAIL,tpy_ge25;base_ge_010;stress_gt0;pf_ge_115;drop5_gt0;year_conc_ok;maxdd_le15
+D_disp_fail_reversal,5855,390.3,0.0406,0.0279,1.063,102.4,"[0.0488, 0.1023, -0.0292]",2,-0.062,11,5,0.46,EARLY_ONLY_EDGE,FAIL,base_ge_010;pf_ge_115;drop5_gt0;maxdd_le15
+E_compress_expand,100,6.8,0.1082,0.0977,1.18,12.2,"[-0.2068, 0.1617, 0.3793]",2,0.0091,8,8,0.64,MIXED,FAIL,N_ge300;tpy_ge25;year_conc_ok
