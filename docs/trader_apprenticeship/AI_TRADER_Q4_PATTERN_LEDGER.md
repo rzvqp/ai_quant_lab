@@ -3157,3 +3157,25 @@ VOLUME                          240 -- thin, in line with the recent quiet basel
 shallow gap, no fresh extreme, thin volume with no acceleration. Not pre-committing, especially
 given -064 and -065 both diverged from an initially-similar-looking thin lean. TRADE #35 remains
 open and unaffected.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5477 (2020-12-23 19:45:00 UTC)
+DURATION                1 bar (5476) -- the fastest possible complete round-trip
+DEEPEST_LOW              1871.277 (bar 5476, the gate-origin/trigger bar itself)
+HEAVIEST_VOLUME          240 (bar 5476, the trigger bar) -- never exceeded (bar 5477 only 208)
+RECLAIM_CLOSE             1871.724 -- a full overshoot: ~174% of the tiny 0.257pt decline from the
+                          last pre-break close (1871.534)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1871.3992 (margin +0.325pt)
+```
+
+TRADE #35 remained open throughout, unaffected (~-0.33R at the time, clear of stop and MGMT-004
+trigger). This time the thin trigger DID resolve exactly as pre-classified -- unlike -064/-065,
+there was no escalation here, just the trivial-touch/immediate-overshoot signature seen repeatedly
+at -008/-009/-011/-014/-063. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** confirms that not every thin
+trigger bar escalates -- -064 and -065 diverged, but -066 did not, underscoring that the divergence
+risk cuts both ways and genuinely has to be watched for each time, not assumed from recent
+precedent in either direction.
