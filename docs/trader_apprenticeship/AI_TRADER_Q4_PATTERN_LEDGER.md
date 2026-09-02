@@ -3464,3 +3464,22 @@ evidence. Continues the theme -- since -070, the market has been unable to make 
 progress lower, each subsequent episode's low landing higher than the last (-070: 1869.309 ->
 -071: 1871.198 -> -072: 1877.49), consistent with a broader stabilizing/basing character following
 the Christmas reopening.
+
+---
+
+## Q4-P007-073
+
+```
+GATE_ORIGIN_BAR          5668 (2020-12-29 01:45:00 UTC) -- immediately after -072's own reclaim
+                          (bar 5667)
+TRIGGER_CLOSE                1878.526
+TRIGGER_LOW                   1877.654 -- still HIGHER than -072's own low (1877.49); NOT a fresh
+                              extreme, continuing the higher-lows theme
+CAUSAL_H1_EMA50_AT_5668       1879.3012
+GAP                            -0.7752pt -- moderate
+VOLUME                          511 -- moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme (continues the higher-lows pattern
+since -070), moderate gap and volume, similar in scale to several recent REJECTED instances. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
