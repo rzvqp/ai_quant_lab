@@ -3810,3 +3810,25 @@ heavy volume at the break bar, a low that essentially retests (but doesn't clear
 and a near-complete retracement (94% in just 2 bars) -- REJECTED for the same reasons, reinforcing
 that this whole zone has become a genuine, repeatedly-defended support level that heavy volume
 alone has twice failed to break through decisively.
+
+---
+
+## Q4-P007-081
+
+```
+GATE_ORIGIN_BAR          5715 (2020-12-29 13:30:00 UTC) -- immediately after -080's own reclaim
+                          (bar 5714)
+TRIGGER_CLOSE                1877.15
+TRIGGER_LOW                   1877.096 -- still above -078's low (1874.342) and -080's low
+                              (1874.44); NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5715       1879.0115
+GAP                            -1.8615pt -- the second-largest gap of this whole recent stretch
+                                 (after -078's -2.06)
+VOLUME                          858 -- real/moderate
+```
+
+**PRE-CLASSIFICATION:** genuinely watching -- a larger gap and real volume, similar in scale to
+-078/-080's own trigger characteristics, both of which ultimately faded despite credible starts.
+No fresh extreme yet. Leaning REJECTED given the established pattern in this zone, but not
+pre-committing -- this defended floor has shown real volume before without genuine follow-through.
+POSITION=FLAT; no MGMT-004 relevance.
