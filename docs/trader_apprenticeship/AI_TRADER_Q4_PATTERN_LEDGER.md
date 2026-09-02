@@ -3305,3 +3305,24 @@ same near-complete band). REJECTED.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this is a clean confirming
 case for the round-trip-over-volume discriminator -- real, not thin, volume on the break bar, yet
 still REJECTED because the retracement was essentially complete within 2 bars.
+
+---
+
+## Q4-P007-070
+
+```
+GATE_ORIGIN_BAR          5611 (2020-12-28 10:30:00 UTC) -- first business day after the Christmas
+                          weekend (GAP-210); TRADE #36 closed +3.0000R at bar 5565; POSITION=FLAT
+TRIGGER_CLOSE                1879.278
+TRIGGER_LOW                   1879.047 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5611       1879.8998
+GAP                            -0.6218pt -- shallow-moderate
+VOLUME                          818 -- moderate, real
+```
+
+**PRE-CLASSIFICATION:** genuinely ambiguous -- moderate gap and moderate volume, similar in scale
+to -068's own moderate-but-ultimately-REJECTED profile. No fresh extreme yet. Leaning slightly
+REJECTED but watching for real continuation, especially given the extended gap since -069 (bars
+5549-5610 ran without a new candidate, the market having spent the whole intervening stretch,
+including the reopening surge, comfortably above EMA50). Not pre-committing. POSITION=FLAT; no
+MGMT-004 relevance.
