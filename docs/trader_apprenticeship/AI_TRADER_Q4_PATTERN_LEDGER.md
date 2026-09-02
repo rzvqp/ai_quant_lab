@@ -3262,3 +3262,21 @@ once at the origin and the whole move round-tripped within a single bar, the def
 signature regardless of the origin volume's own moderate size. Third fast, overshoot-reclaim
 REJECTED in four candidates now (-066, -067, -068), reinforcing that this late-Q4 stretch is
 genuinely low-conviction.
+
+---
+
+## Q4-P007-069
+
+```
+GATE_ORIGIN_BAR          5546 (2020-12-24 14:00:00 UTC) -- Christmas Eve, NY session
+TRIGGER_CLOSE                1873.304
+TRIGGER_LOW                   1872.19 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5546       1873.4317
+GAP                            -0.1277pt -- a touch, not a break
+VOLUME                          627 -- moderate, real
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- a bare touch (gap essentially negligible) with no fresh
+extreme, matching the -008/-009/-011/-014 trivial-touch signature despite real-ish volume. This is
+Christmas Eve; watching for any holiday-driven thinning of subsequent volume as additional context,
+not as a rule. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
