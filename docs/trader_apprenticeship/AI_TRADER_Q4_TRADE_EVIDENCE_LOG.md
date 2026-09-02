@@ -1522,3 +1522,21 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 38
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.8812 + 0.1837 = -2.6975
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #39 — S5 opening-range-breakout LONG (bar 5812)
+
+```
+SIGNAL_BAR    5812 (2020-12-30 14:45:00-15:00:00 UTC, bis=8)
+ENTRY          1887.514
+INITIAL_STOP    1876.179 (= or_low 1876.199 - 2*TICK)
+STRUCTURAL_TARGET 1921.519 (= entry + 3R, R=11.335)
+```
+
+**THESIS (frozen before bar 5813 was revealed):** mechanically triggered, no discretionary override.
+Close 1887.514 > or_high 1883.78, within the entry window (bis=8). The session's own opening range
+(or_high 1883.78, or_low 1876.199) is formed directly from Q4-P007-089's own dramatic reclaim bar
+(5806), and price has since built a genuine 6-bar real-volume rally (bars 5807-5812, volumes
+709/711/1167/913/1079/1650) to this breakout. Volume on the signal bar (1650) is real/heavy.
+
+**INVALIDATION:** a close at or below 1876.179 (STOP). MAX_HOLD 48 bars from entry (through bar
+5860). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1898.849).
