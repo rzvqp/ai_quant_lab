@@ -3567,3 +3567,30 @@ VOLUME                          255 -- thin
 **PRE-CLASSIFICATION:** leaning REJECTED -- a bare touch, no fresh extreme, thin volume, matching
 the -008/-009/-011/-014/-066 trivial-touch signature and continuing the stable higher-lows floor
 theme since -070. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5685 (2020-12-29 06:00:00 UTC)
+DURATION                7 bars (5678-5684)
+DEEPEST_LOW              1875.632 (bar 5684) -- still above both -073's low (1875.236) and -074's
+                        low (1875.358); the floor zone continues to hold, no fresh progress lower
+HEAVIEST_VOLUME          654 (bar 5683) -- real, near but not exactly at the deepest point (bar
+                        5684, only 460)
+RECLAIM_CLOSE             1879.289 -- an 87% retracement of the 4.222pt decline (3.657 of 4.222,
+                          measured from the last pre-episode close of 1879.854), high but genuinely
+                          partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.1725 (margin +0.117pt, thin)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED: although the 87% retracement alone
+sits in the ambiguous band where -070 resolved SUPPORT, the decisive factor is the persistent
+absence of any fresh extreme -- this is now the fifth consecutive episode since -070 (-071 through
+-075) failing to break below the same ~1875.2-1875.4 floor zone, and the heaviest volume landed
+near, not exactly at, the deepest point (unlike -070's clean concentration). The weight of repeated
+floor-retests without a fresh extreme outweighs the single moderately-high retracement figure.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the market has now spent
+five consecutive gate cycles (~50 bars) unable to close below approximately 1875.2-1875.4, forming
+a genuine, repeatedly-tested support floor -- a structural observation independent of, but
+consistent with, the P007 discriminator's own REJECTED reads throughout this stretch.
