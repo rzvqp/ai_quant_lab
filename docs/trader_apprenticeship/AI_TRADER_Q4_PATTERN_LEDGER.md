@@ -3326,3 +3326,36 @@ REJECTED but watching for real continuation, especially given the extended gap s
 5549-5610 ran without a new candidate, the market having spent the whole intervening stretch,
 including the reopening surge, comfortably above EMA50). Not pre-committing. POSITION=FLAT; no
 MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               SUPPORT / RECLAIM
+GATE_ORIGIN_BAR         5611 (2020-12-28 10:30:00 UTC) -- moderate trigger, ambiguous pre-classification
+RESOLUTION_BAR           5621 (2020-12-28 13:00:00 UTC)
+DURATION                 10 bars (5611-5620)
+DEEPEST_LOW              1869.309 (bar 5616, 2020-12-28 11:45:00 UTC) -- NOT an all-time Q4 record,
+                          but the deepest point since the Christmas reopening, a genuine local
+                          multi-day extreme
+HEAVIEST_VOLUME          1995 (bar 5616) -- the SAME bar as the deepest low, a clean, tight
+                          concentration exactly at the extreme (roughly 2x the surrounding bars'
+                          796-1033 range), not diffuse and not off to the side
+RECLAIM_CLOSE             1879.656 -- an 87% retracement of the 11.941pt decline (10.347 of 11.941,
+                          measured from the last pre-episode close of 1881.25), high but clearly
+                          short of the ~97%+ near-complete-round-trip threshold that has been the
+                          most reliable REJECTED signal in this record
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.6096 (margin +0.046pt, the thinnest reclaim margin recorded)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. A genuine close call, resolved toward SUPPORT:
+the fresh low is only moderately significant in absolute Q4 terms (not an all-time record), and the
+87% retracement sits in the upper part of the range that has sometimes gone either way (-046/-062
+REJECTED at 88-89%; -045 SUPPORT at 89%). What tips this one is the volume placement -- 1995 landing
+in the SAME bar as the deepest low is a cleaner, tighter concentration than several of the
+REJECTED high-retracement cases (-062's heaviest volume, 883, landed near but not at the low), and
+the retracement, while high, stayed meaningfully below the ~97%+ near-complete band that has been
+the more decisive REJECTED signal throughout this record.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this instance sharpens the
+retracement-threshold reading -- the reliable REJECTED boundary looks closer to ~90-97%+ (near-
+complete/overshoot) than to the ~85-89% band, where volume placement and other components still
+carry real weight, as they did here.
