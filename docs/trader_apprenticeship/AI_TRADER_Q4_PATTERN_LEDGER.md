@@ -3528,3 +3528,24 @@ VOLUME                          333 -- thin
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme and thin volume, despite the somewhat
 larger gap. Gap magnitude alone has repeatedly not been a reliable SUPPORT signal in this record
 (-013, -067). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5674 (2020-12-29 03:15:00 UTC)
+DURATION                2 bars (5672-5673)
+DEEPEST_LOW              1875.358 (bar 5673) -- barely fails to undercut -073's own low (1875.236),
+                        essentially matching it rather than breaking fresh ground
+HEAVIEST_VOLUME          796 (bar 5673) -- real, higher than the origin bar's 333
+RECLAIM_CLOSE             1879.656 -- a full overshoot: ~103% of the 4.192pt decline from the last
+                          pre-break close (1879.55)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.2247 (margin +0.431pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. Another fast, real-volume overshoot REJECTED,
+directly following the same pattern just confirmed at -073 -- the deepest low essentially retested
+rather than broke the prior episode's floor, and the full-overshoot reclaim (~103% in 2 bars)
+decided REJECTED regardless of the real volume. Fourth consecutive REJECTED (-070 excepted;
+-071/-072/-073/-074), all sharing the same signature: no fresh progress lower and fast overshoot
+reclaims, consistent with a market that has settled into a stable, higher-lows floor since -070.
