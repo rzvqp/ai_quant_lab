@@ -3704,3 +3704,32 @@ this stretch, this one finally breaks the repeatedly-tested floor with real, hea
 right at the break. Genuine escalation, not a marginal touch. Not pre-committing -- watching for
 real continuation vs an early fade (per the -013 precedent, even real trigger-bar magnitude has
 fully reversed before). POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5705 (2020-12-29 11:00:00 UTC)
+DURATION                2 bars (5703-5704)
+DEEPEST_LOW              1874.342 (bar 5703, the origin bar itself) -- the deepest point of the
+                        whole episode; a genuine fresh local extreme, but never built on
+HEAVIEST_VOLUME          1182 (bar 5703, the origin bar) -- collapsed immediately and completely
+                        (243, then 316 on the following two bars), an isolated spike with zero
+                        follow-through
+RECLAIM_CLOSE             1879.273 -- a near-complete round-trip: ~98% of the 5.032pt decline
+                          (4.931 of 5.032, measured from the last pre-episode close of 1879.374)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.1615 (margin +0.111pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. Despite the pre-classification's genuine
+leaning-toward-seriousness -- a real fresh floor break on heavy volume -- the episode fizzled
+completely: volume collapsed immediately and the retracement reached a near-total 98% within just
+2 bars. This is the isolated-spike-with-no-follow-through signature (-008/-009/-012) compounding
+with the near-complete-round-trip signature (-013/-051/-061/-069/-078) -- both point the same
+direction. REJECTED.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** confirms the standing lesson
+from -013 that even a genuinely credible trigger bar (fresh extreme + heavy volume + large gap) can
+still fully reverse within 2 bars -- no combination of favorable trigger-bar characteristics
+guarantees follow-through; only the subsequent bars can confirm it, and this record continues to
+show that isolated spikes without sustained volume are consistently unreliable regardless of their
+initial size.
