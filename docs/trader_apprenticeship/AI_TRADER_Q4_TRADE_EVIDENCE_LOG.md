@@ -1485,3 +1485,22 @@ TRADES_TOTAL_AFTER_THIS_TRADE = 37
 Q4_NET_R_AFTER_THIS_TRADE (control basis) = -1.8812 - 1.0000 = -2.8812
 POSITION_AFTER_THIS_TRADE = FLAT
 ```
+
+## TRADE #38 — S5 opening-range-breakout LONG (bar 5726)
+
+```
+SIGNAL_BAR    5726 (2020-12-29 16:15:00-16:30:00 UTC, bis=14)
+ENTRY          1882.824
+INITIAL_STOP    1874.420 (= or_low 1874.440 - 2*TICK)
+STRUCTURAL_TARGET 1908.036 (= entry + 3R, R=8.404)
+```
+
+**THESIS (frozen before bar 5727 was revealed):** mechanically triggered, no discretionary override.
+Close 1882.824 > or_high 1881.440, within the entry window (bis=14). Signal fires 2 bars after
+Q4-P007-082 resolved REJECTED -- the closest call of the whole -071 through -082 defended-floor
+stretch (deepest fresh extreme, heaviest volume of the sequence, yet still a ~100% round-trip). The
+session's own or_low (1874.440) sits almost exactly on top of that same defended floor zone
+(-078/-080's own lows near 1874.34-1874.44). Volume on the signal bar (601) is real.
+
+**INVALIDATION:** a close at or below 1874.420 (STOP). MAX_HOLD 48 bars from entry (through bar
+5774). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1891.228).
