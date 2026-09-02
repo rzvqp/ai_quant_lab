@@ -3483,3 +3483,30 @@ VOLUME                          511 -- moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme (continues the higher-lows pattern
 since -070), moderate gap and volume, similar in scale to several recent REJECTED instances. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5671 (2020-12-29 02:30:00 UTC)
+DURATION                3 bars (5668-5670)
+DEEPEST_LOW              1875.236 (bar 5669) -- FINALLY breaks below both -072's low (1877.49) and
+                        -073's own trigger low (1877.654), the first genuine progress lower since
+                        -070, though still above -071's own low (1871.198); not an all-time record
+HEAVIEST_VOLUME          881 (bar 5669) -- real, and lands cleanly at the deepest point itself, a
+                        clean concentration
+RECLAIM_CLOSE             1879.55 -- a full overshoot: ~106% of the 4.089pt decline from the last
+                          pre-break close (1879.325), reclaiming beyond the pre-episode level
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.2708 (margin +0.279pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. Despite a genuinely fresher low than the
+immediately preceding episodes and clean volume concentration at the extreme, the full-overshoot
+retracement (~106% in just 3 bars) is decisive -- consistent with the "full-plus round-trip is the
+most reliable REJECTED signal" pattern established at -013/-051/-061/-069, which has held even
+against otherwise-favorable individual components. REJECTED.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this instance is a clean
+test of component-priority -- a fresher low + clean volume placement (both SUPPORT-favoring) still
+lost to a fast full-overshoot retracement, reinforcing that the round-trip completeness is the
+single strongest discriminator component observed in this record, capable of overriding otherwise-
+positive signals.
