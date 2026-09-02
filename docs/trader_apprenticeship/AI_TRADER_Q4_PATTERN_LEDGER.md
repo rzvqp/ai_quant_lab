@@ -3383,3 +3383,42 @@ VOLUME                          784 -- moderate, real
 unremarkable volume. Matches the general profile of several recent REJECTED instances (-068/-069)
 more than the SUPPORT case (-070). Not pre-committing. TRADE #37 remains open, now meaningfully
 underwater but still well clear of its stop.
+
+**INTERIM NOTE:** TRADE #37 stopped out at bar 5644 (-1.0000R), well inside this episode; the gate
+remained open and unaffected -- both subsystems processed independently. One MAINTENANCE gap
+(GAP-211, bar 5656->5657) logged inside the episode, standard.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+GATE_ORIGIN_BAR         5635 (2020-12-28 16:30:00 UTC)
+RESOLUTION_BAR           5661 (2020-12-29 00:00:00 UTC)
+DURATION                 26 bars (5635-5660)
+DEEPEST_LOW              1871.198 (bar 5656, 2020-12-28 21:45:00 UTC) -- NOT an all-time Q4 record,
+                          and NOT even a fresh low relative to -070's own recent low (1869.309, only
+                          ~40 bars/2 days earlier) -- the market has essentially been oscillating in
+                          the same 1869-1880 zone without genuine new progress lower
+HEAVIEST_VOLUME          784 (bar 5635, the gate-origin bar itself) -- a real, moderate spike right
+                          at the origin, but the following 25 bars stayed thin-to-moderate (138-479)
+                          throughout, no sustained elevation
+RECLAIM_CLOSE             1879.579 -- a 90% retracement of the 9.315pt decline (8.381 of 9.315,
+                          measured from the last pre-episode close of 1880.513), right at the
+                          boundary of the "reliable REJECTED zone" identified at -070's own
+                          resolution
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.4311 (margin +0.148pt, thin)
+```
+
+TRADE #37's stop-out (bar 5644, -1.0000R) fell inside this episode, unaffected by it; both
+subsystems processed independently. No S5 trigger at resolution. REJECTED: the decisive factor here
+is the absence of any genuine fresh extreme -- 1871.198 doesn't even undercut -070's own recent low
+from just two days earlier, meaning this 26-bar episode represents continued chop within an
+already-established range rather than a new structural move. The origin-bar volume spike (784)
+faded into a long, thin, directionless grind rather than sustaining or building. The 90% retracement
+sits right at, not clearly below, the boundary identified at -070 -- consistent with REJECTED given
+the other components also point that way.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** this instance sharpens the
+"fresh extreme" component further -- what counts as fresh should be judged against the most recent
+comparable episode's own extreme, not just the all-time Q4 record. A low that fails to undercut
+even a very recent prior episode's low is a meaningfully weaker signal than one that does, even when
+both would show is_new_low=False against the whole-quarter record.
