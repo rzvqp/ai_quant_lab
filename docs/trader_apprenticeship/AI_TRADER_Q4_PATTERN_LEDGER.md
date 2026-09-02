@@ -4164,3 +4164,24 @@ VOLUME                          836 -- real/heavy, one of the heavier bars of th
 episodes with real/heavy volume, though still a meaningful distance above the defended floor zone
 itself. More credible than most of the recent thin/moderate candidates. Not pre-committing.
 POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5806 (2020-12-30 13:15:00 UTC)
+DURATION                1 bar (5805)
+DEEPEST_LOW              1876.199 (bar 5805, the trigger bar itself)
+HEAVIEST_VOLUME          881 (bar 5806, the reclaim bar) -- slightly exceeds the trigger bar's own
+                          836; a genuinely two-sided, real-volume 1-bar round trip, not a thin
+                          bounce on either side
+RECLAIM_CLOSE             1881.566 -- a decisive overshoot: ~130% of the 4.125pt decline from the
+                          last pre-break close (1880.324), on a wide-range bullish bar (high
+                          1883.78)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.7450 (margin +1.821pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. Real volume on BOTH the break and the reclaim
+did not change the outcome -- the decisive overshoot retracement (~130% in a single bar) still
+decides REJECTED, extending the -058/-073/-078/-080/-081 lesson that round-trip completeness
+overrides volume favorability regardless of which side of the round trip carries the volume.
