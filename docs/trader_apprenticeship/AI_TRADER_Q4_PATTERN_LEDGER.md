@@ -3681,3 +3681,26 @@ without any of the other supporting components, does not meet the SUPPORT bar. R
 counter-example to a naive retracement-only read -- a low retracement percentage is necessary but
 not sufficient for SUPPORT; the reclaim's own decisiveness (margin above EMA, volume behind the
 move) matters independently.
+
+---
+
+## Q4-P007-078
+
+```
+GATE_ORIGIN_BAR          5703 (2020-12-29 10:30:00 UTC) -- the first genuine break of the
+                          1875.2-1875.4 floor zone tested repeatedly since -071
+TRIGGER_CLOSE                1877.098
+TRIGGER_LOW                   1874.342 -- undercuts the whole floor zone (below both -073's
+                              1875.236 and -074's 1875.358) for the first time in six episodes;
+                              not an all-time Q4 record, but a genuine fresh local extreme
+CAUSAL_H1_EMA50_AT_5703       1879.1615
+GAP                            -2.0635pt -- the largest gap of the entire -070 through -078 stretch
+VOLUME                          1182 -- real/heavy, the heaviest single-bar volume of the whole
+                                 recent stretch, and lands right at the trigger/break bar itself
+```
+
+**PRE-CLASSIFICATION:** leaning toward taking this seriously -- unlike the six prior candidates in
+this stretch, this one finally breaks the repeatedly-tested floor with real, heavy volume landing
+right at the break. Genuine escalation, not a marginal touch. Not pre-committing -- watching for
+real continuation vs an early fade (per the -013 precedent, even real trigger-bar magnitude has
+fully reversed before). POSITION=FLAT; no MGMT-004 relevance.
