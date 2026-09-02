@@ -4033,3 +4033,21 @@ TRADE #38 remained open throughout, unaffected (~-0.53R to -0.66R across the epi
 stop and MGMT-004 trigger). No S5 trigger. REJECTED -- no fresh extreme, the thinnest sustained
 volume regime of the whole record (never above 226 across 11 bars), and a decisive overshoot
 reclaim. This is now the quietest multi-episode stretch of the entire Q4 replay.
+
+---
+
+## Q4-P007-086
+
+```
+GATE_ORIGIN_BAR          5783 (2020-12-30 07:30:00 UTC) -- TRADE #38 closed (bar 5774, MAX_HOLD,
+                          +0.1837R); POSITION=FLAT
+TRIGGER_CLOSE                1879.678
+TRIGGER_LOW                   1879.367 -- well above the defended floor zone; NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5783       1879.9623
+GAP                            -0.2843pt -- shallow
+VOLUME                          507 -- moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, shallow gap, moderate volume,
+consistent with the whole defended-floor pattern. Not pre-committing. POSITION=FLAT; no MGMT-004
+relevance.
