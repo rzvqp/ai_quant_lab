@@ -2894,3 +2894,24 @@ No trade was open; no MGMT-004 relevance. No S5 trigger.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the pattern from -046/-049/-050
 repeats: a modest fresh low and origin-favoring volume placement, but both at modest magnitude, and a
 near-perfect round-trip dominates the read. REJECTED.
+
+---
+
+## Q4-P007-062
+
+```
+GATE_ORIGIN_BAR          5283 (2020-12-21 17:15:00 UTC) -- immediately after -061's own reclaim
+TRIGGER_CLOSE                1881.484
+TRIGGER_LOW                   1880.926 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5283       1882.1358
+GAP                            -0.652pt -- shallow-moderate
+VOLUME                          385 -- notably LOWER than the recent elevated regime (1305, 1051,
+                                 1272...), a genuine sign of the market calming after the Dec 21 event
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED, clearly -- shallow gap, no fresh extreme, and volume has
+genuinely dropped back toward baseline rather than remaining elevated. Not pre-committing.
+POSITION=FLAT; no MGMT-004 relevance.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the clearest REJECTED lean of
+this immediate aftermath sequence (-060, -061, -062) -- volume finally normalizing is itself a
+meaningful signal that the elevated-volume period has run its course.
