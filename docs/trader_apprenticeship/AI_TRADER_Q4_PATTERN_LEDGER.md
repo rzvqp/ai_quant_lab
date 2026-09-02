@@ -3359,3 +3359,27 @@ the more decisive REJECTED signal throughout this record.
 retracement-threshold reading -- the reliable REJECTED boundary looks closer to ~90-97%+ (near-
 complete/overshoot) than to the ~85-89% band, where volume placement and other components still
 carry real weight, as they did here.
+
+---
+
+## Q4-P007-071
+
+**Fourth candidate opened while a trade (TRADE #37) is live -- trade mechanics confirmed to run
+unconditionally before this reasoning stop.**
+
+```
+GATE_ORIGIN_BAR          5635 (2020-12-28 16:30:00 UTC)
+TRADE_STATE_AT_ORIGIN      TRADE #37 open, entry 1889.380, currently 1879.925 (~-0.640R) -- a real
+                          pullback from the +0.30R high (bar 5628, close 1893.856), but still clear
+                          of both stop (1874.604) and MGMT-004 trigger (1904.156)
+TRIGGER_CLOSE                1879.925
+TRIGGER_LOW                   1877.551 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5635       1880.3987
+GAP                            -0.4737pt -- shallow-moderate
+VOLUME                          784 -- moderate, real
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, shallow-moderate gap, moderate but
+unremarkable volume. Matches the general profile of several recent REJECTED instances (-068/-069)
+more than the SUPPORT case (-070). Not pre-committing. TRADE #37 remains open, now meaningfully
+underwater but still well clear of its stop.
