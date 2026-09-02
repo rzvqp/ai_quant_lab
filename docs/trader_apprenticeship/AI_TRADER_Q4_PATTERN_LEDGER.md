@@ -3422,3 +3422,21 @@ the other components also point that way.
 comparable episode's own extreme, not just the all-time Q4 record. A low that fails to undercut
 even a very recent prior episode's low is a meaningfully weaker signal than one that does, even when
 both would show is_new_low=False against the whole-quarter record.
+
+---
+
+## Q4-P007-072
+
+```
+GATE_ORIGIN_BAR          5662 (2020-12-29 00:15:00 UTC) -- immediately after -071's own reclaim
+                          (bar 5661)
+TRIGGER_CLOSE                1879.308
+TRIGGER_LOW                   1878.606 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5662       1879.3313
+GAP                            -0.0233pt -- essentially zero, a bare touch
+VOLUME                          245 -- thin
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- a bare touch immediately following -071's own
+inconclusive 26-bar grind, matching the -008/-009/-011/-014/-066 trivial-touch signature. Not
+pre-committing. POSITION=FLAT; no MGMT-004 relevance.
