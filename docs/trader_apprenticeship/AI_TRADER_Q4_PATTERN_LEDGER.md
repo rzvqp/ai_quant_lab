@@ -3733,3 +3733,21 @@ still fully reverse within 2 bars -- no combination of favorable trigger-bar cha
 guarantees follow-through; only the subsequent bars can confirm it, and this record continues to
 show that isolated spikes without sustained volume are consistently unreliable regardless of their
 initial size.
+
+---
+
+## Q4-P007-079
+
+```
+GATE_ORIGIN_BAR          5706 (2020-12-29 11:15:00 UTC) -- immediately after -078's own reclaim
+                          (bar 5705)
+TRIGGER_CLOSE                1878.074
+TRIGGER_LOW                   1877.03 -- still above -078's own low (1874.342); NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5706       1879.1059
+GAP                            -1.0319pt -- moderate
+VOLUME                          371 -- thin-moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, moderate gap, thin-moderate volume.
+Reverts to the same low-conviction profile that dominated -071 through -077, now that -078's own
+promising break has already faded. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
