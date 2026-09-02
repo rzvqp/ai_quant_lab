@@ -2875,3 +2875,22 @@ moderate and fading rather than accelerating. Not pre-committing. POSITION=FLAT;
 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature -- consistent with, not the basis for, the REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5282 (2020-12-21 17:00:00 UTC)
+DURATION                6 bars (5276-5282)
+DEEPEST_LOW              1874.64 (bar 5278) -- a modest fresh low, deeper than -060's own 1877.636
+HEAVIEST_VOLUME          1305 (bar 5276, the GATE ORIGIN) -- a clean SUPPORT-consistent placement,
+                          but modest in absolute terms, nowhere near -059's dramatic volumes
+RECLAIM_CLOSE             1882.856 -- a ~98% retracement of the decline (8.2 of 8.3pt), essentially
+                          a near-perfect round-trip
+CAUSAL_H1_EMA50_AT_RESOLUTION 1882.2050 (margin +0.65pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the pattern from -046/-049/-050
+repeats: a modest fresh low and origin-favoring volume placement, but both at modest magnitude, and a
+near-perfect round-trip dominates the read. REJECTED.
