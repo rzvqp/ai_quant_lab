@@ -3549,3 +3549,21 @@ rather than broke the prior episode's floor, and the full-overshoot reclaim (~10
 decided REJECTED regardless of the real volume. Fourth consecutive REJECTED (-070 excepted;
 -071/-072/-073/-074), all sharing the same signature: no fresh progress lower and fast overshoot
 reclaims, consistent with a market that has settled into a stable, higher-lows floor since -070.
+
+---
+
+## Q4-P007-075
+
+```
+GATE_ORIGIN_BAR          5678 (2020-12-29 04:15:00 UTC)
+TRIGGER_CLOSE                1879.12
+TRIGGER_LOW                   1878.466 -- still above both -073's low (1875.236) and -074's low
+                              (1875.358); NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5678       1879.2447
+GAP                            -0.1247pt -- a bare touch
+VOLUME                          255 -- thin
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- a bare touch, no fresh extreme, thin volume, matching
+the -008/-009/-011/-014/-066 trivial-touch signature and continuing the stable higher-lows floor
+theme since -070. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
