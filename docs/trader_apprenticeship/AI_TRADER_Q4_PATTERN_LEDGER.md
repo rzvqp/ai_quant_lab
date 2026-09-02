@@ -3078,3 +3078,56 @@ VOLUME                          897 -- real/moderate
 inside noise, and there is no fresh extreme. Real volume alone (897) is not, on its own, sufficient
 per the established -058 lesson (massive volume decoupled from a fresh extreme still resolved
 REJECTED there). Not pre-committing. TRADE #34 remains open and unaffected.
+
+**INTERIM NOTE:** TRADE #34 stopped out at bar 5366 (-1.0000R), one bar into this episode; the gate
+remained open and unaffected -- both subsystems processed independently. This episode did not fade
+the way its own trigger bar suggested -- it became the largest directional decline since
+Q4-P007-064, running 93 bars with a genuine fresh multi-week low. One MAINTENANCE gap (GAP-208, bar
+5393->5394) logged inside the episode, standard.
+
+### RESOLUTION
+
+**Second consecutive significant divergence from a thin-trigger pre-classification** (after -064) --
+handled as a continuation of the same durable gate reference, per the -006/-010/-015/-016/-064
+precedent.
+
+```
+STATUS               SUPPORT / RECLAIM
+GATE_ORIGIN_BAR         5363 (2020-12-22 14:15:00 UTC) -- trivial trigger bar (gap -0.0018pt)
+GENUINE_ESCALATION       bars 5364-5369, a fast 6-bar decline (1878.7 -> 1861.764) on rapidly
+                          building volume (1568/926/1657/1927), reaching this episode's heaviest
+                          volume (1927, bar 5369) right at the break leg
+RESOLUTION_BAR           5456 (2020-12-23 14:30:00 UTC)
+DURATION                 93 bars (5363-5455) -- the 4th-longest episode of the whole Q4 record
+                          (after -015's 198, -003's 147, -004's 91 -- this narrowly exceeds -004)
+DEEPEST_LOW              1857.132 (bar 5446, 2020-12-23 12:00:00 UTC) -- NOT an all-time Q4 record
+                          (independently verified against the sealed CSV: the true Q4 minimum,
+                          1848.801, was set far earlier at bar 1759, 2020-09-28), but well below
+                          every recent reference including Q4-P007-064's own deep low (1866.794) --
+                          a genuine fresh multi-week local extreme
+HEAVIEST_VOLUME          1927 (bar 5369, 2020-12-22 15:45:00 UTC) -- lands cleanly on the initial
+                          break leg (6 bars after gate origin), not diffuse and not at the reclaim
+RECLAIM_CLOSE             1874.868 -- a 77% retracement of the 23.064pt decline (17.736 of 23.064,
+                          measured from the last pre-episode close of 1880.196), genuinely partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1870.8608 (margin +4.007pt, the largest reclaim margin of the
+                          episode-tracked record to date)
+```
+
+**Coincident S5 trigger at the resolution bar, deferred per standing priority:** bar 5456 also
+produced a fresh S5 opening-range-breakout signal (entry 1874.868, stop 1860.711, target 1917.339,
+bis=7) on the exact same bar as this P007 reclaim. POSITION=FLAT (TRADE #34 closed at bar 5366).
+Per the established decide() priority (P007 reasoning stop takes precedence over a coincident S5
+signal when FLAT), this P007 resolution is handled first; the S5 signal is expected to re-fire on
+the next bar via S5's own stateless `evaluate()`, exactly as seen at Q4-P007-039->TRADE #26 and
+Q4-P007-052->TRADE #29. No MGMT-004 relevance (no trade open at any point during this episode after
+TRADE #34's own bar-5366 close).
+
+This is a clear SUPPORT case: a genuine fresh local extreme (deepest in many weeks, even though not
+an all-time Q4 record), volume concentrated tightly on the break leg rather than diffuse, a PARTIAL
+(77%) retracement, and the second-longest duration of the recent stretch. The trigger bar's own
+thin signature was, again, a poor predictor of the episode's eventual character.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** two consecutive P007
+instances now (-064, -065) have escalated dramatically from genuinely trivial trigger bars into the
+largest directional episodes of this stretch -- reinforcing that a quiet/thin gate origin carries no
+predictive weight on its own about what follows; only the bars that come after the origin reveal
+the episode's real character.
