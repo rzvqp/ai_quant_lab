@@ -3789,3 +3789,24 @@ VOLUME                          480 -- moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, shallow-moderate gap and volume,
 continuing the same low-conviction pattern that has dominated since -071 (with -078 as the lone
 exception, which itself faded). Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5714 (2020-12-29 13:15:00 UTC)
+DURATION                2 bars (5712-5713)
+DEEPEST_LOW              1874.44 (bar 5713) -- just 0.098pt above -078's own low (1874.342);
+                        essentially retesting rather than breaking it, NOT counted as fresh
+HEAVIEST_VOLUME          1202 (bar 5713) -- real/heavy, comparable in magnitude to -078's own
+                          trigger volume (1182)
+RECLAIM_CLOSE             1879.206 -- a near-complete round-trip: ~94% of the 5.078pt decline
+                          (4.766 of 5.078, measured from the last pre-episode close of 1879.518)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0115 (margin +0.195pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. A close echo of -078's own resolution: real,
+heavy volume at the break bar, a low that essentially retests (but doesn't clear) the recent floor,
+and a near-complete retracement (94% in just 2 bars) -- REJECTED for the same reasons, reinforcing
+that this whole zone has become a genuine, repeatedly-defended support level that heavy volume
+alone has twice failed to break through decisively.
