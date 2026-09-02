@@ -1,0 +1,45 @@
+{
+ "name": "P007_DISCRIMINATOR_SPEC_V1",
+ "primary": {
+  "id": "ROUND_TRIP_ONLY",
+  "rule": "round_trip < 1.00 -> SUPPORT else REJECTED",
+  "round_trip_definition": "(reclaim_close - deepest_low_of_episode) / (close_of_bar_before_trigger - deepest_low_of_episode)",
+  "earliest_causal_classification_time": "AT_RECLAIM (resolution). Requires the episode's deepest low AND the reclaim close; neither exists until the episode ends.",
+  "q4_balanced_accuracy": 0.6934
+ },
+ "secondary_1": {
+  "id": "ROUND_TRIP_PLUS_VOLUME",
+  "rule": "round_trip < 0.90 AND vol_sustain > 0.10 -> SUPPORT",
+  "earliest_causal_classification_time": "AT_RECLAIM",
+  "q4_balanced_accuracy": 0.7172
+ },
+ "secondary_2": {
+  "id": "AT_TRIGGER_VOLUME_ONLY",
+  "rule": "t_vol_rel_3 > 1.8 -> SUPPORT",
+  "definition": "mean volume of the trigger bar and the two bars before it, divided by the mean volume of the 96 bars strictly before the trigger",
+  "earliest_causal_classification_time": "AT_TRIGGER",
+  "q4_balanced_accuracy": 0.7917
+ },
+ "population_rule": "the P007 episode registry as curated in AI_TRADER_Q4_PATTERN_LEDGER.md; the frozen mechanical detector is OVER-INCLUSIVE and does NOT reproduce it (121 vs 89 on Q4)",
+ "scoring": "balanced accuracy = (recall_SUPPORT + specificity_REJECTED)/2; baseline 0.500",
+ "alternatives_considered": {
+  "round_trip_thresholds": [
+   0.8,
+   0.85,
+   0.9,
+   0.95,
+   1.0
+  ],
+  "volume_thresholds": [
+   0.1,
+   0.2
+  ],
+  "trigger_vol_thresholds": [
+   1.2,
+   1.5,
+   1.8,
+   2.0
+  ]
+ },
+ "frozen_on": "Q4 2020 only; Q1 2021 outcomes were never opened and none exist"
+}
