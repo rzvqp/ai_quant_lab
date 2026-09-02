@@ -1,0 +1,7 @@
+feature,category,n_setups,dirn
+gC_vol_persist_toward,relative_participation,2,1
+gC_progress_per_vol,relative_participation,2,-1
+gC_volexp_noprog,relative_participation,2,1
+gA_atr_vs_atrma,generic_state,2,1
+gA_volrank,generic_state,2,1
+gA_compress,generic_state,2,-1

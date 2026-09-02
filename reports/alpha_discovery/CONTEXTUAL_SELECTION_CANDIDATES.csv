@@ -1,0 +1,3 @@
+setup_id,object,mechanism,base_exp,model,sel_exp,exp_lift,winners_retained,losers_avoided,sel_N,sel_pct,sel_per_year,perm_lift,time_to_30_mo,time_to_50_mo,months_powered_shrunk,top_discriminators
+BASE_SETUP_07,S11::576394ea476f,M11_STRUCTURE_BREAK_REVERSAL,-0.0581,logit,0.0012,0.0523,0.101,0.903,401,0.099,26.7,-0.0325,13.5,22.4,10857083.1,"h4_trend_up, dist_pwl_atr, approach_pdh_8"
+BASE_SETUP_08,S12::884efeda36f3,M12_RANGE_ROTATION,-0.2324,logit,0.0127,0.2443,0.102,0.936,961,0.08,64.1,-0.008,5.6,9.4,54075.3,"approach_pdh_8, ema20_rel_atr, efficiency_16"

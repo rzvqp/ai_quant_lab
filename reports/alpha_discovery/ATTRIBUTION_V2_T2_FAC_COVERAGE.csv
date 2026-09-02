@@ -1,0 +1,15 @@
+object,STATUS,note
+DIRECTION_AGNOSTIC_EXPANSION_HARVEST_V1,ANALYSED,n=4519 dae daily-open +/-0.25PDR cont (GRAMMAR_INDEX_0)
+M5_EVENT_REVEALED_DIRECTION_FACTORY_V1,ATTEMPT_ERROR,M5 unexpectedly loaded
+H1_H4_SETUP_M5_EXECUTION_V1,ATTEMPT_ERROR,M5 unexpectedly loaded
+LONG_HORIZON_EVENT_REVEALED_DIRECTION_V1,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+CROSS_MARKET_RELATIVE_RESPONSE_FACTORY_V1,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+OB_RETEST_FACTORY_V1,GENUINE_FAILED_REGENERATION,NO_SINGLE_TRADE_POPULATION: factory/library object with no canonical single-strategy driver (multi-mode/meta) — no unambiguous frozen trade population to attribute
+DXY_FRONTIER_V1,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+VOLTIME_FRONTIER,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+VOLPATH_FRONTIER,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+TEMPORAL_SEQUENCE_MINING_V1,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+SESSION_FRONTIER_SF1_SF3,GENUINE_FAILED_REGENERATION,NO_SINGLE_TRADE_POPULATION: factory/library object with no canonical single-strategy driver (multi-mode/meta) — no unambiguous frozen trade population to attribute
+BLIND_FORWARD_STRUCTURE_DISCOVERY_V1,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+CHRONOLOGICAL_MARKET_LEARNING,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: primary script ran but evaluated no canonical trade ledger (information/conditional-response frontier)
+ALPHA_DISCOVERY_FACTORY_V2,GENUINE_FAILED_REGENERATION,NO_SINGLE_TRADE_POPULATION: factory/library object with no canonical single-strategy driver (multi-mode/meta) — no unambiguous frozen trade population to attribute

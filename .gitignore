@@ -27,3 +27,5 @@ acquisition_staging/dxy/pull_dxy.log.err
 reports/alpha_discovery/__swing_cache__/
 
 reports/alpha_discovery/__range_cache__/
+cts_v2_seq.npy
+_cts_v2_summary.json

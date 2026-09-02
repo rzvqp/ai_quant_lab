@@ -1,0 +1,44 @@
+{
+  "event_types": [
+    "ATTACK",
+    "PULLBACK",
+    "STRUCTURE_BREAK_FAV",
+    "STRUCTURE_BREAK_ADV",
+    "REFERENCE_TOUCH",
+    "PENETRATION",
+    "REJECTION",
+    "COMPRESSION",
+    "EXPANSION",
+    "VOLUME_EXPANSION",
+    "VOLUME_DECAY"
+  ],
+  "leg_attributes": [
+    "type",
+    "dir",
+    "prog_atr",
+    "dur",
+    "eff",
+    "vol_rel",
+    "vol_trend",
+    "broke",
+    "dist_start",
+    "dist_end"
+  ],
+  "relation_types": [
+    "BEFORE",
+    "TOWARD_REF",
+    "AWAY_REF",
+    "ACCEL_VS",
+    "DECEL_VS",
+    "MORE_PARTICIPATION",
+    "LESS_PARTICIPATION",
+    "BREAKS",
+    "DEFENDS"
+  ],
+  "symbol_encoding": "[A|P][S|w prog][V|v vol][B fav|b adv|n none]",
+  "window": 48,
+  "zigzag_theta_atr": 2.5,
+  "near_atr": 0.35,
+  "parser_is_deterministic": true,
+  "uses_no_outcome": true
+}

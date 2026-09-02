@@ -1,0 +1,20 @@
+{
+  "SETUP_ID": "SETUP_2",
+  "FAMILY_ID": "S3",
+  "MECHANISM_ID": "M03_BREAKOUT_RETEST",
+  "REP_ID": "7aafa506c507",
+  "DIRECTION": "BOTH",
+  "ENTRY": "mstrat entry=open[si+1] (frozen)",
+  "STOP": "structural (frozen)",
+  "TARGET": "rr (frozen)",
+  "REFERENCE": "structural stop level (broken/retested level proxy)",
+  "TRADE_N": 11719,
+  "WIN_N": 5454,
+  "LOSS_N": 6265,
+  "DATE_RANGE": [
+    "2011-07-27",
+    "2026-07-26"
+  ],
+  "selected_without_v2_pnl": true,
+  "selection_reason": "event interpretability + retest touches/defense meaningful + balanced W/L; NOT the best-V2 setup"
+}

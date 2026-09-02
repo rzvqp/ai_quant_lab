@@ -1,0 +1,26 @@
+object,STATUS,note
+CAND0001,ANALYSED,n=2017 ncalls=1 mod=edge_research.cand0001_pdh_pdl
+CAND0002,ANALYSED,n=3211 ncalls=1 mod=edge_research.cand0002_compression_expansion
+CAND0004,ANALYSED,n=219 ncalls=1 mod=edge_research.cand0004_void_reaction
+CAND0005,ANALYSED,n=4736 ncalls=1 mod=edge_research.cand0005_bpr_reaction
+CAND0006,ANALYSED,n=391 ncalls=1 mod=edge_research.cand0006_weekly_level
+CAND0009,ANALYSED,n=1619 ncalls=1 mod=edge_research.cand0009_level_break_drive
+CAND0027,ANALYSED,n=7652 ncalls=1 mod=edge_research.cand0027_session_fade
+CAND0037,ANALYSED,n=382 ncalls=1 mod=edge_research.cand0037_canonical
+CAND0038,ANALYSED,n=253 ncalls=1 mod=edge_research.cand0038_weekly_break_displacement
+E005,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_SEALED: strategy requires H1 up-front, but H1 status=AWAITING_REGIME_MAP is 100% sealed under ratified governance -> HoldoutConfigError"
+E006,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"
+E008,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_SEALED: strategy requires H1 up-front, but H1 status=AWAITING_REGIME_MAP is 100% sealed under ratified governance -> HoldoutConfigError"
+E009,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: module ran but built no canonical trade ledger (information-test: no entry/exit/PnL)
+E010,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"
+E011,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"
+E012,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"
+E014,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"
+E015,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"
+E017,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: module ran but built no canonical trade ledger (information-test: no entry/exit/PnL)
+E025,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: module ran but built no canonical trade ledger (information-test: no entry/exit/PnL)
+E026,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"
+E027,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_SEALED: strategy requires H1 up-front, but H1 status=AWAITING_REGIME_MAP is 100% sealed under ratified governance -> HoldoutConfigError"
+E028,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: module ran but built no canonical trade ledger (information-test: no entry/exit/PnL)
+E029,GENUINE_FAILED_REGENERATION,NO_TRADE_POPULATION: module ran but built no canonical trade ledger (information-test: no entry/exit/PnL)
+E032,GENUINE_FAILED_REGENERATION,"HTF_SOURCE_ABSENT: strategy requires a D1 feed loaded up-front, but D1 is not a ratified manifest timeframe (governed loader serves M15/M15_v2/M5/H1 only) -> IdentifierError"

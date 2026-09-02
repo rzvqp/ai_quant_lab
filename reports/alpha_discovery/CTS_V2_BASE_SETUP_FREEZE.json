@@ -1,0 +1,70 @@
+{
+  "mandate": "CONTEXTUAL_TRADE_SELECTION_V2",
+  "selected_without_v1_context_performance": true,
+  "setups": [
+    {
+      "BASE_SETUP_ID": "SETUP_1",
+      "SOURCE_FAMILY_ID": "S21",
+      "ANALYSIS_OBJECT_ID": "S21::6ddb75c3f9b1",
+      "MECHANISM_ID": "M01_LIQUIDITY_SWEEP",
+      "REPRESENTATIVE_VARIANT_ID": "6ddb75c3f9b1",
+      "DIRECTION": -1,
+      "ENTRY_RULE": "mstrat: entry=open[ei], ei=si+1 (frozen)",
+      "STOP_RULE": "structural stop (frozen)",
+      "TARGET_RULE": "rr2",
+      "TIME_STOP_RULE": "mstrat 48-bar backstop (frozen)",
+      "COST_RULE": "CFG tick=0.01 spread=slip=1.0 (frozen)",
+      "REFERENCE_GEOMETRY": "swept prior extreme (structural stop level)",
+      "ORIGINAL_TRADE_N": 13540,
+      "WIN_N": 4569,
+      "LOSS_N": 8971,
+      "DATE_START": "2011-07-27",
+      "DATE_END": "2026-07-26"
+    },
+    {
+      "BASE_SETUP_ID": "SETUP_2",
+      "SOURCE_FAMILY_ID": "S3",
+      "ANALYSIS_OBJECT_ID": "S3::7aafa506c507",
+      "MECHANISM_ID": "M03_BREAKOUT_RETEST",
+      "REPRESENTATIVE_VARIANT_ID": "7aafa506c507",
+      "DIRECTION": 1,
+      "ENTRY_RULE": "mstrat: entry=open[ei], ei=si+1 (frozen)",
+      "STOP_RULE": "structural stop (frozen)",
+      "TARGET_RULE": "rr2",
+      "TIME_STOP_RULE": "mstrat 48-bar backstop (frozen)",
+      "COST_RULE": "CFG tick=0.01 spread=slip=1.0 (frozen)",
+      "REFERENCE_GEOMETRY": "broken/retested level (structural stop level)",
+      "ORIGINAL_TRADE_N": 11720,
+      "WIN_N": 5454,
+      "LOSS_N": 6266,
+      "DATE_START": "2011-07-27",
+      "DATE_END": "2026-07-26"
+    },
+    {
+      "BASE_SETUP_ID": "SETUP_3",
+      "SOURCE_FAMILY_ID": "S27",
+      "ANALYSIS_OBJECT_ID": "S27::8492323d86e4",
+      "MECHANISM_ID": "M16_AUCTION_VALUE",
+      "REPRESENTATIVE_VARIANT_ID": "8492323d86e4",
+      "DIRECTION": "BOTH",
+      "ENTRY_RULE": "mstrat: entry=open[ei], ei=si+1 (frozen)",
+      "STOP_RULE": "structural stop (frozen)",
+      "TARGET_RULE": "rr2",
+      "TIME_STOP_RULE": "mstrat 48-bar backstop (frozen)",
+      "COST_RULE": "CFG tick=0.01 spread=slip=1.0 (frozen)",
+      "REFERENCE_GEOMETRY": "value/VWAP reference (structural stop level)",
+      "ORIGINAL_TRADE_N": 25010,
+      "WIN_N": 13227,
+      "LOSS_N": 11783,
+      "DATE_START": "2011-07-26",
+      "DATE_END": "2026-07-27"
+    }
+  ],
+  "selection_criteria": [
+    "causal_validity",
+    "large_population",
+    "substantial_winners_and_losers",
+    "clear_reference_geometry",
+    "mechanism_diversity"
+  ]
+}
