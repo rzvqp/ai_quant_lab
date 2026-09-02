@@ -3241,3 +3241,24 @@ VOLUME                          477 -- moderate, real
 volume, somewhat more real volume than the recent thin/fast REJECTED instances (-066/-067), but no
 fresh extreme yet. Leaning slightly REJECTED but watching for real continuation. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5534 (2020-12-24 11:00:00 UTC)
+DURATION                1 bar (5533)
+DEEPEST_LOW              1871.242 (bar 5533, the gate-origin/trigger bar itself)
+HEAVIEST_VOLUME          477 (bar 5533, the trigger bar) -- higher than -066/-067's own thin
+                        figures, but concentrated entirely at the origin with zero follow-through
+RECLAIM_CLOSE             1875.446 -- a full overshoot: ~156% of the 2.696pt decline from the last
+                          pre-break close (1873.938)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1873.2796 (margin +2.166pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. The ambiguity flagged in the pre-classification
+resolved toward REJECTED: the moderate volume never got a chance to build or confirm -- it printed
+once at the origin and the whole move round-tripped within a single bar, the defining REJECTED
+signature regardless of the origin volume's own moderate size. Third fast, overshoot-reclaim
+REJECTED in four candidates now (-066, -067, -068), reinforcing that this late-Q4 stretch is
+genuinely low-conviction.
