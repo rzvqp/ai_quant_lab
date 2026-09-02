@@ -3970,3 +3970,25 @@ VOLUME                          621 -- moderate
 
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, shallow-moderate gap and volume,
 continuing the same defended-floor pattern. Not pre-committing. TRADE #38 remains open.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5742 (2020-12-29 20:15:00 UTC)
+DURATION                9 bars (5733-5741)
+DEEPEST_LOW              1876.725 (bar 5738) -- still well above the defended floor zone; NOT a
+                        fresh extreme
+HEAVIEST_VOLUME          381 (bar 5734, the origin bar) -- notably thin throughout the whole
+                          9-bar episode, never exceeding 381, the quietest sustained episode of
+                          this whole recent stretch
+RECLAIM_CLOSE             1879.182 -- a slight overshoot: ~101% of the 2.429pt decline from the
+                          last pre-break close (1879.154)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0466 (margin +0.135pt)
+```
+
+TRADE #38 remained open throughout, unaffected (~-0.34R to -0.51R across the episode, clear of
+stop and MGMT-004 trigger). No S5 trigger. REJECTED -- no fresh extreme, unusually thin volume
+throughout the full 9-bar episode (never above 381), and an essentially complete round-trip.
+Confirms the market has entered a genuinely quiet, low-conviction stretch even by this record's
+own recent standards.
