@@ -3852,3 +3852,25 @@ larger gap) resolved into the fastest and most extreme overshoot of the whole -0
 stretch -- a single-bar round-trip that overshot the pre-episode level by nearly a third of the
 decline's own magnitude. REJECTED, consistent with the established pattern throughout this defended
 zone.
+
+---
+
+## Q4-P007-082
+
+```
+GATE_ORIGIN_BAR          5720 (2020-12-29 14:45:00 UTC)
+LEAD-IN                    bars 5717-5719 ran real-to-heavy volume (893/509/1337), with bar 5719
+                          itself printing the heaviest volume of the whole -071 through -082
+                          stretch (1337) two bars before the gate origin
+TRIGGER_CLOSE                1878.504
+TRIGGER_LOW                   1877.172 -- still above -078's low (1874.342); NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5720       1879.0445
+GAP                            -0.5405pt -- shallow-moderate
+VOLUME                          1082 -- real/heavy
+```
+
+**PRE-CLASSIFICATION:** genuinely watching -- real/heavy volume both at the trigger and in the
+2-bar lead-in (the heaviest single-bar volume of this whole defended-floor stretch, bar 5719's
+1337, printed just before the origin). No fresh extreme yet, and the shallow gap itself is
+unremarkable, but the volume context is more sustained than -078/-080/-081's own isolated spikes.
+Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
