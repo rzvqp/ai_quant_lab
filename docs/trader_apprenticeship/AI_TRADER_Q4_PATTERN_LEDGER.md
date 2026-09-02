@@ -4089,3 +4089,22 @@ VOLUME                          453 -- moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme despite the somewhat larger gap.
 Consistent with the whole defended-floor pattern. Not pre-committing. POSITION=FLAT; no MGMT-004
 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5798 (2020-12-30 11:15:00 UTC)
+DURATION                12 bars (5786-5797)
+DEEPEST_LOW              1877.672 (bar 5795) -- still well above the defended floor zone; NOT a
+                        fresh extreme
+HEAVIEST_VOLUME          423 (bar 5789) -- moderate, not concentrated at the deepest point (bar
+                          5795, only 282)
+RECLAIM_CLOSE             1880.215 -- a full overshoot: ~106% of the 2.406pt decline from the last
+                          pre-break close (1880.078)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.7715 (margin +0.444pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED, consistent with the whole
+defended-floor stretch: no fresh extreme, volume not concentrated at the extreme, full-overshoot
+retracement.
