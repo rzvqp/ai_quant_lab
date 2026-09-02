@@ -3613,3 +3613,23 @@ VOLUME                          338 -- thin
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, well above the established floor
 zone, thin volume. Continues the same low-conviction pattern seen across -071 through -075. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5692 (2020-12-29 07:45:00 UTC)
+DURATION                6 bars (5686-5691)
+DEEPEST_LOW              1875.644 (bar 5687) -- still above the ~1875.2-1875.4 floor zone tested at
+                        -071 through -075; NOT a fresh extreme
+HEAVIEST_VOLUME          867 (bar 5687) -- real, and lands cleanly at the deepest point itself
+RECLAIM_CLOSE             1879.785 -- a full overshoot: ~114% of the 3.645pt decline from the last
+                          pre-break close (1879.289), reclaiming beyond the pre-episode level
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.0706 (margin +0.714pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. Despite clean volume concentration at the
+extreme (a SUPPORT-favoring signal, as at -070), the full-overshoot retracement (~114%) decided
+REJECTED, consistent with the established priority of round-trip completeness over volume
+placement (-058/-073). Sixth consecutive REJECTED since -070 (-071 through -076), the market
+continuing to hold the same floor zone without genuine fresh progress lower.
