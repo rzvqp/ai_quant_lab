@@ -1,0 +1,54 @@
+{
+  "vendor": "Databento",
+  "dataset": "GLBX.MDP3",
+  "download_timestamp_utc": "2026-09-02T19:04:13.457170+00:00",
+  "databento_library_version": "0.86.0",
+  "cap_usd": 25.0,
+  "final_costs_usd": {
+    "ohlcv": 18.841074481606,
+    "definition": 2.361728437245,
+    "statistics": 0.915424749255
+  },
+  "final_total_cost_usd": 22.118228,
+  "files": [
+    {
+      "request": "ohlcv",
+      "schema": "ohlcv-1m",
+      "symbol_request": [
+        "GC.v.0"
+      ],
+      "stype_in": "continuous",
+      "start": "2011-07-26",
+      "end": "2026-07-28",
+      "file_name": "gc_ohlcv-1m_GC.v.0_2011-07-26_2026-07-28.dbn",
+      "byte_size": 76680322,
+      "sha256": "99ac4ae897c9c0cbfc1f84eb6fa555b12fe68e65f69661dbf5a3179d6962f5f4"
+    },
+    {
+      "request": "definition",
+      "schema": "definition",
+      "symbol_request": [
+        "GC.FUT"
+      ],
+      "stype_in": "parent",
+      "start": "2011-07-26",
+      "end": "2026-07-28",
+      "file_name": "gc_definition_GC.FUT_2011-07-26_2026-07-28.dbn",
+      "byte_size": 23679001,
+      "sha256": "e73d9b943162ad5a08c2846332a3ad1280577b9fd7efed5799034d89ad869440"
+    },
+    {
+      "request": "statistics",
+      "schema": "statistics",
+      "symbol_request": [
+        "GC.FUT"
+      ],
+      "stype_in": "parent",
+      "start": "2011-07-26",
+      "end": "2026-07-28",
+      "file_name": "gc_statistics_GC.FUT_2011-07-26_2026-07-28.dbn",
+      "byte_size": 209240648,
+      "sha256": "51385a274d161ed882f92734ac54dc7a286d1ee899b76a84df73885db10fe28e"
+    }
+  ]
+}
