@@ -4126,3 +4126,21 @@ VOLUME                          304 -- thin-moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- a marginal new local low against the very recent
 episodes, but nowhere close to the defended floor zone, and thin-moderate volume. Not
 pre-committing. POSITION=FLAT; no MGMT-004 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5803 (2020-12-30 12:30:00 UTC)
+DURATION                3 bars (5800-5802)
+DEEPEST_LOW              1877.389 (bar 5800, the gate-origin bar itself) -- still well above the
+                        defended floor zone; NOT a fresh extreme
+HEAVIEST_VOLUME          304 (bar 5800, the trigger bar) -- never exceeded (212, 221, 241 on the
+                          following bars)
+RECLAIM_CLOSE             1879.934 -- a full overshoot: ~104% of the 2.437pt decline from the last
+                          pre-break close (1879.826)
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.7214 (margin +0.213pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED, consistent with the whole
+defended-floor stretch: no fresh extreme, thin volume, full-overshoot retracement.
