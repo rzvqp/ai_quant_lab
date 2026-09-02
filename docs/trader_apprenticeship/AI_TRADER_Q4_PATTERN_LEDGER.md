@@ -2960,3 +2960,27 @@ the calming trend noted at -062. Not pre-committing. POSITION=FLAT; no MGMT-004 
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a third consecutive
 low-volume, no-fresh-extreme gate origin (following -062's own normalization read) -- the
 post-Dec-21 quiet regime looks to be persisting rather than reverting.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5322 (2020-12-22 04:00:00 UTC)
+DURATION                2 bars (5320-5321)
+DEEPEST_LOW              1880.019 (bar 5320, the gate-origin/trigger bar itself) -- not a fresh
+                        extreme, confirmed at pre-classification
+HEAVIEST_VOLUME          251 (bar 5320, the trigger bar) -- modest, never exceeded across the
+                        2-bar episode (bar 5321 only 116)
+RECLAIM_CLOSE             1882.772 -- a full overshoot: ~193% of the 1.427pt decline from the last
+                          pre-break close (1881.446), reclaiming well past the pre-episode level
+CAUSAL_H1_EMA50_AT_RESOLUTION 1881.2006 (margin +1.571pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger. A 2-bar round-trip with a decisive
+overshoot reclaim, matching the "fast liquidity-grab-and-reclaim" signature seen before at
+Q4-P007-051 (there 107% in 6 bars; here 193% in 2 bars, an even faster and more extreme overshoot)
+-- not a sustained structural process. Modest volume throughout, no fresh extreme. REJECTED.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the fastest complete
+round-trip of the whole Q4 record so far (2 bars gate-to-reclaim) -- extends the "speed +
+overshoot beats magnitude" reading from -051 to an even shorter timescale, and continues the
+post-Dec-21 quiet-regime pattern noted at -062/-063's own pre-classification.
