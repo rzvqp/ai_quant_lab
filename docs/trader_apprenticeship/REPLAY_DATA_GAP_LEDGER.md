@@ -1620,3 +1620,14 @@ SPAN: 2020-12-23T22:00:00Z (last close 1873.37, Q4 bar 5485, Wednesday -- inside
 hold) -> 2020-12-23T23:00:00Z (first open 1873.37, Q4 bar 5486)
 VERIFICATION: exact last-close == first-open match (zero-price-gap). Mechanically classified
 MAINTENANCE -- did not require a reasoning stop.
+
+### GAP-210 [Q4 2020, CSV_CAUSAL_REPLAY_ADAPTER_V1 transport]
+TYPE: Extended pause (76.25hr) -- Christmas Day + weekend combined
+SPAN: 2020-12-24T18:45:00Z (last close 1879.555, Q4 bar 5564, Thursday, Christmas Eve close -- inside
+TRADE #36's ongoing hold) -> 2020-12-27T23:00:00Z (first open 1879.555, Q4 bar 5565, Sunday week-open)
+VERIFICATION: exact last-close == first-open match (zero-price-gap). Spans a Saturday (and Christmas
+Day, Friday 2020-12-25). Mechanically classified EXTENDED_PAUSE per `classify_gap()` -- did not
+require a reasoning stop. Bar 5565 itself (the reopening bar) was volatile intrabar (open 1879.555,
+high 1890.707, close 1887.419, an 11.15pt range) but the gap itself is zero-price -- the volatility
+is ordinary weekly-reopen price action within the first revealed bar, not a price gap. This bar's
+own move triggered TRADE #36's TARGET exit (+3.0000R) -- covered in the trade write-up, not here.

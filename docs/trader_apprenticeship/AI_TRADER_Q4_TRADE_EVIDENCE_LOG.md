@@ -1426,3 +1426,25 @@ any recent trade (4.519pt) given the compressed opening range (1872.427-1876.463
 
 **INVALIDATION:** a close at or below 1872.407 (STOP). MAX_HOLD 48 bars from entry (through bar
 5597). MGMT-004 breakeven trigger at first M15 close >= +1.0R (>= 1881.445).
+
+**OUTCOME:** TARGET hit at bar 5565 (2020-12-27 23:00:00 UTC), price 1890.483.
+```
+EXIT_BAR      5565
+EXIT_REASON    TARGET
+EXIT_PRICE     1890.483
+R_MULTIPLE     +3.0000
+```
+A clean, full +3R winner. Bars 5550-5564 (Christmas Eve NY session, 15:00-18:45 UTC) held in a
+tight, quiet ~1877-1880 range on thin/moderate volume (165-776), never threatening the stop and
+never approaching MGMT-004. GAP-210 (Christmas Day + weekend, 76.25hr EXTENDED_PAUSE) then spanned
+bars 5564->5565. The reopening bar (5565, Sunday 2020-12-27 23:00 UTC) opened flat at the
+pre-pause close (1879.555, zero-price-gap) but moved sharply intrabar -- high 1890.707 -- triggering
+both MGMT-004 (first close >= +1.0R = 1881.445, fire bar 5565) and the TARGET exit within the same
+bar; the engine's TARGET check took priority, closing both CONTROL and SHADOW tracks at 1890.483.
+No P007 candidates during the hold. Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 36
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -4.8812 + 3.0000 = -1.8812
+POSITION_AFTER_THIS_TRADE = FLAT
+```

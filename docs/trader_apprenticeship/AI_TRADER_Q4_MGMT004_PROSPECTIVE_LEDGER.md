@@ -203,3 +203,33 @@ SHADOW     4871        MAX_HOLD      1839.062     +1.6973
 MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 6
 Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 + 0.000 + 0.000 + 0.000 = -0.651
 ```
+
+## TRADE #36 — S5 LONG, bar 5549 (2020-12-24 14:45:00 UTC)
+
+```
+ENTRY                 1876.926
+RISK (1R)              4.519
+STRUCTURAL_TARGET      1890.483 (unchanged in both tracks)
++1.0R_TRIGGER_LEVEL     1881.445
+```
+
+**TRIGGER**: bar 5565 (2020-12-27 23:00:00 UTC), close 1887.419, +2.322R -- first M15 close at or
+beyond +1.0R. This is also the reopening bar following GAP-210 (Christmas Day + weekend,
+76.25hr EXTENDED_PAUSE) -- the entire move from ~flat to +2.32R happened intrabar within this single
+revealed bar, so the +1.0R trigger and the TARGET hit occurred on the same bar. Shadow stop moved to
+breakeven (1876.926); control stop (1872.407) and target (1890.483) unchanged in both tracks.
+
+```
+TRACK      EXIT_BAR   EXIT_REASON   EXIT_PRICE   R_MULTIPLE
+CONTROL    5565        TARGET        1890.483     +3.000
+SHADOW     5565        TARGET        1890.483     +3.000
+```
+
+**DELTA_R (SHADOW - CONTROL) = 0.000.** The trigger and the target hit occurred simultaneously on
+the reopening bar's own intrabar range (high 1890.707, beyond the 1890.483 target) -- both tracks
+converge, as at TRADE #4/#12/#31.
+
+```
+MGMT004_TRIGGERS_TOTAL_AFTER_THIS_TRADE = 7
+Q4_PROSPECTIVE_DELTA_R_RUNNING_TOTAL = -0.651 + 0.000 + 0.000 + 0.000 + 0.000 + 0.000 = -0.651
+```
