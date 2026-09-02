@@ -3007,3 +3007,49 @@ signature. Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the quiet post-Dec-21 regime
 continues to deepen -- each successive gate origin in this stretch (-062, -063, -064) has printed
 progressively thinner volume.
+
+### RESOLUTION
+
+**Significant divergence from the pre-classification lean, disclosed rather than smoothed over:**
+the trigger bar itself (5324) was genuinely trivial, exactly as pre-classified. But the episode did
+not fade the way -062/-063 did -- starting at bar 5326, price began a genuine sustained decline that
+ran for the better part of the next 2 hours, escalating well beyond anything the thin trigger bar
+suggested. Handled as a continuation of the same durable gate reference, not reopened or split, per
+the same discipline applied to -006/-010/-015/-016.
+
+```
+STATUS               SUPPORT / RECLAIM
+GATE_ORIGIN_BAR         5324 (2020-12-22 04:30:00 UTC) -- trivial trigger bar
+GENUINE_ESCALATION       bars 5326-5334, a sustained 9-bar decline with volume stepping up well
+                          above the trigger bar's own 194 (434/408/911/805/1248/690/692/1565/993)
+RESOLUTION_BAR           5361 (2020-12-22 13:45:00 UTC)
+DURATION                 37 bars (5324-5360)
+DEEPEST_LOW              1866.794 (bar 5334, 2020-12-22 07:00:00 UTC) -- not an all-time Q4 record
+                          (Q4-P007-015's 1860.08 stands), but a genuine fresh multi-week local
+                          extreme -- the entire post-Dec-21 stretch (-057 through -064) had held
+                          inside roughly 1874-1884 until this episode broke well below it
+HEAVIEST_VOLUME          1565 (bar 5333, 2020-12-22 06:45:00 UTC) -- one bar before the deepest low,
+                          landing cleanly on the decline leg itself, not at the reclaim
+RECLAIM_CLOSE             1878.88 -- an 83% retracement of the 14.513pt decline (12.086 of 14.513,
+                          measured from the last pre-episode close of 1881.307), genuinely partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1878.6945 (margin +0.186pt, thin)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger at any point in the 37-bar episode
+(unconditional check confirmed each bar). No gap inside the episode -- fully continuous M15 data
+throughout.
+
+This is a clear SUPPORT case by the now-established discriminator components: a genuine fresh local
+extreme (deepest in weeks, even though not an all-time Q4 record), volume concentrated near the
+break leg rather than diffuse or reclaim-side, a PARTIAL (83%, not complete/overshoot) retracement,
+and an extended multi-hour duration (37 bars) with volume staying elevated through most of the
+episode rather than collapsing immediately. The pre-classification's REJECTED lean was reasonable
+given only the trigger bar's own thin signature, but explicitly did not pre-commit -- exactly the
+kind of divergence the escalation-episode precedent (-006/-010/-015/-016) exists to capture
+honestly.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** the quiet post-Dec-21 regime
+noted building at -062/-063/-064's own pre-classifications did NOT persist -- it broke into the
+quarter's next genuine directional episode instead, underscoring that a string of thin/REJECTED
+gate origins says nothing about what the following bar will do. A trivial trigger bar remains a
+poor predictor of the episode's eventual character on its own; the escalation, when it comes, is
+visible only in the bars that follow.
