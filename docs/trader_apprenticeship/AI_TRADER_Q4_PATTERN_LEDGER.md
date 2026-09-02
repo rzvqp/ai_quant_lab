@@ -3131,3 +3131,29 @@ instances now (-064, -065) have escalated dramatically from genuinely trivial tr
 largest directional episodes of this stretch -- reinforcing that a quiet/thin gate origin carries no
 predictive weight on its own about what follows; only the bars that come after the origin reveal
 the episode's real character.
+
+---
+
+## Q4-P007-066
+
+**Second candidate opened while a trade (TRADE #35) is live -- trade mechanics confirmed to run
+unconditionally before this reasoning stop (`trade_monitoring_already_executed=True`,
+`p007_coincided_with_open_trade` flag set).**
+
+```
+GATE_ORIGIN_BAR          5476 (2020-12-23 19:30:00 UTC)
+TRADE_STATE_AT_ORIGIN      TRADE #35 open, entry 1876.580, currently 1871.29 (~-0.333R), clear of
+                          both stop (1860.711) and MGMT-004 trigger (1892.449)
+CONTEXT                    bars 5468-5475 drifted quietly 1871.5-1874.5, thin-moderate volume
+                          (130-381), no strong directional character
+TRIGGER_CLOSE                1871.29
+TRIGGER_LOW                   1871.277 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5476       1871.3992
+GAP                            -0.1092pt -- a touch, not a break
+VOLUME                          240 -- thin, in line with the recent quiet baseline, no acceleration
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- matches the -008/-009/-011/-014 trivial-touch signature:
+shallow gap, no fresh extreme, thin volume with no acceleration. Not pre-committing, especially
+given -064 and -065 both diverged from an initially-similar-looking thin lean. TRADE #35 remains
+open and unaffected.
