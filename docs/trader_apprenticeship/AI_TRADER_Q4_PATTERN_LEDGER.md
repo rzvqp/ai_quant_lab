@@ -3053,3 +3053,28 @@ quarter's next genuine directional episode instead, underscoring that a string o
 gate origins says nothing about what the following bar will do. A trivial trigger bar remains a
 poor predictor of the episode's eventual character on its own; the escalation, when it comes, is
 visible only in the bars that follow.
+
+---
+
+## Q4-P007-065
+
+**First candidate opened while TRADE #34 is live -- trade mechanics confirmed to run unconditionally
+before this reasoning stop (`trade_monitoring_already_executed=True`, `p007_coincided_with_open_trade`
+flag set).**
+
+```
+GATE_ORIGIN_BAR          5363 (2020-12-22 14:15:00 UTC) -- immediately after TRADE #34's own signal
+                          bar (5362)
+TRADE_STATE_AT_ORIGIN      TRADE #34 open, entry 1880.196, currently 1878.7 (~-0.165R), clear of
+                          both stop (1871.150) and MGMT-004 trigger (1889.242)
+TRIGGER_CLOSE                1878.7
+TRIGGER_LOW                   1878.208 -- NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5363       1878.7018
+GAP                            -0.0018pt -- essentially zero, a bare touch
+VOLUME                          897 -- real/moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- the gap is essentially nonexistent (0.0018pt), well
+inside noise, and there is no fresh extreme. Real volume alone (897) is not, on its own, sufficient
+per the established -058 lesson (massive volume decoupled from a fresh extreme still resolved
+REJECTED there). Not pre-committing. TRADE #34 remains open and unaffected.
