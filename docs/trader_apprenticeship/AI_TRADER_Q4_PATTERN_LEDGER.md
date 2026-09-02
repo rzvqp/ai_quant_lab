@@ -2832,3 +2832,25 @@ Not pre-committing. POSITION=FLAT; no MGMT-004 relevance.
 **OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** does not show the SUPPORT-
 leaning signature relative to its own immediate context -- consistent with, not the basis for, the
 REJECTED lean.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5275 (2020-12-21 15:15:00 UTC)
+DURATION                6 bars (5269-5275)
+DEEPEST_LOW              1877.636 (bar 5273) -- not a fresh extreme
+HEAVIEST_VOLUME          2424 (bar 5272) -- neither at the gate origin nor at the deepest-low bar;
+                          volume stayed elevated but diffuse throughout, part of -059's general
+                          aftermath rather than concentrated anywhere meaningful
+RECLAIM_CLOSE             1882.983 -- OVERSHOOTS the pre-episode level (bar 5268 close 1882.866) by
+                          +0.12pt, essentially a full round-trip
+CAUSAL_H1_EMA50_AT_RESOLUTION 1882.3917 (margin +0.59pt)
+```
+
+No trade was open; no MGMT-004 relevance. No S5 trigger.
+**OBSERVATIONAL NOTE (per CEO Q4 audit guidance, not a formal rule):** a clean REJECTED read matching
+the pre-classification's lean -- no fresh extreme, volume diffuse rather than concentrated, and an
+essentially complete round-trip. Continues the pattern seen after -052/-053/-056/-057's own reclaims:
+the immediate next candidate in the same stretch often reads REJECTED even when overall volume stays
+elevated, since it's the RELATIVE, not absolute, evidence that matters.
