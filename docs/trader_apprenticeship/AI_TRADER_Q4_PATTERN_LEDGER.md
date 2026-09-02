@@ -4051,3 +4051,23 @@ VOLUME                          507 -- moderate
 **PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme, shallow gap, moderate volume,
 consistent with the whole defended-floor pattern. Not pre-committing. POSITION=FLAT; no MGMT-004
 relevance.
+
+### RESOLUTION
+
+```
+STATUS               REJECTED -- not a genuine PATTERN-007 instance
+RESOLUTION_BAR         5785 (2020-12-30 08:00:00 UTC)
+DURATION                2 bars (5783-5784)
+DEEPEST_LOW              1877.661 (bar 5785, an intrabar low on the reclaim bar itself) -- still
+                        well above the defended floor zone; NOT a fresh extreme
+HEAVIEST_VOLUME          644 (bar 5785) -- real, landing on the same bar as both the deepest low
+                          and the reclaim close (a big intrabar recovery within one bar)
+RECLAIM_CLOSE             1880.078 -- a 60% retracement of the 4.062pt decline (2.417 of 4.062,
+                          measured from the last pre-episode close of 1881.723), moderate and
+                          genuinely partial
+CAUSAL_H1_EMA50_AT_RESOLUTION 1879.9623 (margin +0.116pt)
+```
+
+No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED: no fresh extreme decides this
+regardless of the moderate (60%) retracement and real volume, consistent with the -072/-075/-083
+precedent throughout this whole defended-floor stretch.
