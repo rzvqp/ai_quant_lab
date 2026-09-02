@@ -4071,3 +4071,21 @@ CAUSAL_H1_EMA50_AT_RESOLUTION 1879.9623 (margin +0.116pt)
 No trade open; no MGMT-004 relevance. No S5 trigger. REJECTED: no fresh extreme decides this
 regardless of the moderate (60%) retracement and real volume, consistent with the -072/-075/-083
 precedent throughout this whole defended-floor stretch.
+
+---
+
+## Q4-P007-087
+
+```
+GATE_ORIGIN_BAR          5786 (2020-12-30 08:15:00 UTC) -- immediately after -086's own reclaim
+                          (bar 5785)
+TRIGGER_CLOSE                1878.713
+TRIGGER_LOW                   1877.784 -- still above the defended floor zone; NOT a fresh extreme
+CAUSAL_H1_EMA50_AT_5786       1879.9165
+GAP                            -1.2035pt -- moderate-larger
+VOLUME                          453 -- moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- no fresh extreme despite the somewhat larger gap.
+Consistent with the whole defended-floor pattern. Not pre-committing. POSITION=FLAT; no MGMT-004
+relevance.
