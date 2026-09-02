@@ -1,0 +1,56 @@
+{
+  "representations": [
+    "A_cts_v2_baseline(setup_relative_static+generic)",
+    "B_event_aggregates",
+    "C_event_relational_sequence(ngram)"
+  ],
+  "event_types": [
+    "ATTACK",
+    "PULLBACK",
+    "STRUCTURE_BREAK_FAV",
+    "STRUCTURE_BREAK_ADV",
+    "REFERENCE_TOUCH",
+    "PENETRATION",
+    "REJECTION",
+    "COMPRESSION",
+    "EXPANSION",
+    "VOLUME_EXPANSION",
+    "VOLUME_DECAY"
+  ],
+  "relation_types": [
+    "BEFORE",
+    "TOWARD_REF",
+    "AWAY_REF",
+    "ACCEL_VS",
+    "DECEL_VS",
+    "MORE_PARTICIPATION",
+    "LESS_PARTICIPATION",
+    "BREAKS",
+    "DEFENDS"
+  ],
+  "max_sequence_length": 48,
+  "max_ngram_length": 3,
+  "min_support": 25,
+  "model_classes": {
+    "A_B": [
+      "L2_logistic",
+      "depth2_tree"
+    ],
+    "C": "event n-gram (1/2/3) winner-mean-R scoring, order+relation sensitive"
+  },
+  "retention_targets": [
+    0.8,
+    0.6,
+    0.4,
+    0.2
+  ],
+  "interaction_budget": "tree depth2 + ngram<=3",
+  "walk_forward": "4 date-blocks expanding, purge96",
+  "negative_controls": [
+    "label_perm_100",
+    "matched_random_100",
+    "event_order_destroy_20",
+    "relation_destroy_20",
+    "time_shift"
+  ]
+}
