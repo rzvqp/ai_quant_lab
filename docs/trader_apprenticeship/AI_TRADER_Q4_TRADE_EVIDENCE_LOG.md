@@ -1582,3 +1582,20 @@ the boundary, not a blocker, and will be reported as such in the Q4 completion r
 **INVALIDATION:** a close at or below 1893.596 (STOP). MAX_HOLD 48 bars from entry (through bar
 5956, subject to the Q4 boundary above). MGMT-004 breakeven trigger at first M15 close >= +1.0R
 (>= 1904.152).
+
+**OUTCOME:** STOP hit at bar 5915 (2020-12-31 17:30:00 UTC), price 1893.596 (exact stop level).
+```
+EXIT_BAR      5915
+EXIT_REASON    STOP
+EXIT_PRICE     1893.596
+R_MULTIPLE     -1.0000
+```
+A clean -1R stop-out, resolved well within the Q4 boundary (the disclosed MAX_HOLD/boundary tension
+noted at entry never materialized). MGMT-004 never fired. No P007 candidates during the hold.
+Trade mechanics ran unconditionally on every bar throughout.
+
+```
+TRADES_TOTAL_AFTER_THIS_TRADE = 40
+Q4_NET_R_AFTER_THIS_TRADE (control basis) = -2.5526 - 1.0000 = -3.5526
+POSITION_AFTER_THIS_TRADE = FLAT
+```
