@@ -3908,3 +3908,26 @@ favorable trigger of this entire 12-episode defended-floor stretch (-071 through
 round-tripped -- the strength of this particular support level looks unusually robust, having now
 absorbed the deepest break, the heaviest volume, and the most credible setup of the whole sequence
 without producing a genuine reclaim failure.
+
+---
+
+## Q4-P007-083
+
+**First candidate opened while a trade (TRADE #38) is live -- trade mechanics confirmed to run
+unconditionally before this reasoning stop.**
+
+```
+GATE_ORIGIN_BAR          5730 (2020-12-29 17:15:00 UTC)
+TRADE_STATE_AT_ORIGIN      TRADE #38 open, entry 1882.824, currently 1879.083 (~-0.445R), clear of
+                          both stop (1874.420) and MGMT-004 trigger (1891.228)
+TRIGGER_CLOSE                1879.083
+TRIGGER_LOW                   1877.855 -- still above the whole defended floor zone; NOT a fresh
+                              extreme
+CAUSAL_H1_EMA50_AT_5730       1879.1028
+GAP                            -0.0198pt -- essentially zero, a bare touch
+VOLUME                          427 -- moderate
+```
+
+**PRE-CLASSIFICATION:** leaning REJECTED -- a bare touch with no fresh extreme, continuing the
+same defended-floor pattern from -071 through -082. Not pre-committing. TRADE #38 remains open,
+pulled back but clear of its stop.
