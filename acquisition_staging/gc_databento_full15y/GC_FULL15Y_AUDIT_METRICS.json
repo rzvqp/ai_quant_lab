@@ -1,0 +1,104 @@
+{
+  "OHLCV_QA": {
+    "rows": 5160829,
+    "first_ts_utc": "2011-07-26 00:00:00+00:00",
+    "last_ts_utc": "2026-07-27 23:59:00+00:00",
+    "duplicate_timestamps": 0,
+    "out_of_order_timestamps": 0,
+    "off_grid_60s": 0,
+    "ohlc_constraint_violations": 0,
+    "nonpositive_price_bars": 0,
+    "volume_present": true,
+    "volume_total": 677066963,
+    "ntrades_present": false,
+    "distinct_instrument_ids": 76,
+    "trading_days_present": 4656,
+    "missing_weekday_count": 25,
+    "missing_weekdays_sample": [
+      "2012-04-06",
+      "2013-03-29",
+      "2014-04-18",
+      "2014-06-13",
+      "2014-09-23",
+      "2014-09-24",
+      "2014-09-25",
+      "2014-12-31",
+      "2015-04-03",
+      "2015-12-25",
+      "2016-01-01",
+      "2016-03-25",
+      "2017-04-14",
+      "2018-03-30",
+      "2019-04-19"
+    ],
+    "databento_degraded_days": [
+      "2014-06-11",
+      "2014-06-12",
+      "2014-06-13"
+    ],
+    "timestamp_semantics": "ts_event = bar OPEN, UTC nanoseconds; bar covers [ts, ts+60s); FEATURE_AVAILABLE at ts+60s"
+  },
+  "ROLL_AUDIT": {
+    "symbol": "GC.v.0",
+    "stype_in": "continuous",
+    "continuous_contract_rule": "Volume roll (.v): the continuous series holds the outright ranked #0 (front) by TRADING VOLUME OF THE PREVIOUS DAY.",
+    "roll_basis": "previous-day trading volume (highest-volume outright)",
+    "when_roll_becomes_effective": "on the session after the previous day's volume ranking changes the front contract",
+    "uses_only_prior_available_information": true,
+    "causality": "PASS \u2014 the roll ranks on the PREVIOUS day's volume, so it uses only information available up to the roll date; no look-ahead.",
+    "distinct_underlying_instruments": 76,
+    "number_of_rolls": 75,
+    "first_5_rolls": [
+      {
+        "roll_ts_utc": "2011-07-31 22:00:00+00:00",
+        "to_instrument_id": 197210
+      },
+      {
+        "roll_ts_utc": "2011-12-01 00:00:00+00:00",
+        "to_instrument_id": 143862
+      },
+      {
+        "roll_ts_utc": "2012-02-01 00:00:00+00:00",
+        "to_instrument_id": 169060
+      },
+      {
+        "roll_ts_utc": "2012-04-01 22:00:00+00:00",
+        "to_instrument_id": 100686
+      },
+      {
+        "roll_ts_utc": "2012-06-01 00:00:00+00:00",
+        "to_instrument_id": 171052
+      }
+    ],
+    "last_5_rolls": [
+      {
+        "roll_ts_utc": "2025-07-31 00:00:00+00:00",
+        "to_instrument_id": 39231
+      },
+      {
+        "roll_ts_utc": "2025-11-27 00:00:00+00:00",
+        "to_instrument_id": 42001025
+      },
+      {
+        "roll_ts_utc": "2026-01-30 00:00:00+00:00",
+        "to_instrument_id": 42000890
+      },
+      {
+        "roll_ts_utc": "2026-03-30 00:00:00+00:00",
+        "to_instrument_id": 19181
+      },
+      {
+        "roll_ts_utc": "2026-05-29 00:00:00+00:00",
+        "to_instrument_id": 42011464
+      }
+    ],
+    "source": "Databento continuous-contract / symbology documentation (volume roll ranks by previous-day volume)."
+  },
+  "DEFINITION_rows": 2869910,
+  "STATISTICS_rows": 12286623,
+  "DERIVED": {
+    "GC_1M_RESEARCH_parquet_rows": 5160829,
+    "GC_15M_RESEARCH_parquet_rows": 350825,
+    "aggregation": "O=first, H=max, L=min, C=last, V=sum real volume; UTC; no forward-fill; ntrades not available in ohlcv-1m"
+  }
+}
