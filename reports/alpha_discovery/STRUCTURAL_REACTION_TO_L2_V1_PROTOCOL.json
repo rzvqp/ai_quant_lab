@@ -1,0 +1,37 @@
+{
+  "mandate": "STRUCTURAL_REACTION_TO_L2_V1",
+  "parent": "LEVEL_TO_LEVEL_ACCEPTANCE_V1 (2a9f0c09)",
+  "timeframe": "M15",
+  "bound_universe": {
+    "raw": 102458,
+    "accepted": 72103,
+    "rejected": 30355
+  },
+  "sequence": "accepted break -> pullback(>=0.5ATR) -> first causal structural zone (LOCATION) -> rejection close (REACTION) -> break pullback micro lower-high (CONFIRMATION) -> next-open entry -> L2",
+  "anchors": {
+    "Z1": "causal zigzag S/R theta1.0ATR band +/-0.10ATR",
+    "Z2": "ob_core.detect_obs canonical OB disp>=0.75",
+    "Z3": "imbalance_mechanics.detect_fvgs canonical FVG",
+    "Z4": "breakout-retest: prior confirmed swing broken by fresh close, flipped, band +/-0.10ATR"
+  },
+  "rejection": "completed M15 closes beyond zone in trade dir (long C>zone_hi) before closing through distal side",
+  "confirmation": "close beyond most recent causal micro swing (theta0.5ATR) lower-high/higher-low as-of rejection",
+  "entry": "open[confirm+1]",
+  "stop": "zone distal boundary -/+0.10ATR floored max(struct,2*spread,0.05,0.10ATR)",
+  "target": "frozen L2",
+  "rr_filter": "NONE (diagnostic buckets)",
+  "windows": {
+    "pullback_atr": 0.5,
+    "search_bars": 48,
+    "react_bars": 8,
+    "confirm_bars": 12,
+    "zone_corridor_atr": 2.5,
+    "max_candidates": 40
+  },
+  "one_trade_per_path": true,
+  "cost_base": 0.05,
+  "cost_stress": 0.08,
+  "no_param_search": true,
+  "no_context_filter": true,
+  "no_old_strategy_rescue": true
+}
