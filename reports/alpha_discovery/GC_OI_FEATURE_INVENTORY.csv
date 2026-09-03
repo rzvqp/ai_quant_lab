@@ -1,0 +1,17 @@
+feature,family,kind
+o1_oi_rel_ma20,O1,OI
+o1_oi_dev_ma60,O1,OI
+o1_oi_pct252,O1,OI
+o2_doi_1,O2,OI
+o2_doi_5,O2,OI
+o2_doi_20,O2,OI
+o2_oi_rise_streak,O2,OI
+o2_oi_accel_5_20,O2,OI
+o3_price_x_doi5,O3,OI
+o3_pricemag_x_doi5,O3,OI
+o3_pxoi_updn,O3,OI
+o4_vol_x_doi5,O4,OI
+o4_highvol_oiup,O4,OI
+o4_highvol_oidn,O4,OI
+o5_xau_x_oiregime,O5,OI
+o5_xau_x_doi5,O5,OI
