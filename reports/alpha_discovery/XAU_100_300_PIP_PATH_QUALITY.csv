@@ -1,0 +1,8 @@
+metric,v
+median_bars_to_100,5.0
+median_MAE_usd,2.0
+P75_MAE_usd,4.024999999999636
+P90_MAE_usd,6.533400000000119
+MFE_MAE_gt1,98.8
+MFE_MAE_gt2,89.4
+MFE_MAE_gt3,77.1

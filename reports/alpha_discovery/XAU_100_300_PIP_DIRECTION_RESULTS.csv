@@ -1,0 +1,11 @@
+precursor,AUC,effect,folds,consistent,passes
+p2_ret1,0.362,0.138,"[np.float64(0.304), np.float64(0.327), np.float64(0.464)]",True,True
+p2_closeloc,0.382,0.118,"[np.float64(0.334), np.float64(0.343), np.float64(0.471)]",True,True
+p9_retr,0.583,0.083,"[np.float64(0.626), np.float64(0.601), np.float64(0.519)]",True,True
+p7_ssloc,0.424,0.076,"[np.float64(0.386), np.float64(0.404), np.float64(0.483)]",True,True
+p2_ret4,0.431,0.069,"[np.float64(0.398), np.float64(0.411), np.float64(0.489)]",True,True
+p4_press,0.455,0.045,"[np.float64(0.434), np.float64(0.447), np.float64(0.482)]",True,False
+p5_volratio,0.51,0.01,"[np.float64(0.519), np.float64(0.491), np.float64(0.522)]",False,False
+p2_bodydom,0.51,0.01,"[np.float64(0.522), np.float64(0.493), np.float64(0.515)]",False,False
+p1_range4,0.509,0.009,"[np.float64(0.513), np.float64(0.497), np.float64(0.516)]",False,False
+p7_pdloc,0.499,0.001,"[nan, np.float64(0.503), np.float64(0.495)]",False,False

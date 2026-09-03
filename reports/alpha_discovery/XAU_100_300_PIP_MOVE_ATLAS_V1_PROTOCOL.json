@@ -1,0 +1,32 @@
+{
+  "mandate": "XAU_100_300_PIP_MOVE_ATLAS_V1",
+  "timeframe": "M15",
+  "horizon_bars": 8,
+  "pip_usd": 0.1,
+  "thresholds_usd": {
+    "100": 10.0,
+    "150": 15.0,
+    "200": 20.0,
+    "300": 30.0
+  },
+  "outcome_first": true,
+  "no_strategy": true,
+  "no_pnl": true,
+  "label": "first-touch +/-100p from close[t] over t+1..t+8 (same-bar both=ambiguous)",
+  "episode": "earliest causal anchor per overlapping same-dir physical move",
+  "controls": "era-third x session-hour x ATR-quintile matched NO_100_MOVE, seed 20260903, frozen before scoring",
+  "precursors": {
+    "P1": "compression range4/tr1/body",
+    "P2": "displacement ret1/ret4/bodydom/closeloc",
+    "P3": "sweep last4 (canonical swing sweep)",
+    "P4": "structural pressure hh-ll",
+    "P5": "vol transition shortATR/ATR + percentile",
+    "P6": "session hour",
+    "P7": "range location pd/session",
+    "P8": "recent accepted/failed level state",
+    "P9": "retrace fraction (deterministic causal)"
+  },
+  "no_feature_factory": true,
+  "no_param_search": true,
+  "no_exogenous": true
+}

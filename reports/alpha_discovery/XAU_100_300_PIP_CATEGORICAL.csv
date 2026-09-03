@@ -1,0 +1,8 @@
+feature,val,ev_rate,co_rate,lift_pp
+p3_sweep,both,7.8,7.6,0.2
+p3_sweep,high,19.7,19.3,0.4
+p3_sweep,low,19.8,18.3,1.5
+p3_sweep,none,52.7,54.8,-2.1
+p8_lvl,accepted,65.1,60.2,4.9
+p8_lvl,failed,10.8,10.7,0.1
+p8_lvl,none,24.1,29.1,-5.0
