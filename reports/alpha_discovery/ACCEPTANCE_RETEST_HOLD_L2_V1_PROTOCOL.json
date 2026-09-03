@@ -1,0 +1,29 @@
+{
+  "mandate": "ACCEPTANCE_RETEST_HOLD_L2_V1",
+  "parent": "LEVEL_TO_LEVEL_ACCEPTANCE_V1 (hash 2a9f0c09eb50be79f3a0)",
+  "timeframe": "M15",
+  "bound_event_universe": {
+    "raw": 102458,
+    "accepted": 72103,
+    "rejected": 30355
+  },
+  "break_rule": "UNCHANGED (V1)",
+  "acceptance": "UNCHANGED (V1)",
+  "L1_L2": "UNCHANGED (V1 frozen identities)",
+  "retest_window_bars": 8,
+  "retest_zone_atr": 0.2,
+  "retest_hold": "retest bar touches L1 +/- 0.20ATR AND closes back on accepted side",
+  "entry": "open[retest_hold+1]",
+  "target": "frozen L2 (no 2R/runner/partial/trailing)",
+  "stop": "retest-bar extreme -/+0.10ATR(retest), floored max(struct,2*spread,0.05,0.10ATR)",
+  "position_sizing": "1R=|entry-retest_stop|",
+  "rr_filter": "NONE (diagnostic buckets only)",
+  "one_trade_per_path": true,
+  "backstop_bars": 96,
+  "horizon_bars": 32,
+  "cost_base": 0.05,
+  "cost_stress": 0.08,
+  "no_param_search": true,
+  "no_context_filter": true,
+  "no_old_strategy_rescue": true
+}
