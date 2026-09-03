@@ -1,0 +1,6 @@
+family,winners,wmae_median,wmae_p75,wmae_p90,wmae_p95,wmae_max,within_10pct_stop,within_20pct_stop,within_30pct_stop
+A_sweep_reclaim,1195,0.36,0.57,0.77,0.87,0.99,4.1,8.6,15.3
+B_breakout_pullback,85,0.4,0.64,0.81,0.87,0.92,2.3,11.4,20.5
+C_attack_decay_break,105,0.44,0.69,0.87,0.92,0.98,8.7,17.4,23.9
+D_disp_fail_reversal,2125,0.37,0.63,0.82,0.9,1.0,5.2,11.7,19.2
+E_compress_expand,40,0.3,0.65,0.88,0.98,0.99,10.0,20.0,23.3

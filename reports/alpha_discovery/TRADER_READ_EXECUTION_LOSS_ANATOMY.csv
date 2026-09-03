@@ -1,0 +1,6 @@
+family,trades,losers,STOP_THEN_2R_PCT,STOP_THEN_1_5R_PCT,L1_dir_wrong,L2_stop_then_target,L3_stop_then_1_5R,L4_intrabar_ambig,L5_entry_timing,L6_other,struct_invalidated_pct,stop_still_valid_pct,same_bar_ambig,same_bar_pct
+A_sweep_reclaim,3274,2079,10.6,14.0,47.8,10.6,3.5,0.2,0.0,38.1,50.7,49.3,4,0.1
+B_breakout_pullback,220,135,16.3,19.3,43.7,16.3,3.0,0.0,0.0,37.0,48.9,51.1,0,0.0
+C_attack_decay_break,313,208,32.2,39.9,38.0,32.2,7.7,0.5,0.0,21.6,65.4,34.6,1,0.3
+D_disp_fail_reversal,5855,3730,23.3,29.4,42.7,23.3,6.1,0.6,0.0,27.9,60.1,39.9,24,0.4
+E_compress_expand,100,60,20.0,25.0,48.3,20.0,5.0,0.0,0.0,26.7,53.3,46.7,0,0.0

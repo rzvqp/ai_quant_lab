@@ -37,3 +37,5 @@ reports/alpha_discovery/GC_OI_DAILY.parquet
 reports/alpha_discovery/GC_COT_JOINED.parquet
 reports/alpha_discovery/CFTC_COT_GOLD.parquet
 reports/alpha_discovery/cot_ctl_out.txt
+reports/alpha_discovery/_trm_forensics.parquet
+reports/alpha_discovery/_trm_gates.csv
