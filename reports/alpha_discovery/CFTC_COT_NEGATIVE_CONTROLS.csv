@@ -1,0 +1,4 @@
+setup,real_G,cot_destroy_mean,time_shift,label_perm_mean,matched_random_mean,beats_cot_destroy,beats_perm,beats_random
+SETUP_1,-0.3352,-0.3379,-0.3336,-0.3371,-0.3411,False,False,False
+SETUP_2,-0.2905,-0.2749,-0.2655,-0.3535,-0.3562,False,True,True
+SETUP_3,-0.0983,-0.0996,-0.1016,-0.1824,-0.1769,False,True,True

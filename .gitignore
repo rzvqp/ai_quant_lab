@@ -34,3 +34,6 @@ acquisition_staging/gc_databento_full15y/derived/
 reports/alpha_discovery/GC_CTX_JOINED.parquet
 reports/alpha_discovery/GC_OI_JOINED.parquet
 reports/alpha_discovery/GC_OI_DAILY.parquet
+reports/alpha_discovery/GC_COT_JOINED.parquet
+reports/alpha_discovery/CFTC_COT_GOLD.parquet
+reports/alpha_discovery/cot_ctl_out.txt
