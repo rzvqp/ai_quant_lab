@@ -1,0 +1,12 @@
+metric,v
+BASE_EXP,-0.0652
+STRESS_EXP,-0.0847
+PF,0.857
+maxDD_R,1862.9
+WR,0.547
+tpy,1872.0
+medLevelTargetR,0.71
+accepted_reach,68.2
+rejected_reach,14.5
+lift_pp,53.7
+stop_then_L2_pct,51.0
