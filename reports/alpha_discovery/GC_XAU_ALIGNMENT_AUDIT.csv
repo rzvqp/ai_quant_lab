@@ -1,0 +1,4 @@
+setup,matched_trades,win_n,loss_n,future_gc_obs,gc_bar_at_or_before_decision,date_start,date_end
+SETUP_1,13418,4525,8893,0,100%,2011-07-27,2026-07-26
+SETUP_2,11605,5408,6197,0,100%,2011-07-27,2026-07-26
+SETUP_3,24617,13035,11582,0,100%,2011-07-27,2026-07-27

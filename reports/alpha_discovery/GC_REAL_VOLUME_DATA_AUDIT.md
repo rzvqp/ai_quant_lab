@@ -1,54 +1,33 @@
-# GC REAL-VOLUME CONTEXT V1 — pre-flight data audit (§3)
+# GC REAL-VOLUME CONTEXT V1 — data audit (RESOLVED; supersedes the earlier DATA_BLOCKED audit)
 
-Mandatory executability audit performed BEFORE any outcome-conditioned research. Result: the qualified-data gate FAILS on history length and
-matched-trade count. Per §6 the experiment is stopped with no purchase and no substitute. This document records exactly what was checked.
+The earlier audit stopped at `GC_DATA_GATE = FAIL` (only ~11 sessions of GC volume, 106 matched trades). Data Acquisition has since delivered
+the full 15-year genuine CME GC real-volume history (commit `712a322`). This audit records the verified handoff identity used by the resumed experiment.
 
-## §3 executability audit
-| check | result |
-|---|---|
-| A. GC datasets available locally | Databento GLBX-MDP3 daily files (MBO / MBP-10 / definition / statistics), 2026-06-29 … 2026-07-10 (~11 sessions), plus a derived `gc_15m.csv` (896 bars) built from them |
-| B. vendor / source | Databento (GLBX-MDP3, CME Globex feed) — genuine exchange data |
-| C. exchange / instrument identity | CME COMEX Gold futures (GC), Globex MDP3 |
-| D. genuine traded CME volume? | **YES** — `gc_15m.csv` carries `volume` and `ntrades` aggregated from the native MBO trade stream (real exchange-traded volume, not tick-count proxy) |
-| E. native granularity | trade-level MBO; the derived bar file is 15-minute OHLCV+volume+ntrades |
-| F. UTC coverage | **2026-06-29 00:00 → 2026-07-10 20:45 UTC** (≈ 12 calendar days / 11 trading sessions) |
-| G. missing intervals | only the 11-session window exists; everything outside it is absent |
-| H. duplicate rate | n/a (single short sample) |
-| I. timestamp semantics | bar file `ts` = interval-start epoch-ns (verifiable), but moot given the gate fails |
-| J. contract identifiers | present in the MBO/definition files (Databento instrument ids) |
-| K. roll / contract-selection | not constructed; only ~11 sessions, no roll spans a 5-year requirement |
-| L. causal alignment feasible? | mechanically yes in-window, but the window is ~12 days |
-| M. overlap with frozen XAU setups | **106 matched CTS trades total** in the 12-day window (SETUP_1=31, SETUP_2=19, SETUP_3=56) |
-| N. end-to-end completable? | **NO** — history and matched-trade minimums fail |
-
-## Pre-flight flags
+## §3 identity gate — PASS
 ```
-GC_DATA_PRESENT = YES
-GC_REAL_TRADED_VOLUME_VERIFIED = YES (Databento MBO-aggregated volume + ntrades)
-GC_TIMESTAMP_SEMANTICS_VERIFIED = PARTIAL (interval-start; not fully audited — gate fails first)
-GC_CONTRACT_IDENTITY_VERIFIED = YES (CME COMEX GC via Databento GLBX-MDP3)
-GC_ROLL_METHOD_EXECUTABLE = NO (only ~11 sessions; no multi-year roll construction possible)
-GC_XAU_CAUSAL_ALIGNMENT_EXECUTABLE = YES in-window (but window is ~12 days)
-SUFFICIENT_OVERLAP = NO (106 matched XAU trades << 1000 minimum; per-setup 19–56 << 250)
-END_TO_END_EXECUTABLE = NO
+GC_HANDOFF_IDENTITY_GATE = PASS
+Source          = Databento GLBX.MDP3 (CME Globex, COMEX Gold GC)
+Symbol          = GC.v.0 (continuous; roll = highest PREVIOUS-DAY volume outright; causal, no lookahead)
+OHLCV_1M_ROWS   = 5,160,829   (matches acquisition)   GC_15M_ROWS = 350,825
+Coverage        = 2011-07-26 00:00 UTC -> 2026-07-27 23:59 UTC
+Real volume     = present on 100% of bars (677,066,963 contracts); ntrades not in ohlcv-1m (volume only)
+Quality         = 0 duplicate ts, 0 out-of-order, 0 off-grid-60s, 0 OHLC violations, 0 non-positive prices
+Instruments     = 76 underlying outrights; 75 roll transitions
+Timestamp       = ts_event = BAR OPEN (UTC); a GC bar is used only once fully closed (ts_event <= XAU decision)
+Preserved gaps  = 25 missing weekdays (holidays + degraded 2014-06-13 and 2014-09-23/24/25) — NOT forward-filled
 ```
 
-## §5 minimum-coverage gate — FAIL
-```
-GC_HISTORY_YEARS ≈ 0.03  (required >= 5.0)                                  -> FAIL
-MATCHED_XAU_TRADES_TOTAL = 106  (required >= 1000)                          -> FAIL
-MATCHED_PER_SETUP = 31 / 19 / 56  (preferred >= 250 each)                   -> FAIL
-MULTI-YEAR / MULTI-STATE COVERAGE = NO (single 12-day window, one regime)   -> FAIL
-GC_DATA_GATE = FAIL
-```
+## Missing-data rule (frozen before outcome scoring)
+A trade's GC context is marked UNAVAILABLE (trade dropped) if there is no GC bar at the decision timestamp, or if the 32-bar causal lookback
+spans more than 5 calendar days (i.e., crosses a data gap). GC volume was never forward-filled and "market closed" was never coded as "zero
+volume". Trades dropped by this rule: 630 (no-GC-bar 625 + gap 5). No future or partial GC bar entered any feature (`FUTURE_GC_OBSERVATIONS_USED = 0`).
 
-## Why the existing data are insufficient (not a workaround — a hard blocker)
-The only genuine GC traded-volume data on disk is the ~11-session Databento sample used earlier for the microstructure-infrastructure gate.
-That sample is authentic (real CME volume) but is **~12 days**, overlapping the 14-year frozen XAU CTS universe by only **106 trades**. Running
-the winner-vs-loser experiment on 106 trades across three setups (19–56 each) would be an underpowered exercise the mandate explicitly forbids
-(§1, §5). No multi-year GC dataset exists locally, and `foundation_gc/` contains only a builder (`engine.py`), not built history. The required
-2011→present GC volume history was specified previously (Databento GLBX ohlcv-1m GC outrights) but **has not been acquired** — acquisition is a
-separate CEO purchase decision, not authorized here.
-
-Per §6/§7: no purchase, no download of a substitute, no continuing with price-only or the short sample. The dataset specification required to
-unblock is in `GC_REAL_VOLUME_DATA_REQUIREMENT.md`.
+## Overlap gate — PASS
+```
+MATCHED_SETUP_A (liquidity-sweep)  = 13,418
+MATCHED_SETUP_B (breakout-retest)  = 11,605
+MATCHED_SETUP_C (auction-value)    = 24,617
+MATCHED_XAU_TRADES_TOTAL           = 49,640   (>= 1,000 required; each setup >= 250)
+GC_DATA_GATE = PASS
+```
+Result of the experiment is in `GC_REAL_VOLUME_CONTEXT_V1_REPORT.md`.

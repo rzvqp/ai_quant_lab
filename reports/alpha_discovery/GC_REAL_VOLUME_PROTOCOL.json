@@ -1,0 +1,68 @@
+{
+  "mandate": "GC_REAL_VOLUME_CONTEXT_V1",
+  "gc_symbol": "GC.v.0",
+  "gc_dataset": "GLBX.MDP3",
+  "windows": [
+    4,
+    8,
+    16,
+    32
+  ],
+  "representations": {
+    "A": "XAU baseline (CTS_V2 setup-relative)",
+    "B": "A + GC price-only",
+    "C": "A + GC real-volume",
+    "D": "A + GC price+volume"
+  },
+  "families": [
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6"
+  ],
+  "model": "L2_logistic (same capacity all reps)",
+  "walk_forward": "4 date-blocks expanding, purge 96",
+  "retention": [
+    0.8,
+    0.6,
+    0.4,
+    0.2
+  ],
+  "missing_rule": "drop trade if no GC bar at decision or 32-bar lookback spans >5 days",
+  "causal": "GC bar available only when fully closed (ts_event<=decision); no future/partial bar",
+  "price_features": [
+    "p_gc_eff_8",
+    "p_gc_eff_16",
+    "p_gc_eff_32",
+    "p_gc_disp_8",
+    "p_gc_disp_16",
+    "p_gc_disp_32"
+  ],
+  "volume_features": [
+    "g1_vol_rel_tod",
+    "g1_vol_z_tod",
+    "g1_vol_rel_sess",
+    "g1_vol_pct500",
+    "g2_elev_streak",
+    "g2_vol_sum_4",
+    "g2_vol_sum_8",
+    "g2_vol_sum_16",
+    "g2_vol_sum_32",
+    "g2_vol_accel_4_8",
+    "g2_vol_concentration_8",
+    "g3_prog_per_vol_8",
+    "g3_prog_per_vol_16",
+    "g3_prog_per_vol_32",
+    "g3_highvol_lowprog",
+    "g3_lowvol_highprog",
+    "g4_up_dn_vol_8",
+    "g4_impulse_vol",
+    "g4_pullback_vol",
+    "g5_gc_partic_move",
+    "g6_vol_up_eff_dn",
+    "g6_disagree",
+    "g5_xau_per_gcvol"
+  ]
+}

@@ -1,0 +1,4 @@
+setup,A60,B60,C60,D60,GC_INFO,REAL_VOL_SPECIFIC,PRICE_ONLY,dCA,dCB,dBA,beats_vol_destroy,beats_tod,GC_CONTEXTUAL_CANDIDATE
+SETUP_1,-0.3474,-0.3507,-0.3368,-0.3443,False,False,False,0.0106,0.0139,-0.0033,False,False,False
+SETUP_2,-0.2743,-0.2783,-0.2711,-0.2732,False,False,False,0.0032,0.0072,-0.004,False,False,False
+SETUP_3,-0.1031,-0.087,-0.0972,-0.093,False,False,False,0.0101,-0.006,0.0161,False,False,False

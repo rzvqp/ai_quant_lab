@@ -31,3 +31,4 @@ cts_v2_seq.npy
 _cts_v2_summary.json
 acquisition_staging/gc_databento_full15y/raw/
 acquisition_staging/gc_databento_full15y/derived/
+reports/alpha_discovery/GC_CTX_JOINED.parquet
