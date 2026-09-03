@@ -1,0 +1,31 @@
+{
+  "mandate": "LEVEL_TO_LEVEL_ACCEPTANCE_EXECUTION_V3",
+  "parents": [
+    "V1 hash 2a9f0c09eb50be79f3a0",
+    "V2 hash 58c8280847bf794faa84"
+  ],
+  "timeframe": "M15",
+  "bound_event_universe": {
+    "raw": 102458,
+    "accepted": 72103,
+    "rejected": 30355
+  },
+  "break_rule": "UNCHANGED (V1)",
+  "acceptance": "UNCHANGED (V1)",
+  "L2": "UNCHANGED (V1)",
+  "entry": "UNCHANGED: open[break+2]",
+  "hard_catastrophe_stop": "EXACT V1 stop: long min(low[break..acceptance])-0.10ATR / short max(high)+0.10ATR, governed floor max(struct,2*spread,0.05,0.10ATR)",
+  "position_sizing": "1R = |entry - hard_stop| (bounded); REMOVES V2 entry->L1 degeneracy",
+  "natural_rr_gate": "|L2-entry| / |entry-hard_stop| >= 1.00 (frozen, not mined)",
+  "target": "L2 (no 2R/runner/partial/extension)",
+  "soft_exit": "V2 acceptance-failure close (completed M15 close back through L1) -> exit NEXT open; EARLY exit, hard stop active throughout",
+  "exit_priority": "intrabar hard_stop/target first (conservative stop-first on same-bar tie), then completed soft close; no future info",
+  "one_trade_at_a_time": true,
+  "backstop_bars": 96,
+  "cost_base": 0.05,
+  "cost_stress": 0.08,
+  "min_reward_risk": 1.0,
+  "no_param_search": true,
+  "no_context_filter": true,
+  "final_iteration_no_v4": true
+}

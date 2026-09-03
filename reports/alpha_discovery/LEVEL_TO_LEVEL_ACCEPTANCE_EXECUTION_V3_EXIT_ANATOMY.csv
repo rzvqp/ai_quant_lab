@@ -1,0 +1,10 @@
+exit,n,pct
+target,3824,27.1
+soft,4408,31.2
+hard_stop,5851,41.4
+timeout,38,0.3
+ambiguous_flag,111,0.8
+soft_medR,4408,-0.571
+soft_P5R,0,-0.905
+soft_worstR,0,-3.804
+hard_medR,5851,-1.041
