@@ -1,0 +1,16 @@
+{
+  "mandate": "M15_M5_M1_MOVE_ONSET_ATLAS_V1",
+  "master_scale": "M15 100p=$10 first-touch 2h",
+  "m5": "native 2021-07-27..2026-07-27",
+  "m1": "native OANDA XAUUSD 2025-08-04..2026-08-04 VERIFIED genuine (sha256 8387296e, exact M5 OHLC xcheck) UNFIT_FOR_VALIDATION/QUARANTINE -> CURRENT_REGIME_DISCOVERY_CANDIDATE only",
+  "window": "30min wall-clock: M5=6 bars, M1=30 bars (equal wall-clock)",
+  "families": "S1-S10 resolution-invariant normalized",
+  "blocks": {
+    "A": "M5 2021-2024",
+    "B": "M1 2025-08..2026-07",
+    "C": "overlap same episodes M1 vs M5"
+  },
+  "controls": "within-block hour x ATR-quintile matched, frozen seed",
+  "no_pnl": true,
+  "no_strategy": true
+}

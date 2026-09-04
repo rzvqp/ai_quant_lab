@@ -1,0 +1,15 @@
+f,AUC,eff,folds,latest_eff,consistent,passes
+s5_imp,0.491,0.009,"[np.float64(0.499), np.float64(0.492), np.float64(0.483)]",0.017,True,False
+s2_loc,0.492,0.008,"[np.float64(0.476), np.float64(0.476), np.float64(0.524)]",0.024,False,False
+s6,0.508,0.008,"[np.float64(0.522), np.float64(0.485), np.float64(0.518)]",0.018,False,False
+s4_d15,0.493,0.007,"[np.float64(0.478), np.float64(0.484), np.float64(0.517)]",0.017,False,False
+s3_wick,0.493,0.007,"[np.float64(0.502), np.float64(0.486), np.float64(0.493)]",0.007,False,False
+s1_bodysum,0.496,0.004,"[np.float64(0.479), np.float64(0.486), np.float64(0.521)]",0.021,False,False
+s10,0.496,0.004,"[np.float64(0.488), np.float64(0.498), np.float64(0.501)]",0.001,False,False
+s7_expside,0.496,0.004,"[np.float64(0.475), np.float64(0.497), np.float64(0.515)]",0.015,False,False
+s1_bull,0.503,0.003,"[np.float64(0.472), np.float64(0.499), np.float64(0.538)]",0.038,False,False
+s2_slope,0.503,0.003,"[np.float64(0.485), np.float64(0.501), np.float64(0.522)]",0.022,False,False
+s9,0.503,0.003,"[np.float64(0.53), np.float64(0.508), np.float64(0.472)]",0.028,False,False
+s8,0.497,0.003,"[np.float64(0.47), np.float64(0.492), np.float64(0.528)]",0.028,False,False
+s1_net,0.498,0.002,"[np.float64(0.48), np.float64(0.49), np.float64(0.524)]",0.024,False,False
+s4_d30,0.499,0.001,"[np.float64(0.482), np.float64(0.489), np.float64(0.526)]",0.026,False,False
