@@ -4,8 +4,24 @@ definitions are frozen at episode-freeze time and never adjusted after seeing th
 
 from __future__ import annotations
 
-from ai_trader.apprenticeship_v2.mt5_read_only_source import ReadOnlyBar
+from typing import TYPE_CHECKING
+
 from ai_trader.apprenticeship_v2.schemas import RESOLUTION_HORIZONS_M15, HorizonMetrics, S5StructuralResolution
+
+if TYPE_CHECKING:
+    from ai_trader.apprenticeship_v2.mt5_read_only_source import ReadOnlyBar
+# `ReadOnlyBar` is used only as a type hint below (`list[ReadOnlyBar]`), never as a runtime value
+# (no isinstance/construction) -- and `from __future__ import annotations` above already means these
+# annotations are never evaluated at runtime. Moving the import behind TYPE_CHECKING removes this
+# module's only hard dependency on `mt5_read_only_source` (which itself does `import MetaTrader5` at
+# module scope) with zero behavior change in any environment where MetaTrader5 IS installed
+# (production) -- General Observer V1.1's own `scorecard.py` needs to import and call
+# `compute_horizon_metrics` in a test/dev environment that lacks that package, the same class of
+# transitive-dependency problem already worked around this same way in `csv_causal_replay` and this
+# package's own `primitives.py`/`snapshot.py` (see their docstrings for the precedent). Distinct from
+# the separately-flagged `Direction.LONG` serialization defect (mandate Section 24): that is a real
+# behavioral bug this delivery is instructed not to silently fix; this is a pure import-shape change
+# that alters no function's computed output anywhere, in any environment.
 
 # Same STOP > TARGET > MAX_HOLD precedence as the already-audited `q4_control_flow.check_trade_mechanics`
 # (STOP checked first, then TARGET, then MAX_HOLD, on each forward bar in order) -- reused, not

@@ -71,6 +71,20 @@ def write_checkpoint(*, note: str = "") -> str:
         f"- TOTAL_SHADOW_TAKE_SKIP_RECORDS = {total_shadow}",
         f"- PREDICTIONS_BY_EXPECTATION = {json.dumps(by_expectation)}",
     ]
+
+    # General Observer V1.1 additions -- additive only: these files may not exist at all (the
+    # subsystem may never have run on this machine), in which case _count_rows returns 0 and this
+    # section simply reports zeros, exactly like every S5 counter above already does before its own
+    # first episode.
+    total_general_episodes = _count_rows(durable_store.GENERAL_OBSERVER_LEDGER_CSV)
+    total_scorecard_rows = _count_rows(durable_store.SCORECARD_CSV)
+    total_missed_move_clusters = _count_rows(durable_store.MISSED_MOVE_CLUSTERS_CSV)
+    lines += [
+        f"- TOTAL_GENERAL_OBSERVER_EPISODES = {total_general_episodes}",
+        f"- TOTAL_SCORECARD_ROWS = {total_scorecard_rows}",
+        f"- TOTAL_MISSED_MOVE_CLUSTERS = {total_missed_move_clusters}",
+    ]
+
     if note:
         lines.append(f"- NOTE: {note}")
     lines.append("")
@@ -85,6 +99,8 @@ def write_checkpoint(*, note: str = "") -> str:
     for src in (
         durable_store.LIVE_EPISODE_LEDGER_CSV, durable_store.PROSPECTIVE_PREDICTIONS_CSV,
         durable_store.RESOLVED_EPISODES_CSV, durable_store.SHADOW_TAKE_SKIP_CSV,
+        durable_store.GENERAL_OBSERVER_LEDGER_CSV, durable_store.SCORECARD_CSV,
+        durable_store.MISSED_MOVE_CLUSTERS_CSV, durable_store.LESSON_HYPOTHESES_JSON,
     ):
         if src.exists():
             shutil.copy2(src, snap_dir / src.name)
