@@ -20,6 +20,22 @@ def _prev_day_h1_bars(day0_ts: int, *, low: float = 1899.0, high: float = 1901.0
     ]
 
 
+def _prev_day_h1_bars_with_swing_high(day0_ts: int, *, low: float, swing_high_price: float) -> list:
+    """24 H1 bars for the previous day, all with the same `low` (so `PREVIOUS_DAY_LOW` is
+    unambiguous), plus a clean, single 3-bar fractal swing high at `swing_high_price` (bars 10-12) --
+    every other bar's high stays comfortably below it so no second, unwanted swing appears."""
+    bars = []
+    for i in range(24):
+        if i == 11:
+            high = swing_high_price
+        elif i in (10, 12):
+            high = swing_high_price - 0.4
+        else:
+            high = swing_high_price - 0.7
+        bars.append(make_bar(ts_open=day0_ts + i * H1_SECONDS, o=1896.5, h=high, l=low, c=1896.5, bar_seconds=H1_SECONDS))
+    return bars
+
+
 def test_single_sweep_produces_one_pending_episode_with_correct_fields(base_ts):
     day0 = base_ts  # 2020-10-01 (ASIA hour 0)
     day1 = base_ts + 86400
@@ -169,3 +185,87 @@ def test_session_transition_reversal_attaches_to_a_separately_persisted_child(ba
     assert reversal.reference_levels["prior_session_name"] == "ASIA"
     assert reversal.reference_levels["new_session_name"] == "LONDON"
     assert reversal.reference_levels["prior_session_close_direction"] == "BEARISH"
+
+
+def _session_transition_asia_bearish_close(base_ts):
+    """Shared ASIA->LONDON session-transition scaffold (BEARISH ASIA close, so a BULLISH reversal
+    qualifies) for the three tie-break tests below -- returns (asia_bars, london_open_ts)."""
+    asia_bars = [
+        make_bar(ts_open=base_ts + i * M15_SECONDS, o=1900.0 - i * 0.1, h=1900.5 - i * 0.1, l=1899.5 - i * 0.1, c=1900.0 - i * 0.1)
+        for i in range(28)
+    ]
+    asia_last = make_bar(ts_open=base_ts + 28 * M15_SECONDS, o=1897.2, h=1897.3, l=1896.8, c=1897.0)
+    asia_bars = asia_bars + [asia_last]
+    london_open_ts = base_ts + 32 * M15_SECONDS
+    return asia_bars, london_open_ts
+
+
+def test_session_transition_reversal_break_only_references_the_break(base_ts):
+    """Mandate Section 32: BREAK only -> session reversal references BREAK."""
+    asia_bars, london_open_ts = _session_transition_asia_bearish_close(base_ts)
+    h1_prev_day = _prev_day_h1_bars_with_swing_high(base_ts - 86400, low=1896.0, swing_high_price=1897.2)
+    # No low breach (low=1897.0, above PREVIOUS_DAY_LOW=1896.0) -- only a break of the 1897.2 swing high.
+    trigger = make_bar(ts_open=london_open_ts, o=1897.0, h=1897.5, l=1897.0, c=1897.3)
+    m15 = asia_bars + [trigger]
+
+    episodes = build_episodes_for_bar(
+        trigger, symbol=SYMBOL, h4=[], h1=h1_prev_day, m15_causal_bars_up_to_and_including_bar=m15, m5=[],
+        existing_general_episode_rows=[],
+    )
+
+    types = [ep.episode_type for ep in episodes]
+    assert "SESSION_TRANSITION_REVERSAL" in types
+    assert "STRUCTURAL_BREAK" in types
+    assert "SWEEP_REJECTION" not in types
+    reversal = next(ep for ep in episodes if ep.episode_type == "SESSION_TRANSITION_REVERSAL")
+    child = next(ep for ep in episodes if ep.episode_type == "STRUCTURAL_BREAK")
+    assert reversal.reference_levels["child_episode_id"] == child.episode_id
+
+
+def test_session_transition_reversal_sweep_and_break_same_bar_both_persist_sweep_referenced(base_ts):
+    """Mandate Section 32 / design doc Section 19.15's own worked example: SWEEP_REJECTION (against
+    PREVIOUS_DAY_LOW) and STRUCTURAL_BREAK (against H1_CONFIRMED_SWING_HIGH) fire on the SAME bar --
+    both persist as their own standalone episodes; the ratified tie-break (prefer SWEEP_REJECTION)
+    means the reversal's `child_episode_id` references the sweep, not the break."""
+    asia_bars, london_open_ts = _session_transition_asia_bearish_close(base_ts)
+    h1_prev_day = _prev_day_h1_bars_with_swing_high(base_ts - 86400, low=1896.0, swing_high_price=1897.2)
+    # Breaches PREVIOUS_DAY_LOW (low=1895.5 < 1896.0, close=1897.4 > 1896.0) AND crosses the swing
+    # high (prior close 1897.0 <= 1897.2 < 1897.4) -- both conditions true on one bar.
+    trigger = make_bar(ts_open=london_open_ts, o=1897.0, h=1897.5, l=1895.5, c=1897.4)
+    m15 = asia_bars + [trigger]
+
+    episodes = build_episodes_for_bar(
+        trigger, symbol=SYMBOL, h4=[], h1=h1_prev_day, m15_causal_bars_up_to_and_including_bar=m15, m5=[],
+        existing_general_episode_rows=[],
+    )
+
+    types = [ep.episode_type for ep in episodes]
+    assert types.count("SWEEP_REJECTION") == 1
+    assert types.count("STRUCTURAL_BREAK") == 1
+    assert types.count("SESSION_TRANSITION_REVERSAL") == 1
+    sweep = next(ep for ep in episodes if ep.episode_type == "SWEEP_REJECTION")
+    reversal = next(ep for ep in episodes if ep.episode_type == "SESSION_TRANSITION_REVERSAL")
+    assert reversal.reference_levels["child_episode_id"] == sweep.episode_id  # SWEEP preferred over BREAK
+
+
+def test_session_transition_reversal_tie_break_is_deterministic_across_repeated_calls(base_ts):
+    """Mandate Section 32: restart/replay -- the tie-break result remains deterministic and
+    identical across repeated, independent calls with the same inputs (no incidental ordering)."""
+    asia_bars, london_open_ts = _session_transition_asia_bearish_close(base_ts)
+    h1_prev_day = _prev_day_h1_bars_with_swing_high(base_ts - 86400, low=1896.0, swing_high_price=1897.2)
+    trigger = make_bar(ts_open=london_open_ts, o=1897.0, h=1897.5, l=1895.5, c=1897.4)
+    m15 = asia_bars + [trigger]
+
+    results = [
+        build_episodes_for_bar(
+            trigger, symbol=SYMBOL, h4=[], h1=h1_prev_day, m15_causal_bars_up_to_and_including_bar=m15,
+            m5=[], existing_general_episode_rows=[],
+        )
+        for _ in range(5)
+    ]
+    child_types_chosen = []
+    for episodes in results:
+        reversal = next(ep for ep in episodes if ep.episode_type == "SESSION_TRANSITION_REVERSAL")
+        sweep = next(ep for ep in episodes if ep.episode_type == "SWEEP_REJECTION")
+        child_types_chosen.append(reversal.reference_levels["child_episode_id"] == sweep.episode_id)
+    assert all(child_types_chosen)  # always SWEEP, every independent call, no run-to-run variance

@@ -164,10 +164,39 @@ def test_horizon_is_a_respected_input_never_silently_ignored_or_mutable():
     assert derive_vote(ep, "H1", scores) != derive_vote(ep, "H4", scores)
 
 
-def test_classify_lesson_status_new_hypothesis_at_zero_votes():
+def test_classify_lesson_status_new_hypothesis_at_zero_and_one_votes():
+    """Section 19.7 correction: NEW_HYPOTHESIS = n_voting in {0, 1} (the frozen doc's own "First...
+    observation" is singular, i.e. n==1, not n==0 alone -- the prior delivery's n==0-only default
+    was SEMANTICALLY_INCORRECT per Section 19.1's own audit)."""
     assert classify_lesson_status(0, 0) == "NEW_HYPOTHESIS"
+    assert classify_lesson_status(1, 1) == "NEW_HYPOTHESIS"
+    assert classify_lesson_status(1, 0) == "NEW_HYPOTHESIS"
 
 
 def test_classify_lesson_status_repeated_observation_range():
-    assert classify_lesson_status(1, 1) == "REPEATED_OBSERVATION"
+    """REPEATED_OBSERVATION = n_voting in [2, 9] -- corrected boundary starts at 2, not 1."""
+    assert classify_lesson_status(2, 2) == "REPEATED_OBSERVATION"
     assert classify_lesson_status(9, 9) == "REPEATED_OBSERVATION"
+    assert classify_lesson_status(9, 0) == "REPEATED_OBSERVATION"
+
+
+def test_classify_lesson_status_weakened_rejected_0_5_boundary():
+    """Section 19.7/mandate Section 20: the WEAKENED/REJECTED split at the mathematically forced 0.5
+    majority midpoint, inclusive on the WEAKENED side -- exact equality boundary tests as required."""
+    assert classify_lesson_status(10, 7) == "PROSPECTIVELY_SUPPORTED"  # 0.70 exact boundary
+    assert classify_lesson_status(10, 5) == "PROSPECTIVELY_WEAKENED"  # 0.5 exact boundary, inclusive
+    assert classify_lesson_status(10, 4) == "PROSPECTIVELY_REJECTED"  # just below 0.5
+    assert classify_lesson_status(10, 6) == "PROSPECTIVELY_WEAKENED"  # strictly between 0.5 and 0.70
+    assert classify_lesson_status(10, 0) == "PROSPECTIVELY_REJECTED"  # 0.0, well below 0.5
+    assert classify_lesson_status(10, 10) == "PROSPECTIVELY_SUPPORTED"  # 1.0, well above 0.70
+
+
+def test_classify_lesson_status_deterioration_and_recovery_are_pure_recomputation():
+    """Section 19.7: no special-case code is needed for deterioration/recovery -- classify_lesson_
+    status is a pure function of the CURRENT (n_voting, support) totals, so recomputing it after new
+    evidence arrives automatically reflects a stage change either direction."""
+    assert classify_lesson_status(10, 7) == "PROSPECTIVELY_SUPPORTED"
+    # A new counterexample arrives (support unchanged, n_voting +1) -- ratio drops, recompute:
+    assert classify_lesson_status(11, 7) == "PROSPECTIVELY_WEAKENED"  # 7/11 ~ 0.636 -- deteriorated
+    # Evidence recovers (another support arrives):
+    assert classify_lesson_status(12, 9) == "PROSPECTIVELY_SUPPORTED"  # 9/12 = 0.75 -- recovered

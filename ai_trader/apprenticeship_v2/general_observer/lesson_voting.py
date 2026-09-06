@@ -1,23 +1,22 @@
-"""Lesson vote aggregation (design doc Section 13/13a, CEO Addendum 2). Governs how one
-`underlying_move_id` produces a single `SUPPORT`/`COUNTEREXAMPLE`/non-voting outcome, and how the
-accumulated votes classify a `LessonHypothesis`'s `lesson_status`.
+"""Lesson vote aggregation (design doc Section 13/13a, CEO Addendum 2; ladder corrected by Section
+19.7, Fifth Addendum). Governs how one `underlying_move_id` produces a single
+`SUPPORT`/`COUNTEREXAMPLE`/non-voting outcome, and how the accumulated votes classify a
+`LessonHypothesis`'s `lesson_status`.
 
-Depends on `scorecard.py`'s `ScorecardEntry.expectation_correct` values, which -- per that module's
-own disclosed `VE_SEMANTIC_GAP_FOUND` -- are not currently produced by any working code path
-(`classify_expectation_correct` raises rather than guesses). Every function below is fully
-implemented and independently testable against manually-constructed scorecard rows; there is
-currently no real caller path that produces those rows in production -- an honest, disclosed
-consequence of the upstream gap, not a second, independent gap in this file.
+Depends on `scorecard.py`'s `ScorecardEntry.expectation_correct` values -- now produced for real by
+`scorecard.classify_expectation_correct` (patched per Section 19), so this module's own vote
+aggregation is no longer blocked from real (non-test-fixture) data.
 
 `MIN_INDEPENDENT_UNDERLYING_MOVES = 10`, `MIN_SUPPORT_RATIO_FOR_PROSPECTIVELY_SUPPORTED = 0.70`,
-`MAX_LESSON_VOTES_PER_UNDERLYING_MOVE = 1` -- all CEO-declared, Section 13/13a, applied verbatim.
+`MAX_LESSON_VOTES_PER_UNDERLYING_MOVE = 1` -- all CEO-declared, Section 13/13a, applied verbatim,
+unchanged by this patch.
 
-**Two narrow disclosed gaps in `classify_lesson_status`** (see its own docstring for detail): (1) the
-exact vote-count boundary between `NEW_HYPOTHESIS` and `REPEATED_OBSERVATION` is not stated
-numerically; (2) the frozen stage table gives `PROSPECTIVELY_WEAKENED`/`PROSPECTIVELY_REJECTED` as
-one undifferentiated row with no criterion separating them. Both are resolved here with a disclosed,
-conservative default -- distinct from the exact, fully-specified `N>=10`/`ratio>=0.70` threshold
-itself, which is applied verbatim with zero interpretation.
+`classify_lesson_status`'s ladder was corrected by Section 19.7 (Fifth Addendum): the prior
+delivery's own disclosed `NEW_HYPOTHESIS`/`REPEATED_OBSERVATION` boundary default was found
+`SEMANTICALLY_INCORRECT` against the frozen doc's own wording and is now `n_voting in {0,1}` /
+`n_voting in [2,9]`; the prior `WEAKENED`/`REJECTED` collapse is now split at the mathematically
+forced `0.5` majority midpoint (not a new CEO-calibrated constant). See `classify_lesson_status`'s
+own docstring for the exact table.
 """
 
 from __future__ import annotations
@@ -120,30 +119,33 @@ def tally_votes(
 
 
 def classify_lesson_status(n_voting: int, support: int) -> str:
-    """Section 13's stage table, applied to `(n_voting_independent_moves, support_moves)`.
+    """Design doc Section 19.7 (Fifth Addendum) -- the corrected, complete stage table, applied to
+    `(n_voting_independent_moves, support_moves)`.
 
-    The `N>=10` / `ratio>=0.70` threshold ITSELF is exact and applied verbatim -- reproduces every
-    one of the CEO's worked examples exactly (7-support/10-voting through 10-support/10-voting ->
-    `PROSPECTIVELY_SUPPORTED`; 6-support/10-voting -> not eligible via ratio; 7-support/9-voting ->
-    not eligible via `N<10` despite `7/9 > 0.70`, Section 13a's own explicit example).
+    `NEW_HYPOTHESIS` = `n_voting in {0, 1}`; `REPEATED_OBSERVATION` = `n_voting in [2, 9]`;
+    `PROSPECTIVELY_SUPPORTED` = `n_voting >= 10 and ratio >= 0.70`; `PROSPECTIVELY_WEAKENED` =
+    `n_voting >= 10 and 0.5 <= ratio < 0.70`; `PROSPECTIVELY_REJECTED` = `n_voting >= 10 and ratio <
+    0.5`.
 
-    Two narrower points are NOT stated numerically/distinctly anywhere in the frozen text, and are
-    resolved here with a disclosed default rather than silently guessed:
-    (1) `NEW_HYPOTHESIS` vs `REPEATED_OBSERVATION` boundary -- "First prospectively-eligible...
-        observation" (singular) could mean `n_voting==0` (just created, no vote yet) or `n_voting==1`
-        (one vote already in, with `REPEATED_OBSERVATION` then meaning 2-9). This function uses
-        `n_voting==0 -> NEW_HYPOTHESIS`, `1..9 -> REPEATED_OBSERVATION` -- the reading that keeps the
-        full `0..9` range contiguous, with no gap and no double-count.
-    (2) `PROSPECTIVELY_WEAKENED` vs `PROSPECTIVELY_REJECTED` -- the frozen table gives one combined
-        row ("`PROSPECTIVELY_WEAKENED / PROSPECTIVELY_REJECTED | >=10 ... <70% support`") with no
-        further criterion anywhere distinguishing them. This function always returns
-        `PROSPECTIVELY_WEAKENED` for that condition -- the more conservative-sounding of the two
-        undifferentiated names, not a discovered rule."""
-    if n_voting == 0:
+    This corrects the prior delivery's own disclosed default (`n_voting==0 -> NEW_HYPOTHESIS`,
+    `1..9 -> REPEATED_OBSERVATION`), which Section 19's own audit (19.1) found
+    `SEMANTICALLY_INCORRECT` against the frozen doc's literal "First... observation" (singular, i.e.
+    `n==1`) / "2-9" wording. It also resolves the prior `WEAKENED`/`REJECTED` collapse using the
+    `0.5` majority midpoint -- mathematically forced (the boundary between "more supporting than
+    contradicting evidence" and the reverse, for a two-outcome vote), not a new CEO-calibrated
+    constant, per Section 19.7's own reasoning.
+
+    `N>=10` / `0.70` / `0.5` reproduce every CEO worked example exactly, including `7-support/
+    9-voting -> REPEATED_OBSERVATION` (`N<10` overrides the ratio even though `7/9 > 0.70`, Section
+    13a's own explicit example) and the new `n_voting=10, support=5 -> WEAKENED` (`0.5` boundary,
+    inclusive) / `support=4 -> REJECTED` (just below `0.5`) vectors (Section 19.15)."""
+    if n_voting <= 1:
         return "NEW_HYPOTHESIS"
     if n_voting < MIN_INDEPENDENT_UNDERLYING_MOVES:
         return "REPEATED_OBSERVATION"
     ratio = support / n_voting
     if ratio >= MIN_SUPPORT_RATIO_FOR_PROSPECTIVELY_SUPPORTED:
         return "PROSPECTIVELY_SUPPORTED"
-    return "PROSPECTIVELY_WEAKENED"
+    if ratio >= 0.5:
+        return "PROSPECTIVELY_WEAKENED"
+    return "PROSPECTIVELY_REJECTED"

@@ -4,35 +4,29 @@ review_horizon)` rows -- additive alongside (never replacing) that existing all-
 own resolution behavior is unchanged: `resolution.py` itself is not modified by this file, only
 called, exactly as Section 15 (S5 isolation) requires.
 
-**Disclosed gap (`VE_SEMANTIC_GAP_FOUND`, narrow scope -- see `classify_expectation_correct` below).**
-Section 9 states the six `ai_trader_expectation` values are "mutually distinguishable using only...
-forward_return sign, round_trip_magnitude, directional_follow_through -- the mechanical scorer needs
-no new computation" and Section 13a calls the resulting `expectation_correct` value "an unambiguous,
-forced mapping... not a new invention." Having read the full 799-line frozen document, that mapping
-itself is never actually stated anywhere -- no threshold says how large a `forward_return` must be to
-count as genuine "follow-through" versus a "range," and no threshold says how much of `mfe` must be
-given back (`round_trip_magnitude`) to count as a full versus partial round-trip. Every one of the
-three named metrics is continuous; forcing a YES/NO/PARTIAL boundary without CEO input means inventing
-an uncalibrated numeric cutoff -- exactly the class of unjustified parameter this mandate forbids VE
-from introducing on its own (Section 6 applies this exact discipline to the 4 event contracts; no
-equivalent pass was ever applied to this specific mapping anywhere in the document). Per this
-mandate's own instruction ("VE implements frozen semantics exactly and must STOP with
-VE_SEMANTIC_GAP_FOUND if any undefined semantic decision is needed -- never improvise"),
-`classify_expectation_correct()` is deliberately left unimplemented (raises `NotImplementedError`)
-rather than guessing. Everything upstream of it -- HorizonMetrics computation (via the existing,
-unmodified `resolution.compute_horizon_metrics`), the BULLISH/BEARISH -> LONG/SHORT vocabulary
-bridge it requires, `mechanical_outcome_summary`, per-horizon due/pending gating, and restart-safe
-persistence -- is fully mechanical, fully specified, and fully implemented and tested below.
+**`classify_expectation_correct` -- patched per design doc Section 19 (Fifth Addendum,
+`SCORECARD_DEFINITIONAL_LOCK = PASS`).** The prior delivery correctly identified that Sections 9/13a
+described the `HorizonMetrics -> expectation_correct` mapping as "forced"/"not a new invention"
+without ever actually stating it, and left the classifier raising `NotImplementedError` rather than
+guess a threshold. Section 19 closes that gap by writing the mapping down explicitly, built entirely
+from `directional_follow_through` (boolean, mathematically forced) and `round_trip_magnitude`'s own
+already-existing `0.0`/`1.0` boundaries plus a direct `mae`-vs-`mfe` comparison (scale-invariant --
+sidesteps the `atr=None` raw-price question noted in Section 19.1's own audit). No new numeric
+constant is introduced anywhere in this classifier; `classify_expectation_correct` below is a direct
+transcription of Section 19.14's own required pseudocode.
 """
 
 from __future__ import annotations
 
+import dataclasses
 import datetime
 from typing import TYPE_CHECKING
 
 from ai_trader.apprenticeship_v2 import durable_store
 from ai_trader.apprenticeship_v2.resolution import compute_horizon_metrics
-from ai_trader.apprenticeship_v2.schemas import RESOLUTION_HORIZONS_M15, HorizonMetrics, ScorecardEntry
+from ai_trader.apprenticeship_v2.schemas import (
+    ALLOWED_EXPECTATIONS, RESOLUTION_HORIZONS_M15, HorizonMetrics, ScorecardEntry,
+)
 
 if TYPE_CHECKING:
     from ai_trader.apprenticeship_v2.mt5_read_only_source import ReadOnlyBar
@@ -102,15 +96,69 @@ def due_horizons_for_episode(
     return due
 
 
-def classify_expectation_correct(ai_trader_expectation: str, metrics: HorizonMetrics) -> str:
-    """NOT IMPLEMENTED -- see module docstring (`VE_SEMANTIC_GAP_FOUND`, disclosed in the
-    implementation report). Raising here, rather than guessing an uncalibrated threshold, is the
-    correct application of this mandate's own "never improvise a semantic decision" rule."""
-    raise NotImplementedError(
-        "classify_expectation_correct: VE_SEMANTIC_GAP_FOUND -- the design doc does not specify the "
-        "HorizonMetrics -> {YES,NO,PARTIAL,NOT_SCORABLE} threshold mapping despite describing it as "
-        "'forced'/'not a new invention' (Sections 9, 13a). See scorecard.py module docstring."
-    )
+@dataclasses.dataclass(frozen=True, slots=True)
+class EpisodeContext:
+    """Design doc Section 19.14's own `episode_context` parameter -- carries exactly the fields the
+    classifier's universal preconditions need, kept separate from `HorizonMetrics` (which is purely
+    the numeric outcome, not eligibility/horizon-identity state)."""
+
+    prospective_eligibility: str | None
+    review_horizon: str
+    structural_resolution_state: str | None = None
+    """One of `"CONFIRMATION"` / `"INVALIDATION"` / `"UNRESOLVED_AT_H8"` / `None` -- only consulted
+    when `review_horizon == "STRUCTURAL_FINAL"`. No caller in this delivery ever produces a
+    `STRUCTURAL_FINAL` row today (`due_horizons_for_episode` only emits H1/H2/H4/H8) -- the
+    structural-resolution computation itself for general-observer episodes remains a disclosed,
+    separate, not-yet-built engineering gap (design doc Section 19.11); this classifier's own
+    STRUCTURAL_FINAL branch is defined and tested regardless, ready for that future caller."""
+
+
+def classify_expectation_correct(expectation: str, metrics: HorizonMetrics, episode_context: EpisodeContext) -> str:
+    """Design doc Section 19.5/19.13/19.14 (Fifth Addendum) -- the now-frozen mapping. Transcribed
+    directly from Section 19.14's own required pseudocode; no threshold introduced beyond what that
+    section itself declares mathematically forced. Mutual exclusivity and exhaustiveness proved in
+    Section 19.16 (every reachable state maps to exactly one verdict, by construction of the
+    if/return branches below -- verified independently by this module's own tests, not merely
+    asserted)."""
+    # --- Universal preconditions (Section 19.4), checked in this exact order ---
+    if expectation == "UNCLEAR":
+        return "NOT_SCORABLE"
+    if expectation not in ALLOWED_EXPECTATIONS:
+        return "NOT_SCORABLE"
+    if episode_context.prospective_eligibility != "YES":
+        return "NOT_SCORABLE"
+
+    if episode_context.review_horizon == "STRUCTURAL_FINAL":
+        state = episode_context.structural_resolution_state
+        if state is None or state == "UNRESOLVED_AT_H8":
+            return "NOT_SCORABLE"
+        dft: bool | None = state == "CONFIRMATION"
+        rtm = 0.0 if dft else 1.0  # CONFIRMATION behaves as the "YES" pole, INVALIDATION as the "NO" pole
+        mae_gt_mfe = state == "INVALIDATION"
+    else:
+        dft = metrics.directional_follow_through
+        rtm = metrics.round_trip_magnitude
+        mae_gt_mfe = metrics.mae > metrics.mfe
+        if dft is None:
+            return "NOT_SCORABLE"
+
+    # --- Per-expectation contract (Section 19.5 / 19.13) ---
+    if expectation == "FOLLOW_THROUGH_LIKELY":
+        return "YES" if (dft is True and rtm < 1.0) else "NO"
+    if expectation == "FAILURE_LIKELY":
+        return "YES" if (dft is False or rtm >= 1.0) else "NO"
+    if expectation == "REVERSAL_LIKELY":
+        return "YES" if (dft is False and mae_gt_mfe) else "NO"
+    if expectation == "RANGE_LIKELY":
+        return "YES" if (dft is False and not mae_gt_mfe) else "NO"
+    if expectation == "ROUND_TRIP_LIKELY":
+        if rtm >= 1.0:
+            return "YES"
+        if rtm > 0.0:
+            return "PARTIAL"
+        return "NO"
+
+    return "NOT_SCORABLE"  # unreachable given the precondition check above; defensive only
 
 
 def score_due_horizons_for_episode(
@@ -120,18 +168,16 @@ def score_due_horizons_for_episode(
     episodes whose `qualitative_review_status == "FROZEN"` (the caller's responsibility -- checked by
     the caller, not here, since gating on review status is an orchestration concern, not a scoring
     one). `original_expectation`/`original_confidence` are copied verbatim from the BEFORE prediction
-    record, never re-derived (Section 9).
-
-    Currently always raises via `classify_expectation_correct` as soon as any horizon is due -- the
-    gap is upstream-only-except-for-that-one-step (see module docstring); this function does not
-    swallow the exception, so the gap can never be silently hidden behind a fabricated verdict.
-    Callers must not call this until the classification gap is resolved; `due_horizons_for_episode`
-    remains safely callable and independently useful in the meantime (e.g. to observe how many
-    horizons are pending, without scoring any of them)."""
+    record, never re-derived (Section 9). `partial_reason` stays `None` -- Section 19 does not
+    request populating it, and `mechanical_outcome_summary` already carries full numeric
+    auditability for the `PARTIAL` (`ROUND_TRIP_LIKELY` only) case."""
     entries: list[ScorecardEntry] = []
     for horizon_name, metrics in due_horizons_for_episode(episode_row, m15_bars):
         expectation = prediction_row.get("ai_trader_expectation", "")
-        expectation_correct = classify_expectation_correct(expectation, metrics)  # raises
+        episode_context = EpisodeContext(
+            prospective_eligibility=episode_row.get("prospective_eligibility"), review_horizon=horizon_name,
+        )
+        expectation_correct = classify_expectation_correct(expectation, metrics, episode_context)
         entries.append(ScorecardEntry(
             episode_id=episode_row["episode_id"], review_horizon=horizon_name,
             original_expectation=expectation, original_confidence=prediction_row.get("confidence", ""),
