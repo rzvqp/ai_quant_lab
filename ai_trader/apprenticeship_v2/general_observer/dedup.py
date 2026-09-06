@@ -41,6 +41,14 @@ def move_origin_price(event: DetectedEvent) -> float:
     raise ValueError(f"move_origin_price: unknown episode_type {event.episode_type!r}")
 
 
+def row_move_origin_price(row: dict) -> float:
+    """Public wrapper around `_row_move_origin_price` -- `structural_resolution.py` needs the same
+    ledger-row `move_origin_price` lookup for its own invalidation check (design doc Section 19.11);
+    exposed here rather than duplicated, since this module already owns the per-class extraction
+    logic."""
+    return _row_move_origin_price(row)
+
+
 def _row_move_origin_price(row: dict) -> float:
     """Same as `move_origin_price`, but reading a ledger CSV row (dict of strings) instead of a
     fresh `DetectedEvent` -- used when checking a NEW event against ALREADY-PERSISTED episodes."""

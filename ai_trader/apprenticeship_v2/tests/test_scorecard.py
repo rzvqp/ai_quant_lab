@@ -25,11 +25,17 @@ def _isolated_scorecard_csv(tmp_path, monkeypatch):
     monkeypatch.setattr(durable_store, "SCORECARD_CSV", tmp_path / "AI_TRADER_SCORECARD.csv")
 
 
-def _episode_row(*, episode_id="GO-TEST-1", frozen_at_bar_ts, direction="BULLISH", price=1900.0, prospective_eligibility="YES"):
+def _episode_row(
+    *, episode_id="GO-TEST-1", frozen_at_bar_ts, direction="BULLISH", price=1900.0, prospective_eligibility="YES",
+    origin_price=1896.0, move_id="MOVE-1",
+):
+    import json
+
     return {
         "episode_id": episode_id, "frozen_at_bar_ts": str(frozen_at_bar_ts),
         "directional_hypothesis": direction, "current_price": str(price),
-        "prospective_eligibility": prospective_eligibility,
+        "prospective_eligibility": prospective_eligibility, "episode_type": "SWEEP_REJECTION",
+        "underlying_move_id": move_id, "reference_levels_json": json.dumps({"swept_level_price": origin_price}),
     }
 
 
@@ -286,3 +292,68 @@ def test_confidence_never_affects_expectation_correct():
 
     params = inspect.signature(scorecard.classify_expectation_correct).parameters
     assert "confidence" not in params
+
+
+# ---- STRUCTURAL_FINAL scoring integration (mandate item 1) -----------------------------------------
+
+def test_score_structural_final_none_while_pending(base_ts):
+    row = _episode_row(frozen_at_bar_ts=base_ts, direction="BULLISH", price=1900.0, origin_price=1896.0)
+    prediction = {"ai_trader_expectation": "FOLLOW_THROUGH_LIKELY", "confidence": "HIGH"}
+    bars = [make_bar(ts_open=base_ts + i * M15_SECONDS, o=1898, h=1898.5, l=1897.5, c=1898.0) for i in range(1, 5)]
+    assert scorecard.score_structural_final_for_episode(row, prediction, bars, []) is None
+
+
+def test_score_structural_final_confirmation_produces_a_row(base_ts):
+    row = _episode_row(frozen_at_bar_ts=base_ts, direction="BULLISH", price=1900.0, origin_price=1896.0)
+    prediction = {"ai_trader_expectation": "FOLLOW_THROUGH_LIKELY", "confidence": "HIGH"}
+    bars = [make_bar(ts_open=base_ts + M15_SECONDS, o=1901, h=1902, l=1900.5, c=1901.5)]  # continuation past current_price
+    entry = scorecard.score_structural_final_for_episode(row, prediction, bars, [])
+    assert entry is not None
+    assert entry.review_horizon == "STRUCTURAL_FINAL"
+    assert entry.expectation_correct == "YES"
+    assert "structural_resolution_state=CONFIRMATION" in entry.mechanical_outcome_summary
+
+
+def test_score_structural_final_invalidation_produces_a_row(base_ts):
+    row = _episode_row(frozen_at_bar_ts=base_ts, direction="BULLISH", price=1900.0, origin_price=1896.0)
+    prediction = {"ai_trader_expectation": "FOLLOW_THROUGH_LIKELY", "confidence": "HIGH"}
+    bars = [make_bar(ts_open=base_ts + M15_SECONDS, o=1897, h=1897.5, l=1895.0, c=1895.5)]  # adverse close through origin
+    entry = scorecard.score_structural_final_for_episode(row, prediction, bars, [])
+    assert entry is not None
+    assert entry.expectation_correct == "NO"
+    assert "structural_resolution_state=INVALIDATION" in entry.mechanical_outcome_summary
+
+
+def test_score_structural_final_does_not_touch_earlier_horizon_rows(base_ts, tmp_path, monkeypatch):
+    """STRUCTURAL_FINAL scoring is a completely separate (episode_id, review_horizon) row -- it must
+    never overwrite or duplicate an already-written H1 row for the same episode."""
+    row = _episode_row(frozen_at_bar_ts=base_ts, direction="BULLISH", price=1900.0, origin_price=1896.0)
+    prediction = {"ai_trader_expectation": "FOLLOW_THROUGH_LIKELY", "confidence": "HIGH"}
+    h1_bars = [make_bar(ts_open=base_ts + i * M15_SECONDS, o=1900, h=1905, l=1899, c=1904) for i in range(1, 5)]
+    h1_entries = scorecard.score_due_horizons_for_episode(row, prediction, h1_bars)
+    for entry in h1_entries:
+        durable_store.append_scorecard(entry)
+    assert scorecard.already_scored(row["episode_id"], "H1") is True
+
+    structural_bars = [make_bar(ts_open=base_ts + M15_SECONDS, o=1901, h=1902, l=1900.5, c=1901.5)]
+    structural_entry = scorecard.score_structural_final_for_episode(row, prediction, structural_bars, [])
+    durable_store.append_scorecard(structural_entry)
+
+    rows = durable_store.read_scorecard_rows(row["episode_id"])
+    horizons_present = sorted(r["review_horizon"] for r in rows)
+    assert horizons_present == ["H1", "STRUCTURAL_FINAL"]
+    h1_row_after = next(r for r in rows if r["review_horizon"] == "H1")
+    assert h1_row_after["expectation_correct"] == h1_entries[0].expectation_correct  # untouched
+
+
+def test_score_structural_final_already_scored_returns_none(base_ts):
+    row = _episode_row(frozen_at_bar_ts=base_ts, direction="BULLISH", price=1900.0, origin_price=1896.0)
+    prediction = {"ai_trader_expectation": "FOLLOW_THROUGH_LIKELY", "confidence": "HIGH"}
+    entry = ScorecardEntry(
+        episode_id=row["episode_id"], review_horizon="STRUCTURAL_FINAL", original_expectation="FOLLOW_THROUGH_LIKELY",
+        original_confidence="HIGH", mechanical_outcome_summary="x", expectation_correct="YES",
+        partial_reason=None, scored_at_utc="2026-01-01T00:00:00+00:00",
+    )
+    durable_store.append_scorecard(entry)
+    bars = [make_bar(ts_open=base_ts + M15_SECONDS, o=1901, h=1902, l=1900.5, c=1901.5)]
+    assert scorecard.score_structural_final_for_episode(row, prediction, bars, []) is None

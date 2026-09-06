@@ -23,6 +23,8 @@ from __future__ import annotations
 
 import json
 
+from ai_trader.apprenticeship_v2.general_observer.before_review import effective_general_episode_rows
+
 MIN_INDEPENDENT_UNDERLYING_MOVES = 10
 MIN_SUPPORT_RATIO_FOR_PROSPECTIVELY_SUPPORTED = 0.70
 MAX_LESSON_VOTES_PER_UNDERLYING_MOVE = 1
@@ -56,7 +58,14 @@ def select_canonical_episodes(
     `CANONICAL_LESSON_EPISODE`; every later matching episode in the same move is simply absent from
     the returned mapping (never chosen by strength, confidence, cleanliness, outcome, or proximity to
     the eventual move -- `LESSON_VOTE_WEIGHT=0` is enforced by never being looked at again, not by an
-    explicit zero-weight marker). Returns `{underlying_move_id: canonical_row}`."""
+    explicit zero-weight marker). Returns `{underlying_move_id: canonical_row}`.
+
+    `general_episode_rows` is passed through `before_review.effective_general_episode_rows` first --
+    the BEFORE-ordering-violation-corrected `prospective_eligibility` value (design doc Section 8
+    step 8) is what actually gates entry into lesson evidence here, not merely the mechanical shell's
+    own construction-time default, and this happens unconditionally so no caller can bypass it by
+    forgetting to apply the overlay themselves."""
+    general_episode_rows = effective_general_episode_rows(general_episode_rows)
     matching = [
         row for row in general_episode_rows
         if row.get("prospective_eligibility") == "YES" and episode_matches_hypothesis(row, hypothesis_eligibility_definition)

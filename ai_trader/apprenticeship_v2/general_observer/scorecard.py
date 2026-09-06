@@ -23,6 +23,7 @@ import datetime
 from typing import TYPE_CHECKING
 
 from ai_trader.apprenticeship_v2 import durable_store
+from ai_trader.apprenticeship_v2.general_observer.structural_resolution import due_structural_final_for_episode
 from ai_trader.apprenticeship_v2.resolution import compute_horizon_metrics
 from ai_trader.apprenticeship_v2.schemas import (
     ALLOWED_EXPECTATIONS, RESOLUTION_HORIZONS_M15, HorizonMetrics, ScorecardEntry,
@@ -106,11 +107,9 @@ class EpisodeContext:
     review_horizon: str
     structural_resolution_state: str | None = None
     """One of `"CONFIRMATION"` / `"INVALIDATION"` / `"UNRESOLVED_AT_H8"` / `None` -- only consulted
-    when `review_horizon == "STRUCTURAL_FINAL"`. No caller in this delivery ever produces a
-    `STRUCTURAL_FINAL` row today (`due_horizons_for_episode` only emits H1/H2/H4/H8) -- the
-    structural-resolution computation itself for general-observer episodes remains a disclosed,
-    separate, not-yet-built engineering gap (design doc Section 19.11); this classifier's own
-    STRUCTURAL_FINAL branch is defined and tested regardless, ready for that future caller."""
+    when `review_horizon == "STRUCTURAL_FINAL"`. Populated by `score_structural_final_for_episode`
+    below, which calls `structural_resolution.due_structural_final_for_episode` (design doc Section
+    19.11) to compute it."""
 
 
 def classify_expectation_correct(expectation: str, metrics: HorizonMetrics, episode_context: EpisodeContext) -> str:
@@ -185,3 +184,48 @@ def score_due_horizons_for_episode(
             expectation_correct=expectation_correct, partial_reason=None, scored_at_utc=_now_iso(),
         ))
     return entries
+
+
+def score_structural_final_for_episode(
+    episode_row: dict, prediction_row: dict, m15_bars: "list[ReadOnlyBar]", existing_general_episode_rows: list[dict],
+) -> ScorecardEntry | None:
+    """`STRUCTURAL_FINAL` scoring (design doc Section 19.11). Returns a single `ScorecardEntry` once
+    `structural_resolution.due_structural_final_for_episode` resolves (an early
+    `CONFIRMATION`/`INVALIDATION`, or `UNRESOLVED_AT_H8` once the H8 bound is reached), else `None`
+    while still pending. Gated by the same `already_scored(..., "STRUCTURAL_FINAL")` check as every
+    other horizon -- restart-safe, never double-scored, and this row is entirely separate from (never
+    overwrites) the episode's own already-written H1/H2/H4/H8 rows, per the append-only
+    `(episode_id, review_horizon)` scorecard contract (Section 9/19.17)."""
+    if already_scored(episode_row["episode_id"], "STRUCTURAL_FINAL"):
+        return None
+    frozen_ts = int(episode_row["frozen_at_bar_ts"])
+    forward = sorted((b for b in m15_bars if b.ts_close > frozen_ts), key=lambda b: b.ts_close)
+    state = due_structural_final_for_episode(episode_row, forward, existing_general_episode_rows)
+    if state is None:
+        return None
+
+    direction = episode_row.get("directional_hypothesis") or None
+    s5_direction = _DIRECTION_TO_S5_VOCABULARY.get(direction) if direction else None
+    if forward:
+        metrics = compute_horizon_metrics(
+            entry_price=float(episode_row["current_price"]), setup_direction=s5_direction,
+            forward_bars=forward, horizon_n=len(forward), atr=None,
+        )
+    else:
+        metrics = HorizonMetrics(
+            forward_return=0.0, mfe=0.0, mae=0.0, max_up_move=0.0, max_down_move=0.0,
+            close_location=0.5, directional_follow_through=None, round_trip_magnitude=0.0,
+        )
+
+    expectation = prediction_row.get("ai_trader_expectation", "")
+    episode_context = EpisodeContext(
+        prospective_eligibility=episode_row.get("prospective_eligibility"), review_horizon="STRUCTURAL_FINAL",
+        structural_resolution_state=state,
+    )
+    expectation_correct = classify_expectation_correct(expectation, metrics, episode_context)
+    return ScorecardEntry(
+        episode_id=episode_row["episode_id"], review_horizon="STRUCTURAL_FINAL",
+        original_expectation=expectation, original_confidence=prediction_row.get("confidence", ""),
+        mechanical_outcome_summary=mechanical_outcome_summary(metrics) + f", structural_resolution_state={state}",
+        expectation_correct=expectation_correct, partial_reason=None, scored_at_utc=_now_iso(),
+    )

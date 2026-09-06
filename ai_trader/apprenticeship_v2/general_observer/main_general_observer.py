@@ -24,7 +24,7 @@ import signal
 import time
 import traceback
 
-from ai_trader.apprenticeship_v2 import durable_store
+from ai_trader.apprenticeship_v2 import checkpoint, durable_store
 from ai_trader.apprenticeship_v2.general_observer.tick import GeneralObserverTick
 from ai_trader.apprenticeship_v2.mt5_read_only_source import MT5ReadOnlyUnavailable, mt5_session
 from ai_trader.new_brain_live.singleton import AlreadyRunningError, SingletonLock
@@ -63,6 +63,12 @@ def run_forever() -> None:
             with mt5_session():
                 result = tick.tick()
             print(f"general_observer: tick ok -- {result}", flush=True)
+            try:
+                if checkpoint.general_observer_checkpoint_due():
+                    checkpoint.write_general_observer_checkpoint()
+                    print("general_observer: checkpoint written", flush=True)
+            except Exception:  # noqa: BLE001 -- a checkpoint failure must never mask a good tick result
+                print(f"general_observer: checkpoint raised:\n{traceback.format_exc()}", flush=True)
         except MT5ReadOnlyUnavailable as exc:
             last_error = f"MT5ReadOnlyUnavailable: {exc}"
             print(f"general_observer: {last_error}", flush=True)

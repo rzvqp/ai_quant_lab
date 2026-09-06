@@ -49,6 +49,15 @@ GENERAL_OBSERVER_LEDGER_CSV = LIVE_STATE_DIR / "AI_TRADER_GENERAL_OBSERVER_LEDGE
 SCORECARD_CSV = LIVE_STATE_DIR / "AI_TRADER_SCORECARD.csv"
 MISSED_MOVE_CLUSTERS_CSV = LIVE_STATE_DIR / "AI_TRADER_MISSED_MOVE_CLUSTERS.csv"
 LESSON_HYPOTHESES_JSON = LIVE_STATE_DIR / "AI_TRADER_LESSON_HYPOTHESES.json"
+GENERAL_OBSERVER_PREDICTIONS_CSV = LIVE_STATE_DIR / "AI_TRADER_GENERAL_OBSERVER_PREDICTIONS.csv"
+"""Final closure mandate item 2 -- general-observer's own BEFORE-review-completion record, parallel
+to S5's `PROSPECTIVE_PREDICTIONS_CSV`/`append_prediction()` (which general-observer episodes cannot
+share, for the same "don't widen a live file's column set" reason `GENERAL_OBSERVER_LEDGER_CSV` is
+already separate from `LIVE_EPISODE_LEDGER_CSV`). Carries `prospective_eligibility` as a genuine,
+directly-queryable column -- the review-time-computed, AUTHORITATIVE value (`general_observer.
+before_review.evaluate_prospective_eligibility`), which supersedes the mechanical shell's own
+always-`YES` default recorded in `GENERAL_OBSERVER_LEDGER_CSV` at construction time. Written once per
+episode (append-only, like every other artifact here); never revised afterward."""
 
 _LEDGER_FIELDS = [
     "episode_id", "timestamp_utc", "frozen_at_bar_ts", "episode_type", "symbol", "current_price",
@@ -71,6 +80,11 @@ _MISSED_MOVE_CLUSTER_FIELDS = [
 _PREDICTIONS_FIELDS = [
     "episode_id", "reviewed_at_utc", "ai_trader_expectation", "confidence", "shadow_decision",
     "expected_failure_mode", "expected_confirmation_behavior", "expected_invalidation_behavior",
+    "supporting_evidence", "conflicting_evidence", "full_record_json",
+]
+_GENERAL_PREDICTIONS_FIELDS = [
+    "episode_id", "reviewed_at_utc", "prospective_eligibility", "ai_trader_expectation", "confidence",
+    "expected_confirmation_behavior", "expected_invalidation_behavior", "what_to_watch_next",
     "supporting_evidence", "conflicting_evidence", "full_record_json",
 ]
 _RESOLVED_FIELDS = [
@@ -126,6 +140,42 @@ def append_prediction(episode: "schemas.EpisodeRecord") -> None:  # type: ignore
         "full_record_json": json.dumps(episode.to_json_dict()),
     }
     _append_csv_row(PROSPECTIVE_PREDICTIONS_CSV, _PREDICTIONS_FIELDS, row)
+
+
+def append_general_prediction(episode: "schemas.EpisodeRecord") -> None:  # type: ignore[name-defined]
+    """General-observer's own BEFORE-review-completion record (final closure mandate item 2) --
+    parallel to `append_prediction()`, writing to the separate `GENERAL_OBSERVER_PREDICTIONS_CSV`
+    (never `PROSPECTIVE_PREDICTIONS_CSV`, S5 isolation). Called once, at the moment
+    `general_observer.before_review.complete_before_review()` finalizes an episode's
+    `prospective_eligibility` -- never overwritten afterward."""
+    from ai_trader.apprenticeship_v2 import schemas
+
+    assert isinstance(episode, schemas.EpisodeRecord)
+    row = {
+        "episode_id": episode.episode_id, "reviewed_at_utc": episode.reviewed_at_utc,
+        "prospective_eligibility": episode.prospective_eligibility or "",
+        "ai_trader_expectation": episode.ai_trader_expectation, "confidence": episode.confidence,
+        "expected_confirmation_behavior": episode.expected_confirmation_behavior,
+        "expected_invalidation_behavior": episode.expected_invalidation_behavior,
+        "what_to_watch_next": episode.what_to_watch_next,
+        "supporting_evidence": episode.supporting_evidence, "conflicting_evidence": episode.conflicting_evidence,
+        "full_record_json": json.dumps(episode.to_json_dict()),
+    }
+    _append_csv_row(GENERAL_OBSERVER_PREDICTIONS_CSV, _GENERAL_PREDICTIONS_FIELDS, row)
+
+
+def read_all_general_predictions() -> list[dict[str, Any]]:
+    """All general-observer BEFORE-review-completion rows, fresh every call (never cached) -- used
+    by `general_observer.before_review.effective_general_episode_rows()` to overlay each episode's
+    review-time-authoritative `prospective_eligibility` onto its ledger row."""
+    return _read_all_rows(GENERAL_OBSERVER_PREDICTIONS_CSV)
+
+
+def read_general_prediction(episode_id: str) -> dict[str, Any] | None:
+    for row in _read_all_rows(GENERAL_OBSERVER_PREDICTIONS_CSV):
+        if row.get("episode_id") == episode_id:
+            return row
+    return None
 
 
 def append_general_episode_to_ledger(episode: "schemas.EpisodeRecord") -> None:  # type: ignore[name-defined]
