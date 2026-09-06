@@ -242,10 +242,23 @@ def append_missed_move_cluster(cluster: "schemas.RetrospectiveMissedMoveCluster"
     """Section 10 -- written EXACTLY ONCE per cluster, at termination (never while a cluster is
     still active/accumulating continuations -- the active cluster's own in-progress state lives in
     runtime state, see `load_active_missed_move_cluster`/`save_active_missed_move_cluster` below,
-    not in this append-only ledger)."""
+    not in this append-only ledger).
+
+    **Idempotent (Red Team RT-GENERAL-OBSERVER-V1-1-FINAL-AUDIT-001, Blocker 3).** `cluster_id` is
+    already deterministic -- a hash over the cluster's own fixed semantic identity (window-start,
+    window-end, direction), computed once when the cluster starts (`missed_move_audit._make_cluster_
+    id`), never revised. If a cluster with this exact id has already been persisted, this call is a
+    no-op -- a fresh ledger read every call, never cached, matching every other dedup check in this
+    module. Without this guard, a crash between this append (`tick.py`) and its own H1 watermark
+    being saved would re-process the same H1 bar on restart and deterministically re-derive and
+    re-append the identical, already-persisted cluster. Cluster semantics (identity, continuation,
+    termination) are entirely unchanged -- this only prevents writing the same already-determined
+    cluster twice."""
     from ai_trader.apprenticeship_v2 import schemas
 
     assert isinstance(cluster, schemas.RetrospectiveMissedMoveCluster)
+    if any(row.get("cluster_id") == cluster.cluster_id for row in read_missed_move_clusters()):
+        return
     row = {
         "cluster_id": cluster.cluster_id, "record_class": cluster.record_class, "direction": cluster.direction,
         "canonical_window_start_ts": cluster.canonical_window_start_ts,

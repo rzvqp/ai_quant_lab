@@ -10,6 +10,9 @@ from __future__ import annotations
 import dataclasses
 import json
 
+import pytest
+
+from ai_trader.apprenticeship_v2 import durable_store
 from ai_trader.apprenticeship_v2.general_observer.missed_move_audit import (
     advance_cluster_state, audit_candidate, classify_for_clustering, cluster_from_dict, coverage_window,
     is_covered,
@@ -236,3 +239,67 @@ def test_cluster_from_dict_round_trips_through_json_restart_simulation(base_ts):
     reloaded = cluster_from_dict(json.loads(as_json))
     assert reloaded == active
     assert dataclasses.asdict(reloaded)["record_class"] == "RETROSPECTIVELY_IDENTIFIED_MISSED_EVENT"
+
+
+# ---- Red Team RT-GENERAL-OBSERVER-V1-1-FINAL-AUDIT-001, Blocker 3 -- missed-move cluster restart
+# idempotency: durable_store.append_missed_move_cluster must not write the same deterministic
+# cluster_id twice, closing the crash-between-append-and-watermark-save window in tick.py.
+
+@pytest.fixture(autouse=True)
+def _isolated_missed_move_clusters_csv(tmp_path, monkeypatch):
+    """These tests must never read or write the real, live production clusters file."""
+    monkeypatch.setattr(durable_store, "MISSED_MOVE_CLUSTERS_CSV", tmp_path / "AI_TRADER_MISSED_MOVE_CLUSTERS.csv")
+
+
+def test_crash_before_watermark_then_restart_emits_cluster_exactly_once(base_ts):
+    """Simulates the exact crash scenario: a cluster is appended (as `tick.py` does, before its own
+    H1 watermark save completes), the process crashes, and on restart the identical H1 bar is
+    reprocessed -- deterministically re-deriving and re-appending the SAME cluster_id. The second
+    append must be a no-op."""
+    c1 = _cand(base_ts, 0)
+    active, _ = advance_cluster_state("MATERIAL_UNCOVERED", c1, None)
+    active2, terminated = advance_cluster_state("NOT_MATERIAL", _cand(base_ts, 1), active)
+    assert terminated is not None
+
+    durable_store.append_missed_move_cluster(terminated)  # first append -- "before the crash"
+    durable_store.append_missed_move_cluster(terminated)  # restart re-derives + re-appends the SAME cluster
+
+    rows = durable_store.read_missed_move_clusters()
+    assert len(rows) == 1
+    assert rows[0]["cluster_id"] == terminated.cluster_id
+
+
+def test_next_genuinely_different_cluster_still_persists_normally(base_ts):
+    """The idempotency guard must not suppress a genuinely DIFFERENT cluster -- only an exact
+    cluster_id repeat."""
+    active_a, terminated_a = advance_cluster_state("MATERIAL_UNCOVERED", _cand(base_ts, 0), None)
+    active_a2, terminated_a = advance_cluster_state("NOT_MATERIAL", _cand(base_ts, 1), active_a)
+    durable_store.append_missed_move_cluster(terminated_a)
+
+    # A later, distinct cluster (different canonical window -- different candidate index).
+    active_b, terminated_b = advance_cluster_state("MATERIAL_UNCOVERED", _cand(base_ts, 5), None)
+    active_b2, terminated_b = advance_cluster_state("NOT_MATERIAL", _cand(base_ts, 6), active_b)
+    assert terminated_b.cluster_id != terminated_a.cluster_id
+    durable_store.append_missed_move_cluster(terminated_b)
+
+    rows = durable_store.read_missed_move_clusters()
+    assert len(rows) == 2
+    assert {r["cluster_id"] for r in rows} == {terminated_a.cluster_id, terminated_b.cluster_id}
+
+
+def test_idempotent_append_restart_safe_via_fresh_read(base_ts):
+    """No in-memory flag anywhere -- the guard is a fresh `read_missed_move_clusters()` call every
+    time, so it works correctly even if the SECOND append happens in what is, in production, a
+    completely different process (the post-restart one)."""
+    active, terminated = advance_cluster_state("MATERIAL_UNCOVERED", _cand(base_ts, 0), None)
+    active2, terminated = advance_cluster_state("NOT_MATERIAL", _cand(base_ts, 1), active)
+    durable_store.append_missed_move_cluster(terminated)
+    assert len(durable_store.read_missed_move_clusters()) == 1
+
+    # Simulate a restart: reconstruct the identical cluster from scratch (fresh Python objects, no
+    # shared state with the block above) and attempt to append it again.
+    active_restart, terminated_restart = advance_cluster_state("MATERIAL_UNCOVERED", _cand(base_ts, 0), None)
+    active_restart2, terminated_restart = advance_cluster_state("NOT_MATERIAL", _cand(base_ts, 1), active_restart)
+    assert terminated_restart.cluster_id == terminated.cluster_id
+    durable_store.append_missed_move_cluster(terminated_restart)
+    assert len(durable_store.read_missed_move_clusters()) == 1  # still exactly one row

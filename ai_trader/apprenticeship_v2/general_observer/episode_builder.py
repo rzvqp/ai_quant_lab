@@ -193,7 +193,24 @@ def build_episodes_for_bar(
     every real chaining candidate; an under-provisioned list fails SAFE (fewer/no candidates found ->
     a new family started rather than an incorrect join), per `dedup.py`'s own documented contract.
     `existing_general_episode_rows` must be the durable ledger's rows from BEFORE this bar (e.g.
-    `durable_store.read_all_general_episode_rows()`), never mutated by the caller mid-call."""
+    `durable_store.read_all_general_episode_rows()`), never mutated by the caller mid-call.
+
+    **Causal truncation (Red Team RT-GENERAL-OBSERVER-V1-1-FINAL-AUDIT-001, Blocker 1).** `h4`/`h1`/
+    `m5` are truncated here, to `ts_close <= bar.ts_close`, before any use -- including the frozen
+    snapshot and the major-levels computation (which already filters `h1` internally, so this is
+    defense-in-depth there, not a behavior change). The caller (`tick.py`) fetches these up to real
+    "now", not up to this specific bar's own trigger timestamp, so during first-run or post-downtime
+    restart catch-up -- where `bar` is an older, already-past M15 bar being processed historically --
+    they can otherwise contain bars strictly after `bar.ts_close`, which must never enter the
+    immutable BEFORE snapshot. `m15_causal_bars_up_to_and_including_bar` is deliberately NOT
+    truncated here: it is already causally guaranteed by the caller's own slicing and by
+    `detect_displacement`'s own precondition assertion (`m15_bars[-1] is bar`), which stays a loud,
+    fail-fast check rather than a silent truncation, so a future caller regression there is still
+    caught immediately rather than quietly absorbed."""
+    h4 = [b for b in h4 if b.ts_close <= bar.ts_close]
+    h1 = [b for b in h1 if b.ts_close <= bar.ts_close]
+    m5 = [b for b in m5 if b.ts_close <= bar.ts_close]
+
     levels = compute_eligible_major_levels(h1, as_of_ts_close=bar.ts_close)
     detection = detect_all_events_for_bar(bar, m15_causal_bars_up_to_and_including_bar, levels)
 

@@ -117,16 +117,29 @@ def compute_underlying_move_id(
 
 
 def per_class_dedup_key(event: DetectedEvent, *, underlying_move_id: str) -> tuple:
-    """Design doc Section 4 (column H of each contract table) + Section 11. DISPLACEMENT keys on
-    `(type, direction, underlying_move_id)` -- a second displacement bar in the SAME still-open
-    family is the SAME key, hence a duplicate; SWEEP_REJECTION/STRUCTURAL_BREAK key on
-    `(type, level_type, level_price, direction)` instead, independent of family, since a whipsaw
-    re-crossing the identical level/price/direction is the duplicate condition for those two
-    classes specifically. SESSION_TRANSITION_REVERSAL inherits its child's own key."""
+    """Design doc Section 4 (column H of each contract table) + Section 11, corrected per Red Team
+    RT-GENERAL-OBSERVER-V1-1-FINAL-AUDIT-001 (Blocker 2). Every class's key includes
+    `underlying_move_id`: DISPLACEMENT already did (`(type, direction, underlying_move_id)`) --
+    SWEEP_REJECTION/STRUCTURAL_BREAK previously keyed on `(type, level_type, level_price, direction)`
+    alone, with no family/move scoping at all, which -- combined with `is_duplicate` scanning the
+    ENTIRE ledger -- suppressed a level/price/direction combination FOREVER, even after the
+    underlying move that first triggered it had long since closed. Section 4A/4B's own text is
+    explicit that this is wrong: a sweep/break of the *same* level is a duplicate only "UNLESS...
+    price has since closed back through the level in the adverse direction (a genuinely new event,
+    not a repeat)" -- exactly the condition `compute_underlying_move_id` already evaluates (unbroken
+    price continuity within the H8 window) to decide whether a NEW event joins an EXISTING family or
+    starts a NEW one. Including `underlying_move_id` in the key is the direct, spec-faithful
+    mechanical encoding of that already-specified behavior -- using the already-existing family
+    identity, not a new time threshold: two triggers of the identical level/price/direction within
+    the SAME still-open family (same `underlying_move_id`) still produce the identical key (still
+    suppressed, matching Section 4A/4B's own whipsaw-suppression text exactly); the identical
+    level/price/direction re-triggering under a NEW family (continuity broken or the H8 window
+    elapsed -- a NEW `underlying_move_id`) now produces a DIFFERENT key, correctly allowed through.
+    SESSION_TRANSITION_REVERSAL inherits its child's own key, unchanged."""
     if event.episode_type == "SWEEP_REJECTION":
-        return (event.episode_type, event.reference_levels["swept_level_type"], event.reference_levels["swept_level_price"], event.direction)
+        return (event.episode_type, event.reference_levels["swept_level_type"], event.reference_levels["swept_level_price"], event.direction, underlying_move_id)
     if event.episode_type == "STRUCTURAL_BREAK":
-        return (event.episode_type, event.reference_levels["broken_level_type"], event.reference_levels["broken_level_price"], event.direction)
+        return (event.episode_type, event.reference_levels["broken_level_type"], event.reference_levels["broken_level_price"], event.direction, underlying_move_id)
     if event.episode_type == "DISPLACEMENT":
         return (event.episode_type, event.direction, underlying_move_id)
     if event.episode_type == "SESSION_TRANSITION_REVERSAL":
@@ -141,16 +154,17 @@ def _row_dedup_key(row: dict, underlying_move_id_field: str = "underlying_move_i
     ref = json.loads(row["reference_levels_json"])
     etype = row["episode_type"]
     direction = row.get("directional_hypothesis")
+    move_id = row.get(underlying_move_id_field)
     if etype == "SWEEP_REJECTION":
-        return (etype, ref["swept_level_type"], ref["swept_level_price"], direction)
+        return (etype, ref["swept_level_type"], ref["swept_level_price"], direction, move_id)
     if etype == "STRUCTURAL_BREAK":
-        return (etype, ref["broken_level_type"], ref["broken_level_price"], direction)
+        return (etype, ref["broken_level_type"], ref["broken_level_price"], direction, move_id)
     if etype == "DISPLACEMENT":
-        return (etype, direction, row.get(underlying_move_id_field))
+        return (etype, direction, move_id)
     if etype == "SESSION_TRANSITION_REVERSAL":
         if "child_swept_level_type" in ref:
-            return ("SWEEP_REJECTION", ref["child_swept_level_type"], ref["child_swept_level_price"], direction)
-        return ("STRUCTURAL_BREAK", ref["child_broken_level_type"], ref["child_broken_level_price"], direction)
+            return ("SWEEP_REJECTION", ref["child_swept_level_type"], ref["child_swept_level_price"], direction, move_id)
+        return ("STRUCTURAL_BREAK", ref["child_broken_level_type"], ref["child_broken_level_price"], direction, move_id)
     raise ValueError(f"_row_dedup_key: unknown episode_type {etype!r}")
 
 
