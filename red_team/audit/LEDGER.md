@@ -5371,4 +5371,55 @@
                red_team/. Report: RT-GENERAL-OBSERVER-V1-1-REAUDIT-001.md.
                STATE: OPERATIONAL. Next entry [115], prev_hash E114.
   entry_hash:  E114
+
+[115] 2026-09-06
+  prev_hash:   E114
+  event:       VERDICT
+  dc_id:       DC-GENERAL-OBSERVER-PROSPECTIVE-LEARNING-SAFETY-GATES-ACTIVATION-T0-H1-DEADLINE
+  freeze_hash: implementation c86143a (child of E114-passed a2637e0, repo ai_quant_lab-research-main, branch
+               ai-trader-implementation); 211 passed 0 failed 0 skipped + REAL_MT5_E2E 6 passed (reproduced
+               live); real activation record M15_EPISODE_CUTOFF_EXCLUSIVE=1788717834 (2026-09-06 18:03 UTC)
+  battery_ver: RT-PROSPECTIVE-LEARNING-SAFETY-GATES-001
+  reviewer:    Red Team
+  detail:      Narrow re-audit of VE c86143a -- 2 prospective-eligibility gates (activation-T0 cutoff, H1 BEFORE
+               deadline) in before_review.effective_general_episode_rows + protocol-cadence doc. VE reports 211/0/0
+               + E2E 6 -- INDEPENDENTLY VERIFIED at source. ***RED_TEAM_VERDICT = PASS***; GROUP_3_PROSPECTIVE_
+               LEARNING_SAFE=YES; no blockers, no regression. Read-only; no code modified, no runtime/broker enabled.
+               SCOPE: ONLY code file changed = before_review.py (+116); rest = tests + docs; protocol-cadence
+               correction (item 3) is a DOC artifact only (no checkpoint.py/runtime change). ★ GATE 1 (activation
+               T0): load_activation_cutoff_ts reads the AUTHORITATIVE activation JSON (LIVE_STATE_DIR/...ACTIVATION
+               .json, data[GENUINELY_PROSPECTIVE_CUTOFF][M15_EPISODE_CUTOFF_EXCLUSIVE]) -- schema verified against
+               the real on-disk record (T0=1788717834); no hardcoded ts; None (no-op) if absent. evaluate_
+               activation_cutoff_eligibility: frozen<=T0 -> NO. PRE_T0_EXCLUSION=PASS (frozen<T0->NO); T0_BOUNDARY_
+               EXCLUSION=PASS (frozen==T0->NO, uses <=, only strictly-after counts); post-T0->YES. CONSUMED by the
+               vote path: effective_general_episode_rows applies it EVEN WITH NO prediction, against the row's raw
+               frozen_at_bar_ts -> catches a backfilled pre-T0 episode mistakenly reviewed BEFORE any scoring (the
+               exact gap the ordering guard can't see: test proves ordering-guard=YES but activation-gate=NO); and
+               lesson_voting.select_canonical_episodes calls effective_...rows unconditionally then filters YES ->
+               gated-NO excluded from canonical+voting (e2e: canonical={}, (n,s,c)=(0,0,0)). RESTART_T0_ENFORCEMENT=
+               PASS (pure fn of persisted facts + static JSON, fresh reads, no in-memory state). ★ GATE 2 (H1 BEFORE
+               deadline): H1_WINDOW_SECONDS=RESOLUTION_HORIZONS_M15[0]*900=3600 REUSES the frozen H1 horizon (no new
+               threshold; _M15_BAR_SECONDS is unit-conversion only). evaluate_before_deadline_eligibility: reviewed>
+               frozen+3600 -> NO. within-H1->YES; boundary->YES (inclusive, package convention); LATE_BEFORE_
+               EXCLUSION=PASS (after H1->NO, record KEPT on ledger never rewritten/deleted, can never vote). RESTART_
+               DEADLINE_ENFORCEMENT=PASS. NEITHER gate reads scored_at_utc -> scorecard-timing cannot restore
+               eligibility (test: no/early/late scorecard all -> NO). ★ DOWNGRADE-ONLY (no promotion): both gates
+               guarded by `if eligibility=='YES': eligibility='NO'` -> only YES->NO never reverse; ledger row
+               prospective_eligibility always 'YES' at construction (episode_builder.py:156) + fn returns a copy ->
+               output = min(ordering_guard, gate1, gate2); an otherwise-ineligible episode can NEVER be promoted.
+               ★ TEST_ISOLATION=PASS: autouse fixture monkeypatches before_review.ACTIVATION_RECORD_JSON + SCORECARD_
+               CSV + PREDICTIONS_CSV to tmp (docstring: 'the real activation record genuinely exists on this
+               machine'); each test writes its own schema-faithful synthetic record; no test reads production state;
+               coverage complete+adversarial; each gate's removal flips a passing assertion. ★ REGRESSION NONE:
+               detectors/structural_resolution/scorecard/lesson_voting(N>=10/0.70 intact)/dedup/episode_builder/
+               mt5_read_only_source(watermark)/s5_observer/tick/schemas BYTE-UNCHANGED; before_review adds no MT5/
+               order call; test_broker_execution_disabled unchanged+passing. S5_UNCHANGED=YES; SEMANTIC_DRIFT=NO.
+               Suite 211/0/0, E2E 6 reproduced live. Closes the real gap: activation record was documentary-only,
+               never consulted by the learning path; ~27 backfilled first-tick episodes could otherwise have entered
+               canonical lesson evidence if reviewed. GROUP_3_PROSPECTIVE_LEARNING_SAFE=YES. NOT authorized: enable
+               live trading / broker / modify code -- LIVE_TRADING_AUTHORIZED=NO, BROKER_AUTHORIZED=NO, NEXT_
+               AUTHORIZED_ACTION=NONE CEO REVIEW REQUIRED. Changes only in red_team/. Report: RT-PROSPECTIVE-
+               LEARNING-SAFETY-GATES-001.md.
+               STATE: OPERATIONAL. Next entry [116], prev_hash E115.
+  entry_hash:  E115
 ```
