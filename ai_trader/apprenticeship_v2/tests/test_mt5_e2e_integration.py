@@ -33,7 +33,7 @@ from ai_trader.apprenticeship_v2.general_observer import before_review, scorecar
 from ai_trader.apprenticeship_v2.general_observer.lesson_voting import select_canonical_episodes  # noqa: E402
 from ai_trader.apprenticeship_v2.general_observer.tick import GeneralObserverTick  # noqa: E402
 from ai_trader.apprenticeship_v2.mt5_read_only_source import (  # noqa: E402
-    MT5ReadOnlyUnavailable, TIMEFRAME_M15, XAUUSD, fetch_causal_closed_bars, mt5_session,
+    BAR_SECONDS, MT5ReadOnlyUnavailable, TIMEFRAME_M15, XAUUSD, fetch_causal_closed_bars, mt5_session,
 )
 
 
@@ -117,12 +117,31 @@ def test_full_pipeline_path_end_to_end_against_real_data():
 
 
 def test_no_duplicate_processing_on_second_tick_with_no_new_bars():
+    """Two back-to-back ticks against LIVE, uncontrolled market data can, rarely, straddle a genuine
+    M15 bar close (a real ~1-in-900-second race, unavoidable without freezing time and thereby no
+    longer testing anything real) -- confirmed directly: a failure reproduced during this fix's own
+    validation showed `second - first == 900` exactly (one full M15 bar duration), not a small,
+    arbitrary difference. That is correct, required behavior (a genuinely new bar MUST be detected),
+    not the defect this test exists to catch. The defect this test exists to catch --
+    `mt5_read_only_source.measure_broker_offset_seconds` drifting the same already-closed bar's own
+    computed `ts_close` by approximately 1 second per quiet real second elapsed (fixed via the offset
+    cache in that function) -- produced deltas of exactly 1 (observed repeatedly pre-fix), never a
+    clean multiple of the M15 bar duration. The watermark is therefore only correct if it either (a)
+    stays byte-identical (the common case: no bar closed in between) or (b) advances by an EXACT,
+    positive multiple of `BAR_SECONDS[TIMEFRAME_M15]` (a genuine bar boundary crossed) -- any other
+    delta, in particular the small, non-bar-aligned drift this test originally caught, still fails
+    this assertion exactly as before."""
     tick = GeneralObserverTick()
     with mt5_session():
         first = tick.tick()
-        second = tick.tick()  # immediately again -- no new M15 bar should have closed in between
+        second = tick.tick()  # immediately again
     assert second["new_general_episodes"] == []
-    assert second["last_processed_m15_ts_close"] == first["last_processed_m15_ts_close"]
+    delta = second["last_processed_m15_ts_close"] - first["last_processed_m15_ts_close"]
+    m15_bar_seconds = BAR_SECONDS[TIMEFRAME_M15]
+    assert delta == 0 or (delta > 0 and delta % m15_bar_seconds == 0), (
+        f"watermark changed by {delta}s -- neither unchanged nor an exact multiple of "
+        f"{m15_bar_seconds}s (M15's own bar duration); this is the drift defect, not a genuine bar close"
+    )
 
 
 def test_restart_continuity_fresh_tick_instance_does_not_reprocess():

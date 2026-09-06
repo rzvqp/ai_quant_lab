@@ -68,17 +68,64 @@ def _default_now() -> float:
     return time.time()
 
 
+_offset_cache: dict[str, tuple[float, float]] = {}
+"""Caches the last successfully-measured `(tick_time, offset_seconds)` pair per symbol -- see
+`measure_broker_offset_seconds`'s own docstring below for why this exists. Module-level, not a
+per-call/per-session value: the bug it fixes spans separate `fetch_causal_closed_bars` calls (and
+separate `mt5_session()` blocks) within the same long-running process, so the cache must survive
+across both to be effective. Single-threaded, process-local usage only (this entire module already
+assumes that -- one local MT5 terminal connection, never concurrent access)."""
+
+
 def measure_broker_offset_seconds(*, symbol: str = XAUUSD, now_fn: Callable[[], float] = _default_now) -> float:
-    """`broker_time - true_utc_time`, from one fresh tick. `0.0` (no correction) if no tick is
-    currently available -- never fabricated. Assumes `mt5.initialize()` has already been called by
-    the caller in this same process (this function performs no connection management itself)."""
+    """`broker_time - true_utc_time`. `0.0` (no correction) if no tick is currently available -- never
+    fabricated. Assumes `mt5.initialize()` has already been called by the caller in this same process
+    (this function performs no connection management itself).
+
+    **Cached per symbol, keyed on the tick's own `time` field -- live-discovered defect, fixed
+    2026-09-06.** `tick.time` is the timestamp of the LAST PRICE TICK, not a continuously-advancing
+    broker-clock reading: during a quiet market moment (no new tick arriving between two calls), it
+    stays frozen while `now_fn()` keeps advancing, so recomputing `tick_time - now_fn()` fresh on
+    every call made the result drift by approximately however long the market had been quiet --
+    reproduced directly: two `fetch_causal_closed_bars` calls taken seconds apart, with no new tick in
+    between, computed the SAME already-closed historical bar's own `ts_close` values one whole second
+    apart, climbing further with each additional call for as long as the tick stayed stale (General
+    Observer's own `last_processed_m15_ts_close` watermark, which compares this value for exact
+    equality across ticks, surfaced this as an intermittent "already-processed bar looks new" failure
+    -- General Observer's own dedup-by-level/price/direction, not by raw timestamp, happened to absorb
+    the resulting reprocessing without ever creating a duplicate episode, but the watermark itself was
+    not stable). This is not a clock-skew change -- the real broker/UTC relationship does not move
+    second to second -- it was purely an artifact of treating a stale reference as fresh. (An
+    independent, unrelated implementation of the same "broker clock offset" idea exists elsewhere in
+    this repo, `live_signal_source/bar_feed.py::make_broker_offset` -- its own docstring documents the
+    same root-cause class of bug, found and fixed there first, via a different, more involved
+    mechanism this function does not adopt; see this function's own fix below for what IS adopted from
+    it and why the narrower version suffices here.)
+
+    The fix: the offset is recomputed only the first time (or the first time again after) a given
+    `tick.time` is observed for a symbol; every subsequent call that sees the SAME `tick.time` reuses
+    that cached value unchanged, rather than recomputing it against a `now_fn()` that has moved on
+    without the market. A genuinely new tick (any change in `tick.time`) still triggers an immediate,
+    fresh recomputation -- this is not a staleness tolerance applied to the comparison or the result;
+    it computes the exact same formula this function always computed, from the exact same input,
+    exactly once per distinct input, instead of silently recomputing (and drifting) against identical
+    input. No bar-closure detection, no dedup check, and no market-structure value anywhere in this
+    file is touched -- only how this one internal measurement is cached."""
     tick = mt5.symbol_info_tick(symbol)
     if tick is None:
         return 0.0
     tick_time = getattr(tick, "time", None)
     if tick_time is None:
         return 0.0
-    return float(tick_time) - now_fn()
+    tick_time = float(tick_time)
+
+    cached = _offset_cache.get(symbol)
+    if cached is not None and cached[0] == tick_time:
+        return cached[1]
+
+    offset = tick_time - now_fn()
+    _offset_cache[symbol] = (tick_time, offset)
+    return offset
 
 
 def _bar_from_rate(rate, symbol: str, timeframe: int, *, offset_seconds: float) -> ReadOnlyBar:
