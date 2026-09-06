@@ -5251,4 +5251,68 @@
                RETEST-V1.md.
                STATE: OPERATIONAL. Next entry [113], prev_hash E112.
   entry_hash:  E112
+
+[113] 2026-09-06
+  prev_hash:   E112
+  event:       VERDICT
+  dc_id:       DC-GENERAL-OBSERVER-V1-1-FINAL-ADVERSARIAL-AUDIT
+  freeze_hash: implementation head 1e099aa (repo ai_quant_lab-research-main, branch ai-trader-implementation)
+               incl 8bf9105 scorecard patch + f8573b3 closure + 1e099aa MT5 watermark fix; 177/177 pass 0 skip
+               (reproduced live); spec DEFINITIONAL_LOCK.md (1258 lines, Section 19 classifier)
+  battery_ver: RT-GENERAL-OBSERVER-V1-1-FINAL-AUDIT-001
+  reviewer:    Red Team
+  detail:      Final adversarial audit of AI Trader General Observer V1.1. VE reported 177/177 PASS across 8 live
+               runs / REMAINING_BLOCKERS=NONE -- INDEPENDENTLY REJECTED. ***RED_TEAM_VERDICT = FAIL***; 3 blockers,
+               all in code paths the 177 tests never exercise. Read-only; no code modified, no finding fixed, no
+               runtime enabled, no broker authorized. ★ HIGH-PRIORITY watermark fix 1e099aa = PASS: caches (tick.time,
+               offset) per symbol (mt5_read_only_source.py:122-128), reuses while tick.time frozen, recomputes on
+               change -- removes quiet-tick drift; no stale-freeze beyond one tick (self-corrects next tick, offset
+               always <=true/lag-biased-down); CAUSALITY-SAFE BOTH WAYS (ts_open=rate.time-offset -> drift climbs
+               ts_close UPWARD; filter ts_close<=now can only DROP closed bars, never admit a forming bar -> no future
+               leak); restart-safe (in-memory cache empties on restart; episode identity is ledger-composite-key not
+               raw watermark). S5 ISOLATION = PASS: measure_broker_offset_seconds has ONE non-test caller (fetch_
+               causal_closed_bars, same module); every mt5_read_only_source importer is in apprenticeship_v2/ (read-
+               only observer); NO live_signal_source/mt5_demo_bridge/mstrat/trading path imports it; s5_observer.py
+               imports only the ReadOnlyBar TYPE; real S5 feed is the separate unchanged live_signal_source/bar_feed.
+               make_broker_offset; union of all 3 commits touches ONLY apprenticeship_v2/ + 4 reports (no real-S5
+               file); broker execution structurally unreachable (test_broker_execution_disabled: no order_send/
+               position call name anywhere; MT5 imported only via read-only source). ★★ BLOCKER 1 -- BEFORE-SNAPSHOT
+               FUTURE LEAK (CAUSALITY=FAIL/BEFORE_INTEGRITY=FAIL/FUTURE_LEAK=YES): the frozen BEFORE snapshot's H4/H1/
+               M5 sections are NOT truncated to the trigger bar's ts_close. tick.py:83-85 passes FULL h4/h1/m5 (only
+               M15 sliced m15[:i+1]) and loops over EVERY unprocessed M15 bar; episode_builder.py:138 build_snapshot
+               (h4,h1,m15,m5) untruncated; snapshot.py:33-45 takes h4[-12]/h1[-24]/m5[-48] (most recent) and its OWN
+               docstring says the caller MUST truncate to the trigger -- the caller does not. M15_FETCH_COUNT=100 ->
+               FIRST run processes ~100 M15 bars (~25h); any episode for an older trigger freezes UP TO ~25h of POST-
+               trigger (future) H1/H4/M5 into the immutable BEFORE (the sole data a later qualitative review may use);
+               same on any restart after >1 M15 bar closed. Steady-state single-tick leak ~0 -> why 177 tests miss it.
+               ★★ BLOCKER 2 -- SWEEP/BREAK DEDUP DRIFT (DEDUP=FAIL/SEMANTIC_DRIFT=YES): per_class_dedup_key for SWEEP_
+               REJECTION/STRUCTURAL_BREAK = (type,level_type,level_price,direction) with NO move_id/timestamp (dedup.py
+               :126-129) and is_duplicate scans the WHOLE ledger (dedup.py:170-177) -> a legitimately-new re-crossing
+               of the same level after a price round-trip (which compute_underlying_move_id correctly mints a NEW
+               family for) is WRONGLY suppressed, contradicting spec Section 4A/4B + Section 11 ("once the family
+               closes the same level may originate a new episode later"; "a genuinely new crossing is a legitimately
+               new event, not a duplicate"). The fn's own docstring claims the move_id resolves it, but the sweep/
+               break key never uses move_id (only DISPLACEMENT does). Under-counts independent moves feeding lesson
+               evidence. Reachable (e.g. two PDH sweeps with a round-trip). Untested (test_dedup uses a displacement).
+               ★ BLOCKER 3 (lower severity) -- RESTART CLUSTER DUPLICATE (CHECKPOINT_RESTART=FAIL/DUPLICATE_EVIDENCE=
+               YES): append_missed_move_cluster (durable_store.py:241-258) has NO idempotency guard and is appended
+               mid-loop (tick.py:104) before the H1 watermark is persisted (tick.py:108+); crash between re-emits the
+               deterministic cluster on restart. Bounded (clusters never feed lesson votes). Same root cause = pending-
+               BEFORE rebuilt-not-reloaded -> hindsight on restart (episode_builder.py:157-162, disclosed "not yet
+               implemented"). PASSES (independently confirmed): STRUCTURAL_FINAL (structural_resolution.py:75 window-
+               bounded/immutable); SCORECARD (classify_expectation_correct = line-for-line Section 19.14); LESSON_LOOP
+               mechanics (one vote/underlying_move, retrospective->zero) BUT its input population is corrupted by
+               Blocker 2; MISSED_MOVE_AUDIT logic (H1 rolling, causal ATR-as-of-start, exact direction, coverage A-D,
+               cluster continuation); REAL_MT5_E2E executed 177/177 + broker unreachable but coverage-incomplete
+               (single-tick only). §8 revised test assertion (delta==0 or delta%900==0) does NOT mask the drift (delta
+               =1 still fails; back-to-back ticks make a 900-multiple drift physically impossible). §9 Section 11
+               citation/provenance defect = cosmetic (wrong section-number cross-refs; every actual contract concretely
+               specified -> no semantic ambiguity), non-blocking as the mandate anticipated. TEST_SUITE_ADEQUATE=NO
+               (177/177 real but ZERO coverage of catch-up snapshot causality, re-sweep-after-roundtrip dedup, crash-
+               before-cluster-save). GENERAL_OBSERVER_READY_FOR_SHADOW_APPRENTICESHIP=NO; LIVE_SHADOW_AUTHORIZED=NO;
+               BROKER_AUTHORIZED=NO. NOT authorized: modify code / fix findings / enable runtime / authorize broker --
+               NEXT_AUTHORIZED_ACTION=NONE CEO REVIEW REQUIRED. Changes only in red_team/. Report:
+               RT-GENERAL-OBSERVER-V1-1-FINAL-AUDIT-001.md.
+               STATE: OPERATIONAL. Next entry [114], prev_hash E113.
+  entry_hash:  E113
 ```
