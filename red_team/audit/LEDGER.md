@@ -5315,4 +5315,60 @@
                RT-GENERAL-OBSERVER-V1-1-FINAL-AUDIT-001.md.
                STATE: OPERATIONAL. Next entry [114], prev_hash E113.
   entry_hash:  E113
+
+[114] 2026-09-06
+  prev_hash:   E113
+  event:       VERDICT
+  dc_id:       DC-GENERAL-OBSERVER-V1-1-REAUDIT-3-BLOCKER-REMEDIATION
+  freeze_hash: remediation a2637e0 (child of 1e099aa, repo ai_quant_lab-research-main, branch ai-trader-
+               implementation); 191 passed 0 failed 0 skipped (reproduced live); closes RT-GENERAL-OBSERVER-V1-1-
+               FINAL-AUDIT-001 (E113) 3 blockers
+  battery_ver: RT-GENERAL-OBSERVER-V1-1-REAUDIT-001
+  reviewer:    Red Team
+  detail:      Re-audit of General Observer V1.1 after VE remediation a2637e0 of the 3 E113 blockers. VE reports
+               191 passed/0 failed/0 skipped -- INDEPENDENTLY VERIFIED, every fix checked at source + adversarially
+               tested. ***RED_TEAM_VERDICT = PASS***; all 3 blockers genuinely closed, no regression, no new defect.
+               Read-only; no code modified, no shadow/broker enabled. SCOPE: a2637e0 = exactly the 3 flagged code
+               files (episode_builder.py +19, dedup.py +40, durable_store.py +15) + 3 test files (test_causal_
+               truncation NEW +138, test_dedup +80, test_missed_move_audit +67) + report; 431 ins/16 del. ★ BLOCKER
+               1 (future leak) CLOSED: build_episodes_for_bar now truncates h4/h1/m5 to `ts_close<=bar.ts_close` at
+               the top before any use (episode_builder.py); bound inclusive-at-trigger (causal); reassigned locals
+               flow into build_episode_record->build_snapshot(:138); UNBYPASSABLE (build_snapshot has 1 caller
+               build_episode_record, 1 non-test caller build_episodes_for_bar, 1 caller tick.py:83); M15 stays the
+               caller's causal slice guarded by detect_displacement's assert m15[-1] is bar; h1 trunc bound ==
+               major_levels' own internal filter so levels/detection unchanged. Tested (6 tests): first-startup(100
+               M15)/long-downtime-restart(multi-day)/trigger begin-mid-end/each-TF-isolated; every test ASSERTS the
+               fixture extends past the trigger (non-vacuous) then asserts every snapshot bar ts_close<=trigger.
+               BEFORE_SNAPSHOT_CAUSALITY/CATCHUP/RESTART=PASS, FUTURE_LEAK=NO. ★ BLOCKER 2 (dedup) CLOSED spec-
+               faithfully: per_class_dedup_key + _row_dedup_key now include underlying_move_id in SWEEP_REJECTION/
+               STRUCTURAL_BREAK keys (dedup.py:126-131,154-170), the threshold-free mechanical encoding of Section
+               4A/4B (a same-level sweep/break is a duplicate UNLESS price closed back through = a new event -- the
+               exact condition compute_underlying_move_id already evaluates via H8 price-continuity). Same-move ->
+               same id -> suppressed; round-trip (adverse close breaks continuity) -> NEW id -> different key ->
+               ALLOWED (the E113 defect). Restart-safe: ledger persists underlying_move_id (durable_store.py:68,203)
+               so _row_dedup_key reads it; re-detected event deterministically recomputes same id. No artificial
+               multiplication, no permanent suppression. Tested end-to-end (5 tests: same-move-suppressed x2, round-
+               trip-new-move-allowed [is_duplicate is False], restart JSON round-trip, 2-distinct-move-ids-for-
+               lesson-votes) -- uses compute_move_id+is_duplicate TOGETHER (the shape that catches the original
+               defect; old test used a displacement). SWEEP_BREAK_DEDUP/NEW_INDEPENDENT_MOVE_ALLOWED/SAME_MOVE_
+               SUPPRESSED=PASS, SEMANTIC_DRIFT=NO, DUPLICATE_EVIDENCE_RISK=NO. ★ BLOCKER 3 (cluster idempotency)
+               CLOSED: append_missed_move_cluster no-ops if the deterministic cluster_id already exists (fresh ledger
+               read every call, durable_store.py). cluster_id = hash over first candidate's FIXED (window_start,
+               window_end, direction) set once in _start_cluster never revised (missed_move_audit.py:109-126) ->
+               restart re-derives identical id. Tested (3): crash-append-twice->1 row; reconstructed-from-scratch
+               (different process)->1 row (fresh read no in-memory flag); distinct cluster still writes->2 rows.
+               MISSED_MOVE_CLUSTER_IDEMPOTENCY/CRASH_RESTART_EXACTLY_ONCE=PASS. ★ REGRESSION (§4) NONE: structural_
+               resolution/scorecard/lesson_voting/mt5_read_only_source(watermark)/s5_observer/tick/snapshot/loop/main
+               BYTE-UNCHANGED by a2637e0; broker safety intact (test_broker_execution_disabled unchanged+passing; the
+               2 new general_observer code changes add no MT5/order call); S5_UNCHANGED=YES (E113 S5-isolation +
+               watermark-fix findings stand). ★ TEST_SUITE_ADEQUATE=YES: 14 new tests balanced+non-vacuous, each
+               would FAIL if its E113 defect were reintroduced (remove truncation->future-bar assert fails; drop
+               move_id from key->round-trip is_duplicate flips True; remove guard->crash test 1->2 rows). ★ REAL_MT5_
+               SUITE = 191 passed/0 failed/0 skipped (reproduced live incl gated E2E; 177+14). BLOCKERS=NONE. GENERAL_
+               OBSERVER_V1_1_FINAL=PASS; GENERAL_OBSERVER_READY_FOR_SHADOW_APPRENTICESHIP=YES (subject to CEO auth --
+               this audit does not grant it). NOT authorized: enable shadow / broker / modify code -- LIVE_SHADOW_
+               AUTHORIZED=NO, BROKER_AUTHORIZED=NO, NEXT_AUTHORIZED_ACTION=NONE CEO REVIEW REQUIRED. Changes only in
+               red_team/. Report: RT-GENERAL-OBSERVER-V1-1-REAUDIT-001.md.
+               STATE: OPERATIONAL. Next entry [115], prev_hash E114.
+  entry_hash:  E114
 ```
