@@ -18,9 +18,15 @@ from ai_trader.apprenticeship_v2.schemas import EpisodeRecord, ScorecardEntry
 
 @pytest.fixture(autouse=True)
 def _isolated_durable_store(tmp_path, monkeypatch):
-    """These tests must never read or write the real, live production files."""
+    """These tests must never read or write the real, live production files. Includes
+    `before_review.ACTIVATION_RECORD_JSON`: the real shadow-apprenticeship activation record already
+    exists on this machine (production data), so leaving it unisolated would make these tests silently
+    depend on live state -- pointed at a nonexistent path by default (`load_activation_cutoff_ts()`
+    returns `None`, the documented no-activation-yet behavior) unless a test writes its own fixture
+    file there."""
     monkeypatch.setattr(durable_store, "SCORECARD_CSV", tmp_path / "AI_TRADER_SCORECARD.csv")
     monkeypatch.setattr(durable_store, "GENERAL_OBSERVER_PREDICTIONS_CSV", tmp_path / "AI_TRADER_GENERAL_OBSERVER_PREDICTIONS.csv")
+    monkeypatch.setattr(before_review, "ACTIVATION_RECORD_JSON", tmp_path / "AI_TRADER_GENERAL_OBSERVER_SHADOW_APPRENTICESHIP_ACTIVATION.json")
 
 
 def _episode(episode_id="GO-1", **overrides) -> EpisodeRecord:

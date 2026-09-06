@@ -45,6 +45,12 @@ def _isolated_durable_store(tmp_path, monkeypatch):
         "GENERAL_OBSERVER_PREDICTIONS_CSV", "LESSON_HYPOTHESES_JSON",
     ):
         monkeypatch.setattr(durable_store, name, tmp_path / f"{name}.tmp")
+    # `before_review.ACTIVATION_RECORD_JSON` is computed once at import time from the REAL
+    # `durable_store.LIVE_STATE_DIR` -- redirecting that attribute above does not retroactively change
+    # it (it is already a materialized Path, not a live reference). Isolated separately here so this
+    # test's fresh, real-clock episodes are never gated against the unrelated real production
+    # shadow-apprenticeship activation record that already exists on this machine.
+    monkeypatch.setattr(before_review, "ACTIVATION_RECORD_JSON", tmp_path / "ACTIVATION.tmp")
 
 
 def test_fetch_causal_closed_bars_is_closed_bars_only_against_real_terminal():
