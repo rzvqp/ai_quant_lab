@@ -1,0 +1,23 @@
+{
+  "mandate": "LEVEL_TO_LEVEL_ACCEPTANCE_V1",
+  "timeframe": "M15",
+  "level_classes": {
+    "1": "prev-day H/L",
+    "2": "session H/L",
+    "3": "causal swing H/L",
+    "4": "20-bar range boundary"
+  },
+  "cluster_atr": 0.2,
+  "break_rule": "M15 close beyond L1",
+  "acceptance": "next completed bar closes on breakout side",
+  "entry": "open[break+2]",
+  "stop": "structural invalidation (break..acceptance extreme) +/- 0.10 ATR, floored max(struct,2*spread,0.05,0.10ATR)",
+  "target": "next causal level L2 beyond price",
+  "swing_theta_atr": 1.0,
+  "one_trade_at_a_time": true,
+  "cost_base": 0.05,
+  "cost_stress": 0.08,
+  "backstop_bars": 96,
+  "no_context_filter": true,
+  "no_param_mining": true
+}

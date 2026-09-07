@@ -1,0 +1,88 @@
+{
+  "mandate": "GC_OI_CONTEXT_V1",
+  "oi_source": "Databento GLBX.MDP3 statistics GC.FUT stat_type=9 OPEN_INTEREST",
+  "oi_construction": "DAILY total-family GC OI (sum across outrights; roll-immune)",
+  "oi_causality": "use OI only after ts_event dissemination <= decision (point-in-time)",
+  "oi_windows_days": [
+    1,
+    5,
+    10,
+    20,
+    60
+  ],
+  "families": [
+    "O1",
+    "O2",
+    "O3",
+    "O4",
+    "O5"
+  ],
+  "oi_features": [
+    "o1_oi_rel_ma20",
+    "o1_oi_dev_ma60",
+    "o1_oi_pct252",
+    "o2_doi_1",
+    "o2_doi_5",
+    "o2_doi_20",
+    "o2_oi_rise_streak",
+    "o2_oi_accel_5_20",
+    "o3_price_x_doi5",
+    "o3_pricemag_x_doi5",
+    "o3_pxoi_updn",
+    "o4_vol_x_doi5",
+    "o4_highvol_oiup",
+    "o4_highvol_oidn",
+    "o5_xau_x_oiregime",
+    "o5_xau_x_doi5"
+  ],
+  "price_features": [
+    "p_gc_eff_8",
+    "p_gc_eff_16",
+    "p_gc_eff_32",
+    "p_gc_disp_8",
+    "p_gc_disp_16",
+    "p_gc_disp_32"
+  ],
+  "volume_features": [
+    "g1_vol_rel_tod",
+    "g1_vol_z_tod",
+    "g1_vol_rel_sess",
+    "g1_vol_pct500",
+    "g2_elev_streak",
+    "g2_vol_sum_4",
+    "g2_vol_sum_8",
+    "g2_vol_sum_16",
+    "g2_vol_sum_32",
+    "g2_vol_accel_4_8",
+    "g2_vol_concentration_8",
+    "g3_prog_per_vol_8",
+    "g3_prog_per_vol_16",
+    "g3_prog_per_vol_32",
+    "g3_highvol_lowprog",
+    "g3_lowvol_highprog",
+    "g4_up_dn_vol_8",
+    "g4_impulse_vol",
+    "g4_pullback_vol",
+    "g5_gc_partic_move",
+    "g6_vol_up_eff_dn",
+    "g6_disagree",
+    "g5_xau_per_gcvol"
+  ],
+  "representations": {
+    "A": "XAU",
+    "B": "A+price",
+    "C": "A+volume",
+    "D": "A+OI",
+    "E": "A+price+OI",
+    "F": "A+volume+OI",
+    "G": "A+price+volume+OI"
+  },
+  "model": "L2_logistic",
+  "walk_forward": "4 date-blocks expanding purge96",
+  "retention": [
+    0.8,
+    0.6,
+    0.4,
+    0.2
+  ]
+}

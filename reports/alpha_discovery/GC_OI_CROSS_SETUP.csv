@@ -1,0 +1,4 @@
+setup,best_nonoi,best_oi,nonoi60,bestoi60,dOI,GC_OI_INCREMENTAL,price_x_oi,vol_x_oi,beats_oi_destroy,GC_OI_CONTEXTUAL_CANDIDATE
+SETUP_1,C_volume,G_all,-0.3368,-0.3333,0.0035,False,0.0073,0.0014,False,False
+SETUP_2,C_volume,F_volume_oi,-0.2711,-0.2653,0.0058,False,0.0030999999999999,0.0058,False,False
+SETUP_3,B_price,E_price_oi,-0.087,-0.0937,-0.0067,False,-0.0067,-0.0004,False,False

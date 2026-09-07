@@ -1,0 +1,4 @@
+setup,best_nonCOT,best_COT,nonc60,bestc60,dCOT,COT_INCREMENTAL
+SETUP_1,C_volume,G_vol_oi_cot,-0.3368,-0.3347,0.0021,False
+SETUP_2,C_volume,G_vol_oi_cot,-0.2711,-0.2912,-0.0201,False
+SETUP_3,B_price,F_price_cot,-0.087,-0.0874,-0.0004,False

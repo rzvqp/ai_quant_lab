@@ -1,0 +1,21 @@
+{
+  "mandate": "FAILED_ACCEPTANCE_PRIOR_LEVEL_V1",
+  "parent": "LEVEL_TO_LEVEL_ACCEPTANCE_V1 (2a9f0c09)",
+  "timeframe": "M15",
+  "behavior_only": true,
+  "no_strategy": true,
+  "bound_universe": {
+    "raw": 102458,
+    "accepted": 72103,
+    "rejected": 30355
+  },
+  "failed_acceptance": "rejected break: close beyond L1 then next M15 closes back through L1",
+  "L0": "nearest causal clustered level on reversal side of L1 (below for upside, above for downside)",
+  "destination_test": "from bar b+2, first of L0 vs L2 vs neither within 32 M15 bars",
+  "control": "accepted breaks' L0 reach rate",
+  "cluster_atr": 0.2,
+  "horizon_bars": 32,
+  "no_pnl": true,
+  "no_param_mining": true,
+  "no_context_filter": true
+}

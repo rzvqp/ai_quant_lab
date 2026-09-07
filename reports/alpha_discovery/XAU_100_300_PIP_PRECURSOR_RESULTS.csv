@@ -1,0 +1,13 @@
+precursor,AUC,effect,ev_med,co_med,folds,consistent,passes
+p1_range4,0.583,0.083,2.192,1.943,"[np.float64(0.589), np.float64(0.584), np.float64(0.577)]",True,True
+p5_volratio,0.569,0.069,1.068,0.992,"[np.float64(0.575), np.float64(0.573), np.float64(0.558)]",True,True
+m_ret4,0.564,0.064,1.003,0.817,"[np.float64(0.58), np.float64(0.567), np.float64(0.543)]",True,True
+p1_tr1,0.558,0.058,1.007,0.913,"[np.float64(0.571), np.float64(0.576), np.float64(0.523)]",True,True
+m_press,0.536,0.036,2.0,1.0,"[np.float64(0.546), np.float64(0.535), np.float64(0.528)]",True,False
+p2_bodydom,0.533,0.033,0.433,0.385,"[np.float64(0.555), np.float64(0.541), np.float64(0.502)]",True,False
+m_ret1,0.532,0.032,0.433,0.386,"[np.float64(0.555), np.float64(0.542), np.float64(0.5)]",False,False
+p7_pdloc,0.471,0.029,0.55,0.607,"[nan, np.float64(0.507), np.float64(0.44)]",False,False
+p5_volpct,0.509,0.009,0.68,0.67,"[np.float64(0.512), np.float64(0.445), np.float64(0.575)]",False,False
+p7_ssloc,0.492,0.008,0.513,0.535,"[np.float64(0.486), np.float64(0.505), np.float64(0.483)]",False,False
+p1_body,0.504,0.004,0.465,0.452,"[np.float64(0.522), np.float64(0.5), np.float64(0.489)]",False,False
+p9_retr,0.504,0.004,0.469,0.459,"[np.float64(0.513), np.float64(0.492), np.float64(0.508)]",False,False

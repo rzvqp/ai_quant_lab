@@ -1,0 +1,6 @@
+family,mfe32_med,mae32_med,mfe_mae_ratio,p_fav_5usd,p_fav_10usd,p_fav_15usd,p_fav_20usd,entry_worse_10pct,entry_worse_25pct,entry_worse_50pct
+A_sweep_reclaim,4.55,4.66,0.98,41.6,20.9,12.1,7.8,0.1,0.1,0.1
+B_breakout_pullback,4.78,4.89,0.98,42.3,25.0,14.1,9.5,0.5,0.5,0.5
+C_attack_decay_break,4.85,4.0,1.21,35.8,14.1,8.6,5.4,0.0,0.0,0.0
+D_disp_fail_reversal,5.2,4.97,1.05,42.2,21.2,11.2,7.1,0.1,0.1,0.0
+E_compress_expand,4.86,4.76,1.02,42.0,16.0,7.0,3.0,1.0,1.0,1.0
