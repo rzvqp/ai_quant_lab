@@ -1,0 +1,16 @@
+{
+  "mandate": "FFR_SECOND_ORDER_TRAP_QUICK_KILL_V1",
+  "parent": "FAILED_ACCEPTANCE_PRIOR_LEVEL_V1 (ffc5e8e0) / LEVEL_TO_LEVEL_ACCEPTANCE_V1 (2a9f0c09)",
+  "mechanism": "BREAK -> FAILED ACCEPTANCE -> RE-ACCEPTANCE (close back on breakout side within 8 bars) -> entry next open -> target L2",
+  "reacceptance_window_bars": 8,
+  "stop": "trap-swing extreme (break..reaccept) -/+0.10ATR floored",
+  "target": "L2 (frozen)",
+  "backstop": 96,
+  "cost_base": 0.05,
+  "cost_stress": 0.08,
+  "abstain": "fade_won (L0 reached first) / pre_continued (L2 first) / no_reacceptance (expiry)",
+  "comparator": "PRIMARY ACCEPTANCE = LEVEL_TO_LEVEL_ACCEPTANCE_V1",
+  "no_grid_search": true,
+  "no_param_invention": true,
+  "causal": true
+}
