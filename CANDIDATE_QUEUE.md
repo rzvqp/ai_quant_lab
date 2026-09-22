@@ -355,3 +355,28 @@ Family conclusion: **CAND-0037 (all-session weekly breakout) is the robust base 
 - any ratified **structural stop/exit** primitive → completes Part B for the non-pilot candidates.
 
 Auto-resumes the moment any of the above is ratified, or on CEO request to enumerate the remaining pairwise confluences.
+
+---
+
+## GOVERNED-Sx-GRAMMAR REAL-COST SURVIVORS (2026-09-22) → STATISTICIAN (CEO-directed)
+
+**Selection line (DISTINCT — do NOT fold into MK family=7, session line, or the CR current-regime line).** Source = the governed **S1–S51 strategy grammar** (`code/mstrat.py` + `code/mstrat_ext.py`), the same corpus the campaign ran cost-naive (only S5 validated). New contribution = re-scored ONCE at the **ratified real live-shadow cost** (`AI_TRADER_SHADOW_COST_MODEL_v1`: BASE round-trip **0.05** / STRESS **0.24**; commission never captured; no real fills) through the governed simulator `mstrat.simulate` with **TICK forced 0.01** (the 0.1 is the known 10× bug), multi-era + skepticism gate. Reproduction: `reports/alpha_discovery/gov_screen.py` (env `COST_RT_USD=0.05 STRESS_RT=0.24`), verification `reports/alpha_discovery/vfy_survivors.py`, report `reports/alpha_discovery/PROFITABLE_AT_REAL_COST_TOP5_V1_REPORT.md`, results `GOV_SCREEN_ALL_RESULTS.csv` / `GOV_SCREEN_SURVIVORS.csv`.
+
+**⚠ MULTIPLE-TESTING DISCLOSURE (load-bearing, for the Statistician):** **2,448 configs** scored; **34 passed the gate**; **4 REJECTED by Alpha as an engine artifact** (all S49 narrow-range fade — inverted-stop/same-bar fill: median hold 0.0 bars, 98% "exit=stop" yet 71% WR because the bar-stop sits on the wrong side of entry after the breakout close → instant fake profit; the "resting-limit same-bar" bug class — now pinned); **30 believable; top-3 NEW candidates sent here.** This is a 2,448-wide selection — FWER/BH-FDR must be applied over the grammar, not per-candidate. Baseline: naive long (buy-every-96, 1ATR, rr2) = **−0.128R** (recent −0.194R), so long-only positivity is not trivial beta.
+
+**S5 is NOT re-sent** — already `INDEPENDENT_VALIDATION_PASS`; it is the only MULTI-ERA survivor (2011-16 +0.026 incl. 2013 crash / 2017-21 +0.033 / 2022-26 +0.139; BASE +0.092 / STRESS +0.063, PF 1.16).
+
+| candidate_id | policy | Part A (entry, frozen config) | Part B (risk) | real-cost metrics (BASE/STRESS R, PF, WR, N/yr, recent) | verdict → state |
+|---|---|---|---|---|---|
+| **CAND-HTFSX-01** | S1 PDH liquidity-sweep + displacement (LONG) | `mstrat.s1_setups` `side=high, liq_ref=pdh_pdl, liq_lb=20, confirm=displacement, imb=none, window=4` (id 85dfa65a9ce1) | stop=beyond_sweep, exit=rr3, sizing 1R, ENGINE-v2 floor | +0.222 / **+0.166**, PF 1.39, WR 39%, ~21/yr, recent +0.285 | ALPHA_SURVIVOR (current-regime) → **Statistician** |
+| **CAND-HTFSX-02** | S9 4H-trend + 1H-align continuation → 15m (LONG) | `mstrat.s9_setups` `c4h=up, conf1h=align, lb=20, stop=structural, exit=rr3` (id 047d776a1bcb) | stop=structural, exit=rr3, 1R, ENGINE-v2 floor | +0.165 / **+0.146**, PF 1.37, WR 46%, ~44/yr, recent +0.252 | ALPHA_SURVIVOR (current-regime) → **Statistician** |
+| **CAND-HTFSX-03** | S20 4H-up context + breakout → 15m (LONG) | `mstrat_ext.s20_setups` `ctx=h4up, trig=breakout, lb=50, stop=atr, exit=rr3` (id 601e20753a4a) | stop=1.5×ATR, exit=rr3, 1R, ENGINE-v2 floor | +0.161 / **+0.119**, PF 1.24, WR 32%, ~52/yr, recent +0.194 | ALPHA_SURVIVOR (current-regime) → **Statistician** |
+
+**Limitations to ATTACK (Alpha-disclosed, not hidden — these are the load-bearing risks):**
+1. **CURRENT-REGIME CONCENTRATION (severe).** CAND-HTFSX-02/03 use the panel's precomputed 4H/1H trend context, which exists **only from 2023** → their entire trade population is **2023-2026** (recent gold bull). CAND-HTFSX-01 (PDH) is full-history-capable but its displacement-confirmed configs **concentrate post-2021** (<20 trades before 2021). The screen's "≥2/3 eras positive" are **chronological thirds WITHIN the recent regime**, NOT cross-regime — do not read them as multi-era robustness. Precedent: this is the same failure surface that sank **CAND-CRS1** (current-regime selection → lookahead → invalidated).
+2. **LONG-TILTED / possible long-beta.** All three are LONG-only; opposite-side/opposite-context counterparts LOSE (S1-low −0.082, S9-down −0.048, S20-down −0.091). They beat the naive-long baseline (−0.128R), but the Statistician should test against a **matched-long / regime-matched null**, not just a random null, and confirm the edge is not the 2021-2026 secular drift.
+3. **IN-SAMPLE / MATERIALLY-EXPOSED.** The full governed record (2011→2026-07-27) was consumed; no untouched holdout exists (data ends 2026-07-27). `HYPOTHESIS_ONLY`. Minimum clean validation = **prospective** post-2026-07-27 M15, or an independent-data replication.
+4. **SELECTION BURDEN.** 5 selected from 2,448 — apply grammar-wide FWER/BH-FDR. Alpha applied only a fixed skepticism gate (BASE>0 ∧ STRESS>0 ∧ PF≥1.15 ∧ ≥2/3 thirds ∧ drop-best-5%>0 ∧ N≥150 ∧ recent≥0 ∧ beats naive long), NOT a formal multiple-comparison correction.
+5. **Part B is not a ratified structural primitive** (rr3 on structural/ATR stop, ENGINE-v2 floor) — same standing risk-layer gap as the MK candidates; route Part B spec to the Statistician.
+
+**Pipeline note:** normal order is Red Team A → Statistician; CEO directed these straight to the Statistician (2026-09-22). Alpha has NOT run any Red Team or Statistician protocol on them (independence preserved). No promotion; nothing sent to AI Trader; protections intact. **State: `ALPHA_SURVIVOR_CURRENT_REGIME → READY_FOR_STATISTICIAN` (3 candidates).**
